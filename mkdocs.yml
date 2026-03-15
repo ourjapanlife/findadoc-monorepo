@@ -6,6 +6,7 @@ copyright: Copyright &copy; 2026, Our Japan Life (NPO法人Find a Doc, Japan)
 
 theme:
   name: material
+  language: en
   logo: assets/site-logo.svg
   favicon: assets/favicon.svg
   palette:
@@ -32,11 +33,35 @@ theme:
     - search.suggest
     - search.highlight
 
+extra:
+  alternate:
+    - name: English
+      link: /
+      lang: en
+    - name: 日本語
+      link: /ja/
+      lang: ja
+
+extra_javascript:
+  - javascripts/i18n-nav-fix.js
+
 extra_css:
   - stylesheets/extra.css
 
 plugins:
   - search
+  - i18n:
+      docs_structure: folder
+      reconfigure_material: true
+      default_language: en
+      languages:
+        - locale: en
+          name: English
+          build: true
+          default: true
+        - locale: ja
+          name: 日本語
+          build: true
 
 markdown_extensions:
   - admonition
