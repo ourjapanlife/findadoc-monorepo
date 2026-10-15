@@ -270,8 +270,9 @@ export const useHealthcareProfessionalsStore = defineStore(
                 }
             }
 
+            const updatedProfessionalId = selectedHealthcareProfessionalId.value
             const updateInput: MutationUpdateHealthcareProfessionalArgs = {
-                id: selectedHealthcareProfessionalId.value,
+                id: updatedProfessionalId,
                 input: patch
             }
 
@@ -286,12 +287,17 @@ export const useHealthcareProfessionalsStore = defineStore(
             if (!serverResponse.errors?.length && responseData) {
                 const index = healthcareProfessionalsData.value.findIndex(hp => hp.id === responseData.id)
                 if (index !== -1) healthcareProfessionalsData.value[index] = responseData
-                selectedHealthcareProfessionalData.value = responseData
-                updateHealthcareProfessionalSectionFields(responseData)
-                removedHealthcareProfessionalNames.value = []
+                const selectedNow = selectedHealthcareProfessionalData.value
+                const stillEditingUpdatedProfessional = selectedHealthcareProfessionalId.value === updatedProfessionalId
+                  && (selectedNow === undefined || selectedNow.id === responseData.id)
+                if (stillEditingUpdatedProfessional) {
+                    selectedHealthcareProfessionalData.value = responseData
+                    updateHealthcareProfessionalSectionFields(responseData)
+                    removedHealthcareProfessionalNames.value = []
+                }
                 await loadHealthcareProfessionalList()
             }
-            if (!serverResponse.errors?.length) {
+            if (!serverResponse.errors?.length && selectedHealthcareProfessionalId.value === updatedProfessionalId) {
                 unsavedChangesResetTick.value++
             }
 
