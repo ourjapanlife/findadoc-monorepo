@@ -1,0 +1,32 @@
+.DS_store
+.idea
+
+# yarn
+node_modules
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+yarn-error.log
+
+# ai env settings
+.claude
+
+# eslint results
+eslint-results.sarif
+
+# App specific
+.env*
+!.env.sample
+!.env.dev
+!.env.prod
+
+# eslint results
+eslint-results.sarif
+
+# build output
+dist
+
+*seed_data.sql

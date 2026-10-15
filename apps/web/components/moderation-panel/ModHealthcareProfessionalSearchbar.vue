@@ -1,0 +1,139 @@
+<template>
+    <div>
+        <span class="mb-3.5 text-center text-primary-text text-2xl font-bold font-sans leading-normal">
+            {{ t('modSubmissionForm.healthcareProfessionalId') }}
+        </span>
+        <div class="flex flex-col mt-4">
+            <div class="justify-start items-start flex">
+                <input
+                    v-model="searchValue"
+                    type="text"
+                    :placeholder="t('modSubmissionForm.placeholderTextHealthcareProfessionalSearchbar')"
+                    class="px-3 py-3.5 w-96 h-12 bg-secondary-bg rounded-lg border border-primary-text-muted
+                    text-primary-text text-sm font-normal font-sans placeholder-primary-text-muted"
+                    @input="searchHealthcareProfessionalByIdOrName"
+                >
+                <SVGLookingGlass
+                    role="img"
+                    title="searching icon"
+                    class="relative right-8 top-3 w-6 h-6"
+                />
+            </div>
+            <div class="relative">
+                <div
+                    v-show="healthcareProfessionalByIdOrName.length"
+                    class="absolute z-30"
+                >
+                    <div
+                        v-for="(healthcareProfessional, index) in healthcareProfessionalByIdOrName"
+                        :key="`${healthcareProfessional.id}-${healthcareProfessional.createdDate}-${index}`"
+                        :class="[
+                            'w-96 border-b border-primary-gray-bg p-4',
+                            index === healthcareProfessionalByIdOrName.length - 1 ? 'rounded-b-lg' : '',
+                        ]"
+                        class="bg-secondary-bg shadow-md hover:bg-accent-bg/20"
+                    >
+                        <div
+                            class="cursor-pointer"
+                            role="button"
+                            tabindex="0"
+                            @click="() => addHealthcareProfessional(healthcareProfessional.id)"
+                            @keydown.enter="() => addHealthcareProfessional(healthcareProfessional.id)"
+                            @keydown.space.prevent="() => addHealthcareProfessional(healthcareProfessional.id)"
+                        >
+                            <div class="font-bold">
+                                <span
+                                    class="mr-1"
+                                >
+                                    {{ healthcareProfessionalsStore
+                                        .displayChosenLocaleForHealthcareProfessional(healthcareProfessional)?.lastName }}
+                                </span>
+                                <span
+                                    v-show="healthcareProfessionalsStore
+                                        .displayChosenLocaleForHealthcareProfessional(healthcareProfessional)?.middleName"
+                                    class="mr-1"
+                                >
+                                    {{ healthcareProfessionalsStore
+                                        .displayChosenLocaleForHealthcareProfessional(healthcareProfessional)?.middleName }}
+                                </span>
+                                <span>
+                                    {{ healthcareProfessionalsStore
+                                        .displayChosenLocaleForHealthcareProfessional(healthcareProfessional)?.firstName }}
+                                </span>
+                            </div>
+                            <span>
+                                ID: {{ healthcareProfessional.id }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import { ref, type Ref } from 'vue'
+import SVGLookingGlass from '~/assets/icons/looking-glass.svg'
+import { RelationshipAction, type HealthcareProfessional } from '@findadoc/graphql'
+import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
+import { useFacilitiesStore } from '~/stores/facilitiesStore'
+import { useModerationScreenStore } from '~/stores/moderationScreenStore'
+import { matchesHealthcareProfessionalSearch } from '~/utils/moderationSearchUtils'
+
+const { t } = useI18n()
+
+const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
+const moderationScreenStore = useModerationScreenStore()
+const facilitiesStore = useFacilitiesStore()
+
+const searchValue: Ref<string> = ref('')
+// `healthcareProfessionalById` will be used in the UI component in an upcoming PR
+const healthcareProfessionalByIdOrName: Ref<HealthcareProfessional[] | []> = ref([])
+
+const addHealthcareProfessional = (id: string) => {
+    if (moderationScreenStore.editFacilityScreenIsActive()
+      || moderationScreenStore.createFacilityScreenIsActive()) {
+        //Check if the healthcareProfessional has already been added
+        const foundProfessionalAlreadyPartOfFacility
+            = facilitiesStore.facilitySectionFields.healthProfessionalsRelations
+                .find(relation => relation.otherEntityId === id)
+                || facilitiesStore.facilitySectionFields.healthcareProfessionalIds.includes(id)
+
+        // Return out of the function if already added
+        if (foundProfessionalAlreadyPartOfFacility) return
+
+        // Add a relationship to the facility with selected healthcare professional
+        facilitiesStore.facilitySectionFields.healthProfessionalsRelations.push({
+            action: RelationshipAction.Create,
+            otherEntityId: id
+        })
+
+        // Find the healthcare professional by ID
+        const foundProfessional = healthcareProfessionalsStore.healthcareProfessionalsData
+            .find(healthcareProfessional => healthcareProfessional.id === id)
+
+        if (foundProfessional) {
+            searchValue.value = ''
+            healthcareProfessionalByIdOrName.value = []
+        }
+    }
+}
+
+function searchHealthcareProfessionalByIdOrName() {
+    if (!searchValue.value || searchValue.value.trim().length < 1) {
+        return healthcareProfessionalByIdOrName.value = []
+    }
+
+    const healthcareProfessionalByIdOrNamesFound = healthcareProfessionalsStore.healthcareProfessionalsData
+        .filter(healthcareProfessional =>
+            matchesHealthcareProfessionalSearch(healthcareProfessional, searchValue.value))
+
+    // Filter out IDs already included in `selectedFacilityData.healthcareProfessionalIds`
+    const selectedIds = facilitiesStore.selectedFacilityData?.healthcareProfessionalIds || []
+    const filteredHealthcareProfessionalIds = healthcareProfessionalByIdOrNamesFound
+        .filter(healthcareProfessional => !selectedIds.includes(healthcareProfessional.id))
+
+    healthcareProfessionalByIdOrName.value = filteredHealthcareProfessionalIds
+}
+</script>

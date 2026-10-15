@@ -1,0 +1,116 @@
+/// <reference types="vitest/globals" />
+import { expect } from 'chai'
+import {
+    readRedirects,
+    readServeJson,
+    redirectRuleIndex
+} from '../helpers/spaFallbackConfig'
+
+describe('SPA fallbacks', () => {
+    it('proxies the umami tracker and collect endpoint before the 404 catch-all', () => {
+        const redirects = readRedirects()
+        const script = redirectRuleIndex(redirects, /^\/stats\.js\s+https:\/\/cloud\.umami\.is\/script\.js\s+200/m)
+        const collect = redirectRuleIndex(redirects, /^\/api\/send\s+https:\/\/gateway\.umami\.is\/api\/send\s+200/m)
+        const notFound = redirectRuleIndex(redirects, /^\/\*\s+\/404\.html\s+404/m)
+
+        expect(script, '/stats.js proxy').to.be.greaterThan(-1)
+        expect(collect, '/api/send proxy').to.be.greaterThan(-1)
+        expect(script).to.be.lessThan(notFound)
+        expect(collect).to.be.lessThan(notFound)
+    })
+
+    it('rewrites profile deep links to the SPA shell before the 404 catch-all', () => {
+        const redirects = readRedirects()
+        const spa = redirectRuleIndex(redirects, /^\/u\/\*\s+\/200\.html\s+200/m)
+        const notFound = redirectRuleIndex(redirects, /^\/\*\s+\/404\.html\s+404/m)
+
+        expect(spa).to.be.greaterThan(-1)
+        expect(notFound).to.be.greaterThan(-1)
+        expect(spa).to.be.lessThan(notFound)
+    })
+
+    it('rewrites other non-prerendered app routes to the SPA shell', () => {
+        const redirects = readRedirects()
+        for (const path of ['/login', '/my-page']) {
+            const exact = new RegExp(`^${path}\\s+/200\\.html\\s+200`, 'm')
+            const nested = new RegExp(`^${path}/\\*\\s+/200\\.html\\s+200`, 'm')
+            expect(redirectRuleIndex(redirects, exact), `${path} exact rewrite`).to.be.greaterThan(-1)
+            expect(redirectRuleIndex(redirects, nested), `${path} nested rewrite`).to.be.greaterThan(-1)
+        }
+    })
+
+    it('does not use a blanket 200 catch-all', () => {
+        expect(readRedirects()).to.not.match(/^\/\*\s+\/(?:index|200)\.html\s+200/m)
+    })
+
+    it('mirrors profile SPA fallbacks in serve.json for the static preview server', () => {
+        const serve = readServeJson()
+        const rewrites = serve.rewrites ?? []
+        expect(serve.cleanUrls).to.equal(true)
+        expect(serve.trailingSlash).to.equal(false)
+        expect(rewrites.some(rule => rule.source.startsWith('/u/') && rule.destination === '/200.html')).to.equal(true)
+        expect(rewrites.some(rule => rule.source === '/**' || rule.source === '*')).to.equal(false)
+    })
+
+    /*
+     * /search is ssr: false, so generate emits no page for it and the 404 catch-all
+     * claims it unless a fallback is listed first. Missing it took the deploy preview
+     * and CI to a 404 while dev worked, because dev never consults either file.
+     */
+    /*
+     * /search takes an exact rewrite and deliberately no `/search/*` wildcard. It has no
+     * sub-routes, and the wildcard turned stray paths under it — notably the analytics
+     * tag's malformed `/search/%22%22` — into 200 HTML, which the browser then parsed as
+     * JavaScript and threw on before the app could hydrate.
+     */
+    it('does not give /search a wildcard, only an exact rewrite', () => {
+        expect(readRedirects()).to.not.match(/^\/search\/\*/m)
+        const rewrites = readServeJson().rewrites ?? []
+        expect(rewrites.some(rule => rule.source.startsWith('/search/'))).to.equal(false)
+    })
+
+    it('gives /search a fallback in both files', () => {
+        const redirects = readRedirects()
+        const spa = redirectRuleIndex(redirects, /^\/search\s+\/200\.html\s+200/m)
+        const notFound = redirectRuleIndex(redirects, /^\/\*\s+\/404\.html\s+404/m)
+        expect(spa, '/search rewrite in _redirects').to.be.greaterThan(-1)
+        expect(spa).to.be.lessThan(notFound)
+
+        const rewrites = readServeJson().rewrites ?? []
+        expect(rewrites.some(rule => rule.source === '/search' && rule.destination === '/200.html')).to.equal(true)
+    })
+
+    /*
+     * Clinic, doctor, and geography hub pages are prerendered. An SPA rewrite
+     * would turn unknown IDs or locations into 200 HTML. Missing files must hit
+     * the 404 catch-all.
+     */
+    it('does not give /clinic or /doctor an SPA rewrite', () => {
+        expect(readRedirects()).to.not.match(/^\/clinic/m)
+        expect(readRedirects()).to.not.match(/^\/doctor/m)
+        const rewrites = readServeJson().rewrites ?? []
+        expect(rewrites.some(rule => rule.source.startsWith('/clinic'))).to.equal(false)
+        expect(rewrites.some(rule => rule.source.startsWith('/doctor'))).to.equal(false)
+    })
+
+    it('sends unknown geography paths to the 404 catch-all', () => {
+        const redirects = readRedirects()
+        const spaSources = [...redirects.matchAll(/^(\S+)\s+\/200\.html\s+200/gm)]
+            .map(match => match[1])
+            .filter((source): source is string => Boolean(source))
+        const notFound = redirectRuleIndex(redirects, /^\/\*\s+\/404\.html\s+404/m)
+
+        expect(notFound).to.be.greaterThan(-1)
+
+        for (const path of ['/not-a-real-prefecture-xyz', '/tokyo/not-a-real-city-xyz']) {
+            const hasSpaRewrite = spaSources.some(source => {
+                if (source.endsWith('/*')) {
+                    const prefix = source.slice(0, -2)
+                    return path === prefix || path.startsWith(`${prefix}/`)
+                }
+                return path === source
+            })
+            expect(hasSpaRewrite, path).to.equal(false)
+        }
+    })
+})

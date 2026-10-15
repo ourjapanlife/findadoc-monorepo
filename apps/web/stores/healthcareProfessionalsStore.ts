@@ -1,0 +1,542 @@
+import type { Maybe } from 'graphql/jsutils/Maybe'
+import { defineStore } from 'pinia'
+import { reactive, ref, type Ref, computed } from 'vue'
+import { gql } from 'graphql-request'
+import { fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
+import { type Insurance,
+    type Degree,
+    LicenseReviewStatus,
+    type Specialty,
+    type Locale, type DeleteResult, type HealthcareProfessional,
+    type LocalizedNameInput,
+    type Mutation,
+    type MutationDeleteHealthcareProfessionalArgs,
+    type MutationUpdateHealthcareProfessionalArgs,
+    type Relationship,
+    RelationshipAction,
+    type CreateHealthcareProfessionalInput,
+    type MutationCreateHealthcareProfessionalArgs,
+    type Query,
+    type UpdateHealthcareProfessionalInput } from '@findadoc/graphql'
+import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
+import { stableStringify } from '~/utils/stableStringify'
+import { useLocaleStore } from '~/stores/localeStore'
+import type { ServerResponse } from '~/typedefs/serverResponse'
+import { useTranslation } from '~/composables/useTranslation'
+
+function healthcareProfessionalUpdatePatch(
+    current: HealthcareProfessional,
+    next: HealthcareProfessional,
+    facilityIds: Relationship[]
+): UpdateHealthcareProfessionalInput {
+    const patch: UpdateHealthcareProfessionalInput = {}
+
+    if (stableStringify(next.acceptedInsurance ?? []) !== stableStringify(current.acceptedInsurance ?? [])) {
+        patch.acceptedInsurance = next.acceptedInsurance ?? []
+    }
+    if ((next.additionalInfoForPatients ?? '') !== (current.additionalInfoForPatients ?? '')) {
+        patch.additionalInfoForPatients = next.additionalInfoForPatients ?? ''
+    }
+    if (stableStringify(next.degrees ?? []) !== stableStringify(current.degrees ?? [])) {
+        patch.degrees = next.degrees ?? []
+    }
+    if ((next.licenseReview ?? null) !== (current.licenseReview ?? null)) {
+        patch.licenseReview = next.licenseReview ?? null
+    }
+    if (stableStringify(next.names ?? []) !== stableStringify(current.names ?? [])) {
+        patch.names = next.names ?? []
+    }
+    if (stableStringify(next.specialties ?? []) !== stableStringify(current.specialties ?? [])) {
+        patch.specialties = next.specialties ?? []
+    }
+    if (stableStringify(next.spokenLanguages ?? []) !== stableStringify(current.spokenLanguages ?? [])) {
+        patch.spokenLanguages = next.spokenLanguages ?? []
+    }
+    if (facilityIds.length > 0) {
+        patch.facilityIds = facilityIds
+    }
+
+    return patch
+}
+
+export const useHealthcareProfessionalsStore = defineStore(
+    'healthcareProfessionalsStore',
+    () => {
+        const localeStore = useLocaleStore()
+
+        const healthcareProfessionalsData: Ref<HealthcareProfessional[]> = ref([])
+        const selectedHealthcareProfessionalId: Ref<string> = ref('')
+        const selectedHealthcareProfessionalData: Ref<HealthcareProfessional | undefined> = ref()
+        // Used for store the total number of healthcare professionals found by the current search query.
+        const totalHealthcareProfessionalsCount: Ref<number> = ref(0)
+        // Used for store the starting index (offset) for the current page of results.
+        const currentOffset: Ref<number> = ref(0)
+        const itemsPerPage: Ref<number> = ref(25)
+        const listSearchQuery: Ref<string> = ref('')
+        const licenseReviewFilter: Ref<LicenseReviewStatus | null> = ref(null)
+        const healthcareProfessionalList: Ref<HealthcareProfessional[]> = ref([])
+        const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
+        let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
+        let professionalListRequest = 0
+        const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalHealthcareProfessionalsCount.value)
+        const hasPrevPage = computed(() => currentOffset.value > 0)
+        const healthcareProfessionalSectionFields = reactive<HealthcareProfessional>({
+            __typename: 'HealthcareProfessional',
+            acceptedInsurance: [],
+            additionalInfoForPatients: '',
+            createdDate: '',
+            degrees: [],
+            additionalCredentials: [],
+            facilityIds: [],
+            id: '', // Empty string, assuming the ID will be set later
+            licenseReview: null,
+            names: [],
+            specialties: [],
+            spokenLanguages: [],
+            updatedDate: ''
+        })
+
+        const createHealthcareProfessionalSectionFields: CreateHealthcareProfessionalInput = reactive({
+            acceptedInsurance: [] as Insurance[],
+            degrees: [] as Degree[],
+            facilityIds: [] as string[],
+            names: [] as LocalizedNameInput[],
+            specialties: [] as Specialty[],
+            spokenLanguages: [] as Locale[],
+            additionalInfoForPatients: ''
+        })
+
+        // This helps users easily add name locales back to a healthcare professional by keeping track of removed ones
+        const removedHealthcareProfessionalNames: Ref<LocalizedNameInput[]> = ref([])
+
+        /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
+        const unsavedChangesResetTick: Ref<number> = ref(0)
+
+        function setSelectedHealthcareProfessional(healthcareProfessionalId: string) {
+            selectedHealthcareProfessionalId.value = healthcareProfessionalId
+            const inModerationList = healthcareProfessionalList.value.find(professional =>
+                professional.id === healthcareProfessionalId)
+            const inPickerCache = healthcareProfessionalsData.value.find(professional =>
+                professional.id === healthcareProfessionalId)
+            const foundHP = inModerationList ?? inPickerCache
+            selectedHealthcareProfessionalData.value = foundHP
+            if (foundHP) {
+                updateHealthcareProfessionalSectionFields(foundHP)
+            }
+        }
+
+        function updateHealthcareProfessionalSectionFields(healthcareProfessional: HealthcareProfessional) {
+            // eslint-disable-next-line no-underscore-dangle
+            healthcareProfessionalSectionFields.__typename = 'HealthcareProfessional'
+            healthcareProfessionalSectionFields.acceptedInsurance = healthcareProfessional.acceptedInsurance
+            healthcareProfessionalSectionFields.additionalInfoForPatients = healthcareProfessional.additionalInfoForPatients
+            healthcareProfessionalSectionFields.createdDate = healthcareProfessional.createdDate
+            healthcareProfessionalSectionFields.degrees = healthcareProfessional.degrees
+            healthcareProfessionalSectionFields.additionalCredentials = healthcareProfessional.additionalCredentials ?? []
+            healthcareProfessionalSectionFields.licenseReview = healthcareProfessional.licenseReview ?? null
+            healthcareProfessionalSectionFields.facilityIds = healthcareProfessional.facilityIds
+            healthcareProfessionalSectionFields.id = healthcareProfessional.id
+            healthcareProfessionalSectionFields.names = healthcareProfessional.names
+            healthcareProfessionalSectionFields.specialties = healthcareProfessional.specialties
+            healthcareProfessionalSectionFields.spokenLanguages = healthcareProfessional.spokenLanguages
+            healthcareProfessionalSectionFields.updatedDate = healthcareProfessional.updatedDate
+        }
+
+        function resetHealthcareProfessionalSectionFields() {
+            // eslint-disable-next-line no-underscore-dangle
+            healthcareProfessionalSectionFields.__typename = 'HealthcareProfessional'
+            healthcareProfessionalSectionFields.acceptedInsurance = []
+            healthcareProfessionalSectionFields.additionalInfoForPatients = ''
+            healthcareProfessionalSectionFields.createdDate = ''
+            healthcareProfessionalSectionFields.degrees = []
+            healthcareProfessionalSectionFields.additionalCredentials = []
+            healthcareProfessionalSectionFields.licenseReview = null
+            healthcareProfessionalSectionFields.facilityIds = []
+            healthcareProfessionalSectionFields.id = ''
+            healthcareProfessionalSectionFields.names = []
+            healthcareProfessionalSectionFields.specialties = []
+            healthcareProfessionalSectionFields.spokenLanguages = []
+            healthcareProfessionalSectionFields.updatedDate = ''
+        }
+
+        async function getHealthcareProfessionals() {
+            const filters = {
+                offset: 0,
+                limit: itemsPerPage.value
+            }
+            try {
+                const { filteredSearchResults } = await fetchHealthcareProfessionalsWithCount(filters)
+                healthcareProfessionalsData.value = filteredSearchResults
+            } catch (error) {
+                console.error(`Error fetching healthcare professionals: ${JSON.stringify(error)}`)
+                // eslint-disable-next-line no-alert
+                alert('Error loading submissions. Please try again later.')
+                healthcareProfessionalsData.value = []
+            }
+        }
+
+        async function loadHealthcareProfessionalList() {
+            const request = ++professionalListRequest
+            const query = listSearchQuery.value.trim()
+            const filters = {
+                offset: currentOffset.value,
+                limit: itemsPerPage.value,
+                ...(query ? { query } : {}),
+                ...(licenseReviewFilter.value ? { licenseReview: licenseReviewFilter.value } : {})
+            }
+            try {
+                const { filteredSearchResults, totalCount } = await fetchHealthcareProfessionalsWithCount(filters)
+                if (request !== professionalListRequest) return
+                healthcareProfessionalList.value = filteredSearchResults
+                totalHealthcareProfessionalsCount.value = totalCount
+            } catch (error) {
+                if (request !== professionalListRequest) return
+                console.error(`Error fetching healthcare professionals: ${JSON.stringify(error)}`)
+                // eslint-disable-next-line no-alert
+                alert('Error loading submissions. Please try again later.')
+                healthcareProfessionalList.value = []
+                totalHealthcareProfessionalsCount.value = 0
+            }
+        }
+
+        function setOffset(newOffset: number) {
+            currentOffset.value = newOffset
+            return loadHealthcareProfessionalList()
+        }
+
+        // helper — create the relationship object to send to the API
+        function createFacilityRelation(otherEntityId: string, currentFacilityIds: string[]): Relationship {
+            return {
+                otherEntityId,
+                action: currentFacilityIds.includes(otherEntityId)
+                    ? RelationshipAction.Delete
+                    : RelationshipAction.Create
+            }
+        }
+
+        async function updateHealthcareProfessional(): Promise<ServerResponse<HealthcareProfessional>> {
+            const currentProfessionalData = healthcareProfessionalList.value.find(
+                hp => hp.id === selectedHealthcareProfessionalId.value
+            )
+            ?? healthcareProfessionalsData.value.find(
+                hp => hp.id === selectedHealthcareProfessionalId.value
+            )
+            ?? (selectedHealthcareProfessionalData.value?.id === selectedHealthcareProfessionalId.value
+                ? selectedHealthcareProfessionalData.value
+                : undefined)
+
+            if (!currentProfessionalData) {
+                console.error(useTranslation('healthcareProfessionalsErrors.noCurrentProfessionalDataFound'), `${selectedHealthcareProfessionalId.value}`)
+                return {
+                    data: {
+                        acceptedInsurance: [],
+                        additionalCredentials: [],
+                        additionalInfoForPatients: '',
+                        createdDate: '',
+                        degrees: [],
+                        facilityIds: [],
+                        id: '',
+                        names: [],
+                        specialties: [],
+                        spokenLanguages: [],
+                        updatedDate: ''
+                    },
+                    hasErrors: true
+                }
+            }
+
+            const currentFacilityIds = currentProfessionalData.facilityIds ?? []
+            const nextFacilityIds = healthcareProfessionalSectionFields.facilityIds ?? []
+            const changedFacilityIds = Array.from(new Set([...currentFacilityIds, ...nextFacilityIds]))
+
+            // Map changed facility IDs to relationship actions the API expects.
+            const facilitiesRelationsToSelectedHealthcareProfessional: Relationship[]
+                = changedFacilityIds
+                    .filter(facilityId => currentFacilityIds.includes(facilityId) !== nextFacilityIds.includes(facilityId))
+                    .map(facilityId => createFacilityRelation(facilityId, currentFacilityIds))
+
+            const patch = healthcareProfessionalUpdatePatch(
+                currentProfessionalData,
+                healthcareProfessionalSectionFields,
+                facilitiesRelationsToSelectedHealthcareProfessional
+            )
+
+            if (Object.keys(patch).length < 1) {
+                unsavedChangesResetTick.value++
+                return {
+                    data: currentProfessionalData,
+                    errors: [],
+                    hasErrors: false
+                }
+            }
+
+            const updateInput: MutationUpdateHealthcareProfessionalArgs = {
+                id: selectedHealthcareProfessionalId.value,
+                input: patch
+            }
+
+            const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
+                gqlClient.request.bind(gqlClient),
+                updateHealthcareProfessionalGqlMutation,
+                updateInput
+            )
+
+            const responseData = serverResponse.data?.updateHealthcareProfessional
+
+            if (!serverResponse.errors?.length && responseData) {
+                const index = healthcareProfessionalsData.value.findIndex(hp => hp.id === responseData.id)
+                if (index !== -1) healthcareProfessionalsData.value[index] = responseData
+                selectedHealthcareProfessionalData.value = responseData
+                updateHealthcareProfessionalSectionFields(responseData)
+                removedHealthcareProfessionalNames.value = []
+                await loadHealthcareProfessionalList()
+            }
+            if (!serverResponse.errors?.length) {
+                unsavedChangesResetTick.value++
+            }
+
+            return {
+                ...serverResponse,
+                data: responseData
+            }
+        }
+
+        async function createHealthcareProfessional():
+        Promise<ServerResponse<Maybe<HealthcareProfessional>>> {
+            const serverResponse: ServerResponse<Maybe<HealthcareProfessional>> = {
+                data: null,
+                errors: [],
+                hasErrors: false
+            }
+
+            const createHealthcareProfessionalInput: MutationCreateHealthcareProfessionalArgs = {
+                input: {
+                    acceptedInsurance: createHealthcareProfessionalSectionFields.acceptedInsurance,
+                    additionalInfoForPatients: createHealthcareProfessionalSectionFields.additionalInfoForPatients,
+                    degrees: createHealthcareProfessionalSectionFields.degrees,
+                    facilityIds: createHealthcareProfessionalSectionFields.facilityIds,
+                    names: createHealthcareProfessionalSectionFields.names,
+                    specialties: createHealthcareProfessionalSectionFields.specialties,
+                    spokenLanguages: createHealthcareProfessionalSectionFields.spokenLanguages
+                }
+            }
+            const response = await graphQLClientRequestWithRetry<Mutation>(
+                gqlClient.request.bind(gqlClient),
+                createHealthcareProfessionalGqMutation,
+                createHealthcareProfessionalInput
+            )
+
+            serverResponse.data = response.data?.createHealthcareProfessional ?? null
+            serverResponse.errors = response.errors ?? []
+            serverResponse.hasErrors = response.hasErrors ?? !!serverResponse.errors.length
+
+            return serverResponse
+        }
+
+        function resetCreateHealthcareProfessionalFields() {
+            createHealthcareProfessionalSectionFields.acceptedInsurance = []
+            createHealthcareProfessionalSectionFields.additionalInfoForPatients = ''
+            createHealthcareProfessionalSectionFields.degrees = []
+            createHealthcareProfessionalSectionFields.facilityIds = []
+            createHealthcareProfessionalSectionFields.names = []
+            createHealthcareProfessionalSectionFields.specialties = []
+            createHealthcareProfessionalSectionFields.spokenLanguages = []
+        }
+
+        async function deleteHealthcareProfessional(
+            inputArgs: MutationDeleteHealthcareProfessionalArgs
+        ): Promise<ServerResponse<DeleteResult>> {
+            const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
+                gqlClient.request.bind(gqlClient),
+                deleteHealthcareProfessionalGqlMutation,
+                inputArgs
+            )
+
+            const deleteResult = serverResponse.data?.deleteHealthcareProfessional as DeleteResult | undefined
+
+            const mappedResponse: ServerResponse<DeleteResult> = {
+                ...serverResponse,
+                data: deleteResult as DeleteResult
+            }
+
+            if (!serverResponse.errors?.length && deleteResult?.isSuccessful) {
+                await Promise.all([getHealthcareProfessionals(), loadHealthcareProfessionalList()])
+                if (selectedHealthcareProfessionalId.value === inputArgs.id) {
+                    selectedHealthcareProfessionalId.value = ''
+                    selectedHealthcareProfessionalData.value = undefined
+                }
+            }
+
+            return mappedResponse
+        }
+
+        const displayChosenLocaleForHealthcareProfessional = (
+            healthcareProfessional: HealthcareProfessional | CreateHealthcareProfessionalInput
+        ) => {
+            const nameFromChosenLocaleDisplay = healthcareProfessional.names.find(
+                name => name.locale === localeStore.activeLocale.code
+            )
+
+            if (nameFromChosenLocaleDisplay) {
+                return nameFromChosenLocaleDisplay
+            }
+
+            const defaultName = healthcareProfessional.names[0]
+            if (defaultName) {
+                return defaultName
+            }
+
+            const fallback: LocalizedNameInput = {
+                firstName: '',
+                lastName: '',
+                middleName: '',
+                locale: localeStore.activeLocale.code as LocalizedNameInput['locale']
+            }
+            return fallback
+        }
+
+        function setItemsPerPage(newLimit: number) {
+            itemsPerPage.value = newLimit
+        }
+
+        function setListSearchQuery(newQuery: string) {
+            listSearchQuery.value = newQuery
+            currentOffset.value = 0
+            if (professionalSearchTimer) clearTimeout(professionalSearchTimer)
+            professionalSearchTimer = setTimeout(() => {
+                loadHealthcareProfessionalList()
+            }, 300)
+        }
+
+        function setLicenseReviewFilter(enabled: boolean) {
+            licenseReviewFilter.value = enabled ? LicenseReviewStatus.NeedsReview : null
+            currentOffset.value = 0
+            return loadHealthcareProfessionalList()
+        }
+
+        return {
+            getHealthcareProfessionals,
+            loadHealthcareProfessionalList,
+            healthcareProfessionalsData,
+            filteredHealthcareProfessionalsData,
+            listSearchQuery,
+            licenseReviewFilter,
+            setListSearchQuery,
+            setLicenseReviewFilter,
+            updateHealthcareProfessional,
+            selectedHealthcareProfessionalId,
+            deleteHealthcareProfessional,
+            healthcareProfessionalSectionFields,
+            unsavedChangesResetTick,
+            displayChosenLocaleForHealthcareProfessional,
+            setSelectedHealthcareProfessional,
+            selectedHealthcareProfessionalData,
+            removedHealthcareProfessionalNames,
+            createHealthcareProfessional,
+            createHealthcareProfessionalSectionFields,
+            resetCreateHealthcareProfessionalFields,
+            resetHealthcareProfessionalSectionFields,
+            totalHealthcareProfessionalsCount,
+            currentOffset,
+            itemsPerPage,
+            setOffset,
+            hasNextPage,
+            hasPrevPage,
+            setItemsPerPage
+        }
+    }
+)
+
+export async function getHealthcareProfessionalById(id: string): Promise<HealthcareProfessional[]> {
+    try {
+        const queryData = {
+            healthcareProfessionalId: id
+        }
+        const result = await graphQLClientRequestWithRetry<Query>(
+            gqlClient.request.bind(gqlClient),
+            getHealthcareProfessionalByIdGqlQuery,
+            queryData
+        )
+
+        if (!result.data?.healthcareProfessional) {
+            throw new Error(useTranslation('healthcareProfessionalsErrors.idDoesNotExist'))
+        }
+
+        return [result.data.healthcareProfessional]
+    } catch (error: unknown) {
+        console.error(useTranslation('healthcareProfessionalsErrors.retrievingById'), `${id}: ${JSON.stringify(error)}`)
+        return []
+    }
+}
+
+const getHealthcareProfessionalByIdGqlQuery = gql`
+    query HealthcareProfessionals($healthcareProfessionalId: ID!) {
+        healthcareProfessional(id: $healthcareProfessionalId) {
+        names {
+            firstName
+            lastName
+        }
+        id
+        specialties
+    }
+}`
+
+const updateHealthcareProfessionalGqlMutation = gql`
+mutation Mutation($id: ID!, $input: UpdateHealthcareProfessionalInput!) {
+  updateHealthcareProfessional(id: $id, input: $input) {
+    id
+    names {
+      firstName
+      middleName
+      lastName
+      locale
+    }
+    spokenLanguages
+    degrees
+    primaryLicense
+    additionalCredentials
+    licenseReview
+    licenseRecommendation
+    specialties
+    acceptedInsurance
+    additionalInfoForPatients
+    facilityIds
+    createdDate
+    updatedDate
+  }
+}
+`
+
+const deleteHealthcareProfessionalGqlMutation = gql`
+mutation Mutation($id: ID!) {
+  deleteHealthcareProfessional(id: $id) {
+    isSuccessful
+  }
+}
+`
+
+const createHealthcareProfessionalGqMutation = gql`
+mutation Mutation($input: CreateHealthcareProfessionalInput!) {
+  createHealthcareProfessional(input: $input) {
+    id
+    names {
+      firstName
+      middleName
+      lastName
+      locale
+    }
+    spokenLanguages
+    degrees
+    primaryLicense
+    additionalCredentials
+    licenseReview
+    licenseRecommendation
+    specialties
+    acceptedInsurance
+    additionalInfoForPatients
+    facilityIds
+    createdDate
+    updatedDate
+  }
+}
+`

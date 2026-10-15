@@ -1,0 +1,29 @@
+{
+    "name": "@findadoc/graphql",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "scripts": {
+        "generate": "graphql-codegen --config codegen.ts",
+        "build": "pnpm generate && tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+    },
+    "dependencies": {
+        "graphql": "catalog:"
+    },
+    "devDependencies": {
+        "@findadoc/tsconfig": "workspace:*",
+        "@graphql-codegen/cli": "^6.1.0",
+        "@graphql-codegen/typescript": "^5.0.7",
+        "@graphql-codegen/typescript-resolvers": "^5.1.5",
+        "typescript": "catalog:"
+    }
+}

@@ -1,0 +1,352 @@
+const PLACE_ID_TOKEN = /^[A-Za-z0-9_-]{8,}$/
+const COORDINATE_PAIR = /^(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)$/
+
+export type MapsPreviewTarget = {
+    name: string | null
+    latitude: number | null
+    longitude: number | null
+    placeId: string | null
+}
+
+/**
+ * A Maps URL that is worth one Places call.
+ * A free-text name, a short share link, or a URL with no pin and no place id is not.
+ */
+export function previewTargetFromMapsUrl(url: string): MapsPreviewTarget | null {
+    const trimmed = url.trim()
+    if (trimmed.length > 2000 || !isGoogleMapsUrl(trimmed)) { return null }
+
+    let parsed: URL
+    try {
+        parsed = new URL(trimmed)
+    } catch {
+        return null
+    }
+
+    const placeMatch = parsed.pathname.match(/\/(?:place|search)\/([^/]+)/)
+    const queryName = parsed.searchParams.get('q') ?? parsed.searchParams.get('query')
+    const pin = mapPin(parsed)
+    const target: MapsPreviewTarget = {
+        name: placeName(placeMatch?.[1]) ?? placeName(queryName, true),
+        latitude: pin?.latitude ?? null,
+        longitude: pin?.longitude ?? null,
+        placeId: googlePlaceIdFromUrl(parsed)
+    }
+
+    if (target.placeId) { return target }
+    if (target.name && target.latitude !== null && target.longitude !== null) { return target }
+    return null
+}
+
+function isGoogleMapsUrl(url: string): boolean {
+    let parsed: URL
+    try {
+        parsed = new URL(url)
+    } catch {
+        return false
+    }
+
+    if (parsed.protocol !== 'https:') { return false }
+
+    const host = parsed.hostname
+    // An iPhone share link redirects to maps.google.com?q=… with no slash before the query.
+    if (host === 'maps.google.com' || host === 'maps.google.co.jp') { return true }
+
+    const googleHost = host === 'www.google.com'
+        || host === 'google.com'
+        || host === 'www.google.co.jp'
+        || host === 'google.co.jp'
+    return googleHost && (parsed.pathname === '/maps' || parsed.pathname.startsWith('/maps/'))
+}
+
+/** A maps.app.goo.gl or goo.gl/maps link. The place id is on the page it opens. */
+export function isShortMapsUrl(url: string): boolean {
+    let parsed: URL
+    try {
+        parsed = new URL(url.trim())
+    } catch {
+        return false
+    }
+
+    if (parsed.protocol !== 'https:') { return false }
+    if (parsed.hostname === 'maps.app.goo.gl') { return true }
+    return parsed.hostname === 'goo.gl' && parsed.pathname.startsWith('/maps')
+}
+
+function placeName(value: string | null | undefined, rejectCoordinates = false): string | null {
+    if (!value) { return null }
+    let label: string
+    try {
+        label = decodeURIComponent(value).replace(/\+/g, ' ').trim()
+    } catch {
+        return null
+    }
+    if (!label || label.startsWith('@') || (rejectCoordinates && readCoordinatePair(label))) { return null }
+    return label
+}
+
+function googlePlaceIdFromUrl(parsed: URL): string | null {
+    const explicit = placeIdToken(parsed.searchParams.get('query_place_id'))
+        ?? placeIdToken(parsed.searchParams.get('place_id'))
+    if (explicit) { return explicit }
+
+    const query = parsed.searchParams.get('q') ?? parsed.searchParams.get('query') ?? ''
+    const fromQuery = query.match(/place_id:([A-Za-z0-9_-]{8,})/)
+    const queryToken = placeIdToken(fromQuery?.[1])
+    if (queryToken) { return queryToken }
+
+    const haystack = decodedMapsPath(parsed)
+    const embedded = haystack.match(/!1s([A-Za-z0-9_-]{8,})/)
+    const embeddedToken = placeIdToken(embedded?.[1])
+    if (embeddedToken && !embeddedToken.startsWith('0x')) { return embeddedToken }
+
+    const feature = haystack.match(/(?:!1s|[?&]ftid=)(0x[0-9a-f]{1,16}):(0x[0-9a-f]{1,16})/i)
+    if (feature?.[1] && feature[2]) { return featureIdToPlaceId(feature[1], feature[2]) }
+    return null
+}
+
+/**
+ * The 0x:0x pair in a Maps link is the same place as a ChIJ place id.
+ * It is a 20-byte id written as two little-endian numbers.
+ */
+export function featureIdToPlaceId(highHex: string, lowHex: string): string {
+    const bytes = [
+        0x0a,
+        0x12,
+        0x09,
+        ...hexToLittleEndianBytes(highHex),
+        0x11,
+        ...hexToLittleEndianBytes(lowHex)
+    ]
+    return Buffer.from(bytes).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+}
+
+/** Stable Maps URL whose query carries the place id explicitly. */
+export function canonicalMapsLink(target: MapsPreviewTarget): string | null {
+    if (!target.placeId) { return null }
+
+    const query = target.name
+        ?? (target.latitude !== null && target.longitude !== null
+            ? `${target.latitude},${target.longitude}`
+            : target.placeId)
+    const params = new URLSearchParams({
+        api: '1',
+        query,
+        query_place_id: target.placeId
+    })
+    return `https://www.google.com/maps/search/?${params.toString()}`
+}
+
+/**
+ * The Maps URL to store.
+ * A short link is opened once. A link that does not identify one place is returned unchanged.
+ */
+export async function canonicalMapsFields(
+    url: string | null | undefined,
+    fetchImpl: typeof fetch = fetch
+): Promise<{ url: string, placeId: string | null }> {
+    const trimmed = (url ?? '').trim()
+    if (!trimmed) { return { url: '', placeId: null } }
+
+    try {
+        // Only a short share link needs to be opened. A long link is canonicalized from the place id it already carries.
+        const target = isShortMapsUrl(trimmed)
+            ? await resolveMapsPlace(trimmed, fetchImpl)
+            : previewTargetFromMapsUrl(trimmed)
+        const canonical = target ? canonicalMapsLink(target) : null
+        if (!canonical || !target?.placeId) { return { url: trimmed, placeId: null } }
+        return { url: canonical, placeId: target.placeId }
+    } catch {
+        return { url: trimmed, placeId: null }
+    }
+}
+
+const MAPS_REDIRECT_LIMIT = 5
+const MAPS_RESOLVE_MS = 8000
+
+/**
+ * Open a short Maps link and read the place id from where it lands.
+ * A link that already contains the id is returned without a request.
+ */
+export async function resolveMapsPlace(
+    url: string,
+    fetchImpl: typeof fetch = fetch
+): Promise<MapsPreviewTarget | null> {
+    const direct = previewTargetFromMapsUrl(url)
+    if (direct?.placeId || !canOpenMapsUrl(url)) { return direct }
+
+    const deadline = AbortSignal.timeout(MAPS_RESOLVE_MS)
+    let current = url.trim()
+    try {
+        for (let hop = 0; hop < MAPS_REDIRECT_LIMIT; hop++) {
+            const response = await fetchImpl(current, {
+                redirect: 'manual',
+                signal: deadline,
+                headers: { 'user-agent': 'Mozilla/5.0' }
+            })
+            if (response.status >= 300 && response.status < 400) {
+                const location = response.headers.get('location')
+                if (!location) { return null }
+                current = new URL(location, current).toString()
+                if (!canOpenMapsUrl(current)) { return null }
+                const opened = previewTargetFromMapsUrl(current)
+                if (opened?.placeId) { return opened }
+                continue
+            }
+            if (!response.ok) { return null }
+
+            const body = (await textWithin(response, deadline)).slice(0, 500000)
+            const fromPage = placeFromMapsPage(body)
+            if (fromPage?.placeId) { return fromPage }
+            return previewTargetFromMapsUrl(current)
+        }
+    } catch {
+        return null
+    }
+
+    return previewTargetFromMapsUrl(current)
+}
+
+function canOpenMapsUrl(url: string): boolean {
+    let parsed: URL
+    try {
+        parsed = new URL(url.trim())
+    } catch {
+        return false
+    }
+
+    if (parsed.protocol !== 'https:') { return false }
+
+    const host = parsed.hostname
+    if (host === 'maps.app.goo.gl') { return true }
+    if (host === 'goo.gl' && parsed.pathname.startsWith('/maps')) { return true }
+    return isGoogleMapsUrl(url.trim())
+}
+
+function textWithin(response: Response, signal: AbortSignal): Promise<string> {
+    if (signal.aborted) { return Promise.reject(signal.reason) }
+
+    return new Promise((resolve, reject) => {
+        const onAbort = () => reject(signal.reason)
+        signal.addEventListener('abort', onAbort, { once: true })
+        response.text().then(text => {
+            signal.removeEventListener('abort', onAbort)
+            resolve(text)
+        }, error => {
+            signal.removeEventListener('abort', onAbort)
+            reject(error)
+        })
+    })
+}
+
+function placeFromMapsPage(body: string): MapsPreviewTarget | null {
+    const decoded = body.replace(/\\u003d/g, '=').replace(/&amp;/g, '&')
+    const place = decoded.match(
+        /https:\/\/(?:www\.google\.(?:com|co\.jp)|maps\.google\.(?:com|co\.jp))\/maps\/[^"'\\\s<]+/
+    )
+    if (place?.[0]) {
+        const target = previewTargetFromMapsUrl(place[0])
+        if (target?.placeId) { return target }
+    }
+
+    const feature = decoded.match(/!1s(0x[0-9a-f]{1,16}):(0x[0-9a-f]{1,16})/i)
+    if (!feature?.[1] || !feature[2]) { return null }
+    return {
+        name: null,
+        latitude: null,
+        longitude: null,
+        placeId: featureIdToPlaceId(feature[1], feature[2])
+    }
+}
+
+function decodedMapsPath(parsed: URL): string {
+    const raw = `${parsed.pathname}${parsed.search}`
+    try {
+        return decodeURIComponent(raw)
+    } catch {
+        return raw
+    }
+}
+
+function hexToLittleEndianBytes(hex: string): number[] {
+    const normalized = hex.replace(/^0x/i, '').padStart(16, '0')
+    const bytes: number[] = []
+    for (let index = 14; index >= 0; index -= 2) {
+        bytes.push(Number.parseInt(normalized.slice(index, index + 2), 16))
+    }
+    return bytes
+}
+
+function placeIdToken(value: string | null | undefined): string | null {
+    if (!value) { return null }
+    const trimmed = value.trim().replace(/^places\//, '')
+    return PLACE_ID_TOKEN.test(trimmed) ? trimmed : null
+}
+
+function mapPin(parsed: URL): { latitude: number, longitude: number } | null {
+    const dataPin = parsed.pathname.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/)
+    const atPin = parsed.pathname.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/)
+    const queryPin = parsed.searchParams.get('ll')
+        ?? parsed.searchParams.get('q')
+        ?? parsed.searchParams.get('query')
+    return readCoordinatePair(dataPin ? `${dataPin[1]},${dataPin[2]}` : null)
+        ?? readCoordinatePair(atPin ? `${atPin[1]},${atPin[2]}` : null)
+        ?? readCoordinatePair(queryPin)
+}
+
+function readCoordinatePair(value: string | null | undefined): { latitude: number, longitude: number } | null {
+    if (!value) { return null }
+    const match = value.trim().match(COORDINATE_PAIR)
+    if (!match?.[1] || !match[2]) { return null }
+    const latitude = Number(match[1])
+    const longitude = Number(match[2])
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) { return null }
+    if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) { return null }
+    return { latitude, longitude }
+}
+
+const IP_LIMIT = 8
+const IP_WINDOW_MS = 10 * 60 * 1000
+const GLOBAL_LIMIT = 30
+const GLOBAL_WINDOW_MS = 60 * 1000
+
+/** Eight lookups per address each 10 minutes, and thirty for the whole process each minute. */
+const sharedIpHits = new Map<string, number[]>()
+const sharedGlobalHits: number[] = []
+
+const moderatorIpHits = new Map<string, number[]>()
+const moderatorGlobalHits: number[] = []
+
+/** Public-preview budget. */
+export function allowSharedPreviewCall(ip: string, now = Date.now(), ipLimit = IP_LIMIT): boolean {
+    return allowPreviewCall(sharedIpHits, sharedGlobalHits, ip, now, ipLimit)
+}
+
+/** Twenty moderator lookups per address each ten minutes, and thirty globally each minute. */
+export function allowModeratorPreviewCall(ip: string, now = Date.now()): boolean {
+    return allowPreviewCall(moderatorIpHits, moderatorGlobalHits, ip, now, 20)
+}
+
+export function allowPreviewCall(
+    ipHits: Map<string, number[]>,
+    globalHits: number[],
+    ip: string,
+    now: number,
+    ipLimit = IP_LIMIT
+): boolean {
+    const recentGlobal = globalHits.filter(at => now - at < GLOBAL_WINDOW_MS)
+    globalHits.length = 0
+    globalHits.push(...recentGlobal)
+    if (globalHits.length >= GLOBAL_LIMIT) { return false }
+
+    const recentIp = (ipHits.get(ip) ?? []).filter(at => now - at < IP_WINDOW_MS)
+    if (recentIp.length >= ipLimit) {
+        ipHits.set(ip, recentIp)
+        return false
+    }
+
+    recentIp.push(now)
+    ipHits.set(ip, recentIp)
+    globalHits.push(now)
+    return true
+}

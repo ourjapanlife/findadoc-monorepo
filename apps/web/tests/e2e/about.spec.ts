@@ -1,0 +1,64 @@
+import enUS from '../../i18n/locales/en.json' with { type: 'json' }
+import { test, expect } from '@playwright/test'
+
+test.describe('About page', () => {
+    test.describe('Desktop resolution', () => {
+        test.beforeEach(async ({ page }) => {
+            await page.setViewportSize({ width: 1728, height: 1077 })
+            await page.goto('/about')
+        })
+
+        test('shows the desktop top nav', async ({ page }) => {
+            await expect(page.getByRole('navigation').first()).toBeVisible()
+        })
+
+        test('does not show the hamburger on desktop', async ({ page }) => {
+            await expect(page.getByRole('button', { name: /menu/i })).toBeHidden()
+        })
+
+        test('has the hero heading', async ({ page }) => {
+            await expect(page.getByRole('heading', { name: enUS.about.heroHeading })).toBeVisible()
+        })
+
+        test('has the hero subheading', async ({ page }) => {
+            // Scoped by test id: the footer's brand blurb reuses the same string, so a text match is ambiguous.
+            const subheading = page.getByTestId('about-hero-subheading')
+            await expect(subheading).toBeVisible()
+            await expect(subheading).toHaveText(enUS.about.heroSubheading)
+        })
+
+        test('shows member details', async ({ page }) => {
+            await expect(page.getByRole('img').first()).toBeVisible()
+            /*
+             * Match on accessible name, as the portrait test below does. The previous
+             * getByText(/github/i) was matching the footer's "Contribute on GitHub"
+             * rather than anything in the member list, so it passed without asserting
+             * that members had rendered at all.
+             */
+            await expect(page.getByRole('link', { name: /linkedin/i }).first()).toBeVisible()
+            await expect(page.getByRole('link', { name: /github/i }).first()).toBeVisible()
+        })
+
+        test('shows the footer', async ({ page }) => {
+            await expect(page.getByRole('contentinfo').or(page.locator('footer'))).toBeVisible()
+        })
+    })
+
+    test.describe('Portrait mode', () => {
+        test.beforeEach(async ({ page }) => {
+            await page.setViewportSize({ width: 320, height: 568 })
+            await page.goto('/about')
+        })
+
+        test('shows the hamburger', async ({ page }) => {
+            await expect(page.getByRole('button', { name: /menu/i })).toBeVisible()
+        })
+
+        test('shows member details with external links', async ({ page }) => {
+            const linkedin = page.getByRole('link', { name: /linkedin/i }).first()
+            await expect(linkedin).toHaveAttribute('href', /linkedin\.com/)
+            const github = page.getByRole('link', { name: /github/i }).first()
+            await expect(github).toHaveAttribute('href', /github\.com/)
+        })
+    })
+})

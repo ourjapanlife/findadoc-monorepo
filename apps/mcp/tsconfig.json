@@ -1,0 +1,12 @@
+{
+    "extends": "@findadoc/tsconfig/base.json",
+    "compilerOptions": {
+        "outDir": "dist"
+    },
+    "ts-node": {
+        "esm": true,
+        "swc": true
+    },
+    "include": ["src/**/*", "tests/**/*"],
+    "exclude": ["node_modules"]
+}

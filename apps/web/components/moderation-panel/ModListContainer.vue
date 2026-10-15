@@ -1,0 +1,213 @@
+<template>
+    <div class="relative flex flex-col h-full w-full min-h-0">
+        <div class="flex flex-col h-full min-h-0 overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-10 pointer-events-none flex items-center justify-center">
+                <img
+                    :src="emptyStateIllustration"
+                    alt=""
+                    width="1536"
+                    height="1024"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-3/5 h-3/5 object-contain"
+                >
+            </div>
+
+            <div class="relative z-10 flex-1 min-h-0 overflow-y-auto">
+                <div
+                    v-if="hasSubmissions && submissionsModerationListViewChosen"
+                    class="grid grid-cols-1 landscape:grid-cols-2 gap-4 items-start justify-start p-3 md:p-4"
+                >
+                    <div
+                        v-for="(submission, index) in modSubmissionsStore.filteredSubmissionDataForListComponent"
+                        :key="index"
+                    >
+                        <ModListContainerItem
+                            :submission="submission"
+                            :pagination-global-row-value-function="getGlobalRowNumber"
+                            :current-offset="modSubmissionsStore.currentOffset"
+                            :index="index"
+                        />
+                    </div>
+                </div>
+
+                <p
+                    v-else-if="facilitiesModerationListViewChosen && !filteredFacilities.length"
+                    class="text-center py-8 px-4"
+                >
+                    {{ t('searchResultsList.noResults') }}
+                </p>
+                <div
+                    v-else-if="facilitiesModerationListViewChosen"
+                    class="grid grid-cols-1 landscape:grid-cols-2 gap-4 items-start justify-start p-3 md:p-4"
+                >
+                    <div
+                        v-for="(facility, index) in filteredFacilities"
+                        :key="index"
+                    >
+                        <ModListContainerItem
+                            :facility="facility"
+                            :pagination-global-row-value-function="getGlobalRowNumber"
+                            :current-offset="facilitiesStore.currentOffset"
+                            :index="index"
+                        />
+                    </div>
+                </div>
+
+                <p
+                    v-else-if="healthcareProfessionalsModerationListViewChosen
+                        && !filteredHealthcareProfessionals.length"
+                    class="text-center py-8 px-4"
+                >
+                    {{ t('searchResultsList.noResults') }}
+                </p>
+                <div
+                    v-else-if="healthcareProfessionalsModerationListViewChosen"
+                    class="grid grid-cols-1 landscape:grid-cols-2 gap-4 items-start justify-start p-3 md:p-4"
+                >
+                    <div
+                        v-for="(healthcareProfessional, index) in filteredHealthcareProfessionals"
+                        :key="index"
+                    >
+                        <ModListContainerItem
+                            :healthcare-professional="healthcareProfessional"
+                            :pagination-global-row-value-function="getGlobalRowNumber"
+                            :current-offset="healthcareProfessionalsStore.currentOffset"
+                            :index="index"
+                        />
+                    </div>
+                </div>
+
+                <div
+                    v-else
+                    class="text-center py-8 px-4"
+                >
+                    {{ t("modPanelSubmissionList.noSubmissions") }}
+                </div>
+            </div>
+
+            <div class="relative z-10 shrink-0 border-t border-accent-bg bg-secondary-bg px-3 py-2">
+                <div class="flex flex-col md:flex-row md:items-center gap-2">
+                    <div class="w-full md:flex-1 flex justify-center">
+                        <Pagination
+                            v-if="submissionsModerationListViewChosen"
+                            :current-offset="modSubmissionsStore.currentOffset"
+                            :total-items="modSubmissionsStore.totalSubmissionsCount"
+                            :items-per-page="modSubmissionsStore.itemsPerPage"
+                            @update:offset="modSubmissionsStore.setOffset"
+                        />
+                        <Pagination
+                            v-if="facilitiesModerationListViewChosen"
+                            :current-offset="facilitiesStore.currentOffset"
+                            :total-items="facilitiesStore.totalFacilitiesCount"
+                            :items-per-page="facilitiesStore.itemsPerPage"
+                            @update:offset="facilitiesStore.setOffset"
+                        />
+                        <Pagination
+                            v-if="healthcareProfessionalsModerationListViewChosen"
+                            :current-offset="healthcareProfessionalsStore.currentOffset"
+                            :total-items="healthcareProfessionalsStore.totalHealthcareProfessionalsCount"
+                            :items-per-page="healthcareProfessionalsStore.itemsPerPage"
+                            @update:offset="healthcareProfessionalsStore.setOffset"
+                        />
+                    </div>
+                    <div class="w-full md:w-auto flex items-center justify-center md:justify-end gap-2">
+                        <label
+                            for="items-per-page-select"
+                            class="text-xs sm:text-sm text-primary-text-muted"
+                        >{{ $t('modListContainer.resultsPerPage') }}
+                        </label>
+                        <select
+                            id="items-per-page-select"
+                            :value="getCurrentItemsPerPage()"
+                            class="border border-accent-bg rounded px-2 py-1 text-sm bg-secondary-bg
+                            text-primary-text focus:ring-primary focus:border-primary"
+                            @change="handleItemsPerPageChange"
+                        >
+                            <option value="10">
+                                10
+                            </option>
+                            <option value="25">
+                                25
+                            </option>
+                            <option value="50">
+                                50
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted } from 'vue'
+import { SelectedModerationListView, useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
+import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
+import { useFacilitiesStore } from '~/stores/facilitiesStore'
+// Served as a cached file rather than inlined into the chunk; bound so the compiler leaves the URL alone.
+const emptyStateIllustration = '/illustrations/characters-together-welcomescreen.svg'
+
+const { t } = useI18n()
+
+const modSubmissionsStore = useModerationSubmissionsStore()
+const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
+const facilitiesStore = useFacilitiesStore()
+
+const healthcareProfessionalsModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
+  === SelectedModerationListView.HealthcareProfessionals)
+
+const facilitiesModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
+  === SelectedModerationListView.Facilities)
+
+const submissionsModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
+  === SelectedModerationListView.Submissions)
+
+onMounted(async () => {
+    await modSubmissionsStore.getSubmissions()
+    await modSubmissionsStore.fetchStatusCounts()
+    await facilitiesStore.loadFacilityList()
+    await healthcareProfessionalsStore.loadHealthcareProfessionalList()
+})
+
+const hasSubmissions = computed(() => modSubmissionsStore.filteredSubmissionDataForListComponent.length)
+const filteredFacilities = computed(() => facilitiesStore.filteredFacilityData)
+const filteredHealthcareProfessionals = computed(() => healthcareProfessionalsStore.filteredHealthcareProfessionalsData)
+
+function getGlobalRowNumber(offset: number, index: number): number {
+    return offset + index + 1
+}
+
+function getCurrentItemsPerPage(): number {
+    switch (modSubmissionsStore.selectedModerationListViewChosen) {
+        case SelectedModerationListView.Submissions:
+            return modSubmissionsStore.itemsPerPage
+        case SelectedModerationListView.Facilities:
+            return facilitiesStore.itemsPerPage
+        case SelectedModerationListView.HealthcareProfessionals:
+            return healthcareProfessionalsStore.itemsPerPage
+        default:
+            return 25
+    }
+}
+
+async function handleItemsPerPageChange(event: Event) {
+    const newItemsPerPage = Number((event.target as HTMLSelectElement).value)
+    switch (modSubmissionsStore.selectedModerationListViewChosen) {
+        case SelectedModerationListView.Submissions:
+            modSubmissionsStore.setItemsPerPage(newItemsPerPage)
+            modSubmissionsStore.setOffset(0)
+            await modSubmissionsStore.getSubmissions()
+            break
+        case SelectedModerationListView.Facilities:
+            facilitiesStore.setItemsPerPage(newItemsPerPage)
+            await facilitiesStore.setOffset(0)
+            break
+        case SelectedModerationListView.HealthcareProfessionals:
+            healthcareProfessionalsStore.setItemsPerPage(newItemsPerPage)
+            await healthcareProfessionalsStore.setOffset(0)
+            break
+    }
+}
+</script>

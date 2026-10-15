@@ -1,0 +1,743 @@
+import { GraphQLError, GraphQLResolveInfo } from 'graphql'
+import { authorize, UserContext, Scope, getEffectiveScopes } from './auth.js'
+import * as facilityService from './services/facilityService.js'
+import * as healthcareProfessionalService from './services/healthcareProfessionalService.js'
+import * as gqlType from '@findadoc/graphql'
+import * as submissionService from './services/submissionService.js'
+import * as userService from './services/userService.js'
+import * as reservationService from './services/reservationService.js'
+import * as cityService from './services/cityService.js'
+import * as citySuggestionService from './services/citySuggestionService.js'
+import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
+import * as facilityPlaceService from './services/facilityPlaceService.js'
+import { Result } from './result.js'
+import { logger } from './logger.js'
+import {
+    getRequestedFields,
+    facilityNeedsHpIds,
+    hpNeedsFacilityIds,
+    buildFacilitySelectString,
+    buildHpSelectString,
+    buildSubmissionSelectString,
+    buildUserSelectString
+} from '../utils/fieldSelectionUtils.js'
+
+const resolvers = {
+    Query: {
+        currentUserAccess: (_parent: unknown, _args: unknown, context: UserContext): gqlType.CurrentUserAccess => {
+            const user = context.user
+            const jwtScopes = user.scope?.split(/\s+/).filter(Boolean) ?? []
+            const roles = (user.roles ?? []).map(r => String(r))
+            return {
+                roles,
+                jwtScopes,
+                effectiveScopes: getEffectiveScopes(user)
+            }
+        },
+        facility: async (_parent: gqlType.Facility, args: { id: string; }, context: UserContext,
+            info: GraphQLResolveInfo)
+        : Promise<gqlType.Facility> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildFacilitySelectString(requestedFields)
+            const needsHpIds = facilityNeedsHpIds(requestedFields)
+            const queryResults = await facilityService.getFacilityById(args.id, selectColumns, needsHpIds)
+
+            convertErrorsToGqlErrors(queryResults)
+            return queryResults.data
+        },
+        facilityByGooglePlaceId: async (
+            _parent: unknown,
+            args: { placeId: string },
+            context: UserContext,
+            info: GraphQLResolveInfo
+        ): Promise<gqlType.Facility | null> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildFacilitySelectString(requestedFields)
+            const needsHpIds = facilityNeedsHpIds(requestedFields)
+            const queryResults = await facilityService.getFacilityByGooglePlaceId(
+                args.placeId.trim(),
+                selectColumns,
+                needsHpIds
+            )
+
+            convertErrorsToGqlErrors(queryResults)
+            return queryResults.data
+        },
+        facilityMatchingMapsUrl: async (
+            _parent: unknown,
+            args: { url: string },
+            context: UserContext,
+            info: GraphQLResolveInfo
+        ): Promise<gqlType.Facility | null> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildFacilitySelectString(requestedFields)
+            const needsHpIds = facilityNeedsHpIds(requestedFields)
+            const queryResults = await facilityService.getFacilityMatchingMapsUrl(
+                args.url.trim(),
+                selectColumns,
+                needsHpIds
+            )
+
+            convertErrorsToGqlErrors(queryResults)
+            return queryResults.data
+        },
+        mapsPlacePreview: async (
+            _parent: unknown,
+            args: { url: string, languageCode?: string | null },
+            context: UserContext
+        ): Promise<gqlType.MapsPlacePreview | null> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const queryResults = await mapsPlacePreviewService.previewMapsPlace(
+                args.url,
+                args.languageCode,
+                context.clientIp
+            )
+            convertErrorsToGqlErrors(queryResults)
+            return queryResults.data
+        },
+        suggestFacilityPlaces: async (
+            _parent: unknown,
+            args: facilityPlaceService.SuggestFacilityPlacesInput,
+            context: UserContext
+        ): Promise<facilityPlaceService.FacilityPlaceCandidate[]> => {
+            const isAuthorized = authorize(context.user, [Scope['write:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const queryResults = await facilityPlaceService.suggestFacilityPlaces(
+                args,
+                context.clientIp || 'unknown'
+            )
+            convertErrorsToGqlErrors(queryResults)
+            return queryResults.data
+        },
+        facilities: async (_parent: unknown, args: { filters: gqlType.FacilitySearchFilters }, context: UserContext,
+            info: GraphQLResolveInfo)
+        : Promise<gqlType.Facility[]> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildFacilitySelectString(requestedFields)
+            const needsHpIds = facilityNeedsHpIds(requestedFields)
+            const queryResults = await facilityService.searchFacilities(args.filters, selectColumns, needsHpIds)
+
+            convertErrorsToGqlErrors(queryResults)
+            return queryResults.data as gqlType.Facility[]
+        },
+        facilitiesTotalCount: async (_parent: unknown, args: { filters: gqlType.FacilitySearchFilters },
+            context: UserContext)
+        : Promise<number> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const countResults = await facilityService.countFacilities(args.filters)
+
+            convertErrorsToGqlErrors(countResults)
+            return countResults.data
+        },
+
+        healthcareProfessional: async (_parent: unknown, args: { id: string; }, context: UserContext,
+            info: GraphQLResolveInfo)
+        : Promise<gqlType.HealthcareProfessional> => {
+            const isAuthorized = authorize(context.user, [Scope['read:healthcareprofessionals']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildHpSelectString(requestedFields)
+            const needsFacilityIds = hpNeedsFacilityIds(requestedFields)
+            const matchingHealthcareProfessionalResult =
+                await healthcareProfessionalService
+                    .getHealthcareProfessionalById(args.id, selectColumns, needsFacilityIds)
+
+            convertErrorsToGqlErrors(matchingHealthcareProfessionalResult)
+            return matchingHealthcareProfessionalResult.data
+        },
+        healthcareProfessionals: async (_parent: unknown, args: {
+            filters: gqlType.HealthcareProfessionalSearchFilters
+        }, context: UserContext, info: GraphQLResolveInfo)
+        : Promise<gqlType.HealthcareProfessional[]> => {
+            const isAuthorized = authorize(context.user, [Scope['read:healthcareprofessionals']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildHpSelectString(requestedFields)
+            const needsFacilityIds = hpNeedsFacilityIds(requestedFields)
+            const queryResults =
+                await healthcareProfessionalService.searchProfessionals(args.filters, selectColumns, needsFacilityIds)
+
+            convertErrorsToGqlErrors(queryResults)
+
+            return queryResults.data
+        },
+
+        healthcareProfessionalsTotalCount: async (_parent: unknown, args: {
+            filters: gqlType.HealthcareProfessionalSearchFilters
+        }, context: UserContext)
+        : Promise<number> => {
+            const isAuthorized = authorize(context.user, [Scope['read:healthcareprofessionals']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const countResults =
+                await healthcareProfessionalService.countProfessionals(args.filters)
+
+            convertErrorsToGqlErrors(countResults)
+            return countResults.data
+        },
+
+        submission: async (_parent: unknown, args: { id: string }, context: UserContext,
+            info: GraphQLResolveInfo)
+        : Promise<gqlType.Submission | undefined> => {
+            const isAuthorized = authorize(context.user, [Scope['read:submissions']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildSubmissionSelectString(requestedFields)
+            const matchingSubmissionResult = await submissionService.getSubmissionById(args.id, selectColumns)
+
+            convertErrorsToGqlErrors(matchingSubmissionResult)
+            return matchingSubmissionResult.data
+        },
+
+        submissions: async (_parent: unknown, args: { filters: gqlType.SubmissionSearchFilters }, context: UserContext,
+            info: GraphQLResolveInfo)
+        : Promise<gqlType.Submission[]> => {
+            const isAuthorized = authorize(context.user, [Scope['read:submissions']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildSubmissionSelectString(requestedFields)
+            const matchingSubmissionsResult = await submissionService.searchSubmissions(args.filters, selectColumns)
+
+            convertErrorsToGqlErrors(matchingSubmissionsResult)
+
+            return matchingSubmissionsResult.data
+        },
+
+        submissionsTotalCount: async (_parent: unknown, args: { filters: gqlType.SubmissionSearchFilters },
+            context: UserContext)
+        : Promise<number> => {
+            const isAuthorized = authorize(context.user, [Scope['read:submissions']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const countResults = await submissionService.countSubmissions(args.filters)
+
+            convertErrorsToGqlErrors(countResults)
+            return countResults.data
+        },
+        user: async (_parent: unknown, args: { id: string }, context: UserContext,
+            info: GraphQLResolveInfo)
+        : Promise<gqlType.User | undefined> => {
+            const isAuthorized = authorize(context.user, [Scope['read:users']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const requestedFields = getRequestedFields(info)
+            const selectColumns = buildUserSelectString(requestedFields)
+            const matchingUserResult = await userService.getUserById(args.id, selectColumns)
+
+            return matchingUserResult.data
+        },
+        reservation: async (_parent: unknown, args: { id: string }, context: UserContext)
+        : Promise<gqlType.Reservation | undefined> => {
+            const isAuthorized = authorize(context.user, [Scope['read:reservations']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+            const matchingReservationResult = await reservationService.getReservationById(args.id)
+
+            return matchingReservationResult.data
+        },
+        prefectures: async (_parent: unknown, _args: unknown, context: UserContext)
+        : Promise<gqlType.Prefecture[]> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const result = await cityService.listPrefectures()
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        },
+        cities: async (_parent: unknown, args: { prefecture?: string | null }, context: UserContext)
+        : Promise<gqlType.City[]> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const result = await cityService.listCities(args.prefecture)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        },
+        suggestCities: async (_parent: unknown, args: { input: string }, context: UserContext)
+        : Promise<gqlType.CitySuggestion[]> => {
+            const isAuthorized = authorize(context.user, [Scope['write:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const result = await citySuggestionService.suggestCities(args.input)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        },
+        cityFacilities: async (
+            _parent: unknown,
+            args: { prefecture: string, citySlug: string },
+            context: UserContext
+        ): Promise<gqlType.Facility[]> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const result = await facilityService.listPublishedCityFacilities(args.prefecture, args.citySlug)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }
+    },
+
+    Facility: {
+        city: (parent: gqlType.Facility): Promise<gqlType.City | null> => {
+            if (!parent.cityId) {
+                return Promise.resolve(null)
+            }
+
+            return cityService.getCityById(parent.cityId)
+        }
+    },
+
+    Mutation: {
+        createFacility: async (_parent: unknown, args: {
+            input: gqlType.CreateFacilityInput
+        }, context: UserContext): Promise<gqlType.Facility> => {
+            const isAuthorized = authorize(context.user, [Scope['write:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const newFacilityResult = await facilityService.createFacility(args.input, context.user.sub)
+
+            convertErrorsToGqlErrors(newFacilityResult)
+            return newFacilityResult.data
+        },
+
+        updateFacility: async (_parent: unknown, args: {
+            id: string,
+            input: gqlType.UpdateFacilityInput
+        }, context: UserContext): Promise<gqlType.Facility> => {
+            const isAuthorized = authorize(context.user, [Scope['write:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const updateFacilityResult = await facilityService.updateFacility(args.id, args.input, context.user.sub)
+
+            convertErrorsToGqlErrors(updateFacilityResult)
+            return updateFacilityResult.data
+        },
+        confirmFacilityPlaceId: async (
+            _parent: unknown,
+            args: { facilityId: string, placeId: string },
+            context: UserContext
+        ): Promise<gqlType.Facility> => {
+            const isAuthorized = authorize(context.user, [Scope['write:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const result = await facilityPlaceService.confirmFacilityPlaceId(
+                args.facilityId,
+                args.placeId,
+                context.user.sub
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data as gqlType.Facility
+        },
+
+        deleteFacility: async (_parent: unknown, args: {
+            id: string
+        }, context: UserContext): Promise<gqlType.DeleteResult> => {
+            const isAuthorized = authorize(context.user, [Scope['delete:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const deleteFacilityResult = await facilityService.deleteFacility(args.id, context.user.sub)
+
+            convertErrorsToGqlErrors(deleteFacilityResult)
+            return deleteFacilityResult.data
+        },
+
+        createHealthcareProfessional: async (_parent: unknown, args: {
+            input: gqlType.CreateHealthcareProfessionalInput
+        }, context: UserContext): Promise<gqlType.HealthcareProfessional> => {
+            const isAuthorized = authorize(context.user, [Scope['write:healthcareprofessionals']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const newHealthcareProfessionalResult = await healthcareProfessionalService
+                .createHealthcareProfessional(args.input, context.user.sub)
+
+            convertErrorsToGqlErrors(newHealthcareProfessionalResult)
+            return newHealthcareProfessionalResult.data
+        },
+
+        updateHealthcareProfessional: async (_parent: unknown, args: {
+            id: string,
+            input: gqlType.UpdateHealthcareProfessionalInput
+        }, context: UserContext): Promise<gqlType.HealthcareProfessional> => {
+            const isAuthorized = authorize(context.user, [Scope['write:healthcareprofessionals']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const updateHealthcareProfessionalResult = await healthcareProfessionalService
+                .updateHealthcareProfessional(args.id, args.input, context.user.sub)
+
+            convertErrorsToGqlErrors(updateHealthcareProfessionalResult)
+            return updateHealthcareProfessionalResult.data
+        },
+
+        deleteHealthcareProfessional: async (_parent: unknown, args: {
+            id: string
+        }, context: UserContext): Promise<gqlType.DeleteResult> => {
+            const isAuthorized = authorize(context.user, [Scope['delete:healthcareprofessionals']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const deleteHealthcareProfessionalResult = await healthcareProfessionalService
+                .deleteHealthcareProfessional(args.id, context.user.sub)
+
+            convertErrorsToGqlErrors(deleteHealthcareProfessionalResult)
+            return deleteHealthcareProfessionalResult.data
+        },
+
+        createSubmission: async (_parent: unknown, args: {
+            input: gqlType.CreateSubmissionInput
+        }, context: UserContext): Promise<gqlType.Submission> => {
+            const isAuthorized = authorize(context.user, [Scope['write:submissions']]) || authorize(context.user, [Scope['create:submissions']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const createSubmissionResult = await submissionService.createSubmission(args.input, context.user.sub)
+
+            convertErrorsToGqlErrors(createSubmissionResult)
+            return createSubmissionResult.data
+        },
+
+        updateSubmission: async (_parent: unknown, args: {
+            id: string,
+            input: gqlType.UpdateSubmissionInput
+        }, context: UserContext): Promise<gqlType.Submission> => {
+            const isAuthorized = authorize(context.user, [Scope['write:submissions']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const updatedSubmissionResult = await submissionService.updateSubmission(
+                args.id,
+                args.input,
+                context.user.sub
+            )
+
+            convertErrorsToGqlErrors(updatedSubmissionResult)
+            return updatedSubmissionResult.data
+        },
+
+        deleteSubmission: async (_parent: unknown, args: {
+            id: string
+        }, context: UserContext): Promise<gqlType.DeleteResult> => {
+            const isAuthorized = authorize(context.user, [Scope['delete:submissions']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const deleteSubmissionResult = await submissionService.deleteSubmission(args.id, context.user.sub)
+
+            convertErrorsToGqlErrors(deleteSubmissionResult)
+            return deleteSubmissionResult.data
+        },
+        createUser: async (_parent: unknown, args: { input: gqlType.CreateUserInput }, context: UserContext)
+        : Promise<gqlType.User> => {
+            const isAuthorized = authorize(context.user, [Scope['write:users']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const createUserResult = await userService.createUser(args.input)
+
+            return createUserResult.data
+        },
+        updateUser: async (_parent: unknown, args: { id: string, input: gqlType.UpdateUserInput }, context: UserContext)
+        : Promise<gqlType.User> => {
+            const isAuthorized = authorize(context.user, [Scope['write:users']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const updateUserResult = await userService.updateUser(args.id, args.input)
+
+            return updateUserResult.data
+        },
+        recordCityPlaceId: async (
+            _parent: unknown,
+            args: { cityId: string, placeId: string },
+            context: UserContext
+        ): Promise<gqlType.City> => {
+            const isAuthorized = authorize(context.user, [Scope['write:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            const result = await citySuggestionService.recordCityPlaceId(args.cityId, args.placeId)
+
+            convertErrorsToGqlErrors(result)
+            if (!result.data) {
+                throw new GraphQLError('City was not found', {
+                    extensions: { code: 'NOT_FOUND', http: { status: 404 } }
+                })
+            }
+            return result.data
+        },
+        createReservation: async (_parent: unknown, args: { input: gqlType.CreateReservationInput }, 
+            context: UserContext)
+        : Promise<gqlType.Reservation> => {
+            const isAuthorized = authorize(context.user, [Scope['write:reservations']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED',
+                        http: { status: 403 }
+                    }
+                })
+            }
+
+            const createReservationResult = await reservationService.createReservation(args.input)
+
+            return createReservationResult.data
+        }
+    }
+}
+
+function convertErrorsToGqlErrors(resultObject: Result<unknown>): void {
+    if (resultObject.hasErrors) {
+        logger.info(`Errors sent to user: ${JSON.stringify(resultObject.errors)}`)
+
+        throw new GraphQLError('Validation Failed', {
+            extensions: {
+                code: 'BAD_USER_INPUT',
+                errors: resultObject.errors
+            }
+        })
+    }
+}
+
+export default resolvers

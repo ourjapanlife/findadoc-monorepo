@@ -1,0 +1,11 @@
+**/node_modules
+**/.git
+**/.nuxt
+**/.output
+**/dist
+**/.turbo
+**/.husky
+apps/web/**
+!apps/web/package.json
+apps/mcp/**
+!apps/mcp/package.json

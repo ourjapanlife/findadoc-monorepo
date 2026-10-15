@@ -1,0 +1,89 @@
+import enUS from '../../i18n/locales/en.json' with { type: 'json' }
+import { test, expect } from '@playwright/test'
+
+test.describe('Submit page', () => {
+    test.describe('Desktop resolution', () => {
+        test.beforeEach(async ({ page }) => {
+            await page.setViewportSize({ width: 1728, height: 1077 })
+            await page.goto('/submit')
+            /*
+             * The page is prerendered, and mount clears the form. Typing before that
+             * lands in HTML that Vue then resets, so wait until the form is live.
+             */
+            await expect(page.getByTestId('submit-form')).toHaveAttribute('data-hydrated', 'true')
+            /*
+             * Force the English locale so text assertions match. The hamburger menu carries a
+             * second, hidden locale selector that is teleported ahead of the app root in the
+             * prerendered HTML, so pick the visible one rather than the first in DOM order.
+             */
+            await page.locator('[data-testid="locale-selector"] select:visible').selectOption('en_US')
+        })
+
+        test('shows the desktop top nav', async ({ page }) => {
+            await expect(page.getByRole('navigation').first()).toBeVisible()
+        })
+
+        test('does not show the hamburger on desktop', async ({ page }) => {
+            await expect(page.getByRole('button', { name: /menu/i })).toBeHidden()
+        })
+
+        test('has the heading', async ({ page }) => {
+            await expect(page.getByRole('heading', { name: enUS.submitPage.heading })).toBeVisible()
+        })
+
+        test('has the subheading', async ({ page }) => {
+            await expect(page.getByText(enUS.submitPage.subheading)).toBeVisible()
+        })
+
+        test('has form fields for location, last name, first name and submit button', async ({ page }) => {
+            await expect(page.getByPlaceholder(enUS.submitPage.location)).toBeVisible()
+            await expect(page.getByPlaceholder(enUS.submitPage.lastName)).toBeVisible()
+            await expect(page.getByPlaceholder(enUS.submitPage.firstName)).toBeVisible()
+            await expect(page.getByRole('button', { name: enUS.submitPage.submitButton })).toBeVisible()
+        })
+
+        test('does not submit an incomplete form', async ({ page }) => {
+            await page.getByRole('button', { name: enUS.submitPage.submitButton }).click()
+            await expect(page.getByText(enUS.submitPage.submissionSuccessful)).not.toBeVisible()
+        })
+
+        test('requires a URL starting with https://', async ({ page }) => {
+            const urlInput = page.getByPlaceholder(enUS.submitPage.location)
+            await urlInput.fill('http://example.com')
+            await urlInput.blur()
+            await expect(page.getByText(enUS.submitPage.googleMapsValidation)).toBeVisible()
+        })
+
+        test('shows no validation errors before the user interacts', async ({ page }) => {
+            await expect(page.getByText(enUS.submitPage.spokenLanguageValidation)).toBeHidden()
+        })
+
+        test('requires a language besides Japanese', async ({ page }) => {
+            await page.getByRole('button', { name: enUS.submitPage.submitButton }).click()
+            await expect(page.getByText(enUS.submitPage.spokenLanguageValidation)).toBeVisible()
+            await page.getByTestId('submit-add-language').selectOption('en_US')
+            await expect(page.getByText(enUS.submitPage.spokenLanguageValidation)).toBeHidden()
+            await expect(page.getByTestId('submit-language-ja')).toBeVisible()
+        })
+
+        test('shows a summary once the maps link is valid', async ({ page }) => {
+            const urlInput = page.getByPlaceholder(enUS.submitPage.location)
+            await urlInput.fill('https://www.google.com/maps/place/Shibuya+Clinic')
+            await urlInput.blur()
+            await expect(page.getByTestId('submit-preview')).toBeVisible()
+            await expect(page.getByTestId('submit-preview')).toContainText('Shibuya Clinic')
+            await expect(page.getByTestId('submit-preview')).toContainText('日本語')
+        })
+    })
+
+    test.describe('Portrait mode', () => {
+        test.beforeEach(async ({ page }) => {
+            await page.setViewportSize({ width: 320, height: 568 })
+            await page.goto('/submit')
+        })
+
+        test('shows the hamburger', async ({ page }) => {
+            await expect(page.getByRole('button', { name: /menu/i })).toBeVisible()
+        })
+    })
+})

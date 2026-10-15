@@ -1,0 +1,7 @@
+packages:
+  - apps/*
+  - packages/*
+
+catalog:
+  graphql: ^16.13.1
+  typescript: ^5.9.3

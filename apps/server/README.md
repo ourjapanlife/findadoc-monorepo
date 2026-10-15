@@ -1,0 +1,54 @@
+> This package lives in the [findadoc monorepo](../../README.md). Install and run tasks from the repository root with pnpm and Turborepo.
+
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+# Find a Doc, Japan - Server
+
+## Back-end Repository
+
+Welcome to the back-end repository for Find a Doc, Japan! We're not currently looking for contributors in this particular repo, but you're free to have a look around. If you want to provide any suggestions or feedback, come have a chat with us in the [#dev-team channel on Slack](https://join.slack.com/t/find-a-doc/shared_invite/zt-s4744a6o-MGaGHzLN5wB9aXeha3vdsQ)!
+
+### How to contribute
+
+We love and welcome contributions to our front-end repository which can be found [here](https://github.com/ourjapanlife/findadoc-web)!
+
+### Documentation:
+- [📒 **Getting Started**](https://docs.findadoc.jp/getting-started/)
+- [💻 **Development**](https://docs.findadoc.jp/development/)
+- [City vocabulary](docs/city-rules.md)
+- [Places storage](docs/places-storage.md)
+- [Agent notes](AGENTS.md)
+
+## Contributors
+
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ghezz9"><img src="https://avatars.githubusercontent.com/u/177678145?v=4?s=100" width="100px;" alt="Davide Ghezzo"/><br /><sub><b>Davide Ghezzo</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=Ghezz9" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.annkilzer.net/"><img src="https://avatars.githubusercontent.com/u/4602369?v=4?s=100" width="100px;" alt="Ann Kilzer キルザー杏"/><br /><sub><b>Ann Kilzer キルザー杏</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=ann-kilzer" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ermish"><img src="https://avatars.githubusercontent.com/u/4411499?v=4?s=100" width="100px;" alt="Philip Ermish"/><br /><sub><b>Philip Ermish</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=ermish" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/RageZBla"><img src="https://avatars.githubusercontent.com/u/1196871?v=4?s=100" width="100px;" alt="Olivier Lechevalier"/><br /><sub><b>Olivier Lechevalier</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=RageZBla" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/evan-desu"><img src="https://avatars.githubusercontent.com/u/86333067?v=4?s=100" width="100px;" alt="Evan Peterson"/><br /><sub><b>Evan Peterson</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=evan-desu" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Anissa3005"><img src="https://avatars.githubusercontent.com/u/114712265?v=4?s=100" width="100px;" alt="Anissa Chadouli"/><br /><sub><b>Anissa Chadouli</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=Anissa3005" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/NabbeunNabi"><img src="https://avatars.githubusercontent.com/u/124335161?v=4?s=100" width="100px;" alt="William Brammer"/><br /><sub><b>William Brammer</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=NabbeunNabi" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/matthewkurtti"><img src="https://avatars.githubusercontent.com/u/29577421?v=4?s=100" width="100px;" alt="Matthew Kurtti"/><br /><sub><b>Matthew Kurtti</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=matthewkurtti" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jbcden"><img src="https://avatars.githubusercontent.com/u/1873996?v=4?s=100" width="100px;" alt="Jacob Chae"/><br /><sub><b>Jacob Chae</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=jbcden" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ProgressChris88"><img src="https://avatars.githubusercontent.com/u/117893544?v=4?s=100" width="100px;" alt="Chris Bowman"/><br /><sub><b>Chris Bowman</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=ProgressChris88" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/eyawata"><img src="https://avatars.githubusercontent.com/u/157731956?v=4?s=100" width="100px;" alt="Eri"/><br /><sub><b>Eri</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=eyawata" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://ljbroersen.com/"><img src="https://avatars.githubusercontent.com/u/62942462?v=4?s=100" width="100px;" alt="Lisa Broersen"/><br /><sub><b>Lisa Broersen</b></sub></a><br /><a href="https://github.com/ourjapanlife/findadoc-server/commits?author=ljbroersen" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->

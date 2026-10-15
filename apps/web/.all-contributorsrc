@@ -1,0 +1,273 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "theyokohamalife",
+      "name": "LaShawn Toyoda",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31802656?v=4",
+      "profile": "http://theyokohamalife.com",
+      "contributions": [
+        "ideas",
+        "code",
+        "promotion"
+      ]
+    },
+    {
+      "login": "ermish",
+      "name": "Philip Ermish",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4411499?v=4",
+      "profile": "http://www.philipermish.com",
+      "contributions": [
+        "ideas",
+        "review",
+        "code",
+        "mentoring"
+      ]
+    },
+    {
+      "login": "ann-kilzer",
+      "name": "Ann Kilzer キルザー杏",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4602369?v=4",
+      "profile": "http://www.annkilzer.net/",
+      "contributions": [
+        "doc",
+        "code",
+        "projectManagement"
+      ]
+    },
+    {
+      "login": "Tch4lla",
+      "name": "Sulaymane Sillah",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99618731?v=4",
+      "profile": "http://sulaymanesillah.netlify.app",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kei-design-jp",
+      "name": "kei-design-jp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72494066?v=4",
+      "profile": "https://github.com/kei-design-jp",
+      "contributions": [
+        "design"
+      ]
+    },
+    {
+      "login": "nasiranebi914",
+      "name": "Nasira Nebi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72615859?v=4",
+      "profile": "https://github.com/nasiranebi914",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "RageZBla",
+      "name": "Olivier Lechevalier",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1196871?v=4",
+      "profile": "https://github.com/RageZBla",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "deek87",
+      "name": "Derek Cameron",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23059797?v=4",
+      "profile": "https://github.com/deek87",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Kumaguro3",
+      "name": "Lily",
+      "avatar_url": "https://avatars.githubusercontent.com/u/82785482?v=4",
+      "profile": "https://github.com/Kumaguro3",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "lucy-gelderloos",
+      "name": "Lucy Gelderloos",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68394281?v=4",
+      "profile": "https://github.com/lucy-gelderloos",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "bbqbum33",
+      "name": "bbqbum33",
+      "avatar_url": "https://avatars.githubusercontent.com/u/87373820?v=4",
+      "profile": "https://github.com/bbqbum33",
+      "contributions": [
+        "business",
+        "fundingFinding",
+        "ideas",
+        "research",
+        "talk"
+      ]
+    },
+    {
+      "login": "Haruno10",
+      "name": "Haruno10",
+      "avatar_url": "https://avatars.githubusercontent.com/u/125802494?v=4",
+      "profile": "https://github.com/Haruno10",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "Aya-Yumino",
+      "name": "Aya-Yumino",
+      "avatar_url": "https://avatars.githubusercontent.com/u/126957811?v=4",
+      "profile": "https://github.com/Aya-Yumino",
+      "contributions": [
+        "research",
+        "ideas"
+      ]
+    },
+    {
+      "login": "NabbeunNabi",
+      "name": "William Brammer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/124335161?v=4",
+      "profile": "https://github.com/NabbeunNabi",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Anissa3005",
+      "name": "Anissa Chadouli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/114712265?v=4",
+      "profile": "https://github.com/Anissa3005",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "evan-desu",
+      "name": "Evan Peterson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/86333067?v=4",
+      "profile": "https://github.com/evan-desu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "gminetoma",
+      "name": "Gustavo Minoru",
+      "avatar_url": "https://avatars.githubusercontent.com/u/73707876?v=4",
+      "profile": "https://github.com/gminetoma",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Ntlja",
+      "name": "Ntlja",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39023563?v=4",
+      "profile": "https://github.com/Ntlja",
+      "contributions": [
+        "design",
+        "code"
+      ]
+    },
+    {
+      "login": "ProgressChris88",
+      "name": "Chris Bowman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/117893544?v=4",
+      "profile": "https://github.com/ProgressChris88",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ShizuokaTerrier",
+      "name": "Matt Keighley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/151515133?v=4",
+      "profile": "http://www.squareonejapan.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Ghezz9",
+      "name": "Davide Ghezzo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/177678145?v=4",
+      "profile": "https://github.com/Ghezz9",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ConwayDecker",
+      "name": "Jason",
+      "avatar_url": "https://avatars.githubusercontent.com/u/171483356?v=4",
+      "profile": "https://github.com/ConwayDecker",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "matthewkurtti",
+      "name": "Matthew Kurtti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29577421?v=4",
+      "profile": "https://github.com/matthewkurtti",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "prestonb91",
+      "name": "Preston Boardman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/77235430?v=4",
+      "profile": "https://github.com/prestonb91",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ljbroersen",
+      "name": "Lisa Broersen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62942462?v=4",
+      "profile": "https://github.com/ljbroersen",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "bnogimauemura",
+      "name": "Bruno Nogima Uemura",
+      "avatar_url": "https://avatars.githubusercontent.com/u/186167453?v=4",
+      "profile": "https://github.com/bnogimauemura",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ayushjava07",
+      "name": "ayush kumar ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/171397266?v=4",
+      "profile": "https://github.com/ayushjava07",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": false,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "findadoc-web",
+  "projectOwner": "ourjapanlife",
+  "commitType": "docs"
+}

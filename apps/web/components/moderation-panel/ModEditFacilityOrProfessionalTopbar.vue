@@ -1,0 +1,465 @@
+<template>
+    <div class="flex justify-between w-full">
+        <div>
+            <button
+                type="button"
+                data-testid="mod-edit-facility-hp-topbar-copy-id"
+                :class="[buttonBaseClass, copyButtonClass, 'w-fit px-3 py-2 m-2']"
+                @click="copyFacilityOrHealthcareProfessionalId"
+            >
+                ID: {{ selectedId }}
+                <SVGSuccessCheckMark
+                    v-if="showCopySuccessIcon"
+                    role="img"
+                    title="clipboard copy"
+                    class="ml-2 w-6"
+                />
+                <SVGCopyContent
+                    v-if="!showCopySuccessIcon"
+                    role="img"
+                    title="successful copy"
+                    class="ml-2 w-6"
+                />
+            </button>
+        </div>
+        <div class="facility-hp-topbar-actions flex justify p-2 font-bold ">
+            <button
+                type="button"
+                :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass, 'mr-2']"
+                data-testid="mod-edit-facility-hp-topbar-back"
+                @click="navigateBackToDashboard"
+            >
+                {{
+                    t('modEditFacilityOrHPTopbar.back') }}
+            </button>
+            <button
+                type="button"
+                :disabled="!hasPendingChanges"
+                :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass, 'mr-2']"
+                data-testid="mod-edit-facility-hp-topbar-update"
+                @click="saveChanges"
+            >
+                <span>
+                    {{ t('modEditFacilityOrHPTopbar.update') }}
+                </span>
+            </button>
+            <button
+                type="button"
+                :disabled="!hasPendingChanges"
+                :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass, 'mr-2']"
+                data-testid="mod-edit-facility-hp-topbar-update-and-exit"
+                @click="saveChangesAndExit"
+            >
+                <span>
+                    {{ t('modEditFacilityOrHPTopbar.updateAndExit') }}
+                </span>
+            </button>
+            <button
+                type="button"
+                :class="[buttonBaseClass, buttonDangerClass, buttonPaddingClass, 'mr-2']"
+                data-testid="mod-edit-facility-hp-topbar-delete"
+                @click="openDeleteConfirmation"
+            >
+                {{
+                    t('modEditFacilityOrHPTopbar.delete') }}
+            </button>
+        </div>
+        <div
+            v-show="modalStore.isOpen"
+            class="fixed top-0 left-0 flex items-center justify-center h-full w-full z-10 bg-secondary/40"
+        >
+            <Modal>
+                <div
+                    class="flex flex-col aspect-square h-96 items-center justify-center bg-primary-inverted p-10 rounded"
+                >
+                    <div
+                        v-if="modalType === ModalType.DeleteConfirmation && moderationScreenStore.editFacilityScreenIsActive()"
+                        class="flex flex-col items-center"
+                    >
+                        <div class="font-bold text-3xl">
+                            {{ t('modEditFacilityOrHPTopbar.deleteConfirmationFacility', {
+                                id: selectedId,
+                                facility: facilitiesStore.selectedFacilityData?.nameEn,
+                            }) }}
+                        </div>
+                        <button
+                            :class="[buttonBaseClass, buttonDangerFilledClass, 'my-8 px-6 py-3 text-xl']"
+                            type="button"
+                            @click="deleteFacilityOrHealthcareProfessional"
+                        >
+                            {{ t('modEditFacilityOrHPTopbar.deleteButtonText') }}
+                        </button>
+                    </div>
+
+                    <div
+                        v-if="modalType === ModalType.DeleteConfirmation
+                            && moderationScreenStore.editHealthcareProfessionalScreenIsActive()"
+                        class="flex flex-col items-center"
+                    >
+                        <div class="font-bold text-3xl">
+                            {{ t('modEditFacilityOrHPTopbar.deleteConfirmationHealthcareProfessional', {
+                                id: selectedId,
+                                healthcareProfessional: `${healthcareProfessionalsStore.selectedHealthcareProfessionalData
+                                    ?.names[0]?.firstName} ${healthcareProfessionalsStore.selectedHealthcareProfessionalData
+                                    ?.names[0]?.lastName}`,
+                            }) }}
+                        </div>
+                        <button
+                            :class="[buttonBaseClass, buttonDangerFilledClass, 'my-8 px-6 py-3 text-xl']"
+                            type="button"
+                            @click="deleteFacilityOrHealthcareProfessional"
+                        >
+                            {{ t('modEditFacilityOrHPTopbar.deleteButtonText') }}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useAppToast } from '~/composables/useAppToast'
+import { useRouter } from 'vue-router'
+import { useI18n } from '#imports'
+import SVGCopyContent from '~/assets/icons/content-copy.svg'
+import SVGSuccessCheckMark from '~/assets/icons/checkmark-square.svg'
+import { useFacilitiesStore, getChangedFacilityFieldsForUpdate } from '~/stores/facilitiesStore'
+import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
+import { useModerationScreenStore, ModerationScreen } from '~/stores/moderationScreenStore'
+import { useModalStore, ModalType } from '~/stores/modalStore'
+import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
+import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
+import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
+import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
+import { arraysAreEqual } from '~/utils/arrayUtils'
+import { hasEnglishLocalizedName } from '~/utils/nameUtils'
+import { hasServerErrors, leaveToModerationDashboard, getModerationDashboardViewForScreen } from '~/utils/moderationUtils'
+import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
+
+const router = useRouter()
+
+// Initialize the stores in use
+const facilitiesStore = useFacilitiesStore()
+const { facilitySectionFields } = storeToRefs(facilitiesStore)
+const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
+const moderationScreenStore = useModerationScreenStore()
+const moderationSubmissionUnsavedStore = useModerationSubmissionUnsavedStore()
+const modalStore = useModalStore()
+
+// Initialize the value of the selected Id based off of Moderation Screen
+const selectedId: ComputedRef<string> = computed(() => setSelectedId())
+
+// Deep snapshots (not live store refs). Topbar mounts before edit sections finish loading — capture once data exists.
+const originalFacilityData: Ref<Facility | undefined> = ref()
+const originalHealthcareProfessionalData: Ref<HealthcareProfessional | undefined> = ref()
+
+watch(
+    () => facilitiesStore.selectedFacilityId,
+    () => {
+        if (moderationScreenStore.editFacilityScreenIsActive()) {
+            originalFacilityData.value = undefined
+        }
+    }
+)
+
+watch(
+    () => facilitiesStore.selectedFacilityData,
+    data => {
+        if (!moderationScreenStore.editFacilityScreenIsActive()) return
+        const id = facilitiesStore.selectedFacilityId
+        if (!data || !id || data.id !== id) return
+        if (originalFacilityData.value !== undefined) return
+        originalFacilityData.value = JSON.parse(JSON.stringify(data)) as Facility
+    },
+    { immediate: true }
+)
+
+watch(
+    () => healthcareProfessionalsStore.selectedHealthcareProfessionalId,
+    () => {
+        if (moderationScreenStore.editHealthcareProfessionalScreenIsActive()) {
+            originalHealthcareProfessionalData.value = undefined
+        }
+    }
+)
+
+watch(
+    () => healthcareProfessionalsStore.selectedHealthcareProfessionalData,
+    data => {
+        if (!moderationScreenStore.editHealthcareProfessionalScreenIsActive()) return
+        const id = healthcareProfessionalsStore.selectedHealthcareProfessionalId
+        if (!data || !id || data.id !== id) return
+        if (originalHealthcareProfessionalData.value !== undefined) return
+        originalHealthcareProfessionalData.value = JSON.parse(JSON.stringify(data)) as HealthcareProfessional
+    },
+    { immediate: true }
+)
+
+const modalType = ref<ModalType.UnsavedChanges | ModalType.DeleteConfirmation | null>(null)
+
+// Disable the buttons if there are no changes
+const hasPendingChanges = computed(() => hasPendingFormChanges())
+
+const toast = useAppToast()
+
+const { t } = useI18n()
+
+const showCopySuccessIcon: Ref<boolean> = ref(false)
+const buttonBaseClass = 'inline-flex justify-center items-center rounded-full border-2 text-base font-bold'
+const buttonPaddingClass = 'px-5 py-2 whitespace-nowrap'
+const buttonOutlineClass = 'bg-secondary-bg border-primary-text-muted text-primary-text hover:bg-accent-bg/20'
+const buttonDangerClass = 'bg-secondary-bg border-error text-error hover:bg-error/10'
+const buttonDangerFilledClass = 'bg-error border-error text-primary-text-inverted hover:opacity-90'
+const copyButtonClass = 'bg-secondary-bg border-accent-bg text-primary-text'
+
+const copyFacilityOrHealthcareProfessionalId = async () => {
+    try {
+        await navigator.clipboard.writeText(selectedId.value)
+        showCopySuccessIcon.value = true
+        setTimeout(() => {
+            showCopySuccessIcon.value = false
+        }, 2000)
+    } catch (err: unknown) {
+        toast.error(`${t('modEditFacilityOrHPTopbar.copyFailure')} ${selectedId.value}: ${err}`)
+        console.error(`Failed to copy ID ${selectedId.value}: ${err}`)
+    }
+}
+
+function setSelectedId() {
+    switch (moderationScreenStore.activeScreen) {
+        case ModerationScreen.EditFacility:
+            return facilitiesStore.selectedFacilityId
+        case ModerationScreen.EditHealthcareProfessional:
+            return healthcareProfessionalsStore.selectedHealthcareProfessionalId
+        default:
+            return ''
+    }
+}
+
+const hasFacilityFormChanges = (): boolean => {
+    if (!originalFacilityData.value) return false
+
+    const updatedFields = getChangedFacilityFieldsForUpdate(
+        facilitySectionFields.value,
+        originalFacilityData.value
+    )
+
+    return !!Object.keys(updatedFields).length
+}
+
+const hasHealthcareProfessionalFormChanges = () => {
+    if (!originalHealthcareProfessionalData.value) return false // No match found, no changes to compare.
+
+    const originalHealthcareProfessional = originalHealthcareProfessionalData.value
+
+    const healthcareProfessionalSections = healthcareProfessionalsStore.healthcareProfessionalSectionFields
+
+    // Compare each field in the `healthcareProfessionalSectionFields` object with the original data.
+    const areThereUnsavedHealthcareProfessionalChanges
+        = !arraysAreEqual(
+            healthcareProfessionalSections.names,
+            originalHealthcareProfessional.names
+        )
+        || !arraysAreEqual(
+            healthcareProfessionalSections.acceptedInsurance,
+            originalHealthcareProfessional.acceptedInsurance
+        )
+        || healthcareProfessionalSections.additionalInfoForPatients !== originalHealthcareProfessional.additionalInfoForPatients
+        || healthcareProfessionalSections.createdDate
+        !== originalHealthcareProfessional.createdDate
+        || !arraysAreEqual(
+            healthcareProfessionalSections.degrees,
+            originalHealthcareProfessional.degrees
+        )
+        || healthcareProfessionalSections.id
+        !== originalHealthcareProfessional.id
+        || !arraysAreEqual(
+            healthcareProfessionalSections.specialties,
+            originalHealthcareProfessional.specialties
+        )
+        || !arraysAreEqual(
+            healthcareProfessionalSections.spokenLanguages,
+            originalHealthcareProfessional.spokenLanguages
+        )
+        || !arraysAreEqual(
+            healthcareProfessionalSections.facilityIds,
+            originalHealthcareProfessional.facilityIds
+        )
+        || healthcareProfessionalSections.updatedDate
+        !== originalHealthcareProfessional.updatedDate
+    return areThereUnsavedHealthcareProfessionalChanges
+}
+
+const hasPendingFormChanges = () => {
+    if (moderationScreenStore.editFacilityScreenIsActive()) {
+        return hasFacilityFormChanges()
+    }
+
+    if (moderationScreenStore.editHealthcareProfessionalScreenIsActive()) {
+        return hasHealthcareProfessionalFormChanges()
+    }
+    return false
+}
+
+const saveChanges = async () => {
+    if (moderationScreenStore.editFacilityScreenIsActive()) {
+        if (!originalFacilityData.value) return
+
+        if (!hasFacilityFormChanges()) return
+
+        let response
+        try {
+            response = await facilitiesStore.updateFacility()
+        } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : String(e)
+            toast.error(message)
+            return
+        }
+
+        if (handleModerationResponseErrors(response, toast, t)) {
+            return response
+        }
+
+        // Updates the facility section values with the data saved in the database
+        facilitiesStore.initializeFacilitySectionValues(response.data as Facility)
+        const savedFacility = facilitiesStore.selectedFacilityData
+        if (savedFacility) {
+            originalFacilityData.value = JSON.parse(JSON.stringify(savedFacility)) as Facility
+        }
+        return returnWithSuccessToast(
+            response,
+            toast,
+            t,
+            'modEditFacilityOrHPTopbar.facilityUpdatedSuccessfully',
+            { toastClassName: 'e2e-moderation-success-toast' }
+        )
+    }
+    // This makes the on click update the facility if the screen is EditFacility
+    if (moderationScreenStore.editHealthcareProfessionalScreenIsActive()) {
+        // This prevents us from sending a requested unnecessarily if the user has not made changes
+        if (!hasHealthcareProfessionalFormChanges()) return
+
+        const namesDirty = !arraysAreEqual(
+            healthcareProfessionalsStore.healthcareProfessionalSectionFields.names,
+            originalHealthcareProfessionalData.value?.names ?? []
+        )
+        if (namesDirty) {
+            const hasEnglishName = hasEnglishLocalizedName(
+                healthcareProfessionalsStore.healthcareProfessionalSectionFields.names
+            )
+            if (guardWithErrorToast(
+                !hasEnglishName,
+                toast,
+                t,
+                'modEditFacilityOrHPTopbar.healthcareProfessionalEnglishNameRequired'
+            )) {
+                return
+            }
+        }
+
+        const response = await healthcareProfessionalsStore.updateHealthcareProfessional()
+
+        if (handleModerationResponseErrors(response, toast, t)) {
+            return response
+        }
+
+        const savedHp = response.data
+        if (savedHp) {
+            originalHealthcareProfessionalData.value = JSON.parse(JSON.stringify(savedHp)) as HealthcareProfessional
+        }
+        return returnWithSuccessToast(
+            response,
+            toast,
+            t,
+            'modEditFacilityOrHPTopbar.healthcareProfessionalUpdatedSuccessfully',
+            { toastClassName: 'e2e-moderation-success-toast' }
+        )
+    }
+}
+
+const saveChangesAndExit = async () => {
+    const dashboardView = getModerationDashboardViewForScreen(moderationScreenStore.activeScreen)
+
+    if (moderationScreenStore.editFacilityScreenIsActive()) {
+        if (hasPendingFormChanges()) {
+            const response = await saveChanges()
+            if (response === undefined || hasServerErrors(response)) {
+                return
+            }
+        }
+        await leaveToModerationDashboard(router, moderationScreenStore, modalStore, dashboardView)
+        return
+    }
+    if (moderationScreenStore.editHealthcareProfessionalScreenIsActive()) {
+        if (hasPendingFormChanges()) {
+            const response = await saveChanges()
+            if (response === undefined || hasServerErrors(response)) {
+                return
+            }
+        }
+        await leaveToModerationDashboard(router, moderationScreenStore, modalStore, dashboardView)
+    }
+}
+
+const openDeleteConfirmation = () => {
+    modalType.value = ModalType.DeleteConfirmation
+    modalStore.showModal()
+}
+
+const deleteFacilityOrHealthcareProfessional = async () => {
+    if (moderationScreenStore.editFacilityScreenIsActive()) {
+        const deleteFacilityArgs = {
+            id: selectedId.value
+        }
+        const response = await facilitiesStore.deleteFacility(deleteFacilityArgs)
+
+        if (handleModerationResponseErrors(response, toast, t)) {
+            return response
+        }
+        returnWithSuccessToast(
+            response,
+            toast,
+            t,
+            'modEditFacilityOrHPTopbar.facilityDeletedSuccessfully'
+        )
+        // Redirect to the dashboard since the facility no longer exists
+        await leaveToModerationDashboard(router, moderationScreenStore, modalStore)
+        modalType.value = null
+        modalStore.hideModal()
+        return response
+    }
+
+    if (moderationScreenStore.editHealthcareProfessionalScreenIsActive()) {
+        const deleteHealthcareProfessionalArgs = {
+            id: selectedId.value
+        }
+
+        const response = await healthcareProfessionalsStore.deleteHealthcareProfessional(deleteHealthcareProfessionalArgs)
+
+        if (handleModerationResponseErrors(response, toast, t)) {
+            return response
+        }
+
+        returnWithSuccessToast(
+            response,
+            toast,
+            t,
+            'modEditFacilityOrHPTopbar.healthcareProfessionalDeletedSuccessfully'
+        )
+        // Redirect to the dashboard since the healthcare professional no longer exists
+        await leaveToModerationDashboard(router, moderationScreenStore, modalStore)
+        modalType.value = null
+        modalStore.hideModal()
+        return response
+    }
+}
+
+const navigateBackToDashboard = () => {
+    const dashboardView = getModerationDashboardViewForScreen(moderationScreenStore.activeScreen)
+    moderationSubmissionUnsavedStore.runLeaveOr(() =>
+        leaveToModerationDashboard(router, moderationScreenStore, modalStore, dashboardView))
+}
+</script>

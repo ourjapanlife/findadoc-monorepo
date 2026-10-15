@@ -1,0 +1,45 @@
+name: Generate GraphQL types
+
+on:
+  schedule:
+    - cron: "0 0 * * MON"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-gql-types:
+    name: Generating GraphQL types
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate types from the API schema
+        run: pnpm generate
+
+      - name: Open a pull request when types changed
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update graphql types"
+          title: "chore: update graphql types"
+          body: "Regenerates `@findadoc/graphql` from `apps/server/src/typeDefs/schema.graphql`."
+          branch: "update-gql-types"
+          base: main
+          delete-branch: true
