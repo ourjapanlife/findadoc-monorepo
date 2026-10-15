@@ -7,7 +7,7 @@
         "dev": "echo 'Local GraphQL API on http://127.0.0.1:4000 (local database)' && cross-env NODE_ENV=development nodemon --exec \"node --loader ts-node/esm src/index.ts\"",
         "dev:seeded": "pnpm db:reset && pnpm db:seed && pnpm dev:startserver",
         "dev:startserver": "echo '💻 💻 💻✨ Starting dev server...' && cross-env NODE_ENV=development nodemon --exec 'node --inspect --loader ts-node/esm src/index.ts'",
-        "dev:startlocaldb": "supabase start",
+        "dev:startlocaldb": "pnpm exec supabase start",
         "check:supabase": "node --loader ts-node/esm src/supabaseCheck.ts",
         "test": "vitest run",
         "db:seed": "node --loader ts-node/esm scripts/seed/index.ts",
@@ -38,7 +38,7 @@
         "migrate:local:dry": "echo '🔍 DRY RUN: LOCAL migration (no data written)...' && cross-env NODE_ENV=development DRY_RUN=true node --loader ts-node/esm src/migration.ts",
         "migrate:prod": "echo '⚠️  Running PRODUCTION migration...' && cross-env NODE_ENV=production node --loader ts-node/esm src/migration.ts",
         "migrate:prod:dry": "echo '🔍 DRY RUN: PRODUCTION migration (no data written)...' && cross-env NODE_ENV=production DRY_RUN=true node --loader ts-node/esm src/migration.ts",
-        "generate:db": "supabase gen types typescript --local > src/typeDefs/supabase-generated.ts",
+        "generate:db": "pnpm exec supabase gen types typescript --local > src/typeDefs/supabase-generated.ts",
         "typecheck": "tsc --noEmit && node --loader ts-node/esm scripts/seed/data.ts"
     },
     "repository": {
@@ -79,7 +79,7 @@
         "kysely-supabase": "^0.2.1",
         "pg": "^8.16.3",
         "rimraf": "^6.0.1",
-        "supabase": "2.58.5",
+        "supabase": "2.121.0",
         "typescript": "catalog:",
         "vite": "^6.0.7",
         "vitest": "^2.1.8",

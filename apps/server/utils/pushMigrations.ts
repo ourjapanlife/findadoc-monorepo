@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs'
 import { envVariables } from './environmentVariables.js'
 
 if (!existsSync('supabase/.temp/project-ref')) {
-    console.error('Link this repo to the hosted project once with `npx supabase login` and `npx supabase link`, then deploy again.')
+    console.error('Link this repo to the hosted project once with `pnpm exec supabase login` and `pnpm exec supabase link`, then deploy again.')
     process.exit(1)
 }
 
@@ -16,8 +16,8 @@ if (password) {
 // https://supabase.com/docs/guides/deployment/database-migrations
 // Applies migration files that are not already in supabase_migrations.schema_migrations.
 const result = spawnSync(
-    'npx',
-    ['supabase', 'db', 'push', '--yes'],
+    'pnpm',
+    ['exec', 'supabase', 'db', 'push', '--yes'],
     { stdio: 'inherit', shell: process.platform === 'win32', env }
 )
 
