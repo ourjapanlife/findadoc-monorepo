@@ -17,7 +17,7 @@
         "lint:fix": "pnpm exec turbo lint:fix",
         "lint:locales": "pnpm exec turbo lint:locales --filter=@findadoc/web",
         "typecheck": "pnpm exec turbo typecheck",
-        "test": "pnpm exec turbo test --filter=@findadoc/web --filter=@findadoc/mcp",
+        "test": "pnpm exec turbo test --filter=@findadoc/web --filter=@findadoc/mcp --filter=@findadoc/utils",
         "test:server": "pnpm exec turbo test --filter=@findadoc/server",
         "test:e2e": "pnpm exec turbo test:e2e:headless --filter=@findadoc/web",
         "generate": "pnpm exec turbo generate",

@@ -31,7 +31,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Unit tests
-        run: pnpm exec turbo test $AFFECTED --filter=@findadoc/web --filter=@findadoc/mcp
+        run: pnpm exec turbo test $AFFECTED --filter=@findadoc/web --filter=@findadoc/mcp --filter=@findadoc/utils
 
       - name: Generated GraphQL types match the schema
         run: |
