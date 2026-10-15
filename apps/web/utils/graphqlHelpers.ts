@@ -40,7 +40,7 @@ export async function fetchHealthcareProfessionalsWithCount(
         return { filteredSearchResults, totalCount }
     } catch (error) {
         console.error(`Error retrieving healthcare professionals: ${JSON.stringify(error)}`)
-        throw new Error('Failed to retrieve healthcare professional data.')
+        throw new Error('Failed to retrieve healthcare professional data.', { cause: error })
     }
 }
 
@@ -70,7 +70,7 @@ export async function fetchFacilitiesWithCount(
         return { filteredSearchResults, totalCount }
     } catch (error) {
         console.error(`Error retrieving facilities with count: ${JSON.stringify(error)}`)
-        throw new Error('Failed to retrieve facility data.')
+        throw new Error('Failed to retrieve facility data.', { cause: error })
     }
 }
 
@@ -99,7 +99,7 @@ export async function fetchSubmissionsWithCount(
         return { filteredSearchResults, totalCount }
     } catch (error) {
         console.error(`Error retrieving submissions with count: ${JSON.stringify(error)}`)
-        throw new Error('Failed to retrieve submission data.')
+        throw new Error('Failed to retrieve submission data.', { cause: error })
     }
 }
 

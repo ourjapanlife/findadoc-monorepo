@@ -22,7 +22,7 @@ test.describe('Specialty and language facet pages', () => {
      * prerendered — otherwise skip rather than treating a seed gap as a regression.
      */
     test('renders a seeded specialty facet when generate produced one', async ({ page, request }) => {
-        let candidates: Array<{ prefectureEn: string, prefecturePath: string, facetPath: string }> = []
+        let candidates: Array<{ prefectureEn: string, prefecturePath: string, facetPath: string }>
 
         try {
             const response = await request.post('http://127.0.0.1:4000', {

@@ -21,7 +21,7 @@ const checkLocaleKeys = () => {
 
     const referenceKeys = extractAllKeys(enFileContent)
 
-    let missingKeysSummary = []
+    let missingKeysSummary
 
     // Check if in CI/CD and write the .txt file for the body of the message in GitHub
     if (process.env.NODE_ENV === 'production') {

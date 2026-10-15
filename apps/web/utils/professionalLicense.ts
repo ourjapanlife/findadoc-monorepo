@@ -1,4 +1,4 @@
-import { Degree } from '@findadoc/graphql'
+import type { Degree } from '@findadoc/graphql'
 import {
     ADDITIONAL_CREDENTIALS as PICKER_CREDENTIALS,
     CLINICAL_LICENSES as PICKER_PRIMARY_LICENSES,

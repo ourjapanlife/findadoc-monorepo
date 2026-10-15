@@ -180,7 +180,7 @@ async function fetchProfessionalsByIds(ids: readonly string[]): Promise<Healthca
 
 async function fetchFacilitiesLive(): Promise<FacilitySearchResult[] | null> {
     const rows: Facility[] = []
-    let totalCount = 0
+    let totalCount: number
 
     for (let offset = 0; ; offset += PAGE_SIZE) {
         const data = await graphqlPost<{

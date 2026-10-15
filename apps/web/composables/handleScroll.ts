@@ -11,12 +11,11 @@ export const handleScroll
         if (!import.meta.client || isScrolling.value) return
         let newActiveSection: string | null = null
         sectionDetailsObject.forEach(section => {
-            let rect = null
             const foundSectionById = document.getElementById(section.sectionElementIdToScrollTo)
             if (!foundSectionById) {
                 return
             }
-            rect = foundSectionById.getBoundingClientRect()
+            const rect = foundSectionById.getBoundingClientRect()
 
             const sectionId = section.sectionElementIdToScrollTo
 
