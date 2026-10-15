@@ -13,14 +13,18 @@ pnpm workspace and Turborepo for the Find a Doc, Japan apps. One install, one se
 
 ## Prerequisites
 
-- Node.js 22 (see `.nvmrc`). `>=22.12.0` is required.
+- Node.js 24.22.0 (see `.nvmrc`). Nuxt accepts `^22.21.0`, `^24.11.0`, or `>=26.0.0`.
 - Corepack, so pnpm 10.27.0 from the root `packageManager` field is used.
 - Docker, only for the API's local Supabase database.
 
 ## Install
 
+`nvm use` switches the Node directory. The pnpm command lives in that directory, so activate it for the Node version you just selected. On Windows this is required before `turbo` or `pnpm` will run:
+
 ```bash
+nvm use
 corepack enable
+corepack prepare pnpm@10.27.0 --activate
 pnpm install
 ```
 
@@ -35,11 +39,14 @@ pnpm install --config.package-import-method=copy
 Turborepo runs a task in every package that defines it. Root scripts call `pnpm exec turbo`, and each app adds a `turbo.json` that extends the root pipeline (`//`) with its own outputs. pnpm settings live in `pnpm-workspace.yaml`.
 
 ```bash
-pnpm dev                 # site, fake GraphQL server, and MCP
+pnpm dev                 # site, local GraphQL API (local database), and MCP
 pnpm dev:web             # same, without the MCP process
-pnpm dev:server          # fake GraphQL server only
-pnpm dev:seeded          # site against a reset, seeded local Supabase API
+pnpm dev:server          # local GraphQL API only
+pnpm dev:seeded          # reset and seed the local database, then the site against that API
 pnpm dev:api             # site against https://api.findadoc.jp
+pnpm check:supabase      # local Docker Supabase at http://127.0.0.1:54321
+pnpm db:seed             # load the TypeScript seed into the local database
+pnpm db:reset            # drop and recreate the local database only
 pnpm dev:mcp
 pnpm dev:mcp:http
 

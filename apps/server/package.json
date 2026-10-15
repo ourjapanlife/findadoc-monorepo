@@ -4,12 +4,14 @@
     "description": "Backend for Find a Doc, Japan",
     "main": "index.js",
     "scripts": {
-        "dev": "echo 'Fake GraphQL server on http://127.0.0.1:4000' && cross-env NODE_ENV=development nodemon --exec \"node --loader ts-node/esm src/fakeServer.ts\"",
-        "dev:seeded": "supabase start && supabase db reset && pnpm generate:db && pnpm dev:seeddb && concurrently --raw \"pnpm dev:startserver\"",
+        "dev": "echo 'Local GraphQL API on http://127.0.0.1:4000 (local database)' && cross-env NODE_ENV=development nodemon --exec \"node --loader ts-node/esm src/index.ts\"",
+        "dev:seeded": "pnpm db:reset && pnpm db:seed && pnpm dev:startserver",
         "dev:startserver": "echo '💻 💻 💻✨ Starting dev server...' && cross-env NODE_ENV=development nodemon --exec 'node --inspect --loader ts-node/esm src/index.ts'",
         "dev:startlocaldb": "supabase start",
+        "check:supabase": "node --loader ts-node/esm src/supabaseCheck.ts",
         "test": "vitest run",
-        "dev:seeddb": "echo '🌱 Seeding database...' && node --loader ts-node/esm utils/runSeed.ts",
+        "db:seed": "node --loader ts-node/esm scripts/seed/index.ts",
+        "db:reset": "node --loader ts-node/esm scripts/db/reset.ts",
         "test:dockerstart": "docker compose -f docker/docker-compose-test.yml up -d --build",
         "test:dockerstop": "docker compose -f docker/docker-compose-test.yml down",
         "build": "rimraf dist && copyfiles -a src/typeDefs/schema.graphql src/vocabulary/municipalities.json .env.prod dist && tsc",
@@ -36,8 +38,8 @@
         "migrate:local:dry": "echo '🔍 DRY RUN: LOCAL migration (no data written)...' && cross-env NODE_ENV=development DRY_RUN=true node --loader ts-node/esm src/migration.ts",
         "migrate:prod": "echo '⚠️  Running PRODUCTION migration...' && cross-env NODE_ENV=production node --loader ts-node/esm src/migration.ts",
         "migrate:prod:dry": "echo '🔍 DRY RUN: PRODUCTION migration (no data written)...' && cross-env NODE_ENV=production DRY_RUN=true node --loader ts-node/esm src/migration.ts",
-        "generate:db": "node --loader ts-node/esm utils/generateSqlSeed.ts && supabase gen types typescript --local > src/typeDefs/supabase-generated.ts",
-        "typecheck": "tsc --noEmit"
+        "generate:db": "supabase gen types typescript --local > src/typeDefs/supabase-generated.ts",
+        "typecheck": "tsc --noEmit && node --loader ts-node/esm scripts/seed/data.ts"
     },
     "repository": {
         "type": "git",
@@ -53,7 +55,7 @@
     },
     "homepage": "https://github.com/ourjapanlife/findadoc-server#readme",
     "engines": {
-        "node": ">=22.12.0"
+        "node": "^22.21.0 || ^24.11.0 || >=26.0.0"
     },
     "devDependencies": {
         "@eslint/js": "^9.18.0",

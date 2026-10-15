@@ -16,8 +16,8 @@ export function generateRandomCreateFacilityInput()
     // Select random location from Tokyo, Kyoto, or Hokkaido
     const locations = [
         {
-            cityEn: 'Tokyo',
-            cityJa: '東京',
+            cityEn: 'Chiyoda',
+            cityJa: '千代田区',
             prefectureEn: 'Tokyo',
             prefectureJa: '東京都',
             latMin: 35.6,
@@ -28,7 +28,7 @@ export function generateRandomCreateFacilityInput()
         },
         {
             cityEn: 'Kyoto',
-            cityJa: '京都',
+            cityJa: '京都市',
             prefectureEn: 'Kyoto',
             prefectureJa: '京都府',
             latMin: 35.0,
@@ -39,7 +39,7 @@ export function generateRandomCreateFacilityInput()
         },
         {
             cityEn: 'Sapporo',
-            cityJa: '札幌',
+            cityJa: '札幌市',
             prefectureEn: 'Hokkaido',
             prefectureJa: '北海道',
             latMin: 43.0,

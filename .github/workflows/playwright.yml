@@ -53,9 +53,8 @@ jobs:
         run: |
           cp .env.dev .env 2>/dev/null || true
           supabase start
-          supabase db reset
-          pnpm generate:db
-          pnpm dev:seeddb
+          pnpm db:reset
+          pnpm db:seed
 
       - name: Start API server
         run: |

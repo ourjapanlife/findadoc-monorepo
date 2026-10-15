@@ -4,6 +4,15 @@
     "tasks": {
         "build": {
             "outputs": ["dist/**"]
+        },
+        "db:seed": {
+            "cache": false,
+            "dependsOn": ["^build"],
+            "outputLogs": "full"
+        },
+        "db:reset": {
+            "cache": false,
+            "outputLogs": "full"
         }
     }
 }

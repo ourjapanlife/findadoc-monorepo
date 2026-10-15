@@ -11,6 +11,7 @@
     "include": [
         "src/**/*",
         "utils/**/*",
+        "scripts/**/*",
         "__tests__/*"
     ],
     "exclude": [

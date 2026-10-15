@@ -4,7 +4,7 @@
     "private": true,
     "packageManager": "pnpm@10.27.0",
     "engines": {
-        "node": ">=22.12.0"
+        "node": "^22.21.0 || ^24.11.0 || >=26.0.0"
     },
     "scripts": {
         "dev": "pnpm exec turbo dev",
@@ -12,6 +12,9 @@
         "dev:server": "pnpm exec turbo dev --filter=@findadoc/server",
         "dev:seeded": "pnpm exec turbo dev:seeded --filter=@findadoc/web --filter=@findadoc/server",
         "dev:api": "pnpm exec turbo dev:api --filter=@findadoc/web",
+        "check:supabase": "pnpm exec turbo check:supabase --filter=@findadoc/server",
+        "db:seed": "pnpm exec turbo db:seed",
+        "db:reset": "pnpm exec turbo db:reset",
         "dev:mcp": "pnpm exec turbo dev --filter=@findadoc/mcp",
         "dev:mcp:http": "pnpm exec turbo dev:http --filter=@findadoc/mcp",
         "build": "pnpm exec turbo build",
@@ -27,6 +30,7 @@
     },
     "devDependencies": {
         "husky": "^9.1.7",
+        "pnpm": "10.27.0",
         "turbo": "^2.11.6"
     }
 }

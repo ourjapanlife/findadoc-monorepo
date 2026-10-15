@@ -24,6 +24,9 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
+      pnpm:
+        specifier: 10.27.0
+        version: 10.27.0
       turbo:
         specifier: ^2.11.6
         version: 2.11.8
@@ -220,7 +223,7 @@ importers:
         version: 6.26.1
       axios:
         specifier: ^1.7.9
-        version: 1.20.0
+        version: 1.20.0(debug@4.4.3)
       concurrently:
         specifier: ^9.2.0
         version: 9.2.5
@@ -8549,6 +8552,11 @@ packages:
     engines: {node: '>=12.0.0'}
     hasBin: true
 
+  pnpm@10.27.0:
+    resolution: {integrity: sha512-ctaZ2haxF5wUup5k3HHJpAmIy9xlwmTLDkidt96RfyDc9NZNhyNiXylpulLUt+KhFwaC2awqXcrqq3MrfhbwSg==}
+    engines: {node: '>=18.12'}
+    hasBin: true
+
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
@@ -16132,16 +16140,6 @@ snapshots:
 
   axe-core@4.14.0: {}
 
-  axios@1.20.0:
-    dependencies:
-      follow-redirects: 1.16.1(debug@4.3.7)
-      form-data: 4.0.6
-      https-proxy-agent: 5.0.1
-      proxy-from-env: 2.1.0
-    transitivePeerDependencies:
-      - debug
-      - supports-color
-
   axios@1.20.0(debug@4.4.3):
     dependencies:
       follow-redirects: 1.16.1(debug@4.4.3)
@@ -20355,6 +20353,8 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  pnpm@10.27.0: {}
+
   possible-typed-array-names@1.1.0: {}
 
   postcss-calc@11.2.3(postcss@8.5.30):
@@ -22643,7 +22643,7 @@ snapshots:
 
   wait-on@8.0.5:
     dependencies:
-      axios: 1.20.0
+      axios: 1.20.0(debug@4.4.3)
       joi: 18.2.9
       lodash: 4.18.1
       minimist: 1.2.8

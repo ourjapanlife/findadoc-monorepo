@@ -37,6 +37,17 @@ A professional has one primary clinical license. PhD, MPH, and DSc are additiona
 - Do not store a Places display name, formatted address, phone, website, hours, photos, or reviews as directory data.
 - The Maps URL enrichment path is gone (#1008). Do not copy a Places payload into a submission. The picker is #1012. The facility resolver is #1013.
 
+## Node and pnpm
+
+Node is pinned in the repo-root `.nvmrc` (24.22.0). pnpm 10.27.0 comes from the root `packageManager` field through Corepack. After `nvm use`, including on Windows, activate pnpm for that Node install before running `turbo` or `pnpm`:
+
+```bash
+corepack enable
+corepack prepare pnpm@10.27.0 --activate
+```
+
+Without that shim, `turbo` fails with `Unable to find package manager binary`.
+
 ## GraphQL types
 
 `src/typeDefs/schema.graphql` is the only schema. Web, the API, and the MCP server import the generated types from `@findadoc/graphql`. Do not hand-write those types, and do not add another codegen config.

@@ -31,7 +31,7 @@
         "storybook": "cross-env NUXT_STORYBOOK=true nuxi dev -p 7331 && storybook dev -p 6006"
     },
     "engines": {
-        "node": ">=22.12.0"
+        "node": "^22.21.0 || ^24.11.0 || >=26.0.0"
     },
     "type": "module",
     "dependencies": {
