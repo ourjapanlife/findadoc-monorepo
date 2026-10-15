@@ -38,8 +38,10 @@ jobs:
         with:
           version: latest
 
-      - name: Build shared GraphQL types
-        run: pnpm --filter @findadoc/graphql build
+      - name: Build shared packages
+        run: |
+          pnpm --filter @findadoc/graphql build
+          pnpm --filter @findadoc/utils build
 
       - name: Start Supabase and seed the API database
         working-directory: apps/server
