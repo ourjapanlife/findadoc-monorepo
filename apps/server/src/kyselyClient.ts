@@ -68,12 +68,17 @@ export async function initializeKyselyClient(): Promise<void> {
         logger.info('✅ Kysely client initialized and connected successfully!')
     } catch (error) {
         logger.error('❌ Kysely connection test failed:', error)
-    
-        // Cleanup on failure
-        await kyselyInstance.destroy()
-        kyselyInstance = null
-        pool = null
-    
+
+        const failedClient = kyselyInstance
+        const failedPool = pool
+        if (kyselyInstance === failedClient) {
+            kyselyInstance = null
+        }
+        if (pool === failedPool) {
+            pool = null
+        }
+        await failedClient?.destroy()
+
         throw new Error(`Failed to connect to PostgreSQL: ${error}`)
     }
 }
@@ -114,20 +119,22 @@ export const db = new Proxy({} as Kysely<Database>, {
  * - The process hanging on exit
  */
 export async function closeDatabase(): Promise<void> {
-    if (!kyselyInstance) {
+    const client = kyselyInstance
+
+    if (!client) {
         logger.warn('Kysely client not initialized, nothing to close')
         return
     }
 
+    kyselyInstance = null
+    pool = null
+
     try {
-        await kyselyInstance.destroy()
+        await client.destroy()
         logger.info('✅ Database connection pool closed successfully')
     } catch (error) {
         logger.error('Error closing database connection pool:', error)
         throw error
-    } finally {
-        kyselyInstance = null
-        pool = null
     }
 }
 
