@@ -24,9 +24,6 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
-      pnpm:
-        specifier: 10.27.0
-        version: 10.27.0
       turbo:
         specifier: ^2.11.6
         version: 2.11.8
@@ -8550,11 +8547,6 @@ packages:
   pm2@5.4.3:
     resolution: {integrity: sha512-4/I1htIHzZk1Y67UgOCo4F1cJtas1kSds31N8zN0PybO230id1nigyjGuGFzUnGmUFPmrJ0On22fO1ChFlp7VQ==}
     engines: {node: '>=12.0.0'}
-    hasBin: true
-
-  pnpm@10.27.0:
-    resolution: {integrity: sha512-ctaZ2haxF5wUup5k3HHJpAmIy9xlwmTLDkidt96RfyDc9NZNhyNiXylpulLUt+KhFwaC2awqXcrqq3MrfhbwSg==}
-    engines: {node: '>=18.12'}
     hasBin: true
 
   possible-typed-array-names@1.1.0:
@@ -20352,8 +20344,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-
-  pnpm@10.27.0: {}
 
   possible-typed-array-names@1.1.0: {}
 

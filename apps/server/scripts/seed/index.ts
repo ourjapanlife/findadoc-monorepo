@@ -132,8 +132,14 @@ async function runSeed() {
 
         await client.query('COMMIT')
 
-        const count = await client.query('SELECT COUNT(*) FROM facilities')
-        console.log(`Seeded ${count.rows[0].count} facilities`)
+        const count = await client.query(`
+            SELECT
+                (SELECT COUNT(*) FROM facilities) AS facilities,
+                (SELECT COUNT(*) FROM hps) AS hps,
+                (SELECT COUNT(*) FROM submissions) AS submissions
+        `)
+        const row = count.rows[0]
+        console.log(`Seeded ${row.facilities} facilities, ${row.hps} healthcare professionals, and ${row.submissions} submissions`)
     } catch (error) {
         await client.query('ROLLBACK')
         console.error('Error seeding database:', error)
