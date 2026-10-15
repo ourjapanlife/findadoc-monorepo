@@ -220,7 +220,7 @@ importers:
         version: 6.26.1
       axios:
         specifier: ^1.7.9
-        version: 1.20.0(debug@4.4.3)
+        version: 1.20.0
       concurrently:
         specifier: ^9.2.0
         version: 9.2.5
@@ -502,6 +502,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@25.9.9)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
 packages:
 
@@ -16129,6 +16132,16 @@ snapshots:
 
   axe-core@4.14.0: {}
 
+  axios@1.20.0:
+    dependencies:
+      follow-redirects: 1.16.1(debug@4.3.7)
+      form-data: 4.0.6
+      https-proxy-agent: 5.0.1
+      proxy-from-env: 2.1.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
   axios@1.20.0(debug@4.4.3):
     dependencies:
       follow-redirects: 1.16.1(debug@4.4.3)
@@ -22630,7 +22643,7 @@ snapshots:
 
   wait-on@8.0.5:
     dependencies:
-      axios: 1.20.0(debug@4.4.3)
+      axios: 1.20.0
       joi: 18.2.9
       lodash: 4.18.1
       minimist: 1.2.8
