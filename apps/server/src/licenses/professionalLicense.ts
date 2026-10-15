@@ -1,4 +1,12 @@
 import { Degree } from '@findadoc/graphql'
+import {
+    ADDITIONAL_CREDENTIALS,
+    CLINICAL_LICENSES,
+    HIDDEN_FROM_PICKER,
+    LicenseRecommendation,
+    recommendationFor,
+    type LicenseRecommendationValue
+} from '@findadoc/utils'
 
 /**
  * One clinical license, with extra credentials stored separately (#1014).
@@ -6,35 +14,14 @@ import { Degree } from '@findadoc/graphql'
  * The snapshot notes disagree (90 vs 86 DDS+DMD). This counts stored rows and does not collapse them.
  */
 
-export const CLINICAL_LICENSES: readonly Degree[] = [
-    Degree.Cnm,
-    Degree.Dc,
-    Degree.Dds,
-    Degree.Dmd,
-    Degree.Dnp,
-    Degree.Do,
-    Degree.Dpm,
-    Degree.Dpt,
-    Degree.Md,
-    Degree.Np,
-    Degree.Od,
-    Degree.Pa,
-    Degree.PharmD,
-    Degree.PsyD
-]
-
-export const ADDITIONAL_CREDENTIALS: readonly Degree[] = [
-    Degree.DSc,
-    Degree.Mph,
-    Degree.PhD
-]
-
-/** Offered in the enum, hidden from the moderation picker until there is a use case. */
-export const HIDDEN_FROM_PICKER: readonly Degree[] = [
-    Degree.Dsw,
-    Degree.Dvm,
-    Degree.EdD
-]
+export {
+    ADDITIONAL_CREDENTIALS,
+    CLINICAL_LICENSES,
+    HIDDEN_FROM_PICKER,
+    LicenseRecommendation,
+    recommendationFor,
+    type LicenseRecommendationValue
+}
 
 export const LicenseReview = {
     NeedsReview: 'NEEDS_REVIEW',
@@ -42,14 +29,6 @@ export const LicenseReview = {
 } as const
 
 export type LicenseReviewValue = typeof LicenseReview[keyof typeof LicenseReview]
-
-export const LicenseRecommendation = {
-    Md: 'MD',
-    OneDentalLicense: 'one_dental_license',
-    ConfirmPrimary: 'confirm_primary'
-} as const
-
-export type LicenseRecommendationValue = typeof LicenseRecommendation[keyof typeof LicenseRecommendation]
 
 export type LicenseColumns = {
     degrees: Degree[]
@@ -104,24 +83,6 @@ export function clinicalLicensesIn(degrees: readonly Degree[]): Degree[] {
 
 export function credentialsIn(degrees: readonly Degree[]): Degree[] {
     return degrees.filter(degree => ADDITIONAL_CREDENTIALS.includes(degree))
-}
-
-export function recommendationFor(clinical: readonly Degree[]): LicenseRecommendationValue | null {
-    const present = new Set(clinical)
-
-    if (present.has(Degree.Md) && present.has(Degree.Do)) {
-        return LicenseRecommendation.Md
-    }
-
-    if (present.has(Degree.Dds) && present.has(Degree.Dmd) && clinical.length === 2) {
-        return LicenseRecommendation.OneDentalLicense
-    }
-
-    if (clinical.length > 1) {
-        return LicenseRecommendation.ConfirmPrimary
-    }
-
-    return null
 }
 
 function storedReview(value: string | null | undefined): LicenseReviewValue | null {

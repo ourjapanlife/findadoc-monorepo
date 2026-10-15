@@ -1,3 +1,5 @@
+import { Locale, type LocalizedNameInput } from '@findadoc/graphql'
+import { validateGoogleMapsUrlInput } from '@findadoc/utils'
 import { hasJapaneseCharacters,
     hasOnlyValidJapaneseAndLatinCharacters,
     isValidEmail,
@@ -5,7 +7,8 @@ import { hasJapaneseCharacters,
     isValidWebsite,
     isFloat,
     isValidPostalCode } from './stringUtils'
-import { Locale, type LocalizedNameInput } from '@findadoc/graphql'
+
+export { validateGoogleMapsUrlInput }
 
 export function validateNameEn(nameEn: string): boolean {
     if (nameEn.length < 1 || nameEn.length > 128) {
@@ -372,28 +375,6 @@ function readCoordinatePair(value: string | null | undefined): { latitude: numbe
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null
     if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return null
     return { latitude, longitude }
-}
-
-export function validateGoogleMapsUrlInput(url: string): boolean {
-    const trimmed = url.trim()
-    // Short "Share" links produced by the Google Maps app, including iPhone links.
-    if (trimmed.startsWith('https://maps.app.goo.gl/') || trimmed.startsWith('https://goo.gl/maps/')) {
-        return true
-    }
-
-    try {
-        const parsed = new URL(trimmed)
-        if (parsed.protocol !== 'https:') return false
-        const host = parsed.hostname
-        if (host === 'maps.google.com' || host === 'maps.google.co.jp') return true
-        const googleHost = host === 'www.google.com'
-          || host === 'google.com'
-          || host === 'www.google.co.jp'
-          || host === 'google.co.jp'
-        return googleHost && (parsed.pathname === '/maps' || parsed.pathname.startsWith('/maps/'))
-    } catch {
-        return false
-    }
 }
 
 export function validateFirstSpokenLanguage(localeCode: string): boolean {

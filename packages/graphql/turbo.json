@@ -1,0 +1,15 @@
+{
+    "$schema": "https://turborepo.com/schema.json",
+    "extends": ["//"],
+    "tasks": {
+        "generate": {
+            "cache": false,
+            "inputs": ["codegen.ts", "$TURBO_ROOT$/apps/server/src/typeDefs/schema.graphql"],
+            "outputs": ["src/index.ts"]
+        },
+        "build": {
+            "dependsOn": ["generate", "^build"],
+            "outputs": ["dist/**"]
+        }
+    }
+}

@@ -1,26 +1,22 @@
 {
-    "$schema": "https://turbo.build/schema.json",
-    "ui": "stream",
+    "$schema": "https://turborepo.com/schema.json",
+    "ui": "tui",
     "tasks": {
-        "generate": {
-            "cache": false,
-            "inputs": ["codegen.ts", "$TURBO_ROOT$/apps/server/src/typeDefs/schema.graphql"],
-            "outputs": ["src/index.ts"]
-        },
         "build": {
-            "dependsOn": ["^build"],
-            "outputs": ["dist/**", ".output/**", ".nuxt/**"]
+            "dependsOn": ["^build"]
+        },
+        "generate": {
+            "cache": false
         },
         "typecheck": {
-            "dependsOn": ["^build"],
-            "outputs": []
+            "dependsOn": ["^build"]
         },
         "lint": {
             "dependsOn": ["^build"]
         },
         "lint:fix": {
-            "cache": false,
-            "dependsOn": ["^build"]
+            "dependsOn": ["^build"],
+            "cache": false
         },
         "lint:locales": {
             "cache": false
@@ -34,14 +30,14 @@
             "cache": false
         },
         "dev": {
-            "dependsOn": ["^build"],
+            "persistent": true,
             "cache": false,
-            "persistent": true
+            "dependsOn": ["^build"]
         },
         "dev:http": {
-            "dependsOn": ["^build"],
+            "persistent": true,
             "cache": false,
-            "persistent": true
+            "dependsOn": ["^build"]
         }
     }
 }

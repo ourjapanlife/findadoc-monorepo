@@ -1,5 +1,5 @@
 import type { ColumnType, Generated } from 'kysely'
-import * as gqlTypes from './gqlTypes.js'
+import * as gqlTypes from '@findadoc/graphql'
 import type { Database as SupabaseDatabase } from './supabase-generated.js'
 
 /**

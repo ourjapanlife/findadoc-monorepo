@@ -5,3 +5,22 @@ packages:
 catalog:
   graphql: ^16.13.1
   typescript: ^5.9.3
+
+# pnpm settings live here, next to the workspace, instead of .npmrc.
+nodeLinker: hoisted
+autoInstallPeers: true
+strictPeerDependencies: false
+
+onlyBuiltDependencies:
+  - "@apollo/protobufjs"
+  - "@swc/core"
+  - browser-tabs-lock
+  - esbuild
+  - protobufjs
+  - supabase
+  - unrs-resolver
+  - vue-demi
+
+overrides:
+  "@simple-git/argv-parser": "2.0.1"
+  long: "^4.0.0"

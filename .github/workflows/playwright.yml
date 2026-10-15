@@ -30,22 +30,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Build shared GraphQL types
         run: pnpm --filter @findadoc/graphql build
@@ -53,7 +44,7 @@ jobs:
       - name: Start Supabase and seed the API database
         working-directory: apps/server
         run: |
-          cp .env.dev .env
+          cp .env.dev .env 2>/dev/null || true
           supabase start
           supabase db reset
           pnpm generate:db

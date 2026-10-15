@@ -8,6 +8,7 @@ pnpm workspace and Turborepo for the Find a Doc, Japan apps. One install, one se
 | `@findadoc/server` | `apps/server` | GraphQL API |
 | `@findadoc/mcp` | `apps/mcp` | MCP server |
 | `@findadoc/graphql` | `packages/graphql` | Types generated from the API schema |
+| `@findadoc/utils` | `packages/utils` | Shared checks and helpers used by the site and the API |
 | `@findadoc/tsconfig` | `packages/tsconfig` | Shared TypeScript config |
 
 ## Prerequisites
@@ -31,7 +32,7 @@ pnpm install --config.package-import-method=copy
 
 ## Commands
 
-Turborepo runs the task in every package that defines it. pnpm is the installer and the way to target one package.
+Turborepo runs a task in every package that defines it. Root scripts call `pnpm exec turbo`, and each app adds a `turbo.json` that extends the root pipeline (`//`) with its own outputs. pnpm settings live in `pnpm-workspace.yaml`.
 
 ```bash
 pnpm dev                 # web, API, and MCP together
@@ -73,7 +74,9 @@ Database types from Supabase stay in the API (`pnpm --filter @findadoc/server ge
 
 | Workflow | What it runs |
 | --- | --- |
-| `ci.yml` | `turbo` lint and typecheck, web + MCP unit tests, schema/type drift check, API tests against Supabase |
+| `lint.yml` | `pnpm exec turbo lint`. Pull requests pass `--affected` |
+| `typecheck.yml` | `pnpm exec turbo typecheck` |
+| `tests.yml` | Web and MCP unit tests, schema drift check, API tests against Supabase |
 | `playwright.yml` | API and web together, then Playwright |
 | `lint-locales.yml` | Locale key check, with a PR comment when keys are missing |
 | `lint-pr-title.yml` | Conventional Commits title |

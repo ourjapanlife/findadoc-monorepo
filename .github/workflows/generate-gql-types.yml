@@ -18,20 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Generate types from the API schema
-        run: pnpm generate
+        run: pnpm exec turbo generate
 
       - name: Open a pull request when types changed
         uses: peter-evans/create-pull-request@v8

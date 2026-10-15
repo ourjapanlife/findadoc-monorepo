@@ -1,3 +1,5 @@
+import { isGoogleMapsUrl, isShortMapsUrl } from '@findadoc/utils'
+
 const PLACE_ID_TOKEN = /^[A-Za-z0-9_-]{8,}$/
 const COORDINATE_PAIR = /^(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)$/
 
@@ -38,40 +40,7 @@ export function previewTargetFromMapsUrl(url: string): MapsPreviewTarget | null 
     return null
 }
 
-function isGoogleMapsUrl(url: string): boolean {
-    let parsed: URL
-    try {
-        parsed = new URL(url)
-    } catch {
-        return false
-    }
-
-    if (parsed.protocol !== 'https:') { return false }
-
-    const host = parsed.hostname
-    // An iPhone share link redirects to maps.google.com?q=… with no slash before the query.
-    if (host === 'maps.google.com' || host === 'maps.google.co.jp') { return true }
-
-    const googleHost = host === 'www.google.com'
-        || host === 'google.com'
-        || host === 'www.google.co.jp'
-        || host === 'google.co.jp'
-    return googleHost && (parsed.pathname === '/maps' || parsed.pathname.startsWith('/maps/'))
-}
-
-/** A maps.app.goo.gl or goo.gl/maps link. The place id is on the page it opens. */
-export function isShortMapsUrl(url: string): boolean {
-    let parsed: URL
-    try {
-        parsed = new URL(url.trim())
-    } catch {
-        return false
-    }
-
-    if (parsed.protocol !== 'https:') { return false }
-    if (parsed.hostname === 'maps.app.goo.gl') { return true }
-    return parsed.hostname === 'goo.gl' && parsed.pathname.startsWith('/maps')
-}
+export { isShortMapsUrl }
 
 function placeName(value: string | null | undefined, rejectCoordinates = false): string | null {
     if (!value) { return null }

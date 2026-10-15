@@ -111,6 +111,7 @@
         "ts-node": "^10.9.2",
         "winston": "^3.11.0",
         "winston-loki": "^6.0.8",
-        "@findadoc/graphql": "workspace:*"
+        "@findadoc/graphql": "workspace:*",
+        "@findadoc/utils": "workspace:*"
     }
 }

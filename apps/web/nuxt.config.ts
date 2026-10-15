@@ -29,9 +29,6 @@ export default defineNuxtConfig({
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
     plugins: [],
     ssr: true,
-    build: {
-        transpile: ['@findadoc/graphql']
-    },
 
     // Auto import components: https://nuxt.com/docs/guide/directory-structure/components#component-names
     components: [
@@ -174,6 +171,9 @@ export default defineNuxtConfig({
                 tracesSampleRate: process.env.NUXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE
             }
         }
+    },
+    build: {
+        transpile: ['@findadoc/graphql', '@findadoc/utils']
     },
 
     // Public directory pages are prerendered (keeps the static Netlify generate model).

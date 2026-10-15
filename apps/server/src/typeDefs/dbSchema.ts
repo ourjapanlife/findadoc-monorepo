@@ -1,4 +1,4 @@
-import * as gqlType from './gqlTypes.js'
+import * as gqlType from '@findadoc/graphql'
 
 //Omit is how we can override a field from the inherited type. 
 //In this instance, we want to use the dbSchema contact type instead of the gqlType contact type.

@@ -1,9 +1,9 @@
-name: CI
+name: Tests
 
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
   schedule:
     - cron: "45 15 * * 4"
 
@@ -11,35 +11,31 @@ permissions:
   contents: read
 
 jobs:
-  quality:
-    name: Lint, types, and unit tests
+  unit:
+    name: Unit tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
+    concurrency:
+      group: unit-${{ github.ref }}
+      cancel-in-progress: true
+    env:
+      TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
+      AFFECTED: ${{ github.event_name == 'pull_request' && '--affected' || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
-          cache: pnpm
+          fetch-depth: 0
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint and typecheck
-        run: pnpm turbo run lint typecheck
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Unit tests
-        run: pnpm test
+        run: pnpm exec turbo test $AFFECTED --filter=@findadoc/web --filter=@findadoc/mcp
 
       - name: Generated GraphQL types match the schema
         run: |
-          pnpm generate
+          pnpm exec turbo generate
           git diff --exit-code
 
   server:
@@ -53,32 +49,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build shared types
-        run: pnpm --filter @findadoc/graphql build
-
       - name: Start Supabase
         working-directory: apps/server
         run: supabase start
 
       - name: Run server tests
-        run: pnpm test:server
+        run: pnpm exec turbo test --filter=@findadoc/server
         env:
           SUPABASE_URL: http://127.0.0.1:54321
           SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU

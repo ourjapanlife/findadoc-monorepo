@@ -1,0 +1,12 @@
+{
+    "$schema": "https://turborepo.com/schema.json",
+    "extends": ["//"],
+    "tasks": {
+        "build": {
+            "outputs": [".output/**", ".nuxt/**"]
+        },
+        "test:unit:coverage": {
+            "outputs": ["coverage/**"]
+        }
+    }
+}
