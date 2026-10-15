@@ -36,3 +36,16 @@ A professional has one primary clinical license. PhD, MPH, and DSc are additiona
 - Places latitude and longitude last at most 30 days, then delete or refresh.
 - Do not store a Places display name, formatted address, phone, website, hours, photos, or reviews as directory data.
 - The Maps URL enrichment path is gone (#1008). Do not copy a Places payload into a submission. The picker is #1012. The facility resolver is #1013.
+
+## GraphQL types
+
+`src/typeDefs/schema.graphql` is the only schema. Web, the API, and the MCP server import the generated types from `@findadoc/graphql`. Do not hand-write those types, and do not add another codegen config.
+
+When a type, field, enum, input, query, or mutation changes in that schema, regenerate from the repo root before the change is finished:
+
+```bash
+pnpm generate
+pnpm --filter @findadoc/graphql build
+```
+
+Commit `packages/graphql/src/index.ts` with the schema change. `pnpm generate` rewrites that file. The build compiles it so the rest of the workspace can import the new types.

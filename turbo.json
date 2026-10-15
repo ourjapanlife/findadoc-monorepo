@@ -34,6 +34,16 @@
             "cache": false,
             "dependsOn": ["^build"]
         },
+        "dev:seeded": {
+            "persistent": true,
+            "cache": false,
+            "dependsOn": ["^build"]
+        },
+        "dev:api": {
+            "persistent": true,
+            "cache": false,
+            "dependsOn": ["^build"]
+        },
         "dev:http": {
             "persistent": true,
             "cache": false,

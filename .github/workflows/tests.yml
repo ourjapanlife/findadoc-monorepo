@@ -4,8 +4,6 @@ on:
   pull_request:
   push:
     branches: [main]
-  schedule:
-    - cron: "45 15 * * 4"
 
 permissions:
   contents: read
@@ -23,7 +21,7 @@ jobs:
       AFFECTED: ${{ github.event_name == 'pull_request' && '--affected' || '' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -32,11 +30,6 @@ jobs:
 
       - name: Unit tests
         run: pnpm exec turbo test $AFFECTED --filter=@findadoc/web --filter=@findadoc/mcp --filter=@findadoc/utils
-
-      - name: Generated GraphQL types match the schema
-        run: |
-          pnpm exec turbo generate
-          git diff --exit-code
 
   server:
     name: Server tests
@@ -47,13 +40,13 @@ jobs:
       TEST_ENABLED: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup
         uses: ./.github/actions/setup
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
           version: latest
 

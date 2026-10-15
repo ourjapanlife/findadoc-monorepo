@@ -4,8 +4,6 @@ on:
   pull_request:
   push:
     branches: [main]
-  schedule:
-    - cron: "45 15 * * 4"
 
 permissions:
   contents: read
@@ -23,7 +21,7 @@ jobs:
       AFFECTED: ${{ github.event_name == 'pull_request' && '--affected' || '' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 

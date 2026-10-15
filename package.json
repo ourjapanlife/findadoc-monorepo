@@ -8,8 +8,10 @@
     },
     "scripts": {
         "dev": "pnpm exec turbo dev",
-        "dev:web": "pnpm exec turbo dev --filter=@findadoc/web",
+        "dev:web": "pnpm exec turbo dev --filter=@findadoc/web --filter=@findadoc/server",
         "dev:server": "pnpm exec turbo dev --filter=@findadoc/server",
+        "dev:seeded": "pnpm exec turbo dev:seeded --filter=@findadoc/web --filter=@findadoc/server",
+        "dev:api": "pnpm exec turbo dev:api --filter=@findadoc/web",
         "dev:mcp": "pnpm exec turbo dev --filter=@findadoc/mcp",
         "dev:mcp:http": "pnpm exec turbo dev:http --filter=@findadoc/mcp",
         "build": "pnpm exec turbo build",

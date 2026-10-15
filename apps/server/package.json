@@ -4,7 +4,8 @@
     "description": "Backend for Find a Doc, Japan",
     "main": "index.js",
     "scripts": {
-        "dev": "supabase start && supabase db reset && pnpm generate:db && pnpm dev:seeddb && concurrently --raw \"pnpm dev:startserver\"",
+        "dev": "echo 'Fake GraphQL server on http://127.0.0.1:4000' && cross-env NODE_ENV=development nodemon --exec \"node --loader ts-node/esm src/fakeServer.ts\"",
+        "dev:seeded": "supabase start && supabase db reset && pnpm generate:db && pnpm dev:seeddb && concurrently --raw \"pnpm dev:startserver\"",
         "dev:startserver": "echo '💻 💻 💻✨ Starting dev server...' && cross-env NODE_ENV=development nodemon --exec 'node --inspect --loader ts-node/esm src/index.ts'",
         "dev:startlocaldb": "supabase start",
         "test": "vitest run",

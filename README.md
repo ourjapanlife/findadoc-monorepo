@@ -35,9 +35,11 @@ pnpm install --config.package-import-method=copy
 Turborepo runs a task in every package that defines it. Root scripts call `pnpm exec turbo`, and each app adds a `turbo.json` that extends the root pipeline (`//`) with its own outputs. pnpm settings live in `pnpm-workspace.yaml`.
 
 ```bash
-pnpm dev                 # web, API, and MCP together
-pnpm dev:web
-pnpm dev:server          # starts local Supabase, resets, seeds, then the API
+pnpm dev                 # site, fake GraphQL server, and MCP
+pnpm dev:web             # same, without the MCP process
+pnpm dev:server          # fake GraphQL server only
+pnpm dev:seeded          # site against a reset, seeded local Supabase API
+pnpm dev:api             # site against https://api.findadoc.jp
 pnpm dev:mcp
 pnpm dev:mcp:http
 
@@ -66,7 +68,7 @@ pnpm --filter @findadoc/mcp dev:http
 import { Facility, Locale } from '@findadoc/graphql'
 ```
 
-Do not add another codegen config or another copy of these types. CI regenerates the file and fails if it does not match the schema. A weekly Action opens a PR when `main` drifts.
+Do not add another codegen config or another copy of these types. On every pull request, and on pushes to `main`, CI regenerates `packages/graphql/src/index.ts` and fails if that file was not committed.
 
 Database types from Supabase stay in the API (`pnpm --filter @findadoc/server generate:db`). They describe Postgres, not the GraphQL schema.
 
@@ -75,12 +77,11 @@ Database types from Supabase stay in the API (`pnpm --filter @findadoc/server ge
 | Workflow | What it runs |
 | --- | --- |
 | `lint.yml` | `pnpm exec turbo lint`. Pull requests pass `--affected` |
-| `typecheck.yml` | `pnpm exec turbo typecheck` |
-| `tests.yml` | Web and MCP unit tests, schema drift check, API tests against Supabase |
+| `typecheck.yml` | `pnpm exec turbo typecheck`, and a check that committed GraphQL types match the schema |
+| `tests.yml` | Web, MCP, and utils unit tests, plus API tests against Supabase |
 | `playwright.yml` | API and web together, then Playwright |
 | `lint-locales.yml` | Locale key check, with a PR comment when keys are missing |
 | `lint-pr-title.yml` | Conventional Commits title |
-| `generate-gql-types.yml` | Weekly regeneration of `@findadoc/graphql` |
 
 Node is pinned by `.nvmrc` in every workflow. The API image builds from the repository root so it can install `@findadoc/server` and `@findadoc/graphql` together:
 

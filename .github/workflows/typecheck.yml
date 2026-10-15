@@ -17,10 +17,29 @@ jobs:
       cancel-in-progress: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup
         uses: ./.github/actions/setup
 
       - name: Typecheck
         run: pnpm exec turbo typecheck
+
+  graphql-types:
+    name: GraphQL types
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: graphql-types-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Regenerate shared types and fail if they were not committed
+        run: |
+          pnpm exec turbo generate
+          git diff --exit-code -- packages/graphql/src/index.ts
