@@ -10,9 +10,9 @@
         "dev:http": "tsx watch src/http.ts",
         "start": "node dist/index.js",
         "start:http": "node dist/http.js",
-        "lint": "ESLINT_USE_FLAT_CONFIG=true eslint .",
-        "lint:fix": "ESLINT_USE_FLAT_CONFIG=true eslint . --fix",
-        "lint:ci": "ESLINT_USE_FLAT_CONFIG=true eslint .",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "lint:ci": "eslint .",
         "test": "vitest run",
         "test:watch": "vitest",
         "typecheck": "tsc -p tsconfig.json --noEmit"

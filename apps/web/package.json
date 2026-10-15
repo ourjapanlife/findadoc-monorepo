@@ -5,8 +5,8 @@
     "scripts": {
         "dev": "nuxi dev",
         "dev:localserver": "cross-env NUXT_USE_LOCAL_API=true nuxi dev",
-        "lint": "pnpm prepare:ci && ESLINT_USE_FLAT_CONFIG=true eslint . -c eslint.config.js",
-        "lint:fix": "pnpm prepare:ci && ESLINT_USE_FLAT_CONFIG=true eslint . -c eslint.config.js --fix",
+        "lint": "pnpm prepare:ci && eslint . -c eslint.config.js",
+        "lint:fix": "pnpm prepare:ci && eslint . -c eslint.config.js --fix",
         "lint:locales": "node i18n/checkLocaleKeys.js",
         "lint:cleanlocales": "node i18n/cleanUnusedLocaleKeys.js",
         "lint:ci": "pnpm lint",
