@@ -24,7 +24,7 @@
             </a>
             <button
                 type="button"
-                class="btn btn-secondary btn-sm"
+                class="btn btn-secondary btn-sm mod-edit-only"
                 data-testid="mod-fill-from-maps"
                 :disabled="filling"
                 @click="fillEmptyFields"
@@ -32,7 +32,7 @@
                 {{ t('modFacilitySection.fillFromMaps') }}
             </button>
         </div>
-        <p class="text-sm text-primary-text-muted">
+        <p class="mod-edit-only text-sm text-primary-text-muted">
             {{ t('modFacilitySection.fillFromMapsHint') }}
         </p>
         <p

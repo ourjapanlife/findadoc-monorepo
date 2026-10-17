@@ -12,6 +12,8 @@
                 type="text"
                 :placeholder="placeHolderText"
                 :data-testid="`${dataTestId}`"
+                :disabled="!isEditing"
+                :tabindex="isEditing ? undefined : -1"
                 class="min-w-0 grow bg-transparent text-primary-text placeholder-primary-text-muted
                     focus-visible:outline-none"
                 @blur="handleSearchInputBlur"
@@ -30,6 +32,7 @@
             </span>
             <button
                 type="button"
+                :disabled="!isEditing"
                 @click="searchInputElement?.focus()"
             >
                 <SVGLookingGlass
@@ -113,6 +116,7 @@ import SVGCheckMark from '~/assets/icons/check-mark.svg'
 import SVGLookingGlass from '~/assets/icons/looking-glass.svg'
 import { searchResultMenuBox } from '~/utils/searchResultMenu'
 import type { SearchResultMenuBox } from '~/utils/searchResultMenu'
+import { useModerationFormEditing } from '~/composables/useModerationFormMode'
 
 // Obtain the array inner type
 type ArrayType<V> = V extends Array<infer U> ? U : never
@@ -147,6 +151,7 @@ const showResultId = (item: { id?: unknown }) => {
     return !fieldsToDisplayCallback(item as ArrayType<T>).some(field => String(field) === id)
 }
 
+const isEditing = useModerationFormEditing()
 const listId = useId()
 const anchorElement = ref<HTMLElement>()
 const resultListElement = ref<HTMLElement>()
@@ -200,7 +205,7 @@ const handleListScroll = () => {
 }
 
 const handleListItem = () => {
-    if (filteredItems.value.length === 0) return
+    if (!isEditing.value || filteredItems.value.length === 0) return
 
     const item = filteredItems.value[selectedItemIndex.value]
 
@@ -287,6 +292,7 @@ const handleSearchInputChange = (event: Event) => {
 }
 
 const handleSearchInputFocus = (event: Event) => {
+    if (!isEditing.value) return
     isInputFocused.value = true
     handleSearchInputChange(event)
     nextTick(trackMenu)

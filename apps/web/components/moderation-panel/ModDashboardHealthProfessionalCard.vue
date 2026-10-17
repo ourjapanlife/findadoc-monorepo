@@ -119,7 +119,8 @@
                     v-if="isEditOrCreateFacility
                         && !isHealthcareProfessionalReadyForRemoval(healthcareProfessional?.id)"
                     id="remove-related-healthcare-professional-to-facility"
-                    class="flex w-8 items-center justify-center cursor-pointer font-bold text-secondary text-sm self-start p-1"
+                    class="mod-edit-only flex w-8 items-center justify-center cursor-pointer font-bold
+                        text-secondary text-sm self-start p-1"
                     role="button"
                     tabindex="0"
                     aria-label="Remove healthcare professional from facility"
@@ -134,7 +135,8 @@
                     v-if="isEditOrCreateFacility
                         && isHealthcareProfessionalReadyForRemoval(healthcareProfessional?.id)"
                     id="undo-remove-related-healthcare-professional-to-facility"
-                    class="flex w-8 items-center justify-center cursor-pointer font-bold text-secondary text-sm self-start p-1"
+                    class="mod-edit-only flex w-8 items-center justify-center cursor-pointer font-bold
+                        text-secondary text-sm self-start p-1"
                     role="button"
                     tabindex="0"
                     aria-label="Undo removal of healthcare professional from facility"
@@ -146,7 +148,7 @@
                 </div>
                 <div
                     v-if="isEditOrCreateHealthcareProfessional || isEditSubmission"
-                    class="flex w-8 items-center justify-center
+                    class="mod-edit-only flex w-8 items-center justify-center
                 cursor-pointer font-bold text-secondary text-sm self-start p-1"
                 >
                     <div id="edit-healthcare-professional-button-container">
@@ -194,8 +196,10 @@ import {
     type LocalizedNameInput,
     type Relationship
 } from '@findadoc/graphql'
+import { useModerationFormEditing } from '~/composables/useModerationFormMode'
 
 const { t } = useI18n()
+const isEditing = useModerationFormEditing()
 
 const localeStore = useLocaleStore()
 const facilitiesStore = useFacilitiesStore()
@@ -209,6 +213,7 @@ const isHealthcareProfessionalReadyForRemoval = (id: string = '0') =>
           && healthcareProfessionalRelation.action === RelationshipAction.Delete)
 
 const removeHealthcareProfessional = (id: string = '0') => {
+    if (!isEditing.value) return
     if (props.healthcareProfessionalsRelatedToFacility && props.healthcareProfessionalsRelatedToFacility.includes(id)) {
         facilitiesStore.facilitySectionFields.healthProfessionalsRelations
             .push({ otherEntityId: id, action: RelationshipAction.Delete })
@@ -220,12 +225,14 @@ const removeHealthcareProfessional = (id: string = '0') => {
 }
 
 const undoRemovalOfHealthcareProfessional = (id: string = '0') => {
+    if (!isEditing.value) return
     facilitiesStore.facilitySectionFields.healthProfessionalsRelations
         = facilitiesStore.facilitySectionFields.healthProfessionalsRelations
             .filter((healthcareProfessionalRelation: Relationship) => healthcareProfessionalRelation.otherEntityId !== id)
 }
 // This changes the component details to editable with an optional parameter to use in the callback function
 const setChangeToEditable = () => {
+    if (!isEditing.value) return
     if (props.setIsEditableFunction) props.setIsEditableFunction(true)
 }
 
