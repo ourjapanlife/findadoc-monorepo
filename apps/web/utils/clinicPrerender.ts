@@ -6,6 +6,7 @@ import { hubPathsFromFacilities } from './hubIndex'
 import { fetchCities, type CityOption } from './cityOptions'
 import { facetPathsFromFacilities } from './facetIndex'
 import { graphqlEndpoint } from './graphqlEndpoint'
+import { facilitySelection, professionalSelection } from './graphqlSelection'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import type { FacilitySearchResult } from './searchDirectory'
 
@@ -15,31 +16,7 @@ export const CLINIC_PRERENDER_CACHE_ENV = 'NUXT_CLINIC_PRERENDER_CACHE'
 const FACILITIES_QUERY = `
     query ClinicPrerenderFacilities($filters: FacilitySearchFilters!, $countFilters: FacilitySearchFilters!) {
         facilities(filters: $filters) {
-            id
-            nameEn
-            nameJa
-            mapLatitude
-            mapLongitude
-            healthcareProfessionalIds
-            contact {
-                address {
-                    addressLine1En
-                    addressLine2En
-                    addressLine1Ja
-                    addressLine2Ja
-                    cityJa
-                    cityEn
-                    prefectureJa
-                    prefectureEn
-                    postalCode
-                }
-                email
-                googleMapsUrl
-                phone
-                website
-            }
-            createdDate
-            updatedDate
+            ${facilitySelection}
         }
         facilitiesTotalCount(filters: $countFilters)
     }
@@ -51,21 +28,7 @@ const PROFESSIONALS_QUERY = `
         $countFilters: HealthcareProfessionalSearchFilters!
     ) {
         healthcareProfessionals(filters: $filters) {
-            id
-            names {
-                lastName
-                firstName
-                middleName
-                locale
-            }
-            degrees
-            specialties
-            facilityIds
-            spokenLanguages
-            acceptedInsurance
-            additionalInfoForPatients
-            createdDate
-            updatedDate
+            ${professionalSelection}
         }
         healthcareProfessionalsTotalCount(filters: $countFilters)
     }

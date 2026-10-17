@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, type Ref, reactive } from 'vue'
 import { gql } from 'graphql-request'
 import { fetchFacilitiesWithCount } from '../utils/graphqlHelpers'
+import { facilitySelection } from '../utils/graphqlSelection'
 import type {
     Facility,
     Mutation,
@@ -548,33 +549,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
 const updateExistingFacilityGqlMutation = gql`
     mutation Mutation($id: ID!, $input: UpdateFacilityInput!) {
         updateFacility(id: $id, input: $input) {
-            id
-            googlePlaceId
-            nameEn
-            nameJa
-            cityId
-            contact {
-                googleMapsUrl
-                email
-                phone
-                website
-                address {
-                    postalCode
-                    prefectureEn
-                    cityEn
-                    addressLine1En
-                    addressLine2En
-                    prefectureJa
-                    cityJa
-                    addressLine1Ja
-                    addressLine2Ja
-                }
-            }
-            mapLatitude
-            mapLongitude
-            healthcareProfessionalIds
-            createdDate
-            updatedDate
+            ${facilitySelection}
         }
     }
 `
@@ -589,33 +564,7 @@ const deleteExistingFacilityGqlMutation = gql`
 const createFacilityGqlMutation = gql`
     mutation Mutation($input: CreateFacilityInput!) {
         createFacility(input: $input) {
-            id
-            googlePlaceId
-            nameEn
-            nameJa
-            cityId
-            contact {
-                googleMapsUrl
-                email
-                phone
-                website
-                address {
-                    postalCode
-                    prefectureEn
-                    cityEn
-                    addressLine1En
-                    addressLine2En
-                    prefectureJa
-                    cityJa
-                    addressLine1Ja
-                    addressLine2Ja
-                }
-            }
-            mapLatitude
-            mapLongitude
-            healthcareProfessionalIds
-            createdDate
-            updatedDate
+            ${facilitySelection}
         }
     }
 `

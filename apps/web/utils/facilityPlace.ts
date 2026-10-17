@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request'
 import { gqlClient, graphQLClientRequestWithRetry } from './graphql'
+import { facilitySelection } from './graphqlSelection'
 
 export type FacilityPlaceCandidate = {
     placeId: string
@@ -50,8 +51,7 @@ const suggestFacilityPlacesQuery = gql`
 const confirmFacilityPlaceIdMutation = gql`
     mutation ConfirmFacilityPlaceId($facilityId: ID!, $placeId: String!) {
         confirmFacilityPlaceId(facilityId: $facilityId, placeId: $placeId) {
-            id
-            googlePlaceId
+            ${facilitySelection}
         }
     }
 `

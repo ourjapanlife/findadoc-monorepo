@@ -2,6 +2,7 @@ import { gql } from 'graphql-request'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 import { fetchSubmissionsWithCount } from '../utils/graphqlHelpers'
+import { submissionSelection } from '../utils/graphqlSelection'
 import type { Submission, MutationUpdateSubmissionArgs, Mutation, SubmissionSearchFilters } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql.js'
 import type { ServerResponse } from '~/typedefs/serverResponse'
@@ -297,55 +298,6 @@ export const useModerationSubmissionsStore = defineStore(
 const updateFacilitySubmissionGqlMutation = gql`
 mutation Mutation($id: ID!, $input: UpdateSubmissionInput!) {
   updateSubmission(id: $id, input: $input) {
-    id
-    googleMapsUrl
-    healthcareProfessionalName
-    spokenLanguages
-    facility {
-      id
-      nameEn
-      nameJa
-      contact {
-        googleMapsUrl
-        email
-        phone
-        website
-        address {
-          postalCode
-          prefectureEn
-          cityEn
-          addressLine1En
-          addressLine2En
-          prefectureJa
-          cityJa
-          addressLine1Ja
-          addressLine2Ja
-        }
-      }
-      healthcareProfessionalIds
-      mapLatitude
-      mapLongitude
-    }
-    healthcareProfessionals {
-      id
-      names {
-        firstName
-        middleName
-        lastName
-        locale
-      }
-      spokenLanguages
-      degrees
-      specialties
-      acceptedInsurance
-      additionalInfoForPatients
-      facilityIds
-    }
-    isUnderReview
-    isApproved
-    isRejected
-    createdDate
-    updatedDate
-    notes
+    ${submissionSelection}
   }
 }`

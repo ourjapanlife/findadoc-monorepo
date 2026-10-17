@@ -15,6 +15,7 @@ import { prefectureTranslations } from '../../utils/japanesePrefectures.js'
 import { validateSeed, type SeedFile } from './schema.js'
 
 const SEED_COUNT = 30
+const INDEXABLE_FACET_COUNT = 3
 
 const faker = new Faker({ locale: [en] })
 const fakerJa = new Faker({ locale: [ja] })
@@ -104,6 +105,17 @@ function cities(): Array<{ prefectureEn: string, nameEn: string, nameJa: string 
     return Array.from({ length: SEED_COUNT }, (_, index) => known[Math.floor(index * known.length / SEED_COUNT)]!)
 }
 
+/** Facet pages need three professionals of one specialty in one prefecture. */
+function tokyoMinato(): { prefectureEn: string, nameEn: string, nameJa: string } {
+    const city = municipalities.find(row => row.prefectureEn === 'Tokyo' && row.nameEn === 'Minato')
+
+    if (!city) {
+        throw new Error('Tokyo Minato is missing from the municipality list')
+    }
+
+    return city
+}
+
 function contact(
     city: { prefectureEn: string, nameEn: string, nameJa: string },
     latitude: number,
@@ -139,7 +151,8 @@ function buildSeed(): SeedFile {
     const submissions: SeedFile['submissions'] = []
 
     for (let index = 0; index < SEED_COUNT; index++) {
-        const city = selectedCities[index]!
+        const indexableFacet = index < INDEXABLE_FACET_COUNT
+        const city = indexableFacet ? tokyoMinato() : selectedCities[index]!
         const [baseLat, baseLng] = prefecturePoint[city.prefectureEn] ?? [35.68, 139.76]
         const latitude = Number((baseLat + (index % 5) * 0.01).toFixed(4))
         const longitude = Number((baseLng + (index % 4) * 0.01).toFixed(4))
@@ -152,8 +165,12 @@ function buildSeed(): SeedFile {
         const license = CLINICAL_LICENSES[index % CLINICAL_LICENSES.length]!
         const degrees = index % 4 === 0 ? [license, Degree.Mph] : [license]
         const licensed = licenseColumnsForDegrees(degrees)
-        const specialties = faker.helpers.arrayElements(Object.values(Specialty), { min: 1, max: 2 })
-        const spokenLanguages = [Locale.EnUs, Locale.JaJp, extraLanguages[index % extraLanguages.length]!]
+        const specialties = indexableFacet
+            ? [Specialty.Dentistry]
+            : faker.helpers.arrayElements(Object.values(Specialty), { min: 1, max: 2 })
+        const spokenLanguages = indexableFacet
+            ? [Locale.EnUs, Locale.JaJp]
+            : [Locale.EnUs, Locale.JaJp, extraLanguages[index % extraLanguages.length]!]
         const insurance = index % 5 === 0
             ? [Insurance.InternationalHealthInsurance]
             : [Insurance.JapaneseHealthInsurance]

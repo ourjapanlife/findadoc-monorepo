@@ -10,6 +10,7 @@ import { db } from '../kyselyClient.js'
 import { asJsonb } from '../../utils/dbUtils.js'
 import type { HasContains, HasEq, HasIlike, HasIn } from '../../utils/dbUtils.js'
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
+import { HP_SEARCH_COLUMN } from '../../utils/fieldSelectionUtils.js'
 import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { mapDbHpToGql, mapKyselyHpToGraphQL} from '../services/mappersEntityService.js'
 /** Row type used as Supabase select generic — matches DbHealthcareProfessionalRow from dbSchema */
@@ -75,7 +76,7 @@ export function applyHpFilters<T extends HasContains & HasIn & HasEq & HasIlike>
     let query = builder
 
     const queryText = listQueryValue(filters.query)
-    if (queryText) { query = query.ilike('search_text', likeContainsPattern(queryText)) as T }
+    if (queryText) { query = query.ilike(HP_SEARCH_COLUMN, likeContainsPattern(queryText)) as T }
     if (filters.degrees?.length) { query = query.contains('degrees', JSON.stringify(filters.degrees)) as T }
     if (filters.licenseReview) { query = query.eq('license_review', filters.licenseReview) as T }
     if (filters.specialties?.length) { query = query.contains('specialties', JSON.stringify(filters.specialties)) as T }

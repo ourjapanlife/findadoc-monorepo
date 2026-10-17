@@ -8,6 +8,7 @@ import { cityHubSlugToLoad } from './legacyCityHubs'
 import { fetchCities, type CityOption } from './cityOptions'
 import type { FacilitySearchResult } from './searchDirectory'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
+import { facilitySelection, professionalSelection } from './graphqlSelection'
 
 const PAGE_SIZE = 100
 const LIVE_FETCH_TIMEOUT_MS = 10000
@@ -15,31 +16,7 @@ const LIVE_FETCH_TIMEOUT_MS = 10000
 const FACILITIES_QUERY = `
     query HubFacilities($filters: FacilitySearchFilters!, $countFilters: FacilitySearchFilters!) {
         facilities(filters: $filters) {
-            id
-            nameEn
-            nameJa
-            mapLatitude
-            mapLongitude
-            healthcareProfessionalIds
-            contact {
-                address {
-                    addressLine1En
-                    addressLine2En
-                    addressLine1Ja
-                    addressLine2Ja
-                    cityJa
-                    cityEn
-                    prefectureJa
-                    prefectureEn
-                    postalCode
-                }
-                email
-                googleMapsUrl
-                phone
-                website
-            }
-            createdDate
-            updatedDate
+            ${facilitySelection}
         }
         facilitiesTotalCount(filters: $countFilters)
     }
@@ -48,21 +25,7 @@ const FACILITIES_QUERY = `
 const PROFESSIONALS_QUERY = `
     query HubProfessionals($filters: HealthcareProfessionalSearchFilters!) {
         healthcareProfessionals(filters: $filters) {
-            id
-            names {
-                lastName
-                firstName
-                middleName
-                locale
-            }
-            degrees
-            specialties
-            facilityIds
-            spokenLanguages
-            acceptedInsurance
-            additionalInfoForPatients
-            createdDate
-            updatedDate
+            ${professionalSelection}
         }
     }
 `
