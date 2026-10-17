@@ -1,9 +1,7 @@
 <template>
     <div
-        class="mod-edit-only relative flex w-full gap-1"
-        :class="[
-            isNearPageBottom ? 'flex-col-reverse' : 'flex-col',
-        ]"
+        ref="anchorElement"
+        class="mod-edit-only relative flex w-full"
     >
         <div
             class="flex h-12 w-full items-center gap-2 rounded-lg border border-border-strong bg-secondary-bg px-3
@@ -41,26 +39,25 @@
                 />
             </button>
         </div>
-        <div class="relative w-full">
+        <Teleport to="body">
             <ul
                 v-if="isInputFocused"
-                id="search-list"
-                class="absolute z-20 flex max-h-64 w-full flex-col divide-y divide-accent-bg
-                    overflow-y-auto overflow-x-hidden rounded-lg border border-accent-bg
-                    bg-primary-bg shadow-raised"
-                :class="[
-                    isNearPageBottom ? '-translate-y-full' : '',
-                ]"
+                :id="listId"
+                ref="resultListElement"
+                class="fixed z-40 flex flex-col divide-y divide-accent-bg overflow-y-auto overflow-x-hidden
+                    rounded-lg border border-accent-bg bg-primary-bg shadow-raised"
+                :style="menuStyle"
             >
                 <li
                     v-for="(item, index) in filteredItems"
-                    :id="`search-list-item-${index}`"
-                    :key="item.id"
+                    :id="`${listId}-item-${index}`"
+                    :key="item.id ?? index"
                     class="flex cursor-pointer justify-between"
                     :class="[
                         selectedItems.includes(item) ? 'bg-primary/10' : '',
                         selectedItemIndex === index ? 'bg-accent-bg' : '',
                     ]"
+                    :data-result-index="index"
                     data-testid="mod-search-bar-search-result"
                     role="button"
                     tabindex="0"
@@ -102,7 +99,7 @@
                     <span>{{ noMatchText }}</span>
                 </li>
             </ul>
-        </div>
+        </Teleport>
     </div>
 </template>
 
@@ -111,9 +108,11 @@
     Vue Generics: https://vuejs.org/api/sfc-script-setup.html#generics
     Defining generic types using props
 */
-import { computed, ref, watch, type Ref } from 'vue'
+import { computed, nextTick, onUnmounted, ref, useId, watch, type Ref } from 'vue'
 import SVGCheckMark from '~/assets/icons/check-mark.svg'
 import SVGLookingGlass from '~/assets/icons/looking-glass.svg'
+import { searchResultMenuBox } from '~/utils/searchResultMenu'
+import type { SearchResultMenuBox } from '~/utils/searchResultMenu'
 
 // Obtain the array inner type
 type ArrayType<V> = V extends Array<infer U> ? U : never
@@ -148,6 +147,10 @@ const showResultId = (item: { id?: unknown }) => {
     return !fieldsToDisplayCallback(item as ArrayType<T>).some(field => String(field) === id)
 }
 
+const listId = useId()
+const anchorElement = ref<HTMLElement>()
+const resultListElement = ref<HTMLElement>()
+const menuBox = ref<SearchResultMenuBox | null>(null)
 const searchInputElement = ref<HTMLInputElement>()
 const searchInputValue = ref('')
 const filteredItems = ref<ArrayType<T>[]>([])
@@ -155,13 +158,42 @@ const selectedItemIndex = ref(0)
 const searchResultCount = ref(0)
 const isInputFocused = ref(false)
 
-const handleListScroll = () => {
+const menuStyle = computed(() => {
+    const box = menuBox.value
+    if (!box) return undefined
+    return {
+        top: box.top === null ? 'auto' : `${box.top}px`,
+        bottom: box.bottom === null ? 'auto' : `${box.bottom}px`,
+        left: `${box.left}px`,
+        width: `${box.width}px`,
+        maxHeight: `${box.maxHeight}px`
+    }
+})
+
+const placeMenu = () => {
+    const anchor = anchorElement.value
+    if (!import.meta.client || !anchor) return
+    const rect = anchor.getBoundingClientRect()
+    menuBox.value = searchResultMenuBox(rect, window.innerWidth, window.innerHeight)
+}
+
+const stopTrackingMenu = () => {
     if (!import.meta.client) return
-    const selectedElement = document.getElementById(`search-list-item-${selectedItemIndex.value}`)
+    window.removeEventListener('resize', placeMenu)
+    window.removeEventListener('scroll', placeMenu, true)
+}
 
-    if (!selectedElement) return
+const trackMenu = () => {
+    if (!isInputFocused.value) return
+    stopTrackingMenu()
+    placeMenu()
+    window.addEventListener('resize', placeMenu)
+    window.addEventListener('scroll', placeMenu, true)
+}
 
-    selectedElement.scrollIntoView({
+const handleListScroll = () => {
+    const selectedElement = resultListElement.value?.querySelector(`[data-result-index="${selectedItemIndex.value}"]`)
+    selectedElement?.scrollIntoView({
         block: 'nearest',
         inline: 'nearest'
     })
@@ -257,13 +289,16 @@ const handleSearchInputChange = (event: Event) => {
 const handleSearchInputFocus = (event: Event) => {
     isInputFocused.value = true
     handleSearchInputChange(event)
+    nextTick(trackMenu)
 }
 
-// Displays the dropdown above the searchInputElement if its position is greater than window.innerHeight / 1.5
-const isNearPageBottom = computed(() => {
-    if (!import.meta.client || !searchInputElement.value) return
-    return searchInputElement.value.getBoundingClientRect().bottom >= window.innerHeight / 1.5
+watch(isInputFocused, focused => {
+    if (focused) return
+    stopTrackingMenu()
+    menuBox.value = null
 })
+
+onUnmounted(stopTrackingMenu)
 
 watch(() => filteredItems.value, value => {
     searchResultCount.value = value.length
