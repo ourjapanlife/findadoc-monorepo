@@ -285,12 +285,13 @@ describe('buildHpSelectString', () => {
     })
 
     it('includes requested columns beyond the filter defaults', () => {
-        const result = buildHpSelectString(new Set(['id', 'names', 'email']))
+        const result = buildHpSelectString(new Set(['id', 'names', 'createdDate', 'email']))
         const columns = result.split(',')
 
         expect(columns).toContain('id')
         expect(columns).toContain('names')
-        expect(columns).toContain('email')
+        expect(columns).toContain('created_date')
+        expect(columns).not.toContain('email')
         // filter columns always present
         expect(columns).toContain('degrees')
         expect(columns).toContain('specialties')
