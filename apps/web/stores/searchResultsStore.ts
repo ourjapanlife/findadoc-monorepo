@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, watch, type Ref } from 'vue'
 import { gqlClient, graphQLClientRequestWithRetry } from '../utils/graphql.js'
 import { filterDirectory, type FacilitySearchResult, type SearchFilters } from '~/utils/searchDirectory'
+import { facilitySelection, professionalSelection } from '~/utils/graphqlSelection'
 import type { Facility,
     FacilitySearchFilters,
     HealthcareProfessional,
@@ -334,30 +335,7 @@ export const useSearchResultsStore = defineStore('searchResultsStore', () => {
 const searchFacilitiesPageQuery = gql`
     query SearchFacilitiesPage($filters: FacilitySearchFilters!, $countFilters: FacilitySearchFilters!) {
         facilities(filters: $filters) {
-            id
-            nameEn
-            nameJa
-            mapLatitude
-            mapLongitude
-            healthcareProfessionalIds
-            contact {
-                address {
-                    addressLine1En
-                    addressLine2En
-                    addressLine1Ja
-                    addressLine2Ja
-                    cityJa
-                    cityEn
-                    prefectureJa
-                    prefectureEn
-                    postalCode
-                }
-                email
-                googleMapsUrl
-                phone
-                website
-            }
-            updatedDate
+            ${facilitySelection}
         }
         facilitiesTotalCount(filters: $countFilters)
     }
@@ -369,20 +347,7 @@ const searchProfessionalsPageQuery = gql`
         $countFilters: HealthcareProfessionalSearchFilters!
     ) {
         healthcareProfessionals(filters: $filters) {
-            id
-            names {
-                lastName
-                firstName
-                middleName
-                locale
-            }
-            degrees
-            specialties
-            facilityIds
-            spokenLanguages
-            acceptedInsurance
-            additionalInfoForPatients
-            updatedDate
+            ${professionalSelection}
         }
         healthcareProfessionalsTotalCount(filters: $countFilters)
     }

@@ -117,6 +117,24 @@ export function mapKyselyFacilityToGraphQL(
     }
 }
 
+export function paymentOptionFields(row: {
+    payment_options?: unknown
+}): Pick<gqlTypes.Facility, 'paymentOptions'> {
+    let stored = row.payment_options
+
+    if (typeof stored === 'string') {
+        try {
+            stored = JSON.parse(stored)
+        } catch {
+            stored = []
+        }
+    }
+
+    return {
+        paymentOptions: Array.isArray(stored) ? stored as gqlTypes.PaymentOption[] : []
+    }
+}
+
 export function supportedLanguageFields(row: {
     supported_languages?: unknown
 }): Pick<gqlTypes.Facility, 'supportedLanguages'> {

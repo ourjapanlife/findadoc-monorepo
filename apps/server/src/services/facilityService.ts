@@ -5,11 +5,12 @@ import { logger } from '../logger.js'
 import { getSupabaseClient } from '../supabaseClient.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import { validateIdInput, validateCreateFacilityInput, validateFacilitiesSearchInput, validateUpdateFacilityInput } from '../validation/validateFacility.js'
-import { mapKyselyFacilityToGraphQL, facilityLocationFields, supportedLanguageFields } from '../services/mappersEntityService.js'
+import { mapKyselyFacilityToGraphQL, facilityLocationFields, paymentOptionFields, supportedLanguageFields } from '../services/mappersEntityService.js'
 import { uniqueLocales } from '../languages/publishedLocales.js'
 import type { HasContains, HasIlike, HasOr } from '../../utils/dbUtils.js'
 import { prefectureTranslations, resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
+import { FACILITY_SEARCH_COLUMN } from '../../utils/fieldSelectionUtils.js'
 import { isCityRecordId, resolveFacilityPublication, verificationStatusForUpdate } from './facilityPublication.js'
 import { cityExists, findCityBySlug } from './cityService.js'
 import { FacilitySource } from '@findadoc/graphql'
@@ -106,7 +107,7 @@ export function applyFacilityFilters<T extends HasIlike & HasOr & HasContains>(
     }
     const queryText = listQueryValue(filters.query)
     if (queryText) {
-        query = query.ilike('search_text', likeContainsPattern(queryText)) as T
+        query = query.ilike(FACILITY_SEARCH_COLUMN, likeContainsPattern(queryText)) as T
     }
 
     // Prefecture: match the canonical key on the English side (any casing) or the Japanese name.
@@ -367,7 +368,7 @@ export const getFacilityById = async (
             healthcareProfessionalIds,
             createdDate: facilityRow.created_date as string,
             updatedDate: facilityRow.updated_date as string,
-            paymentOptions: (facilityRow.payment_options ?? []) as gqlTypes.PaymentOption[],
+            ...paymentOptionFields(facilityRow),
             ...supportedLanguageFields(facilityRow),
             ...facilityLocationFields(facilityRow)
         }
@@ -731,7 +732,7 @@ export async function searchFacilities(
             mapLatitude: row.map_latitude as number,
             mapLongitude: row.map_longitude as number,
             healthcareProfessionalIds: hpIdsByFacility.get(row.id as string) ?? [],
-            paymentOptions: (row.payment_options ?? []) as gqlTypes.PaymentOption[],
+            ...paymentOptionFields(row),
             createdDate: row.created_date as string,
             updatedDate: row.updated_date as string,
             ...supportedLanguageFields(row),
@@ -1231,7 +1232,7 @@ export async function listPublishedCityFacilities(
                 mapLatitude: row.map_latitude,
                 mapLongitude: row.map_longitude,
                 healthcareProfessionalIds: hpIdsByFacility.get(row.id) ?? [],
-                paymentOptions: (row.payment_options ?? []) as gqlTypes.PaymentOption[],
+                ...paymentOptionFields(row),
                 createdDate: row.created_date,
                 updatedDate: row.updated_date,
                 ...supportedLanguageFields(row),

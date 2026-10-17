@@ -52,7 +52,19 @@ jobs:
         working-directory: apps/server
         run: |
           cp .env.dev .env 2>/dev/null || true
-          supabase start
+          # public.ecr.aws rate-limits the Postgres image. Retry the pull instead of
+          # failing the job before any test runs.
+          for attempt in 1 2 3 4 5; do
+            if supabase start; then
+              break
+            fi
+            echo "supabase start failed (attempt ${attempt})"
+            if [ "$attempt" -eq 5 ]; then
+              exit 1
+            fi
+            supabase stop --no-backup || true
+            sleep $((attempt * 20))
+          done
           pnpm db:reset
           pnpm db:seed
 

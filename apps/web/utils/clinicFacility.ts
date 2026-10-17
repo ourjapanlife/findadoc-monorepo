@@ -3,6 +3,7 @@ import { gqlClient, graphQLClientRequestWithRetry } from './graphql'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import type { FacilitySearchResult } from './searchDirectory'
 import { useRuntimeConfig } from '#imports'
+import { facilitySelection, professionalSelection } from './graphqlSelection'
 
 const PUBLIC_REQUEST_OPTIONS = {
     skipAuth: true,
@@ -16,31 +17,7 @@ const PROFESSIONAL_PAGE_SIZE = 100
 const clinicFacilityQuery = gql`
     query ClinicFacility($id: ID!) {
         facility(id: $id) {
-            id
-            nameEn
-            nameJa
-            mapLatitude
-            mapLongitude
-            healthcareProfessionalIds
-            contact {
-                address {
-                    addressLine1En
-                    addressLine2En
-                    addressLine1Ja
-                    addressLine2Ja
-                    cityJa
-                    cityEn
-                    prefectureJa
-                    prefectureEn
-                    postalCode
-                }
-                email
-                googleMapsUrl
-                phone
-                website
-            }
-            createdDate
-            updatedDate
+            ${facilitySelection}
         }
     }
 `
@@ -48,21 +25,7 @@ const clinicFacilityQuery = gql`
 const clinicProfessionalsQuery = gql`
     query ClinicProfessionals($filters: HealthcareProfessionalSearchFilters!) {
         healthcareProfessionals(filters: $filters) {
-            id
-            names {
-                lastName
-                firstName
-                middleName
-                locale
-            }
-            degrees
-            specialties
-            facilityIds
-            spokenLanguages
-            acceptedInsurance
-            additionalInfoForPatients
-            createdDate
-            updatedDate
+            ${professionalSelection}
         }
     }
 `

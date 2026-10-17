@@ -248,6 +248,26 @@ describe('buildFacilitySelectString', () => {
         expect(columns).toContain('id')
         expect(columns).not.toContain('healthcare_professional_ids')
     })
+
+    it('maps schema fields onto the columns the list must load', () => {
+        const result = buildFacilitySelectString(new Set([
+            'supportedLanguages',
+            'verificationStatus',
+            'paymentOptions',
+            'city',
+            'source'
+        ]))
+        const columns = result.split(',')
+
+        expect(columns).toEqual(expect.arrayContaining([
+            'supported_languages',
+            'verification_status',
+            'payment_options',
+            'city_id',
+            'source'
+        ]))
+        expect(columns.filter(column => column === 'city_id')).toHaveLength(1)
+    })
 })
 
 // --- buildHpSelectString ---

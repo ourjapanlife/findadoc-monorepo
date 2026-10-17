@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request'
 import { gqlClient, graphQLClientRequestWithRetry } from './graphql'
+import { facilitySelection } from './graphqlSelection'
 
 export type ExistingFacilityMatch = {
     id: string
@@ -15,18 +16,7 @@ export type ExistingFacilityMatch = {
 const facilityByGooglePlaceIdQuery = gql`
     query FacilityByGooglePlaceId($placeId: String!) {
         facilityByGooglePlaceId(placeId: $placeId) {
-            id
-            nameEn
-            nameJa
-            mapLatitude
-            mapLongitude
-            contact {
-                googleMapsUrl
-                address {
-                    prefectureEn
-                    cityEn
-                }
-            }
+            ${facilitySelection}
         }
     }
 `
@@ -51,18 +41,7 @@ type FacilityByPlaceIdResponse = {
 const facilityMatchingMapsUrlQuery = gql`
     query FacilityMatchingMapsUrl($url: String!) {
         facilityMatchingMapsUrl(url: $url) {
-            id
-            nameEn
-            nameJa
-            mapLatitude
-            mapLongitude
-            contact {
-                googleMapsUrl
-                address {
-                    prefectureEn
-                    cityEn
-                }
-            }
+            ${facilitySelection}
         }
     }
 `

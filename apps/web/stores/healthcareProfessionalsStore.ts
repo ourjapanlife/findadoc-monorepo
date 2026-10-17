@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { reactive, ref, type Ref, computed } from 'vue'
 import { gql } from 'graphql-request'
 import { fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
+import { professionalSelection } from '../utils/graphqlSelection'
 import { type Insurance,
     type Degree,
     LicenseReviewStatus,
@@ -478,37 +479,15 @@ export async function getHealthcareProfessionalById(id: string): Promise<Healthc
 const getHealthcareProfessionalByIdGqlQuery = gql`
     query HealthcareProfessionals($healthcareProfessionalId: ID!) {
         healthcareProfessional(id: $healthcareProfessionalId) {
-        names {
-            firstName
-            lastName
+            ${professionalSelection}
         }
-        id
-        specialties
     }
-}`
+`
 
 const updateHealthcareProfessionalGqlMutation = gql`
 mutation Mutation($id: ID!, $input: UpdateHealthcareProfessionalInput!) {
   updateHealthcareProfessional(id: $id, input: $input) {
-    id
-    names {
-      firstName
-      middleName
-      lastName
-      locale
-    }
-    spokenLanguages
-    degrees
-    primaryLicense
-    additionalCredentials
-    licenseReview
-    licenseRecommendation
-    specialties
-    acceptedInsurance
-    additionalInfoForPatients
-    facilityIds
-    createdDate
-    updatedDate
+    ${professionalSelection}
   }
 }
 `
@@ -524,25 +503,7 @@ mutation Mutation($id: ID!) {
 const createHealthcareProfessionalGqMutation = gql`
 mutation Mutation($input: CreateHealthcareProfessionalInput!) {
   createHealthcareProfessional(input: $input) {
-    id
-    names {
-      firstName
-      middleName
-      lastName
-      locale
-    }
-    spokenLanguages
-    degrees
-    primaryLicense
-    additionalCredentials
-    licenseReview
-    licenseRecommendation
-    specialties
-    acceptedInsurance
-    additionalInfoForPatients
-    facilityIds
-    createdDate
-    updatedDate
+    ${professionalSelection}
   }
 }
 `

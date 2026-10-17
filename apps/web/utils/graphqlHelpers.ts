@@ -6,6 +6,11 @@ import type { HealthcareProfessional,
     FacilitySearchFilters,
     Submission,
     SubmissionSearchFilters } from '@findadoc/graphql'
+import {
+    facilitySelection,
+    professionalSelection,
+    submissionSelection
+} from './graphqlSelection'
 
 /**
  * Fetches a paginated list of healthcare professionals along with their total count.
@@ -109,25 +114,7 @@ const healthcareProfessionalsAndCountGqlQuery = gql`
         $countFilters: HealthcareProfessionalSearchFilters!
     ) {
         healthcareProfessionals(filters: $listFilters) {
-            id
-            names {
-                firstName
-                middleName
-                lastName
-                locale
-            }
-            spokenLanguages
-            degrees
-            primaryLicense
-            additionalCredentials
-            licenseReview
-            licenseRecommendation
-            specialties
-            acceptedInsurance
-            additionalInfoForPatients
-            facilityIds
-            createdDate
-            updatedDate
+            ${professionalSelection}
         }
         healthcareProfessionalsTotalCount(filters: $countFilters)
     }
@@ -139,33 +126,7 @@ export const facilitiesAndCountGqlQuery = gql`
         $countFilters: FacilitySearchFilters!
     ) {
         facilities(filters: $listFilters) {
-            id
-            cityId
-            googlePlaceId
-            nameEn
-            nameJa
-            mapLatitude
-            mapLongitude
-            healthcareProfessionalIds
-            contact {
-                address {
-                    addressLine1En
-                    addressLine2En
-                    addressLine1Ja
-                    addressLine2Ja
-                    cityJa
-                    cityEn
-                    prefectureJa
-                    prefectureEn
-                    postalCode
-                }
-                email
-                googleMapsUrl
-                phone
-                website
-            }
-            createdDate
-            updatedDate
+            ${facilitySelection}
         }
         facilitiesTotalCount(filters: $countFilters)
     }
@@ -177,56 +138,7 @@ const fetchSubmissionsAndCountGqlQuery = gql`
         $countFilters: SubmissionSearchFilters!
     ) {
         submissions(filters: $listFilters) {
-            id
-            googleMapsUrl
-            healthcareProfessionalName
-            spokenLanguages
-            facility {
-                id
-                mapLatitude
-                mapLongitude
-                nameEn
-                nameJa
-                contact {
-                    googleMapsUrl
-                    email
-                    phone
-                    website
-                    address {
-                        postalCode
-                        prefectureEn
-                        cityEn
-                        addressLine1En
-                        addressLine2En
-                        prefectureJa
-                        cityJa
-                        addressLine1Ja
-                        addressLine2Ja
-                    }
-                }
-                healthcareProfessionalIds
-            }
-            healthcareProfessionals {
-                id
-                names {
-                    firstName
-                    middleName
-                    lastName
-                    locale
-                }
-                spokenLanguages
-                degrees
-                specialties
-                acceptedInsurance
-                additionalInfoForPatients
-                facilityIds
-            }
-            isUnderReview
-            isApproved
-            isRejected
-            createdDate
-            updatedDate
-            notes
+            ${submissionSelection}
         }
         submissionsTotalCount(filters: $countFilters)
     }

@@ -7,6 +7,7 @@ import { hubSitemapUrls } from './hubIndex'
 import { fetchCities, type CityOption } from './cityOptions'
 import { attachProfessionalsToFacilities, facetSitemapUrls } from './facetIndex'
 import { graphqlEndpoint } from './graphqlEndpoint'
+import { facilitySelection, professionalSelection } from './graphqlSelection'
 import type { FacilitySearchFilters, HealthcareProfessionalSearchFilters,
     Locale, LocalizedName, Specialty } from '@findadoc/graphql'
 
@@ -127,18 +128,7 @@ export function directoryKindsToFetch(
 const sitemapFacilitiesQuery = gql`
     query SitemapFacilities($filters: FacilitySearchFilters!, $countFilters: FacilitySearchFilters!) {
         facilities(filters: $filters) {
-            id
-            nameEn
-            updatedDate
-            healthcareProfessionalIds
-            contact {
-                address {
-                    cityEn
-                    cityJa
-                    prefectureEn
-                    prefectureJa
-                }
-            }
+            ${facilitySelection}
         }
         facilitiesTotalCount(filters: $countFilters)
     }
@@ -150,17 +140,7 @@ const sitemapProfessionalsQuery = gql`
         $countFilters: HealthcareProfessionalSearchFilters!
     ) {
         healthcareProfessionals(filters: $filters) {
-            id
-            updatedDate
-            specialties
-            spokenLanguages
-            facilityIds
-            names {
-                firstName
-                middleName
-                lastName
-                locale
-            }
+            ${professionalSelection}
         }
         healthcareProfessionalsTotalCount(filters: $countFilters)
     }

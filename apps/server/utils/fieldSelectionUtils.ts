@@ -1,5 +1,11 @@
 import type { GraphQLResolveInfo, SelectionSetNode } from 'graphql'
-import type { HpsTable, SubmissionsTable } from '../src/typeDefs/kyselyTypes.js'
+import type * as gqlTypes from '@findadoc/graphql'
+import type { FacilitiesTable, HpsTable, SubmissionsTable } from '../src/typeDefs/kyselyTypes.js'
+
+/** Schema fields, without the codegen `__typename` marker. */
+type SchemaField<T> = Exclude<keyof T, '__typename'>
+type ColumnName<Table> = Extract<keyof Table, string>
+type FieldColumn<T, Table> = Record<SchemaField<T>, ColumnName<Table> | 'skip'>
 
 /**
  * Parses GraphQLResolveInfo to extract the set of top-level fields
@@ -58,30 +64,81 @@ export function camelToSnake(str: string): string {
 }
 
 // --- GQL → DB column mappings ---
-// By default, any requested GQL field is converted via camelToSnake and selected.
-// Only fields that need special handling are listed:
-//   - skip: GQL fields with no DB column (junction table fields, nested objects)
-//   - overrides: GQL fields where the DB column doesn't follow camelToSnake
+// Each moderation list type maps every schema field to a table column.
+// `skip` means the API fills that field from another table.
 
-/** GQL fields that don't map to a DB column (resolved via junction tables or nested resolvers) */
-const FACILITY_SKIP = new Set(['healthcareProfessionalIds', 'city'])
-const HP_SKIP = new Set(['facilityIds'])
+/**
+ * Every Facility field names a real facilities column, or `skip` when the API resolves it elsewhere.
+ * A new schema field or a renamed column fails typecheck until this map is updated.
+ * `city` selects `city_id` because the city resolver reads that id.
+ */
+const FACILITY_FIELD_COLUMN = {
+    id: 'id',
+    nameEn: 'name_en',
+    nameJa: 'name_ja',
+    contact: 'contact',
+    mapLatitude: 'map_latitude',
+    mapLongitude: 'map_longitude',
+    healthcareProfessionalIds: 'skip',
+    supportedLanguages: 'supported_languages',
+    createdDate: 'created_date',
+    updatedDate: 'updated_date',
+    paymentOptions: 'payment_options',
+    cityId: 'city_id',
+    city: 'city_id',
+    googlePlaceId: 'google_place_id',
+    source: 'source',
+    verificationStatus: 'verification_status'
+} as const satisfies FieldColumn<gqlTypes.Facility, FacilitiesTable>
 
-/** JSONB columns on hps that may be used in PostgREST .contains() filters.
- *  Always included in select to avoid PostgREST errors when filtering on non-selected columns. */
-const HP_FILTER_COLUMNS: readonly (keyof HpsTable)[] = [
-    'degrees', 'specialties', 'spoken_languages', 'accepted_insurance'
-]
+/**
+ * Every HealthcareProfessional field names a real hps column, or `skip` for the junction.
+ */
+const HP_FIELD_COLUMN = {
+    id: 'id',
+    names: 'names',
+    spokenLanguages: 'spoken_languages',
+    degrees: 'degrees',
+    primaryLicense: 'primary_license',
+    additionalCredentials: 'additional_credentials',
+    licenseReview: 'license_review',
+    licenseRecommendation: 'license_recommendation',
+    specialties: 'specialties',
+    acceptedInsurance: 'accepted_insurance',
+    facilityIds: 'skip',
+    createdDate: 'created_date',
+    updatedDate: 'updated_date',
+    additionalInfoForPatients: 'additional_info_for_patients'
+} as const satisfies FieldColumn<gqlTypes.HealthcareProfessional, HpsTable>
 
-/** Submission fields where the DB column doesn't match camelToSnake.
- *  Type-checked against SubmissionsTable to catch schema changes at compile time. */
-const SUBMISSION_OVERRIDES = {
+/**
+ * Every Submission field names a real submissions column.
+ * Status flags share `status`. Partials use the stored JSON columns.
+ */
+const SUBMISSION_FIELD_COLUMN = {
+    id: 'id',
+    googleMapsUrl: 'google_maps_url',
+    healthcareProfessionalName: 'healthcare_professional_name',
+    spokenLanguages: 'spoken_languages',
+    facility: 'facility_partial',
+    healthcareProfessionals: 'healthcare_professionals_partial',
     isUnderReview: 'status',
     isApproved: 'status',
     isRejected: 'status',
-    facility: 'facility_partial',
-    healthcareProfessionals: 'healthcare_professionals_partial'
-} as const satisfies Record<string, keyof SubmissionsTable>
+    createdDate: 'created_date',
+    updatedDate: 'updated_date',
+    notes: 'notes'
+} as const satisfies FieldColumn<gqlTypes.Submission, SubmissionsTable>
+
+/** JSONB columns on hps that may be used in PostgREST .contains() filters.
+ *  Always included in select to avoid PostgREST errors when filtering on non-selected columns. */
+const HP_FILTER_COLUMNS = [
+    'degrees', 'specialties', 'spoken_languages', 'accepted_insurance'
+] as const satisfies readonly ColumnName<HpsTable>[]
+
+/** Text search columns. Renaming one fails typecheck at the filter call. */
+export const FACILITY_SEARCH_COLUMN = 'search_text' satisfies ColumnName<FacilitiesTable>
+export const HP_SEARCH_COLUMN = 'search_text' satisfies ColumnName<HpsTable>
 
 // --- Select string builders ---
 
@@ -114,18 +171,33 @@ function buildSelectString(
     return Array.from(columns).join(',')
 }
 
+/** Selects only mapped columns. An unknown field is ignored so it cannot invent a missing column. */
+function columnsFor(
+    requestedFields: Set<string>,
+    mapping: Record<string, string>,
+    alwaysInclude: readonly string[]
+): string {
+    const columns = new Set<string>(alwaysInclude)
+
+    for (const field of requestedFields) {
+        const column = mapping[field]
+
+        if (!column || column === 'skip') {
+            continue
+        }
+
+        columns.add(column)
+    }
+
+    return Array.from(columns).join(',')
+}
+
 /**
  * Builds a Supabase select string for the facilities table.
  * Always includes 'id'. Only includes columns the client actually requested.
  */
 export function buildFacilitySelectString(requestedFields: Set<string>): string {
-    const select = buildSelectString(requestedFields, { skip: FACILITY_SKIP })
-
-    if (requestedFields.has('city') && !select.split(',').includes('city_id')) {
-        return `${select},city_id`
-    }
-
-    return select
+    return columnsFor(requestedFields, FACILITY_FIELD_COLUMN, ['id'])
 }
 
 /**
@@ -133,10 +205,7 @@ export function buildFacilitySelectString(requestedFields: Set<string>): string 
  * Always includes 'id' and all filter-used JSONB columns to avoid PostgREST errors.
  */
 export function buildHpSelectString(requestedFields: Set<string>): string {
-    return buildSelectString(requestedFields, {
-        skip: HP_SKIP,
-        alwaysInclude: ['id', ...HP_FILTER_COLUMNS]
-    })
+    return columnsFor(requestedFields, HP_FIELD_COLUMN, ['id', ...HP_FILTER_COLUMNS])
 }
 
 /**
@@ -144,7 +213,7 @@ export function buildHpSelectString(requestedFields: Set<string>): string {
  * Always includes 'id'. Non-standard mappings (status flags, partials) use explicit overrides.
  */
 export function buildSubmissionSelectString(requestedFields: Set<string>): string {
-    return buildSelectString(requestedFields, { overrides: SUBMISSION_OVERRIDES })
+    return columnsFor(requestedFields, SUBMISSION_FIELD_COLUMN, ['id'])
 }
 
 /**
