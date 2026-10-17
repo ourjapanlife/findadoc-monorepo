@@ -72,6 +72,7 @@ export type FacilitySeed = {
     google_place_id: string | null
     source: EnumValue<FacilitySource> | null
     verification_status: EnumValue<FacilityVerificationStatus>
+    supported_languages: EnumValue<Locale>[]
 }
 
 export type HpSeed = {
@@ -213,6 +214,7 @@ export function parseSeed(value: unknown): SeedFile {
 
         readEnum(facility.verification_status, verificationValues, `${facility.id} verification_status`, problems)
         readEnum(facility.source, sourceValues, `${facility.id} source`, problems)
+        readEnumList(facility.supported_languages, localeValues, `${facility.id} supported_languages`, problems)
 
         if (!Array.isArray(facility.payment_options)) {
             problems.push(`${facility.id} payment_options is missing`)

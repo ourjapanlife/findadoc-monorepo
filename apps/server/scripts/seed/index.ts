@@ -35,11 +35,13 @@ async function runSeed() {
                 `INSERT INTO facilities (
                     id, code, name_en, name_ja, contact, map_latitude, map_longitude,
                     created_date, updated_date, firestore_id, payment_options,
-                    city_id, google_place_id, source, verification_status
+                    city_id, google_place_id, source, verification_status,
+                    supported_languages
                 ) VALUES (
                     $1, $2, $3, $4, $5::jsonb, $6, $7,
                     $8, $9, $10, $11::jsonb,
-                    $12, $13, $14, $15
+                    $12, $13, $14, $15,
+                    $16::jsonb
                 )`,
                 [
                     facility.id,
@@ -56,7 +58,8 @@ async function runSeed() {
                     cityId,
                     facility.google_place_id,
                     facility.source,
-                    facility.verification_status
+                    facility.verification_status,
+                    JSON.stringify(facility.supported_languages)
                 ]
             )
         }

@@ -173,7 +173,8 @@ function buildSeed(): SeedFile {
             city_id: { prefectureEn: city.prefectureEn, nameEn: city.nameEn },
             google_place_id: null,
             source: FacilitySource.Manual,
-            verification_status: FacilityVerificationStatus.Confirmed
+            verification_status: FacilityVerificationStatus.Confirmed,
+            supported_languages: index % 3 === 0 ? [] : [Locale.EnUs, Locale.JaJp]
         })
 
         hps.push({
