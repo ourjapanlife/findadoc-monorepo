@@ -6,7 +6,7 @@ export const DEFAULT_LOCALE_CODE = 'en-US'
 /** vue-i18n codes, English first. Same order as `i18n/index.ts`. */
 export const LOCALE_CODES = i18nLocales.map(locale => locale.code)
 
-const PREFIXED_LOCALE_CODES = new Set(
+const PREFIXED_LOCALE_CODES = new Set<string>(
     LOCALE_CODES.filter(code => code !== DEFAULT_LOCALE_CODE)
 )
 
