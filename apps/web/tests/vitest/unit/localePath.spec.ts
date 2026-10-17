@@ -5,6 +5,8 @@ import {
     localizedPath,
     routeMatchesPath,
     unlocalizedPath,
+    DIRECTORY_PRERENDER_LOCALE_CODES,
+    withDirectoryLocaleVariants,
     withLocaleVariants
 } from '@/utils/localePath'
 
@@ -27,6 +29,19 @@ describe('locale paths', () => {
         expect(localizedPath('/my-page?view=facilities', 'ja-JP')).to.equal('/ja-JP/my-page?view=facilities')
         expect(withLocaleVariants(['/about'])[0]).to.equal('/about')
         expect(withLocaleVariants(['/about'])).to.include('/ja-JP/about')
+        expect(withLocaleVariants(['/about'])).to.include('/zh-CN/about')
+    })
+
+    it('prerenders directory pages for English and Japanese only', () => {
+        const clinic = '/clinic/tokyo/shibuya/clinic--abc'
+        const variants = withDirectoryLocaleVariants([clinic])
+
+        expect(variants).to.deep.equal([
+            clinic,
+            '/ja-JP/clinic/tokyo/shibuya/clinic--abc'
+        ])
+        expect(DIRECTORY_PRERENDER_LOCALE_CODES).to.deep.equal(['en-US', 'ja-JP'])
+        expect(variants).to.not.include('/zh-CN/clinic/tokyo/shibuya/clinic--abc')
     })
 
     it('matches nav items on a prefixed URL', () => {

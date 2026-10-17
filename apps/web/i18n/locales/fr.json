@@ -148,7 +148,8 @@
     "optional": "optionnel",
     "otherNotes": "Autres remarques",
     "firstNameValidation": "Enter a first name",
-    "submissionSuccessful": "Thank you for contributing! Your submission about the doctor has been successfully recorded. We’re grateful for your support!"
+    "submissionSuccessful": "Thank you for contributing! Your submission about the doctor has been successfully recorded. We’re grateful for your support!",
+    "existingPlacePossible": "Ce lien correspond peut-être déjà à une clinique de la base :"
   },
   "searchBar": {
     "allSpecialties": "Toutes les spécialités",
@@ -237,7 +238,8 @@
     "labelModNoteInput": "Moderator Notes",
     "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "useExistingFacility": "Utiliser cette clinique"
   },
   "login": {
     "checkingauth": "Checking Authentication...",
@@ -381,7 +383,13 @@
     "existingHPHeading": "Current Healthcare Professionals at Facility",
     "addHealthcareProfessional": "Add existing Healthcare Professional",
     "noHPSelected": "No Healthcare Professionals selected",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found"
+    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "openMaps": "Ouvrir dans Google Maps",
+    "fillFromMaps": "Remplir les champs vides à partir de ce lien",
+    "fillFromMapsHint": "Remplit le nom, l’adresse et le repère vides à partir du lien Maps. Les champs déjà remplis restent inchangés.",
+    "fillFromMapsDone": "{count} champs vides ont été remplis à partir du lien Maps.",
+    "fillFromMapsNone": "Aucun champ vide ne restait à remplir à partir de ce lien.",
+    "fillFromMapsFailed": "Ce lien n’a pas pu être lu. Ouvrez-le dans Maps et copiez les informations."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Update & Exit",
@@ -635,5 +643,11 @@
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
     "home": "Home"
+  },
+  "modForm": {
+    "edit": "Modifier",
+    "preview": "Aperçu",
+    "previewHint": "Aperçu. Passez en modification avant de changer quoi que ce soit.",
+    "editHint": "Modification. Revenez à l’aperçu si vous ne faites que lire."
   }
 }

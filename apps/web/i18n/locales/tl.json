@@ -148,7 +148,8 @@
     "optional": "Opsyonal",
     "otherNotes": "Iba pang tala",
     "submissionSuccessful": "Maraming salamat sa iyong kontribusyon! Ang iyong na-isumiteng detalye tungkol sa doktor ay matagumpay na naitala. Kami ay lubos na nagpapasalamat sa iyong suporta!",
-    "spokenLanguageValidation": "Pumili ng kahit isang wika bukod sa Japanese"
+    "spokenLanguageValidation": "Pumili ng kahit isang wika bukod sa Japanese",
+    "existingPlacePossible": "Maaaring tumugma na ang link na ito sa isang klinika sa database:"
   },
   "searchBar": {
     "allSpecialties": "Lahat ng Espesyalidad",
@@ -328,7 +329,13 @@
     "existingHPHeading": "Current Healthcare Professionals at Facility",
     "addHealthcareProfessional": "Add existing Healthcare Professional",
     "noHPSelected": "No Healthcare Professionals selected",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found"
+    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "openMaps": "Buksan sa Google Maps",
+    "fillFromMaps": "Punan ang mga walang laman na field mula sa link na ito",
+    "fillFromMapsHint": "Pinupunan ang walang laman na pangalan, address, at pin mula sa link ng Maps. Ang mga field na may laman ay hindi babaguhin.",
+    "fillFromMapsDone": "Napunan ang {count} na walang laman na field mula sa link ng Maps.",
+    "fillFromMapsNone": "Wala nang walang laman na field na mapupunan mula sa link na ito.",
+    "fillFromMapsFailed": "Hindi mabasa ang link na ito. Buksan ito sa Maps at kopyahin ang mga detalye."
   },
   "modSubmissionForm": {
     "errorMessageCompletedForm": "Hindi na-isumite and kumpletong form",
@@ -349,7 +356,8 @@
     "labelModNoteInput": "Moderator Notes",
     "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "useExistingFacility": "Gamitin ang klinikang ito"
   },
   "serverErrorMessages": {
     "errorCodeMessagingNeeded": "Walang mensahe sa user ang error code ng server. Pakidagdagan ng isa.",
@@ -635,5 +643,11 @@
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
     "home": "Home"
+  },
+  "modForm": {
+    "edit": "I-edit",
+    "preview": "Preview",
+    "previewHint": "Preview. Lumipat sa edit bago baguhin ang anuman.",
+    "editHint": "Ine-edit. Bumalik sa preview kung babasahin mo lang."
   }
 }

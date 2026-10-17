@@ -148,7 +148,8 @@
     "submitButton": "提交",
     "optional": "可选",
     "otherNotes": "其他建议或注释",
-    "submissionSuccessful": "Thank you for contributing! Your submission about the doctor has been successfully recorded. We’re grateful for your support!"
+    "submissionSuccessful": "Thank you for contributing! Your submission about the doctor has been successfully recorded. We’re grateful for your support!",
+    "existingPlacePossible": "此链接可能与数据库中已有的医疗机构相符："
   },
   "searchBar": {
     "allSpecialties": "所有专科",
@@ -294,7 +295,8 @@
     "labelModNoteInput": "Moderator Notes",
     "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "useExistingFacility": "使用此医疗机构"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "Facility Name Unknown",
@@ -383,7 +385,13 @@
     "existingHPHeading": "Current Healthcare Professionals at Facility",
     "addHealthcareProfessional": "Add existing Healthcare Professional",
     "noHPSelected": "No Healthcare Professionals selected",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found"
+    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "openMaps": "在 Google 地图中打开",
+    "fillFromMaps": "用此链接填写空白项",
+    "fillFromMapsHint": "根据地图链接填写空白的名称、地址和地图钉。已有内容的字段保持不变。",
+    "fillFromMapsDone": "已根据地图链接填写 {count} 个空白项。",
+    "fillFromMapsNone": "没有可以用此链接填写的空白项。",
+    "fillFromMapsFailed": "无法读取此链接。请在地图中打开并复制详细信息。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Update & Exit",
@@ -635,5 +643,11 @@
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
     "home": "Home"
+  },
+  "modForm": {
+    "edit": "编辑",
+    "preview": "预览",
+    "previewHint": "当前为预览。修改前请切换到编辑。",
+    "editHint": "当前为编辑。只需查看时请切换回预览。"
   }
 }

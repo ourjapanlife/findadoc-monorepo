@@ -148,7 +148,8 @@
     "submitButton": "Einreichen",
     "optional": "optional",
     "otherNotes": "Andere Anmerkungen",
-    "submissionSuccessful": "Thank you for contributing! Your submission about the doctor has been successfully recorded. We’re grateful for your support!"
+    "submissionSuccessful": "Thank you for contributing! Your submission about the doctor has been successfully recorded. We’re grateful for your support!",
+    "existingPlacePossible": "Dieser Link könnte bereits einer Klinik in der Datenbank entsprechen:"
   },
   "searchBar": {
     "allSpecialties": "All Specialties",
@@ -342,7 +343,8 @@
     "labelModNoteInput": "Moderator Notes",
     "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "useExistingFacility": "Diese Klinik verwenden"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "Facility Name Unknown",
@@ -431,7 +433,13 @@
     "existingHPHeading": "Current Healthcare Professionals at Facility",
     "addHealthcareProfessional": "Add existing Healthcare Professional",
     "noHPSelected": "No Healthcare Professionals selected",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found"
+    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "openMaps": "In Google Maps öffnen",
+    "fillFromMaps": "Leere Felder aus diesem Link füllen",
+    "fillFromMapsHint": "Füllt leere Namens-, Adress- und Pin-Felder aus dem Maps-Link. Felder mit einem Wert bleiben unverändert.",
+    "fillFromMapsDone": "{count} leere Felder wurden aus dem Maps-Link gefüllt.",
+    "fillFromMapsNone": "Es waren keine leeren Felder mehr aus diesem Link zu füllen.",
+    "fillFromMapsFailed": "Dieser Link konnte nicht gelesen werden. Öffnen Sie ihn in Maps und kopieren Sie die Angaben."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Update & Exit",
@@ -635,5 +643,11 @@
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
     "home": "Home"
+  },
+  "modForm": {
+    "edit": "Bearbeiten",
+    "preview": "Vorschau",
+    "previewHint": "Vorschau. Wechseln Sie zum Bearbeiten, bevor Sie etwas ändern.",
+    "editHint": "Bearbeitung. Wechseln Sie zurück zur Vorschau, wenn Sie nur lesen."
   }
 }

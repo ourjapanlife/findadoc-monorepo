@@ -148,7 +148,8 @@
     "submitButton": "Enviar",
     "optional": "opcional",
     "otherNotes": "Observações",
-    "submissionSuccessful": "Obrigado por contribuir! Seu envio sobre o médico foi gravado com sucesso. Estamos gratos por seu apoio!"
+    "submissionSuccessful": "Obrigado por contribuir! Seu envio sobre o médico foi gravado com sucesso. Estamos gratos por seu apoio!",
+    "existingPlacePossible": "Este link pode corresponder a uma clínica que já está na base:"
   },
   "searchBar": {
     "allSpecialties": "Todas as especialidades",
@@ -287,7 +288,8 @@
     "labelModNoteInput": "Moderator Notes",
     "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "useExistingFacility": "Usar esta clínica"
   },
   "login": {
     "checkingauth": "Checking Authentication...",
@@ -383,7 +385,13 @@
     "existingHPHeading": "Current Healthcare Professionals at Facility",
     "addHealthcareProfessional": "Add existing Healthcare Professional",
     "noHPSelected": "No Healthcare Professionals selected",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found"
+    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "openMaps": "Abrir no Google Maps",
+    "fillFromMaps": "Preencher os campos vazios a partir deste link",
+    "fillFromMapsHint": "Preenche nome, endereço e pin vazios a partir do link do Maps. Campos que já têm valor permanecem como estão.",
+    "fillFromMapsDone": "{count} campos vazios foram preenchidos a partir do link do Maps.",
+    "fillFromMapsNone": "Não restavam campos vazios para preencher a partir deste link.",
+    "fillFromMapsFailed": "Não foi possível ler este link. Abra-o no Maps e copie os dados."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Update & Exit",
@@ -635,5 +643,11 @@
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
     "home": "Home"
+  },
+  "modForm": {
+    "edit": "Editar",
+    "preview": "Pré-visualização",
+    "previewHint": "Pré-visualização. Mude para editar antes de alterar algo.",
+    "editHint": "A editar. Volte à pré-visualização se só precisar de ler."
   }
 }
