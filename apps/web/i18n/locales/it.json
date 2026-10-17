@@ -152,7 +152,8 @@
     "submissionSuccessful": "Grazie per il tuo contributo! La tua segnalazione sul medico è stata registrata con successo. Siamo grati per il tuo supporto!",
     "submitButton": "Invia",
     "optional": "Opzionale",
-    "otherNotes": "Altre note"
+    "otherNotes": "Altre note",
+    "existingPlacePossible": "Questo link potrebbe corrispondere a una clinica già nel database:"
   },
   "searchBar": {
     "allSpecialties": "Tutte le specialità",
@@ -382,7 +383,13 @@
     "placeholderTextFacilityPhoneNumber": "es. 08xxxxxxxxx",
     "placeholderTextFacilityPostalCode": "es. 186-0000",
     "placeholderTextFacilityWebsite": "es. http://www.example.com/",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found"
+    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "openMaps": "Apri in Google Maps",
+    "fillFromMaps": "Compila i campi vuoti da questo link",
+    "fillFromMapsHint": "Compila nome, indirizzo e pin vuoti dal link di Maps. I campi che hanno già un valore restano invariati.",
+    "fillFromMapsDone": "Compilati {count} campi vuoti dal link di Maps.",
+    "fillFromMapsNone": "Non restavano campi vuoti da compilare da questo link.",
+    "fillFromMapsFailed": "Impossibile leggere questo link. Aprilo in Maps e copia i dettagli."
   },
   "modSubmissionForm": {
     "errorMessageCompletedForm": "Tentativo di inviare il modulo completato fallito",
@@ -403,7 +410,8 @@
     "labelModNoteInput": "Moderator Notes",
     "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "useExistingFacility": "Usa questa clinica"
   },
   "specialties": {
     "allergyAndImmunology": "Allergologo/Allergologa",
@@ -635,5 +643,11 @@
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
     "home": "Home"
+  },
+  "modForm": {
+    "edit": "Modifica",
+    "preview": "Anteprima",
+    "previewHint": "Anteprima. Passa alla modifica prima di cambiare qualcosa.",
+    "editHint": "Modifica in corso. Torna all’anteprima se devi solo leggere."
   }
 }

@@ -148,7 +148,8 @@
     "submitButton": "Gửi",
     "optional": "Tùy chọn",
     "otherNotes": "Ghi chú khác",
-    "submissionSuccessful": "Cảm ơn bạn đã đóng góp! Bài gửi của bạn về bác sĩ đã được ghi nhận thành công. Chúng tôi rất biết ơn sự hỗ trợ của bạn!"
+    "submissionSuccessful": "Cảm ơn bạn đã đóng góp! Bài gửi của bạn về bác sĩ đã được ghi nhận thành công. Chúng tôi rất biết ơn sự hỗ trợ của bạn!",
+    "existingPlacePossible": "Liên kết này có thể trùng với một cơ sở y tế đã có trong cơ sở dữ liệu:"
   },
   "searchBar": {
     "allSpecialties": "Tất cả chuyên khoa",
@@ -378,7 +379,13 @@
     "addHealthcareProfessional": "Add existing Healthcare Professional",
     "noHPSelected": "No Healthcare Professionals selected",
     "placeholderTextFacilityAddressLine1En": "Street address",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found"
+    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "openMaps": "Mở trong Google Maps",
+    "fillFromMaps": "Điền các ô trống từ liên kết này",
+    "fillFromMapsHint": "Điền tên, địa chỉ và ghim còn trống từ liên kết Maps. Ô đã có nội dung được giữ nguyên.",
+    "fillFromMapsDone": "Đã điền {count} ô trống từ liên kết Maps.",
+    "fillFromMapsNone": "Không còn ô trống để điền từ liên kết này.",
+    "fillFromMapsFailed": "Không đọc được liên kết này. Hãy mở trong Maps và sao chép thông tin."
   },
   "modSubmissionForm": {
     "errorMessageCompletedForm": "Gửi mẫu đã hoàn thành không thành công.",
@@ -399,7 +406,8 @@
     "labelModNoteInput": "Moderator Notes",
     "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "useExistingFacility": "Dùng cơ sở này"
   },
   "serverErrorMessages": {
     "errorCodeMessagingNeeded": "The server error code does not have a message for the user. Please add one.",
@@ -635,5 +643,11 @@
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
     "home": "Home"
+  },
+  "modForm": {
+    "edit": "Sửa",
+    "preview": "Xem trước",
+    "previewHint": "Đang xem trước. Hãy chuyển sang sửa trước khi thay đổi.",
+    "editHint": "Đang sửa. Hãy quay lại xem trước nếu bạn chỉ cần đọc."
   }
 }

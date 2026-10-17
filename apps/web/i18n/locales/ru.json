@@ -148,7 +148,8 @@
     "otherNotes": " Другие заметки ",
     "firstNameValidation": "Введите имя",
     "spokenLanguageValidation": "Выберите хотя бы один язык кроме японского",
-    "submissionSuccessful": "Thank you for contributing! Your submission about the doctor has been successfully recorded. We’re grateful for your support!"
+    "submissionSuccessful": "Thank you for contributing! Your submission about the doctor has been successfully recorded. We’re grateful for your support!",
+    "existingPlacePossible": "Эта ссылка может совпадать с клиникой, которая уже есть в базе:"
   },
   "searchBar": {
     "allSpecialties": "Все специальности",
@@ -287,7 +288,8 @@
     "labelModNoteInput": "Moderator Notes",
     "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "useExistingFacility": "Использовать эту клинику"
   },
   "login": {
     "checkingauth": "Checking Authentication...",
@@ -383,7 +385,13 @@
     "existingHPHeading": "Current Healthcare Professionals at Facility",
     "addHealthcareProfessional": "Add existing Healthcare Professional",
     "noHPSelected": "No Healthcare Professionals selected",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found"
+    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "openMaps": "Открыть в Google Maps",
+    "fillFromMaps": "Заполнить пустые поля по этой ссылке",
+    "fillFromMapsHint": "Заполняет пустые название, адрес и метку из ссылки Maps. Поля, в которых уже есть значение, не меняются.",
+    "fillFromMapsDone": "Из ссылки Maps заполнено пустых полей: {count}.",
+    "fillFromMapsNone": "Пустых полей для заполнения по этой ссылке не осталось.",
+    "fillFromMapsFailed": "Не удалось прочитать эту ссылку. Откройте её в Maps и скопируйте данные."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Update & Exit",
@@ -635,5 +643,11 @@
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
     "home": "Home"
+  },
+  "modForm": {
+    "edit": "Изменить",
+    "preview": "Просмотр",
+    "previewHint": "Просмотр. Переключитесь на изменение, прежде чем что-либо править.",
+    "editHint": "Изменение. Вернитесь к просмотру, если нужно только читать."
   }
 }

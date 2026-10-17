@@ -195,7 +195,8 @@
     "submissionSuccessful": "기여해 주셔서 감사합니다! 의사에 관한 제보가 접수되었습니다. 감사합니다!",
     "submitButton": "제출",
     "optional": "선택",
-    "otherNotes": "기타 메모"
+    "otherNotes": "기타 메모",
+    "existingPlacePossible": "이 링크는 데이터베이스에 있는 의료기관과 일치할 수 있습니다:"
   },
   "searchBar": {
     "allSpecialties": "모든 진료 과목",
@@ -473,7 +474,13 @@
     "placeholderTextFacilityNameJa": "예: 立川中央病院",
     "placeholderTextFacilityPhoneNumber": "예: 08xxxxxxxxx",
     "placeholderTextFacilityPostalCode": "예: 186-0000",
-    "placeholderTextFacilityWebsite": "예: http://www.example.com/"
+    "placeholderTextFacilityWebsite": "예: http://www.example.com/",
+    "openMaps": "Google 지도에서 열기",
+    "fillFromMaps": "이 링크로 빈 칸 채우기",
+    "fillFromMapsHint": "지도 링크에서 비어 있는 이름, 주소, 핀을 채웁니다. 이미 값이 있는 칸은 그대로 둡니다.",
+    "fillFromMapsDone": "지도 링크에서 빈 칸 {count}개를 채웠습니다.",
+    "fillFromMapsNone": "이 링크로 채울 빈 칸이 없습니다.",
+    "fillFromMapsFailed": "이 링크를 읽지 못했습니다. 지도에서 열어 내용을 복사하세요."
   },
   "modSubmissionForm": {
     "errorMessageCompletedForm": "작성한 양식을 제출하지 못했습니다",
@@ -494,7 +501,8 @@
     "rejectSubmissionConfirmationMessage": "이 제보를 거절하시겠습니까?",
     "rejectSubmissionConfirmationButton": "예, 제보를 거절합니다",
     "successMessageUpdated": "제보가 업데이트되었습니다",
-    "successMessageApproved": "제보가 승인되었습니다"
+    "successMessageApproved": "제보가 승인되었습니다",
+    "useExistingFacility": "이 의료기관 사용"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "구사 언어",
@@ -635,5 +643,11 @@
     "nearbySpecialtyHeading": "다른 도도부현의 {specialty}",
     "nearbyLanguageHeading": "다른 도도부현의 {language} 진료",
     "siblingCitiesHeading": "이 도도부현의 다른 시·구"
+  },
+  "modForm": {
+    "edit": "편집",
+    "preview": "미리보기",
+    "previewHint": "미리보기입니다. 바꾸기 전에 편집으로 전환하세요.",
+    "editHint": "편집 중입니다. 읽기만 할 때는 미리보기로 돌아가세요."
   }
 }

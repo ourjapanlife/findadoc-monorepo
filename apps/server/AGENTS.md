@@ -43,6 +43,12 @@ A professional has one primary clinical license. PhD, MPH, and DSc are additiona
 - Do not store a Places display name, formatted address, phone, website, hours, photos, or reviews as directory data.
 - The Maps URL enrichment path is gone (#1008). Do not copy a Places payload into a submission. The picker is #1012. The facility resolver is #1013.
 
+## Directory HTML
+
+Clinic, doctor, hub, and facet pages are generated for English and Japanese only. `apps/web/utils/localePath.ts` names that set as `DIRECTORY_PRERENDER_LOCALE_CODES`. Marketing pages still generate for every locale. A directory URL in another locale renders in the browser, stays `noindex`, and stays out of hreflang and the sitemap. Do not add a `/ja-JP/*` rewrite. Unknown Japanese clinics stay a real 404.
+
+Moderation forms that already have saved data open in preview. Create forms stay editable. A Maps link that matches a clinic disables Submit on the public form. The same match is a warning in moderation, and update, approve, and create stay available.
+
 ## Node and pnpm
 
 Node is pinned in the repo-root `.nvmrc` (24.22.0). pnpm 10.27.0 comes from the root `packageManager` field through Corepack. After `nvm use`, including on Windows, activate pnpm for that Node install before running `turbo` or `pnpm`:
