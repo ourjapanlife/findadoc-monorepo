@@ -22,6 +22,7 @@ import { asJsonb } from '../../utils/dbUtils.js'
 import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { canonicalMapsFields } from '../places/mapsLink.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
+import { databaseOrderColumn, SUBMISSION_ORDER_COLUMNS } from '../search/orderColumn.js'
 /** Row type used as Supabase select generic — matches SubmissionRow from dbSchema */
 type SubmissionRow = dbSchema.SubmissionRow
 
@@ -363,10 +364,11 @@ export async function searchSubmissions(
         )
 
         const orderBy = filters.orderBy?.[0]
+        const orderColumn = databaseOrderColumn(orderBy?.fieldToOrder, SUBMISSION_ORDER_COLUMNS)
 
-        if (orderBy?.fieldToOrder) {
-            base = base.order(orderBy.fieldToOrder, {
-                ascending: orderBy.orderDirection !== 'desc'
+        if (orderColumn !== null) {
+            base = base.order(orderColumn, {
+                ascending: orderBy?.orderDirection !== 'desc'
             })
         } else {
             base = base.order('created_date', { ascending: false })

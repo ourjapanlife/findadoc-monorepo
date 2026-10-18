@@ -7,31 +7,12 @@
                 {{ updateTextForModerationDashboard(moderationSubmissionsStore.selectedModerationListViewChosen) }}
             </h1>
             <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full lg:w-auto">
-                <div
-                    v-if="showListSearch"
-                    class="justify-start items-start flex relative w-full sm:w-auto order-2 sm:order-1"
-                >
-                    <input
-                        v-model="listSearchQuery"
-                        type="text"
-                        :placeholder="t('modDashboardTopbar.placeholderText')"
-                        class="pl-10 pr-3 py-2.5 w-full sm:w-80 rounded-lg border border-accent-bg
-                        bg-secondary-bg text-primary-text text-sm font-normal font-sans
-                        placeholder-primary-text-muted"
-                        data-testid="mod-submission-search-input"
-                    >
-                    <SVGLookingGlass
-                        role="img"
-                        title="searching icon"
-                        class="absolute left-3 top-3 w-4 h-4 text-primary-text-muted"
-                    />
-                </div>
                 <NuxtLink
                     v-if="showAddHpButton"
                     to="/my-page/create-healthcare-professional"
                     data-testid="add-hp-button"
                     class="flex justify-center items-center rounded-lg border border-accent-bg
-                    bg-secondary-bg py-2 px-3 order-1 sm:order-2 font-semibold text-sm
+                    bg-secondary-bg py-2 px-3 font-semibold text-sm
                     overflow-hidden text-center text-primary-text hover:bg-accent-bg/20"
                 >
                     {{ t('modDashboardTopbar.addHealthcareProfessional') }}
@@ -41,7 +22,7 @@
                     to="/my-page/create-facility"
                     data-testid="add-facility-button"
                     class="flex justify-center items-center rounded-lg border border-accent-bg
-                    bg-secondary-bg py-2 px-3 order-1 sm:order-2 font-semibold text-sm
+                    bg-secondary-bg py-2 px-3 font-semibold text-sm
                     overflow-hidden text-center text-primary-text hover:bg-accent-bg/20"
                 >
                     {{ t('modDashboardTopbar.addFacility') }}
@@ -105,23 +86,13 @@ import {
     useModerationSubmissionsStore
 } from '~/stores/moderationSubmissionsStore'
 import { useCurrentUserAccessStore } from '~/stores/currentUserAccessStore'
-import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useI18n } from '#imports'
-import SVGLookingGlass from '~/assets/icons/looking-glass.svg'
 
 const { t } = useI18n()
 const moderationSubmissionsStore = useModerationSubmissionsStore()
-const facilitiesStore = useFacilitiesStore()
 const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
 const accessStore = useCurrentUserAccessStore()
-
-const showListSearch = computed(() => {
-    const selectedView = moderationSubmissionsStore.selectedModerationListViewChosen
-    return selectedView === SelectedModerationListView.Submissions
-      || selectedView === SelectedModerationListView.Facilities
-      || selectedView === SelectedModerationListView.HealthcareProfessionals
-})
 
 const showAddHpButton = computed(() =>
     moderationSubmissionsStore.selectedModerationListViewChosen
@@ -144,31 +115,6 @@ const showAddFacilityButton = computed(() =>
 const showLicenseReviewFilter = computed(() =>
     moderationSubmissionsStore.selectedModerationListViewChosen
     === SelectedModerationListView.HealthcareProfessionals)
-
-const listSearchQuery = computed({
-    get() {
-        switch (moderationSubmissionsStore.selectedModerationListViewChosen) {
-            case SelectedModerationListView.Facilities:
-                return facilitiesStore.listSearchQuery
-            case SelectedModerationListView.HealthcareProfessionals:
-                return healthcareProfessionalsStore.listSearchQuery
-            default:
-                return moderationSubmissionsStore.submissionSearchQuery
-        }
-    },
-    set(newValue: string) {
-        switch (moderationSubmissionsStore.selectedModerationListViewChosen) {
-            case SelectedModerationListView.Facilities:
-                facilitiesStore.setListSearchQuery(newValue)
-                return
-            case SelectedModerationListView.HealthcareProfessionals:
-                healthcareProfessionalsStore.setListSearchQuery(newValue)
-                return
-            default:
-                moderationSubmissionsStore.setSubmissionSearchQuery(newValue)
-        }
-    }
-})
 
 function toggleLicenseReviewFilter() {
     const reviewIsOff = healthcareProfessionalsStore.licenseReviewFilter === null

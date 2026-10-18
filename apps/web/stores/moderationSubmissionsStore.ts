@@ -8,6 +8,7 @@ import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql.js'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { useTranslation } from '~/composables/useTranslation'
 import { isNewSubmission } from '~/utils/moderationUtils'
+import { nextListOrder, orderByInput, orderedPage, type ListOrder } from '~/utils/moderationTable'
 
 export enum SelectedSubmissionListViewTab {
     New = 'NEW',
@@ -67,6 +68,7 @@ export const useModerationSubmissionsStore = defineStore(
         const totalSubmissionsCount: Ref<number> = ref(0)
         const currentOffset: Ref<number> = ref(0)
         const itemsPerPage: Ref<number> = ref(25)
+        const listOrder: Ref<ListOrder | null> = ref(null)
         const cachedNewSubmissions: Ref<Submission[]> = ref([])
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalSubmissionsCount.value)
         const hasPrevPage = computed(() => currentOffset.value > 0)
@@ -100,15 +102,33 @@ export const useModerationSubmissionsStore = defineStore(
             return filteredSearchResults.filter(isNewSubmission)
         }
 
+        function submissionSortValue(submission: Submission, field: string): string {
+            if (field === 'healthcareProfessionalName') {
+                return submission.healthcareProfessionalName
+            }
+            if (field === 'createdDate') {
+                return submission.createdDate
+            }
+            if (field === 'updatedDate') {
+                return submission.updatedDate
+            }
+            return ''
+        }
+
         function applyNewTabListView(newSubmissions: Submission[]) {
             cachedNewSubmissions.value = newSubmissions
             const searchFiltered = applySearchFilter(newSubmissions)
             totalSubmissionsCount.value = searchFiltered.length
-            submissionsData.value = searchFiltered.slice(
+            // New is not a server status, so the loaded queue is sorted before the page is cut.
+            const page = orderedPage(
+                searchFiltered,
+                listOrder.value,
                 currentOffset.value,
-                currentOffset.value + itemsPerPage.value
+                itemsPerPage.value,
+                submissionSortValue
             )
-            filteredSubmissionDataForListComponent.value = submissionsData.value
+            submissionsData.value = page
+            filteredSubmissionDataForListComponent.value = page
         }
 
         async function getSubmissions() {
@@ -120,10 +140,12 @@ export const useModerationSubmissionsStore = defineStore(
 
                 cachedNewSubmissions.value = []
 
+                const orderBy = orderByInput(listOrder.value)
                 const filters: SubmissionSearchFilters = {
                     offset: currentOffset.value,
                     limit: itemsPerPage.value,
-                    ...SUBMISSION_TAB_FILTERS[selectedModerationListViewTabChosen.value]
+                    ...SUBMISSION_TAB_FILTERS[selectedModerationListViewTabChosen.value],
+                    ...(orderBy === null ? {} : { orderBy })
                 }
                 const { filteredSearchResults, totalCount } = await fetchSubmissionsWithCount(filters)
                 submissionsData.value = filteredSearchResults
@@ -264,6 +286,25 @@ export const useModerationSubmissionsStore = defineStore(
             itemsPerPage.value = newLimit
         }
 
+        function setListOrder(field: string) {
+            listOrder.value = nextListOrder(listOrder.value, field)
+            currentOffset.value = 0
+            return getSubmissions()
+        }
+
+        async function updateSubmissionStatus(
+            id: string,
+            input: { isApproved?: boolean, isRejected?: boolean, isUnderReview?: boolean }
+        ): Promise<boolean> {
+            const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
+                gqlClient.request.bind(gqlClient),
+                updateFacilitySubmissionGqlMutation,
+                { id, input }
+            )
+            const updatedSubmission = serverResponse.data?.updateSubmission
+            return serverResponse.errors?.length ? false : updatedSubmission !== undefined && updatedSubmission !== null
+        }
+
         return {
             getSubmissions,
             fetchStatusCounts,
@@ -287,6 +328,9 @@ export const useModerationSubmissionsStore = defineStore(
             totalSubmissionsCount,
             currentOffset,
             itemsPerPage,
+            listOrder,
+            setListOrder,
+            updateSubmissionStatus,
             setOffset,
             hasNextPage,
             hasPrevPage,

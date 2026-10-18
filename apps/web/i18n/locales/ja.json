@@ -497,6 +497,25 @@
   "modListContainer": {
     "resultsPerPage": "1ページの件数"
   },
+  "moderationTable": {
+    "name": "名前",
+    "facility": "医療機関",
+    "status": "状態",
+    "englishName": "英語名",
+    "japaneseName": "日本語名",
+    "selectRow": "{name}を選択",
+    "selectPage": "このページの行をすべて選択",
+    "selectedRows": "{count}件を選択: {names}",
+    "approveSelected": "選択した投稿を承認",
+    "rejectSelected": "選択した投稿を却下",
+    "rowApproved": "{name}を承認しました",
+    "rowRejected": "{name}を却下しました",
+    "rowFailed": "{name}は失敗しました",
+    "sortBy": "{column}で並べ替え",
+    "dragColumn": "{column}をドラッグして列を移動",
+    "page": "{page}ページ",
+    "working": "選択した行を更新しています"
+  },
   "errorPage": {
     "title": "404 - 診断：ページが見つかりません",
     "description": "このページは健康診断に合格しませんでした。代わりに健康なページにご案内します！",

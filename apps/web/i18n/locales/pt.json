@@ -491,6 +491,25 @@
   "modListContainer": {
     "resultsPerPage": "Resultados por página"
   },
+  "moderationTable": {
+    "name": "Nome",
+    "facility": "Estabelecimento",
+    "status": "Estado",
+    "englishName": "Nome em inglês",
+    "japaneseName": "Nome em japonês",
+    "selectRow": "Selecionar {name}",
+    "selectPage": "Selecionar cada linha desta página",
+    "selectedRows": "{count} selecionados: {names}",
+    "approveSelected": "Aprovar os selecionados",
+    "rejectSelected": "Rejeitar os selecionados",
+    "rowApproved": "{name} aprovado",
+    "rowRejected": "{name} rejeitado",
+    "rowFailed": "{name} falhou",
+    "sortBy": "Ordenar por {column}",
+    "dragColumn": "Arrastar para mover {column}",
+    "page": "Página {page}",
+    "working": "A atualizar as linhas selecionadas"
+  },
   "errorPage": {
     "title": "404 - Diagnóstico: Página não encontrada",
     "description": "Esta página não passou no seu exame de saúde. Vamos levá-lo a uma página saudável!",

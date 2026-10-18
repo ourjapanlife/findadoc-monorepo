@@ -21,6 +21,7 @@ import { type Insurance,
     type UpdateHealthcareProfessionalInput } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import { stableStringify } from '~/utils/stableStringify'
+import { nextListOrder, orderByInput, type ListOrder } from '~/utils/moderationTable'
 import { useLocaleStore } from '~/stores/localeStore'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { useTranslation } from '~/composables/useTranslation'
@@ -74,6 +75,7 @@ export const useHealthcareProfessionalsStore = defineStore(
         const currentOffset: Ref<number> = ref(0)
         const itemsPerPage: Ref<number> = ref(25)
         const listSearchQuery: Ref<string> = ref('')
+        const listOrder: Ref<ListOrder | null> = ref(null)
         const licenseReviewFilter: Ref<LicenseReviewStatus | null> = ref(null)
         const licenseReviewQueueCount: Ref<number | null> = ref(null)
         const healthcareProfessionalList: Ref<HealthcareProfessional[]> = ref([])
@@ -180,10 +182,12 @@ export const useHealthcareProfessionalsStore = defineStore(
         async function loadHealthcareProfessionalList() {
             const request = ++professionalListRequest
             const query = listSearchQuery.value.trim()
+            const orderBy = orderByInput(listOrder.value)
             const filters = {
                 offset: currentOffset.value,
                 limit: itemsPerPage.value,
                 ...(query ? { query } : {}),
+                ...(orderBy === null ? {} : { orderBy }),
                 ...(licenseReviewFilter.value ? { licenseReview: licenseReviewFilter.value } : {})
             }
             try {
@@ -407,6 +411,12 @@ export const useHealthcareProfessionalsStore = defineStore(
             itemsPerPage.value = newLimit
         }
 
+        function setListOrder(field: string) {
+            listOrder.value = nextListOrder(listOrder.value, field)
+            currentOffset.value = 0
+            return loadHealthcareProfessionalList()
+        }
+
         function setListSearchQuery(newQuery: string) {
             listSearchQuery.value = newQuery
             currentOffset.value = 0
@@ -442,6 +452,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             healthcareProfessionalsData,
             filteredHealthcareProfessionalsData,
             listSearchQuery,
+            listOrder,
+            setListOrder,
             licenseReviewFilter,
             licenseReviewQueueCount,
             fetchLicenseReviewQueueCount,

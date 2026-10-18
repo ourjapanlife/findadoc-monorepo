@@ -10,6 +10,7 @@ import { uniqueLocales } from '../languages/publishedLocales.js'
 import type { HasContains, HasIlike, HasOr } from '../../utils/dbUtils.js'
 import { prefectureTranslations, resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
+import { databaseOrderColumn, FACILITY_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { FACILITY_SEARCH_COLUMN } from '../../utils/fieldSelectionUtils.js'
 import { isCityRecordId, resolveFacilityPublication, verificationStatusForUpdate } from './facilityPublication.js'
 import { cityExists, findCityBySlug } from './cityService.js'
@@ -678,9 +679,10 @@ export async function searchFacilities(
 
         // Determine the field and direction for ordering, falling back to nameEn if no order is specified
         const orderBy = filters.orderBy?.[0]
+        const orderColumn = databaseOrderColumn(orderBy?.fieldToOrder, FACILITY_ORDER_COLUMNS)
 
-        if (orderBy?.fieldToOrder) {
-            baseQuery = baseQuery.order(orderBy.fieldToOrder, { ascending: orderBy.orderDirection !== 'desc' })
+        if (orderColumn !== null) {
+            baseQuery = baseQuery.order(orderColumn, { ascending: orderBy?.orderDirection !== 'desc' })
         } else {
             baseQuery = baseQuery.order('name_en', { ascending: true })
         }

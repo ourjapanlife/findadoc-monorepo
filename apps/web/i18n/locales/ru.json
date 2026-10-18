@@ -491,6 +491,25 @@
   "modListContainer": {
     "resultsPerPage": "На странице"
   },
+  "moderationTable": {
+    "name": "Имя",
+    "facility": "Учреждение",
+    "status": "Статус",
+    "englishName": "Имя на английском",
+    "japaneseName": "Имя на японском",
+    "selectRow": "Выбрать {name}",
+    "selectPage": "Выбрать все строки на этой странице",
+    "selectedRows": "Выбрано {count}: {names}",
+    "approveSelected": "Одобрить выбранные",
+    "rejectSelected": "Отклонить выбранные",
+    "rowApproved": "{name} одобрено",
+    "rowRejected": "{name} отклонено",
+    "rowFailed": "{name} не удалось",
+    "sortBy": "Сортировать по полю {column}",
+    "dragColumn": "Перетащите, чтобы переместить {column}",
+    "page": "Страница {page}",
+    "working": "Обновление выбранных строк"
+  },
   "errorPage": {
     "title": "404 - Диагноз: Страница не найдена",
     "description": "Эта страница не прошла медосмотр. Давайте направим вас на здоровую страницу!",
