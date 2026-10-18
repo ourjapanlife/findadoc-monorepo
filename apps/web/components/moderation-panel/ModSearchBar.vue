@@ -4,7 +4,7 @@
         class="mod-edit-only relative flex w-full"
     >
         <div
-            class="flex h-12 w-full items-center gap-2 rounded-lg border border-border-strong bg-secondary-bg px-3
+            class="mod-search-control flex h-12 w-full items-center gap-2 rounded-lg border border-border-strong px-3
                 focus-within:border-primary"
         >
             <input
@@ -38,7 +38,7 @@
                 <SVGLookingGlass
                     role="img"
                     title="searching icon"
-                    class="h-6 pl-2"
+                    class="h-5 w-5 shrink-0 text-primary-text-muted"
                 />
             </button>
         </div>
