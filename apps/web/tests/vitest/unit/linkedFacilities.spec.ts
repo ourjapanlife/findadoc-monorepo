@@ -18,15 +18,23 @@ describe('linked facilities', () => {
         ])
 
         const linked = facilitiesForIds(['clinic-off-page', 'clinic-on-page'], known)
+        const harbor = linked[0]
+        if (harbor === undefined) {
+            throw new Error('expected the off-page clinic')
+        }
 
         expect(linked.map(facility => facility.id)).to.deep.equal(['clinic-off-page', 'clinic-on-page'])
-        expect(facilityLinkLabel(linked[0])).to.equal('Harbor Clinic · 港クリニック')
+        expect(facilityLinkLabel(harbor)).to.equal('Harbor Clinic · 港クリニック')
     })
 
     it('falls back to the id until a name is known', () => {
         const linked = facilitiesForIds(['missing-clinic'], new Map())
+        const missing = linked[0]
+        if (missing === undefined) {
+            throw new Error('expected the missing clinic')
+        }
 
-        expect(facilityLinkLabel(linked[0])).to.equal('missing-clinic')
+        expect(facilityLinkLabel(missing)).to.equal('missing-clinic')
     })
 
     it('adds a link once and removes it by id', () => {

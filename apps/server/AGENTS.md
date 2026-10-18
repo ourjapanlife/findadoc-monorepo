@@ -49,6 +49,10 @@ Clinic, doctor, hub, and facet pages are generated for English and Japanese only
 
 Moderation forms that already have saved data open in preview. Create forms stay editable. A Maps link that matches a clinic disables Submit on the public form. The same match is a warning in moderation, and update, approve, and create stay available.
 
+## Pull requests
+
+A pull request title follows [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary): `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`, `build:`, `ci:`, `chore:`, or `revert:`. `.github/workflows/lint-pr-title.yml` rejects anything else. Commit subjects use the same form.
+
 ## Node and pnpm
 
 Node is pinned in the repo-root `.nvmrc` (24.22.0). pnpm 10.27.0 comes from the root `packageManager` field through Corepack. After `nvm use`, including on Windows, activate pnpm for that Node install before running `turbo` or `pnpm`:
