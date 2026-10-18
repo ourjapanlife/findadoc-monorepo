@@ -197,7 +197,9 @@
     "new": "Nouveau",
     "approved": "Approuvé",
     "rejected": "Rejeté",
-    "submissions": "Soumissions"
+    "submissions": "Soumissions",
+    "collapse": "Réduire la barre latérale",
+    "expand": "Ouvrir la barre latérale"
   },
   "accessPanel": {
     "loading": "Chargement des autorisations…",

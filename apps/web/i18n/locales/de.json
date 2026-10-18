@@ -252,7 +252,9 @@
     "new": "Neu",
     "approved": "Genehmigt",
     "rejected": "Abgelehnt",
-    "submissions": "Einreichungen"
+    "submissions": "Einreichungen",
+    "collapse": "Seitenleiste einklappen",
+    "expand": "Seitenleiste ausklappen"
   },
   "accessPanel": {
     "loading": "Berechtigungen werden geladen…",

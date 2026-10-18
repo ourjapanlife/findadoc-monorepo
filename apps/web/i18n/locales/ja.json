@@ -204,7 +204,9 @@
     "new": "新規",
     "approved": "承認済み",
     "rejected": "却下",
-    "submissions": "投稿"
+    "submissions": "投稿",
+    "collapse": "サイドバーを折りたたむ",
+    "expand": "サイドバーを開く"
   },
   "accessPanel": {
     "loading": "権限を読み込み中…",

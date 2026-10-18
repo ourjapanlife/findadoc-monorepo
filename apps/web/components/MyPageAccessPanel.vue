@@ -6,21 +6,29 @@
         <div
             v-if="!accessStore.isLoaded && !accessStore.loadError"
             class="text-primary-text-muted"
+            :class="collapsed ? 'md:break-words md:text-center md:text-xs' : ''"
         >
             {{ t('accessPanel.loading') }}
         </div>
         <div
             v-else-if="accessStore.loadError"
             class="text-error"
+            :class="collapsed ? 'md:break-words md:text-center md:text-xs' : ''"
         >
             {{ t('accessPanel.loadError') }}
         </div>
         <template v-else>
-            <div class="mb-3">
+            <div
+                class="mb-3"
+                :class="collapsed ? 'md:hidden' : ''"
+            >
                 <span class="font-medium text-primary-text block mb-1">{{ t('accessPanel.signedInAs') }}</span>
                 <span class="text-primary-text-muted">{{ authStore.userId }}</span>
             </div>
-            <div class="mb-3">
+            <div
+                class="mb-3"
+                :class="collapsed ? 'md:hidden' : ''"
+            >
                 <span class="font-medium text-primary-text block mb-2">{{ t('accessPanel.roles') }}</span>
                 <div class="flex flex-wrap gap-2">
                     <span
@@ -57,7 +65,10 @@
                             aria-hidden="true"
                         />
                     </button>
-                    <span class="hidden md:block font-bold text-primary-text">
+                    <span
+                        class="font-bold text-primary-text"
+                        :class="collapsed ? 'hidden' : 'hidden md:block'"
+                    >
                         {{ t('accessPanel.sections.settings') }}
                     </span>
                     <ul class="hidden md:flex md:flex-col md:gap-1 pl-0 list-none">
@@ -68,10 +79,17 @@
                             <NuxtLink
                                 :to="pageRoute(page)"
                                 :class="sidebarNavLinkClass(page)"
+                                :title="collapsed ? page.label : undefined"
                                 :data-testid="`access-page-link-${page.id}`"
                                 @click="onPageClick(page.listView)"
                             >
-                                {{ page.label }}
+                                <component
+                                    :is="page.icon"
+                                    class="h-5 w-5 shrink-0"
+                                    :class="page.iconClass"
+                                    aria-hidden="true"
+                                />
+                                <span :class="collapsed ? 'md:sr-only' : ''">{{ page.label }}</span>
                             </NuxtLink>
                         </li>
                     </ul>
@@ -111,7 +129,10 @@
                             aria-hidden="true"
                         />
                     </button>
-                    <span class="hidden md:block font-bold text-primary-text">
+                    <span
+                        class="font-bold text-primary-text"
+                        :class="collapsed ? 'hidden' : 'hidden md:block'"
+                    >
                         {{ t('accessPanel.sections.moderation') }}
                     </span>
                     <ul class="hidden md:flex md:flex-col md:gap-1 pl-0 list-none">
@@ -122,10 +143,17 @@
                             <NuxtLink
                                 :to="pageRoute(page)"
                                 :class="sidebarNavLinkClass(page)"
+                                :title="collapsed ? page.label : undefined"
                                 :data-testid="`access-page-link-${page.id}`"
                                 @click="onPageClick(page.listView)"
                             >
-                                {{ page.label }}
+                                <component
+                                    :is="page.icon"
+                                    class="h-5 w-5 shrink-0"
+                                    :class="page.iconClass"
+                                    aria-hidden="true"
+                                />
+                                <span :class="collapsed ? 'md:sr-only' : ''">{{ page.label }}</span>
                             </NuxtLink>
                         </li>
                     </ul>
@@ -161,10 +189,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, type Component } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/authStore'
 import { useCurrentUserAccessStore } from '~/stores/currentUserAccessStore'
+import SVGSettingsIcon from '~/assets/icons/settings-icon.svg'
+import SVGSubmissionListIcon from '~/assets/icons/hamburger-list-icon.svg'
+import SVGFacilityIcon from '~/assets/icons/hospital-facility-icon.svg'
+import SVGProfessionalIcon from '~/assets/icons/user-icon.svg'
 import {
     SelectedModerationListView,
     type SelectedModerationListView as SelectedModerationListViewType
@@ -178,8 +210,14 @@ interface NavPage {
     id: string
     route: string
     label: string
+    icon: Component
+    iconClass: string
     listView?: SelectedModerationListViewType
 }
+
+const props = withDefaults(defineProps<{ collapsed?: boolean }>(), {
+    collapsed: false
+})
 
 const { t } = useI18n()
 const route = useRoute()
@@ -201,7 +239,9 @@ const canReadHealthcareProfessionals = computed(
 const settingsPages = computed<NavPage[]>(() => [{
     id: 'my-page',
     route: '/my-page',
-    label: t('topNav.myPage')
+    label: t('topNav.myPage'),
+    icon: SVGSettingsIcon,
+    iconClass: '[&_path]:fill-current'
 }])
 
 const moderationPages = computed<NavPage[]>(() => [
@@ -210,6 +250,8 @@ const moderationPages = computed<NavPage[]>(() => [
             id: 'moderation-submissions',
             route: '/my-page',
             label: t('modDashboardLeftNav.submissions'),
+            icon: SVGSubmissionListIcon,
+            iconClass: '[&_path]:fill-current',
             listView: SelectedModerationListView.Submissions
         }]
         : []),
@@ -218,6 +260,8 @@ const moderationPages = computed<NavPage[]>(() => [
             id: 'moderation-facilities',
             route: '/my-page',
             label: t('modDashboardLeftNav.facilities'),
+            icon: SVGFacilityIcon,
+            iconClass: '',
             listView: SelectedModerationListView.Facilities
         }]
         : []),
@@ -226,6 +270,8 @@ const moderationPages = computed<NavPage[]>(() => [
             id: 'moderation-healthcare-professionals',
             route: '/my-page',
             label: t('modDashboardLeftNav.healthcareProfessionals'),
+            icon: SVGProfessionalIcon,
+            iconClass: '',
             listView: SelectedModerationListView.HealthcareProfessionals
         }]
         : [])
@@ -256,7 +302,8 @@ function pageRoute(page: NavPage): string | { path: string, query: { view: strin
 }
 
 function sidebarNavLinkClass(page: NavPage): string {
-    const base = 'block py-2 px-3 text-sm font-medium transition-colors border-l-2 rounded-r-md'
+    const collapsedLayout = props.collapsed ? ' md:justify-center md:px-1.5 md:gap-0' : ''
+    const base = `flex items-center gap-2 py-2 px-3 text-sm font-medium transition-colors border-l-2 rounded-r-md${collapsedLayout}`
     const resolved = pageRoute(page)
     const targetPath = typeof resolved === 'string' ? resolved : resolved.path
     const targetView = typeof resolved === 'string'
