@@ -1,6 +1,17 @@
 /** Auth0 API identifier — must match the findadoc API in Auth0 and the server JWT audience. */
 export const AUTH0_API_AUDIENCE = 'findadoc'
 
+export const AUTH0_DOMAIN = 'findadoc.jp.auth0.com'
+export const AUTH0_CLIENT_ID = 'HB5Jow9yA5yiA4LTPQCKBYrfDyRkO9JX'
+
+/**
+ * The SDK default cache is memory. A reload empties it, and Auth0 then tries to
+ * restore the session through an iframe on findadoc.jp.auth0.com. That cookie is
+ * third-party on localhost, so the browser blocks it and the user is logged out.
+ * localstorage keeps the tokens on this origin across a refresh.
+ */
+export const AUTH0_CACHE_LOCATION = 'localstorage' as const
+
 const LOGIN_PATH = '/login'
 export const AUTH_RETURN_TO_QUERY = 'returnTo'
 
@@ -47,6 +58,15 @@ export function resolveAuthReturnPath(currentFullPath: string): string {
     }
 
     return sanitizeAuthReturnPath(currentFullPath) ?? '/'
+}
+
+export function getAuth0ClientOptions(redirectUri?: string) {
+    return {
+        domain: AUTH0_DOMAIN,
+        clientId: AUTH0_CLIENT_ID,
+        cacheLocation: AUTH0_CACHE_LOCATION,
+        authorizationParams: getAuth0AuthorizationParams(redirectUri)
+    }
 }
 
 export function buildLoginRoute(returnTo: string) {
