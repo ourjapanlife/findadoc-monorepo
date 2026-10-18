@@ -204,7 +204,9 @@
     "new": "新建",
     "approved": "已批准",
     "rejected": "已驳回",
-    "submissions": "提交"
+    "submissions": "提交",
+    "collapse": "收起侧边栏",
+    "expand": "展开侧边栏"
   },
   "accessPanel": {
     "loading": "正在加载权限…",

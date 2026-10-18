@@ -204,7 +204,9 @@
     "new": "Bago",
     "approved": "Aprubado",
     "rejected": "Hindi na-aprubahan",
-    "submissions": "Mga Isinumite"
+    "submissions": "Mga Isinumite",
+    "collapse": "Tiklupin ang gilid na menu",
+    "expand": "Palawakin ang gilid na menu"
   },
   "accessPanel": {
     "loading": "Nilo-load ang mga pahintulot…",

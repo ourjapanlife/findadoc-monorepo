@@ -204,7 +204,9 @@
     "new": "Mới",
     "approved": "Đã được phê duyệt",
     "rejected": "Bị từ chối",
-    "submissions": "Các bài gửi"
+    "submissions": "Các bài gửi",
+    "collapse": "Thu gọn thanh bên",
+    "expand": "Mở rộng thanh bên"
   },
   "accessPanel": {
     "loading": "Đang tải quyền truy cập…",

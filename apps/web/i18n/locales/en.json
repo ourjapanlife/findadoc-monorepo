@@ -299,7 +299,9 @@
     "new": "New",
     "approved": "Approved",
     "rejected": "Rejected",
-    "submissions": "Submissions"
+    "submissions": "Submissions",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
   },
   "accessPanel": {
     "loading": "Loading permissions…",

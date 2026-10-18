@@ -299,7 +299,9 @@
     "new": "신규",
     "approved": "승인됨",
     "rejected": "거절됨",
-    "submissions": "제보"
+    "submissions": "제보",
+    "collapse": "사이드바 접기",
+    "expand": "사이드바 펼치기"
   },
   "accessPanel": {
     "loading": "권한을 불러오는 중…",
