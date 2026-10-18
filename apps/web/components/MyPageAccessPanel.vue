@@ -194,7 +194,7 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/authStore'
 import { useCurrentUserAccessStore } from '~/stores/currentUserAccessStore'
 import SVGSettingsIcon from '~/assets/icons/settings-icon.svg'
-import SVGSubmissionListIcon from '~/assets/icons/hamburger-list-icon.svg'
+import SVGInbox from '~/assets/icons/inbox.svg'
 import SVGFacilityIcon from '~/assets/icons/hospital-facility-icon.svg'
 import SVGProfessionalIcon from '~/assets/icons/user-icon.svg'
 import {
@@ -250,8 +250,8 @@ const moderationPages = computed<NavPage[]>(() => [
             id: 'moderation-submissions',
             route: '/my-page',
             label: t('modDashboardLeftNav.submissions'),
-            icon: SVGSubmissionListIcon,
-            iconClass: '[&_path]:fill-current',
+            icon: SVGInbox,
+            iconClass: '',
             listView: SelectedModerationListView.Submissions
         }]
         : []),
