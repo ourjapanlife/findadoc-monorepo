@@ -5,12 +5,22 @@ export const AUTH0_DOMAIN = 'findadoc.jp.auth0.com'
 export const AUTH0_CLIENT_ID = 'HB5Jow9yA5yiA4LTPQCKBYrfDyRkO9JX'
 
 /**
- * The SDK default cache is memory. A reload empties it, and Auth0 then tries to
- * restore the session through an iframe on findadoc.jp.auth0.com. That cookie is
- * third-party on localhost, so the browser blocks it and the user is logged out.
- * localstorage keeps the tokens on this origin across a refresh.
+ * Production can restore a reload through the Auth0 iframe. Localhost cannot:
+ * that cookie is third-party there, so the browser blocks it. Only a local
+ * origin keeps the tokens in localStorage.
  */
-export const AUTH0_CACHE_LOCATION = 'localstorage' as const
+export function auth0CacheLocation(origin: string): 'memory' | 'localstorage' {
+    try {
+        const host = new URL(origin).hostname
+        if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]') {
+            return 'localstorage'
+        }
+    } catch {
+        return 'memory'
+    }
+
+    return 'memory'
+}
 
 const LOGIN_PATH = '/login'
 export const AUTH_RETURN_TO_QUERY = 'returnTo'
@@ -61,10 +71,12 @@ export function resolveAuthReturnPath(currentFullPath: string): string {
 }
 
 export function getAuth0ClientOptions(redirectUri?: string) {
+    const origin = redirectUri ?? (import.meta.client ? window.location.origin : '')
+
     return {
         domain: AUTH0_DOMAIN,
         clientId: AUTH0_CLIENT_ID,
-        cacheLocation: AUTH0_CACHE_LOCATION,
+        cacheLocation: auth0CacheLocation(origin),
         authorizationParams: getAuth0AuthorizationParams(redirectUri)
     }
 }

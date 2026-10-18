@@ -53,7 +53,7 @@ Moderation forms that already have saved data open in preview. Create forms stay
 
 ## Auth
 
-The web Auth0 client stores its cache in localStorage. `apps/web/utils/auth0Config.ts` names that as `AUTH0_CACHE_LOCATION`. The SDK default is memory. A reload then restores the session through an iframe on `findadoc.jp.auth0.com`, and that cookie is third-party on localhost, so the browser blocks it and the user is logged out. Do not switch the cache back to memory. A refresh token is not requested. After the access token expires, local silent renewal still cannot run until Auth0 allows refresh tokens for this client.
+The web Auth0 client keeps its cache in memory on the production site. A reload there restores the session through the iframe on `findadoc.jp.auth0.com`. That cookie is third-party on localhost, so the browser blocks it and a local reload logs the user out. `auth0CacheLocation` in `apps/web/utils/auth0Config.ts` uses localStorage only for localhost and `127.0.0.1`. Do not use localStorage for the production origin. A refresh token is not requested. After the access token expires, a local reload still cannot renew it until Auth0 allows refresh tokens for this client.
 
 ## Locale files
 

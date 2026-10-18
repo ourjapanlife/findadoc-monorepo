@@ -41,12 +41,17 @@ describe('resolveAuthReturnPath', () => {
 })
 
 describe('getAuth0ClientOptions', () => {
-    it('keeps the token cache on this origin so a reload can restore the session', () => {
+    it('keeps the token cache on localhost so a reload can restore the session', () => {
         const options = getAuth0ClientOptions('http://localhost:3000')
 
         expect(options.cacheLocation).to.equal('localstorage')
+        expect(getAuth0ClientOptions('http://127.0.0.1:3000').cacheLocation).to.equal('localstorage')
         expect(options.authorizationParams.audience).to.equal(AUTH0_API_AUDIENCE)
         expect(options.authorizationParams.redirect_uri).to.equal('http://localhost:3000')
+    })
+
+    it('leaves the production cache in memory', () => {
+        expect(getAuth0ClientOptions('https://findadoc.jp').cacheLocation).to.equal('memory')
     })
 })
 
