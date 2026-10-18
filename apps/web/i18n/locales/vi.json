@@ -12,7 +12,7 @@
   "contactPage": {
     "heading": "Liên hệ",
     "intro": "Find a Doc, Japan là tổ chức phi lợi nhuận đã đăng ký. Hãy viết cho chúng tôi khi bạn cần một người, không chỉ ô tìm kiếm.",
-    "emailLabel": "Email",
+    "emailLabel": "E-mail",
     "whatHeading": "Việc chúng tôi có thể giúp",
     "whatBody": "Hãy cho chúng tôi biết phòng khám hoặc bác sĩ cần được liệt kê, chỗ cần sửa trên trang đã đăng, hoặc sự cố khi dùng trang web. Chúng tôi cũng trả lời câu hỏi của đối tác, nhà báo và cơ quan công về chính tổ chức. Chúng tôi không đưa ra lời khuyên y khoa, chẩn đoán hay đặt lịch hộ. Để được khám, hãy tìm phòng khám trong danh bạ và liên hệ trực tiếp phòng khám đó.",
     "npoHeading": "Tổ chức",
@@ -43,8 +43,8 @@
     "siteName": "Find a Doc, Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
-    "loading": "Loading",
-    "close": "Close"
+    "loading": "Đang tải",
+    "close": "Đóng"
   },
   "about": {
     "heroHeading": "Find a Doc, Japan",
@@ -68,7 +68,7 @@
     "involveAdd": "Thêm bác sĩ",
     "involveLinkedin": "Theo dõi chúng tôi",
     "involveContribute": "Đóng góp",
-    "sectionNavLabel": "On this page"
+    "sectionNavLabel": "Trên trang này"
   },
   "footer": {
     "terms": "Điều khoản",
@@ -78,16 +78,16 @@
     "contribute": "Đóng góp",
     "contact": "Liên hệ",
     "copyright": "NPO法人Find a Doc, Japan",
-    "exploreHeading": "Explore",
-    "communityHeading": "Community",
-    "legalHeading": "Legal"
+    "exploreHeading": "Khám phá",
+    "communityHeading": "Cộng đồng",
+    "legalHeading": "Pháp lý"
   },
   "hamburgerMenu": {
     "logout": "Đăng xuất",
     "languageDropdownTitle": "Ngôn Ngữ:",
     "copyright": "NPO法人Find a Doc, Japan",
-    "login": "Login",
-    "logoutToast": "Successfully logged out"
+    "login": "Đăng nhập",
+    "logoutToast": "Đã đăng xuất"
   },
   "privacyPage": {
     "heading": "Chính Sách Bảo Mật",
@@ -113,7 +113,7 @@
   "submitPage": {
     "firstName": "Tên",
     "firstNameValidation": "Nhập tên của bạn",
-    "googleMaps": "Google Maps URL",
+    "googleMaps": "URL Google Maps",
     "googleMapsValidation": "Nhập liên kết Google Maps (ví dụ: https://maps.app.goo.gl/…)",
     "heading": "Thêm bác sĩ",
     "healthcareProfessionalName": "Tên chuyên gia y tế",
@@ -160,29 +160,29 @@
     "remaining": "còn lại",
     "noResults": "Không tìm thấy kết quả",
     "noResultsSubtext": "Vui lòng thử kết hợp bộ lọc khác.",
-    "loadMoreCount": "Load more ({n} remaining)"
+    "loadMoreCount": "Tải thêm (còn {n})"
   },
   "searchResultsDetails": {
     "speaks": "Bác sĩ này nói",
-    "lastUpdate": "Last updated",
-    "healthcareProfessionals": "Healthcare Professionals",
+    "lastUpdate": "Cập nhật lần cuối",
+    "healthcareProfessionals": "Nhân viên y tế",
     "callNow": "Gọi"
   },
   "thankYouPage": {
     "heading": "Cảm ơn bạn!",
     "submission": "Bài gửi của bạn sẽ được xem xét trong thời gian ngắn bởi các quản trị viên của chúng tôi.",
     "home": "Quay lại trang chủ",
-    "submitAnotherDoctor": "Add another doctor"
+    "submitAnotherDoctor": "Thêm bác sĩ khác"
   },
   "topNav": {
     "about": "Về chúng tôi",
     "home": "Trang chủ",
     "submit": "Thêm bác sĩ",
     "logout": "Đăng xuất",
-    "login": "Login",
+    "login": "Đăng nhập",
     "myPage": "Trang của tôi",
-    "logoutToast": "Successfully logged out",
-    "search": "Search"
+    "logoutToast": "Đã đăng xuất",
+    "search": "Tìm kiếm"
   },
   "login": {
     "checkingauth": "Đang kiểm tra xác thực...",
@@ -192,16 +192,16 @@
     "unauthorizedline3": "Ở đây"
   },
   "modCreateFacilityOrHPTopbar": {
-    "confirmExit": "Exit without saving",
-    "create": "Create",
-    "exit": "Exit",
-    "unsavedChangesMessage": "This will exit without saving your entry. All unsaved data will be lost."
+    "confirmExit": "Thoát mà không lưu",
+    "create": "Tạo",
+    "exit": "Thoát",
+    "unsavedChangesMessage": "Bạn sẽ thoát mà không lưu. Mọi dữ liệu chưa lưu sẽ mất."
   },
   "modDashboardLeftNav": {
     "facilities": "Cơ sở vật chất",
     "healthcareProfessionals": "Chuyên gia y tế",
     "forReview": "Đang xem xét",
-    "new": "New",
+    "new": "Mới",
     "approved": "Đã được phê duyệt",
     "rejected": "Bị từ chối",
     "submissions": "Các bài gửi"
@@ -224,34 +224,34 @@
     "healthcareProfessionalFacilities": "Healthcare Professional Related Facilities"
   },
   "modDashboardTopbar": {
-    "addFacility": "Add Facility",
+    "addFacility": "Thêm cơ sở",
     "placeholderText": "Nhập tên hoặc mã ID để tìm kiếm",
     "healthcareProfessionals": "Các Chuyên gia Chăm sóc Sức khỏe",
     "facilities": "Cơ sở vật chất",
-    "addHealthcareProfessional": "Add Healthcare Professional",
-    "licenseReview": "Needs license review"
+    "addHealthcareProfessional": "Thêm nhân viên y tế",
+    "licenseReview": "Cần xem lại giấy phép"
   },
   "modEditFacilityOrHPTopbar": {
     "copyFailure": "Không thể sao chép ID",
     "delete": "Xóa",
     "updateAndExit": "Cập nhật và thoát.",
-    "deleteButtonText": "DELETE FOREVER",
-    "update": "Update",
-    "facilityDeletedSuccessfully": "Facility deleted successfully",
-    "facilityUpdatedSuccessfully": "Facility updated successfully",
-    "healthcareProfessionalDeletedSuccessfully": "Healthcare Professional deleted successfully",
-    "healthcareProfessionalUpdatedSuccessfully": "Healthcare Professional updated successfully",
-    "back": "Back",
-    "hasUnsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
-    "deleteConfirmationFacility": "Are you sure you want to delete the Facility: {facility}, with ID: {id}?",
-    "deleteConfirmationHealthcareProfessional": "Are you sure you want to delete the Healthcare Professional: {healthcareProfessional}, with ID: {id}?",
-    "healthcareProfessionalEnglishNameRequired": "Healthcare Professional must have an English name"
+    "deleteButtonText": "XÓA VĨNH VIỄN",
+    "update": "Cập nhật",
+    "facilityDeletedSuccessfully": "Đã xóa cơ sở",
+    "facilityUpdatedSuccessfully": "Đã cập nhật cơ sở",
+    "healthcareProfessionalDeletedSuccessfully": "Đã xóa nhân viên y tế",
+    "healthcareProfessionalUpdatedSuccessfully": "Đã cập nhật nhân viên y tế",
+    "back": "Quay lại",
+    "hasUnsavedChanges": "Có thay đổi chưa lưu. Bạn vẫn muốn rời đi?",
+    "deleteConfirmationFacility": "Xóa cơ sở {facility}, ID: {id}?",
+    "deleteConfirmationHealthcareProfessional": "Xóa nhân viên y tế {healthcareProfessional}, ID: {id}?",
+    "healthcareProfessionalEnglishNameRequired": "Nhân viên y tế phải có tên tiếng Anh"
   },
   "modEditSubmissionTopNav": {
     "updateAndExit": "Lưu và thoát.",
     "approve": "Phê duyệt",
     "reject": "Từ chối",
-    "update": "Save"
+    "update": "Lưu"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Không có bài gửi nào đang chờ xử lý"
@@ -271,59 +271,59 @@
     "selectInsurances": "Các bảo hiểm được chấp nhận",
     "selectLocales": "Chọn các ngôn ngữ địa phương được sử dụng",
     "selectSpecialties": "Chuyên ngành.",
-    "errorMessageHealthcareProfessionalId": "Healthcare Professional ID was not found",
-    "facilities": "Healthcare Professional Facilities",
+    "errorMessageHealthcareProfessionalId": "Không tìm thấy ID nhân viên y tế",
+    "facilities": "Cơ sở của nhân viên y tế",
     "placeholderTextFacilitySearchBar": "Search by name or ID add a Facility",
     "removeFacility": "Bỏ {name}",
-    "noFacilitiesWereFound": "No Facilities were found",
+    "noFacilitiesWereFound": "Không tìm thấy cơ sở",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "Search by insurance",
-    "placeholderTextSpecialties": "Search by specialty",
-    "placeholderTextDegrees": "Search by degree",
-    "placeholderTextLocales": "Search by language",
-    "noSpecialtiesWereFound": "No specialties were found",
-    "noInsurancesWereFound": "No insurance was found",
-    "noDegreesWereFound": "No degrees were found",
-    "noLocalesWereFound": "No languages were found",
-    "delete": "Permanently delete",
-    "exit": "Exit",
-    "missingFirstName": "No first name entered",
-    "missingLastName": "No last name entered",
-    "missingLocale": "No language chosen",
-    "oneNameNecessary": "At least one name is required for a Healthcare Professional",
-    "save": "Save",
-    "update": "Update",
-    "charactersOfLanguageDoNotMatchNameLocale": "The characters of the Healthcare Professional's name are invalid in the chosen language",
-    "labelAdditionalNotesForPatients": "Additional Notes for Patients",
-    "placeholderAdditionalNotesForPatients": "e.g. English speaking doctors only available from 2-4",
-    "selectPrimaryLicense": "Primary license",
-    "selectAdditionalCredentials": "Additional credentials",
-    "placeholderPrimaryLicense": "Choose a primary license",
-    "placeholderAdditionalCredentials": "Search credentials such as PhD or MPH",
-    "keepBothLicenses": "Keep both licenses",
-    "licenseRecommendationMd": "Suggested primary license: MD. Patients still see the saved degrees until you choose.",
-    "licenseRecommendationDental": "Suggested collapse: one dental license. Patients still see the saved degrees until you choose.",
-    "licenseRecommendationConfirm": "More than one clinical license is stored. Choose the primary license, or keep both.",
-    "storedHiddenDegrees": "Also stored, and still shown on the public listing: {degrees}",
-    "listingShowsSavedDegrees": "The public listing shows every degree saved here."
+    "placeholderTextAcceptedInsurances": "Tìm theo bảo hiểm",
+    "placeholderTextSpecialties": "Tìm theo chuyên khoa",
+    "placeholderTextDegrees": "Tìm theo học vị",
+    "placeholderTextLocales": "Tìm theo ngôn ngữ",
+    "noSpecialtiesWereFound": "Không tìm thấy chuyên khoa",
+    "noInsurancesWereFound": "Không tìm thấy bảo hiểm",
+    "noDegreesWereFound": "Không tìm thấy học vị",
+    "noLocalesWereFound": "Không tìm thấy ngôn ngữ",
+    "delete": "Xóa vĩnh viễn",
+    "exit": "Thoát",
+    "missingFirstName": "Chưa nhập tên",
+    "missingLastName": "Chưa nhập họ",
+    "missingLocale": "Chưa chọn ngôn ngữ",
+    "oneNameNecessary": "Cần ít nhất một tên",
+    "save": "Lưu",
+    "update": "Cập nhật",
+    "charactersOfLanguageDoNotMatchNameLocale": "Ký tự trong tên không hợp lệ với ngôn ngữ đã chọn",
+    "labelAdditionalNotesForPatients": "Ghi chú thêm cho người bệnh",
+    "placeholderAdditionalNotesForPatients": "vd. bác sĩ nói tiếng Anh chỉ có mặt từ 14 giờ đến 16 giờ",
+    "selectPrimaryLicense": "Giấy phép chính",
+    "selectAdditionalCredentials": "Chứng chỉ khác",
+    "placeholderPrimaryLicense": "Chọn giấy phép chính",
+    "placeholderAdditionalCredentials": "Tìm chứng chỉ như PhD hoặc MPH",
+    "keepBothLicenses": "Giữ cả hai giấy phép",
+    "licenseRecommendationMd": "Giấy phép chính được gợi ý: MD. Người bệnh vẫn thấy các học vị đã lưu cho đến khi bạn chọn.",
+    "licenseRecommendationDental": "Gợi ý: một giấy phép nha khoa. Người bệnh vẫn thấy các học vị đã lưu cho đến khi bạn chọn.",
+    "licenseRecommendationConfirm": "Đang lưu nhiều hơn một giấy phép lâm sàng. Hãy chọn giấy phép chính hoặc giữ cả hai.",
+    "storedHiddenDegrees": "Cũng được lưu và vẫn hiện trên trang công khai: {degrees}",
+    "listingShowsSavedDegrees": "Trang công khai hiển thị mọi học vị được lưu ở đây."
   },
   "modFacilitySection": {
     "addresses": "Địa chỉ.",
     "contactInformation": "Thông tin liên lạc",
     "facilityHeading": "Thông tin cơ sở",
     "googleMapsInformation": "Thông tin Google Maps",
-    "placeMatchHeading": "Google place",
-    "placeMatchFind": "Find matching places",
-    "placeMatchSave": "Save this place id",
-    "placeMatchSaved": "Place id saved",
-    "placeMatchLow": "Low confidence",
-    "placeMatchHigh": "Clear match",
-    "placeMatchEmpty": "No place matched this clinic.",
-    "placeMatchCurrent": "Saved place id",
-    "placeMatchError": "This place id could not be saved.",
+    "placeMatchHeading": "Địa điểm Google",
+    "placeMatchFind": "Tìm địa điểm khớp",
+    "placeMatchSave": "Lưu place ID này",
+    "placeMatchSaved": "Đã lưu place ID",
+    "placeMatchLow": "Độ tin cậy thấp",
+    "placeMatchHigh": "Khớp rõ",
+    "placeMatchEmpty": "Không có địa điểm nào khớp với phòng khám này.",
+    "placeMatchCurrent": "Place ID đã lưu",
+    "placeMatchError": "Không lưu được place ID này.",
     "inputErrorMessageFacilityAddressLine1Ja": "Địa chỉ Nhật Bản không hợp lệ",
     "inputErrorMessageFacilityAddressLine1En": "Địa chỉ tiếng Anh không hợp lệ",
-    "inputErrorMessagePrefectureMismatch": "Japanese and/or English Name Prefecture do not match",
+    "inputErrorMessagePrefectureMismatch": "Tên tỉnh bằng tiếng Nhật và tiếng Anh không khớp",
     "inputErrorMessageFacilityCityEn": "Tên thành phố tiếng Anh không hợp lệ",
     "inputErrorMessageFacilityCityJa": "Tên thành phố tiếng Nhật không hợp lệ",
     "inputErrorMessageFacilityEmail": "Địa chỉ email không hợp lệ",
@@ -338,7 +338,7 @@
     "labelFacilityNameEn": "Tên (Tiếng Anh)",
     "labelFacilityNameJa": "Tên (Tiếng Nhật)",
     "labelFacilityPhoneNumber": "Số điện thoại",
-    "labelFacilityEmail": "Email",
+    "labelFacilityEmail": "E-mail",
     "labelFacilityWebsite": "Trang Web",
     "labelFacilityPostalCode": "Mã bưu điện",
     "labelFacilityPrefectureEn": "Tỉnh (Tiếng Anh)",
@@ -375,12 +375,12 @@
     "placeholderTextFacilityPhoneNumber": "Ví.dụ. 08xxxxxxxxx",
     "placeholderTextFacilityPostalCode": "Ví.dụ. 186-0000",
     "placeholderTextFacilityWebsite": "Ví.dụ http://www.example.com/",
-    "errorMessageFacilityId": "Facility ID was not found",
-    "existingHPHeading": "Current Healthcare Professionals at Facility",
-    "addHealthcareProfessional": "Add existing Healthcare Professional",
-    "noHPSelected": "No Healthcare Professionals selected",
-    "placeholderTextFacilityAddressLine1En": "Street address",
-    "noHealthcareProfessionalFound": "No matching Healthcare Professionals found",
+    "errorMessageFacilityId": "Không tìm thấy ID cơ sở",
+    "existingHPHeading": "Nhân viên y tế hiện tại tại cơ sở",
+    "addHealthcareProfessional": "Thêm nhân viên y tế đã có",
+    "noHPSelected": "Chưa chọn nhân viên y tế",
+    "placeholderTextFacilityAddressLine1En": "Địa chỉ đường",
+    "noHealthcareProfessionalFound": "Không có nhân viên y tế khớp",
     "openMaps": "Mở trong Google Maps",
     "fillFromMaps": "Điền các ô trống từ liên kết này",
     "fillFromMapsHint": "Điền tên, địa chỉ và ghim còn trống từ liên kết Maps. Ô đã có nội dung được giữ nguyên.",
@@ -399,27 +399,27 @@
     "placeholderTextHealthcareProfessionalSearchbar": "Tìm kiếm theo tên hoặc ID để thêm bác sĩ.",
     "submissionConfirmationAcceptanceButton": "Vâng, gửi đi",
     "submissionConfirmationMessage": "Bạn có chắc chắn muốn gửi mẫu đơn này không?",
-    "facilitySuccessfullyRejected": "Facility rejected successfully",
-    "rejectSubmissionConfirmationMessage": "Are you sure you want to reject this submission?",
-    "rejectSubmissionConfirmationButton": "Yes, reject the submission",
-    "searchExistingFacilities": "Search for existing Facility",
-    "searchExistingHealthcareProfessionals": "Search for existing Healthcare Professionals",
-    "labelModNoteInput": "Moderator Notes",
-    "placeholderTextNoteInput": "e.g. waiting for call back from clinic",
-    "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully",
+    "facilitySuccessfullyRejected": "Đã từ chối cơ sở",
+    "rejectSubmissionConfirmationMessage": "Từ chối nội dung gửi này?",
+    "rejectSubmissionConfirmationButton": "Có, từ chối",
+    "searchExistingFacilities": "Tìm cơ sở đã có",
+    "searchExistingHealthcareProfessionals": "Tìm nhân viên y tế đã có",
+    "labelModNoteInput": "Ghi chú của người kiểm duyệt",
+    "placeholderTextNoteInput": "vd. đang chờ phòng khám gọi lại",
+    "successMessageUpdated": "Đã cập nhật nội dung gửi",
+    "successMessageApproved": "Đã duyệt nội dung gửi",
     "useExistingFacility": "Dùng cơ sở này"
   },
   "serverErrorMessages": {
-    "errorCodeMessagingNeeded": "The server error code does not have a message for the user. Please add one.",
-    "genericErrorMessage": "There was an error submitting your form, please try again"
+    "errorCodeMessagingNeeded": "Mã lỗi máy chủ này chưa có thông báo cho người dùng. Hãy thêm một thông báo.",
+    "genericErrorMessage": "Đã xảy ra lỗi khi gửi biểu mẫu. Vui lòng thử lại"
   },
   "modDashboardHealthcareProfessionalCard": {
-    "spokenLanguages": "Spoken languages",
-    "lastName": "Last name",
-    "firstName": "First name",
-    "middleName": "Middle name",
-    "nameLocale": "Name language"
+    "spokenLanguages": "Ngôn ngữ sử dụng",
+    "lastName": "Họ",
+    "firstName": "Tên",
+    "middleName": "Tên đệm",
+    "nameLocale": "Ngôn ngữ của tên"
   },
   "specialties": {
     "allergyAndImmunology": "Bác sĩ Dị ứng và Miễn dịch học",
@@ -441,7 +441,7 @@
     "ophthalmology": "Bác sĩ Nhãn khoa (Phẫu thuật mắt)",
     "orthopedicSurgery": "Bác sĩ Chấn thương chỉnh hình",
     "optometry": "Bác sĩ Khúc xạ",
-    "otolaryngology": "Otolaryngology",
+    "otolaryngology": "Tai mũi họng",
     "pathology": "Bác sĩ Giải phẫu bệnh",
     "pediatrics": "Bác sĩ Nhi khoa",
     "physiotherapy": "Bác sĩ Vật lý trị liệu",
@@ -470,17 +470,17 @@
     "womensHealth": "Sức khỏe phụ nữ"
   },
   "noteInputField": {
-    "optional": "(optional)"
+    "optional": "(không bắt buộc)"
   },
   "modInputField": {
-    "optional": "Optional"
+    "optional": "Không bắt buộc"
   },
   "pagination": {
-    "of": "of",
-    "results": "results"
+    "of": "/",
+    "results": "kết quả"
   },
   "modListContainer": {
-    "resultsPerPage": "Results per page"
+    "resultsPerPage": "Số kết quả mỗi trang"
   },
   "errorPage": {
     "title": "404 - Chẩn đoán: Không tìm thấy trang",
@@ -491,38 +491,38 @@
     "recovery": "Địa chỉ phòng khám và bác sĩ nằm trong sơ đồ trang. Nếu một liên kết trên trang này hỏng, hãy viết cho chúng tôi từ trang liên hệ."
   },
   "modListContainerItem": {
-    "newSubmission": "New",
-    "underReviewSubmission": "Under Review",
-    "approvedSubmission": "Approved",
+    "newSubmission": "Mới",
+    "underReviewSubmission": "Đang xem xét",
+    "approvedSubmission": "Đã duyệt",
     "rejectedSubmission": "Bị từ chối",
-    "createdDate": "Created on",
-    "updatedDate": "Updated last"
+    "createdDate": "Tạo lúc",
+    "updatedDate": "Cập nhật lần cuối"
   },
   "settingsPage": {
-    "heading": "Settings",
-    "subheading": "Manage your account settings",
+    "heading": "Cài đặt",
+    "subheading": "Quản lý cài đặt tài khoản",
     "displayName": "Tên hiển thị",
-    "healthcareProfessionalName": "Profile Image",
-    "updateButton": "Update Settings"
+    "healthcareProfessionalName": "Ảnh hồ sơ",
+    "updateButton": "Cập nhật cài đặt"
   },
   "profile": {
-    "edit": "Edit Profile",
-    "username": "Username",
-    "email": "Email",
-    "profilePhoto": "Profile Photo",
-    "save": "Save Changes",
-    "updatedSuccessfully": "Profile updated successfully",
-    "updateFailed": "Profile update failed"
+    "edit": "Sửa hồ sơ",
+    "username": "Tên đăng nhập",
+    "email": "E-mail",
+    "profilePhoto": "Ảnh hồ sơ",
+    "save": "Lưu thay đổi",
+    "updatedSuccessfully": "Đã cập nhật hồ sơ",
+    "updateFailed": "Cập nhật hồ sơ không thành công"
   },
   "localeErrors": {
-    "notSpecified": "Not Specified",
-    "notFound": "Unknown language"
+    "notSpecified": "Chưa ghi",
+    "notFound": "Ngôn ngữ không xác định"
   },
   "themeManager": {
-    "label": "Appearance",
-    "light": "Light",
-    "dark": "Dark",
-    "auto": "Auto"
+    "label": "Giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "auto": "Tự động"
   },
   "unsavedChanges": {
     "create": {
@@ -572,78 +572,78 @@
     "contributeCta": "Thêm bác sĩ"
   },
   "search": {
-    "filters": "Filters",
-    "clearFilters": "Clear filters",
-    "showMap": "Show map",
-    "hideMap": "Hide map",
-    "loading": "Loading the directory…",
-    "loadError": "We could not load the directory. Check your connection and try again.",
-    "retry": "Try again",
-    "backToResults": "Back to results",
-    "website": "Website",
-    "openInMaps": "Open in Google Maps",
-    "email": "Email",
-    "phone": "Phone",
-    "languagesSpoken": "Languages spoken",
-    "resultsRegion": "Search results",
-    "moreProfessionals": "+{n} more",
-    "professionalsAtFacility": "No professionals listed | 1 professional | {n} professionals",
-    "pageHeading": "Find a doctor in Japan",
-    "mapUnavailable": "The map could not be loaded.",
-    "mapUnavailableHint": "The rest of the results are unaffected."
+    "filters": "Bộ lọc",
+    "clearFilters": "Xóa bộ lọc",
+    "showMap": "Hiện bản đồ",
+    "hideMap": "Ẩn bản đồ",
+    "loading": "Đang tải danh bạ…",
+    "loadError": "Không tải được danh bạ. Kiểm tra kết nối và thử lại.",
+    "retry": "Thử lại",
+    "backToResults": "Về kết quả",
+    "website": "Trang web",
+    "openInMaps": "Mở trong Google Maps",
+    "email": "E-mail",
+    "phone": "Điện thoại",
+    "languagesSpoken": "Ngôn ngữ sử dụng",
+    "resultsRegion": "Kết quả tìm kiếm",
+    "moreProfessionals": "+{n} nữa",
+    "professionalsAtFacility": "Không có nhân viên | 1 nhân viên | {n} nhân viên",
+    "pageHeading": "Tìm bác sĩ ở Nhật Bản",
+    "mapUnavailable": "Không tải được bản đồ.",
+    "mapUnavailableHint": "Các kết quả còn lại không bị ảnh hưởng."
   },
   "clinicPage": {
-    "backToSearch": "Back to search",
-    "metaDescription": "{name} in {city}, {prefecture}. Address, phone and the languages spoken by staff.",
-    "locationNav": "Location",
+    "backToSearch": "Về tìm kiếm",
+    "metaDescription": "{name} tại {city}, {prefecture}. Địa chỉ, điện thoại và ngôn ngữ của nhân viên.",
+    "locationNav": "Địa điểm",
     "relatedSpecialtiesHeading": "Duyệt theo chuyên khoa",
     "relatedLanguagesHeading": "Duyệt theo ngôn ngữ"
   },
   "doctorPage": {
-    "backToSearch": "Back to search",
-    "metaDescription": "{name} — {specialties}. Languages spoken: {languages}.",
-    "specialtiesFallback": "healthcare professional",
-    "languagesFallback": "languages listed on the profile",
-    "specialties": "Specialties",
-    "languages": "Languages spoken",
-    "insurance": "Accepted insurance",
-    "additionalInfo": "For patients",
-    "facilities": "Clinics",
+    "backToSearch": "Về tìm kiếm",
+    "metaDescription": "{name} — {specialties}. Ngôn ngữ: {languages}.",
+    "specialtiesFallback": "nhân viên y tế",
+    "languagesFallback": "ngôn ngữ ghi trên hồ sơ",
+    "specialties": "Chuyên khoa",
+    "languages": "Ngôn ngữ sử dụng",
+    "insurance": "Bảo hiểm được nhận",
+    "additionalInfo": "Cho người bệnh",
+    "facilities": "Phòng khám",
     "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "Does not accept insurance",
-      "INTERNATIONAL_HEALTH_INSURANCE": "International health insurance",
-      "JAPANESE_HEALTH_INSURANCE": "Japanese health insurance",
-      "TRAVEL_INSURANCE": "Travel insurance",
-      "UNINSURED": "Uninsured / self-pay"
+      "INSURANCE_NOT_ACCEPTED": "Không nhận bảo hiểm",
+      "INTERNATIONAL_HEALTH_INSURANCE": "Bảo hiểm y tế quốc tế",
+      "JAPANESE_HEALTH_INSURANCE": "Bảo hiểm y tế Nhật Bản",
+      "TRAVEL_INSURANCE": "Bảo hiểm du lịch",
+      "UNINSURED": "Không bảo hiểm / tự chi trả"
     }
   },
   "hubPage": {
-    "prefectureHeading": "Healthcare in {prefecture}",
-    "cityHeading": "Healthcare in {city}, {prefecture}",
-    "prefectureMeta": "Clinics and health services in {prefecture}, Japan. Browse cities and facilities.",
-    "cityMeta": "Clinics and health services in {city}, {prefecture}. Address, phone and the languages spoken by staff.",
-    "citiesHeading": "Cities",
-    "facilitiesHeading": "Clinics",
-    "facilityCount": "No clinics | 1 clinic | {n} clinics",
-    "backToPrefecture": "Back to {prefecture}",
-    "backToSearch": "Back to search",
-    "professionalCount": "No professionals | 1 professional | {n} professionals",
-    "specialtiesHeading": "Specialties",
-    "languagesHeading": "Languages",
-    "languageChip": "{language}-speaking",
-    "specialtyHeading": "{specialty} in {prefecture}",
-    "languageHeading": "{language}-speaking care in {prefecture}",
-    "specialtyMeta": "Clinics and {specialty} in {prefecture}, Japan. Address, phone and the languages spoken by staff.",
-    "languageMeta": "{language}-speaking clinics and health services in {prefecture}, Japan.",
+    "prefectureHeading": "Dịch vụ y tế tại {prefecture}",
+    "cityHeading": "Dịch vụ y tế tại {city}, {prefecture}",
+    "prefectureMeta": "Phòng khám và dịch vụ y tế tại {prefecture}, Nhật Bản. Xem thành phố và cơ sở.",
+    "cityMeta": "Phòng khám và dịch vụ y tế tại {city}, {prefecture}. Địa chỉ, điện thoại và ngôn ngữ của nhân viên.",
+    "citiesHeading": "Thành phố",
+    "facilitiesHeading": "Phòng khám",
+    "facilityCount": "Không có phòng khám | 1 phòng khám | {n} phòng khám",
+    "backToPrefecture": "Về {prefecture}",
+    "backToSearch": "Về tìm kiếm",
+    "professionalCount": "Không có nhân viên | 1 nhân viên | {n} nhân viên",
+    "specialtiesHeading": "Chuyên khoa",
+    "languagesHeading": "Ngôn ngữ",
+    "languageChip": "{language}",
+    "specialtyHeading": "{specialty} tại {prefecture}",
+    "languageHeading": "Khám chữa bằng {language} tại {prefecture}",
+    "specialtyMeta": "Phòng khám và {specialty} tại {prefecture}, Nhật Bản. Địa chỉ, điện thoại và ngôn ngữ của nhân viên.",
+    "languageMeta": "Phòng khám và dịch vụ y tế bằng {language} tại {prefecture}, Nhật Bản.",
     "relatedSpecialtiesHeading": "Các chuyên khoa khác trong tỉnh này",
     "relatedLanguagesHeading": "Các ngôn ngữ khác trong tỉnh này",
-    "nearbySpecialtyHeading": "{specialty} in other prefectures",
-    "nearbyLanguageHeading": "{language}-speaking care in other prefectures",
+    "nearbySpecialtyHeading": "{specialty} ở tỉnh khác",
+    "nearbyLanguageHeading": "Khám chữa bằng {language} ở tỉnh khác",
     "siblingCitiesHeading": "Các thành phố khác trong tỉnh này"
   },
   "breadcrumbs": {
-    "navLabel": "Breadcrumb",
-    "home": "Home"
+    "navLabel": "Đường dẫn",
+    "home": "Trang chủ"
   },
   "modForm": {
     "edit": "Sửa",

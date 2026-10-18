@@ -3,19 +3,11 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect } from 'chai'
 import i18nLocales from '@/i18n'
+import { allowedSameAsEnglishKeys, localeFileProblems } from '../../../i18n/checkLocaleKeys.js'
+import { localeMessageProblems } from '../../../i18n/localeMessages.js'
 
-const localesDir = join(dirname(fileURLToPath(import.meta.url)), '../../../i18n/locales')
-
-function extractKeys(value: unknown, prefix = ''): string[] {
-    if (typeof value !== 'object' || value === null) {
-        return prefix ? [prefix] : []
-    }
-
-    return Object.entries(value as Record<string, unknown>).flatMap(([key, nested]) => {
-        const path = prefix ? `${prefix}.${key}` : key
-        return extractKeys(nested, path)
-    })
-}
+const i18nDir = join(dirname(fileURLToPath(import.meta.url)), '../../../i18n')
+const localesDir = join(i18nDir, 'locales')
 
 describe('site UI locales', () => {
     it('lists English, then Japanese, then locales by foreign-resident population', () => {
@@ -41,11 +33,40 @@ describe('site UI locales', () => {
         }
     })
 
-    it('keeps Korean translation keys in lockstep with English', () => {
-        const en = JSON.parse(readFileSync(join(localesDir, 'en.json'), 'utf-8'))
-        const ko = JSON.parse(readFileSync(join(localesDir, 'ko.json'), 'utf-8'))
+    it('fails when a locale is missing a key, drops a placeholder, or copies the English sentence', () => {
+        expect(localeMessageProblems(
+            { greet: 'Hello {name}' },
+            { greet: 'Hello' },
+            new Set()
+        )).to.deep.equal(['greet: placeholders must match English ({name})'])
 
-        expect(extractKeys(ko).sort()).to.deep.equal(extractKeys(en).sort())
+        expect(localeMessageProblems(
+            { greet: 'Hello' },
+            {},
+            new Set()
+        )).to.deep.equal(['greet: missing'])
+
+        expect(localeMessageProblems(
+            { greet: 'Hello' },
+            { greet: 'Hello' },
+            new Set()
+        )).to.deep.equal(['greet: still the English sentence'])
+
+        expect(localeMessageProblems(
+            { brand: 'Find a Doc', empty: '—' },
+            { brand: 'Find a Doc', empty: '—' },
+            new Set(['brand'])
+        )).to.deep.equal([])
+    })
+
+    it('keeps every locale file aligned with English', () => {
+        const allowlist = JSON.parse(readFileSync(join(i18nDir, 'sameAsEnglish.json'), 'utf8')) as {
+            all?: string[]
+        }
+        const problems = localeFileProblems(localesDir, allowlist)
+
+        expect(problems, problems.slice(0, 12).join('\n')).to.deep.equal([])
+        expect(allowedSameAsEnglishKeys(allowlist, 'ja.json').has('common.siteName')).to.equal(true)
     })
 
     it('ships a JSON file for every registered site locale', () => {

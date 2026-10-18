@@ -53,11 +53,11 @@ pnpm dev:mcp:http
 pnpm generate            # rewrite packages/graphql from the API schema
 pnpm build
 pnpm lint
-pnpm typecheck
+pnpm typecheck           # includes the locale key check
 pnpm test                # web unit tests and MCP tests
 pnpm test:server         # API tests; needs Supabase running
 pnpm test:e2e            # Playwright, from the web app
-pnpm lint:locales
+pnpm lint:locales        # the locale key check alone, without the rest of typecheck
 ```
 
 Target one package when you do not want the whole workspace:
@@ -84,10 +84,9 @@ Database types from Supabase stay in the API (`pnpm --filter @findadoc/server ge
 | Workflow | What it runs |
 | --- | --- |
 | `lint.yml` | `pnpm exec turbo lint`. Pull requests pass `--affected` |
-| `typecheck.yml` | `pnpm exec turbo typecheck`, and a check that committed GraphQL types match the schema |
+| `typecheck.yml` | `pnpm exec turbo typecheck`, including the locale key check, and a check that committed GraphQL types match the schema |
 | `tests.yml` | Web, MCP, and utils unit tests, plus API tests against Supabase |
 | `playwright.yml` | API and web together, then Playwright |
-| `lint-locales.yml` | Locale key check, with a PR comment when keys are missing |
 | `lint-pr-title.yml` | Conventional Commits title |
 
 Node is pinned by `.nvmrc` in every workflow. The API image builds from the repository root so it can install `@findadoc/server` and `@findadoc/graphql` together:

@@ -12,7 +12,7 @@
         "lint:locales": "node i18n/checkLocaleKeys.js",
         "lint:cleanlocales": "node i18n/cleanUnusedLocaleKeys.js",
         "lint:ci": "pnpm lint",
-        "typecheck": "nuxi prepare && nuxi typecheck",
+        "typecheck": "node i18n/checkLocaleKeys.js && nuxi prepare && nuxi typecheck",
         "build": "nuxi generate",
         "prod:build": "pnpm build",
         "prod:start": "serve .output/public",
