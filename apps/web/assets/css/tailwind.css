@@ -367,29 +367,6 @@
     @apply mt-1.5 min-h-5 text-sm font-medium text-error;
   }
 
-  /*
-   * Preview keeps the same rows as edit mode. Inputs stay in place and cannot be typed in,
-   * and controls that only exist to change data are hidden.
-   */
-  [data-mod-mode='preview'] .field,
-  [data-mod-mode='preview'] textarea.field {
-    pointer-events: none;
-    height: auto;
-    min-height: 1.75rem;
-    border-color: transparent;
-    background: transparent;
-    padding-left: 0;
-  }
-
-  [data-mod-mode='preview'] select.field {
-    appearance: none;
-    opacity: 1;
-  }
-
-  [data-mod-mode='preview'] .mod-edit-only {
-    display: none;
-  }
-
   /* Moderation sheets. One grid, two kinds: facility uses primary, healthcare uses accent. */
   .mod-sheet {
     @apply flex min-w-0 flex-col gap-3;
@@ -408,7 +385,7 @@
   }
 
   .mod-form-grid {
-    @apply grid items-start gap-x-4 landscape:grid-cols-2;
+    @apply grid items-start gap-4 landscape:grid-cols-2;
   }
 
   .mod-span-2 {
@@ -416,7 +393,16 @@
   }
 
   .mod-picker {
-    @apply flex min-w-0 flex-col rounded-lg border border-accent-bg bg-secondary-bg p-3;
+    @apply flex min-w-0 flex-col gap-2 rounded-lg border border-accent-bg bg-secondary-bg p-3;
+  }
+
+  /* The picker is already secondary, so the search field uses the page ground to stay visible. */
+  .mod-search-control {
+    background-color: rgb(var(--theme-color-bg-secondary));
+  }
+
+  .mod-picker .mod-search-control {
+    background-color: rgb(var(--theme-color-bg-primary));
   }
 
   /* Loading */
@@ -450,5 +436,38 @@
 @layer utilities {
   .pause {
     animation-play-state: paused;
+  }
+
+  /*
+   * These have to live with the utilities. A search bar is `mod-edit-only flex`, and a
+   * utilities-layer `display: flex` beats a components-layer `display: none` no matter
+   * which selector is more specific. Preview then leaves the search typed-into.
+   */
+  [data-mod-mode='preview'] .field,
+  [data-mod-mode='preview'] textarea.field {
+    pointer-events: none;
+    height: auto;
+    min-height: 1.75rem;
+    border-color: transparent;
+    background: transparent;
+    padding-left: 0;
+  }
+
+  [data-mod-mode='preview'] select.field {
+    appearance: none;
+    opacity: 1;
+  }
+
+  [data-mod-mode='preview'] .mod-edit-only {
+    display: none;
+  }
+
+  /* The label's own bottom margin would stack on the picker's gap. */
+  .mod-picker > .field-label {
+    margin-bottom: 0;
+  }
+
+  .mod-picker > .mod-token-list {
+    margin-top: 0;
   }
 }

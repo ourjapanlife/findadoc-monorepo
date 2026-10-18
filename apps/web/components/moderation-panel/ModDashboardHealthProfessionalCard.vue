@@ -2,7 +2,7 @@
     <div
         :class="[
             'mod-dashboard-healthcare-professional-card',
-            'flex w-full items-center rounded-lg border border-accent-bg bg-secondary-bg p-3',
+            'flex w-full items-center gap-3 rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2.5',
             (isEditable && chosenLocaleIndex === 0)
                 ? 'border-primary'
                 : '',
@@ -10,26 +10,26 @@
     >
         <div class="flex min-w-0 flex-1 items-center gap-3">
             <div class="flex w-full min-w-0 items-center gap-3">
-                <div class="w-10 shrink-0 self-start">
+                <div class="w-8 shrink-0">
                     <SVGProfileIcon
                         role="img"
                         alt="profile icon"
                         title="profile icon"
-                        class="profile-icon inline h-10 w-10 stroke-primary stroke-1"
+                        class="profile-icon inline h-8 w-8 stroke-primary stroke-1"
                     />
                 </div>
                 <div
                     v-if="healthcareProfessionalsRelatedToFacility && healthcareProfessional"
-                    class="min-w-44"
+                    class="min-w-0 flex-1"
                 >
-                    <div class="mb-1 flex h-full min-w-0 flex-1 flex-col pl-1">
+                    <div class="flex min-w-0 flex-col gap-1">
                         <div
                             id="healthcare-professional-related-to-facility-name-display-container"
-                            class="flex font-bold pt-2"
+                            class="flex flex-wrap items-baseline gap-x-2 font-semibold text-primary-text"
                         >
                             <span>{{ healthcareProfessionalsStore
                                 .displayChosenLocaleForHealthcareProfessional(healthcareProfessional)?.lastName }}</span>
-                            <span class="mx-2">
+                            <span>
                                 {{ healthcareProfessionalsStore
                                     .displayChosenLocaleForHealthcareProfessional(healthcareProfessional)?.firstName }}
                             </span>
@@ -41,25 +41,25 @@
                                     .displayChosenLocaleForHealthcareProfessional(healthcareProfessional)?.middleName }}
                             </span>
                         </div>
-                        <span>
-                            ID: {{ healthcareProfessional.id }}
+                        <span class="text-xs text-primary-text-muted">
+                            {{ healthcareProfessional.id }}
                         </span>
                         <div>
                             <div
                                 id="healthcare-professional-related-to-facility-formatted-locale-spoken"
-                                class="flex flex-wrap justify-start items-start self-end pt-2"
+                                class="flex flex-col gap-1"
                             >
-                                <div class="flex flex-col">
-                                    <label class="font-semibold">
-                                        {{ t('modDashboardHealthcareProfessionalCard.spokenLanguages') }}</label>
-                                    <div class="flex">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold text-primary-text-muted">
+                                        {{ t('modDashboardHealthcareProfessionalCard.spokenLanguages') }}
+                                    </span>
+                                    <div class="flex flex-wrap gap-1">
                                         <div
                                             v-for="(spokenLanguage, indexOfLocale)
                                                 in healthcareProfessional.spokenLanguages"
                                             :key="`${spokenLanguage}-${indexOfLocale}`"
                                             class="healthcare-professional-related-to-facility-formatted-spoken-language
-                                    w-24 px-2 py-1 mr-1 mb-1 bg-primary-text-muted/30
-                                    text-nowrap rounded-full text-sm text-center"
+                                                chip"
                                         >
                                             <span>
                                                 {{ localeStore.formatLanguageCodeToSimpleText(
@@ -75,51 +75,38 @@
                 <div
                     v-if="healthcareProfessionalNameByLocale"
                     id="healthcare-professional-name-by-locale-container"
-                    class="flex min-w-0 flex-1 flex-col items-start justify-center"
+                    class="flex min-w-0 flex-1 flex-col gap-0.5"
                 >
-                    <div
+                    <p
                         id="healthcare-professional-name-display-container"
-                        class="flex pt-2"
+                        class="flex flex-wrap items-baseline gap-x-2 text-primary-text"
                     >
-                        <div class="flex flex-col mx-2">
-                            <label class="font-semibold text-nowrap">
-                                {{ t('modDashboardHealthcareProfessionalCard.lastName') }}</label>
-                            <span
-                                data-testid="healthcare-professional-card-last-name"
-                            >
-                                {{ healthcareProfessionalNameByLocale.lastName }}</span>
-                        </div>
-                        <div class="flex flex-col mr-2">
-                            <label class="font-semibold text-nowrap">
-                                {{ t('modDashboardHealthcareProfessionalCard.firstName') }}</label>
-                            <span>{{ healthcareProfessionalNameByLocale.firstName
-                            }}</span>
-                        </div>
-                        <div class="flex flex-col mr-2">
-                            <label class="font-semibold text-nowrap">
-                                {{ t('modDashboardHealthcareProfessionalCard.middleName') }}</label>
-                            <span v-show="healthcareProfessionalNameByLocale.middleName">
-                                {{ healthcareProfessionalNameByLocale.middleName }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="flex self-start mr-2 my-2">
-                        <label class="font-semibold mx-2">{{ t('modDashboardHealthcareProfessionalCard.nameLocale') }}:</label>
                         <span
-                            id="healthcare-professional-name-locale"
-                            class="w-24"
-                            data-testid="healthcare-professional-name-card-locale"
+                            class="font-semibold"
+                            data-testid="healthcare-professional-card-last-name"
                         >
-                            {{ localeStore.formatLanguageCodeToSimpleText(
-                                healthcareProfessionalNameByLocale.locale) }}
+                            {{ healthcareProfessionalNameByLocale.lastName }}
                         </span>
-                    </div>
+                        <span>{{ healthcareProfessionalNameByLocale.firstName }}</span>
+                        <span v-if="healthcareProfessionalNameByLocale.middleName">
+                            {{ healthcareProfessionalNameByLocale.middleName }}
+                        </span>
+                    </p>
+                    <p
+                        id="healthcare-professional-name-locale"
+                        class="text-sm text-primary-text-muted"
+                        data-testid="healthcare-professional-name-card-locale"
+                    >
+                        {{ localeStore.formatLanguageCodeToSimpleText(
+                            healthcareProfessionalNameByLocale.locale) }}
+                    </p>
                 </div>
                 <div
                     v-if="isEditOrCreateFacility
                         && !isHealthcareProfessionalReadyForRemoval(healthcareProfessional?.id)"
                     id="remove-related-healthcare-professional-to-facility"
-                    class="flex w-8 items-center justify-center cursor-pointer font-bold text-secondary text-sm self-start p-1"
+                    class="mod-edit-only flex w-8 shrink-0 items-center justify-center cursor-pointer
+                        font-bold text-secondary text-sm p-1"
                     role="button"
                     tabindex="0"
                     aria-label="Remove healthcare professional from facility"
@@ -134,7 +121,8 @@
                     v-if="isEditOrCreateFacility
                         && isHealthcareProfessionalReadyForRemoval(healthcareProfessional?.id)"
                     id="undo-remove-related-healthcare-professional-to-facility"
-                    class="flex w-8 items-center justify-center cursor-pointer font-bold text-secondary text-sm self-start p-1"
+                    class="mod-edit-only flex w-8 shrink-0 items-center justify-center cursor-pointer
+                        font-bold text-secondary text-sm p-1"
                     role="button"
                     tabindex="0"
                     aria-label="Undo removal of healthcare professional from facility"
@@ -146,8 +134,8 @@
                 </div>
                 <div
                     v-if="isEditOrCreateHealthcareProfessional || isEditSubmission"
-                    class="flex w-8 items-center justify-center
-                cursor-pointer font-bold text-secondary text-sm self-start p-1"
+                    class="mod-edit-only flex w-8 shrink-0 items-center justify-center
+                        cursor-pointer font-bold text-secondary text-sm p-1"
                 >
                     <div id="edit-healthcare-professional-button-container">
                         <!-- If the chosen index is not 0 we want them to be able to click the pencil to reorder
@@ -194,8 +182,10 @@ import {
     type LocalizedNameInput,
     type Relationship
 } from '@findadoc/graphql'
+import { useModerationFormEditing } from '~/composables/useModerationFormMode'
 
 const { t } = useI18n()
+const isEditing = useModerationFormEditing()
 
 const localeStore = useLocaleStore()
 const facilitiesStore = useFacilitiesStore()
@@ -209,6 +199,7 @@ const isHealthcareProfessionalReadyForRemoval = (id: string = '0') =>
           && healthcareProfessionalRelation.action === RelationshipAction.Delete)
 
 const removeHealthcareProfessional = (id: string = '0') => {
+    if (!isEditing.value) return
     if (props.healthcareProfessionalsRelatedToFacility && props.healthcareProfessionalsRelatedToFacility.includes(id)) {
         facilitiesStore.facilitySectionFields.healthProfessionalsRelations
             .push({ otherEntityId: id, action: RelationshipAction.Delete })
@@ -220,12 +211,14 @@ const removeHealthcareProfessional = (id: string = '0') => {
 }
 
 const undoRemovalOfHealthcareProfessional = (id: string = '0') => {
+    if (!isEditing.value) return
     facilitiesStore.facilitySectionFields.healthProfessionalsRelations
         = facilitiesStore.facilitySectionFields.healthProfessionalsRelations
             .filter((healthcareProfessionalRelation: Relationship) => healthcareProfessionalRelation.otherEntityId !== id)
 }
 // This changes the component details to editable with an optional parameter to use in the callback function
 const setChangeToEditable = () => {
+    if (!isEditing.value) return
     if (props.setIsEditableFunction) props.setIsEditableFunction(true)
 }
 

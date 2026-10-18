@@ -129,8 +129,8 @@
                     <div
                         v-for="(nameLocale, index) in hpStore.healthcareProfessionalSectionFields.names"
                         :key="`${nameLocale.firstName}-${nameLocale.lastName}-${index}`"
-                        role="button"
-                        tabindex="0"
+                        :role="isEditing ? 'button' : undefined"
+                        :tabindex="isEditing ? 0 : undefined"
                         @click="() => setChosenLocaleNameInput(index)"
                         @keydown.enter="() => setChosenLocaleNameInput(index)"
                         @keydown.space.prevent="() => setChosenLocaleNameInput(index)"
@@ -346,6 +346,7 @@ const originalNameLocale: Ref<Locale> = ref(Locale.Und)
 
 // Sets the locale being edited name value
 const setEditingLocaleName = async (newValue: boolean) => {
+    if (newValue && !isEditing.value) return
     // This allows the dom to change so the position of the name locale is correct before trying to edit
     await nextTick()
     editingLocaleName.value = newValue

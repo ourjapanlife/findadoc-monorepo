@@ -66,7 +66,7 @@
                     >
                         <button
                             type="button"
-                            class="btn btn-secondary btn-sm w-fit"
+                            class="btn btn-secondary btn-sm mod-edit-only w-fit"
                             data-testid="mod-use-existing-facility"
                             @click="useMatchedFacility"
                         >
