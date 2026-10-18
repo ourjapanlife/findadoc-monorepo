@@ -132,7 +132,7 @@
                 </div>
 
                 <NuxtLink
-                    v-else
+                    v-else-if="!authStore.isLoadingAuth"
                     :to="loginRoute"
                     data-testid="topnav-login"
                     :class="navLinkClass('/login')"

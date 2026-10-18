@@ -147,7 +147,7 @@
                                 </button>
                             </template>
                             <NuxtLink
-                                v-else
+                                v-else-if="!authStore.isLoadingAuth"
                                 :to="loginRoute"
                                 :class="menuLinkClass('/login')"
                                 @click="closeMenu"
