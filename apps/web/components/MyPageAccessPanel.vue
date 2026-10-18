@@ -189,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, type Component } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/authStore'
 import { useCurrentUserAccessStore } from '~/stores/currentUserAccessStore'
@@ -210,7 +210,7 @@ interface NavPage {
     id: string
     route: string
     label: string
-    icon: Component
+    icon: string
     iconClass: string
     listView?: SelectedModerationListViewType
 }

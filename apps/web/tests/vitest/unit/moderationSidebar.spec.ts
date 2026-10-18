@@ -45,9 +45,9 @@ describe('moderation sidebar collapsed preference', () => {
         localStorage.removeItem(MODERATION_SIDEBAR_COLLAPSED_KEY)
         const i18n = createI18n({
             legacy: false,
-            locale: 'en',
+            locale: 'en-US',
             messages: {
-                en: {
+                'en-US': {
                     topNav: { myPage: 'My Page' },
                     modDashboardLeftNav: {
                         collapse: 'Collapse sidebar',
