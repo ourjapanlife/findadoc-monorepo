@@ -233,15 +233,13 @@
             tone="healthcare"
             :title="t('modHealthcareProfessionalSection.facilities')"
         >
-            <ModSearchBar
-                v-model="selectedFacilitiesModel"
+            <ModLinkedFacilities
+                v-model="hpStore.healthcareProfessionalSectionFields.facilityIds"
+                :suggestions="facilitiesStore.facilityData"
                 :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextFacilitySearchBar')"
                 :no-match-text="t('modHealthcareProfessionalSection.noFacilitiesWereFound')"
-                :fields-to-display-callback="facilitiesFieldsToDisplayCallback"
-                :default-suggestions="facilitiesStore.facilityData"
-                @search-input-change="handleFacilitySearchInputChange"
+                :remove-label="facilityRemoveLabel"
             />
-            <ModTokenList :labels="selectedFacilityLabels" />
         </ModAccordion>
     </div>
 </template>
@@ -254,11 +252,11 @@ import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessional
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useLocaleStore } from '~/stores/localeStore'
-import { Insurance, Locale, Specialty, type LocalizedNameInput, type Facility } from '@findadoc/graphql'
+import { Insurance, Locale, Specialty, type LocalizedNameInput } from '@findadoc/graphql'
 import { useI18n } from '#imports'
 import { validateNameLocaleMatchesLanguage } from '~/utils/formValidations'
 import { stableStringify } from '~/utils/stableStringify'
-import { filterByCaseInsensitiveIncludes, matchesFacilitySearch } from '~/utils/moderationSearchUtils'
+import { filterByCaseInsensitiveIncludes } from '~/utils/moderationSearchUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { provideModerationFormEditing, useModerationFormEditing } from '~/composables/useModerationFormMode'
 // Keeps track of if the search bar inputs have been autofilled with existing facilities
@@ -279,24 +277,8 @@ const localesStore = useLocaleStore()
 const hpStore = useHealthcareProfessionalsStore()
 const facilitiesStore = useFacilitiesStore()
 await facilitiesStore.getFacilities() // Fix a bug where facilities disappear after the user refreshes the page
-const currentFacilities = facilitiesStore.facilityData
 
 const isHealthcareProfessionalInitialized: Ref<boolean> = ref(false)
-const selectedFacilities: Ref<Facility[]> = ref([])
-const selectedFacilitiesModel = computed({
-    get: () => selectedFacilities.value,
-    set: (newValue: Facility[]) => {
-        selectedFacilities.value = newValue
-        if (newValue.length) {
-            const selectedFacilityIds = newValue.map(facility => facility.id)
-            const mergedFacilityIds = Array.from(
-                new Set([...hpStore.healthcareProfessionalSectionFields.facilityIds, ...selectedFacilityIds])
-            )
-            hpStore.healthcareProfessionalSectionFields.facilityIds = mergedFacilityIds
-            selectedFacilities.value = []
-        }
-    }
-})
 
 const hpFormState = computed(() =>
     JSON.parse(stableStringify(hpStore.healthcareProfessionalSectionFields)))
@@ -314,17 +296,13 @@ watch(
     { flush: 'sync' }
 )
 
-const currentFacilityRelations = computed(() =>
-    facilitiesStore.facilityData.filter(facility =>
-        hpStore.healthcareProfessionalSectionFields.facilityIds.includes(facility.id)))
 const tokenLabels = (values: readonly unknown[] | null | undefined) =>
     (values ?? []).map(item => String(item))
 const spokenLanguageLabels = computed(() =>
     (hpStore.healthcareProfessionalSectionFields.spokenLanguages ?? [])
         .map(locale => localesStore.formatLanguageCodeToSimpleText(locale)))
-const selectedFacilityLabels = computed(() =>
-    currentFacilityRelations.value.map(facility =>
-        [facility.nameEn, facility.nameJa].filter(Boolean).join(' · ')))
+const facilityRemoveLabel = (name: string) =>
+    t('modHealthcareProfessionalSection.removeFacility', { name })
 
 // Tracks whether we want to display adding a new name
 const addingLocaleName: Ref<boolean> = ref(false)
@@ -535,10 +513,6 @@ const handleAddLocalizedName = () => {
     handleCloseAddingNewLocalizedName()
 }
 
-const handleFacilitySearchInputChange = (filteredItems: Ref<Facility[]>, inputValue: string) => {
-    filteredItems.value = currentFacilities.filter(facility => matchesFacilitySearch(facility, inputValue))
-}
-
 const handleInsuranceInputChange = (filteredItems: Ref<Insurance[]>, inputValue: string) => {
     const arrayOfInsurances = Object.values(Insurance) as Insurance[]
     filteredItems.value = filterByCaseInsensitiveIncludes(arrayOfInsurances, inputValue)
@@ -560,7 +534,6 @@ const handleLocaleInputChange = (filteredItems: Ref<Locale[]>, inputValue: strin
     filteredItems.value = localesStore.getLocaleByNameInput(inputValue)
 }
 
-const facilitiesFieldsToDisplayCallback = (item: Facility) => [item.nameEn, item.nameJa]
 const specialtiesToDisplayCallback = (specialty: Specialty) => [specialty]
 const insurancesToDisplayCallback = (insurance: Insurance) => [insurance]
 const localesToDisplayCallback = (locale: Locale) => [localesStore.formatLanguageCodeToSimpleText(locale)]

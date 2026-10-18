@@ -394,6 +394,7 @@
     "placeholderTextDegrees": "Search by degree",
     "placeholderTextLocales": "Search by language",
     "placeholderTextFacilitySearchBar": "Search by Facility name or ID",
+    "removeFacility": "Remove {name}",
     "noFacilitiesWereFound": "No Facilities were found",
     "noSpecialtiesWereFound": "No specialties were found",
     "noInsurancesWereFound": "No insurance was found",

@@ -226,16 +226,14 @@
             tone="healthcare"
             :title="t('modHealthcareProfessionalSection.facilities')"
         >
-            <ModSearchBar
-                v-model="selectedFacilitiesModel"
-                data-testid="mod-healthcare-professional-section-facilities"
+            <ModLinkedFacilities
+                v-model="createHealthcareProfessionalSectionFields.facilityIds"
+                data-test-id="mod-healthcare-professional-section-facilities"
+                :suggestions="facilitiesStore.facilityData"
                 :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextFacilitySearchBar')"
                 :no-match-text="t('modHealthcareProfessionalSection.noFacilitiesWereFound')"
-                :fields-to-display-callback="facilitiesFieldsToDisplayCallback"
-                :default-suggestions="currentFacilities"
-                @search-input-change="handleFacilitySearchInputChange"
+                :remove-label="facilityRemoveLabel"
             />
-            <ModTokenList :labels="selectedFacilityLabels" />
         </ModAccordion>
     </div>
 </template>
@@ -251,10 +249,9 @@ import { Insurance,
     Locale,
     Specialty,
     type LocalizedNameInput,
-    type Facility,
     type HealthcareProfessional } from '@findadoc/graphql'
 import { useI18n } from '#imports'
-import { filterByCaseInsensitiveIncludes, matchesFacilitySearch } from '~/utils/moderationSearchUtils'
+import { filterByCaseInsensitiveIncludes } from '~/utils/moderationSearchUtils'
 
 const toast = useAppToast()
 
@@ -268,18 +265,6 @@ const localesStore = useLocaleStore()
 const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
 const facilitiesStore = useFacilitiesStore()
 await facilitiesStore.getFacilities() // Fix a bug where facilities disappear after the user refreshes the page
-const currentFacilities = facilitiesStore.facilityData
-
-const selectedFacilities: Ref<Facility[]> = ref([])
-const selectedFacilitiesModel = computed({
-    get: () => selectedFacilities.value,
-    set: (newValue: Facility[]) => {
-        selectedFacilities.value = newValue
-        createHealthcareProfessionalSectionFields.facilityIds = newValue.length
-            ? newValue.map(facility => facility.id)
-            : []
-    }
-})
 
 const createHealthcareProfessionalSectionFields = healthcareProfessionalsStore.createHealthcareProfessionalSectionFields
 const tokenLabels = (values: readonly unknown[] | null | undefined) =>
@@ -287,9 +272,8 @@ const tokenLabels = (values: readonly unknown[] | null | undefined) =>
 const spokenLanguageLabels = computed(() =>
     (createHealthcareProfessionalSectionFields.spokenLanguages ?? [])
         .map(locale => localesStore.formatLanguageCodeToSimpleText(locale)))
-const selectedFacilityLabels = computed(() =>
-    selectedFacilities.value.map(facility =>
-        [facility.nameEn, facility.nameJa].filter(Boolean).join(' · ')))
+const facilityRemoveLabel = (name: string) =>
+    t('modHealthcareProfessionalSection.removeFacility', { name })
 
 // Tracks whether we want to display adding a new name
 const addingLocaleName: Ref<boolean> = ref(false)
@@ -486,10 +470,6 @@ function checkIfHealthcareProfessionalHasAnExistingNameForLocale() {
         .find(name => name.locale === nameLocaleInputs.locale)
 }
 
-const handleFacilitySearchInputChange = (filteredItems: Ref<Facility[]>, inputValue: string) => {
-    filteredItems.value = currentFacilities.filter(facility => matchesFacilitySearch(facility, inputValue))
-}
-
 const handleInsuranceInputChange = (filteredItems: Ref<Insurance[]>, inputValue: string) => {
     const arrayOfInsurances = Object.values(Insurance) as Insurance[]
     filteredItems.value = filterByCaseInsensitiveIncludes(arrayOfInsurances, inputValue)
@@ -511,7 +491,6 @@ const handleLocaleInputChange = (filteredItems: Ref<Locale[]>, inputValue: strin
     filteredItems.value = localesStore.getLocaleByNameInput(inputValue)
 }
 
-const facilitiesFieldsToDisplayCallback = (item: Facility) => [item.nameEn, item.nameJa]
 const specialtiesToDisplayCallback = (specialty: Specialty) => [specialty]
 const insurancesToDisplayCallback = (insurance: Insurance) => [insurance]
 const localesToDisplayCallback = (locale: Locale) => [localesStore.formatLanguageCodeToSimpleText(locale)]

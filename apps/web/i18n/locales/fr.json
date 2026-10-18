@@ -428,6 +428,7 @@
     "selectSpecialties": "Specialties",
     "facilities": "Healthcare Professional Facilities",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
+    "removeFacility": "Retirer {name}",
     "noFacilitiesWereFound": "No Facilities were found",
     "errorMessageHealthcareProfessionalId": "Healthcare Professional ID was not found",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
