@@ -37,11 +37,9 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useModerationScreenStore } from '~/stores/moderationScreenStore'
+import { hidesModerationListTopbar } from '~/utils/moderationView'
 
 const route = useRoute()
 const moderationScreenStore = useModerationScreenStore()
-const isSettingsView = computed(() => {
-    const view = route.query.view
-    return typeof view !== 'string' || view === '' || view === 'settings'
-})
+const isSettingsView = computed(() => hidesModerationListTopbar(route.query.view))
 </script>

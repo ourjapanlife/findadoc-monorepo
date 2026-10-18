@@ -328,6 +328,13 @@
     "facilities": "의료기관",
     "licenseReview": "면허 확인이 필요함"
   },
+  "modQueueOverview": {
+    "heading": "대기열",
+    "subheading": "검토를 기다리는 작업입니다.",
+    "newSubmissions": "새 제보",
+    "forReview": "검토 대기 제보",
+    "licenseReview": "면허 검토"
+  },
   "modEditFacilityOrHPTopbar": {
     "copyFailure": "ID를 복사하지 못했습니다",
     "delete": "삭제",

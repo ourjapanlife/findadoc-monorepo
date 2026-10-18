@@ -315,6 +315,13 @@
     "addHealthcareProfessional": "医療従事者を追加",
     "licenseReview": "免許の確認が必要"
   },
+  "modQueueOverview": {
+    "heading": "対応待ち",
+    "subheading": "モデレーターの確認を待っている件数です。",
+    "newSubmissions": "新規の投稿",
+    "forReview": "確認待ちの投稿",
+    "licenseReview": "免許の確認"
+  },
   "modFacilitySection": {
     "addresses": "住所",
     "contactInformation": "連絡先",
