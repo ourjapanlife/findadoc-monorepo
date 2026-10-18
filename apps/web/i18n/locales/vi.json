@@ -274,6 +274,7 @@
     "errorMessageHealthcareProfessionalId": "Healthcare Professional ID was not found",
     "facilities": "Healthcare Professional Facilities",
     "placeholderTextFacilitySearchBar": "Search by name or ID add a Facility",
+    "removeFacility": "Bỏ {name}",
     "noFacilitiesWereFound": "No Facilities were found",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Search by insurance",

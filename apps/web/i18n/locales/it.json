@@ -278,6 +278,7 @@
     "selectSpecialties": "Specializzazioni",
     "facilities": "Healthcare Professional Facilities",
     "placeholderTextFacilitySearchBar": "Cerca per nome o ID",
+    "removeFacility": "Rimuovi {name}",
     "noFacilitiesWereFound": "Nessuna struttura è stata trovata",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Search by insurance",
