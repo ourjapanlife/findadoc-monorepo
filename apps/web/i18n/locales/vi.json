@@ -233,6 +233,13 @@
     "addHealthcareProfessional": "Thêm nhân viên y tế",
     "licenseReview": "Cần xem lại giấy phép"
   },
+  "modQueueOverview": {
+    "heading": "Hàng đợi",
+    "subheading": "Việc đang chờ người kiểm duyệt.",
+    "newSubmissions": "Bài gửi mới",
+    "forReview": "Bài gửi chờ xem xét",
+    "licenseReview": "Cần xem xét giấy phép"
+  },
   "modEditFacilityOrHPTopbar": {
     "copyFailure": "Không thể sao chép ID",
     "delete": "Xóa",

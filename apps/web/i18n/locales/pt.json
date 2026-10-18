@@ -315,6 +315,13 @@
     "addHealthcareProfessional": "Adicionar profissional de saúde",
     "licenseReview": "Licença a revisar"
   },
+  "modQueueOverview": {
+    "heading": "Fila",
+    "subheading": "Trabalho à espera de um moderador.",
+    "newSubmissions": "Novos envios",
+    "forReview": "Envios para revisão",
+    "licenseReview": "Revisão de licença"
+  },
   "modFacilitySection": {
     "addresses": "Endereços",
     "contactInformation": "Contato",

@@ -233,6 +233,13 @@
     "addHealthcareProfessional": "Magdagdag ng propesyonal sa kalusugan",
     "licenseReview": "Kailangang suriin ang lisensya"
   },
+  "modQueueOverview": {
+    "heading": "Pila",
+    "subheading": "Gawaing naghihintay sa tagapamagitan.",
+    "newSubmissions": "Mga bagong isinumite",
+    "forReview": "Mga isinumiteng susuriin",
+    "licenseReview": "Pagsusuri ng lisensya"
+  },
   "modEditFacilityOrHPTopbar": {
     "copyFailure": "Hindi nakopya ang ID",
     "delete": "Burahin",

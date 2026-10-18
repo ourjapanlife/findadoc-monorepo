@@ -77,6 +77,7 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/authStore'
 import { definePageMeta, useI18n } from '#imports'
 import { unlocalizedPath } from '~/utils/localePath'
+import { hidesModerationListTopbar } from '~/utils/moderationView'
 import { CONTACT_MAILTO } from '~/utils/site'
 
 definePageMeta({
@@ -93,8 +94,7 @@ const isSettingsView = computed(() => {
     if (unlocalizedPath(route.path) !== '/my-page') {
         return false
     }
-    const view = route.query.view
-    return typeof view !== 'string' || view === '' || view === 'settings'
+    return hidesModerationListTopbar(route.query.view)
 })
 
 const runModerationAuthRedirect = () => {

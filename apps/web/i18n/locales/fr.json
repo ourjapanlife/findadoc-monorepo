@@ -312,6 +312,13 @@
     "addHealthcareProfessional": "Ajouter un professionnel de santé",
     "licenseReview": "Licence à vérifier"
   },
+  "modQueueOverview": {
+    "heading": "File d'attente",
+    "subheading": "Travail en attente d'un modérateur.",
+    "newSubmissions": "Nouvelles soumissions",
+    "forReview": "Soumissions à examiner",
+    "licenseReview": "Révision de licence"
+  },
   "modFacilitySection": {
     "addresses": "Adresses",
     "contactInformation": "Coordonnées",

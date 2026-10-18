@@ -4,7 +4,8 @@
             v-if="moderationScreenStore.dashboardScreenIsActive()"
             class="h-full min-h-0 flex flex-col"
         >
-            <MyPageSettingsContent v-if="isSettingsView" />
+            <ModQueueOverview v-if="isOverviewView" />
+            <MyPageSettingsContent v-else-if="isSettingsView" />
             <ModListContainer v-else />
         </div>
         <div
@@ -63,6 +64,7 @@ import { useModerationScreenStore, ModerationScreen } from '~/stores/moderationS
 import { SelectedModerationListView, useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
+import { isModerationOverviewView, isModerationSettingsView } from '~/utils/moderationView'
 
 const route = useRoute()
 
@@ -77,10 +79,11 @@ const selectedViewQuery = computed(() => {
     const view = route.query.view
     return typeof view === 'string' ? view : ''
 })
-const isSettingsView = computed(() => selectedViewQuery.value === '' || selectedViewQuery.value === 'settings')
+const isOverviewView = computed(() => isModerationOverviewView(selectedViewQuery.value))
+const isSettingsView = computed(() => isModerationSettingsView(selectedViewQuery.value))
 
 function syncSelectedModerationViewFromQuery() {
-    if (isSettingsView.value) {
+    if (isOverviewView.value || isSettingsView.value) {
         return
     }
 
