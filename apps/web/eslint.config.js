@@ -38,7 +38,6 @@ export default withNuxt(
             '@typescript-eslint': tseslint.plugin,
             '@stylistic': stylistic
         },
-        ignores: ['i18n/checkLocaleKeys.js'],
         rules: {
             // Current eslintRecommended rules (https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/src/configs/eslint-recommended-raw.ts)
             // More information about the plugin (https://typescript-eslint.io/users/configs#eslint-recommended)

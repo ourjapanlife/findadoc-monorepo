@@ -1,0 +1,48 @@
+{
+  "all": [
+    "common.siteName",
+    "common.siteNameLine1",
+    "common.siteNameLine2",
+    "about.heroHeading",
+    "about.mascotsAwa",
+    "about.mascotsMichael",
+    "about.mascotsTamika",
+    "about.mascotsSachi",
+    "about.mascotsChiko",
+    "footer.npo",
+    "footer.copyright",
+    "hamburgerMenu.copyright",
+    "modFacilitySection.citySuggestionAttribution"
+  ],
+  "fr": [
+    "common.menu",
+    "pageMeta.contactTitle",
+    "contactPage.heading",
+    "npoPage.contactLabel",
+    "footer.contact",
+    "submitPage.previewNotes",
+    "submitPage.previewLocation"
+  ],
+  "de": [
+    "submitPage.previewName",
+    "submitPage.optional",
+    "submitPage.previewLocation"
+  ],
+  "it": [
+    "common.menu",
+    "footer.privacy",
+    "submitPage.previewLocation"
+  ],
+  "pt": [
+    "common.menu",
+    "submitPage.previewLocation"
+  ],
+  "tl": [
+    "common.menu",
+    "submitPage.previewLocation"
+  ],
+  "vi": [
+    "common.menu",
+    "submitPage.previewLocation"
+  ]
+}
