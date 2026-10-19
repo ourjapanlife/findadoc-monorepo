@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
-import MemberComponent from '../../components/MemberComponent.vue'
+import MemberComponent from '../../components/about/MemberComponent.vue'
 
 const meta = {
-    title: 'components/MemberComponent',
+    title: 'components/about/MemberComponent',
     component: MemberComponent,
     tags: ['autodocs']
 } satisfies Meta<typeof MemberComponent>

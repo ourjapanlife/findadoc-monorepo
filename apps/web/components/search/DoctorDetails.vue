@@ -38,22 +38,15 @@
                 <li
                     v-for="item in specialtyItems"
                     :key="item.label"
+                    class="max-w-full min-w-0"
                 >
-                    <NuxtLink
-                        v-if="item.to"
+                    <ChipTag
+                        :label="item.label"
                         :to="item.to"
-                        class="chip chip-primary h-7 px-2.5 text-xs"
-                        data-testid="doctor-specialty-link"
-                        @click="track('Related clicked', { kind: 'specialty', from: 'doctor' })"
-                    >
-                        {{ item.label }}
-                    </NuxtLink>
-                    <span
-                        v-else
-                        class="chip chip-primary h-7 px-2.5 text-xs"
-                    >
-                        {{ item.label }}
-                    </span>
+                        chip-class="chip-primary h-7 px-2.5 text-xs"
+                        :data-testid="item.to ? 'doctor-specialty-link' : undefined"
+                        @click="item.to && track('Related clicked', { kind: 'specialty', from: 'doctor' })"
+                    />
                 </li>
             </ul>
         </section>
@@ -69,22 +62,15 @@
                 <li
                     v-for="item in languageItems"
                     :key="item.label"
+                    class="max-w-full min-w-0"
                 >
-                    <NuxtLink
-                        v-if="item.to"
+                    <ChipTag
+                        :label="item.label"
                         :to="item.to"
-                        class="chip h-7 px-2.5 text-xs"
-                        data-testid="doctor-language-link"
-                        @click="track('Related clicked', { kind: 'language', from: 'doctor' })"
-                    >
-                        {{ item.label }}
-                    </NuxtLink>
-                    <span
-                        v-else
-                        class="chip h-7 px-2.5 text-xs"
-                    >
-                        {{ item.label }}
-                    </span>
+                        chip-class="h-7 px-2.5 text-xs"
+                        :data-testid="item.to ? 'doctor-language-link' : undefined"
+                        @click="item.to && track('Related clicked', { kind: 'language', from: 'doctor' })"
+                    />
                 </li>
             </ul>
         </section>
@@ -100,9 +86,12 @@
                 <li
                     v-for="label in insurance"
                     :key="label"
-                    class="chip h-7 px-2.5 text-xs"
+                    class="max-w-full min-w-0"
                 >
-                    {{ label }}
+                    <ChipTag
+                        :label="label"
+                        chip-class="h-7 px-2.5 text-xs"
+                    />
                 </li>
             </ul>
         </section>

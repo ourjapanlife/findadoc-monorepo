@@ -397,7 +397,6 @@
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",
     "delete": "Supprimer",
-    "copyFailure": "Impossible de copier l’ID",
     "update": "Mettre à jour",
     "facilityUpdatedSuccessfully": "Établissement mis à jour",
     "deleteButtonText": "SUPPRIMER DÉFINITIVEMENT",

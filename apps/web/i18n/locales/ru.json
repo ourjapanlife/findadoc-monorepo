@@ -400,7 +400,6 @@
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Обновить и выйти",
     "delete": "Удалить",
-    "copyFailure": "Не удалось скопировать ID",
     "update": "Обновить",
     "facilityUpdatedSuccessfully": "Учреждение обновлено",
     "deleteButtonText": "УДАЛИТЬ НАВСЕГДА",

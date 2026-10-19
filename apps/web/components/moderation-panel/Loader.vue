@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { useLoadingStore } from '../stores/loadingStore.js'
+import { useLoadingStore } from '~/stores/loadingStore'
 import SVGLoadingIcon from '~/assets/icons/loading.svg'
 
 const { t } = useI18n()

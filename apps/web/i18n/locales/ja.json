@@ -400,7 +400,6 @@
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新して終了",
     "delete": "削除",
-    "copyFailure": "ID をコピーできませんでした",
     "update": "更新",
     "facilityUpdatedSuccessfully": "医療機関を更新しました",
     "deleteButtonText": "完全に削除",

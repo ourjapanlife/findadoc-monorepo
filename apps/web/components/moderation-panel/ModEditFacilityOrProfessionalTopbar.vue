@@ -1,67 +1,46 @@
 <template>
-    <div class="flex justify-between w-full">
-        <div>
-            <button
-                type="button"
-                data-testid="mod-edit-facility-hp-topbar-copy-id"
-                :class="[buttonBaseClass, copyButtonClass, 'w-fit px-3 py-2 m-2']"
-                @click="copyFacilityOrHealthcareProfessionalId"
-            >
-                ID: {{ selectedId }}
-                <SVGSuccessCheckMark
-                    v-if="showCopySuccessIcon"
-                    role="img"
-                    title="clipboard copy"
-                    class="ml-2 w-6"
-                />
-                <SVGCopyContent
-                    v-if="!showCopySuccessIcon"
-                    role="img"
-                    title="successful copy"
-                    class="ml-2 w-6"
-                />
-            </button>
-        </div>
-        <div class="facility-hp-topbar-actions flex justify p-2 font-bold ">
-            <button
-                type="button"
-                :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass, 'mr-2']"
-                data-testid="mod-edit-facility-hp-topbar-back"
-                @click="navigateBackToDashboard"
-            >
-                {{
-                    t('modEditFacilityOrHPTopbar.back') }}
-            </button>
+    <div
+        class="facility-hp-topbar-actions flex w-full min-w-0 flex-col gap-2 p-2 font-bold
+        landscape:flex-row landscape:items-center landscape:justify-between"
+    >
+        <button
+            type="button"
+            :class="[buttonBaseClass, backButtonClass, buttonOutlineClass, buttonPaddingClass]"
+            data-testid="mod-edit-facility-hp-topbar-back"
+            @click="navigateBackToDashboard"
+        >
+            {{ t('modEditFacilityOrHPTopbar.back') }}
+        </button>
+        <div
+            class="grid w-full min-w-0 grid-cols-2 gap-2
+            portrait:[&>*:last-child:nth-child(odd)]:col-span-2
+            landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end"
+        >
             <button
                 type="button"
                 :disabled="!hasPendingChanges"
-                :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass, 'mr-2']"
+                :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
                 data-testid="mod-edit-facility-hp-topbar-update"
                 @click="saveChanges"
             >
-                <span>
-                    {{ t('modEditFacilityOrHPTopbar.update') }}
-                </span>
+                {{ t('modEditFacilityOrHPTopbar.update') }}
             </button>
             <button
                 type="button"
                 :disabled="!hasPendingChanges"
-                :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass, 'mr-2']"
+                :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
                 data-testid="mod-edit-facility-hp-topbar-update-and-exit"
                 @click="saveChangesAndExit"
             >
-                <span>
-                    {{ t('modEditFacilityOrHPTopbar.updateAndExit') }}
-                </span>
+                {{ t('modEditFacilityOrHPTopbar.updateAndExit') }}
             </button>
             <button
                 type="button"
-                :class="[buttonBaseClass, buttonDangerClass, buttonPaddingClass, 'mr-2']"
+                :class="[buttonBaseClass, actionButtonClass, buttonDangerClass, buttonPaddingClass]"
                 data-testid="mod-edit-facility-hp-topbar-delete"
                 @click="openDeleteConfirmation"
             >
-                {{
-                    t('modEditFacilityOrHPTopbar.delete') }}
+                {{ t('modEditFacilityOrHPTopbar.delete') }}
             </button>
         </div>
     </div>
@@ -73,8 +52,6 @@ import { storeToRefs } from 'pinia'
 import { useAppToast } from '~/composables/useAppToast'
 import { useRouter } from 'vue-router'
 import { useI18n } from '#imports'
-import SVGCopyContent from '~/assets/icons/content-copy.svg'
-import SVGSuccessCheckMark from '~/assets/icons/checkmark-square.svg'
 import { useFacilitiesStore, getChangedFacilityFieldsForUpdate } from '~/stores/facilitiesStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useModerationScreenStore, ModerationScreen } from '~/stores/moderationScreenStore'
@@ -154,25 +131,13 @@ const toast = useAppToast()
 
 const { t } = useI18n()
 
-const showCopySuccessIcon: Ref<boolean> = ref(false)
-const buttonBaseClass = 'inline-flex justify-center items-center rounded-full border-2 text-base font-bold'
-const buttonPaddingClass = 'px-5 py-2 whitespace-nowrap'
+const buttonBaseClass = 'inline-flex min-h-11 min-w-0 max-w-full items-center justify-center rounded-full border-2'
+  + ' break-words text-center text-sm font-bold leading-tight landscape:text-base'
+const actionButtonClass = 'w-full landscape:w-auto landscape:shrink-0'
+const backButtonClass = 'w-auto shrink-0 self-start landscape:self-center'
+const buttonPaddingClass = 'px-3 py-2 whitespace-normal landscape:px-5'
 const buttonOutlineClass = 'bg-secondary-bg border-primary-text-muted text-primary-text hover:bg-accent-bg/20'
 const buttonDangerClass = 'bg-secondary-bg border-error text-error hover:bg-error/10'
-const copyButtonClass = 'bg-secondary-bg border-accent-bg text-primary-text'
-
-const copyFacilityOrHealthcareProfessionalId = async () => {
-    try {
-        await navigator.clipboard.writeText(selectedId.value)
-        showCopySuccessIcon.value = true
-        setTimeout(() => {
-            showCopySuccessIcon.value = false
-        }, 2000)
-    } catch (err: unknown) {
-        toast.error(`${t('modEditFacilityOrHPTopbar.copyFailure')} ${selectedId.value}: ${err}`)
-        console.error(`Failed to copy ID ${selectedId.value}: ${err}`)
-    }
-}
 
 function setSelectedId() {
     switch (moderationScreenStore.activeScreen) {
