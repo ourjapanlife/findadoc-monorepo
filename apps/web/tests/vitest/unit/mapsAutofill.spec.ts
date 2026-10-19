@@ -4,7 +4,12 @@ import { resolve } from 'node:path'
 import { defineComponent } from 'vue'
 import { mount } from '@vue/test-utils'
 import { expect } from 'chai'
-import { fillEmptyFacilityFields, officialCityPatch, type FacilityMapsFillTarget } from '~/utils/mapsAutofill'
+import {
+    fillEmptyFacilityFields,
+    officialCityPatch,
+    withoutFilledFields,
+    type FacilityMapsFillTarget
+} from '~/utils/mapsAutofill'
 import type { CityOption } from '~/utils/cityOptions'
 import {
     provideModerationFormEditing,
@@ -133,6 +138,30 @@ describe('fillEmptyFacilityFields', () => {
         })
 
         expect(patch).to.deep.equal({})
+    })
+})
+
+describe('withoutFilledFields', () => {
+    it('drops keys the moderator filled during the city lookup', () => {
+        const patch = withoutFilledFields(emptyFacility({
+            nameEn: 'Typed Clinic',
+            cityJa: '中野区',
+            mapLatitude: '35.1'
+        }), {
+            nameEn: 'A-ONE Dental Clinic',
+            nameJa: 'A-ONE歯科クリニック',
+            postalCode: '164-0002',
+            cityId: 'city-nakano',
+            cityEn: 'Nakano',
+            cityJa: '中野区',
+            mapLatitude: '35.71',
+            mapLongitude: '139.66'
+        })
+
+        expect(patch).to.deep.equal({
+            nameJa: 'A-ONE歯科クリニック',
+            postalCode: '164-0002'
+        })
     })
 })
 

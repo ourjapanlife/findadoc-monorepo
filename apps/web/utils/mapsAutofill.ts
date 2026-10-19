@@ -92,6 +92,47 @@ export function fillEmptyFacilityFields(
     return patch
 }
 
+const SINGLE_FIELDS = [
+    'nameEn',
+    'nameJa',
+    'postalCode',
+    'prefectureEn',
+    'prefectureJa',
+    'addressLine1En',
+    'addressLine1Ja'
+] as const
+
+/**
+ * Drop patch keys the moderator filled while a lookup was in flight.
+ * City is one value, and the pin is one value, so a later edit to either side removes both keys.
+ */
+export function withoutFilledFields(
+    current: FacilityMapsFillTarget,
+    patch: Partial<FacilityMapsFillTarget>
+): Partial<FacilityMapsFillTarget> {
+    const next: Partial<FacilityMapsFillTarget> = {}
+
+    for (const key of SINGLE_FIELDS) {
+        const value = patch[key]
+        if (value !== undefined && current[key].trim() === '') {
+            next[key] = value
+        }
+    }
+
+    if (!cityIsSet(current)) {
+        if (patch.cityId !== undefined) next.cityId = patch.cityId
+        if (patch.cityEn !== undefined) next.cityEn = patch.cityEn
+        if (patch.cityJa !== undefined) next.cityJa = patch.cityJa
+    }
+
+    if (current.mapLatitude.trim() === '' && current.mapLongitude.trim() === '') {
+        if (patch.mapLatitude !== undefined) next.mapLatitude = patch.mapLatitude
+        if (patch.mapLongitude !== undefined) next.mapLongitude = patch.mapLongitude
+    }
+
+    return next
+}
+
 /** Replace a Places city spelling with the official municipality when one row matches. */
 export function officialCityPatch(
     current: FacilityMapsFillTarget,

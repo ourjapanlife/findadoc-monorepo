@@ -54,6 +54,7 @@ import { parseMapsPlace, validateGoogleMapsUrlInput } from '~/utils/formValidati
 import {
     fillEmptyFacilityFields,
     officialCityPatch,
+    withoutFilledFields,
     type FacilityMapsFillTarget
 } from '~/utils/mapsAutofill'
 import { fetchMapsPlaceDetails, type MapsPlaceDetails } from '~/utils/mapsPlaceDetails'
@@ -145,10 +146,11 @@ async function matchOfficialCity(patch: Partial<FacilityMapsFillTarget>): Promis
 
     try {
         const cities = await fetchCities(prefectureEn)
-        return officialCityPatch(props.current, patch, cities)
+        const current = props.current
+        return officialCityPatch(current, withoutFilledFields(current, patch), cities)
     } catch (error) {
         console.error('Matching a Maps city failed', error)
-        return patch
+        return withoutFilledFields(props.current, patch)
     }
 }
 </script>
