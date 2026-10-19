@@ -246,8 +246,7 @@
     "back": "Quay lại",
     "hasUnsavedChanges": "Có thay đổi chưa lưu. Bạn vẫn muốn rời đi?",
     "deleteConfirmationFacility": "Xóa cơ sở {facility}, ID: {id}?",
-    "deleteConfirmationHealthcareProfessional": "Xóa nhân viên y tế {healthcareProfessional}, ID: {id}?",
-    "healthcareProfessionalEnglishNameRequired": "Nhân viên y tế phải có tên tiếng Anh"
+    "deleteConfirmationHealthcareProfessional": "Xóa nhân viên y tế {healthcareProfessional}, ID: {id}?"
   },
   "modEditSubmissionTopNav": {
     "updateAndExit": "Lưu và thoát.",
@@ -328,15 +327,12 @@
     "inputErrorMessagePrefectureMismatch": "Tên tỉnh bằng tiếng Nhật và tiếng Anh không khớp",
     "inputErrorMessageFacilityCityEn": "Tên thành phố tiếng Anh không hợp lệ",
     "inputErrorMessageFacilityCityJa": "Tên thành phố tiếng Nhật không hợp lệ",
-    "inputErrorMessageFacilityEmail": "Địa chỉ email không hợp lệ",
     "inputErrorMessageFacilityGoogleMapsUrl": "URL Google Maps không hợp lệ",
     "inputErrorMessageFacilityMapLatitude": "Vĩ độ không hợp lệ",
     "inputErrorMessageFacilityMapLongitude": "Kinh độ không hợp lệ",
     "inputErrorMessageFacilityNameEn": "Tên tiếng Anh không hợp lệ",
     "inputErrorMessageFacilityNameJa": "Tên tiếng Nhật không hợp lệ",
-    "inputErrorMessageFacilityPhoneNumber": "Số điện thoại không hợp lệ",
     "inputErrorMessageFacilityPostalCode": "Mã bưu điện không hợp lệ",
-    "inputErrorMessageFacilityWebsite": "URL trang web không hợp lệ",
     "labelFacilityNameEn": "Tên (Tiếng Anh)",
     "labelFacilityNameJa": "Tên (Tiếng Nhật)",
     "labelFacilityPhoneNumber": "Số điện thoại",
@@ -391,10 +387,8 @@
     "fillFromMapsFailed": "Không đọc được liên kết này. Hãy mở trong Maps và sao chép thông tin."
   },
   "modSubmissionForm": {
-    "errorMessageCompletedForm": "Gửi mẫu đã hoàn thành không thành công.",
     "errorMessageFacilityId": "Mã cơ sở vật chất là bắt buộc để cập nhật cơ sở vật chất.",
     "healthcareProfessionalId": "Mã số chuyên gia y tế",
-    "infoMessageAlreadyApproved": "Đơn đăng ký này đã được phê duyệt.",
     "labelHealthcareProfessionalFirstName": "Tên đầu tiên",
     "labelHealthcareProfessionalLastName": "Họ",
     "labelHealthcareProfessionalMiddleName": "Tên đệm",
@@ -414,7 +408,30 @@
   },
   "serverErrorMessages": {
     "errorCodeMessagingNeeded": "Mã lỗi máy chủ này chưa có thông báo cho người dùng. Hãy thêm một thông báo.",
-    "genericErrorMessage": "Đã xảy ra lỗi khi gửi biểu mẫu. Vui lòng thử lại"
+    "genericErrorMessage": "Đã xảy ra lỗi khi gửi biểu mẫu. Vui lòng thử lại",
+    "englishNameRequired": "Nhân viên y tế cần có tên bằng tiếng Anh.",
+    "facilityFieldsIncomplete": "Hãy điền các mục bắt buộc của cơ sở y tế trước khi tiếp tục.",
+    "healthcareProfessionalFieldsIncomplete": "Hãy điền các mục bắt buộc của nhân viên y tế trước khi tiếp tục.",
+    "serverUnavailable": "Đã xảy ra sự cố từ phía chúng tôi. Hãy thử lại.",
+    "recordNotFound": "Không tìm thấy bản ghi đó.",
+    "requiredFieldEmpty": "Một mục bắt buộc đang trống.",
+    "invalidEmail": "Nhập địa chỉ email hợp lệ.",
+    "invalidPhone": "Nhập số điện thoại hợp lệ.",
+    "invalidWebsite": "Nhập địa chỉ website hợp lệ.",
+    "invalidInformation": "Một phần thông tin không hợp lệ. Hãy kiểm tra biểu mẫu và thử lại.",
+    "submissionCannotBeApproved": "Không thể phê duyệt hồ sơ này cho đến khi đủ thông tin bắt buộc về cơ sở và nhân viên y tế.",
+    "submissionAlreadyApproved": "Hồ sơ này đã được phê duyệt.",
+    "clinicRequired": "Hãy chọn cơ sở y tế cho nhân viên y tế này.",
+    "japaneseInEnglishField": "Một mục tiếng Anh có ký tự tiếng Nhật.",
+    "latinInJapaneseField": "Một mục tiếng Nhật có ký tự Latinh.",
+    "invalidCharacter": "Một mục chứa ký tự không được phép.",
+    "duplicateLanguage": "Ngôn ngữ đó đã có trong danh sách.",
+    "invalidLanguage": "Hãy chọn một ngôn ngữ trong danh sách.",
+    "fieldTooLong": "Một mục quá dài.",
+    "fieldTooShort": "Một mục quá ngắn.",
+    "negativeNumber": "Số không được là số âm.",
+    "nothingToSave": "Không có nội dung mới để lưu.",
+    "signInRequired": "Bạn cần đăng nhập để làm việc này."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Ngôn ngữ sử dụng",

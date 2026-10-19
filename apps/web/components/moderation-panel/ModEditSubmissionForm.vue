@@ -106,6 +106,7 @@ import { useI18n } from '#imports'
 import { stableStringify } from '~/utils/stableStringify'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToastAndEffect } from '~/composables/useModerationGuardFeedback'
+import { formErrorKey, GENERIC_FORM_ERROR_KEY, translatedFormError } from '~/utils/formErrorMessage'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import { ModerationSubmissionActionType, useModerationSubmissionActions } from '~/composables/useModerationSubmissionActions'
 import { mapIdsToEntities, matchesFacilitySearch, matchesHealthcareProfessionalSearch } from '~/utils/moderationSearchUtils'
@@ -508,7 +509,7 @@ async function confirmAndApproveSubmission(e?: Event) {
     const selectedSubmissionData = moderationSubmissionStore.selectedSubmissionData
     // This prevents submission of an already approved submission the backend does this but as an extra visual and check
     if (selectedSubmissionData && selectedSubmissionData.isApproved) {
-        toast.info(t('modSubmissionForm.infoMessageAlreadyApproved'))
+        toast.info(translatedFormError(t, formErrorKey.submissionAlreadyApproved))
         await resetModalRefs()
         return
     }
@@ -523,7 +524,7 @@ async function confirmAndApproveSubmission(e?: Event) {
             !isValidFacility,
             toast,
             t,
-            'modSubmissionForm.errorMessageFacilityInputsInvalid',
+            formErrorKey.facilityFieldsIncomplete,
             resetModalRefs
         )) {
             return
@@ -536,7 +537,7 @@ async function confirmAndApproveSubmission(e?: Event) {
             !isValidHealthcareProfessional,
             toast,
             t,
-            'modSubmissionForm.errorMessageHealthcareInputsInvalid',
+            formErrorKey.healthcareProfessionalFieldsIncomplete,
             resetModalRefs
         )) {
             return
@@ -546,7 +547,7 @@ async function confirmAndApproveSubmission(e?: Event) {
             !hasEnglishName,
             toast,
             t,
-            'modSubmissionForm.errorMessageEnglishNameRequired',
+            formErrorKey.englishNameRequired,
             resetModalRefs
         )) {
             return
@@ -571,7 +572,7 @@ async function confirmAndApproveSubmission(e?: Event) {
         returnWithSuccessToast(result, toast, t, 'modSubmissionForm.successMessageApproved')
         await leaveToModerationDashboard(router, screenStore, modalStore, 'submissions')
     } catch {
-        toast.error(t('modSubmissionForm.errorMessageCompletedForm'))
+        toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
         await resetModalRefs()
     }
 }
