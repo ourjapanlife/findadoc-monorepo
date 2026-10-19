@@ -1,15 +1,13 @@
-import type { ToastInterface } from 'vue-toastification'
-
-type SuccessToastOptions = Parameters<ToastInterface['success']>[1]
+import type { AppToast, ToastSentenceOptions } from '~/composables/useAppToast'
 
 export function returnWithSuccessToast<T>(
     response: T,
-    toast: ToastInterface,
+    toast: AppToast,
     t: (translatableString: string) => string | undefined,
     translationKey: string,
-    toastOptions?: SuccessToastOptions
+    options?: ToastSentenceOptions
 ): T {
     const msg = t(translationKey) ?? translationKey ?? ''
-    toast.success(msg, toastOptions)
+    toast.success(msg, options)
     return response
 }

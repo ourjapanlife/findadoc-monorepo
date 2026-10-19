@@ -672,5 +672,14 @@
     "preview": "Paunang tingin",
     "previewHint": "Preview. Lumipat sa edit bago baguhin ang anuman.",
     "editHint": "Ine-edit. Bumalik sa preview kung babasahin mo lang."
+  },
+  "toast": {
+    "successTitle": "Tapos na",
+    "warningTitle": "Pakisuri",
+    "dangerTitle": "May nangyaring mali",
+    "infoTitle": "Paalala",
+    "dismiss": "Isara",
+    "announceLabel": "Abiso",
+    "viewportLabel": "Mga abiso ({hotkey})"
   }
 }

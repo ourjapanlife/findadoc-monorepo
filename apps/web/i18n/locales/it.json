@@ -672,5 +672,14 @@
     "preview": "Anteprima",
     "previewHint": "Anteprima. Passa alla modifica prima di cambiare qualcosa.",
     "editHint": "Modifica in corso. Torna all’anteprima se devi solo leggere."
+  },
+  "toast": {
+    "successTitle": "Fatto",
+    "warningTitle": "Controlla",
+    "dangerTitle": "Qualcosa è andato storto",
+    "infoTitle": "Nota",
+    "dismiss": "Chiudi",
+    "announceLabel": "Notifica",
+    "viewportLabel": "Notifiche ({hotkey})"
   }
 }

@@ -1,8 +1,8 @@
-import type { ToastInterface } from 'vue-toastification'
+import type { AppToast } from '~/composables/useAppToast'
 
 export function guardWithErrorToast(
     shouldBlock: boolean,
-    toast: ToastInterface,
+    toast: AppToast,
     t: (translatableString: string) => string | undefined,
     translationKey: string
 ): boolean {
@@ -17,7 +17,7 @@ export function guardWithErrorToast(
 
 export async function guardWithErrorToastAndEffect(
     shouldBlock: boolean,
-    toast: ToastInterface,
+    toast: AppToast,
     t: (translatableString: string) => string | undefined,
     translationKey: string,
     onBlocked: () => void | Promise<void>

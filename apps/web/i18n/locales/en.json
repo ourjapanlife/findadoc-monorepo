@@ -672,5 +672,14 @@
     "nearbySpecialtyHeading": "{specialty} in other prefectures",
     "nearbyLanguageHeading": "{language}-speaking care in other prefectures",
     "siblingCitiesHeading": "Other cities in this prefecture"
+  },
+  "toast": {
+    "successTitle": "Done",
+    "warningTitle": "Check this",
+    "dangerTitle": "Something went wrong",
+    "infoTitle": "Note",
+    "dismiss": "Dismiss",
+    "announceLabel": "Notification",
+    "viewportLabel": "Notifications ({hotkey})"
   }
 }

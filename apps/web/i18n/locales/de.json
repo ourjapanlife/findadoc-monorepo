@@ -672,5 +672,14 @@
     "preview": "Vorschau",
     "previewHint": "Vorschau. Wechseln Sie zum Bearbeiten, bevor Sie etwas ändern.",
     "editHint": "Bearbeitung. Wechseln Sie zurück zur Vorschau, wenn Sie nur lesen."
+  },
+  "toast": {
+    "successTitle": "Erledigt",
+    "warningTitle": "Bitte prüfen",
+    "dangerTitle": "Etwas ist schiefgelaufen",
+    "infoTitle": "Hinweis",
+    "dismiss": "Schließen",
+    "announceLabel": "Meldung",
+    "viewportLabel": "Hinweise ({hotkey})"
   }
 }

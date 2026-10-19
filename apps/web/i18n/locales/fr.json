@@ -672,5 +672,14 @@
     "preview": "Aperçu",
     "previewHint": "Aperçu. Passez en modification avant de changer quoi que ce soit.",
     "editHint": "Modification. Revenez à l’aperçu si vous ne faites que lire."
+  },
+  "toast": {
+    "successTitle": "Terminé",
+    "warningTitle": "À vérifier",
+    "dangerTitle": "Un problème est survenu",
+    "infoTitle": "Remarque",
+    "dismiss": "Fermer",
+    "announceLabel": "Message",
+    "viewportLabel": "Messages ({hotkey})"
   }
 }

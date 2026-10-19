@@ -672,5 +672,14 @@
     "preview": "Pré-visualização",
     "previewHint": "Pré-visualização. Mude para editar antes de alterar algo.",
     "editHint": "A editar. Volte à pré-visualização se só precisar de ler."
+  },
+  "toast": {
+    "successTitle": "Concluído",
+    "warningTitle": "Verifique isto",
+    "dangerTitle": "Algo correu mal",
+    "infoTitle": "Nota",
+    "dismiss": "Fechar",
+    "announceLabel": "Notificação",
+    "viewportLabel": "Notificações ({hotkey})"
   }
 }

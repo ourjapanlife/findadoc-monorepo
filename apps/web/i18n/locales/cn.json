@@ -672,5 +672,14 @@
     "preview": "预览",
     "previewHint": "当前为预览。修改前请切换到编辑。",
     "editHint": "当前为编辑。只需查看时请切换回预览。"
+  },
+  "toast": {
+    "successTitle": "完成",
+    "warningTitle": "请检查",
+    "dangerTitle": "出了点问题",
+    "infoTitle": "提示",
+    "dismiss": "关闭",
+    "announceLabel": "通知",
+    "viewportLabel": "通知（{hotkey}）"
   }
 }

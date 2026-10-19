@@ -44,7 +44,7 @@ test.describe('Moderation facility and healthcare professional happy paths', () 
         )
 
         // 4. 🛑 Explicit Asynchronous DOM Wait: Hold the thread until the alert paints on screen
-        const alertElement = page.getByRole('alert').filter({ hasText: facilityToastPattern })
+        const alertElement = page.locator('li[data-status="success"]').filter({ hasText: facilityToastPattern })
         await alertElement.waitFor({ state: 'visible', timeout: 15000 })
 
         // 5. Assert visibility safely
@@ -104,7 +104,7 @@ test.describe('Moderation facility and healthcare professional happy paths', () 
         )
 
         // 3. 🛑 Explicit Asynchronous DOM Wait: Hold the thread until the alert paints on screen
-        const alertElement = page.getByRole('alert').filter({ hasText: hpToastPattern })
+        const alertElement = page.locator('li[data-status="success"]').filter({ hasText: hpToastPattern })
         await alertElement.waitFor({ state: 'visible', timeout: 10000 })
 
         // 4. Assert visibility safely
