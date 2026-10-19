@@ -7,6 +7,7 @@ interface ConfirmationConfig {
     textConfirm?: string
     textCancel?: string
     mode?: ConfirmationMode
+    destructive?: boolean
 }
 
 type ConfirmationConfigInput = string | ConfirmationConfig
@@ -21,6 +22,7 @@ interface ConfirmationData {
     textConfirm?: string
     textCancel?: string
     mode?: ConfirmationMode
+    destructive?: boolean
     onConfirm: () => void | Promise<void>
     onCancel?: () => void
 }
@@ -42,6 +44,7 @@ export default defineNuxtPlugin(() => {
             textCancel: config.textCancel,
             textConfirm: config.textConfirm,
             mode: config.mode,
+            destructive: config.destructive,
             onCancel: config.onCancel,
             onConfirm
         }

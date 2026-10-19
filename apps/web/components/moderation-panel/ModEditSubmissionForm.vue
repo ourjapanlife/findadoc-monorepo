@@ -1,44 +1,5 @@
 <template>
     <Loader />
-    <div v-if="isEditSubmissionFormInitialized">
-        <Modal
-            data-testid="submission-form-modal"
-            @modal-closed="resetModalRefs"
-        >
-            <div
-                v-if="showApproveSubmissionConfirmation"
-                class="flex flex-col aspect-square h-96 items-center justify-around bg-primary-inverted p-10 rounded"
-            >
-                <span class="font-bold text-3xl">
-                    {{ t('modSubmissionForm.submissionConfirmationMessage') }}
-                </span>
-                <button
-                    type="button"
-                    class="bg-primary p-4 rounded-full my-8 font-semibold text-xl"
-                    @click="confirmAndApproveSubmission"
-                >
-                    {{ t('modSubmissionForm.submissionConfirmationAcceptanceButton') }}
-                </button>
-            </div>
-            <div
-                v-else-if="showRejectSubmissionConfirmation"
-                data-testid="reject-confirmation"
-                class="flex flex-col aspect-square h-96 items-center justify-around bg-primary-inverted p-10 rounded"
-            >
-                <span class="font-bold text-3xl">
-                    {{ t('modSubmissionForm.rejectSubmissionConfirmationMessage') }}
-                </span>
-                <button
-                    data-testid="reject-submission-confirmation-btn"
-                    type="button"
-                    class="bg-primary p-4 rounded-full my-8 font-semibold text-xl"
-                    @click="rejectSubmission"
-                >
-                    {{ t('modSubmissionForm.rejectSubmissionConfirmationButton') }}
-                </button>
-            </div>
-        </Modal>
-    </div>
     <div :data-mod-mode="isEditing ? 'edit' : 'preview'">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p class="text-sm text-primary-text-muted">
@@ -192,8 +153,6 @@ watch(isDirty, dirty => moderationSubmissionUnsavedStore.setEditSubmissionFormDi
 })
 
 const isEditSubmissionFormInitialized: Ref<boolean> = ref(false)
-const showApproveSubmissionConfirmation: Ref<boolean> = ref(false)
-const showRejectSubmissionConfirmation: Ref<boolean> = ref(false)
 const lastHandledActionId: Ref<number> = ref(0)
 const submissionBeforeChanges: Ref<Submission | undefined> = ref(undefined)
 
@@ -542,9 +501,9 @@ async function saveSubmissionDraft(
     return true
 }
 
-async function confirmAndApproveSubmission(e: Event) {
+async function confirmAndApproveSubmission(e?: Event) {
     // stop the form submitting before we validate
-    e.preventDefault()
+    e?.preventDefault()
 
     const selectedSubmissionData = moderationSubmissionStore.selectedSubmissionData
     // This prevents submission of an already approved submission the backend does this but as an extra visual and check
@@ -619,8 +578,6 @@ async function confirmAndApproveSubmission(e: Event) {
 
 const resetModalRefs = async () => {
     await nextTick()
-    showRejectSubmissionConfirmation.value = false
-    showApproveSubmissionConfirmation.value = false
     modalStore.hideModal()
 }
 
@@ -642,14 +599,25 @@ watch(
 
         switch (action.type) {
             case ModerationSubmissionActionType.Approve:
-                showApproveSubmissionConfirmation.value = true
-                showRejectSubmissionConfirmation.value = false
-                modalStore.showModal()
+                useNuxtApp().$withConfirmation(() => {
+                    void confirmAndApproveSubmission()
+                }, {
+                    title: t('modEditSubmissionTopNav.approve'),
+                    message: t('modSubmissionForm.submissionConfirmationMessage'),
+                    textConfirm: t('modSubmissionForm.submissionConfirmationAcceptanceButton'),
+                    textCancel: t('common.cancel')
+                })
                 return
             case ModerationSubmissionActionType.Reject:
-                showRejectSubmissionConfirmation.value = true
-                showApproveSubmissionConfirmation.value = false
-                modalStore.showModal()
+                useNuxtApp().$withConfirmation(() => {
+                    void rejectSubmission()
+                }, {
+                    title: t('modEditSubmissionTopNav.reject'),
+                    message: t('modSubmissionForm.rejectSubmissionConfirmationMessage'),
+                    textConfirm: t('modSubmissionForm.rejectSubmissionConfirmationButton'),
+                    textCancel: t('common.cancel'),
+                    destructive: true
+                })
                 return
             case ModerationSubmissionActionType.UpdateAndExit:
                 saveSubmissionDraft(new Event('submit', { bubbles: false, cancelable: true }), {

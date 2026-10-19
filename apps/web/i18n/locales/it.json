@@ -44,7 +44,8 @@
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "Caricamento",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "cancel": "Annulla"
   },
   "about": {
     "heroHeading": "Find a Doc, Japan",

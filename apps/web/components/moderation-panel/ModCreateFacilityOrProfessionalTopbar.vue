@@ -22,30 +22,6 @@
                 </span>
             </button>
         </div>
-        <div
-            v-show="modalStore.isOpen"
-            class="fixed top-0 left-0 flex items-center justify-center h-full w-full z-10 bg-secondary/40"
-        >
-            <Modal>
-                <div
-                    class="flex flex-col aspect-square h-96 items-center justify-around bg-primary-inverted p-10 rounded"
-                >
-                    <span
-                        class="font-bold text-3xl"
-                    >
-                        {{ t('modCreateFacilityOrHPTopbar.unsavedChangesMessage') }}
-                    </span>
-                    <button
-                        :class="[buttonBaseClass, buttonDangerFilledClass, 'my-8 px-6 py-3 text-xl']"
-                        type="button"
-                        @click="navigateBackToDashboardWithoutCreation"
-                    >
-                        {{
-                            t('modCreateFacilityOrHPTopbar.confirmExit') }}
-                    </button>
-                </div>
-            </Modal>
-        </div>
     </div>
 </template>
 
@@ -83,7 +59,6 @@ const buttonBaseClass = 'inline-flex justify-center items-center rounded-full bo
 const buttonPaddingClass = 'px-5 py-2 whitespace-nowrap'
 const buttonOutlineClass = 'bg-secondary-bg border-primary-text-muted text-primary-text hover:bg-accent-bg/20'
 const buttonPrimaryClass = 'bg-primary border-primary text-primary-text-inverted hover:bg-primary-hover'
-const buttonDangerFilledClass = 'bg-error border-error text-primary-text-inverted hover:opacity-90'
 
 const validateFacilityFields = () => validateModerationFacilityFields(facilitiesStore.createFacilityFields)
 
@@ -180,6 +155,13 @@ const navigateBackToDashboardWithoutCreation = async () => {
 }
 
 const openExitConfirmation = () => {
-    modalStore.showModal()
+    useNuxtApp().$withConfirmation(() => {
+        void navigateBackToDashboardWithoutCreation()
+    }, {
+        title: t('unsavedChanges.create.title'),
+        message: t('modCreateFacilityOrHPTopbar.unsavedChangesMessage'),
+        textConfirm: t('modCreateFacilityOrHPTopbar.confirmExit'),
+        textCancel: t('unsavedChanges.create.cancel')
+    })
 }
 </script>
