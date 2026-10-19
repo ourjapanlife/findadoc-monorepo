@@ -53,7 +53,8 @@ const moderationSubmissionsStore = useModerationSubmissionsStore()
 const toast = useAppToast()
 
 const { t } = useI18n()
-const buttonBaseClass = 'inline-flex min-h-11 w-full min-w-0 max-w-full flex-1 basis-[calc(50%-0.25rem)] items-center justify-center rounded-full border-2'
+const buttonBaseClass = 'inline-flex min-h-11 w-full min-w-0 max-w-full flex-1 basis-[calc(50%-0.25rem)]'
+  + ' items-center justify-center rounded-full border-2'
   + ' break-words text-center text-sm font-bold leading-tight'
   + ' landscape:w-auto landscape:max-w-full landscape:flex-none landscape:basis-auto landscape:text-base'
 const buttonPaddingClass = 'px-3 py-2 whitespace-normal landscape:px-5'

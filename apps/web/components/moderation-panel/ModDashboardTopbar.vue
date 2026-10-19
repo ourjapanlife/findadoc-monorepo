@@ -6,13 +6,17 @@
             >
                 {{ updateTextForModerationDashboard(moderationSubmissionsStore.selectedModerationListViewChosen) }}
             </h1>
-            <div class="flex w-full min-w-0 max-w-full flex-col gap-2 landscape:flex-row landscape:flex-wrap landscape:justify-end">
+            <div
+                class="flex w-full min-w-0 max-w-full flex-col gap-2
+                landscape:flex-row landscape:flex-wrap landscape:justify-end"
+            >
                 <NuxtLink
                     v-if="showAddHpButton"
                     to="/my-page/create-healthcare-professional"
                     data-testid="add-hp-button"
-                    class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center rounded-lg border border-accent-bg
-                    bg-secondary-bg px-3 py-2 text-center text-sm font-semibold leading-tight break-words whitespace-normal
+                    class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center
+                    rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2 text-center text-sm
+                    font-semibold leading-tight break-words whitespace-normal
                     text-primary-text hover:bg-accent-bg/20 landscape:w-auto"
                 >
                     {{ t('modDashboardTopbar.addHealthcareProfessional') }}
@@ -21,8 +25,9 @@
                     v-if="showAddFacilityButton"
                     to="/my-page/create-facility"
                     data-testid="add-facility-button"
-                    class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center rounded-lg border border-accent-bg
-                    bg-secondary-bg px-3 py-2 text-center text-sm font-semibold leading-tight break-words whitespace-normal
+                    class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center
+                    rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2 text-center text-sm
+                    font-semibold leading-tight break-words whitespace-normal
                     text-primary-text hover:bg-accent-bg/20 landscape:w-auto"
                 >
                     {{ t('modDashboardTopbar.addFacility') }}
@@ -135,8 +140,9 @@ function statusFilterClass(tab: SelectedSubmissionListViewTab): string {
 }
 
 function queueFilterClass(isActive: boolean): string {
-    const baseClass = 'min-h-11 w-full min-w-0 max-w-full break-words border-b-2 px-3 py-2.5 text-center text-sm font-medium leading-tight'
-      + ' whitespace-normal transition-colors landscape:w-auto landscape:px-4 landscape:text-left'
+    const baseClass = 'min-h-11 w-full min-w-0 max-w-full break-words border-b-2 px-3 py-2.5'
+      + ' text-center text-sm font-medium leading-tight whitespace-normal'
+      + ' transition-colors landscape:w-auto landscape:px-4 landscape:text-left'
 
     return isActive
         ? `${baseClass} border-primary text-primary-text`
