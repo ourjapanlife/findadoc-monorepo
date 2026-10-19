@@ -400,7 +400,6 @@
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",
     "delete": "删除",
-    "copyFailure": "复制 ID 失败",
     "update": "更新",
     "facilityUpdatedSuccessfully": "医疗机构已更新",
     "deleteButtonText": "永久删除",

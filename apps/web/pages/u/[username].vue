@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import ProfilePage from '~/components/ProfilePage.vue'
+import ProfilePage from '~/components/profile/ProfilePage.vue'
 import { useAuthStore } from '~/stores/authStore'
 
 const route = useRoute()

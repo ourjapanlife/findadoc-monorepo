@@ -6,14 +6,14 @@
             >
                 {{ updateTextForModerationDashboard(moderationSubmissionsStore.selectedModerationListViewChosen) }}
             </h1>
-            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full lg:w-auto">
+            <div class="flex w-full min-w-0 max-w-full flex-col gap-2 landscape:flex-row landscape:flex-wrap landscape:justify-end">
                 <NuxtLink
                     v-if="showAddHpButton"
                     to="/my-page/create-healthcare-professional"
                     data-testid="add-hp-button"
-                    class="flex justify-center items-center rounded-lg border border-accent-bg
-                    bg-secondary-bg py-2 px-3 font-semibold text-sm
-                    overflow-hidden text-center text-primary-text hover:bg-accent-bg/20"
+                    class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center rounded-lg border border-accent-bg
+                    bg-secondary-bg px-3 py-2 text-center text-sm font-semibold leading-tight break-words whitespace-normal
+                    text-primary-text hover:bg-accent-bg/20 landscape:w-auto"
                 >
                     {{ t('modDashboardTopbar.addHealthcareProfessional') }}
                 </NuxtLink>
@@ -21,9 +21,9 @@
                     v-if="showAddFacilityButton"
                     to="/my-page/create-facility"
                     data-testid="add-facility-button"
-                    class="flex justify-center items-center rounded-lg border border-accent-bg
-                    bg-secondary-bg py-2 px-3 font-semibold text-sm
-                    overflow-hidden text-center text-primary-text hover:bg-accent-bg/20"
+                    class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center rounded-lg border border-accent-bg
+                    bg-secondary-bg px-3 py-2 text-center text-sm font-semibold leading-tight break-words whitespace-normal
+                    text-primary-text hover:bg-accent-bg/20 landscape:w-auto"
                 >
                     {{ t('modDashboardTopbar.addFacility') }}
                 </NuxtLink>
@@ -31,7 +31,9 @@
         </div>
         <div
             v-if="showLicenseReviewFilter"
-            class="flex items-end border-b border-accent-bg -mb-px"
+            class="grid w-full min-w-0 grid-cols-2 border-b border-accent-bg
+            portrait:[&>*:last-child:nth-child(odd)]:col-span-2
+            landscape:flex landscape:flex-wrap landscape:items-end"
         >
             <button
                 type="button"
@@ -44,7 +46,9 @@
         </div>
         <div
             v-if="moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.Submissions"
-            class="flex items-end border-b border-accent-bg -mb-px"
+            class="grid w-full min-w-0 grid-cols-2 border-b border-accent-bg
+            portrait:[&>*:last-child:nth-child(odd)]:col-span-2
+            landscape:flex landscape:flex-wrap landscape:items-end"
         >
             <button
                 type="button"
@@ -131,7 +135,8 @@ function statusFilterClass(tab: SelectedSubmissionListViewTab): string {
 }
 
 function queueFilterClass(isActive: boolean): string {
-    const baseClass = 'px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px'
+    const baseClass = 'min-h-11 w-full min-w-0 max-w-full break-words border-b-2 px-3 py-2.5 text-center text-sm font-medium leading-tight'
+      + ' whitespace-normal transition-colors landscape:w-auto landscape:px-4 landscape:text-left'
 
     return isActive
         ? `${baseClass} border-primary text-primary-text`

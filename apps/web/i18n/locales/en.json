@@ -330,7 +330,6 @@
     "licenseReview": "Needs license review"
   },
   "modEditFacilityOrHPTopbar": {
-    "copyFailure": "Failed to copy ID",
     "delete": "Delete",
     "deleteButtonText": "DELETE FOREVER",
     "update": "Update",

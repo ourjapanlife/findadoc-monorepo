@@ -1,25 +1,23 @@
 <template>
-    <div class="mod-create-facility-hp-topbar flex justify-end h-full w-full">
-        <div class="facility-hp-topbar-actions flex justify p-2 font-bold ">
+    <div class="mod-create-facility-hp-topbar flex h-full w-full min-w-0 justify-end">
+        <div
+            class="facility-hp-topbar-actions flex w-full min-w-0 max-w-full flex-wrap justify-end gap-2 p-2 font-bold"
+        >
             <button
                 type="button"
-                :class="[buttonBaseClass, buttonPrimaryClass, buttonPaddingClass, 'text-lg mr-2']"
+                :class="[buttonBaseClass, buttonPrimaryClass, buttonPaddingClass]"
                 data-testid="mod-create-facility-hp-topbar-create"
                 @click="createFacilityOrHealthcareProfessional"
             >
-                <span>
-                    {{ t('modCreateFacilityOrHPTopbar.create') }}
-                </span>
+                {{ t('modCreateFacilityOrHPTopbar.create') }}
             </button>
             <button
                 type="button"
-                :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass, 'text-lg mr-2']"
+                :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass]"
                 data-testid="mod-create-facility-hp-topbar-exit"
                 @click="openExitConfirmation"
             >
-                <span>
-                    {{ t('modCreateFacilityOrHPTopbar.exit') }}
-                </span>
+                {{ t('modCreateFacilityOrHPTopbar.exit') }}
             </button>
         </div>
     </div>
@@ -55,8 +53,10 @@ const moderationSubmissionsStore = useModerationSubmissionsStore()
 const toast = useAppToast()
 
 const { t } = useI18n()
-const buttonBaseClass = 'inline-flex justify-center items-center rounded-full border-2 font-bold'
-const buttonPaddingClass = 'px-5 py-2 whitespace-nowrap'
+const buttonBaseClass = 'inline-flex min-h-11 w-full min-w-0 max-w-full flex-1 basis-[calc(50%-0.25rem)] items-center justify-center rounded-full border-2'
+  + ' break-words text-center text-sm font-bold leading-tight'
+  + ' landscape:w-auto landscape:max-w-full landscape:flex-none landscape:basis-auto landscape:text-base'
+const buttonPaddingClass = 'px-3 py-2 whitespace-normal landscape:px-5'
 const buttonOutlineClass = 'bg-secondary-bg border-primary-text-muted text-primary-text hover:bg-accent-bg/20'
 const buttonPrimaryClass = 'bg-primary border-primary text-primary-text-inverted hover:bg-primary-hover'
 

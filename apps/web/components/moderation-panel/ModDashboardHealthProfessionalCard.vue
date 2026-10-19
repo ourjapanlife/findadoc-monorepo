@@ -54,18 +54,14 @@
                                         {{ t('modDashboardHealthcareProfessionalCard.spokenLanguages') }}
                                     </span>
                                     <div class="flex flex-wrap gap-1">
-                                        <div
+                                        <ChipTag
                                             v-for="(spokenLanguage, indexOfLocale)
                                                 in healthcareProfessional.spokenLanguages"
                                             :key="`${spokenLanguage}-${indexOfLocale}`"
-                                            class="healthcare-professional-related-to-facility-formatted-spoken-language
-                                                chip"
-                                        >
-                                            <span>
-                                                {{ localeStore.formatLanguageCodeToSimpleText(
-                                                    spokenLanguage) }}
-                                            </span>
-                                        </div>
+                                            class="max-w-full"
+                                            chip-class="healthcare-professional-related-to-facility-formatted-spoken-language"
+                                            :label="localeStore.formatLanguageCodeToSimpleText(spokenLanguage)"
+                                        />
                                     </div>
                                 </div>
                             </div>

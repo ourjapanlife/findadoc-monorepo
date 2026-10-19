@@ -6,9 +6,9 @@
         <li
             v-for="(label, index) in labels"
             :key="`${index}-${label}`"
-            class="chip"
+            class="max-w-full min-w-0"
         >
-            {{ label }}
+            <ChipTag :label="label" />
         </li>
     </ul>
 </template>

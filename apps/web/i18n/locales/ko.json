@@ -330,7 +330,6 @@
     "licenseReview": "면허 확인이 필요함"
   },
   "modEditFacilityOrHPTopbar": {
-    "copyFailure": "ID를 복사하지 못했습니다",
     "delete": "삭제",
     "deleteButtonText": "영구 삭제",
     "update": "업데이트",

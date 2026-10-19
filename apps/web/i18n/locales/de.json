@@ -448,7 +448,6 @@
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Aktualisieren und beenden",
     "delete": "Löschen",
-    "copyFailure": "ID konnte nicht kopiert werden",
     "update": "Aktualisieren",
     "facilityUpdatedSuccessfully": "Einrichtung aktualisiert",
     "deleteButtonText": "ENDGÜLTIG LÖSCHEN",

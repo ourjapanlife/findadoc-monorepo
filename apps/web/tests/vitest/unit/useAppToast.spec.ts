@@ -3,7 +3,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { createI18n } from 'vue-i18n'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, nextTick } from 'vue'
-import AppToast from '~/components/AppToast.vue'
+import AppToast from '~/components/common/AppToast.vue'
 import { appToastManager, useAppToast, type AppToast as ToastApi } from '~/composables/useAppToast'
 
 const i18n = createI18n({

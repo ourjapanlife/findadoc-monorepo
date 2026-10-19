@@ -17,9 +17,13 @@
             <li
                 v-for="facility in linked"
                 :key="facility.id"
-                class="chip gap-1 pr-1"
+                class="chip max-w-full min-w-0 gap-1 overflow-hidden pr-1
+                portrait:h-auto portrait:min-h-11 portrait:overflow-visible portrait:whitespace-normal"
             >
-                <span>{{ facilityLinkLabel(facility) }}</span>
+                <ChipTag
+                    bare
+                    :label="facilityLinkLabel(facility)"
+                />
                 <button
                     type="button"
                     class="mod-edit-only inline-flex h-5 w-5 items-center justify-center rounded-full text-sm leading-none"

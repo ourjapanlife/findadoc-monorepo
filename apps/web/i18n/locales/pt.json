@@ -400,7 +400,6 @@
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",
     "delete": "Excluir",
-    "copyFailure": "Não foi possível copiar o ID",
     "update": "Atualizar",
     "facilityUpdatedSuccessfully": "Unidade atualizada",
     "deleteButtonText": "EXCLUIR PARA SEMPRE",
