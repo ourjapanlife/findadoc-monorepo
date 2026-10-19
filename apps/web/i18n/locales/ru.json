@@ -44,7 +44,8 @@
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "Загрузка",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "cancel": "Отмена"
   },
   "about": {
     "heroHeading": "Find a Doc, Japan",

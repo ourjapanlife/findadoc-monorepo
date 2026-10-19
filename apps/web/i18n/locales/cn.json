@@ -44,7 +44,8 @@
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "加载中",
-    "close": "关闭"
+    "close": "关闭",
+    "cancel": "取消"
   },
   "about": {
     "heroHeading": "Find a Doc, Japan",

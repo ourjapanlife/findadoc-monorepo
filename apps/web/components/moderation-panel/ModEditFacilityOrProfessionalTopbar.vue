@@ -64,57 +64,6 @@
                     t('modEditFacilityOrHPTopbar.delete') }}
             </button>
         </div>
-        <div
-            v-show="modalStore.isOpen"
-            class="fixed top-0 left-0 flex items-center justify-center h-full w-full z-10 bg-secondary/40"
-        >
-            <Modal>
-                <div
-                    class="flex flex-col aspect-square h-96 items-center justify-center bg-primary-inverted p-10 rounded"
-                >
-                    <div
-                        v-if="modalType === ModalType.DeleteConfirmation && moderationScreenStore.editFacilityScreenIsActive()"
-                        class="flex flex-col items-center"
-                    >
-                        <div class="font-bold text-3xl">
-                            {{ t('modEditFacilityOrHPTopbar.deleteConfirmationFacility', {
-                                id: selectedId,
-                                facility: facilitiesStore.selectedFacilityData?.nameEn,
-                            }) }}
-                        </div>
-                        <button
-                            :class="[buttonBaseClass, buttonDangerFilledClass, 'my-8 px-6 py-3 text-xl']"
-                            type="button"
-                            @click="deleteFacilityOrHealthcareProfessional"
-                        >
-                            {{ t('modEditFacilityOrHPTopbar.deleteButtonText') }}
-                        </button>
-                    </div>
-
-                    <div
-                        v-if="modalType === ModalType.DeleteConfirmation
-                            && moderationScreenStore.editHealthcareProfessionalScreenIsActive()"
-                        class="flex flex-col items-center"
-                    >
-                        <div class="font-bold text-3xl">
-                            {{ t('modEditFacilityOrHPTopbar.deleteConfirmationHealthcareProfessional', {
-                                id: selectedId,
-                                healthcareProfessional: `${healthcareProfessionalsStore.selectedHealthcareProfessionalData
-                                    ?.names[0]?.firstName} ${healthcareProfessionalsStore.selectedHealthcareProfessionalData
-                                    ?.names[0]?.lastName}`,
-                            }) }}
-                        </div>
-                        <button
-                            :class="[buttonBaseClass, buttonDangerFilledClass, 'my-8 px-6 py-3 text-xl']"
-                            type="button"
-                            @click="deleteFacilityOrHealthcareProfessional"
-                        >
-                            {{ t('modEditFacilityOrHPTopbar.deleteButtonText') }}
-                        </button>
-                    </div>
-                </div>
-            </Modal>
-        </div>
     </div>
 </template>
 
@@ -129,7 +78,7 @@ import SVGSuccessCheckMark from '~/assets/icons/checkmark-square.svg'
 import { useFacilitiesStore, getChangedFacilityFieldsForUpdate } from '~/stores/facilitiesStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useModerationScreenStore, ModerationScreen } from '~/stores/moderationScreenStore'
-import { useModalStore, ModalType } from '~/stores/modalStore'
+import { useModalStore } from '~/stores/modalStore'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
@@ -198,8 +147,6 @@ watch(
     { immediate: true }
 )
 
-const modalType = ref<ModalType.UnsavedChanges | ModalType.DeleteConfirmation | null>(null)
-
 // Disable the buttons if there are no changes
 const hasPendingChanges = computed(() => hasPendingFormChanges())
 
@@ -212,7 +159,6 @@ const buttonBaseClass = 'inline-flex justify-center items-center rounded-full bo
 const buttonPaddingClass = 'px-5 py-2 whitespace-nowrap'
 const buttonOutlineClass = 'bg-secondary-bg border-primary-text-muted text-primary-text hover:bg-accent-bg/20'
 const buttonDangerClass = 'bg-secondary-bg border-error text-error hover:bg-error/10'
-const buttonDangerFilledClass = 'bg-error border-error text-primary-text-inverted hover:opacity-90'
 const copyButtonClass = 'bg-secondary-bg border-accent-bg text-primary-text'
 
 const copyFacilityOrHealthcareProfessionalId = async () => {
@@ -405,8 +351,29 @@ const saveChangesAndExit = async () => {
 }
 
 const openDeleteConfirmation = () => {
-    modalType.value = ModalType.DeleteConfirmation
-    modalStore.showModal()
+    const deletingFacility = moderationScreenStore.editFacilityScreenIsActive()
+    const professional = healthcareProfessionalsStore.selectedHealthcareProfessionalData
+    const name = professional?.names?.[0]
+    const professionalName = name === undefined
+        ? ''
+        : [name.firstName, name.lastName].filter(part => part).join(' ')
+    useNuxtApp().$withConfirmation(() => {
+        void deleteFacilityOrHealthcareProfessional()
+    }, {
+        title: t('modEditFacilityOrHPTopbar.delete'),
+        message: deletingFacility
+            ? t('modEditFacilityOrHPTopbar.deleteConfirmationFacility', {
+                id: selectedId.value,
+                facility: facilitiesStore.selectedFacilityData?.nameEn
+            })
+            : t('modEditFacilityOrHPTopbar.deleteConfirmationHealthcareProfessional', {
+                id: selectedId.value,
+                healthcareProfessional: professionalName
+            }),
+        textConfirm: t('modEditFacilityOrHPTopbar.deleteButtonText'),
+        textCancel: t('common.cancel'),
+        destructive: true
+    })
 }
 
 const deleteFacilityOrHealthcareProfessional = async () => {
@@ -427,8 +394,6 @@ const deleteFacilityOrHealthcareProfessional = async () => {
         )
         // Redirect to the dashboard since the facility no longer exists
         await leaveToModerationDashboard(router, moderationScreenStore, modalStore)
-        modalType.value = null
-        modalStore.hideModal()
         return response
     }
 
@@ -451,8 +416,6 @@ const deleteFacilityOrHealthcareProfessional = async () => {
         )
         // Redirect to the dashboard since the healthcare professional no longer exists
         await leaveToModerationDashboard(router, moderationScreenStore, modalStore)
-        modalType.value = null
-        modalStore.hideModal()
         return response
     }
 }
