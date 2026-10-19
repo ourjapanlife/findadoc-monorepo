@@ -51,6 +51,10 @@ Clinic, doctor, hub, and facet pages are generated for English and Japanese only
 
 Moderation forms that already have saved data open in preview. Create forms stay editable. A Maps link that matches a clinic disables Submit on the public form. The same match is a warning in moderation, and update, approve, and create stay available.
 
+## Auth
+
+The web Auth0 client keeps its cache in memory on the production site. A reload there restores the session through the iframe on `findadoc.jp.auth0.com`. That cookie is third-party on localhost, so the browser blocks it and a local reload logs the user out. `auth0CacheLocation` in `apps/web/utils/auth0Config.ts` uses localStorage only for localhost and `127.0.0.1`. Do not use localStorage for the production origin. A refresh token is not requested. After the access token expires, a local reload still cannot renew it until Auth0 allows refresh tokens for this client.
+
 ## Locale files
 
 `apps/web/i18n/checkLocaleKeys.js` compares every file in `apps/web/i18n/locales` with `en.json`. Web typecheck runs it, and it does not write the locale files. A missing key, an extra key, or a `{token}` that does not match English fails the check. A value that is still the English sentence also fails, unless that key is listed in `apps/web/i18n/sameAsEnglish.json` because it is a brand name, a person's name, or a word that is the same in that language. Add the translation. Do not copy the English sentence in to make the check pass.
