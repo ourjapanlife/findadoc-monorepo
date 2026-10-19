@@ -328,13 +328,6 @@
     "facilities": "Facilities",
     "licenseReview": "Needs license review"
   },
-  "modQueueOverview": {
-    "heading": "Queue",
-    "subheading": "Work waiting for a moderator.",
-    "newSubmissions": "New submissions",
-    "forReview": "Submissions for review",
-    "licenseReview": "License review"
-  },
   "modEditFacilityOrHPTopbar": {
     "copyFailure": "Failed to copy ID",
     "delete": "Delete",

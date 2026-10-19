@@ -315,13 +315,6 @@
     "addHealthcareProfessional": "Добавить медицинского специалиста",
     "licenseReview": "Нужно проверить лицензию"
   },
-  "modQueueOverview": {
-    "heading": "Очередь",
-    "subheading": "Работа, ожидающая модератора.",
-    "newSubmissions": "Новые заявки",
-    "forReview": "Заявки на проверку",
-    "licenseReview": "Проверка лицензии"
-  },
   "modFacilitySection": {
     "addresses": "Адреса",
     "contactInformation": "Контакты",

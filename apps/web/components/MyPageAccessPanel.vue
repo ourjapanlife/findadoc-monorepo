@@ -284,9 +284,9 @@ function onPageClick(listView?: SelectedModerationListViewType): void {
     }
 }
 
-function pageRoute(page: NavPage): { path: string, query: { view: string } } {
+function pageRoute(page: NavPage): { path: string, query?: { view: string } } {
     if (!page.listView) {
-        return { path: page.route, query: { view: 'settings' } }
+        return { path: page.route }
     }
 
     const view = page.listView === SelectedModerationListView.Submissions
@@ -306,8 +306,11 @@ function sidebarNavLinkClass(page: NavPage): string {
     const base = `flex items-center gap-2 py-2 px-3 text-sm font-medium transition-colors border-l-2 rounded-r-md${collapsedLayout}`
     const resolved = pageRoute(page)
     const currentView = typeof route.query.view === 'string' ? route.query.view : ''
-    const isActive = unlocalizedPath(route.path) === unlocalizedPath(resolved.path)
-      && currentView === resolved.query.view
+    const onAccountPage = currentView === '' || currentView === 'settings'
+    const viewMatches = resolved.query === undefined
+        ? onAccountPage
+        : currentView === resolved.query.view
+    const isActive = unlocalizedPath(route.path) === unlocalizedPath(resolved.path) && viewMatches
 
     return isActive
         ? `${base} border-primary text-primary-text bg-accent-bg/20`
