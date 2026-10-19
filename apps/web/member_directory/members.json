@@ -311,6 +311,13 @@
             "title": "Board Member",
             "linkedInUrl": "https://www.linkedin.com/in/kajaswenson/",
             "githubUrl": null
+        },
+        {
+            "avatarImg": "/avatars/samriti_sharma.jpg",
+            "name": "Samriti Sharma",
+            "title": "Board Member",
+            "linkedInUrl": null,
+            "githubUrl": null
         }
     ]
 }
