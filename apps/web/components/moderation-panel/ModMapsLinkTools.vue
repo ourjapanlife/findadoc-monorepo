@@ -49,12 +49,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from '#imports'
+import { fetchCities } from '~/utils/cityOptions'
 import { parseMapsPlace, validateGoogleMapsUrlInput } from '~/utils/formValidations'
 import {
     fillEmptyFacilityFields,
+    officialCityPatch,
     type FacilityMapsFillTarget
 } from '~/utils/mapsAutofill'
-import { fetchMapsPlaceDetails } from '~/utils/mapsPlaceDetails'
+import { fetchMapsPlaceDetails, type MapsPlaceDetails } from '~/utils/mapsPlaceDetails'
 
 const props = defineProps<{
     url: string
@@ -74,36 +76,43 @@ async function fillEmptyFields() {
     filling.value = true
     status.value = ''
     const parsed = parseMapsPlace(props.url)
-    let nameEn: string | null = null
-    let nameJa: string | null = null
-    let addressEn: string | null = null
-    let addressJa: string | null = null
+    let english: MapsPlaceDetails | null = null
+    let japanese: MapsPlaceDetails | null = null
     let failed = false
 
     try {
-        const [english, japanese] = await Promise.all([
+        const places = await Promise.all([
             fetchMapsPlaceDetails(props.url, 'en'),
             fetchMapsPlaceDetails(props.url, 'ja')
         ])
-        nameEn = english?.name ?? null
-        nameJa = japanese?.name ?? null
-        addressEn = english?.address ?? null
-        addressJa = japanese?.address ?? null
+        english = places[0]
+        japanese = places[1]
     } catch (error) {
         failed = true
         console.error('Reading a Maps link for autofill failed', error)
-    } finally {
-        filling.value = false
     }
 
-    const patch = fillEmptyFacilityFields(props.current, {
-        nameEn,
-        nameJa,
-        addressEn,
-        addressJa,
-        latitude: parsed?.latitude ?? null,
-        longitude: parsed?.longitude ?? null
+    const placesPin = pinFrom(japanese) ?? pinFrom(english)
+    const urlPin = parsed !== null && parsed.latitude !== null && parsed.longitude !== null
+        ? { latitude: parsed.latitude, longitude: parsed.longitude }
+        : null
+    const pin = placesPin ?? urlPin
+    let patch = fillEmptyFacilityFields(props.current, {
+        nameEn: english?.name ?? null,
+        nameJa: japanese?.name ?? null,
+        postalCode: japanese?.postalCode ?? english?.postalCode ?? null,
+        prefectureEn: english?.prefecture ?? null,
+        prefectureJa: japanese?.prefecture ?? null,
+        cityEn: english?.city ?? null,
+        cityJa: japanese?.city ?? null,
+        streetEn: english?.street ?? null,
+        streetJa: japanese?.street ?? null,
+        latitude: pin?.latitude ?? null,
+        longitude: pin?.longitude ?? null
     })
+    patch = await matchOfficialCity(patch)
+
+    filling.value = false
     const filled = Object.keys(patch).length
     if (filled > 0) {
         emit('apply', patch)
@@ -116,5 +125,30 @@ async function fillEmptyFields() {
     status.value = failed
         ? t('modFacilitySection.fillFromMapsFailed')
         : t('modFacilitySection.fillFromMapsNone')
+}
+
+function pinFrom(place: MapsPlaceDetails | null): { latitude: number, longitude: number } | null {
+    if (place === null || place.latitude === null || place.longitude === null) {
+        return null
+    }
+    if (!Number.isFinite(place.latitude) || !Number.isFinite(place.longitude)) {
+        return null
+    }
+    return { latitude: place.latitude, longitude: place.longitude }
+}
+
+async function matchOfficialCity(patch: Partial<FacilityMapsFillTarget>): Promise<Partial<FacilityMapsFillTarget>> {
+    const prefectureEn = (patch.prefectureEn ?? props.current.prefectureEn).trim()
+    if ((!patch.cityEn && !patch.cityJa) || !prefectureEn) {
+        return patch
+    }
+
+    try {
+        const cities = await fetchCities(prefectureEn)
+        return officialCityPatch(props.current, patch, cities)
+    } catch (error) {
+        console.error('Matching a Maps city failed', error)
+        return patch
+    }
 }
 </script>

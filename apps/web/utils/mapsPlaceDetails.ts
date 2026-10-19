@@ -6,6 +6,12 @@ export type MapsPlaceDetails = {
     name: string | null
     address: string | null
     category: string | null
+    postalCode: string | null
+    prefecture: string | null
+    city: string | null
+    street: string | null
+    latitude: number | null
+    longitude: number | null
 }
 
 const mapsPlacePreviewQuery = gql`
@@ -15,6 +21,12 @@ const mapsPlacePreviewQuery = gql`
             name
             address
             category
+            postalCode
+            prefecture
+            city
+            street
+            latitude
+            longitude
         }
     }
 `
@@ -25,6 +37,12 @@ type MapsPlacePreviewResponse = {
         name?: string | null
         address?: string | null
         category?: string | null
+        postalCode?: string | null
+        prefecture?: string | null
+        city?: string | null
+        street?: string | null
+        latitude?: number | null
+        longitude?: number | null
     } | null
 }
 
@@ -47,6 +65,12 @@ export async function fetchMapsPlaceDetails(
         placeId: place.placeId ?? null,
         name: place.name ?? null,
         address: place.address ?? null,
-        category: place.category ?? null
+        category: place.category ?? null,
+        postalCode: place.postalCode ?? null,
+        prefecture: place.prefecture ?? null,
+        city: place.city ?? null,
+        street: place.street ?? null,
+        latitude: place.latitude ?? null,
+        longitude: place.longitude ?? null
     }
 }

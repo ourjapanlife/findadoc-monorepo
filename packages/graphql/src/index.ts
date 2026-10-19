@@ -619,14 +619,24 @@ export type LocalizedNameInput = {
   middleName?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Live place details for the submit form. Do not store the name, address, or category. */
+/**
+ * Live place details for an open form. Do not store this response.
+ * A moderator may copy these values into empty facility fields.
+ */
 export type MapsPlacePreview = {
   __typename?: 'MapsPlacePreview';
   address?: Maybe<Scalars['String']['output']>;
   /** Short place type, such as Medical clinic. */
   category?: Maybe<Scalars['String']['output']>;
+  city?: Maybe<Scalars['String']['output']>;
+  latitude?: Maybe<Scalars['Float']['output']>;
+  longitude?: Maybe<Scalars['Float']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   placeId?: Maybe<Scalars['String']['output']>;
+  postalCode?: Maybe<Scalars['String']['output']>;
+  prefecture?: Maybe<Scalars['String']['output']>;
+  /** Street line only. The postal code, prefecture, and city stay in their own fields. */
+  street?: Maybe<Scalars['String']['output']>;
 };
 
 export type Mutation = {
@@ -894,7 +904,7 @@ export type Query = {
   /** Get the total count of healthcare professionals matching the given filters. Useful for pagination. */
   healthcareProfessionalsTotalCount: Scalars['Int']['output'];
   /**
-   * Live name, address, and category for a Maps link on the submit form.
+   * Live place details for a Maps link on an open form.
    * Nothing in this response is saved.
    */
   mapsPlacePreview?: Maybe<MapsPlacePreview>;
@@ -1641,8 +1651,14 @@ export type LocalizedNameResolvers<ContextType = any, ParentType extends Resolve
 export type MapsPlacePreviewResolvers<ContextType = any, ParentType extends ResolversParentTypes['MapsPlacePreview'] = ResolversParentTypes['MapsPlacePreview']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   category?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  city?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  latitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  longitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   placeId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  postalCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  prefecture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  street?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
