@@ -21,6 +21,7 @@ import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
 import { validateCreateFacility, validateUpdateFacility } from '~/utils/facilitiesUtils'
+import { nextListOrder, orderByInput, type ListOrder } from '~/utils/moderationTable'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -165,6 +166,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
     const currentOffset: Ref<number> = ref(0)
     const itemsPerPage: Ref<number> = ref(25)
     const listSearchQuery: Ref<string> = ref('')
+    const listOrder: Ref<ListOrder | null> = ref(null)
     const facilityList: Ref<Facility[]> = ref([])
     const filteredFacilityData = computed(() => facilityList.value)
     let facilitySearchTimer: ReturnType<typeof setTimeout> | undefined
@@ -307,10 +309,12 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
     async function loadFacilityList() {
         const request = ++facilityListRequest
         const query = listSearchQuery.value.trim()
+        const orderBy = orderByInput(listOrder.value)
         const filters: FacilitySearchFilters = {
             offset: currentOffset.value,
             limit: itemsPerPage.value,
-            ...(query ? { query } : {})
+            ...(query ? { query } : {}),
+            ...(orderBy === null ? {} : { orderBy })
         }
         try {
             const { filteredSearchResults, totalCount } = await fetchFacilitiesWithCount(filters)
@@ -508,6 +512,12 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         itemsPerPage.value = newLimit
     }
 
+    function setListOrder(field: string) {
+        listOrder.value = nextListOrder(listOrder.value, field)
+        currentOffset.value = 0
+        return loadFacilityList()
+    }
+
     function setListSearchQuery(newQuery: string) {
         listSearchQuery.value = newQuery
         currentOffset.value = 0
@@ -525,6 +535,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilityData,
         filteredFacilityData,
         listSearchQuery,
+        listOrder,
+        setListOrder,
         setListSearchQuery,
         totalFacilitiesCount,
         updateFacility,

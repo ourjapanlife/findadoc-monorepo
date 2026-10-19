@@ -484,6 +484,25 @@
   "modListContainer": {
     "resultsPerPage": "Ergebnisse pro Seite"
   },
+  "moderationTable": {
+    "name": "Name",
+    "facility": "Einrichtung",
+    "status": "Status",
+    "englishName": "Englischer Name",
+    "japaneseName": "Japanischer Name",
+    "selectRow": "{name} auswählen",
+    "selectPage": "Alle Zeilen auf dieser Seite auswählen",
+    "selectedRows": "{count} ausgewählt: {names}",
+    "approveSelected": "Auswahl genehmigen",
+    "rejectSelected": "Auswahl ablehnen",
+    "rowApproved": "{name} genehmigt",
+    "rowRejected": "{name} abgelehnt",
+    "rowFailed": "{name} fehlgeschlagen",
+    "sortBy": "Nach {column} sortieren",
+    "dragColumn": "{column} ziehen, um die Spalte zu verschieben",
+    "page": "Seite {page}",
+    "working": "Ausgewählte Zeilen werden aktualisiert"
+  },
   "errorPage": {
     "title": "404 - Diagnose: Seite nicht gefunden",
     "description": "Diese Seite hat ihre Gesundheitsprüfung nicht bestanden. Lassen Sie uns Sie stattdessen zu einer gesunden Seite bringen!",

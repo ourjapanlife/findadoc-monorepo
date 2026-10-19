@@ -484,6 +484,25 @@
   "modListContainer": {
     "resultsPerPage": "Résultats par page"
   },
+  "moderationTable": {
+    "name": "Nom",
+    "facility": "Établissement",
+    "status": "Statut",
+    "englishName": "Nom anglais",
+    "japaneseName": "Nom japonais",
+    "selectRow": "Sélectionner {name}",
+    "selectPage": "Sélectionner chaque ligne de cette page",
+    "selectedRows": "{count} sélectionnés : {names}",
+    "approveSelected": "Approuver la sélection",
+    "rejectSelected": "Rejeter la sélection",
+    "rowApproved": "{name} approuvé",
+    "rowRejected": "{name} rejeté",
+    "rowFailed": "{name} a échoué",
+    "sortBy": "Trier par {column}",
+    "dragColumn": "Glisser pour déplacer {column}",
+    "page": "Page n° {page}",
+    "working": "Mise à jour des lignes sélectionnées"
+  },
   "errorPage": {
     "title": "404 - Diagnostic : Page non trouvée",
     "description": "Cette page n'a pas réussi son examen de santé. Dirigeons-vous vers une page saine à la place !",

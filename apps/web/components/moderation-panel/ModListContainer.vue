@@ -1,159 +1,52 @@
 <template>
-    <div class="relative flex flex-col h-full w-full min-h-0">
-        <div class="flex flex-col h-full min-h-0 overflow-hidden">
-            <div class="absolute inset-0 z-0 opacity-10 pointer-events-none flex items-center justify-center">
-                <img
-                    :src="emptyStateIllustration"
-                    alt=""
-                    width="1536"
-                    height="1024"
-                    loading="lazy"
-                    decoding="async"
-                    class="w-3/5 h-3/5 object-contain"
-                >
-            </div>
-
-            <div class="relative z-10 flex-1 min-h-0 overflow-y-auto">
-                <div
-                    v-if="hasSubmissions && submissionsModerationListViewChosen"
-                    class="grid grid-cols-1 landscape:grid-cols-2 gap-4 items-start justify-start p-3 md:p-4"
-                >
-                    <div
-                        v-for="(submission, index) in modSubmissionsStore.filteredSubmissionDataForListComponent"
-                        :key="index"
-                    >
-                        <ModListContainerItem
-                            :submission="submission"
-                            :pagination-global-row-value-function="getGlobalRowNumber"
-                            :current-offset="modSubmissionsStore.currentOffset"
-                            :index="index"
-                        />
-                    </div>
-                </div>
-
-                <p
-                    v-else-if="facilitiesModerationListViewChosen && !filteredFacilities.length"
-                    class="text-center py-8 px-4"
-                >
-                    {{ t('searchResultsList.noResults') }}
-                </p>
-                <div
-                    v-else-if="facilitiesModerationListViewChosen"
-                    class="grid grid-cols-1 landscape:grid-cols-2 gap-4 items-start justify-start p-3 md:p-4"
-                >
-                    <div
-                        v-for="(facility, index) in filteredFacilities"
-                        :key="index"
-                    >
-                        <ModListContainerItem
-                            :facility="facility"
-                            :pagination-global-row-value-function="getGlobalRowNumber"
-                            :current-offset="facilitiesStore.currentOffset"
-                            :index="index"
-                        />
-                    </div>
-                </div>
-
-                <p
-                    v-else-if="healthcareProfessionalsModerationListViewChosen
-                        && !filteredHealthcareProfessionals.length"
-                    class="text-center py-8 px-4"
-                >
-                    {{ t('searchResultsList.noResults') }}
-                </p>
-                <div
-                    v-else-if="healthcareProfessionalsModerationListViewChosen"
-                    class="grid grid-cols-1 landscape:grid-cols-2 gap-4 items-start justify-start p-3 md:p-4"
-                >
-                    <div
-                        v-for="(healthcareProfessional, index) in filteredHealthcareProfessionals"
-                        :key="index"
-                    >
-                        <ModListContainerItem
-                            :healthcare-professional="healthcareProfessional"
-                            :pagination-global-row-value-function="getGlobalRowNumber"
-                            :current-offset="healthcareProfessionalsStore.currentOffset"
-                            :index="index"
-                        />
-                    </div>
-                </div>
-
-                <div
-                    v-else
-                    class="text-center py-8 px-4"
-                >
-                    {{ t("modPanelSubmissionList.noSubmissions") }}
-                </div>
-            </div>
-
-            <div class="relative z-10 shrink-0 border-t border-accent-bg bg-secondary-bg px-3 py-2">
-                <div class="flex flex-col md:flex-row md:items-center gap-2">
-                    <div class="w-full md:flex-1 flex justify-center">
-                        <Pagination
-                            v-if="submissionsModerationListViewChosen"
-                            :current-offset="modSubmissionsStore.currentOffset"
-                            :total-items="modSubmissionsStore.totalSubmissionsCount"
-                            :items-per-page="modSubmissionsStore.itemsPerPage"
-                            @update:offset="modSubmissionsStore.setOffset"
-                        />
-                        <Pagination
-                            v-if="facilitiesModerationListViewChosen"
-                            :current-offset="facilitiesStore.currentOffset"
-                            :total-items="facilitiesStore.totalFacilitiesCount"
-                            :items-per-page="facilitiesStore.itemsPerPage"
-                            @update:offset="facilitiesStore.setOffset"
-                        />
-                        <Pagination
-                            v-if="healthcareProfessionalsModerationListViewChosen"
-                            :current-offset="healthcareProfessionalsStore.currentOffset"
-                            :total-items="healthcareProfessionalsStore.totalHealthcareProfessionalsCount"
-                            :items-per-page="healthcareProfessionalsStore.itemsPerPage"
-                            @update:offset="healthcareProfessionalsStore.setOffset"
-                        />
-                    </div>
-                    <div class="w-full md:w-auto flex items-center justify-center md:justify-end gap-2">
-                        <label
-                            for="items-per-page-select"
-                            class="text-xs sm:text-sm text-primary-text-muted"
-                        >{{ $t('modListContainer.resultsPerPage') }}
-                        </label>
-                        <select
-                            id="items-per-page-select"
-                            :value="getCurrentItemsPerPage()"
-                            class="border border-accent-bg rounded px-2 py-1 text-sm bg-secondary-bg
-                            text-primary-text focus:ring-primary focus:border-primary"
-                            @change="handleItemsPerPageChange"
-                        >
-                            <option value="10">
-                                10
-                            </option>
-                            <option value="25">
-                                25
-                            </option>
-                            <option value="50">
-                                50
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <ModerationDataTable
+        :column-storage-key="columnStorageKey"
+        :columns="columns"
+        :rows="rows"
+        :empty-label="emptyLabel"
+        :search="listSearchQuery"
+        :offset="offset"
+        :total-items="totalItems"
+        :page-size="pageSize"
+        :sort="sort"
+        :selectable="submissionsModerationListViewChosen"
+        :selected-ids="selectedIds"
+        :selected-names="selectedNames"
+        :page-selection="pageSelection"
+        :pending="bulkPending"
+        :results="bulkResultLines"
+        @update:search="listSearchQuery = $event"
+        @update:offset="onOffset"
+        @update:page-size="onPageSize"
+        @sort="onSort"
+        @toggle-row="toggleRow"
+        @toggle-page="togglePage"
+        @open="openRow"
+        @approve="runBulk('approve')"
+        @reject="runBulk('reject')"
+    />
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import type { HealthcareProfessional, Submission } from '@findadoc/graphql'
 import { SelectedModerationListView, useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
-// Served as a cached file rather than inlined into the chunk; bound so the compiler leaves the URL alone.
-const emptyStateIllustration = '/illustrations/characters-together-welcomescreen.svg'
+import { formatToReadableDate } from '~/utils/dateUtils'
+import { isNewSubmission } from '~/utils/moderationUtils'
+import { pageSelectionState, type ModerationTableColumn, type ModerationTableRow } from '~/utils/moderationTable'
+import { runBulkSubmissionAction } from '~/utils/moderationTable'
 
 const { t } = useI18n()
 
 const modSubmissionsStore = useModerationSubmissionsStore()
 const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
 const facilitiesStore = useFacilitiesStore()
+
+const selectedSubmissions = ref<Record<string, string>>({})
+const bulkPending = ref(false)
+const bulkResultLines = ref<{ id: string, text: string }[]>([])
 
 const healthcareProfessionalsModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
   === SelectedModerationListView.HealthcareProfessionals)
@@ -164,6 +57,172 @@ const facilitiesModerationListViewChosen = computed(() => modSubmissionsStore.se
 const submissionsModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
   === SelectedModerationListView.Submissions)
 
+const columnStorageKey = computed(() => {
+    if (facilitiesModerationListViewChosen.value) {
+        return 'facilities'
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        return 'healthcare-professionals'
+    }
+    return 'submissions'
+})
+
+const columns = computed((): ModerationTableColumn[] => {
+    if (facilitiesModerationListViewChosen.value) {
+        return [
+            { id: 'englishName', label: t('moderationTable.englishName'), sortField: 'nameEn' },
+            { id: 'japaneseName', label: t('moderationTable.japaneseName'), sortField: 'nameJa' },
+            { id: 'created', label: t('modListContainerItem.createdDate'), sortField: 'createdDate' },
+            { id: 'updated', label: t('modListContainerItem.updatedDate'), sortField: 'updatedDate' }
+        ]
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        return [
+            { id: 'name', label: t('moderationTable.name') },
+            { id: 'created', label: t('modListContainerItem.createdDate'), sortField: 'createdDate' },
+            { id: 'updated', label: t('modListContainerItem.updatedDate'), sortField: 'updatedDate' }
+        ]
+    }
+    return [
+        { id: 'name', label: t('moderationTable.name'), sortField: 'healthcareProfessionalName' },
+        { id: 'facility', label: t('moderationTable.facility') },
+        { id: 'status', label: t('moderationTable.status') },
+        { id: 'created', label: t('modListContainerItem.createdDate'), sortField: 'createdDate' },
+        { id: 'updated', label: t('modListContainerItem.updatedDate'), sortField: 'updatedDate' }
+    ]
+})
+
+const rows = computed((): ModerationTableRow[] => {
+    if (facilitiesModerationListViewChosen.value) {
+        return facilitiesStore.filteredFacilityData.map((facility, index) => ({
+            id: facility.id,
+            href: `/my-page/edit-facility/${facility.id}`,
+            testId: `mod-facility-list-item-${index + 1}`,
+            linkColumn: 'englishName',
+            badges: [],
+            cells: {
+                englishName: facility.nameEn ?? '',
+                japaneseName: facility.nameJa ?? '',
+                created: formatToReadableDate(facility.createdDate),
+                updated: formatToReadableDate(facility.updatedDate)
+            }
+        }))
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        return healthcareProfessionalsStore.filteredHealthcareProfessionalsData.map((professional, index) => ({
+            id: professional.id,
+            href: `/my-page/edit-healthcare-professional/${professional.id}`,
+            testId: `mod-healthcare-professional-list-item-${index + 1}`,
+            linkColumn: 'name',
+            badges: [],
+            cells: {
+                name: professionalLabel(professional),
+                created: formatToReadableDate(professional.createdDate),
+                updated: formatToReadableDate(professional.updatedDate)
+            }
+        }))
+    }
+    return modSubmissionsStore.filteredSubmissionDataForListComponent.map((submission, index) => ({
+        id: submission.id,
+        href: `/my-page/edit-submission/${submission.id}`,
+        testId: `mod-submission-list-item-${index + 1}`,
+        linkColumn: 'name',
+        badges: submissionBadges(submission),
+        cells: {
+            name: submission.healthcareProfessionalName,
+            facility: submission.facility?.nameEn || submission.facility?.nameJa || '',
+            status: '',
+            created: formatToReadableDate(submission.createdDate),
+            updated: formatToReadableDate(submission.updatedDate)
+        }
+    }))
+})
+
+const emptyLabel = computed(() => submissionsModerationListViewChosen.value
+    ? t('modPanelSubmissionList.noSubmissions')
+    : t('searchResultsList.noResults'))
+
+const offset = computed(() => {
+    if (facilitiesModerationListViewChosen.value) {
+        return facilitiesStore.currentOffset
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        return healthcareProfessionalsStore.currentOffset
+    }
+    return modSubmissionsStore.currentOffset
+})
+
+const totalItems = computed(() => {
+    if (facilitiesModerationListViewChosen.value) {
+        return facilitiesStore.totalFacilitiesCount
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        return healthcareProfessionalsStore.totalHealthcareProfessionalsCount
+    }
+    return modSubmissionsStore.totalSubmissionsCount
+})
+
+const pageSize = computed(() => {
+    if (facilitiesModerationListViewChosen.value) {
+        return facilitiesStore.itemsPerPage
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        return healthcareProfessionalsStore.itemsPerPage
+    }
+    return modSubmissionsStore.itemsPerPage
+})
+
+const sort = computed(() => {
+    if (facilitiesModerationListViewChosen.value) {
+        return facilitiesStore.listOrder
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        return healthcareProfessionalsStore.listOrder
+    }
+    return modSubmissionsStore.listOrder
+})
+
+const listSearchQuery = computed({
+    get() {
+        if (facilitiesModerationListViewChosen.value) {
+            return facilitiesStore.listSearchQuery
+        }
+        if (healthcareProfessionalsModerationListViewChosen.value) {
+            return healthcareProfessionalsStore.listSearchQuery
+        }
+        return modSubmissionsStore.submissionSearchQuery
+    },
+    set(newValue: string) {
+        if (facilitiesModerationListViewChosen.value) {
+            facilitiesStore.setListSearchQuery(newValue)
+            return
+        }
+        if (healthcareProfessionalsModerationListViewChosen.value) {
+            healthcareProfessionalsStore.setListSearchQuery(newValue)
+            return
+        }
+        modSubmissionsStore.setSubmissionSearchQuery(newValue)
+    }
+})
+
+const selectedIds = computed(() => Object.keys(selectedSubmissions.value))
+const selectedNames = computed(() => Object.values(selectedSubmissions.value))
+const pageSelection = computed(() => pageSelectionState(
+    rows.value.map(row => row.id),
+    new Set(selectedIds.value)
+))
+
+watch(
+    () => [
+        modSubmissionsStore.selectedModerationListViewChosen,
+        modSubmissionsStore.selectedModerationListViewTabChosen
+    ],
+    () => {
+        selectedSubmissions.value = {}
+        bulkResultLines.value = []
+    }
+)
+
 onMounted(async () => {
     await modSubmissionsStore.getSubmissions()
     await modSubmissionsStore.fetchStatusCounts()
@@ -171,43 +230,148 @@ onMounted(async () => {
     await healthcareProfessionalsStore.loadHealthcareProfessionalList()
 })
 
-const hasSubmissions = computed(() => modSubmissionsStore.filteredSubmissionDataForListComponent.length)
-const filteredFacilities = computed(() => facilitiesStore.filteredFacilityData)
-const filteredHealthcareProfessionals = computed(() => healthcareProfessionalsStore.filteredHealthcareProfessionalsData)
-
-function getGlobalRowNumber(offset: number, index: number): number {
-    return offset + index + 1
+function professionalLabel(professional: HealthcareProfessional): string {
+    const name = healthcareProfessionalsStore.displayChosenLocaleForHealthcareProfessional(professional)
+    return [name.lastName, name.firstName, name.middleName].filter(part => part).join(' ')
 }
 
-function getCurrentItemsPerPage(): number {
-    switch (modSubmissionsStore.selectedModerationListViewChosen) {
-        case SelectedModerationListView.Submissions:
-            return modSubmissionsStore.itemsPerPage
-        case SelectedModerationListView.Facilities:
-            return facilitiesStore.itemsPerPage
-        case SelectedModerationListView.HealthcareProfessionals:
-            return healthcareProfessionalsStore.itemsPerPage
-        default:
-            return 25
+function submissionBadges(submission: Submission) {
+    const badges = []
+    if (isNewSubmission(submission)) {
+        badges.push({ label: t('modListContainerItem.newSubmission'), className: 'bg-success/80' })
     }
+    if (submission.isUnderReview) {
+        badges.push({ label: t('modListContainerItem.underReviewSubmission'), className: 'bg-info/80' })
+    }
+    if (submission.isApproved) {
+        badges.push({ label: t('modListContainerItem.approvedSubmission'), className: 'bg-warning/80' })
+    }
+    if (submission.isRejected) {
+        badges.push({ label: t('modListContainerItem.rejectedSubmission'), className: 'bg-error/80' })
+    }
+    return badges
 }
 
-async function handleItemsPerPageChange(event: Event) {
-    const newItemsPerPage = Number((event.target as HTMLSelectElement).value)
-    switch (modSubmissionsStore.selectedModerationListViewChosen) {
-        case SelectedModerationListView.Submissions:
-            modSubmissionsStore.setItemsPerPage(newItemsPerPage)
-            modSubmissionsStore.setOffset(0)
-            await modSubmissionsStore.getSubmissions()
-            break
-        case SelectedModerationListView.Facilities:
-            facilitiesStore.setItemsPerPage(newItemsPerPage)
-            await facilitiesStore.setOffset(0)
-            break
-        case SelectedModerationListView.HealthcareProfessionals:
-            healthcareProfessionalsStore.setItemsPerPage(newItemsPerPage)
-            await healthcareProfessionalsStore.setOffset(0)
-            break
+function onOffset(nextOffset: number) {
+    if (facilitiesModerationListViewChosen.value) {
+        facilitiesStore.setOffset(nextOffset)
+        return
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        healthcareProfessionalsStore.setOffset(nextOffset)
+        return
+    }
+    modSubmissionsStore.setOffset(nextOffset)
+}
+
+function onPageSize(nextPageSize: number) {
+    if (facilitiesModerationListViewChosen.value) {
+        facilitiesStore.setItemsPerPage(nextPageSize)
+        facilitiesStore.setOffset(0)
+        return
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        healthcareProfessionalsStore.setItemsPerPage(nextPageSize)
+        healthcareProfessionalsStore.setOffset(0)
+        return
+    }
+    modSubmissionsStore.setItemsPerPage(nextPageSize)
+    modSubmissionsStore.setOffset(0)
+}
+
+function onSort(field: string) {
+    if (facilitiesModerationListViewChosen.value) {
+        facilitiesStore.setListOrder(field)
+        return
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        healthcareProfessionalsStore.setListOrder(field)
+        return
+    }
+    modSubmissionsStore.setListOrder(field)
+}
+
+function omitSelected(ids: ReadonlySet<string>): Record<string, string> {
+    const next: Record<string, string> = {}
+    for (const [id, label] of Object.entries(selectedSubmissions.value)) {
+        if (!ids.has(id)) {
+            next[id] = label
+        }
+    }
+    return next
+}
+
+function rowLabel(row: ModerationTableRow): string {
+    const label = row.cells[row.linkColumn]
+    return label === undefined || label === '' ? row.id : label
+}
+
+function toggleRow(row: ModerationTableRow) {
+    if (selectedSubmissions.value[row.id] !== undefined) {
+        selectedSubmissions.value = omitSelected(new Set([row.id]))
+    } else {
+        selectedSubmissions.value = {
+            ...selectedSubmissions.value,
+            [row.id]: rowLabel(row)
+        }
+    }
+    bulkResultLines.value = []
+}
+
+function togglePage() {
+    if (pageSelection.value === 'all') {
+        selectedSubmissions.value = omitSelected(new Set(rows.value.map(row => row.id)))
+    } else {
+        const next = { ...selectedSubmissions.value }
+        for (const row of rows.value) {
+            next[row.id] = rowLabel(row)
+        }
+        selectedSubmissions.value = next
+    }
+    bulkResultLines.value = []
+}
+
+function openRow(row: ModerationTableRow) {
+    if (facilitiesModerationListViewChosen.value) {
+        facilitiesStore.selectedFacilityId = row.id
+        return
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        healthcareProfessionalsStore.selectedHealthcareProfessionalId = row.id
+        return
+    }
+    modSubmissionsStore.selectedSubmissionId = row.id
+}
+
+async function runBulk(action: 'approve' | 'reject') {
+    const targets = Object.entries(selectedSubmissions.value).map(([id, label]) => ({ id, label }))
+    if (targets.length === 0 || bulkPending.value) {
+        return
+    }
+    bulkPending.value = true
+    try {
+        const results = await runBulkSubmissionAction(targets, id => modSubmissionsStore.updateSubmissionStatus(
+            id,
+            action === 'approve'
+                ? { isApproved: true }
+                : { isRejected: true, isUnderReview: false }
+        ))
+        bulkResultLines.value = results.map(result => ({
+            id: result.id,
+            text: t(
+                result.succeeded
+                    ? (action === 'approve' ? 'moderationTable.rowApproved' : 'moderationTable.rowRejected')
+                    : 'moderationTable.rowFailed',
+                { name: result.label }
+            )
+        }))
+        selectedSubmissions.value = omitSelected(new Set(
+            results.filter(result => result.succeeded).map(result => result.id)
+        ))
+        await modSubmissionsStore.fetchStatusCounts()
+        await modSubmissionsStore.getSubmissions()
+    } finally {
+        bulkPending.value = false
     }
 }
 </script>

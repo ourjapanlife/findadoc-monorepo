@@ -484,6 +484,25 @@
   "modListContainer": {
     "resultsPerPage": "每页条数"
   },
+  "moderationTable": {
+    "name": "名称",
+    "facility": "医疗机构",
+    "status": "状态",
+    "englishName": "英文名称",
+    "japaneseName": "日文名称",
+    "selectRow": "选择{name}",
+    "selectPage": "选择本页的全部行",
+    "selectedRows": "已选择 {count} 项：{names}",
+    "approveSelected": "批准所选提交",
+    "rejectSelected": "拒绝所选提交",
+    "rowApproved": "已批准{name}",
+    "rowRejected": "已拒绝{name}",
+    "rowFailed": "{name}未能完成",
+    "sortBy": "按{column}排序",
+    "dragColumn": "拖动以移动{column}列",
+    "page": "第{page}页",
+    "working": "正在更新所选的行"
+  },
   "errorPage": {
     "title": "404 - 诊断：页面未找到",
     "description": "此页面未通过健康检查。让我们带您到一个健康的页面吧！",

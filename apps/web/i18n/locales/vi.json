@@ -484,6 +484,25 @@
   "modListContainer": {
     "resultsPerPage": "Số kết quả mỗi trang"
   },
+  "moderationTable": {
+    "name": "Tên",
+    "facility": "Cơ sở y tế",
+    "status": "Trạng thái",
+    "englishName": "Tên tiếng Anh",
+    "japaneseName": "Tên tiếng Nhật",
+    "selectRow": "Chọn {name}",
+    "selectPage": "Chọn mọi dòng trên trang này",
+    "selectedRows": "Đã chọn {count}: {names}",
+    "approveSelected": "Duyệt các mục đã chọn",
+    "rejectSelected": "Từ chối các mục đã chọn",
+    "rowApproved": "Đã duyệt {name}",
+    "rowRejected": "Đã từ chối {name}",
+    "rowFailed": "{name} thất bại",
+    "sortBy": "Sắp xếp theo {column}",
+    "dragColumn": "Kéo để đổi chỗ cột {column}",
+    "page": "Trang {page}",
+    "working": "Đang cập nhật các dòng đã chọn"
+  },
   "errorPage": {
     "title": "404 - Chẩn đoán: Không tìm thấy trang",
     "description": "Trang này đã không vượt qua kiểm tra sức khỏe. Hãy để chúng tôi đưa bạn đến một trang khỏe mạnh!",

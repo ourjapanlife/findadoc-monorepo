@@ -549,6 +549,25 @@
   "modListContainer": {
     "resultsPerPage": "Results per page"
   },
+  "moderationTable": {
+    "name": "Name",
+    "facility": "Facility",
+    "status": "Status",
+    "englishName": "English name",
+    "japaneseName": "Japanese name",
+    "selectRow": "Select {name}",
+    "selectPage": "Select every row on this page",
+    "selectedRows": "{count} selected: {names}",
+    "approveSelected": "Approve selected",
+    "rejectSelected": "Reject selected",
+    "rowApproved": "{name} approved",
+    "rowRejected": "{name} rejected",
+    "rowFailed": "{name} failed",
+    "sortBy": "Sort by {column}",
+    "dragColumn": "Drag to move {column}",
+    "page": "Page {page}",
+    "working": "Updating the selected rows"
+  },
   "settingsPage": {
     "heading": "Settings",
     "subheading": "Manage your account settings",

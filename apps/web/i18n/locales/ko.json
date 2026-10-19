@@ -543,6 +543,25 @@
   "modListContainer": {
     "resultsPerPage": "페이지당 결과"
   },
+  "moderationTable": {
+    "name": "이름",
+    "facility": "의료기관",
+    "status": "상태",
+    "englishName": "영어 이름",
+    "japaneseName": "일본어 이름",
+    "selectRow": "{name} 선택",
+    "selectPage": "이 페이지의 모든 행 선택",
+    "selectedRows": "{count}개 선택: {names}",
+    "approveSelected": "선택한 제보 승인",
+    "rejectSelected": "선택한 제보 거절",
+    "rowApproved": "{name} 승인됨",
+    "rowRejected": "{name} 거절됨",
+    "rowFailed": "{name} 실패",
+    "sortBy": "{column} 기준 정렬",
+    "dragColumn": "{column} 열을 끌어 옮기기",
+    "page": "{page}페이지",
+    "working": "선택한 행을 업데이트하는 중"
+  },
   "settingsPage": {
     "heading": "설정",
     "subheading": "계정 설정을 관리하세요",

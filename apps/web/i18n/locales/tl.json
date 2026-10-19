@@ -484,6 +484,25 @@
   "modListContainer": {
     "resultsPerPage": "Mga resulta bawat pahina"
   },
+  "moderationTable": {
+    "name": "Pangalan",
+    "facility": "Pasilidad",
+    "status": "Katayuan",
+    "englishName": "Pangalang Ingles",
+    "japaneseName": "Pangalang Hapones",
+    "selectRow": "Piliin si {name}",
+    "selectPage": "Piliin ang bawat hilera sa pahinang ito",
+    "selectedRows": "{count} ang napili: {names}",
+    "approveSelected": "Aprubahan ang napili",
+    "rejectSelected": "Tanggihan ang napili",
+    "rowApproved": "Naaprubahan si {name}",
+    "rowRejected": "Tinanggihan si {name}",
+    "rowFailed": "Nabigo si {name}",
+    "sortBy": "Ayusin ayon sa {column}",
+    "dragColumn": "I-drag para ilipat ang {column}",
+    "page": "Pahina {page}",
+    "working": "Ina-update ang mga napiling hilera"
+  },
   "errorPage": {
     "title": "404 - Diagnosis: Hindi Nahanap ang Pahina",
     "description": "Hindi nakapasa ang pahinang ito sa wellness exam. Dalhin ka namin sa malusog na pahina!",

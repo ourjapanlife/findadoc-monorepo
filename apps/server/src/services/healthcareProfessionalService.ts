@@ -10,6 +10,7 @@ import { db } from '../kyselyClient.js'
 import { asJsonb } from '../../utils/dbUtils.js'
 import type { HasContains, HasEq, HasIlike, HasIn } from '../../utils/dbUtils.js'
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
+import { databaseOrderColumn, PROFESSIONAL_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { HP_SEARCH_COLUMN } from '../../utils/fieldSelectionUtils.js'
 import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { mapDbHpToGql, mapKyselyHpToGraphQL} from '../services/mappersEntityService.js'
@@ -286,10 +287,11 @@ export async function searchProfessionals(
 
         // Fallback to createdDate DESC.
         const orderBy = filters.orderBy?.[0]
+        const orderColumn = databaseOrderColumn(orderBy?.fieldToOrder, PROFESSIONAL_ORDER_COLUMNS)
 
-        if (orderBy?.fieldToOrder) {
-            hpSelect = hpSelect.order(orderBy.fieldToOrder, {
-                ascending: orderBy.orderDirection !== 'desc'
+        if (orderColumn !== null) {
+            hpSelect = hpSelect.order(orderColumn, {
+                ascending: orderBy?.orderDirection !== 'desc'
             })
         } else {
             hpSelect = hpSelect.order('created_date', { ascending: false })
