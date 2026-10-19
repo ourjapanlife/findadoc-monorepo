@@ -75,7 +75,6 @@ export const useHealthcareProfessionalsStore = defineStore(
         const itemsPerPage: Ref<number> = ref(25)
         const listSearchQuery: Ref<string> = ref('')
         const licenseReviewFilter: Ref<LicenseReviewStatus | null> = ref(null)
-        const licenseReviewQueueCount: Ref<number | null> = ref(null)
         const healthcareProfessionalList: Ref<HealthcareProfessional[]> = ref([])
         const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
         let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
@@ -416,20 +415,6 @@ export const useHealthcareProfessionalsStore = defineStore(
             }, 300)
         }
 
-        async function fetchLicenseReviewQueueCount() {
-            try {
-                const { totalCount } = await fetchHealthcareProfessionalsWithCount({
-                    licenseReview: LicenseReviewStatus.NeedsReview,
-                    limit: 1,
-                    offset: 0
-                })
-                licenseReviewQueueCount.value = totalCount
-            } catch (error) {
-                console.error(`Error fetching license review count: ${JSON.stringify(error)}`)
-                licenseReviewQueueCount.value = null
-            }
-        }
-
         function setLicenseReviewFilter(enabled: boolean) {
             licenseReviewFilter.value = enabled ? LicenseReviewStatus.NeedsReview : null
             currentOffset.value = 0
@@ -443,8 +428,6 @@ export const useHealthcareProfessionalsStore = defineStore(
             filteredHealthcareProfessionalsData,
             listSearchQuery,
             licenseReviewFilter,
-            licenseReviewQueueCount,
-            fetchLicenseReviewQueueCount,
             setListSearchQuery,
             setLicenseReviewFilter,
             updateHealthcareProfessional,

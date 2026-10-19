@@ -315,13 +315,6 @@
     "addHealthcareProfessional": "添加医疗人员",
     "licenseReview": "需要核对执照"
   },
-  "modQueueOverview": {
-    "heading": "待处理",
-    "subheading": "等待审核人员处理的工作。",
-    "newSubmissions": "新提交",
-    "forReview": "待审核的提交",
-    "licenseReview": "执照待审核"
-  },
   "modFacilitySection": {
     "addresses": "地址",
     "contactInformation": "联系方式",

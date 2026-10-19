@@ -363,13 +363,6 @@
     "addHealthcareProfessional": "Gesundheitsfachkraft hinzufügen",
     "licenseReview": "Lizenz prüfen"
   },
-  "modQueueOverview": {
-    "heading": "Warteschlange",
-    "subheading": "Arbeit, die auf eine Moderation wartet.",
-    "newSubmissions": "Neue Einreichungen",
-    "forReview": "Einreichungen zur Prüfung",
-    "licenseReview": "Lizenzprüfung"
-  },
   "modFacilitySection": {
     "addresses": "Adressen",
     "contactInformation": "Kontakt",

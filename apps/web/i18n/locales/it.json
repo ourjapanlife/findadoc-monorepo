@@ -237,13 +237,6 @@
     "addHealthcareProfessional": "Aggiungi un professionista sanitario",
     "licenseReview": "Licenza da verificare"
   },
-  "modQueueOverview": {
-    "heading": "Coda",
-    "subheading": "Lavoro in attesa di un moderatore.",
-    "newSubmissions": "Nuovi inoltri",
-    "forReview": "Inoltri da esaminare",
-    "licenseReview": "Revisione della licenza"
-  },
   "modEditFacilityOrHPTopbar": {
     "copyFailure": "Copiatura ID fallita",
     "delete": "Elimina",
