@@ -1,4 +1,5 @@
 import type { AppToast } from '~/composables/useAppToast'
+import { translatedFormError } from '~/utils/formErrorMessage'
 
 export function guardWithErrorToast(
     shouldBlock: boolean,
@@ -10,8 +11,7 @@ export function guardWithErrorToast(
         return false
     }
 
-    const message = t(translationKey) ?? translationKey ?? ''
-    toast.error(message)
+    toast.error(translatedFormError(t, translationKey))
     return true
 }
 
