@@ -672,5 +672,14 @@
   "breadcrumbs": {
     "navLabel": "パンくず",
     "home": "ホーム"
+  },
+  "toast": {
+    "successTitle": "完了",
+    "warningTitle": "確認してください",
+    "dangerTitle": "問題が起きました",
+    "infoTitle": "お知らせ",
+    "dismiss": "閉じる",
+    "announceLabel": "通知",
+    "viewportLabel": "通知（{hotkey}）"
   }
 }

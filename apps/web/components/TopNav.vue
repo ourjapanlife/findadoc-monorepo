@@ -234,8 +234,11 @@ async function logout() {
         await authStore.logout()
         toast.success(t('topNav.logoutToast'))
         router.push(localizedPath('/', localeCodeFromPath(route.path)))
-    } catch (error) {
-        toast.error(error)
+    } catch (error: unknown) {
+        const message = error instanceof Error && error.message
+            ? error.message
+            : t('serverErrorMessages.genericErrorMessage')
+        toast.error(message)
     }
 }
 </script>

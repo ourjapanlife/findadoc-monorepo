@@ -672,5 +672,14 @@
     "preview": "미리보기",
     "previewHint": "미리보기입니다. 바꾸기 전에 편집으로 전환하세요.",
     "editHint": "편집 중입니다. 읽기만 할 때는 미리보기로 돌아가세요."
+  },
+  "toast": {
+    "successTitle": "완료",
+    "warningTitle": "확인해 주세요",
+    "dangerTitle": "문제가 발생했습니다",
+    "infoTitle": "안내",
+    "dismiss": "닫기",
+    "announceLabel": "알림",
+    "viewportLabel": "알림 ({hotkey})"
   }
 }

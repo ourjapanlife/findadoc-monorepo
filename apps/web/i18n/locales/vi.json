@@ -672,5 +672,14 @@
     "preview": "Xem trước",
     "previewHint": "Đang xem trước. Hãy chuyển sang sửa trước khi thay đổi.",
     "editHint": "Đang sửa. Hãy quay lại xem trước nếu bạn chỉ cần đọc."
+  },
+  "toast": {
+    "successTitle": "Xong",
+    "warningTitle": "Hãy kiểm tra",
+    "dangerTitle": "Đã xảy ra lỗi",
+    "infoTitle": "Lưu ý",
+    "dismiss": "Đóng",
+    "announceLabel": "Thông báo",
+    "viewportLabel": "Thông báo ({hotkey})"
   }
 }

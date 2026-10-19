@@ -36,6 +36,8 @@
     "type": "module",
     "dependencies": {
         "@auth0/auth0-vue": "^2.5.0",
+        "@findadoc/graphql": "workspace:*",
+        "@findadoc/utils": "workspace:*",
         "@fontsource/noto-sans": "5.3.0",
         "@fontsource/noto-sans-jp": "^5.3.0",
         "@fontsource/noto-sans-kr": "^5.3.0",
@@ -45,15 +47,13 @@
         "graphql-request": "^7.4.0",
         "nuxt-svgo": "^4.2.6",
         "pinia": "^3.0.4",
+        "reka-ui": "^2.11.0",
         "vue": "^3.5.26",
         "vue-gtag": "^3.6.3",
         "vue-router": "^4.6.3",
         "vue-server-renderer": "^2.7.16",
         "vue-template-compiler": "^2.7.16",
-        "vue-toastification": "^2.0.0-rc.5",
-        "vue3-google-map": "^0.27.0",
-        "@findadoc/graphql": "workspace:*",
-        "@findadoc/utils": "workspace:*"
+        "vue3-google-map": "^0.27.0"
     },
     "devDependencies": {
         "@microsoft/eslint-formatter-sarif": "^3.1.0",

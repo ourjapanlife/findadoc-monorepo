@@ -280,7 +280,7 @@ const saveChanges = async () => {
             toast,
             t,
             'modEditFacilityOrHPTopbar.facilityUpdatedSuccessfully',
-            { toastClassName: 'e2e-moderation-success-toast' }
+            { className: 'e2e-moderation-success-toast' }
         )
     }
     // This makes the on click update the facility if the screen is EditFacility
@@ -321,7 +321,7 @@ const saveChanges = async () => {
             toast,
             t,
             'modEditFacilityOrHPTopbar.healthcareProfessionalUpdatedSuccessfully',
-            { toastClassName: 'e2e-moderation-success-toast' }
+            { className: 'e2e-moderation-success-toast' }
         )
     }
 }

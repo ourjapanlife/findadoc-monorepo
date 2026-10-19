@@ -1,16 +1,21 @@
 <template>
     <NuxtLayout>
         <NuxtPage />
-        <!--
-            Client-only: the dialog reads $confirmationDialog, which is provided by a
-            .client plugin and is therefore undefined during SSR. It has nothing to
-            render server-side anyway — it only ever appears in response to a user
-            action.
-        -->
-        <ClientOnly>
-            <ConfirmationDialog />
-        </ClientOnly>
     </NuxtLayout>
+    <!--
+        Renders on the server as an empty viewport. The manager drops any toast
+        fired during SSR, so this stays out of ClientOnly.
+    -->
+    <AppToast />
+    <!--
+        Client-only: the dialog reads $confirmationDialog, which is provided by a
+        .client plugin and is therefore undefined during SSR. It has nothing to
+        render server-side anyway — it only ever appears in response to a user
+        action.
+    -->
+    <ClientOnly>
+        <ConfirmationDialog />
+    </ClientOnly>
 </template>
 
 <script setup lang="ts">
