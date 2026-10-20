@@ -180,14 +180,12 @@
                         text-primary-text focus:ring-primary focus:border-primary"
                         @change="onPageSizeChange"
                     >
-                        <option value="10">
-                            10
-                        </option>
-                        <option value="25">
-                            25
-                        </option>
-                        <option value="50">
-                            50
+                        <option
+                            v-for="size in MODERATION_PAGE_SIZES"
+                            :key="size"
+                            :value="size"
+                        >
+                            {{ size }}
                         </option>
                     </select>
                 </div>
@@ -200,7 +198,7 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import SVGLookingGlass from '~/assets/icons/looking-glass.svg'
 import type { ListOrder, ModerationTableColumn, ModerationTableRow, PageSelection } from '~/utils/moderationTable'
-import { readColumnOrder, reorderColumns, writeColumnOrder } from '~/utils/moderationTable'
+import { MODERATION_PAGE_SIZES, readColumnOrder, reorderColumns, writeColumnOrder } from '~/utils/moderationTable'
 
 const emptyStateIllustration = '/illustrations/characters-together-welcomescreen.svg'
 
