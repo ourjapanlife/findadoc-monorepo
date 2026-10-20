@@ -6,9 +6,19 @@ import { submissionSelection } from '../utils/graphqlSelection'
 import type { Submission, MutationUpdateSubmissionArgs, Mutation, SubmissionSearchFilters } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql.js'
 import type { ServerResponse } from '~/typedefs/serverResponse'
+import { usePersistentFilters } from '~/composables/usePersistentFilters'
 import { useTranslation } from '~/composables/useTranslation'
 import { isNewSubmission } from '~/utils/moderationUtils'
-import { nextListOrder, orderByInput, orderedPage, type ListOrder } from '~/utils/moderationTable'
+import {
+    DEFAULT_MODERATION_PAGE_SIZE,
+    loadPageInRange,
+    MODERATION_PAGE_SIZES,
+    nextListOrder,
+    orderByInput,
+    orderedPage,
+    pageOffsetInRange,
+    type ListOrder
+} from '~/utils/moderationTable'
 
 export enum SelectedSubmissionListViewTab {
     New = 'NEW',
@@ -56,8 +66,12 @@ export const useModerationSubmissionsStore = defineStore(
         const filteredSubmissionDataForListComponent: Ref<Submission[]> = ref([])
         const submissionSearchQuery: Ref<string> = ref('')
         const didMutationFail: Ref<boolean> = ref(false)
-        const selectedModerationListViewTabChosen: Ref<SelectedSubmissionListViewTab>
-            = ref(SelectedSubmissionListViewTab.New)
+        const selectedModerationListViewTabChosen = usePersistentFilters(
+            'submissions',
+            'tab',
+            SelectedSubmissionListViewTab.New,
+            Object.values(SelectedSubmissionListViewTab)
+        )
         const statusTotalCounts: Ref<SubmissionStatusCounts> = ref({
             newCount: 0,
             forReviewCount: 0,
@@ -66,8 +80,13 @@ export const useModerationSubmissionsStore = defineStore(
         })
 
         const totalSubmissionsCount: Ref<number> = ref(0)
-        const currentOffset: Ref<number> = ref(0)
-        const itemsPerPage: Ref<number> = ref(25)
+        const currentOffset = usePersistentFilters('submissions', 'offset', 0)
+        const itemsPerPage = usePersistentFilters(
+            'submissions',
+            'pageSize',
+            DEFAULT_MODERATION_PAGE_SIZE,
+            MODERATION_PAGE_SIZES
+        )
         const listOrder: Ref<ListOrder | null> = ref(null)
         const cachedNewSubmissions: Ref<Submission[]> = ref([])
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalSubmissionsCount.value)
@@ -118,17 +137,30 @@ export const useModerationSubmissionsStore = defineStore(
         function applyNewTabListView(newSubmissions: Submission[]) {
             cachedNewSubmissions.value = newSubmissions
             const searchFiltered = applySearchFilter(newSubmissions)
+            const nextOffset = pageOffsetInRange(
+                currentOffset.value,
+                itemsPerPage.value,
+                searchFiltered.length
+            )
+            currentOffset.value = nextOffset
             totalSubmissionsCount.value = searchFiltered.length
             // New is not a server status, so the loaded queue is sorted before the page is cut.
             const page = orderedPage(
                 searchFiltered,
                 listOrder.value,
-                currentOffset.value,
+                nextOffset,
                 itemsPerPage.value,
                 submissionSortValue
             )
             submissionsData.value = page
             filteredSubmissionDataForListComponent.value = page
+        }
+
+        function applySubmissionPage(offset: number, rows: Submission[], totalCount: number) {
+            currentOffset.value = offset
+            submissionsData.value = rows
+            totalSubmissionsCount.value = totalCount
+            filteredSubmissionDataForListComponent.value = applySearchFilter(rows)
         }
 
         async function getSubmissions() {
@@ -141,16 +173,21 @@ export const useModerationSubmissionsStore = defineStore(
                 cachedNewSubmissions.value = []
 
                 const orderBy = orderByInput(listOrder.value)
-                const filters: SubmissionSearchFilters = {
-                    offset: currentOffset.value,
-                    limit: itemsPerPage.value,
-                    ...SUBMISSION_TAB_FILTERS[selectedModerationListViewTabChosen.value],
-                    ...(orderBy === null ? {} : { orderBy })
-                }
-                const { filteredSearchResults, totalCount } = await fetchSubmissionsWithCount(filters)
-                submissionsData.value = filteredSearchResults
-                totalSubmissionsCount.value = totalCount
-                filteredSubmissionDataForListComponent.value = applySearchFilter(filteredSearchResults)
+                const page = await loadPageInRange(
+                    currentOffset.value,
+                    itemsPerPage.value,
+                    async offset => {
+                        const filters: SubmissionSearchFilters = {
+                            offset,
+                            limit: itemsPerPage.value,
+                            ...SUBMISSION_TAB_FILTERS[selectedModerationListViewTabChosen.value],
+                            ...(orderBy === null ? {} : { orderBy })
+                        }
+                        const { filteredSearchResults, totalCount } = await fetchSubmissionsWithCount(filters)
+                        return { rows: filteredSearchResults, totalCount }
+                    }
+                )
+                applySubmissionPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
                 console.error(`Error fetching submissions: ${JSON.stringify(error)}`)
                 //eslint-disable-next-line
