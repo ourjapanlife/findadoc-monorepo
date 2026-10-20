@@ -22,7 +22,15 @@ import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
 import { validateCreateFacility, validateUpdateFacility } from '~/utils/facilitiesUtils'
-import { nextListOrder, orderByInput, type ListOrder } from '~/utils/moderationTable'
+import { usePersistentFilters } from '~/composables/usePersistentFilters'
+import {
+    DEFAULT_MODERATION_PAGE_SIZE,
+    loadPageInRange,
+    MODERATION_PAGE_SIZES,
+    nextListOrder,
+    orderByInput,
+    type ListOrder
+} from '~/utils/moderationTable'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -193,9 +201,14 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
     // Used for store the total number of facility found by the current search query.
     const totalFacilitiesCount: Ref<number> = ref(0)
     // Used for store the starting index (offset) for the current page of results.
-    const currentOffset: Ref<number> = ref(0)
-    const itemsPerPage: Ref<number> = ref(25)
-    const listSearchQuery: Ref<string> = ref('')
+    const currentOffset = usePersistentFilters('facilities', 'offset', 0)
+    const itemsPerPage = usePersistentFilters(
+        'facilities',
+        'pageSize',
+        DEFAULT_MODERATION_PAGE_SIZE,
+        MODERATION_PAGE_SIZES
+    )
+    const listSearchQuery = usePersistentFilters('facilities', 'search', '')
     const listOrder: Ref<ListOrder | null> = ref(null)
     const facilityList: Ref<Facility[]> = ref([])
     const filteredFacilityData = computed(() => facilityList.value)
@@ -346,21 +359,33 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         }
     }
 
+    function applyFacilityPage(offset: number, rows: Facility[], totalCount: number) {
+        currentOffset.value = offset
+        facilityList.value = rows
+        totalFacilitiesCount.value = totalCount
+    }
+
     async function loadFacilityList() {
         const request = ++facilityListRequest
         const query = listSearchQuery.value.trim()
         const orderBy = orderByInput(listOrder.value)
-        const filters: FacilitySearchFilters = {
-            offset: currentOffset.value,
-            limit: itemsPerPage.value,
-            ...(query ? { query } : {}),
-            ...(orderBy === null ? {} : { orderBy })
-        }
         try {
-            const { filteredSearchResults, totalCount } = await fetchFacilitiesWithCount(filters)
+            const page = await loadPageInRange(
+                currentOffset.value,
+                itemsPerPage.value,
+                async offset => {
+                    const filters: FacilitySearchFilters = {
+                        offset,
+                        limit: itemsPerPage.value,
+                        ...(query ? { query } : {}),
+                        ...(orderBy === null ? {} : { orderBy })
+                    }
+                    const { filteredSearchResults, totalCount } = await fetchFacilitiesWithCount(filters)
+                    return { rows: filteredSearchResults, totalCount }
+                }
+            )
             if (request !== facilityListRequest) return
-            facilityList.value = filteredSearchResults
-            totalFacilitiesCount.value = totalCount
+            applyFacilityPage(page.offset, page.rows, page.totalCount)
         } catch (error) {
             if (request !== facilityListRequest) return
             console.error(`Error fetching facilities: ${JSON.stringify(error)}`)
