@@ -6,6 +6,7 @@ import { withLocaleVariants } from './utils/localePath'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
+import { publicRuntimeValue } from './utils/nuxt/publicRuntimeEnv'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
 import {
     applyEntityDirectoryToNitro,
@@ -159,16 +160,16 @@ export default defineNuxtConfig({
         public: {
             isTestingMode: process.env.NUXT_IS_TESTING_MODE,
 
-            GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+            GOOGLE_MAPS_API_KEY: publicRuntimeValue('NUXT_PUBLIC_GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY'),
 
             NUXT_PUBLIC_LOAD_STORES: process.env.NUXT_PUBLIC_LOAD_STORES,
 
             NUXT_USE_LOCAL_API: process.env.NUXT_USE_LOCAL_API,
 
             sentry: {
-                dsn: process.env.NUXT_PUBLIC_SENTRY_DSN,
-                environment: process.env.NUXT_PUBLIC_SENTRY_ENVIRONMENT,
-                tracesSampleRate: process.env.NUXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE
+                dsn: publicRuntimeValue('NUXT_PUBLIC_SENTRY_DSN'),
+                environment: publicRuntimeValue('NUXT_PUBLIC_SENTRY_ENVIRONMENT'),
+                tracesSampleRate: publicRuntimeValue('NUXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE')
             }
         }
     },

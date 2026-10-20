@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/vue'
 import { defineNuxtPlugin, useRuntimeConfig, useRouter } from '#app'
+import { isSentryDsn } from '~/utils/nuxt/publicRuntimeEnv'
 
 export default defineNuxtPlugin(nuxtApp => {
     const sentryConfig = useRuntimeConfig().public.sentry as {
@@ -8,7 +9,7 @@ export default defineNuxtPlugin(nuxtApp => {
         tracesSampleRate?: string
     }
 
-    if (!sentryConfig.dsn) {
+    if (!isSentryDsn(sentryConfig.dsn)) {
         // eslint-disable-next-line no-console
         console.log('🛰️ Sentry DSN not set — skipping Sentry initialization')
         return
