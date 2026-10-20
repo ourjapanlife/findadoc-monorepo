@@ -90,7 +90,7 @@ jobs:
 
       - name: Run Playwright e2e tests
         working-directory: apps/web
-        run: pnpm test:e2e:ci
+        run: pnpm test:e2e:headless
         env:
           NODE_ENV: development
           PLAYWRIGHT_BASE_URL: http://localhost:4242

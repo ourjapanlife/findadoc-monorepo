@@ -3,7 +3,8 @@
     "extends": ["//"],
     "tasks": {
         "build": {
-            "outputs": [".output/**", ".nuxt/**"]
+            "cache": false,
+            "passThroughEnv": ["GOOGLE_MAPS_API_KEY", "NUXT_*"]
         },
         "test:unit:coverage": {
             "outputs": ["coverage/**"]

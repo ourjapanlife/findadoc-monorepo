@@ -12,7 +12,6 @@
         "start:http": "node dist/http.js",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "lint:ci": "eslint .",
         "test": "vitest run",
         "test:watch": "vitest",
         "typecheck": "tsc -p tsconfig.json --noEmit"
