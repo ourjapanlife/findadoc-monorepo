@@ -21,7 +21,7 @@
             v-else-if="isMapReady"
             ref="mapRef"
             data-testid="map-of-japan"
-            :api-key="mapsApiKey"
+            :api-key="runtimeConfig.public.GOOGLE_MAPS_API_KEY as string ?? undefined"
             :libraries="['marker']"
             map-id="153d718018a2577e"
             :disable-default-ui="true"
@@ -71,8 +71,7 @@
 
 <script setup lang="ts">
 /// <reference types="google.maps" />
-import { computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import { isGoogleMapsApiKey } from '~/utils/nuxt/publicRuntimeEnv'
+import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { GoogleMap, AdvancedMarker, MarkerCluster } from 'vue3-google-map'
 import type { Renderer } from '@googlemaps/markerclusterer'
@@ -101,12 +100,6 @@ const searchResultsStore = useSearchResultsStore()
 const mapRef = ref<{ map: google.maps.Map } | null>(null)
 const markerClusterRef = ref<typeof MarkerCluster | null>(null)
 const runtimeConfig = useRuntimeConfig()
-const mapsApiKey = computed(() => {
-    const key = runtimeConfig.public.GOOGLE_MAPS_API_KEY
-    // CI has no key. The panel still mounts the SDK then, which is what the search spec asserts.
-    // A baked env-var name is not a key, so it is left off the request.
-    return isGoogleMapsApiKey(key) ? key : undefined
-})
 
 const markerIcons = ref<Record<string, string>>({})
 
