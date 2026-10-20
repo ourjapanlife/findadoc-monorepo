@@ -6,7 +6,7 @@
             is the only hook it offers, so the failure is surfaced here instead.
         -->
         <div
-            v-if="authFailed"
+            v-if="authFailed || !mapsApiKey"
             data-testid="map-unavailable"
             class="flex h-full w-full flex-col items-center justify-center gap-1 p-6 text-center"
         >
@@ -21,7 +21,7 @@
             v-else-if="isMapReady"
             ref="mapRef"
             data-testid="map-of-japan"
-            :api-key="runtimeConfig.public.GOOGLE_MAPS_API_KEY as string ?? undefined"
+            :api-key="mapsApiKey"
             :libraries="['marker']"
             map-id="153d718018a2577e"
             :disable-default-ui="true"
@@ -71,7 +71,8 @@
 
 <script setup lang="ts">
 /// <reference types="google.maps" />
-import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { isGoogleMapsApiKey } from '~/utils/nuxt/publicRuntimeEnv'
 import { useI18n } from 'vue-i18n'
 import { GoogleMap, AdvancedMarker, MarkerCluster } from 'vue3-google-map'
 import type { Renderer } from '@googlemaps/markerclusterer'
@@ -100,6 +101,10 @@ const searchResultsStore = useSearchResultsStore()
 const mapRef = ref<{ map: google.maps.Map } | null>(null)
 const markerClusterRef = ref<typeof MarkerCluster | null>(null)
 const runtimeConfig = useRuntimeConfig()
+const mapsApiKey = computed(() => {
+    const key = runtimeConfig.public.GOOGLE_MAPS_API_KEY
+    return isGoogleMapsApiKey(key) ? key : ''
+})
 
 const markerIcons = ref<Record<string, string>>({})
 
