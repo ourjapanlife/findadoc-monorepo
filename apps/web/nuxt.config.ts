@@ -6,7 +6,7 @@ import { withLocaleVariants } from './utils/localePath'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
-import { publicRuntimeValue } from './utils/nuxt/publicRuntimeEnv'
+import { isGoogleMapsApiKey, isSentryDsn, publicRuntimeValue } from './utils/nuxt/publicRuntimeEnv'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
 import {
     applyEntityDirectoryToNitro,
@@ -247,6 +247,40 @@ export default defineNuxtConfig({
 
     hooks: {
         async ready(nuxt) {
+            // Static generate bakes these into the client. An empty production build
+            // is usually a Netlify env marked "Contains secret values" (or missing
+            // Builds scope). Deploy previews may omit them under the sensitive
+            // variable policy — warn only there.
+            if (process.env.NETLIFY === 'true') {
+                const mapsKey = publicRuntimeValue(
+                    'NUXT_PUBLIC_GOOGLE_MAPS_API_KEY',
+                    'GOOGLE_MAPS_API_KEY'
+                )
+                const sentryDsn = publicRuntimeValue('NUXT_PUBLIC_SENTRY_DSN')
+                const recreateHint = [
+                    'Do not mark it as a Netlify secret.',
+                    'If it already is, delete the variable and recreate it without that flag',
+                    '(Builds scope on).'
+                ].join(' ')
+                if (!isGoogleMapsApiKey(mapsKey)) {
+                    const message = [
+                        'Google Maps API key missing on Netlify.',
+                        'Set GOOGLE_MAPS_API_KEY or NUXT_PUBLIC_GOOGLE_MAPS_API_KEY for Builds.',
+                        recreateHint
+                    ].join(' ')
+                    if (process.env.CONTEXT === 'production') {
+                        throw new Error(message)
+                    }
+                    console.warn(`[nuxt] ${message}`)
+                }
+                if (!isSentryDsn(sentryDsn)) {
+                    const context = process.env.CONTEXT ?? 'unknown'
+                    console.warn(
+                        `[nuxt] Sentry DSN missing on Netlify (${context}). `
+                        + `Set NUXT_PUBLIC_SENTRY_DSN for Builds. ${recreateHint}`
+                    )
+                }
+            }
             await applyEntityDirectoryToNuxt(nuxt)
         },
         async 'nitro:config'(nitroConfig) {

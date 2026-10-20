@@ -3,6 +3,10 @@
  * An unset `process.env` read is `undefined`, and Nuxt then writes the env var's name
  * into the client bundle. The browser was sending that name to Sentry and to Google.
  * An empty string stays empty.
+ *
+ * Netlify: available to Builds, and not "Contains secret values". A secret-flagged
+ * Maps key or Sentry DSN never lands in the static bundle correctly — delete and
+ * recreate without the flag. Restrict the Maps key with HTTP referrers instead.
  */
 export function publicRuntimeValue(nuxtName: string, legacyName?: string): string {
     const fromNuxt = process.env[nuxtName]

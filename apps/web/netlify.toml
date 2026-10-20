@@ -10,6 +10,12 @@
   # facet HTML are in the same run. Those pages are generated for English and
   # Japanese only. All 11 locales exceeded the 18 minute build limit.
   NODE_OPTIONS="--max-old-space-size=4096"
+  # Client values that nuxi generate bakes into /_nuxt — not Netlify secrets:
+  #   GOOGLE_MAPS_API_KEY or NUXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  #   NUXT_PUBLIC_SENTRY_DSN
+  # Restrict the Maps key with HTTP referrers in Google Cloud. In the Netlify UI
+  # leave "Contains secret values" unchecked (Builds scope on). That secret flag
+  # cannot be removed later: delete the variable and recreate it without the flag.
 
 # SPA fallbacks for non-prerendered routes live in public/_redirects so they
 # land in the publish directory ahead of Nitro's /* → /404.html 404 rule.
