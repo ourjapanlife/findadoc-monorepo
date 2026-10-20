@@ -6,7 +6,7 @@
             is the only hook it offers, so the failure is surfaced here instead.
         -->
         <div
-            v-if="authFailed || !mapsApiKey"
+            v-if="authFailed"
             data-testid="map-unavailable"
             class="flex h-full w-full flex-col items-center justify-center gap-1 p-6 text-center"
         >
@@ -103,7 +103,9 @@ const markerClusterRef = ref<typeof MarkerCluster | null>(null)
 const runtimeConfig = useRuntimeConfig()
 const mapsApiKey = computed(() => {
     const key = runtimeConfig.public.GOOGLE_MAPS_API_KEY
-    return isGoogleMapsApiKey(key) ? key : ''
+    // CI has no key. The panel still mounts the SDK then, which is what the search spec asserts.
+    // A baked env-var name is not a key, so it is left off the request.
+    return isGoogleMapsApiKey(key) ? key : undefined
 })
 
 const markerIcons = ref<Record<string, string>>({})
