@@ -52,7 +52,7 @@ Every URL returns an identical shell:
 | `application/ld+json` blocks | **0** |
 | `data-ssr` attribute in payload | `false` |
 
-`ssr: false` is set at `nuxt.config.ts:24`, and `prod:build` (`package.json:15`) runs `nuxi generate`, so the "static" build is a single prerendered empty shell rather than prerendered content.
+`ssr` is true. Search, login, and my-page stay client-rendered. `build` runs `nuxi generate`.
 
 Google does execute JavaScript, but rendering is queued, budgeted, and deprioritised for low-authority domains. On a site where *all* content requires JS plus a cross-origin GraphQL round trip to `api.findadoc.jp`, effectively nothing reaches the index. AI crawlers are stricter still — see §9.2.
 
