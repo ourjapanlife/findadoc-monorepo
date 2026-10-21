@@ -1,23 +1,32 @@
 import type { AppToast } from '~/composables/useAppToast'
 import type { ServerError } from '~/typedefs/serverResponse'
+import {
+    GENERIC_FORM_ERROR_KEY,
+    sentenceKeyForServerCode,
+    translatedFormError
+} from '~/utils/formErrorMessage'
 
 export function handleServerErrorMessaging(
-    serverErrors: ServerError[], toast: AppToast,
+    serverErrors: ServerError[],
+    toast: AppToast,
     t: (translatableString: string) => string | undefined
 ) {
     if (serverErrors.length === 0) {
-        toast.error(t('serverErrorMessages.genericErrorMessage') ?? 'An error occurred')
+        toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
         return
     }
-    serverErrors.forEach(error => {
-        const specific = t(`serverErrorMessages.${error.code}`)
-        if (specific) {
-            toast.error(specific)
+
+    const shown = new Set<string>()
+    for (const error of serverErrors) {
+        const key = sentenceKeyForServerCode(error.code)
+        const translated = t(key)
+        const missingSentence = !translated || translated === key
+        if (missingSentence) {
             console.error(error.code)
-            return
+            console.info(t('serverErrorMessages.errorCodeMessagingNeeded'))
         }
-        toast.error(t('serverErrorMessages.genericErrorMessage') ?? 'An error occurred')
-        console.error((t('serverErrorMessages.genericErrorMessage')))
-        console.info(t('serverErrorMessages.errorCodeMessagingNeeded'))
-    })
+        if (shown.has(key)) continue
+        shown.add(key)
+        toast.error(translatedFormError(t, key))
+    }
 }

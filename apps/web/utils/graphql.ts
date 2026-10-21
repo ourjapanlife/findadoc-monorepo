@@ -1,6 +1,7 @@
 import { GraphQLClient, type RequestDocument } from 'graphql-request'
 import { useRuntimeConfig } from '#imports'
-import type { ErrorCode, ServerErrorResponse, ServerResponse } from '~/typedefs/serverResponse'
+import type { ServerErrorResponse, ServerResponse } from '~/typedefs/serverResponse'
+import { serverErrorsFromGraphQL } from '~/utils/formErrorMessage'
 import { graphqlEndpoint } from './graphqlEndpoint'
 
 // eslint-disable-next-line
@@ -99,11 +100,7 @@ export const graphQLClientRequestWithRetry = async <T>(
             console.error(`There was an error executing the request: ${error}`)
             const serverErrorResponse = error as ServerErrorResponse
             // This map transforms errors if they exist
-            const errors = serverErrorResponse.response?.errors?.map(errorResponse => ({
-                message: errorResponse.message,
-                fieldWithError: errorResponse.locations,
-                code: errorResponse.extensions.code as ErrorCode
-            })) || []
+            const errors = serverErrorsFromGraphQL(serverErrorResponse.response?.errors)
 
             return { data: {} as T, errors, hasErrors: true }
         }

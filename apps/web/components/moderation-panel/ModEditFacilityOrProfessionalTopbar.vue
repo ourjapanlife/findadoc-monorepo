@@ -58,6 +58,7 @@ import { useModerationScreenStore, ModerationScreen } from '~/stores/moderationS
 import { useModalStore } from '~/stores/modalStore'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
+import { formErrorKey, GENERIC_FORM_ERROR_KEY, translatedFormError } from '~/utils/formErrorMessage'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import { arraysAreEqual } from '~/utils/arrayUtils'
@@ -225,8 +226,8 @@ const saveChanges = async () => {
         try {
             response = await facilitiesStore.updateFacility()
         } catch (e: unknown) {
-            const message = e instanceof Error ? e.message : String(e)
-            toast.error(message)
+            console.error(e)
+            toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
             return
         }
 
@@ -265,7 +266,7 @@ const saveChanges = async () => {
                 !hasEnglishName,
                 toast,
                 t,
-                'modEditFacilityOrHPTopbar.healthcareProfessionalEnglishNameRequired'
+                formErrorKey.englishNameRequired
             )) {
                 return
             }
