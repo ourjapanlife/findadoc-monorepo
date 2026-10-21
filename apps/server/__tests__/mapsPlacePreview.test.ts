@@ -12,19 +12,68 @@ import {
 const TOKYO_STATION = 'https://www.google.com/maps/place/Tokyo+Station+International+Clinic/@35.6791006,139.767714,17z/data=!3m1!4b1!4m6!3m5!1s0x60188bf5d2aa2fe7:0xe80be270a19ad1f8!8m2!3d35.6791006!4d139.767714!16s%2Fg%2F11l6yc1_d0?entry=ttu'
 
 describe('readPlacePreview', () => {
-    it('reads the name, address, and category and ignores everything else', () => {
+    it('reads the name, address parts, pin, and category', () => {
         expect(readPlacePreview({
             id: 'ChIJtokyoStationClinic',
             displayName: { text: 'Tokyo Station International Clinic' },
             formattedAddress: '〒100-0005 Tokyo, Chiyoda City, Marunouchi, 1-chome−9−1 グランルーフ 1F',
             primaryTypeDisplayName: { text: 'Medical clinic' },
             rating: 4.5,
-            location: { latitude: 35.67, longitude: 139.76 }
+            location: { latitude: 35.67, longitude: 139.76 },
+            addressComponents: [
+                { longText: 'Japan', types: ['country', 'political'] },
+                { longText: '100-0005', types: ['postal_code'] },
+                { longText: 'Tokyo', types: ['administrative_area_level_1', 'political'] },
+                { longText: 'Chiyoda City', types: ['locality', 'political'] },
+                { longText: 'Marunouchi', types: ['sublocality_level_2', 'political'] },
+                { longText: '1-chome', types: ['sublocality_level_3', 'political'] },
+                { longText: '9-1', types: ['premise'] }
+            ]
         })).toEqual({
             placeId: 'ChIJtokyoStationClinic',
             name: 'Tokyo Station International Clinic',
             address: '〒100-0005 Tokyo, Chiyoda City, Marunouchi, 1-chome−9−1 グランルーフ 1F',
-            category: 'Medical clinic'
+            category: 'Medical clinic',
+            postalCode: '100-0005',
+            prefecture: 'Tokyo',
+            city: 'Chiyoda City',
+            street: 'Marunouchi 1-chome 9-1',
+            latitude: 35.67,
+            longitude: 139.76
+        })
+    })
+
+    it('keeps a designated-city ward out of the city and on the street', () => {
+        expect(readPlacePreview({
+            displayName: { text: '箱崎クリニック' },
+            addressComponents: [
+                { longText: '812-0053', types: ['postal_code'] },
+                { longText: '福岡県', types: ['administrative_area_level_1', 'political'] },
+                { longText: '福岡市', types: ['locality', 'political'] },
+                { longText: '東区', types: ['sublocality_level_1', 'political'] },
+                { longText: '箱崎', types: ['sublocality_level_2', 'political'] }
+            ],
+            location: { latitude: 33.62, longitude: 130.42 }
+        })).toMatchObject({
+            postalCode: '812-0053',
+            prefecture: '福岡県',
+            city: '福岡市',
+            street: '東区 箱崎'
+        })
+    })
+
+    it('uses a Tokyo ward as the city', () => {
+        expect(readPlacePreview({
+            displayName: { text: '港クリニック' },
+            addressComponents: [
+                { longText: '東京都', types: ['administrative_area_level_1', 'political'] },
+                { longText: '港区', types: ['sublocality_level_1', 'political'] },
+                { longText: '六本木', types: ['sublocality_level_2', 'political'] }
+            ]
+        })).toMatchObject({
+            prefecture: '東京都',
+            city: '港区',
+            street: '六本木'
         })
     })
 
@@ -187,7 +236,16 @@ describe('searchPlacePreview', () => {
             expect(body.locationBias.circle.center).toEqual({ latitude: 35.6791006, longitude: 139.767714 })
             expect(body.locationBias.circle.radius).toBe(500)
             expect(init?.headers).toMatchObject({
-                'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.primaryTypeDisplayName'
+                'X-Goog-FieldMask': [
+                    'places.id',
+                    'places.displayName',
+                    'places.formattedAddress',
+                    'places.primaryTypeDisplayName',
+                    'places.location',
+                    'places.addressComponents.longText',
+                    'places.addressComponents.shortText',
+                    'places.addressComponents.types'
+                ].join(',')
             })
 
             return new Response(JSON.stringify({
@@ -211,7 +269,13 @@ describe('searchPlacePreview', () => {
             placeId: 'ChIJtokyoStationClinic',
             name: 'Tokyo Station International Clinic',
             address: '〒100-0005 Tokyo, Chiyoda City, Marunouchi, 1-chome−9−1',
-            category: 'Medical clinic'
+            category: 'Medical clinic',
+            postalCode: null,
+            prefecture: null,
+            city: null,
+            street: null,
+            latitude: null,
+            longitude: null
         })
     })
 })

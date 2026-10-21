@@ -369,6 +369,9 @@ const mapsFillCurrent = computed<FacilityMapsFillTarget>(() => {
         postalCode: fields.contact.address.postalCode,
         prefectureEn: fields.contact.address.prefectureEn,
         prefectureJa: fields.contact.address.prefectureJa,
+        cityId: fields.cityId,
+        cityEn: fields.contact.address.cityEn,
+        cityJa: fields.contact.address.cityJa,
         addressLine1En: fields.contact.address.addressLine1En,
         addressLine1Ja: fields.contact.address.addressLine1Ja,
         mapLatitude: fields.mapLatitude,
@@ -383,6 +386,9 @@ function applyMapsFill(patch: Partial<FacilityMapsFillTarget>) {
     if (patch.postalCode) fields.contact.address.postalCode = patch.postalCode
     if (patch.prefectureEn) fields.contact.address.prefectureEn = patch.prefectureEn
     if (patch.prefectureJa) fields.contact.address.prefectureJa = patch.prefectureJa
+    if (patch.cityId) fields.cityId = patch.cityId
+    if (patch.cityEn) fields.contact.address.cityEn = patch.cityEn
+    if (patch.cityJa) fields.contact.address.cityJa = patch.cityJa
     if (patch.addressLine1En) fields.contact.address.addressLine1En = patch.addressLine1En
     if (patch.addressLine1Ja) fields.contact.address.addressLine1Ja = patch.addressLine1Ja
     if (patch.mapLatitude) fields.mapLatitude = patch.mapLatitude
