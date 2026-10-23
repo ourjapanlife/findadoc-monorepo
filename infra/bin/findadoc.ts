@@ -4,6 +4,7 @@ import {
     FINDADOC_DOMAIN,
     FINDADOC_ENV,
     GITHUB_DEPLOY_ROLE_NAME,
+    GITHUB_OIDC_SUBJECT_PREFIX,
     GITHUB_REPOSITORY,
 } from '../lib/environment.js'
 import { GithubDeployStack } from '../lib/githubDeployStack.js'
@@ -21,6 +22,7 @@ new DnsStack(app, 'FindadocDns', {
 new GithubDeployStack(app, 'FindadocGithubDeploy', {
     env: FINDADOC_ENV,
     repository: GITHUB_REPOSITORY,
+    subjectPrefix: GITHUB_OIDC_SUBJECT_PREFIX,
     branch: 'main',
     roleName: GITHUB_DEPLOY_ROLE_NAME,
 })

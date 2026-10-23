@@ -5,6 +5,8 @@ import type { Construct } from 'constructs'
 export interface GithubDeployStackProps extends StackProps {
     // owner/name, for example ourjapanlife/findadoc-monorepo
     repository: string
+    // The sub claim before :ref:..., exactly as GitHub issues it for this repository.
+    subjectPrefix: string
     // Only workflow runs on this branch can assume the deploy role.
     branch: string
     roleName: string
@@ -34,7 +36,7 @@ export class GithubDeployStack extends Stack {
             assumedBy: new WebIdentityPrincipal(provider.oidcProviderArn, {
                 StringEquals: {
                     'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-                    'token.actions.githubusercontent.com:sub': `repo:${props.repository}:ref:refs/heads/${props.branch}`,
+                    'token.actions.githubusercontent.com:sub': `${props.subjectPrefix}:ref:refs/heads/${props.branch}`,
                 },
             }),
         })
