@@ -22,18 +22,18 @@ Create a profile once:
 aws configure sso --profile findadoc
 ```
 
-Use the Identity Center start URL and region for the organization, choose account `677501681118`, pick your permission set, and set the default region to `ap-northeast-1`. The resulting `~/.aws/config` looks like this:
+Use the Identity Center start URL and region for the organization, choose account `677501681118`, pick the `AdministratorAccess` permission set, and set the default region to `ap-northeast-1`. The resulting `~/.aws/config` looks like this:
 
 ```ini
 [profile findadoc]
 sso_session = findadoc
 sso_account_id = 677501681118
-sso_role_name = <permission set>
+sso_role_name = AdministratorAccess
 region = ap-northeast-1
 
 [sso-session findadoc]
 sso_start_url = https://findadoc.awsapps.com/start
-sso_region = <identity center region>
+sso_region = ap-northeast-1
 sso_registration_scopes = sso:account:access
 ```
 
