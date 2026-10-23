@@ -18,7 +18,7 @@ Follow the [Running the Code](../development/running-the-code.md) guide to get t
 
 ## Step 3: Create a Branch and Code
 
-1. Clone the repo you want to work on and create a branch from `main` — prefix with your username: `yourusername/my-change`
+1. Clone [findadoc-monorepo](https://github.com/ourjapanlife/findadoc-monorepo) and create a branch from `main` — prefix with your username: `yourusername/my-change`
 2. Write your code and make sure all automated checks and linters pass
 3. Push your branch and submit a Pull Request on GitHub with a clear description of what you did and how to test it
 

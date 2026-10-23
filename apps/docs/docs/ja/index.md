@@ -19,18 +19,20 @@
 
 1. [Slack](https://find-a-doc.slack.com/join/shared_invite/zt-2lb3j2t1z-O9F4thzcFktqsIXNzzjzHw#/shared-invite/email)に参加し、**#general**または**#dev-team**で自己紹介してください
 2. [はじめに](getting-started/index.md)ガイドをご覧ください
-3. リポジトリからIssueを選んで貢献を始めましょう
+3. [Issue](https://github.com/ourjapanlife/findadoc-monorepo/issues)を選んで貢献を始めましょう
 
 ## リポジトリ
 
-すべてのソフトウェアはオープンソースであり、どのリポジトリへの貢献も歓迎します。
+すべてのソフトウェアはオープンソースで、1つのモノレポ [findadoc-monorepo](https://github.com/ourjapanlife/findadoc-monorepo) にあります。
 
-| リポジトリ | 説明 |
+| パス | 説明 |
 |------|-------------|
-| [findadoc-web](https://github.com/ourjapanlife/findadoc-web) | フロントエンドウェブサイト (Nuxt 3 / Vue 3) |
-| [findadoc-server](https://github.com/ourjapanlife/findadoc-server) | バックエンドAPI (Node.js / GraphQL / Supabase) |
-| [findadoc-mcp](https://github.com/ourjapanlife/findadoc-mcp) | AI連携用MCPサーバー |
-| [findadoc-docs](https://github.com/ourjapanlife/findadoc-docs) | このドキュメントサイト |
+| `apps/web` | [findadoc.jp](https://www.findadoc.jp) のウェブサイト (Nuxt 4 / Vue 3) |
+| `apps/server` | GraphQL API (Node.js / Apollo Server / Supabase) |
+| `apps/mcp` | AI連携用MCPサーバー |
+| `apps/docs` | このドキュメントサイト |
+| `packages/graphql` | APIスキーマから生成したTypeScript型 |
+| `packages/utils` | サイトとAPIで共有するチェックとヘルパー |
 
 ## Slackの主要チャンネル
 

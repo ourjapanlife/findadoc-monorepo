@@ -1,54 +1,71 @@
 # 技術スタック
 
-## フロントエンド (findadoc-web)
+## モノレポ
 
 | 技術 | 用途 |
 |-----------|---------|
-| [Nuxt 3](https://nuxt.com/) | Vueベースのメタフレームワーク（SSGモード） |
-| [Vue 3](https://vuejs.org/) | UIフレームワーク（Composition API） |
+| [pnpm](https://pnpm.io/) | パッケージマネージャーとワークスペース |
+| [Turborepo](https://turborepo.com/) | パッケージ横断のタスク実行 |
 | [TypeScript](https://www.typescriptlang.org/) | 型安全なJavaScript |
-| [Tailwind CSS](https://tailwindcss.com/) | ユーティリティファーストCSSフレームワーク |
-| [Pinia](https://pinia.vuejs.org/) | 状態管理 |
-| [GraphQL](https://graphql.org/) | APIクエリ言語 |
-| [graphql-request](https://github.com/jasonkuhrt/graphql-request) | 軽量GraphQLクライアント |
-| [Nuxt i18n](https://i18n.nuxtjs.org/) | 国際化（10言語対応） |
-| [Auth0](https://auth0.com/) | 認証 |
-| [Google Maps API](https://developers.google.com/maps) | 地図・位置情報サービス |
-| [Vitest](https://vitest.dev/) | ユニットテスト |
-| [Cypress](https://www.cypress.io/) | E2Eテスト |
-| [Storybook](https://storybook.js.org/) | コンポーネント開発・ドキュメント |
+| [GraphQL Code Generator](https://the-guild.dev/graphql/codegen) | `@findadoc/graphql` の共有型 |
 | [ESLint](https://eslint.org/) | リンティング |
 | [Husky](https://typicode.github.io/husky/) | Gitフック |
+| [GitHub Actions](https://docs.github.com/en/actions) | リンティング、型チェック、テスト、ドキュメントのデプロイ |
 
-### 必要条件
+### 要件
 
-- **Node.js** >= 22.12.0
-- **Yarn** 4.x（Corepack経由）
+- **Node.js** 24.22.0（`.nvmrc`を参照）
+- **pnpm** 10.27.0（Corepack経由）
 
-## バックエンド (findadoc-server)
+## ウェブサイト（`apps/web`）
+
+| 技術 | 用途 |
+|-----------|---------|
+| [Nuxt 4](https://nuxt.com/) | Vueベースのメタフレームワーク（`nuxi generate`でプリレンダリング） |
+| [Vue 3](https://vuejs.org/) | UIフレームワーク（Composition API） |
+| [Tailwind CSS 4](https://tailwindcss.com/) | ユーティリティファーストCSSフレームワーク |
+| [Pinia](https://pinia.vuejs.org/) | 状態管理 |
+| [graphql-request](https://github.com/jasonkuhrt/graphql-request) | 軽量GraphQLクライアント |
+| [Nuxt i18n](https://i18n.nuxtjs.org/) | 国際化（11言語） |
+| [Auth0](https://auth0.com/) | モデレーション用の認証 |
+| [Google Maps API](https://developers.google.com/maps) | 地図・位置情報サービス |
+| [Sentry](https://sentry.io/) | エラー報告 |
+| [Vitest](https://vitest.dev/) | ユニットテスト |
+| [Playwright](https://playwright.dev/) | E2Eテスト |
+| [Storybook](https://storybook.js.org/) | コンポーネント開発とドキュメント |
+| [Netlify](https://www.netlify.com/) | ホスティング |
+
+## API（`apps/server`）
 
 | 技術 | 用途 |
 |-----------|---------|
 | [Node.js](https://nodejs.org/) | ランタイム |
-| [TypeScript](https://www.typescriptlang.org/) | 型安全なJavaScript |
-| [GraphQL](https://graphql.org/) | APIレイヤー |
+| [Apollo Server](https://www.apollographql.com/docs/apollo-server/) | Fastify上のGraphQL API |
 | [Supabase](https://supabase.com/) | データベース（PostgreSQL） |
+| [Sentry](https://sentry.io/) | エラー報告 |
 | [PM2](https://pm2.keymetrics.io/) | プロセス管理（本番環境） |
 | [Docker](https://www.docker.com/) | コンテナ化 |
 | [Vitest](https://vitest.dev/) | テスト |
 
-## MCPサーバー (findadoc-mcp)
+## MCPサーバー（`apps/mcp`）
 
 | 技術 | 用途 |
 |-----------|---------|
 | [Node.js](https://nodejs.org/) | ランタイム |
-| [TypeScript](https://www.typescriptlang.org/) | 型安全なJavaScript |
-| [Model Context Protocol](https://modelcontextprotocol.io/) | AIツール連携 |
+| [Model Context Protocol](https://modelcontextprotocol.io/) | Streamable HTTPとSTDIOによるAIツール連携 |
+| [Vitest](https://vitest.dev/) | テスト |
 
-MCPサーバーは、Find a Docの医療機関データにAIがアクセスするためのツールを提供します。
+MCPサーバーは、Find a Docの医療機関データをAIアシスタントに公開します。HTTPサーバーは同じツールを、`apps/mcp/openapi.yaml`で定義されたRESTエンドポイントとしても提供します。
+
+## ドキュメント（`apps/docs`）
+
+| 技術 | 用途 |
+|-----------|---------|
+| [Zensical](https://zensical.org/) | このサイトの静的サイトジェネレーター |
+| [GitHub Pages](https://pages.github.com/) | [docs.findadoc.jp](https://docs.findadoc.jp) のホスティング |
 
 ## コードスタイル
 
-- すべてのプロジェクトでフラットコンフィグの**ESLint**を使用
+- すべてのパッケージでフラットコンフィグの**ESLint**を使用
 - PRタイトルは[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)に従う必要があります（CIで強制）
 - ブランチ名にはGitHubユーザー名をプレフィックスとして付けてください：`yourusername/my-change`

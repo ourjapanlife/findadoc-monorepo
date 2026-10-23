@@ -18,7 +18,7 @@
 
 ## ステップ3：ブランチを作成してコーディング
 
-1. 作業したいリポジトリをクローンし、`main`からブランチを作成してください — ユーザー名をプレフィックスにしてください：`yourusername/my-change`
+1. [findadoc-monorepo](https://github.com/ourjapanlife/findadoc-monorepo)をクローンし、`main`からブランチを作成してください — ユーザー名をプレフィックスにしてください：`yourusername/my-change`
 2. コードを書き、すべての自動チェックとリンターがパスすることを確認してください
 3. ブランチをプッシュし、GitHubでPull Requestを送信してください。変更内容とテスト方法を明確に記述してください
 

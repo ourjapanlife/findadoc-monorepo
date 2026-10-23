@@ -6,7 +6,7 @@ Find a Doc, Japan is open source and built by volunteers. We welcome anyone will
 
 ### Developers
 
-Get started with the [Getting Started](../getting-started/index.md) guide, then follow the [Contribution Workflow](workflow.md). We welcome contributions to any of our [repositories](../index.md#repositories).
+Get started with the [Getting Started](../getting-started/index.md) guide, then follow the [Contribution Workflow](workflow.md). All of our code lives in one [repository](../index.md#repository).
 
 ### Designers
 

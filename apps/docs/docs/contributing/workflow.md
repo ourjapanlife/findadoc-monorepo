@@ -2,19 +2,20 @@
 
 ## Finding Work
 
-1. Browse issues on any of our repos: [findadoc-web](https://github.com/ourjapanlife/findadoc-web/issues), [findadoc-server](https://github.com/ourjapanlife/findadoc-server/issues), [findadoc-mcp](https://github.com/ourjapanlife/findadoc-mcp/issues), or [findadoc-docs](https://github.com/ourjapanlife/findadoc-docs/issues)
+1. Browse [issues](https://github.com/ourjapanlife/findadoc-monorepo/issues) in the monorepo
 2. Join **#dev-team** on Slack and let us know you're interested in helping out
 3. Assign yourself to an issue before starting work
 
 ## Making Changes
 
-1. Clone the repo and create a branch from `main` — prefix with your username: `yourusername/my-change`
-2. Make your changes
+1. Clone [findadoc-monorepo](https://github.com/ourjapanlife/findadoc-monorepo) and create a branch from `main` — prefix with your username: `yourusername/my-change`
+2. Make your changes. If they change how something is set up, run, or built, update the docs too (see [Writing Docs](docs.md))
 3. Run linting and tests to make sure everything passes:
 
 ```bash
-yarn lint
-yarn test:unit
+pnpm lint
+pnpm typecheck
+pnpm test
 ```
 
 ## Submitting a Pull Request
@@ -28,6 +29,7 @@ yarn test:unit
 - PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) (e.g., `feat: add search filter`, `fix: correct map marker position`)
 - All automated checks and linters must pass
 - Include testing instructions in the PR description
+- Update `apps/docs` when the change makes a page out of date
 
 ## Code Review
 

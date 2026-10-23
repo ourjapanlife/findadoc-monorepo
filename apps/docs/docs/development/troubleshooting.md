@@ -4,31 +4,39 @@
 
 ### Node.js Version
 
-Find a Doc requires **Node.js >= 22.12.0**. Check your version:
+The monorepo pins **Node.js 24.22.0** in `.nvmrc`. Check your version:
 
 ```bash
 node --version
 ```
 
-We recommend using [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to manage Node.js versions:
+We recommend [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm). From the repository root:
 
 ```bash
-nvm install 22
-nvm use 22
+nvm install
+nvm use
 ```
 
-### Yarn / Corepack Issues
+### `Unable to find package manager binary`
 
-The project uses Yarn 4.x via Corepack. If you encounter Yarn errors:
+`turbo` cannot find pnpm for the Node version you selected. Activate it after every `nvm use` that switches to a new Node install:
 
 ```bash
 corepack enable
-corepack prepare yarn@4 --activate
+corepack prepare pnpm@10.27.0 --activate
+```
+
+### Install Fails in OneDrive
+
+pnpm's file links can fail in a synced folder. Install with a copy instead:
+
+```bash
+pnpm install --config.package-import-method=copy
 ```
 
 ### Port Already in Use
 
-If `yarn dev` fails because port 3000 is already in use:
+If `pnpm dev` fails because port 3000 or 4000 is already in use:
 
 ```bash
 # Find the process using port 3000
@@ -38,18 +46,13 @@ lsof -i :3000
 kill -9 <PID>
 ```
 
-Or start the dev server on a different port:
+### GraphQL Type Errors
+
+If you get type errors after pulling new changes, regenerate and rebuild the shared GraphQL types:
 
 ```bash
-npx nuxi dev --port 3001
-```
-
-### GraphQL Type Generation Errors
-
-If you get type errors after pulling new changes, regenerate the GraphQL types:
-
-```bash
-yarn generate
+pnpm generate
+pnpm --filter @findadoc/graphql build
 ```
 
 ### ESLint Errors
@@ -57,22 +60,38 @@ yarn generate
 Run the linter with auto-fix:
 
 ```bash
-yarn lint:fix
+pnpm lint:fix
 ```
 
-### Supabase Issues (Backend)
+### Locale Key Check Fails
 
-If the local Supabase instance isn't starting:
+`pnpm typecheck` compares every locale file with `en.json`. Run the check alone to see which keys are missing or extra:
 
 ```bash
-# Make sure Docker is running, then:
-npx supabase start
-npx supabase db reset
+pnpm lint:locales
 ```
+
+Add the translation. Do not copy the English sentence into another locale.
+
+### Supabase Issues (API)
+
+If the local Supabase instance isn't starting, make sure Docker is running, then:
+
+```bash
+pnpm check:supabase
+pnpm db:reset
+pnpm db:seed
+```
+
+A local database that is behind the current migrations can make the API return `INTERNAL_SERVER_ERROR`. Reset and seed it.
+
+### Docs Check Fails
+
+`pnpm lint:docs` fails when a page is missing its Japanese translation, a link is broken, or a command or version no longer matches the monorepo. The message names the file and line. See [Writing Docs](../contributing/docs.md).
 
 ## Getting Help
 
 If you're stuck, don't hesitate to ask for help:
 
 - **Slack**: Post in the [#dev-team](https://find-a-doc.slack.com/join/shared_invite/zt-2lb3j2t1z-O9F4thzcFktqsIXNzzjzHw#/shared-invite/email) channel
-- **GitHub**: Open an issue or comment on an existing one
+- **GitHub**: Open an [issue](https://github.com/ourjapanlife/findadoc-monorepo/issues) or comment on an existing one

@@ -1,13 +1,13 @@
 # Running the Code
 
+Everything lives in one repository, [findadoc-monorepo](https://github.com/ourjapanlife/findadoc-monorepo). It is a pnpm workspace run by [Turborepo](https://turborepo.com/). Install once at the root and run every task from there.
+
 ## Prerequisites
 
-- **Node.js** >= 22.12.0 (we recommend [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm))
-- **Yarn** 4.x — enabled via [Corepack](https://nodejs.org/api/corepack.html):
-
-```bash
-corepack enable
-```
+- **Node.js** 24.22.0, pinned in `.nvmrc` (we recommend [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm))
+- **pnpm** 10.27.0, through [Corepack](https://nodejs.org/api/corepack.html)
+- **Docker**, only for the API's local Supabase database
+- **Python** 3.10 or later, only for this documentation site
 
 **Recommended IDE plugins** (VS Code):
 
@@ -15,147 +15,92 @@ corepack enable
 - [Vue Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
 - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
 
-## Documentation Site (findadoc-docs)
+## Clone and Install
 
-### Clone and Install
-
-```bash
-git clone https://github.com/ourjapanlife/findadoc-docs.git
-cd findadoc-docs
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### Start the Dev Server
+`nvm use` switches Node. Activate pnpm for that Node install before running `pnpm` or `turbo`. On Windows this step is required.
 
 ```bash
-zensical serve
+git clone https://github.com/ourjapanlife/findadoc-monorepo.git
+cd findadoc-monorepo
+nvm use
+corepack enable
+corepack prepare pnpm@10.27.0 --activate
+pnpm install
 ```
 
-The site will be available at `http://127.0.0.1:8000`.
+`pnpm install` also sets up Husky, which lints before each commit.
 
-### Build
+If the checkout lives in OneDrive, pnpm's file links can fail. Install with a copy instead:
 
 ```bash
-zensical build --clean
+pnpm install --config.package-import-method=copy
 ```
 
-## Frontend (findadoc-web)
-
-### Clone and Install
+## Start Everything
 
 ```bash
-git clone https://github.com/ourjapanlife/findadoc-web.git
-cd findadoc-web
-yarn install
+pnpm dev
 ```
 
-### Set Up Git Hooks
+This starts the website, the GraphQL API against a local database, and the MCP server. Other ways to start:
 
-```bash
-yarn prepare
-```
+| Command | What it starts |
+|---------|----------------|
+| `pnpm dev` | Site, local API, and MCP server |
+| `pnpm dev:web` | Site and local API, without the MCP server |
+| `pnpm dev:seeded` | Resets and seeds the local database, then the site and API |
+| `pnpm dev:api` | Site only, against the production API at `https://api.findadoc.jp` |
+| `pnpm dev:server` | Local API only |
+| `pnpm dev:mcp` | MCP server over STDIO |
+| `pnpm dev:mcp:http` | MCP server over Streamable HTTP |
 
-This sets up Husky to run linting before commits, reducing common contributor mistakes.
+The site runs at `http://localhost:3000`. The API runs at `http://127.0.0.1:4000`.
 
-### Start the Dev Server
-
-```bash
-yarn dev
-```
-
-The site will be available at `http://localhost:3000`.
-
-### Run with Local API
-
-To connect to a locally running backend:
-
-```bash
-yarn dev:localserver
-```
+## Website (`apps/web`)
 
 ### Moderation Dashboard
 
-The moderation dashboard requires a locally running backend:
+The moderation dashboard needs the local API:
 
-1. Start the backend (see [Backend](#backend-findadoc-server) section below)
-2. Start the frontend with local API: `yarn dev:localserver`
-3. Go to `http://localhost:3000/login`
-4. Enter the username and password — contact a core maintainer on Slack for credentials
-
-### Generate GraphQL Types
-
-TypeScript types for the GraphQL API are auto-generated. Run this after pulling new changes or when the API schema updates:
-
-```bash
-yarn generate
-```
-
-This generates the `gqlTypes.ts` file. Additional custom TypeScript types should go in the `./typedefs` folder.
-
-### Linting
-
-```bash
-yarn lint        # Check for issues
-yarn lint:fix    # Auto-fix issues
-```
-
-### Testing
-
-```bash
-# Unit tests
-yarn test:unit
-
-# E2E tests (opens Cypress GUI)
-yarn test:e2e
-
-# E2E tests (headless)
-yarn test:e2e:headless
-```
+1. Start the site and API: `pnpm dev:seeded`
+2. Go to `http://localhost:3000/login`
+3. Enter the username and password. Ask a core maintainer on Slack for credentials
 
 ### Storybook
 
 ```bash
-yarn storybook
+pnpm --filter @findadoc/web storybook
 ```
 
-Storybook will be available at `http://localhost:6006`.
+Storybook runs at `http://localhost:6006`.
 
 ### Production Build
 
 ```bash
-yarn prod:build
+pnpm --filter @findadoc/web build
 ```
 
-## Backend (findadoc-server)
+This prerenders the site into `apps/web/.output/public`.
+
+## API (`apps/server`)
 
 !!! note
-    The backend requires Docker and Supabase CLI for the local database.
-
-### Clone and Install
+    The API needs Docker and a local Supabase database.
 
 ```bash
-git clone https://github.com/ourjapanlife/findadoc-server.git
-cd findadoc-server
-yarn install
-```
-
-### Start the Dev Server
-
-This will start Supabase, seed the database, generate types, and start the dev server:
-
-```bash
-yarn dev
+pnpm check:supabase      # confirm local Supabase is running at http://127.0.0.1:54321
+pnpm db:reset            # drop and recreate the local database
+pnpm db:seed             # load the seed data
+pnpm dev:server          # start the API
 ```
 
 ### Debugging
 
-You can debug the backend with VS Code: open the **Run and Debug** tab, choose **JavaScript Debug Terminal**, then run `yarn dev` in that terminal. The debugger will automatically connect — just add breakpoints by clicking on line numbers.
+You can debug the API with VS Code: open the **Run and Debug** tab, choose **JavaScript Debug Terminal**, then run `pnpm dev:server` in that terminal. The debugger connects automatically. Add breakpoints by clicking on line numbers.
 
 ### Testing with Apollo Explorer
 
-Once the server is running at `http://localhost:4000`:
+Once the API is running at `http://127.0.0.1:4000`:
 
 1. Navigate to the **Explorer** section from the menu
 2. Click **query: Query** under "Root Types"
@@ -163,43 +108,61 @@ Once the server is running at `http://localhost:4000`:
 4. Select fields to add them to the query builder
 5. For types requiring an ID (e.g., `Facility` or `HealthcareProfessional`), add the ID in the **Variables** window as a string
 
-### Testing
+## MCP Server (`apps/mcp`)
 
 ```bash
-yarn test
+pnpm dev:mcp             # STDIO, for Claude Code and the MCP Inspector
+pnpm dev:mcp:http        # Streamable HTTP
+pnpm --filter @findadoc/mcp build
 ```
 
-### Linting
+See `apps/mcp/README.md` for the tool list and client setup.
+
+## GraphQL Types
+
+`apps/server/src/typeDefs/schema.graphql` is the only schema. The site, the API, and the MCP server import types generated from it through `@findadoc/graphql`. After you change the schema, regenerate them and commit `packages/graphql/src/index.ts`:
 
 ```bash
-yarn lint
+pnpm generate
+pnpm --filter @findadoc/graphql build
 ```
 
-## MCP Server (findadoc-mcp)
+CI fails if the committed types do not match the schema.
 
-### Clone and Install
+## Linting and Tests
 
 ```bash
-git clone https://github.com/ourjapanlife/findadoc-mcp.git
-cd findadoc-mcp
-yarn install
+pnpm lint                # every package
+pnpm lint:fix
+pnpm typecheck           # includes the locale key check
+pnpm test                # web, MCP, and utils unit tests
+pnpm test:server         # API tests; needs Supabase running
+pnpm test:e2e            # Playwright, from the website
 ```
 
-### Development
+Run one package's task with `--filter`:
 
 ```bash
-yarn dev
+pnpm --filter @findadoc/web test:unit
 ```
 
-### Build
+## Documentation Site (`apps/docs`)
+
+This site is built with [Zensical](https://zensical.org/). Install it once in a virtual environment:
 
 ```bash
-yarn build
+cd apps/docs
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-### Testing
+Then, from the repository root, with the virtual environment active:
 
 ```bash
-yarn test
-yarn test:watch
+pnpm docs                # preview at http://127.0.0.1:8000
+pnpm docs:build          # write the site to apps/docs/site
+pnpm lint:docs           # check the docs against the monorepo
 ```
+
+See [Writing Docs](../contributing/docs.md) for when and how to update these pages.

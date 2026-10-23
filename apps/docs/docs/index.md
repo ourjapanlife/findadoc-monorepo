@@ -19,18 +19,20 @@ We welcome anyone willing to contribute their skills — whether that's **develo
 
 1. Join our [Slack](https://find-a-doc.slack.com/join/shared_invite/zt-2lb3j2t1z-O9F4thzcFktqsIXNzzjzHw#/shared-invite/email) and introduce yourself in **#general** or **#dev-team**
 2. Check out the [Getting Started](getting-started/index.md) guide
-3. Pick an issue from any of our repos and start contributing
+3. Pick an [issue](https://github.com/ourjapanlife/findadoc-monorepo/issues) and start contributing
 
-## Repositories
+## Repository
 
-All of our software is open source and we welcome contributions to any repo.
+All of our software is open source and lives in one monorepo: [findadoc-monorepo](https://github.com/ourjapanlife/findadoc-monorepo).
 
-| Repo | Description |
+| Path | Description |
 |------|-------------|
-| [findadoc-web](https://github.com/ourjapanlife/findadoc-web) | Frontend website (Nuxt 3 / Vue 3) |
-| [findadoc-server](https://github.com/ourjapanlife/findadoc-server) | Backend API (Node.js / GraphQL / Supabase) |
-| [findadoc-mcp](https://github.com/ourjapanlife/findadoc-mcp) | MCP server for AI integrations |
-| [findadoc-docs](https://github.com/ourjapanlife/findadoc-docs) | This documentation site |
+| `apps/web` | Website at [findadoc.jp](https://www.findadoc.jp) (Nuxt 4 / Vue 3) |
+| `apps/server` | GraphQL API (Node.js / Apollo Server / Supabase) |
+| `apps/mcp` | MCP server for AI integrations |
+| `apps/docs` | This documentation site |
+| `packages/graphql` | TypeScript types generated from the API schema |
+| `packages/utils` | Shared checks and helpers used by the site and the API |
 
 ## Key Channels on Slack
 

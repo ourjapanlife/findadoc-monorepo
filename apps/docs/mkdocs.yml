@@ -1,7 +1,7 @@
 site_name: Find a Doc, Japan — Developer Docs
 site_url: https://docs.findadoc.jp
-repo_url: https://github.com/ourjapanlife/findadoc-web
-edit_uri: ""
+repo_url: https://github.com/ourjapanlife/findadoc-monorepo
+edit_uri: edit/main/apps/docs/docs/
 copyright: Copyright &copy; 2026, Our Japan Life (NPO法人Find a Doc, Japan)
 
 theme:
@@ -85,4 +85,5 @@ nav:
       - contributing/index.md
       - Contribution Workflow: contributing/workflow.md
       - Standups: contributing/standups.md
+      - Writing Docs: contributing/docs.md
       - Code of Conduct: contributing/code-of-conduct.md
