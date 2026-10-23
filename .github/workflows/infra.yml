@@ -1,0 +1,68 @@
+name: Infra
+
+on:
+  pull_request:
+    paths:
+      - infra/**
+      - .github/workflows/infra.yml
+      - pnpm-lock.yaml
+  push:
+    branches: [main]
+    paths:
+      - infra/**
+      - .github/workflows/infra.yml
+      - pnpm-lock.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  synth:
+    name: CDK synth
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: infra-synth-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # No AWS credentials here. Lookups come from the committed cdk.context.json,
+      # so a new lookup that is not in that file fails the check.
+      - name: Synth
+        run: pnpm --filter @findadoc/infra synth --quiet
+
+  deploy:
+    name: CDK deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Never cancel a deploy halfway. Queue the next one behind it.
+    concurrency:
+      group: infra-deploy
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # The role trusts only this repository's main branch. It is created by the
+      # FindadocGithubDeploy stack in infra/.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::677501681118:role/findadoc-github-cdk-deploy
+          aws-region: ap-northeast-1
+
+      - name: Deploy
+        run: pnpm --filter @findadoc/infra run deploy --all --require-approval never

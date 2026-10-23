@@ -1,0 +1,26 @@
+import { App, Tags } from 'aws-cdk-lib'
+import { DnsStack } from '../lib/dnsStack.js'
+import {
+    FINDADOC_DOMAIN,
+    FINDADOC_ENV,
+    GITHUB_DEPLOY_ROLE_NAME,
+    GITHUB_REPOSITORY,
+} from '../lib/environment.js'
+import { GithubDeployStack } from '../lib/githubDeployStack.js'
+
+const app = new App()
+
+Tags.of(app).add('project', 'findadoc')
+Tags.of(app).add('managed-by', 'cdk')
+
+new DnsStack(app, 'FindadocDns', {
+    env: FINDADOC_ENV,
+    domainName: FINDADOC_DOMAIN,
+})
+
+new GithubDeployStack(app, 'FindadocGithubDeploy', {
+    env: FINDADOC_ENV,
+    repository: GITHUB_REPOSITORY,
+    branch: 'main',
+    roleName: GITHUB_DEPLOY_ROLE_NAME,
+})
