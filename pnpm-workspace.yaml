@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - infra
 
 catalog:
   graphql: ^16.13.1
