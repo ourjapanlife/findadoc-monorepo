@@ -1,0 +1,11 @@
+{
+    "name": "@findadoc/docs",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "docs:serve": "zensical serve",
+        "docs:build": "zensical build --clean",
+        "lint": "node scripts/checkDocs.mjs"
+    }
+}

@@ -59,6 +59,16 @@ The web Auth0 client keeps its cache in memory on the production site. A reload 
 
 `apps/web/i18n/checkLocaleKeys.js` compares every file in `apps/web/i18n/locales` with `en.json`. Web typecheck runs it, and it does not write the locale files. A missing key, an extra key, or a `{token}` that does not match English fails the check. A value that is still the English sentence also fails, unless that key is listed in `apps/web/i18n/sameAsEnglish.json` because it is a brand name, a person's name, or a word that is the same in that language. Add the translation. Do not copy the English sentence in to make the check pass.
 
+## Developer docs
+
+`apps/docs` is docs.findadoc.jp, the contributor site. It is built with Zensical and deployed to GitHub Pages by `.github/workflows/docs.yml` when `apps/docs` changes on `main`.
+
+Update it in the same change that makes it wrong: a root or contributor-facing `pnpm` script, the Node or pnpm pin, an app or package, how something is set up, run, tested, or deployed, the stack, or the architecture. English is `apps/docs/docs/`. Japanese mirrors the same path under `apps/docs/docs/ja/`. Write both. A new page also goes under `nav` in `apps/docs/mkdocs.yml`.
+
+`pnpm lint:docs` runs `apps/docs/scripts/checkDocs.mjs`. The Docs workflow runs it on every pull request, not only docs changes. It fails on a page without its mirror, a page missing from `nav`, a broken relative link, a `pnpm` command in code that no package defines, a Node or pnpm version that does not match `.nvmrc` or `packageManager`, Yarn, `npm run`, or `npx` in a code block, or a link to a retired single-app repo. Fix the page. Do not loosen the check to make it pass.
+
+Rules that only code follows, such as `apps/server/docs/city-rules.md`, stay next to that code. The site links to them.
+
 ## Pull requests
 
 A pull request title follows [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary): `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`, `build:`, `ci:`, `chore:`, or `revert:`. `.github/workflows/lint-pr-title.yml` rejects anything else. Commit subjects use the same form.
