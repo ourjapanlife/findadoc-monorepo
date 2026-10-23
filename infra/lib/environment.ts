@@ -6,3 +6,8 @@ export const FINDADOC_ENV = {
 } as const satisfies Environment
 
 export const FINDADOC_DOMAIN = 'findadoc.jp'
+
+export const GITHUB_REPOSITORY = 'ourjapanlife/findadoc-monorepo'
+
+// The deploy workflow assumes this role by name.
+export const GITHUB_DEPLOY_ROLE_NAME = 'findadoc-github-cdk-deploy'

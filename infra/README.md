@@ -11,6 +11,7 @@ AWS CDK app for the Find a Doc AWS account.
 | Stack         | What it does                                                                                                 |
 | ------------- | ------------------------------------------------------------------------------------------------------------ |
 | `FindadocDns` | Looks up the existing `findadoc.jp` hosted zone and exposes it as `hostedZone`. It does not create the zone. |
+| `FindadocGithubDeploy` | GitHub OIDC provider and the `findadoc-github-cdk-deploy` role that the Infra workflow assumes. |
 
 ## Credentials (IAM Identity Center)
 
@@ -57,14 +58,26 @@ pnpm --filter @findadoc/infra cdk bootstrap aws://677501681118/ap-northeast-1
 
 ## Commands
 
-Run from the repo root, or use `pnpm <script>` inside `infra/`:
+Run from the repo root, or use `pnpm run <script>` inside `infra/`. Keep `run` before `deploy`: `pnpm deploy` is a built-in pnpm command, not this package's script.
 
 ```bash
 pnpm --filter @findadoc/infra typecheck
 pnpm --filter @findadoc/infra synth
 pnpm --filter @findadoc/infra diff
-pnpm --filter @findadoc/infra deploy --all
+pnpm --filter @findadoc/infra run deploy --all
 ```
+
+## CI deploys
+
+`.github/workflows/infra.yml` runs `cdk synth` on pull requests that touch `infra/`, and `cdk deploy --all` on pushes to `main`. CI has no stored AWS keys. The deploy job gets a GitHub OIDC token and assumes `findadoc-github-cdk-deploy`. That role trusts only `main` of `ourjapanlife/findadoc-monorepo`, and it can only assume the CDK bootstrap roles.
+
+`FindadocGithubDeploy` creates that role, so CI cannot create it. Deploy it once locally with an Identity Center session:
+
+```bash
+pnpm --filter @findadoc/infra run deploy FindadocGithubDeploy
+```
+
+After that, CI deploys every stack, including later changes to `FindadocGithubDeploy`.
 
 ## Context lookups
 
