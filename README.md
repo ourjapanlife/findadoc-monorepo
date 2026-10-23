@@ -7,6 +7,7 @@ pnpm workspace and Turborepo for the Find a Doc, Japan apps. One install, one se
 | `@findadoc/web` | `apps/web` | Nuxt site (findadoc.jp) |
 | `@findadoc/server` | `apps/server` | GraphQL API |
 | `@findadoc/mcp` | `apps/mcp` | MCP server |
+| `@findadoc/docs` | `apps/docs` | Contributor docs ([docs.findadoc.jp](https://docs.findadoc.jp)) |
 | `@findadoc/graphql` | `packages/graphql` | Types generated from the API schema |
 | `@findadoc/utils` | `packages/utils` | Shared checks and helpers used by the site and the API |
 | `@findadoc/tsconfig` | `packages/tsconfig` | Shared TypeScript config |
@@ -58,6 +59,8 @@ pnpm test                # web unit tests and MCP tests
 pnpm test:server         # API tests; needs Supabase running
 pnpm test:e2e            # Playwright, from the web app
 pnpm lint:locales        # the locale key check alone, without the rest of typecheck
+pnpm lint:docs           # check apps/docs against the scripts and versions in this repo
+pnpm docs                # preview apps/docs; needs Zensical (see apps/docs/README.md)
 ```
 
 Target one package when you do not want the whole workspace:
@@ -88,6 +91,7 @@ Database types from Supabase stay in the API (`pnpm --filter @findadoc/server ge
 | `tests.yml` | Web, MCP, and utils unit tests, plus API tests against Supabase |
 | `playwright.yml` | API and web together, then Playwright |
 | `lint-pr-title.yml` | Conventional Commits title |
+| `docs.yml` | Docs check and build on every pull request. Deploys `apps/docs` to GitHub Pages from `main` |
 
 Node is pinned by `.nvmrc` in every workflow. The API image builds from the repository root so it can install `@findadoc/server` and `@findadoc/graphql` together:
 

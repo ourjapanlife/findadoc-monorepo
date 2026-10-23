@@ -1,0 +1,89 @@
+site_name: Find a Doc, Japan — Developer Docs
+site_url: https://docs.findadoc.jp
+repo_url: https://github.com/ourjapanlife/findadoc-monorepo
+edit_uri: edit/main/apps/docs/docs/
+copyright: Copyright &copy; 2026, Our Japan Life (NPO法人Find a Doc, Japan)
+
+theme:
+  name: material
+  language: en
+  logo: assets/site-logo.svg
+  favicon: assets/favicon.svg
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+
+extra:
+  alternate:
+    - name: English
+      link: /
+      lang: en
+    - name: 日本語
+      link: /ja/
+      lang: ja
+
+extra_javascript:
+  - javascripts/i18n-nav-fix.js
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      reconfigure_material: true
+      default_language: en
+      languages:
+        - locale: en
+          name: English
+          build: true
+          default: true
+        - locale: ja
+          name: 日本語
+          build: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - getting-started/index.md
+      - Beginner Resources: getting-started/beginner-resources.md
+  - Development:
+      - development/index.md
+      - Tech Stack: development/tech-stack.md
+      - Running the Code: development/running-the-code.md
+      - Architecture: development/architecture.md
+      - Troubleshooting: development/troubleshooting.md
+  - Contributing:
+      - contributing/index.md
+      - Contribution Workflow: contributing/workflow.md
+      - Standups: contributing/standups.md
+      - Writing Docs: contributing/docs.md
+      - Code of Conduct: contributing/code-of-conduct.md

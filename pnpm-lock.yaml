@@ -28,6 +28,8 @@ importers:
         specifier: ^2.11.6
         version: 2.11.8
 
+  apps/docs: {}
+
   apps/mcp:
     dependencies:
       '@fastify/rate-limit':
