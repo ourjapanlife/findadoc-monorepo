@@ -7,7 +7,7 @@ import { hostedClinicIndex } from '~/utils/hostedClinicIndex'
  * clean link. The clinic list is the API. Returning `navigateTo` from middleware
  * stops the directory page from answering with its own 404.
  */
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware(async to => {
     const config = useRuntimeConfig()
     const mode = clinicLandingMode(config.public.onlineClinic)
     if (mode === 'off' || !to.path.includes('/clinic/')) {

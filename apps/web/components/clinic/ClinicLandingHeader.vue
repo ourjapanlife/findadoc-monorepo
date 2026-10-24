@@ -5,53 +5,53 @@
         aria-hidden="true"
     />
     <header
-            class="sticky top-0 z-30 border-b bg-primary text-primary-text-inverted transition-shadow"
-            :class="stuck ? 'border-primary-hover shadow-raised' : 'border-transparent'"
-            data-testid="clinic-landing-header"
-        >
-            <div class="page-container flex h-16 items-center gap-3 px-6 landscape:px-12">
-                <a
-                    href="#top"
-                    class="flex min-w-0 items-center gap-2 font-semibold"
-                >
-                    <span
-                        class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary-text-inverted/15 text-sm"
-                        aria-hidden="true"
-                    >{{ mark }}</span>
-                    <span class="truncate">{{ name }}</span>
-                </a>
-                <nav
-                    class="portrait:hidden"
-                    :aria-label="navLabel"
-                >
-                    <ul class="m-0 flex list-none gap-1 p-0">
-                        <li
-                            v-for="section in sections"
-                            :key="section.id"
-                        >
-                            <a
-                                :href="`#${section.id}`"
-                                class="inline-flex h-10 items-center rounded-lg px-3 text-sm"
-                                :class="activeId === section.id
-                                    ? 'bg-primary-text-inverted/20'
-                                    : 'hover:bg-primary-text-inverted/10'"
-                                :aria-current="activeId === section.id ? 'true' : undefined"
-                            >{{ section.label }}</a>
-                        </li>
-                    </ul>
-                </nav>
-                <div class="ml-auto flex shrink-0 items-center gap-2">
-                    <LocaleSelector />
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-on-primary portrait:hidden"
-                        data-testid="clinic-landing-header-book"
-                        @click="emit('book')"
+        class="sticky top-0 z-30 border-b bg-primary text-primary-text-inverted transition-shadow"
+        :class="stuck ? 'border-primary-hover shadow-raised' : 'border-transparent'"
+        data-testid="clinic-landing-header"
+    >
+        <div class="page-container flex h-16 items-center gap-3 px-6 landscape:px-12">
+            <a
+                href="#top"
+                class="flex min-w-0 items-center gap-2 font-semibold"
+            >
+                <span
+                    class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary-text-inverted/15 text-sm"
+                    aria-hidden="true"
+                >{{ mark }}</span>
+                <span class="truncate">{{ name }}</span>
+            </a>
+            <nav
+                class="portrait:hidden"
+                :aria-label="navLabel"
+            >
+                <ul class="m-0 flex list-none gap-1 p-0">
+                    <li
+                        v-for="section in sections"
+                        :key="section.id"
                     >
-                        {{ bookLabel }}
-                    </button>
-                </div>
+                        <a
+                            :href="`#${section.id}`"
+                            class="inline-flex h-10 items-center rounded-lg px-3 text-sm"
+                            :class="activeId === section.id
+                                ? 'bg-primary-text-inverted/20'
+                                : 'hover:bg-primary-text-inverted/10'"
+                            :aria-current="activeId === section.id ? 'true' : undefined"
+                        >{{ section.label }}</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="ml-auto flex shrink-0 items-center gap-2">
+                <LocaleSelector />
+                <button
+                    type="button"
+                    class="btn btn-sm btn-on-primary portrait:hidden"
+                    data-testid="clinic-landing-header-book"
+                    @click="emit('book')"
+                >
+                    {{ bookLabel }}
+                </button>
             </div>
+        </div>
     </header>
 </template>
 
@@ -78,7 +78,7 @@ let sectionObserver: IntersectionObserver | undefined
 
 function observeSections() {
     sectionObserver?.disconnect()
-    sectionObserver = new IntersectionObserver((entries) => {
+    sectionObserver = new IntersectionObserver(entries => {
         const visible = entries
             .filter(entry => entry.isIntersecting)
             .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0]

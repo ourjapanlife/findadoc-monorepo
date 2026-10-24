@@ -166,7 +166,8 @@ export function isNoindexRoute(
     onlineClinic?: string | null
 ): boolean {
     const normalised = unlocalizedPath(normalisePagePath(path))
-    if (isClinicLandingPath(normalised) && clinicLandingMode(onlineClinic ?? process.env.NUXT_PUBLIC_ONLINE_CLINIC) !== 'public') {
+    const clinicMode = clinicLandingMode(onlineClinic ?? process.env.NUXT_PUBLIC_ONLINE_CLINIC)
+    if (isClinicLandingPath(normalised) && clinicMode !== 'public') {
         return true
     }
 
