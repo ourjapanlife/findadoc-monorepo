@@ -425,9 +425,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { createError, useAsyncData, useHead, useRoute, useRuntimeConfig } from '#imports'
+import { createError, useAsyncData, useHead, useRequestURL, useRoute, useRuntimeConfig } from '#imports'
 import { useUmami } from '~/composables/useUmamiTracking'
-import { clinicLandingMode, clinicLandingPath, clinicLandingShareImage } from '~/utils/clinicLanding'
+import { clinicLandingHostSlug, clinicLandingMode, clinicLandingPath, clinicLandingShareImage } from '~/utils/clinicLanding'
 import { fetchClinicSite } from '~/utils/clinicSiteQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
 import { localizedPath } from '~/utils/localePath'
@@ -436,6 +436,7 @@ import { jsonLdScript, medicalClinicJsonLd } from '~/utils/structuredData'
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const requestUrl = useRequestURL()
 const { locale } = useI18n()
 const { track } = useUmami()
 
@@ -446,7 +447,12 @@ definePageMeta({
 
 const slug = computed(() => {
     const param = route.params.slug
-    return typeof param === 'string' ? param : param?.[0]
+    const fromParam = typeof param === 'string' ? param : param?.[0]
+    if (fromParam) {
+        return fromParam
+    }
+    const host = import.meta.server ? requestUrl.hostname : window.location.hostname
+    return clinicLandingHostSlug(host)
 })
 
 const { data: site } = await useAsyncData(

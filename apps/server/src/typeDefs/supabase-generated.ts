@@ -399,7 +399,7 @@ export type Database = {
     }
     Enums: {
       action_type_enum: "CREATE" | "UPDATE" | "DELETE"
-      object_type_enum: "Facility" | "HealthcareProfessional" | "Submission"
+      object_type_enum: "Facility" | "HealthcareProfessional" | "Submission" | "User" | "FacilityMembership"
       schema_version_enum: "V1"
       submission_status_enum:
         | "pending"
@@ -537,7 +537,7 @@ export const Constants = {
   public: {
     Enums: {
       action_type_enum: ["CREATE", "UPDATE", "DELETE"],
-      object_type_enum: ["Facility", "HealthcareProfessional", "Submission"],
+      object_type_enum: ["Facility", "HealthcareProfessional", "Submission", "User", "FacilityMembership"],
       schema_version_enum: ["V1"],
       submission_status_enum: [
         "pending",

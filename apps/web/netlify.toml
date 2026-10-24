@@ -30,6 +30,13 @@
 # addresses 301 there too. Preview stays a 404 without the cookie, so a crawler
 # does not receive the SPA shell. The function returns immediately unless the
 # host is a clinic hostname or the path is a clinic path.
+# Staff site. Returns immediately unless the host is admin.localhost or
+# admin.findadoc.jp. Declared before the clinic function so that host is
+# not treated as a clinic.
+[[edge_functions]]
+  function = "admin-site"
+  path = "/*"
+
 [[edge_functions]]
   function = "clinic-landing"
   path = "/*"

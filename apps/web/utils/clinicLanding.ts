@@ -10,7 +10,9 @@ import { SITE_ORIGIN } from './site'
  * until the directory listing exists.
  *
  * `NUXT_PUBLIC_ONLINE_CLINIC`:
- * - unset — every landing is a 404, and the id address is left as a normal clinic URL
+ * - unset in `pnpm dev` — same as `preview`, so `turbo dev` does not need the variable
+ * - unset for generate and Netlify — every landing is a 404, and the id address stays a clinic URL
+ * - `off` — the 404, including in dev
  * - `preview` — showcase. `?preview=1` sets a cookie; without it the landing is a 404,
  *   noindex, and absent from the sitemap. The id address still redirects to the clean link
  * - `public` — a published clinic is prerendered, indexable, and listed in the sitemap.
@@ -81,6 +83,18 @@ export function clinicLandingMode(value: string | null | undefined): ClinicLandi
     return 'off'
 }
 
+/**
+ * A set flag always wins, including `off`.
+ * `pnpm dev` uses preview when the variable is missing.
+ * Generate and Netlify pass `isDev` false, so they stay off until the variable is set.
+ */
+export function hostedPreviewValue(value: string | null | undefined, isDev: boolean): string | undefined {
+    if (typeof value === 'string' && value.length > 0) {
+        return value
+    }
+    return isDev ? 'preview' : undefined
+}
+
 export function clinicLandingsArePublic(value?: string | null): boolean {
     return clinicLandingMode(value ?? process.env.NUXT_PUBLIC_ONLINE_CLINIC) === 'public'
 }
@@ -112,9 +126,33 @@ export function clinicLandingHostSlug(hostname: string | null | undefined): stri
     return label
 }
 
+/** Scripts, images, and Vite files stay on the host. A page path does not. */
+export function isStaticHostPath(pathname: string): boolean {
+    if (pathname.startsWith('/_nuxt') || pathname.startsWith('/__nuxt') || pathname.startsWith('/@')) {
+        return true
+    }
+    const leaf = pathname.split('/').pop() ?? ''
+    return leaf.includes('.')
+}
+
+/** `/` or `/{locale}` on a clinic hostname. The clinic path is not part of this URL. */
+export function clinicHostPagePath(pathname: string): string {
+    const trimmed = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
+    const locale = trimmed.split('/').filter(Boolean)[0]
+    if (locale && (CLINIC_LANDING_LOCALE_PREFIXES as readonly string[]).includes(locale)) {
+        return `/${locale}`
+    }
+    return '/'
+}
+
+export function isClinicHostPage(pathname: string): boolean {
+    const trimmed = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
+    return trimmed === clinicHostPagePath(pathname)
+}
+
 /**
- * The root of a clinic hostname opens the same page as `/clinic/{slug}`.
- * Any other path is left alone, so assets and the clinic path do not loop.
+ * A clinic hostname is the clinic. `/` stays `/`. `/submit` and `/clinic/{slug}`
+ * on that host go back to `/` (or `/{locale}`). Files the page loads stay put.
  * Off mode does not redirect.
  */
 export function clinicHostLandingTarget(
@@ -126,23 +164,16 @@ export function clinicHostLandingTarget(
         return undefined
     }
 
-    const slug = clinicLandingHostSlug(hostname)
-    if (!slug) {
+    if (!clinicLandingHostSlug(hostname)) {
         return undefined
     }
 
     const trimmed = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
-    const segments = trimmed.split('/').filter(Boolean)
-    if (segments.length === 0) {
-        return clinicLandingPath(slug)
+    if (isStaticHostPath(trimmed) || isClinicHostPage(pathname)) {
+        return undefined
     }
 
-    const locale = segments[0]
-    if (segments.length === 1 && locale && (CLINIC_LANDING_LOCALE_PREFIXES as readonly string[]).includes(locale)) {
-        return `/${locale}${clinicLandingPath(slug)}`
-    }
-
-    return undefined
+    return clinicHostPagePath(pathname)
 }
 
 /** Absolute URL. Link previews ignore a site-relative image. */

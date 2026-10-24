@@ -423,6 +423,58 @@ type User {
   profilePicUrl: String
 }
 
+"""
+Role of a person at a hospital. Owner may assign and revoke staff.
+Staff has a seat and does not manage other seats.
+"""
+enum FacilityMembershipRole {
+  OWNER
+  STAFF
+}
+
+"""An active seat counts toward the plan. Revoked keeps the history and frees the seat."""
+enum FacilityMembershipStatus {
+  ACTIVE
+  REVOKED
+}
+
+"""The only plan today. Three active people per hospital."""
+enum FacilityPlan {
+  BASIC
+}
+
+"""A person's seat at one hospital."""
+type FacilityMembership {
+  id: ID!
+  facilityId: ID!
+  userId: ID!
+  hpId: ID
+  role: FacilityMembershipRole!
+  status: FacilityMembershipStatus!
+  createdDate: String!
+}
+
+"""How many seats the hospital's plan allows, and how many are active."""
+type AssignFacilityMemberPayload {
+  membership: FacilityMembership!
+  user: User!
+  seatsUsed: Int!
+  seatLimit: Int!
+}
+
+"""
+Assign a person to a hospital. Pass userId to use an existing account.
+Pass authSubject to remember their login, so they can manage this hospital later.
+"""
+input AssignFacilityMemberInput {
+  facilityId: ID!
+  displayName: String
+  role: FacilityMembershipRole!
+  hpId: ID
+  userId: ID
+  authSubject: String
+}
+
 """Input for creating a new user."""
 input CreateUserInput {
   """Display name shown in the UI."""
@@ -477,6 +529,10 @@ enum ObjectType {
   HealthcareProfessional
   """A submission entity."""
   Submission
+  """A user account."""
+  User
+  """A person's seat at a hospital."""
+  FacilityMembership
 }
 
 """The schema version used for audit log serialization."""
@@ -1343,6 +1399,20 @@ type Mutation {
 
   """Create a new user account."""
   createUser(input: CreateUserInput!): User!
+
+  """
+  Give a person a seat at a hospital. Creates the account when no user id is sent.
+  The basic plan has three active seats. An optional professional id means this
+  person is that healthcare professional, and they must already work at the hospital.
+  Find a Doc staff may assign an owner. A hospital owner may assign staff.
+  """
+  assignFacilityMember(input: AssignFacilityMemberInput!): AssignFacilityMemberPayload!
+
+  """
+  Free a seat. The membership row stays, with status revoked, and an audit log is written.
+  A hospital owner may revoke staff. Find a Doc staff may revoke anyone.
+  """
+  revokeFacilityMember(facilityId: ID!, userId: ID!): FacilityMembership!
 
   """Update an existing user by ID."""
   updateUser(id: ID!, input: UpdateUserInput!): User!

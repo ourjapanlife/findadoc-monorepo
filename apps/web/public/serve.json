@@ -14,6 +14,8 @@
     { "source": "/:locale/login/:path*", "destination": "/200.html" },
     { "source": "/:locale/my-page", "destination": "/200.html" },
     { "source": "/:locale/my-page/:path*", "destination": "/200.html" },
+    { "source": "/admin", "destination": "/200.html" },
+    { "source": "/:locale/admin", "destination": "/200.html" },
     { "source": "/clinic/multilingual-online-clinic", "destination": "/200.html" },
     { "source": "/:locale/clinic/multilingual-online-clinic", "destination": "/200.html" }
   ]
