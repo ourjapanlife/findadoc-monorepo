@@ -12,6 +12,10 @@ import {
     type ContactInput
 } from '@findadoc/graphql'
 import type {
+    ClinicSiteDoctorsTable,
+    ClinicSiteLanguagesTable,
+    ClinicSiteLocalesTable,
+    ClinicSitesTable,
     FacilitiesTable,
     HpsFacilitiesTable,
     HpsTable,
@@ -133,6 +137,45 @@ export type RelationSeed = {
     facilities_id: string
 }
 
+/** Insert row for a hosted clinic. facility_id stays null until a real directory listing exists. */
+export type ClinicSiteInsert = {
+    id: string
+    facility_id: string | null
+    slug: string
+    status: string
+    share_image_path: string
+    hero_path: string
+    theme: string
+    created_date: string
+    updated_date: string
+}
+
+export type ClinicSiteLanguageInsert = {
+    clinic_site_id: string
+    sort_order: number
+    code: string
+    native_name: string
+    bcp47: string
+}
+
+export type ClinicSiteDoctorInsert = {
+    clinic_site_id: string
+    sort_order: number
+    name_ja: string
+    name_en: string
+    image_path: string
+    object_position: string
+    hp_id: string | null
+}
+
+export type ClinicSiteLocaleInsert = {
+    clinic_site_id: string
+    locale: string
+    name: string
+    description: string
+    document: string
+}
+
 export type SeedFile = {
     facilities: FacilitySeed[]
     hps: HpSeed[]
@@ -144,6 +187,10 @@ export type FacilitySeedCoversTable = Expect<Covers<RequiredKeys<FacilitiesTable
 export type HpSeedCoversTable = Expect<Covers<RequiredKeys<HpsTable>, HpSeed>>
 export type SubmissionSeedCoversTable = Expect<Covers<RequiredKeys<SubmissionsTable>, SubmissionSeed>>
 export type RelationSeedCoversTable = Expect<Covers<RequiredKeys<HpsFacilitiesTable>, RelationSeed>>
+export type ClinicSiteInsertCoversTable = Expect<Covers<RequiredKeys<ClinicSitesTable>, ClinicSiteInsert>>
+export type ClinicSiteLanguageInsertCoversTable = Expect<Covers<RequiredKeys<ClinicSiteLanguagesTable>, ClinicSiteLanguageInsert>>
+export type ClinicSiteDoctorInsertCoversTable = Expect<Covers<RequiredKeys<ClinicSiteDoctorsTable>, ClinicSiteDoctorInsert>>
+export type ClinicSiteLocaleInsertCoversTable = Expect<Covers<RequiredKeys<ClinicSiteLocalesTable>, ClinicSiteLocaleInsert>>
 
 const municipalitiesByKey = new Map(
     municipalities.map(city => [`${city.prefectureEn}|${city.nameEn}`, city])

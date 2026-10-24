@@ -26,6 +26,14 @@
     [headers.values]
     Access-Control-Allow-Origin = "*"
 
+# Clinic landings: a clinic hostname's root 301s to /clinic/{slug}, and id
+# addresses 301 there too. Preview stays a 404 without the cookie, so a crawler
+# does not receive the SPA shell. The function returns immediately unless the
+# host is a clinic hostname or the path is a clinic path.
+[[edge_functions]]
+  function = "clinic-landing"
+  path = "/*"
+
 # Accept: text/markdown is rewritten to the sibling .md file. Static generate
 # cannot do that itself. See netlify/edge-functions/markdown.ts and #1797.
 [[edge_functions]]

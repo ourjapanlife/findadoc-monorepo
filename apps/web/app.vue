@@ -22,15 +22,17 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { initializeGqlClient } from './utils/graphql.js'
+import { isClinicLandingPath } from '~/utils/clinicLanding'
 import { isEntityRoute, pageDescriptionKeyForPath, pageMetaI18nKey, pageTitleKeyForPath } from '~/utils/pageTitles'
 import { canonicalUrl, hreflangLinkTags, indexableLocaleCodes, isNoindexRoute, openGraphLocale } from '~/utils/seo'
 import { jsonLdScript, organizationJsonLd } from '~/utils/structuredData'
 import { formatPageTitle } from '~/utils/site'
-import { useHead, useRoute } from '#imports'
+import { useHead, useRoute, useRuntimeConfig } from '#imports'
 
 initializeGqlClient()
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const { t, locale } = useI18n()
 
 const canonical = computed(() => canonicalUrl(route.path))
@@ -46,7 +48,7 @@ useHead(() => {
     // Unhead's meta and link inputs are discriminated unions. A shared
     // `{ name?: string, property?: string }` element is not assignable to any
     // member, so each tag keeps its own literal shape.
-    const noindex = isNoindexRoute(route.path, route.query)
+    const noindex = isNoindexRoute(route.path, route.query, config.public.onlineClinic)
     const meta: Array<
       | { property: 'og:url' | 'og:locale' | 'og:locale:alternate' | 'og:description', content: string, key: string }
       | { name: 'robots' | 'description' | 'twitter:description', content: string, key: string }
@@ -73,7 +75,9 @@ useHead(() => {
     // Entity routes set their own title from the record. Omitting `title` lets that
     // win. A public route with no catalog key still sends '' so the brand fallback applies.
     let title: string | undefined
-    if (!isEntityRoute(route.path)) {
+    // Landings set their own title and share image. An empty catalog title here
+    // would replace both with the brand-only fallback.
+    if (!isEntityRoute(route.path) && !isClinicLandingPath(route.path)) {
         const key = pageTitleKeyForPath(route.path)
         title = key ? t(pageMetaI18nKey(key)) : ''
         const descriptionKey = pageDescriptionKeyForPath(route.path)

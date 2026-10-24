@@ -37,7 +37,15 @@ export function withLocaleAlternates<T extends { loc: string, lastmod?: string }
     })
 }
 
+/**
+ * Titled marketing paths. A published clinic page is added by the clinic-sites
+ * sitemap source, and only when that clinic's status is published.
+ */
+export function indexableMarketingPaths(): string[] {
+    return [...Object.values(PAGE_META_TITLE_ROUTES)]
+}
+
 /** Public indexable paths. The same exhaustive map as document titles, per locale. */
 export function publicSitemapUrls(): SitemapLocaleEntry[] {
-    return withLocaleAlternates(Object.values(PAGE_META_TITLE_ROUTES).map(loc => ({ loc })))
+    return withLocaleAlternates(indexableMarketingPaths().map(loc => ({ loc })))
 }

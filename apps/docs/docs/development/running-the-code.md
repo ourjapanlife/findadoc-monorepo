@@ -66,6 +66,40 @@ The moderation dashboard needs the local API:
 2. Go to `http://localhost:3000/login`
 3. Enter the username and password. Ask a core maintainer on Slack for credentials
 
+### Clinic landings
+
+A clinic that owns a page is a `clinic_sites` row, seeded from `apps/server/scripts/seed/clinicSiteContent.ts`. The first one is `/clinic/multilingual-online-clinic`. It has no facility id until the directory listing exists. Accounts will attach through `clinic_memberships`. Set `NUXT_PUBLIC_ONLINE_CLINIC` before starting the site, and run the API against a seeded database so the page can load.
+
+- `preview` keeps it a showcase. Open `/clinic/multilingual-online-clinic?preview=1` to store a cookie for 30 days. Without that cookie the URL is a 404, `noindex`, and left out of the sitemap. `?preview=0` clears the cookie.
+- `public` prerenders the clean link, adds it to the sitemap, and drops the cookie.
+
+The link to put on a poster is `/clinic/multilingual-online-clinic`. The directory address that ends in `--{id}` redirects there, and the preview image is that clinic’s icon. The footer is the Find a Doc logo and “Powered by Find a Doc, Japan”. The header uses the clinic’s stored brand color. The booking buttons do not go anywhere yet. The appointment flow will replace them. An admin of that hospital still edits the facility itself.
+
+The same page answers two hosts. Start the seeded site with the flag set:
+
+```bash
+NUXT_PUBLIC_ONLINE_CLINIC=preview pnpm dev:seeded
+```
+
+- Domain path: `http://127.0.0.1:3000/clinic/multilingual-online-clinic?preview=1`
+- Clinic hostname: `http://multilingual-online-clinic.localhost:3000/?preview=1`
+
+Browsers resolve `*.localhost` to this machine, so no hosts-file entry is required. The hostname root redirects to `/clinic/multilingual-online-clinic` and stays on that host. The preview cookie belongs to the host that set it, so each host needs its own `?preview=1`. `?preview=0` clears it on that host. With the flag unset, the hostname root is the normal home page and the path is a 404.
+
+`www`, `api`, `mcp`, `docs`, and `admin` are not clinic hosts. `admin` is reserved for a later staff site.
+
+The canonical URL stays `https://www.findadoc.jp/clinic/{slug}`. A clinic hostname is another door to that page.
+
+### Netlify and Route 53
+
+The DNS zone stays in Route 53. Do not change the nameservers.
+
+1. In the Netlify site, add the domain `*.findadoc.jp`.
+2. Netlify shows a certificate check record. Add that record in the same Route 53 zone.
+3. Add a CNAME named `*` whose target is the hostname Netlify shows for this site.
+
+`*` does not include `findadoc.jp` itself. Records that already exist for `www`, `api`, `mcp`, and `docs` are more specific than `*` and stay as they are. When the site moves off Netlify, change the target of that `*` record. The clinic slug does not change.
+
 ### Storybook
 
 ```bash

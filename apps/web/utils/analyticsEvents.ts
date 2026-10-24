@@ -131,7 +131,9 @@ export const eventCatalog = {
     'Submit completed': null,
     'Submit rejected': {
         reason: SUBMIT_REASON
-    }
+    },
+    // The appointment flow is not built yet. The button records the click and stays put.
+    'Clinic landing book': null
 } as const
 
 type Catalog = typeof eventCatalog

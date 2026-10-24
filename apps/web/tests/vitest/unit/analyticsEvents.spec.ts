@@ -78,6 +78,7 @@ describe('track', () => {
         track('Not found escaped', { to: 'search' })
         track('Submit completed')
         track('Submit rejected', { reason: 'validation' })
+        track('Clinic landing book')
 
         expect(sent.map(event => event.name)).to.deep.equal([
             'Search submitted',

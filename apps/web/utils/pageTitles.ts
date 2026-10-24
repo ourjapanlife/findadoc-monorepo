@@ -1,4 +1,5 @@
 import type enMessages from '../i18n/locales/en.json'
+import { isClinicLandingPath } from './clinicLanding'
 import { isGeographyHubRoute } from './hubPath'
 import { unlocalizedPath } from './localePath'
 
@@ -90,6 +91,11 @@ export function isUntitledRoute(path: string): boolean {
 
 export function isEntityRoute(path: string): boolean {
     const normalised = normalisePagePath(path)
+    // A clinic-owned landing lives under /clinic/{slug} and sets its own title,
+    // but it is a marketing page: every locale, not the English/Japanese directory set.
+    if (isClinicLandingPath(normalised)) {
+        return false
+    }
     if (ENTITY_ROUTE_PREFIXES.some(prefix => normalised === prefix || normalised.startsWith(`${prefix}/`))) {
         return true
     }

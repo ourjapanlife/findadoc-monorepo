@@ -66,6 +66,40 @@ pnpm dev
 2. `http://localhost:3000/login` にアクセス
 3. ユーザー名とパスワードを入力 — 認証情報はSlackでコアメンテナーにお問い合わせください
 
+### クリニックの独自ページ
+
+独自ページを持つクリニックは `clinic_sites` の1行で、種データは `apps/server/scripts/seed/clinicSiteContent.ts` です。最初のページは `/clinic/multilingual-online-clinic` です。ディレクトリの施設ができるまで、施設idは空です。アカウントは `clinic_memberships` で紐づけます。サイトを起動する前に `NUXT_PUBLIC_ONLINE_CLINIC` を設定し、ページを読むために種データを入れたAPIを起動します。
+
+- `preview` は関係者向けの公開です。`/clinic/multilingual-online-clinic?preview=1` を開くと、30日間有効なCookieが保存されます。CookieがないURLは404で、`noindex` になり、サイトマップにも入りません。`?preview=0` でCookieを消します。
+- `public` ではこの短いURLをプリレンダリングし、サイトマップに載せ、Cookieは不要になります。
+
+ポスターに載せるリンクは `/clinic/multilingual-online-clinic` です。`--{id}` で終わるディレクトリのURLはそこへ転送され、共有時の画像はそのクリニックのアイコンです。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけです。ヘッダーには、そのクリニックが保存したブランドカラーを使います。予約ボタンはまだどこにも飛びません。予約の流れはあとからこのボタンを置き換えます。病院の管理者は、これまでどおり施設そのものを編集します。
+
+同じページは2つのホストで開きます。フラグを付けて、種データ入りのサイトを起動します。
+
+```bash
+NUXT_PUBLIC_ONLINE_CLINIC=preview pnpm dev:seeded
+```
+
+- ドメインのパス: `http://127.0.0.1:3000/clinic/multilingual-online-clinic?preview=1`
+- クリニックのホスト名: `http://multilingual-online-clinic.localhost:3000/?preview=1`
+
+ブラウザは `*.localhost` をこのマシンに解決するので、hosts ファイルは要りません。ホスト名のルートは `/clinic/multilingual-online-clinic` へ転送され、ホスト名はそのままです。プレビューのCookieは、それを保存したホストにだけ付きます。それぞれのホストで `?preview=1` が必要です。`?preview=0` はそのホストのCookieを消します。フラグが無いときは、ホスト名のルートは通常のホームで、パスは404です。
+
+`www`、`api`、`mcp`、`docs`、`admin` はクリニックのホストではありません。`admin` は、このあと作るスタッフ用サイトのために空けてあります。
+
+正規URLは `https://www.findadoc.jp/clinic/{slug}` のままです。クリニックのホスト名は、そのページへの別の入口です。
+
+### Netlify と Route 53
+
+DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。
+
+1. Netlify のサイトにドメイン `*.findadoc.jp` を追加します。
+2. Netlify が証明書の確認用レコードを表示します。同じ Route 53 ゾーンにそのレコードを追加します。
+3. 名前が `*` の CNAME を追加し、向き先は Netlify がそのサイトに表示するホスト名にします。
+
+`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。サイトを Netlify から移すときは、その `*` レコードの向き先を変えます。クリニックのスラッグは変わりません。
+
 ### Storybook
 
 ```bash

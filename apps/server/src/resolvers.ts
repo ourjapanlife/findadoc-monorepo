@@ -10,6 +10,7 @@ import * as cityService from './services/cityService.js'
 import * as citySuggestionService from './services/citySuggestionService.js'
 import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
 import * as facilityPlaceService from './services/facilityPlaceService.js'
+import * as clinicSiteService from './services/clinicSiteService.js'
 import { Result } from './result.js'
 import { logger } from './logger.js'
 import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
@@ -34,6 +35,30 @@ const resolvers = {
                 jwtScopes,
                 effectiveScopes: getEffectiveScopes(user)
             }
+        },
+        clinicSite: async (_parent: unknown, args: { slug: string }, context: UserContext)
+        : Promise<gqlType.ClinicSite | null> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            return clinicSiteService.getClinicSiteBySlug(args.slug)
+        },
+        clinicSites: async (_parent: unknown, _args: unknown, context: UserContext)
+        : Promise<gqlType.ClinicSiteSummary[]> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            return clinicSiteService.listPublicClinicSites()
         },
         facility: async (_parent: gqlType.Facility, args: { id: string; }, context: UserContext,
             info: GraphQLResolveInfo)
