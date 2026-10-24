@@ -7,6 +7,7 @@ import {
     localizedPath,
     unlocalizedPath
 } from './localePath'
+import { clinicLandingMode, isClinicLandingPath } from './clinicLanding'
 import { isEntityRoute } from './pageTitles'
 import { SITE_ORIGIN, SITE_SITEMAP_URL } from './site'
 
@@ -17,7 +18,7 @@ import { SITE_ORIGIN, SITE_SITEMAP_URL } from './site'
  *
  * `/u` is a public profile and is intentionally not here.
  */
-export const ROBOTS_DISALLOW_PATHS = ['/moderation', '/my-page', '/login'] as const
+export const ROBOTS_DISALLOW_PATHS = ['/moderation', '/my-page', '/login', '/admin'] as const
 
 export const DEFAULT_OG_LOCALE = 'en_US'
 
@@ -59,6 +60,9 @@ export type HreflangAlternate = {
  * English and Japanese only, so hreflang must not advertise the rest.
  */
 export function indexableLocaleCodes(path: string): readonly string[] {
+    if (isClinicLandingPath(path)) {
+        return LOCALE_CODES
+    }
     return isEntityRoute(path) ? DIRECTORY_PRERENDER_LOCALE_CODES : LOCALE_CODES
 }
 
@@ -156,8 +160,17 @@ function queryFromPath(path: string): Record<string, string> | undefined {
     return search ? Object.fromEntries(new URLSearchParams(search)) : undefined
 }
 
-export function isNoindexRoute(path: string, query?: Record<string, unknown>): boolean {
+export function isNoindexRoute(
+    path: string,
+    query?: Record<string, unknown>,
+    onlineClinic?: string | null
+): boolean {
     const normalised = unlocalizedPath(normalisePagePath(path))
+    const clinicMode = clinicLandingMode(onlineClinic ?? process.env.NUXT_PUBLIC_ONLINE_CLINIC)
+    if (isClinicLandingPath(normalised) && clinicMode !== 'public') {
+        return true
+    }
+
     if (ROBOTS_DISALLOW_PATHS.some(
         prefix => normalised === prefix || normalised.startsWith(`${prefix}/`)
     )) {

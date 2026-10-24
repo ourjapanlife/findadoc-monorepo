@@ -1,5 +1,12 @@
 import pg from 'pg'
 import { seedData } from './data.js'
+import { clinicSiteSeeds } from './clinicSiteContent.js'
+import type {
+    ClinicSiteDoctorInsert,
+    ClinicSiteInsert,
+    ClinicSiteLanguageInsert,
+    ClinicSiteLocaleInsert
+} from './schema.js'
 
 const { Client } = pg
 
@@ -16,6 +23,11 @@ async function runSeed() {
 
     try {
         await client.query('BEGIN')
+        await client.query('DELETE FROM clinic_memberships')
+        await client.query('DELETE FROM clinic_site_locales')
+        await client.query('DELETE FROM clinic_site_doctors')
+        await client.query('DELETE FROM clinic_site_languages')
+        await client.query('DELETE FROM clinic_sites')
         await client.query('DELETE FROM "Reservation"')
         await client.query('DELETE FROM "ReservationSlot"')
         await client.query('DELETE FROM affiliation_memberships')
@@ -133,16 +145,119 @@ async function runSeed() {
             )
         }
 
+        const seededAt = new Date().toISOString()
+        for (const site of clinicSiteSeeds) {
+            const siteRow: ClinicSiteInsert = {
+                id: site.id,
+                facility_id: site.facility_id,
+                slug: site.slug,
+                status: site.status,
+                share_image_path: site.share_image_path,
+                hero_path: site.hero_path,
+                theme: JSON.stringify(site.theme),
+                created_date: seededAt,
+                updated_date: seededAt
+            }
+            await client.query(
+                `INSERT INTO clinic_sites (
+                    id, facility_id, slug, status, share_image_path, hero_path, theme,
+                    created_date, updated_date
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9)`,
+                [
+                    siteRow.id,
+                    siteRow.facility_id,
+                    siteRow.slug,
+                    siteRow.status,
+                    siteRow.share_image_path,
+                    siteRow.hero_path,
+                    siteRow.theme,
+                    siteRow.created_date,
+                    siteRow.updated_date
+                ]
+            )
+
+            for (const [index, language] of site.languages.entries()) {
+                const languageRow: ClinicSiteLanguageInsert = {
+                    clinic_site_id: site.id,
+                    sort_order: index,
+                    code: language.code,
+                    native_name: language.native,
+                    bcp47: language.bcp47
+                }
+                await client.query(
+                    `INSERT INTO clinic_site_languages (
+                        clinic_site_id, sort_order, code, native_name, bcp47
+                    ) VALUES ($1, $2, $3, $4, $5)`,
+                    [
+                        languageRow.clinic_site_id,
+                        languageRow.sort_order,
+                        languageRow.code,
+                        languageRow.native_name,
+                        languageRow.bcp47
+                    ]
+                )
+            }
+
+            for (const [index, doctor] of site.doctors.entries()) {
+                const doctorRow: ClinicSiteDoctorInsert = {
+                    clinic_site_id: site.id,
+                    sort_order: index,
+                    name_ja: doctor.nameJa,
+                    name_en: doctor.nameEn,
+                    image_path: doctor.image,
+                    object_position: doctor.position,
+                    hp_id: null
+                }
+                await client.query(
+                    `INSERT INTO clinic_site_doctors (
+                        clinic_site_id, sort_order, name_ja, name_en, image_path, object_position, hp_id
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [
+                        doctorRow.clinic_site_id,
+                        doctorRow.sort_order,
+                        doctorRow.name_ja,
+                        doctorRow.name_en,
+                        doctorRow.image_path,
+                        doctorRow.object_position,
+                        doctorRow.hp_id
+                    ]
+                )
+            }
+
+            for (const [locale, copy] of Object.entries(site.copy)) {
+                const localeRow: ClinicSiteLocaleInsert = {
+                    clinic_site_id: site.id,
+                    locale,
+                    name: copy.name,
+                    description: copy.description,
+                    document: JSON.stringify(copy)
+                }
+                await client.query(
+                    `INSERT INTO clinic_site_locales (
+                        clinic_site_id, locale, name, description, document
+                    ) VALUES ($1, $2, $3, $4, $5::jsonb)`,
+                    [
+                        localeRow.clinic_site_id,
+                        localeRow.locale,
+                        localeRow.name,
+                        localeRow.description,
+                        localeRow.document
+                    ]
+                )
+            }
+        }
+
         await client.query('COMMIT')
 
         const count = await client.query(`
             SELECT
                 (SELECT COUNT(*) FROM facilities) AS facilities,
                 (SELECT COUNT(*) FROM hps) AS hps,
-                (SELECT COUNT(*) FROM submissions) AS submissions
+                (SELECT COUNT(*) FROM submissions) AS submissions,
+                (SELECT COUNT(*) FROM clinic_sites) AS clinic_sites
         `)
         const row = count.rows[0]
-        console.log(`Seeded ${row.facilities} facilities, ${row.hps} healthcare professionals, and ${row.submissions} submissions`)
+        console.log(`Seeded ${row.facilities} facilities, ${row.hps} healthcare professionals, ${row.submissions} submissions, and ${row.clinic_sites} clinic sites`)
     } catch (error) {
         await client.query('ROLLBACK')
         console.error('Error seeding database:', error)

@@ -132,7 +132,6 @@
                     © {{ currentYear }} {{ t('footer.copyright') }}
                 </p>
                 <ThemeManager />
-                <!-- Hosting credit, deliberately the quietest thing here -->
                 <p class="m-0 text-xs">
                     {{ t('footer.poweredBy') }}
                     <NuxtLink

@@ -10,6 +10,8 @@ import * as cityService from './services/cityService.js'
 import * as citySuggestionService from './services/citySuggestionService.js'
 import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
 import * as facilityPlaceService from './services/facilityPlaceService.js'
+import * as clinicSiteService from './services/clinicSiteService.js'
+import * as facilityMembershipService from './services/facilityMembershipService.js'
 import { Result } from './result.js'
 import { logger } from './logger.js'
 import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
@@ -34,6 +36,30 @@ const resolvers = {
                 jwtScopes,
                 effectiveScopes: getEffectiveScopes(user)
             }
+        },
+        clinicSite: async (_parent: unknown, args: { slug: string }, context: UserContext)
+        : Promise<gqlType.ClinicSite | null> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            return clinicSiteService.getClinicSiteBySlug(args.slug)
+        },
+        clinicSites: async (_parent: unknown, _args: unknown, context: UserContext)
+        : Promise<gqlType.ClinicSiteSummary[]> => {
+            const isAuthorized = authorize(context.user, [Scope['read:facilities']])
+
+            if (!isAuthorized) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+
+            return clinicSiteService.listPublicClinicSites()
         },
         facility: async (_parent: gqlType.Facility, args: { id: string; }, context: UserContext,
             info: GraphQLResolveInfo)
@@ -677,6 +703,40 @@ const resolvers = {
             const createUserResult = await userService.createUser(args.input)
 
             return createUserResult.data
+        },
+        assignFacilityMember: async (
+            _parent: unknown,
+            args: { input: gqlType.AssignFacilityMemberInput },
+            context: UserContext
+        ): Promise<gqlType.AssignFacilityMemberPayload> => {
+            const platformStaff = authorize(context.user, [Scope['write:users']])
+            const role = args.input.role === 'OWNER' ? 'owner' : 'staff'
+            const result = await facilityMembershipService.assignFacilityMember({
+                facilityId: args.input.facilityId,
+                displayName: args.input.displayName,
+                role,
+                hpId: args.input.hpId,
+                userId: args.input.userId,
+                authSubject: args.input.authSubject
+            }, { sub: context.user.sub, platformStaff })
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        },
+        revokeFacilityMember: async (
+            _parent: unknown,
+            args: { facilityId: string, userId: string },
+            context: UserContext
+        ): Promise<gqlType.FacilityMembership> => {
+            const platformStaff = authorize(context.user, [Scope['write:users']])
+            const result = await facilityMembershipService.revokeFacilityMember(
+                args.facilityId,
+                args.userId,
+                { sub: context.user.sub, platformStaff }
+            )
+
+            convertErrorsToGqlErrors(result)
+            return result.data
         },
         updateUser: async (_parent: unknown, args: { id: string, input: gqlType.UpdateUserInput }, context: UserContext)
         : Promise<gqlType.User> => {

@@ -78,6 +78,7 @@ describe('track', () => {
         track('Not found escaped', { to: 'search' })
         track('Submit completed')
         track('Submit rejected', { reason: 'validation' })
+        track('Clinic landing book')
 
         expect(sent.map(event => event.name)).to.deep.equal([
             'Search submitted',
@@ -109,7 +110,8 @@ describe('track', () => {
             'Not found',
             'Not found escaped',
             'Submit completed',
-            'Submit rejected'
+            'Submit rejected',
+            'Clinic landing book'
         ])
         expect(sent.find(event => event.name === 'Filters opened')?.data).to.equal(undefined)
         expect(sent.find(event => event.name === 'Call clicked')?.data).to.deep.equal({ surface: 'clinic' })

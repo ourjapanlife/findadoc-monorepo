@@ -26,6 +26,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **認証**：Auth0（モデレーションダッシュボード用）
 - **地図**：Google Maps API（医療機関の位置表示）
 - **国際化**：Nuxt i18n（11言語対応）。クリニック、医師、ハブ、ファセットのページは英語と日本語でプリレンダリング
+- **クリニックの独自ページ**：独自ページは `clinic_sites` の1行。アカウント（`clinic_memberships`）と、これからのCRMが紐づくのはこのid。ディレクトリの施設は、市区町村が分かるまで空のままでよい。共有するURLは `/clinic/{slug}`。`{slug}.findadoc.jp` はそのホストの `/` でクリニックを開きます。正規URLは www のパスのままです。DNSは Route 53 のままです。ローカルの `pnpm dev` は preview が既定です。Generate と Netlify は、`NUXT_PUBLIC_ONLINE_CLINIC` が `preview`（Cookie）または `public` になるまでオフです。公開済みで、その行の状態も published のとき、検索に載るのはこの短いURL。`/clinic/{prefecture}/{city}/{slug}--{id}` はそこへ転送する。リンクのプレビュー画像はそのクリニックのアイコン。保存したテーマのプライマリ色は、そのページのヘッダーとボタンに使われる。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけ。`admin.findadoc.jp` はスタッフ用サイト（`NUXT_PUBLIC_ADMIN_SITE`、同じCookie、常に `noindex`）。病院の人は `facility_memberships`。基本プランは有効3席で、追加と解除は監査ログに残る。
 
 ### API（`apps/server`）
 
