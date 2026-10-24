@@ -1,4 +1,4 @@
-import { CLINIC_LANDING_LOCALE_PREFIXES, isStaticHostPath, type ClinicLandingMode } from './clinicLanding'
+import { CLINIC_LANDING_LOCALE_PREFIXES, isStaticHostPath, type ClinicLandingMode } from './clinicLanding.ts'
 
 /**
  * `admin.findadoc.jp` and `admin.localhost` are the staff site.

@@ -1,5 +1,5 @@
-import { graphqlEndpoint } from './graphqlEndpoint'
-import { clinicLandingPath, isClinicLandingPath, type HostedClinicRef } from './clinicLanding'
+import { graphqlEndpoint } from './graphqlEndpoint.ts'
+import { clinicLandingPath, isClinicLandingPath, type HostedClinicRef } from './clinicLanding.ts'
 
 const INDEX_QUERY = `query ClinicSites {
   clinicSites {
