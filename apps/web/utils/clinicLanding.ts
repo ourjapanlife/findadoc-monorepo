@@ -1,4 +1,4 @@
-import { SITE_ORIGIN } from './site'
+import { SITE_ORIGIN } from './site.ts'
 
 /**
  * Hosted clinic pages live in `clinic_sites`. This module only knows the URL

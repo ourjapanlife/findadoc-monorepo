@@ -77,7 +77,7 @@ function recorded(value: string | null): { user_id?: string, status?: string } {
     return typeof value === 'string' ? JSON.parse(value) : value
 }
 
-async function auditFor(actor: string, objectType: string) {
+async function auditFor(actor: string, objectType: ObjectType) {
     return db.selectFrom('audit_logs')
         .select(['action_type', 'object_type', 'new_value', 'old_value', 'updated_by'])
         .where('updated_by', '=', actor)
