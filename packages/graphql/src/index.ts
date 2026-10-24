@@ -75,6 +75,185 @@ export type CitySuggestion = {
   placeId: Scalars['String']['output'];
 };
 
+/**
+ * An account linked to a hosted clinic. Not returned by the public page query.
+ * A future CRM authorizes appointments and patients with this row.
+ */
+export type ClinicMembership = {
+  __typename?: 'ClinicMembership';
+  clinicSiteId: Scalars['ID']['output'];
+  createdDate: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  role: ClinicMembershipRole;
+  userId: Scalars['ID']['output'];
+};
+
+/** Role of an account on a hosted clinic. Owner manages the clinic. Staff uses the future CRM. */
+export enum ClinicMembershipRole {
+  Owner = 'OWNER',
+  Staff = 'STAFF'
+}
+
+/**
+ * A clinic-owned page. id is the id accounts and a future CRM attach to.
+ * facilityId is the directory listing, null until that facility exists.
+ */
+export type ClinicSite = {
+  __typename?: 'ClinicSite';
+  doctors: Array<ClinicSiteDoctor>;
+  facilityId?: Maybe<Scalars['ID']['output']>;
+  heroPath: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  languages: Array<ClinicSiteLanguage>;
+  locales: Array<ClinicSiteLocale>;
+  shareImagePath: Scalars['String']['output'];
+  slug: Scalars['String']['output'];
+  status: ClinicSiteStatus;
+  theme: ClinicSiteTheme;
+};
+
+export type ClinicSiteCase = {
+  __typename?: 'ClinicSiteCase';
+  detail: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+/**
+ * A doctor shown on the hosted page.
+ * hpId is the directory professional once that record exists.
+ */
+export type ClinicSiteDoctor = {
+  __typename?: 'ClinicSiteDoctor';
+  hpId?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
+  imagePath: Scalars['String']['output'];
+  nameEn: Scalars['String']['output'];
+  nameJa: Scalars['String']['output'];
+  objectPosition: Scalars['String']['output'];
+};
+
+export type ClinicSiteDoctorCopy = {
+  __typename?: 'ClinicSiteDoctorCopy';
+  alt: Scalars['String']['output'];
+  paragraphs: Array<Scalars['String']['output']>;
+  role: Scalars['String']['output'];
+  tag: Scalars['String']['output'];
+};
+
+/** A language the clinic consults in. This is not a site UI locale. */
+export type ClinicSiteLanguage = {
+  __typename?: 'ClinicSiteLanguage';
+  bcp47: Scalars['String']['output'];
+  code: Scalars['String']['output'];
+  native: Scalars['String']['output'];
+};
+
+/** The hosted page in one site locale. */
+export type ClinicSiteLocale = {
+  __typename?: 'ClinicSiteLocale';
+  about: Array<Scalars['String']['output']>;
+  aboutEyebrow: Scalars['String']['output'];
+  aboutTitle: Scalars['String']['output'];
+  badgeDetail: Scalars['String']['output'];
+  badgeTitle: Scalars['String']['output'];
+  book: Scalars['String']['output'];
+  bookEyebrow: Scalars['String']['output'];
+  bookLead: Scalars['String']['output'];
+  bookNote: Scalars['String']['output'];
+  bookTitle: Scalars['String']['output'];
+  cases: Array<ClinicSiteCase>;
+  casesEyebrow: Scalars['String']['output'];
+  casesLead: Scalars['String']['output'];
+  casesTitle: Scalars['String']['output'];
+  ctaButton: Scalars['String']['output'];
+  ctaLead: Scalars['String']['output'];
+  ctaTitle: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  doctorCopy: Array<ClinicSiteDoctorCopy>;
+  doctorsEyebrow: Scalars['String']['output'];
+  doctorsTitle: Scalars['String']['output'];
+  emergency: Scalars['String']['output'];
+  fees: Array<Scalars['String']['output']>;
+  feesEyebrow: Scalars['String']['output'];
+  feesLead: Scalars['String']['output'];
+  feesLink: Scalars['String']['output'];
+  feesTitle: Scalars['String']['output'];
+  flowEyebrow: Scalars['String']['output'];
+  flowTitle: Scalars['String']['output'];
+  heroAlt: Scalars['String']['output'];
+  heroBadge: Scalars['String']['output'];
+  heroLead: Scalars['String']['output'];
+  heroNote: Scalars['String']['output'];
+  heroTitleBefore: Scalars['String']['output'];
+  heroTitleHighlight: Scalars['String']['output'];
+  highlights: Array<Scalars['String']['output']>;
+  includedLabel: Scalars['String']['output'];
+  locale: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  navCases: Scalars['String']['output'];
+  navDoctors: Scalars['String']['output'];
+  navFees: Scalars['String']['output'];
+  navFlow: Scalars['String']['output'];
+  noticeEyebrow: Scalars['String']['output'];
+  noticeLead: Scalars['String']['output'];
+  noticeTitle: Scalars['String']['output'];
+  notices: Array<ClinicSiteNotice>;
+  plans: Array<ClinicSitePlan>;
+  rangeLabel: Scalars['String']['output'];
+  referralNote: Scalars['String']['output'];
+  sectionNavLabel: Scalars['String']['output'];
+  seeFees: Scalars['String']['output'];
+  steps: Array<ClinicSiteStep>;
+};
+
+export type ClinicSiteNotice = {
+  __typename?: 'ClinicSiteNotice';
+  detail: Scalars['String']['output'];
+  feesLink?: Maybe<Scalars['Boolean']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type ClinicSitePlan = {
+  __typename?: 'ClinicSitePlan';
+  amount: Scalars['String']['output'];
+  note: Scalars['String']['output'];
+};
+
+/**
+ * Whether a hosted clinic page is a draft, a showcase, or published.
+ * Drafts are hidden from the public queries.
+ */
+export enum ClinicSiteStatus {
+  Draft = 'DRAFT',
+  Preview = 'PREVIEW',
+  Published = 'PUBLISHED'
+}
+
+export type ClinicSiteStep = {
+  __typename?: 'ClinicSiteStep';
+  detail: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+/** Enough of a hosted clinic to redirect its directory address to the clean link. */
+export type ClinicSiteSummary = {
+  __typename?: 'ClinicSiteSummary';
+  facilityId?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
+  shareImagePath: Scalars['String']['output'];
+  slug: Scalars['String']['output'];
+  status: ClinicSiteStatus;
+};
+
+/**
+ * Brand color for a hosted clinic. A later picker writes `primary`.
+ * The page turns it into the theme primary. Null keeps the Find a Doc primary.
+ */
+export type ClinicSiteTheme = {
+  __typename?: 'ClinicSiteTheme';
+  primary?: Maybe<Scalars['String']['output']>;
+};
+
 /** Contact information for a facility. */
 export type Contact = {
   __typename?: 'Contact';
@@ -868,6 +1047,10 @@ export type Query = {
   cities: Array<City>;
   /** Facilities published under one city. Unresolved locations are excluded. */
   cityFacilities: Array<Facility>;
+  /** A hosted clinic page. Drafts are null. The clean link is /clinic/{slug}. */
+  clinicSite?: Maybe<ClinicSite>;
+  /** Hosted clinics that are in preview or published. Drafts are omitted. */
+  clinicSites: Array<ClinicSiteSummary>;
   /** Roles and effective API scopes for the authenticated user (always allowed when a user context exists). */
   currentUserAccess: CurrentUserAccess;
   /** Search for facilities matching the given filters. Returns an empty list if no matches. */
@@ -938,6 +1121,11 @@ export type QueryCitiesArgs = {
 export type QueryCityFacilitiesArgs = {
   citySlug: Scalars['String']['input'];
   prefecture: Scalars['String']['input'];
+};
+
+
+export type QueryClinicSiteArgs = {
+  slug: Scalars['String']['input'];
 };
 
 
@@ -1414,6 +1602,20 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   City: ResolverTypeWrapper<City>;
   CitySuggestion: ResolverTypeWrapper<CitySuggestion>;
+  ClinicMembership: ResolverTypeWrapper<ClinicMembership>;
+  ClinicMembershipRole: ClinicMembershipRole;
+  ClinicSite: ResolverTypeWrapper<ClinicSite>;
+  ClinicSiteCase: ResolverTypeWrapper<ClinicSiteCase>;
+  ClinicSiteDoctor: ResolverTypeWrapper<ClinicSiteDoctor>;
+  ClinicSiteDoctorCopy: ResolverTypeWrapper<ClinicSiteDoctorCopy>;
+  ClinicSiteLanguage: ResolverTypeWrapper<ClinicSiteLanguage>;
+  ClinicSiteLocale: ResolverTypeWrapper<ClinicSiteLocale>;
+  ClinicSiteNotice: ResolverTypeWrapper<ClinicSiteNotice>;
+  ClinicSitePlan: ResolverTypeWrapper<ClinicSitePlan>;
+  ClinicSiteStatus: ClinicSiteStatus;
+  ClinicSiteStep: ResolverTypeWrapper<ClinicSiteStep>;
+  ClinicSiteSummary: ResolverTypeWrapper<ClinicSiteSummary>;
+  ClinicSiteTheme: ResolverTypeWrapper<ClinicSiteTheme>;
   Contact: ResolverTypeWrapper<Contact>;
   ContactInput: ContactInput;
   CreateFacilityInput: CreateFacilityInput;
@@ -1478,6 +1680,18 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   City: City;
   CitySuggestion: CitySuggestion;
+  ClinicMembership: ClinicMembership;
+  ClinicSite: ClinicSite;
+  ClinicSiteCase: ClinicSiteCase;
+  ClinicSiteDoctor: ClinicSiteDoctor;
+  ClinicSiteDoctorCopy: ClinicSiteDoctorCopy;
+  ClinicSiteLanguage: ClinicSiteLanguage;
+  ClinicSiteLocale: ClinicSiteLocale;
+  ClinicSiteNotice: ClinicSiteNotice;
+  ClinicSitePlan: ClinicSitePlan;
+  ClinicSiteStep: ClinicSiteStep;
+  ClinicSiteSummary: ClinicSiteSummary;
+  ClinicSiteTheme: ClinicSiteTheme;
   Contact: Contact;
   ContactInput: ContactInput;
   CreateFacilityInput: CreateFacilityInput;
@@ -1546,6 +1760,138 @@ export type CitySuggestionResolvers<ContextType = any, ParentType extends Resolv
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   placeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicMembershipResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicMembership'] = ResolversParentTypes['ClinicMembership']> = {
+  clinicSiteId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['ClinicMembershipRole'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type ClinicSiteResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSite'] = ResolversParentTypes['ClinicSite']> = {
+  doctors?: Resolver<Array<ResolversTypes['ClinicSiteDoctor']>, ParentType, ContextType>;
+  facilityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  heroPath?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  languages?: Resolver<Array<ResolversTypes['ClinicSiteLanguage']>, ParentType, ContextType>;
+  locales?: Resolver<Array<ResolversTypes['ClinicSiteLocale']>, ParentType, ContextType>;
+  shareImagePath?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['ClinicSiteStatus'], ParentType, ContextType>;
+  theme?: Resolver<ResolversTypes['ClinicSiteTheme'], ParentType, ContextType>;
+};
+
+export type ClinicSiteCaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteCase'] = ResolversParentTypes['ClinicSiteCase']> = {
+  detail?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicSiteDoctorResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteDoctor'] = ResolversParentTypes['ClinicSiteDoctor']> = {
+  hpId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  imagePath?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  objectPosition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicSiteDoctorCopyResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteDoctorCopy'] = ResolversParentTypes['ClinicSiteDoctorCopy']> = {
+  alt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  paragraphs?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicSiteLanguageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteLanguage'] = ResolversParentTypes['ClinicSiteLanguage']> = {
+  bcp47?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  native?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicSiteLocaleResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteLocale'] = ResolversParentTypes['ClinicSiteLocale']> = {
+  about?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  aboutEyebrow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  aboutTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  badgeDetail?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  badgeTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  book?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  bookEyebrow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  bookLead?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  bookNote?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  bookTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  cases?: Resolver<Array<ResolversTypes['ClinicSiteCase']>, ParentType, ContextType>;
+  casesEyebrow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  casesLead?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  casesTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ctaButton?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ctaLead?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ctaTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  doctorCopy?: Resolver<Array<ResolversTypes['ClinicSiteDoctorCopy']>, ParentType, ContextType>;
+  doctorsEyebrow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  doctorsTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  emergency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fees?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  feesEyebrow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feesLead?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feesLink?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feesTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  flowEyebrow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  flowTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  heroAlt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  heroBadge?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  heroLead?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  heroNote?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  heroTitleBefore?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  heroTitleHighlight?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  highlights?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  includedLabel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  navCases?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  navDoctors?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  navFees?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  navFlow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  noticeEyebrow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  noticeLead?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  noticeTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  notices?: Resolver<Array<ResolversTypes['ClinicSiteNotice']>, ParentType, ContextType>;
+  plans?: Resolver<Array<ResolversTypes['ClinicSitePlan']>, ParentType, ContextType>;
+  rangeLabel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  referralNote?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sectionNavLabel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  seeFees?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  steps?: Resolver<Array<ResolversTypes['ClinicSiteStep']>, ParentType, ContextType>;
+};
+
+export type ClinicSiteNoticeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteNotice'] = ResolversParentTypes['ClinicSiteNotice']> = {
+  detail?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feesLink?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicSitePlanResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSitePlan'] = ResolversParentTypes['ClinicSitePlan']> = {
+  amount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  note?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicSiteStepResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteStep'] = ResolversParentTypes['ClinicSiteStep']> = {
+  detail?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicSiteSummaryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteSummary'] = ResolversParentTypes['ClinicSiteSummary']> = {
+  facilityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  shareImagePath?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['ClinicSiteStatus'], ParentType, ContextType>;
+};
+
+export type ClinicSiteThemeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteTheme'] = ResolversParentTypes['ClinicSiteTheme']> = {
+  primary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = {
@@ -1691,6 +2037,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   auditLog?: Resolver<Maybe<ResolversTypes['AuditLog']>, ParentType, ContextType, Partial<QueryAuditLogArgs>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, Partial<QueryCitiesArgs>>;
   cityFacilities?: Resolver<Array<ResolversTypes['Facility']>, ParentType, ContextType, RequireFields<QueryCityFacilitiesArgs, 'citySlug' | 'prefecture'>>;
+  clinicSite?: Resolver<Maybe<ResolversTypes['ClinicSite']>, ParentType, ContextType, RequireFields<QueryClinicSiteArgs, 'slug'>>;
+  clinicSites?: Resolver<Array<ResolversTypes['ClinicSiteSummary']>, ParentType, ContextType>;
   currentUserAccess?: Resolver<ResolversTypes['CurrentUserAccess'], ParentType, ContextType>;
   facilities?: Resolver<Array<ResolversTypes['Facility']>, ParentType, ContextType, RequireFields<QueryFacilitiesArgs, 'filters'>>;
   facilitiesTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<QueryFacilitiesTotalCountArgs, 'filters'>>;
@@ -1747,6 +2095,18 @@ export type Resolvers<ContextType = any> = {
   AuditLog?: AuditLogResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   CitySuggestion?: CitySuggestionResolvers<ContextType>;
+  ClinicMembership?: ClinicMembershipResolvers<ContextType>;
+  ClinicSite?: ClinicSiteResolvers<ContextType>;
+  ClinicSiteCase?: ClinicSiteCaseResolvers<ContextType>;
+  ClinicSiteDoctor?: ClinicSiteDoctorResolvers<ContextType>;
+  ClinicSiteDoctorCopy?: ClinicSiteDoctorCopyResolvers<ContextType>;
+  ClinicSiteLanguage?: ClinicSiteLanguageResolvers<ContextType>;
+  ClinicSiteLocale?: ClinicSiteLocaleResolvers<ContextType>;
+  ClinicSiteNotice?: ClinicSiteNoticeResolvers<ContextType>;
+  ClinicSitePlan?: ClinicSitePlanResolvers<ContextType>;
+  ClinicSiteStep?: ClinicSiteStepResolvers<ContextType>;
+  ClinicSiteSummary?: ClinicSiteSummaryResolvers<ContextType>;
+  ClinicSiteTheme?: ClinicSiteThemeResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   CurrentUserAccess?: CurrentUserAccessResolvers<ContextType>;
   DeleteResult?: DeleteResultResolvers<ContextType>;

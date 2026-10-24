@@ -1,8 +1,7 @@
 import { expect } from 'chai'
 import { DIRECTORY_PRERENDER_LOCALE_CODES, LOCALE_CODES, localizedPath, unlocalizedPath } from '@/utils/localePath'
-import { PAGE_META_TITLE_ROUTES } from '@/utils/pageTitles'
 import { hreflangAlternates, isNoindexRoute, ROBOTS_DISALLOW_PATHS } from '@/utils/seo'
-import { publicSitemapUrls, SITEMAP_EXCLUDE } from '@/utils/sitemap'
+import { indexableMarketingPaths, publicSitemapUrls, SITEMAP_EXCLUDE } from '@/utils/sitemap'
 import {
     collectPagedRows,
     directoryKindsToFetch,
@@ -26,7 +25,7 @@ describe('publicSitemapUrls', () => {
         const urls = publicSitemapUrls()
         const locs = defaultLocaleEntries(urls).map(entry => entry.loc)
 
-        expect(locs.sort()).to.deep.equal(Object.values(PAGE_META_TITLE_ROUTES).slice().sort())
+        expect(locs.sort()).to.deep.equal(indexableMarketingPaths().slice().sort())
         expect(urls).to.have.length(locs.length * LOCALE_CODES.length)
         for (const loc of urls.map(entry => entry.loc)) {
             expect(isNoindexRoute(loc), loc).to.equal(false)

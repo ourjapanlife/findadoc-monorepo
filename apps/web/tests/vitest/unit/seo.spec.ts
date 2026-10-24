@@ -94,6 +94,11 @@ describe('isNoindexRoute', () => {
         expect(isNoindexRoute('/zh-CN/clinic/tokyo/shibuya/clinic--abc')).to.equal(true)
         expect(isNoindexRoute('/zh-CN/tokyo')).to.equal(true)
         expect(isNoindexRoute('/zh-CN/about')).to.equal(false)
+        expect(isNoindexRoute('/clinic/multilingual-online-clinic')).to.equal(true)
+        expect(isNoindexRoute('/ja-JP/clinic/multilingual-online-clinic')).to.equal(true)
+        expect(isNoindexRoute('/clinic/multilingual-online-clinic', undefined, 'public')).to.equal(false)
+        expect(isNoindexRoute('/ja-JP/clinic/multilingual-online-clinic', undefined, 'preview')).to.equal(true)
+        expect(isNoindexRoute('/clinic/tokyo/minato/other--abc')).to.equal(false)
     })
 })
 

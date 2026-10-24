@@ -26,6 +26,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 - **Auth**: Auth0 (used for the moderation dashboard)
 - **Maps**: Google Maps API for provider locations
 - **i18n**: Nuxt i18n supporting 11 languages. Clinic, doctor, hub, and facet pages are prerendered in English and Japanese
+- **Clinic landings**: a hosted page is a `clinic_sites` row. That id is what an account (`clinic_memberships`) and a future CRM attach to. The directory facility stays optional until the city is known. The clean link is `/clinic/{slug}`. `{slug}.findadoc.jp` redirects to that path and is not a second canonical. DNS stays in Route 53. When public and the row is published, search indexes that link. `/clinic/{prefecture}/{city}/{slug}--{id}` redirects to it. The link preview uses the clinic’s icon. A stored theme primary recolors that page’s header and buttons. The footer is the Find a Doc logo and “Powered by Find a Doc, Japan”. `NUXT_PUBLIC_ONLINE_CLINIC` is `preview` (cookie) or `public`
 
 ### API (`apps/server`)
 

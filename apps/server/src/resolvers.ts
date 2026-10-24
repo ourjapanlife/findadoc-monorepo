@@ -10,6 +10,7 @@ import * as cityService from './services/cityService.js'
 import * as citySuggestionService from './services/citySuggestionService.js'
 import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
 import * as facilityPlaceService from './services/facilityPlaceService.js'
+import * as clinicSiteService from './services/clinicSiteService.js'
 import { Result } from './result.js'
 import { logger } from './logger.js'
 import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
@@ -29,6 +30,14 @@ const resolvers = {
                 effectiveScopes: getEffectiveScopes(user)
             }
         },
+        clinicSite: withScope(Scope['read:facilities'], async (_parent: unknown, args: { slug: string })
+        : Promise<gqlType.ClinicSite | null> => {
+            return clinicSiteService.getClinicSiteBySlug(args.slug)
+        }),
+        clinicSites: withScope(Scope['read:facilities'], async ()
+        : Promise<gqlType.ClinicSiteSummary[]> => {
+            return clinicSiteService.listPublicClinicSites()
+        }),
         facility: withScope(Scope['read:facilities'], async (_parent: unknown, args: { id: string; })
         : Promise<FacilityParent> => {
             const queryResults = await facilityService.getFacilityById(args.id)
