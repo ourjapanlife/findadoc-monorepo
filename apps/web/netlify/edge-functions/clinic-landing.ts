@@ -2,10 +2,12 @@ import { graphqlEndpoint } from '../../utils/graphqlEndpoint.ts'
 import {
     clinicHostLandingTarget,
     clinicLandingAccess,
+    clinicLandingHostSlug,
     clinicLandingMode,
     clinicLandingPreviewCookie,
     clinicLandingPreviewCookieHeader,
-    clinicLandingRedirectTarget
+    clinicLandingRedirectTarget,
+    isClinicHostPage
 } from '../../utils/clinicLanding.ts'
 import { hostedClinicForPath, hostedClinicIndex } from '../../utils/hostedClinicIndex.ts'
 
@@ -38,6 +40,34 @@ export default async function clinicLanding(request: Request, context: EdgeConte
             headers.append('set-cookie', clinicLandingPreviewCookieHeader(url.protocol === 'https:'))
         }
         return new Response(null, { status: 301, headers })
+    }
+
+    // The hostname root is the clinic. Rewriting to the SPA shell keeps `/`
+    // and skips the prerendered home page, which lives at that same path.
+    if (clinicLandingHostSlug(url.hostname) && mode !== 'off' && isClinicHostPage(url.pathname)) {
+        const access = clinicLandingAccess(
+            mode,
+            url.searchParams.get('preview'),
+            clinicLandingPreviewCookie(request.headers.get('cookie'))
+        )
+        if (access === 'deny' || access === 'revoke') {
+            const notFound = await context.rewrite('/404.html')
+            const headers = new Headers(notFound.headers)
+            headers.set('cache-control', 'private, no-store')
+            if (access === 'revoke') {
+                headers.append('set-cookie', clinicLandingPreviewCookieHeader(url.protocol === 'https:', true))
+            }
+            return new Response(notFound.body, { status: 404, headers })
+        }
+
+        const spa = await context.rewrite('/200.html')
+        const headers = new Headers(spa.headers)
+        headers.set('cache-control', 'private, no-store')
+        headers.set('vary', 'Cookie')
+        if (access === 'grant') {
+            headers.append('set-cookie', clinicLandingPreviewCookieHeader(url.protocol === 'https:'))
+        }
+        return new Response(spa.body, { status: spa.status, headers })
     }
 
     if (!url.pathname.includes('/clinic/')) {

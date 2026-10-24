@@ -136,6 +136,40 @@ export interface SubmissionsTable {
 }
 
 /**
+ * A login account. auth_subject is the Auth0 subject, empty until that person signs in.
+ */
+export interface UsersTable {
+    id: Generated<string>
+    display_name: string | null
+    profile_pic_url: string | null
+    auth_subject: string | null
+    created_date: Generated<string>
+    updated_date: string | null
+}
+
+/** The hospital's plan. Basic is three active seats. */
+export interface FacilitySubscriptionsTable {
+    facility_id: string
+    plan: string
+    seat_limit: number
+    created_date: Generated<string>
+    updated_date: string
+}
+
+/** One person at one hospital. Revoked rows stay and do not count as seats. */
+export interface FacilityMembershipsTable {
+    id: Generated<string>
+    facility_id: string
+    user_id: string
+    hp_id: string | null
+    role: string
+    status: string
+    created_date: Generated<string>
+    updated_date: string
+    revoked_date: string | null
+}
+
+/**
  * Audit Logs Table
  */
 export interface AuditLogsTable {
@@ -147,17 +181,6 @@ export interface AuditLogsTable {
     old_value: string | null
     updated_by: string
     updated_date: Generated<string>
-}
-
-/**
- * User Table
- */
-export interface UserTable {
-    id: Generated<string>
-    created_date: Generated<string>
-    updated_date: string | null
-    display_name: string | null
-    profile_pic_url: string | null
 }
 
 /**
@@ -226,7 +249,9 @@ export interface Database {
     hps_facilities: HpsFacilitiesTable
     submissions: SubmissionsTable
     audit_logs: AuditLogsTable
-    user: UserTable
+    user: UsersTable
+    facility_subscriptions: FacilitySubscriptionsTable
+    facility_memberships: FacilityMembershipsTable
     clinic_sites: ClinicSitesTable
     clinic_memberships: ClinicMembershipsTable
     clinic_site_languages: ClinicSiteLanguagesTable
@@ -238,7 +263,7 @@ export interface Database {
  * Enums from the database
  */
 export type ActionTypeEnum = 'CREATE' | 'UPDATE' | 'DELETE'
-export type ObjectTypeEnum = 'Facility' | 'HealthcareProfessional' | 'Submission'
+export type ObjectTypeEnum = 'Facility' | 'HealthcareProfessional' | 'Submission' | 'User' | 'FacilityMembership'
 export type SchemaVersionEnum = 'V1'
 export type SubmissionStatusEnum = 'pending' | 'under_review' | 'approved' | 'rejected'
 

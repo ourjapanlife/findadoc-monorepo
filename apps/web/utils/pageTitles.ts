@@ -50,7 +50,7 @@ const PAGE_META_DESCRIPTION_KEYS = {
  * fallback from `formatPageTitle`. `/login` is here because it is an Auth0
  * interstitial (ssr: false, not prerendered, not in the sitemap) — not a search result.
  */
-const UNTITLED_ROUTE_PREFIXES = ['/my-page', '/u', '/login', '/404'] as const
+const UNTITLED_ROUTE_PREFIXES = ['/my-page', '/u', '/login', '/404', '/admin'] as const
 
 /**
  * Directory entity pages set their own `<title>` from the record. They are not

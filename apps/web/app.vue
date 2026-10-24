@@ -1,5 +1,11 @@
 <template>
-    <NuxtLayout>
+    <NuxtLayout
+        v-if="hostedClinicSlug"
+        name="clinic-landing"
+    >
+        <ClinicHostLanding />
+    </NuxtLayout>
+    <NuxtLayout v-else>
         <NuxtPage />
     </NuxtLayout>
     <!--
@@ -22,20 +28,47 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { initializeGqlClient } from './utils/graphql.js'
-import { isClinicLandingPath } from '~/utils/clinicLanding'
+import ClinicHostLanding from '~/pages/clinic/[slug].vue'
+import { isAdminPath } from '~/utils/adminSite'
+import {
+    clinicLandingHostSlug,
+    clinicLandingMode,
+    clinicLandingPath,
+    isClinicHostPage,
+    isClinicLandingPath
+} from '~/utils/clinicLanding'
+import { localizedPath } from '~/utils/localePath'
 import { isEntityRoute, pageDescriptionKeyForPath, pageMetaI18nKey, pageTitleKeyForPath } from '~/utils/pageTitles'
 import { canonicalUrl, hreflangLinkTags, indexableLocaleCodes, isNoindexRoute, openGraphLocale } from '~/utils/seo'
 import { jsonLdScript, organizationJsonLd } from '~/utils/structuredData'
 import { formatPageTitle } from '~/utils/site'
-import { useHead, useRoute, useRuntimeConfig } from '#imports'
+import { useHead, useRequestURL, useRoute, useRuntimeConfig } from '#imports'
 
 initializeGqlClient()
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const requestUrl = useRequestURL()
 const { t, locale } = useI18n()
 
-const canonical = computed(() => canonicalUrl(route.path))
+const hostedClinicSlug = computed(() => {
+    const host = import.meta.server ? requestUrl.hostname : window.location.hostname
+    if (clinicLandingMode(config.public.onlineClinic) === 'off') {
+        return undefined
+    }
+    if (!isClinicHostPage(route.path)) {
+        return undefined
+    }
+    return clinicLandingHostSlug(host)
+})
+
+const canonical = computed(() => {
+    const slug = hostedClinicSlug.value
+    if (slug) {
+        return canonicalUrl(localizedPath(clinicLandingPath(slug), String(locale.value)))
+    }
+    return canonicalUrl(route.path)
+})
 
 // Titles live in PAGE_META_TITLE_ROUTES, not in each page, so a missing public
 // route is a type/test failure instead of a forgotten useHead. Canonical, og:url,
@@ -48,7 +81,9 @@ useHead(() => {
     // Unhead's meta and link inputs are discriminated unions. A shared
     // `{ name?: string, property?: string }` element is not assignable to any
     // member, so each tag keeps its own literal shape.
-    const noindex = isNoindexRoute(route.path, route.query, config.public.onlineClinic)
+    const noindex = hostedClinicSlug.value
+        ? isNoindexRoute(clinicLandingPath(hostedClinicSlug.value), route.query, config.public.onlineClinic)
+        : isNoindexRoute(route.path, route.query, config.public.onlineClinic)
     const meta: Array<
       | { property: 'og:url' | 'og:locale' | 'og:locale:alternate' | 'og:description', content: string, key: string }
       | { name: 'robots' | 'description' | 'twitter:description', content: string, key: string }
@@ -77,7 +112,7 @@ useHead(() => {
     let title: string | undefined
     // Landings set their own title and share image. An empty catalog title here
     // would replace both with the brand-only fallback.
-    if (!isEntityRoute(route.path) && !isClinicLandingPath(route.path)) {
+    if (!hostedClinicSlug.value && !isEntityRoute(route.path) && !isClinicLandingPath(route.path) && !isAdminPath(route.path)) {
         const key = pageTitleKeyForPath(route.path)
         title = key ? t(pageMetaI18nKey(key)) : ''
         const descriptionKey = pageDescriptionKeyForPath(route.path)

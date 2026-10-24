@@ -3,7 +3,7 @@ import i18nLocales from './i18n'
 import tailwindcss from '@tailwindcss/vite'
 import { VIEWPORT_BREAKPOINTS, VIEWPORT_FALLBACK_BREAKPOINT } from './utils/viewport'
 import { withLocaleVariants } from './utils/localePath'
-import { clinicLandingsArePublic } from './utils/clinicLanding'
+import { clinicLandingsArePublic, hostedPreviewValue } from './utils/clinicLanding'
 import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
@@ -176,7 +176,16 @@ export default defineNuxtConfig({
 
             NUXT_USE_LOCAL_API: process.env.NUXT_USE_LOCAL_API,
 
-            onlineClinic: process.env.NUXT_PUBLIC_ONLINE_CLINIC,
+            // `pnpm dev` is preview when the variable is unset. Generate stays off.
+            onlineClinic: hostedPreviewValue(
+                process.env.NUXT_PUBLIC_ONLINE_CLINIC,
+                process.env.NODE_ENV === 'development'
+            ),
+
+            adminSite: hostedPreviewValue(
+                process.env.NUXT_PUBLIC_ADMIN_SITE,
+                process.env.NODE_ENV === 'development'
+            ),
 
             sentry: {
                 dsn: process.env.NUXT_PUBLIC_SENTRY_DSN,
@@ -212,6 +221,8 @@ export default defineNuxtConfig({
          */
         '/search': { ssr: false },
         '/login': { ssr: false },
+        '/admin': { ssr: false },
+        '/:locale/admin': { ssr: false },
         '/my-page': { ssr: false },
         '/my-page/**': { ssr: false },
         // prefix_except_default: the same SPA surfaces under /ja-JP/search and so on.

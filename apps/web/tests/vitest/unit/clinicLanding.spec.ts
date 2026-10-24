@@ -10,6 +10,7 @@ import {
     clinicLandingHostSlug,
     clinicLandingMode,
     clinicLandingPath,
+    hostedPreviewValue,
     clinicLandingPreviewCookie,
     clinicLandingRedirectTarget,
     clinicLandingShareImage,
@@ -45,11 +46,17 @@ describe('clinic landings', () => {
         expect(clinicLandingHostSlug('docs.findadoc.jp')).to.equal(undefined)
         expect(clinicLandingHostSlug('admin.findadoc.jp')).to.equal(undefined)
         expect(clinicLandingHostSlug('findadoc.jp')).to.equal(undefined)
-        expect(clinicHostLandingTarget(`${slug}.localhost`, '/', 'preview')).to.equal(clean)
-        expect(clinicHostLandingTarget(`${slug}.findadoc.jp`, '/ja-JP', 'public')).to.equal(`/ja-JP${clean}`)
-        expect(clinicHostLandingTarget(`${slug}.localhost`, clean, 'preview')).to.equal(undefined)
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/', 'preview')).to.equal(undefined)
+        expect(clinicHostLandingTarget(`${slug}.findadoc.jp`, '/ja-JP', 'public')).to.equal(undefined)
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/submit', 'preview')).to.equal('/')
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/ja-JP/submit', 'preview')).to.equal('/ja-JP')
+        expect(clinicHostLandingTarget(`${slug}.localhost`, clean, 'preview')).to.equal('/')
+        expect(clinicHostLandingTarget(`${slug}.localhost`, `/ja-JP${clean}`, 'preview')).to.equal('/ja-JP')
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/favicon.ico', 'preview')).to.equal(undefined)
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/_nuxt/entry.js', 'preview')).to.equal(undefined)
         expect(clinicHostLandingTarget('www.findadoc.jp', '/', 'preview')).to.equal(undefined)
         expect(clinicHostLandingTarget(`${slug}.localhost`, '/', 'off')).to.equal(undefined)
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/submit', 'off')).to.equal(undefined)
     })
 
     it('keeps locale prefixes aligned with the site catalog', () => {
@@ -80,6 +87,11 @@ describe('clinic landings', () => {
 
     it('stays a 404 until preview grants a cookie, and public skips the cookie', () => {
         expect(clinicLandingMode(undefined)).to.equal('off')
+        expect(clinicLandingMode('off')).to.equal('off')
+        expect(hostedPreviewValue(undefined, true)).to.equal('preview')
+        expect(hostedPreviewValue(undefined, false)).to.equal(undefined)
+        expect(hostedPreviewValue('off', true)).to.equal('off')
+        expect(hostedPreviewValue('public', false)).to.equal('public')
         expect(clinicLandingMode('true')).to.equal('preview')
         expect(clinicLandingMode('public')).to.equal('public')
         expect(clinicLandingAccess('off', '1', '1')).to.equal('deny')
