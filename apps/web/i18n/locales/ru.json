@@ -622,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "К поиску",
     "metaDescription": "{name} в {city}, {prefecture}. Адрес, телефон и языки персонала.",
+    "onlineBreadcrumb": "Онлайн",
+    "onlineMetaDescription": "{name}. Онлайн-учреждение без уличного адреса. Телефон и языки персонала.",
     "locationNav": "Место",
     "relatedSpecialtiesHeading": "Просмотр по специальности",
     "relatedLanguagesHeading": "Просмотр по языку"

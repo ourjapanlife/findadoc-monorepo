@@ -11,6 +11,7 @@ export type ExistingFacilityMatch = {
     googleMapsUrl: string
     mapLatitude: number
     mapLongitude: number
+    online?: boolean
 }
 
 const facilityByGooglePlaceIdQuery = gql`
@@ -26,6 +27,7 @@ type FacilityByPlaceIdResponse = {
         id: string
         nameEn: string
         nameJa: string
+        online?: boolean | null
         mapLatitude?: number | null
         mapLongitude?: number | null
         contact?: {
@@ -74,7 +76,8 @@ function matchFromFacility(
         cityEn: facility.contact?.address?.cityEn ?? '',
         googleMapsUrl: facility.contact?.googleMapsUrl ?? '',
         mapLatitude: facility.mapLatitude ?? 0,
-        mapLongitude: facility.mapLongitude ?? 0
+        mapLongitude: facility.mapLongitude ?? 0,
+        online: facility.online === true
     }
 }
 

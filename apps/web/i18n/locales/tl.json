@@ -622,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "Bumalik sa paghahanap",
     "metaDescription": "{name} sa {city}, {prefecture}. Adres, telepono, at mga wika ng kawani.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Online na pasilidad na walang street address. Telepono at mga wika ng kawani.",
     "locationNav": "Lokasyon",
     "relatedSpecialtiesHeading": "Mag-browse ayon sa specialty",
     "relatedLanguagesHeading": "Mag-browse ayon sa wika"

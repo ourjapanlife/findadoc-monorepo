@@ -88,6 +88,20 @@ describe('buildFacetIndex', () => {
         expect(facets).to.deep.equal([])
     })
 
+    it('excludes online facilities so they do not create /japan facets', () => {
+        const online = {
+            ...facility('online-1', '', '', [
+                professional('p1', [Specialty.Dentistry], [Locale.EnUs]),
+                professional('p2', [Specialty.Dentistry], [Locale.EnUs]),
+                professional('p3', [Specialty.Dentistry], [Locale.EnUs])
+            ]),
+            online: true
+        }
+        const { facets } = buildFacetIndex([online])
+        expect(facets).to.deep.equal([])
+        expect(facetPathsFromFacilities([online])).to.deep.equal([])
+    })
+
     it('counts a professional once even when they appear on two facilities', () => {
         const dentist = professional('p-same', [Specialty.Psychiatry], [Locale.EnUs])
         const { facets } = buildFacetIndex([

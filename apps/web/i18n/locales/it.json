@@ -622,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "Torna alla ricerca",
     "metaDescription": "{name} a {city}, {prefecture}. Indirizzo, telefono e lingue parlate dal personale.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Struttura online senza indirizzo. Telefono e lingue parlate dal personale.",
     "locationNav": "Luogo",
     "relatedSpecialtiesHeading": "Sfoglia per specialità",
     "relatedLanguagesHeading": "Sfoglia per lingua"

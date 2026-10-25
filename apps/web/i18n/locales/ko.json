@@ -627,6 +627,8 @@
     "backToSearch": "검색으로 돌아가기",
     "locationNav": "위치",
     "metaDescription": "{prefecture} {city}의 {name}. 주소, 전화, 직원이 구사하는 언어.",
+    "onlineBreadcrumb": "온라인",
+    "onlineMetaDescription": "{name}. 거리 주소가 없는 온라인 의료기관. 전화와 직원이 구사하는 언어.",
     "relatedSpecialtiesHeading": "전문 과목으로 찾기",
     "relatedLanguagesHeading": "언어로 찾기"
   },

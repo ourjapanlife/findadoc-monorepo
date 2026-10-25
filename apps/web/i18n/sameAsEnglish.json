@@ -28,20 +28,24 @@
     "submitPage.optional",
     "submitPage.previewLocation",
     "moderationTable.name",
-    "moderationTable.status"
+    "moderationTable.status",
+    "clinicPage.onlineBreadcrumb"
   ],
   "it": [
     "common.menu",
     "footer.privacy",
-    "submitPage.previewLocation"
+    "submitPage.previewLocation",
+    "clinicPage.onlineBreadcrumb"
   ],
   "pt": [
     "common.menu",
-    "submitPage.previewLocation"
+    "submitPage.previewLocation",
+    "clinicPage.onlineBreadcrumb"
   ],
   "tl": [
     "common.menu",
-    "submitPage.previewLocation"
+    "submitPage.previewLocation",
+    "clinicPage.onlineBreadcrumb"
   ],
   "vi": [
     "common.menu",

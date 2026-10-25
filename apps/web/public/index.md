@@ -9,6 +9,7 @@ This directory does not provide medical advice, a diagnosis, or a booking. Use a
 ## How to read a page
 
 - Clinic URLs look like `/clinic/{prefecture}/{city}/{name}--{id}`.
+- Online clinics (no street address) use `/clinic/japan/online/{name}--{id}`.
 - Doctor URLs look like `/doctor/{name}--{id}`.
 - Prefecture and city hubs look like `/tokyo` and `/tokyo/shibuya`.
 - Specialty and language hubs look like `/tokyo/dentistry` and `/tokyo/english-speaking`.

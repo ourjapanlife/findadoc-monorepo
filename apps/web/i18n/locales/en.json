@@ -633,6 +633,8 @@
     "backToSearch": "Back to search",
     "locationNav": "Location",
     "metaDescription": "{name} in {city}, {prefecture}. Address, phone and the languages spoken by staff.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Online clinic with no street address. Phone and the languages spoken by staff.",
     "relatedSpecialtiesHeading": "Browse by specialty",
     "relatedLanguagesHeading": "Browse by language"
   },
