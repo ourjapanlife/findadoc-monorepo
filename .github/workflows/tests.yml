@@ -28,6 +28,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Preview comment
+        run: node --test .github/scripts/preview-comment.test.mjs
+
       - name: Unit tests
         run: pnpm exec turbo test $AFFECTED --filter=@findadoc/web --filter=@findadoc/mcp --filter=@findadoc/utils
 

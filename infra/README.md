@@ -129,6 +129,8 @@ A pull request that changes the site publishes an Amplify branch named `pr-<numb
 
 The preview role can publish and delete only `pr-*` branches. Closing the pull request deletes that branch. Deploy `FindadocWeb` once so `findadoc-github-web-preview` exists; until then the Web workflow cannot assume it.
 
+The pull request comment is replaced on each publish. It shows the preview URL, then mobile Lighthouse scores for the homepage: performance, accessibility, best practices, and SEO. Under those it shows first contentful paint, largest contentful paint, total blocking time, cumulative layout shift, and speed index, each beside the same run of `https://www.findadoc.jp`. A lower timing is the faster one. The three largest savings opportunities are listed, and the HTML reports are attached to the workflow run.
+
 ## Context lookups
 
 `HostedZone.fromLookup` calls Route 53 on the first synth and caches the zone in `cdk.context.json`. Commit that file. Later synths, including CI, then read the cached zone instead of calling AWS. Delete the entry with `pnpm cdk context --reset <key>` if the zone is ever recreated.
