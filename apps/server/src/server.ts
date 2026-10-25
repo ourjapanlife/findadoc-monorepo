@@ -1,7 +1,7 @@
 
 import { randomUUID } from 'node:crypto'
 import * as Sentry from '@sentry/node'
-import Fastify from 'fastify'
+import Fastify, { type FastifyInstance } from 'fastify'
 import { fastifyApolloDrainPlugin, fastifyApolloHandler } from '@as-integrations/fastify'
 import corsPlugin from '@fastify/cors'
 import rateLimitPlugin from '@fastify/rate-limit'
@@ -18,7 +18,11 @@ import resolvers from './resolvers.js'
 import { logger } from './logger.js'
 import { requestErrorFields } from './requestErrors.js'
 
-export const createApolloFastifyServer = async (customPort?: number): Promise<string> => {
+/**
+ * Builds the Fastify app with Apollo on `/`, ready to serve but not listening.
+ * The long-running server listens on a port. The Lambda handler (lambda.ts) passes it requests.
+ */
+export const buildApiServer = async (): Promise<FastifyInstance> => {
     logger.info('⛽️ Starting server...')
 
     //fastify is our http server (a modern, faster alternative to express)
@@ -132,6 +136,12 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
             })
         })
     })
+
+    return fastify
+}
+
+export const createApolloFastifyServer = async (customPort?: number): Promise<string> => {
+    const fastify = await buildApiServer()
 
     //start the actual fastify http server
     const serverUrl = await fastify.listen({

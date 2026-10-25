@@ -65,6 +65,7 @@
         "@stylistic/eslint-plugin": "^5.0.0",
         "@stylistic/eslint-plugin-migrate": "^4.0.0",
         "@swc/core": "^1.3.95",
+        "@types/aws-lambda": "^8.10.164",
         "@types/node": "^22.10.7",
         "@types/pg": "^8.15.6",
         "@types/supertest": "^6.0.2",
@@ -85,8 +86,10 @@
     "dependencies": {
         "@apollo/server": "^4.9.3",
         "@as-integrations/fastify": "^2.1.1",
+        "@aws-sdk/rds-signer": "3.1156.0",
         "@faker-js/faker": "^8.2.0",
         "@fastify/auth": "^5.0.2",
+        "@fastify/aws-lambda": "5.1.4",
         "@fastify/compress": "^8.0.1",
         "@fastify/cors": "^11.0.1",
         "@fastify/jwt": "^9.1.0",
