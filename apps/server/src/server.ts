@@ -15,6 +15,7 @@ import { createLoaders, type ApiContext } from './loaders.js'
 import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
 import { logger } from './logger.js'
+import { requestErrorFields } from './requestErrors.js'
 
 export const createApolloFastifyServer = async (customPort?: number): Promise<string> => {
     logger.info('⛽️ Starting server...')
@@ -94,6 +95,7 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
                     return {
                         // One line per request: which operation, how long, and whether it failed.
                         // The query text and variables stay out of the logs. Sentry gets them on errors.
+                        // searchFailed drives the search-failure alarm (a metric filter on this line).
                         async willSendResponse(ctx) {
                             //we want to skip logging requests from the apollo query explorer internal introspection query
                             if (ctx.request.query?.includes('IntrospectionQuery')) {
@@ -105,7 +107,8 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
                                 requestId,
                                 operationName: ctx.operationName ?? ctx.request.operationName ?? null,
                                 durationMs: Math.round(performance.now() - startedAt),
-                                errorCount: ctx.errors?.length ?? 0
+                                errorCount: ctx.errors?.length ?? 0,
+                                ...requestErrorFields(ctx.operation, ctx.errors)
                             })
                         },
                         async didEncounterErrors(ctx) {
