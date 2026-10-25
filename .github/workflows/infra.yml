@@ -84,5 +84,11 @@ jobs:
           pnpm --filter @findadoc/graphql build
           pnpm --filter @findadoc/utils build
 
+      # FindadocGithubDeploy goes first, on its own. It decides which regions' bootstrap
+      # roles this role may assume, and deploy --all publishes every stack's assets before
+      # it deploys any stack. A new region (us-east-1 for CloudFront) has to be allowed first.
+      - name: Deploy the CI role
+        run: pnpm --filter @findadoc/infra run deploy FindadocGithubDeploy --require-approval never
+
       - name: Deploy
         run: pnpm --filter @findadoc/infra run deploy --all --require-approval never

@@ -107,7 +107,7 @@ pnpm --filter @findadoc/infra run deploy --all
 
 ## CI deploys
 
-`.github/workflows/infra.yml` runs `cdk synth` on pull requests that touch `infra/`, and `cdk deploy --all` on pushes to `main`. CI has no stored AWS keys. The deploy job gets a GitHub OIDC token and assumes `findadoc-github-cdk-deploy`. That role trusts only `main` of `ourjapanlife/findadoc-monorepo`, and it can only assume the CDK bootstrap roles.
+`.github/workflows/infra.yml` runs `cdk synth` on pull requests, and on pushes to `main` it deploys `FindadocGithubDeploy` first, then `cdk deploy --all`. It runs when `infra/`, `apps/server/`, `packages/graphql/` or `packages/utils/` change. The CI role goes first because it decides which regions' bootstrap roles CI may assume, and `deploy --all` publishes every stack's assets before deploying any stack. CI has no stored AWS keys. The deploy job gets a GitHub OIDC token and assumes `findadoc-github-cdk-deploy`. That role trusts only `main` of `ourjapanlife/findadoc-monorepo`, and it can only assume the CDK bootstrap roles.
 
 `FindadocGithubDeploy` creates that role, so CI cannot create it. Deploy it once locally with an Identity Center session:
 
