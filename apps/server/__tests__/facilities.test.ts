@@ -318,7 +318,7 @@ describe('deleteFacility', () => {
         expect(validQueryErrors.length).toBe(1)
         expect(validQueryErrors[0]).toBeDefined()
         expect(validQueryErrors[0].field).toBe('getFacilityById')
-        expect(validQueryErrors[0].errorCode).toBe(ErrorCode.INTERNAL_SERVER_ERROR)
+        expect(validQueryErrors[0].errorCode).toBe(ErrorCode.NOT_FOUND)
 
         // -- Let's try to delete the facility again! We should receive an error now that it doesn't exist --
         const deleteAgainFacilityResult = await request(gqlApiUrl).post('').send(deleteFacilityRequest)

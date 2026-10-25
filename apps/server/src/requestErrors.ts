@@ -23,9 +23,9 @@ const CLIENT_ERROR_CODES: ReadonlySet<string> = new Set([
 type ServiceError = { httpStatus?: number }
 
 /**
- * Whether an error is the server's fault. Resolvers wrap every service error as
- * BAD_USER_INPUT, including a database failure, so a wrapped error with an
- * httpStatus of 500 or more is a server error too.
+ * Whether an error is the server's fault: Sentry reports these, and searchFailed counts them.
+ * Resolvers wrap every service error as BAD_USER_INPUT, including a database failure, so a
+ * wrapped error with an httpStatus of 500 or more is a server error too. A missing record is 404.
  */
 export function isServerError(error: Pick<GraphQLError, 'extensions'>): boolean {
     const code = String(error.extensions?.code ?? 'INTERNAL_SERVER_ERROR')

@@ -193,15 +193,15 @@ export async function getHealthcareProfessionalById(
             .where('id', '=', id)
             .executeTakeFirst()
 
-        // A missing professional has always been INTERNAL_SERVER_ERROR, not NOT_FOUND.
+        // A missing professional is the caller's to handle, not a server failure (and not a Sentry event).
         if (!hpEntity) {
             return {
                 data: {} as gqlTypes.HealthcareProfessional,
                 hasErrors: true,
                 errors: [{
                     field: 'getHealthcareProfessionalById',
-                    errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                    httpStatus: 500
+                    errorCode: ErrorCode.NOT_FOUND,
+                    httpStatus: 404
                 }]
             }
         }

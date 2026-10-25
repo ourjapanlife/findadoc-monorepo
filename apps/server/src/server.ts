@@ -16,7 +16,7 @@ import { createLoaders, type ApiContext } from './loaders.js'
 import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
 import { logger } from './logger.js'
-import { requestErrorFields } from './requestErrors.js'
+import { isServerError, requestErrorFields } from './requestErrors.js'
 import { clientIpFrom } from '@findadoc/utils'
 
 /**
@@ -99,10 +99,10 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
                             })
                         },
                         async didEncounterErrors(ctx) {
-                            //skip user-input validation errors (already surfaced via GraphQL response)
+                            //skip errors the client caused (already surfaced via GraphQL response).
+                            //a service failure wrapped as BAD_USER_INPUT with a 5xx status still goes to Sentry.
                             for (const err of ctx.errors) {
-                                if (err.extensions?.code === 'BAD_USER_INPUT'
-                                    || err.extensions?.code === 'UNAUTHORIZED') {
+                                if (!isServerError(err)) {
                                     continue
                                 }
                                 Sentry.captureException(err, {

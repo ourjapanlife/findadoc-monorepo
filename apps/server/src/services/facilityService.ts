@@ -291,15 +291,15 @@ export const getFacilityById = async (
             .where('id', '=', id)
             .executeTakeFirst()
 
-        // A missing facility has always been INTERNAL_SERVER_ERROR, not NOT_FOUND, and tests expect that.
+        // A missing facility is the caller's to handle, not a server failure (and not a Sentry event).
         if (!facilityRow) {
             return {
                 data: {} as gqlTypes.Facility,
                 hasErrors: true,
                 errors: [{
                     field: 'getFacilityById',
-                    errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                    httpStatus: 500
+                    errorCode: ErrorCode.NOT_FOUND,
+                    httpStatus: 404
                 }]
             }
         }
