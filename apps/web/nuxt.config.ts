@@ -9,6 +9,7 @@ import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
 import { CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
+import { writeAdminPreviewShells } from './utils/nuxt/adminPreviewShell'
 import { writeClinicPreviewShells } from './utils/nuxt/clinicPreviewShell'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
 import {
@@ -228,8 +229,8 @@ export default defineNuxtConfig({
         // `/clinic/:slug` is not `ssr: false`. Nuxt treats that rule as covering
         // `/clinic/{prefecture}/{city}/{slug}` and stubs the directory page, so
         // generate writes an empty shell. Preview landings stay off the prerender
-        // list. Generate copies the SPA shell to `{slug}.html` for Amplify, which
-        // serves that file. serve.json and _redirects do the same for local preview.
+        // list. Generate copies the app shell to `{slug}.html`. Amplify's
+        // catch-all serves that file. There is no `/clinic/*` rewrite.
     },
     sourcemap: {
         client: true
@@ -246,15 +247,7 @@ export default defineNuxtConfig({
             // directory cache, not live facility(id)/healthcareProfessional(id) calls.
             concurrency: 8,
             routes: [
-                ...withLocaleVariants([
-                    '/',
-                    '/about',
-                    '/terms',
-                    '/privacypolicy',
-                    '/submit',
-                    '/npo',
-                    '/contact'
-                ]),
+                ...withLocaleVariants(['/', '/about', '/terms', '/privacypolicy', '/submit', '/npo', '/contact']),
                 '/sitemap.xml',
                 '/404'
             ],
@@ -300,6 +293,7 @@ export default defineNuxtConfig({
                 for (const slug of CLINIC_PREVIEW_SHELL_SLUGS) {
                     await writeClinicPreviewShells(publicDir, slug)
                 }
+                await writeAdminPreviewShells(publicDir)
             })
         }
     },

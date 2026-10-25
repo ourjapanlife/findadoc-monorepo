@@ -1,4 +1,8 @@
 import { expect } from 'chai'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { adminPreviewShellPaths, writeAdminPreviewShells } from '@/utils/nuxt/adminPreviewShell'
 import {
     ADMIN_SITE_MODE,
     ADMIN_SITE_PATH,
@@ -53,5 +57,21 @@ describe('admin site flag', () => {
         expect(adminSiteAccess('preview', '0', '1')).to.equal('revoke')
         expect(adminSiteAccess('public', null, null)).to.equal('allow')
         expect(adminSitePreviewCookie('admin_site_preview=1; Path=/')).to.equal('1')
+    })
+})
+
+describe('admin preview shell', () => {
+    it('copies the app shell to the html path Amplify serves', async () => {
+        const dir = await mkdtemp(join(tmpdir(), 'admin-shell-'))
+        try {
+            await writeFile(join(dir, '200.html'), '<html>shell</html>')
+            await writeAdminPreviewShells(dir)
+            for (const relative of adminPreviewShellPaths()) {
+                expect(await readFile(join(dir, relative), 'utf8')).to.equal('<html>shell</html>')
+            }
+            expect(adminPreviewShellPaths()).to.include('ja-JP/admin.html')
+        } finally {
+            await rm(dir, { recursive: true, force: true })
+        }
     })
 })

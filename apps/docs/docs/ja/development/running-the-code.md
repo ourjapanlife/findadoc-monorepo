@@ -89,7 +89,7 @@ pnpm dev:seeded
 
 ### スタッフ用サイト
 
-`http://admin.localhost:3000/?preview=1` を開くと、30日間のCookieが保存され、`/admin` へ転送されます。Cookieがないとそのホストは404です。`?preview=0` でCookieを消します。そのホストの他のページ、`/submit` も含めて、`/admin` へ転送されます。ページは `noindex` のままです。環境変数はありません。
+`http://admin.localhost:3000/?preview=1` を開くと、30日間のCookieが保存され、`/admin` へ転送されます。Cookieがないとそのホストは404です。`?preview=0` でCookieを消します。そのホストの他のページ、`/submit` も含めて、`/admin` へ転送されます。ページは `noindex` のままです。環境変数はありません。ビルドはアプリのシェルを `admin.html` に置きます。Amplify はそのファイルを配信します。
 
 ### Amplify と Route 53
 

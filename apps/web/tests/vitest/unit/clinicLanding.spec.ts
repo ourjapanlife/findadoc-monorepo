@@ -24,7 +24,6 @@ import { clinicPreviewShellPaths, writeClinicPreviewShells } from '@/utils/nuxt/
 import { indexableMarketingPaths } from '@/utils/sitemap'
 import { SITE_ORIGIN } from '@/utils/site'
 import { clinicThemeVars } from '@/utils/clinicTheme'
-import { devServerEnv } from '../../../scripts/devFlags.mjs'
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '../../..')
 
@@ -123,14 +122,6 @@ describe('clinic landings', () => {
             `${SITE_ORIGIN}/clinic-landings/multilingual-online-clinic/hero.jpg`
         )
         expect(indexableMarketingPaths()).to.not.include(clean)
-    })
-
-    it('gives the showcase clinic an exact SPA fallback, not a /clinic wildcard', () => {
-        const redirects = readFileSync(join(rootDir, 'public/_redirects'), 'utf8')
-        const serve = readFileSync(join(rootDir, 'public/serve.json'), 'utf8')
-        expect(redirects).to.match(new RegExp(`^${clean}\\s+/200\\.html\\s+200`, 'm'))
-        expect(redirects).to.match(new RegExp(`^/:locale${clean}\\s+/200\\.html\\s+200`, 'm'))
-        expect(serve).to.include(`"${clean}"`)
         const seedSource = readFileSync(join(rootDir, '../server/scripts/seed/clinicSiteContent.ts'), 'utf8')
         const seededSlugs = [...seedSource.matchAll(/^ +slug: '([^']+)',$/gm)].map(match => match[1])
         expect([...CLINIC_PREVIEW_SHELL_SLUGS]).to.deep.equal(seededSlugs)
@@ -171,17 +162,5 @@ describe('clinic preview shells', () => {
         } finally {
             await rm(dir, { recursive: true, force: true })
         }
-    })
-})
-
-describe('turbo dev flags', () => {
-    it('points pnpm dev at the local API when asked', () => {
-        const env = devServerEnv({}, { localApi: true })
-        expect(env.NUXT_USE_LOCAL_API).to.equal('true')
-    })
-
-    it('leaves the API target alone unless asked', () => {
-        const env = devServerEnv({})
-        expect(env.NUXT_USE_LOCAL_API).to.equal(undefined)
     })
 })

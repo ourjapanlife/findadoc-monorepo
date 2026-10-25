@@ -89,7 +89,7 @@ The canonical URL is `https://{slug}.findadoc.jp/`. The www path and the shareab
 
 ### Staff site
 
-Open `http://admin.localhost:3000/?preview=1`. That stores a cookie for 30 days and redirects to `/admin`. Without the cookie the host is a 404. `?preview=0` clears the cookie. Other pages on that host, including `/submit`, redirect to `/admin`. The page stays `noindex`. There is no environment variable.
+Open `http://admin.localhost:3000/?preview=1`. That stores a cookie for 30 days and redirects to `/admin`. Without the cookie the host is a 404. `?preview=0` clears the cookie. Other pages on that host, including `/submit`, redirect to `/admin`. The page stays `noindex`. There is no environment variable. The build copies the app shell to `admin.html`. Amplify serves that file.
 
 ### Amplify and Route 53
 
