@@ -42,10 +42,14 @@ async function nameOnSecondPage(page: Page, navTestId: string, rowTestId: string
     await page.getByTestId(navTestId).click()
     const firstRow = page.getByTestId(rowTestId)
     await expect(firstRow).toBeVisible({ timeout: 30_000 })
+    // Numbered page buttons hide when the pager is narrow. Ten rows makes a second page, and the arrow stays.
+    const nextPage = page.getByTestId('mod-pagination-next')
+    await page.locator('#items-per-page-select').selectOption('10')
+    await expect(nextPage.locator('..')).toContainText('1-10')
     const firstPageName = (await firstRow.innerText()).trim()
-    const secondPage = page.getByRole('button', { name: 'Page 2' })
-    await expect(secondPage).toBeVisible()
-    await secondPage.click()
+    await expect(nextPage).toBeEnabled()
+    await nextPage.click()
+    await expect(nextPage.locator('..')).toContainText('11-')
     await expect(firstRow).not.toHaveText(firstPageName)
     return (await firstRow.innerText()).trim()
 }
