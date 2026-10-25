@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 /**
  * A refused connection means this machine is not running the local API.
- * CI always starts that API, so the same failure is a broken Supabase run.
+ * CI always starts that API, so the same failure is a broken database run.
  */
 export function skipIfLocalApiIsDown(error: unknown): void {
     const message = error instanceof Error ? error.message : String(error)
