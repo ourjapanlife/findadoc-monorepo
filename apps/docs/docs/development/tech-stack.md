@@ -33,7 +33,7 @@
 | [Vitest](https://vitest.dev/) | Unit testing |
 | [Playwright](https://playwright.dev/) | End-to-end testing |
 | [Storybook](https://storybook.js.org/) | Component development and documentation |
-| [Netlify](https://www.netlify.com/) | Hosting |
+| [AWS Amplify](https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html) | Hosting |
 
 ## API (`apps/server`)
 
