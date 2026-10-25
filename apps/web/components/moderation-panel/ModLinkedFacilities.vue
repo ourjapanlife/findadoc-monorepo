@@ -7,6 +7,7 @@
             :no-match-text="noMatchText"
             :fields-to-display-callback="fieldsToDisplay"
             :default-suggestions="suggestions"
+            @search-input-blur="handleSearchInputChange.cancel"
             @search-input-change="handleSearchInputChange"
         />
         <ul

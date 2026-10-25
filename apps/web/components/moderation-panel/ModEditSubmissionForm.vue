@@ -40,6 +40,7 @@
                         :no-match-text="t('modHealthcareProfessionalSection.noFacilitiesWereFound')"
                         :fields-to-display-callback="facilitiesFieldsToDisplayCallback"
                         :default-suggestions="facilitiesStore.facilityData"
+                        @search-input-blur="applyFacilitySearch.cancel"
                         @search-input-change="handleFacilitySearchInputChange"
                     />
                     <ModTokenList :labels="linkedFacilityLabels" />
@@ -69,6 +70,7 @@
                         :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
                         :fields-to-display-callback="healthcareProfessionalsToDisplayCallback"
                         :default-suggestions="healthcareProfessionalsStore.healthcareProfessionalsData"
+                        @search-input-blur="applyHealthcareProfessionalSearch.cancel"
                         @search-input-change="handleHealthcareProfessionalsInputChange"
                     />
                     <ModTokenList :labels="linkedHealthcareProfessionalLabels" />
@@ -210,6 +212,9 @@ const applyFacilitySearch = useDirectoryPickerSearch(
 )
 const handleFacilitySearchInputChange = (filteredItems: Ref<Facility[]>, inputValue: string) => {
     applyFacilitySearch(filteredItems, inputValue)
+    if (inputValue.trim() === '') {
+        return
+    }
 
     if (currentFacilityRelations.value.length) {
         facilitiesStore.resetFacilitySectionFields()
@@ -229,6 +234,9 @@ const applyHealthcareProfessionalSearch = useDirectoryPickerSearch(
 )
 const handleHealthcareProfessionalsInputChange = (filteredItems: Ref<HealthcareProfessional[]>, inputValue: string) => {
     applyHealthcareProfessionalSearch(filteredItems, inputValue)
+    if (inputValue.trim() === '') {
+        return
+    }
 
     if (currentExistingHealthcareProfessionals.value.length) {
         healthcareProfessionalsStore.resetHealthcareProfessionalSectionFields()
@@ -345,9 +353,13 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
           ?? ''
 
     facilitySectionFields.healthcareProfessionalIds = submissionData?.facility?.healthcareProfessionalIds ?? []
+    // A searched person may sit outside the preloaded page. Keep the object already picked.
     currentExistingHealthcareProfessionals.value = mapIdsToEntities(
         facilitySectionFields.healthcareProfessionalIds,
-        healthcareProfessionalsStore.healthcareProfessionalsData
+        [
+            ...currentExistingHealthcareProfessionals.value,
+            ...healthcareProfessionalsStore.healthcareProfessionalsData
+        ]
     )
 
     // Healthcare Professionals fields
@@ -375,9 +387,13 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
                   : [])
 
     healthcareProfessionalSections.facilityIds = [...(hp?.facilityIds ?? [])]
+    // A searched clinic may sit outside the preloaded page. Keep the object already picked.
     currentFacilityRelations.value = mapIdsToEntities(
         healthcareProfessionalSections.facilityIds,
-        facilitiesStore.facilityData
+        [
+            ...currentFacilityRelations.value,
+            ...facilitiesStore.facilityData
+        ]
     )
 
     if (submissionData?.healthcareProfessionals?.[0]?.acceptedInsurance) {

@@ -57,7 +57,7 @@
                     :key="item.id ?? index"
                     class="flex cursor-pointer justify-between"
                     :class="[
-                        selectedItems.includes(item) ? 'bg-primary/10' : '',
+                        isSelected(item) ? 'bg-primary/10' : '',
                         selectedItemIndex === index ? 'bg-accent-bg' : '',
                     ]"
                     :data-result-index="index"
@@ -88,7 +88,7 @@
                         <SVGCheckMark
                             class="h-4 m-3"
                             :class="[
-                                selectedItems.includes(item) ? 'opacity-100' : 'opacity-10',
+                                isSelected(item) ? 'opacity-100' : 'opacity-10',
                             ]"
                         />
                     </div>
@@ -212,13 +212,26 @@ const handleListScroll = () => {
     })
 }
 
+const sameSelection = (selected: ArrayType<T>, item: ArrayType<T>) => {
+    if (selected === item) return true
+    if (typeof selected !== 'object' || selected === null || typeof item !== 'object' || item === null) {
+        return false
+    }
+    if (!('id' in selected) || !('id' in item)) return false
+    const selectedId = selected.id
+    const itemId = item.id
+    return typeof selectedId === 'string' && selectedId !== '' && selectedId === itemId
+}
+
+const isSelected = (item: ArrayType<T>) => selectedItems.value.some(selected => sameSelection(selected, item))
+
 const handleListItem = () => {
     if (!isEditing.value || filteredItems.value.length === 0) return
 
     const item = filteredItems.value[selectedItemIndex.value]
+    const itemIndex = selectedItems.value.findIndex(selected => sameSelection(selected, item))
 
-    if (selectedItems.value.includes(item)) {
-        const itemIndex = selectedItems.value.indexOf(item)
+    if (itemIndex !== -1) {
         selectedItems.value.splice(itemIndex, 1)
         return
     }
@@ -287,6 +300,7 @@ const handleSearchInputChange = (event: Event) => {
 
     if (inputValue.trim() === '') {
         filteredItems.value = defaultSuggestions
+        emit('searchInputChange', filteredItems as Ref<ArrayType<T>[]>, inputValue)
         return
     }
 
