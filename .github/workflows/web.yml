@@ -48,7 +48,10 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Build
-        run: pnpm --filter @findadoc/web build
+        run: |
+          pnpm --filter @findadoc/graphql build
+          pnpm --filter @findadoc/utils build
+          pnpm --filter @findadoc/web build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 

@@ -158,6 +158,8 @@ function siteBuildSpec(): string {
         '    build:',
         '      commands:',
         '        - export NODE_OPTIONS=--max-old-space-size=4096',
+        '        - pnpm --filter @findadoc/graphql build',
+        '        - pnpm --filter @findadoc/utils build',
         '        - pnpm --filter @findadoc/web build',
         '  artifacts:',
         '    baseDirectory: apps/web/.output/public',
