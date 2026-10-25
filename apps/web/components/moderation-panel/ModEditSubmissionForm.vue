@@ -108,7 +108,8 @@ import { returnWithSuccessToast } from '~/composables/useModerationActionFeedbac
 import { guardWithErrorToastAndEffect } from '~/composables/useModerationGuardFeedback'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import { ModerationSubmissionActionType, useModerationSubmissionActions } from '~/composables/useModerationSubmissionActions'
-import { mapIdsToEntities, matchesFacilitySearch, matchesHealthcareProfessionalSearch } from '~/utils/moderationSearchUtils'
+import { mapIdsToEntities } from '~/utils/moderationSearchUtils'
+import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
 import { formatFirstLocalizedFullName, hasEnglishLocalizedName } from '~/utils/nameUtils'
 import { leaveToModerationDashboard } from '~/utils/moderationUtils'
@@ -204,8 +205,11 @@ function useMatchedFacility() {
     } as Facility]
 }
 
+const applyFacilitySearch = useDirectoryPickerSearch(
+    query => facilitiesStore.searchFacilities(query)
+)
 const handleFacilitySearchInputChange = (filteredItems: Ref<Facility[]>, inputValue: string) => {
-    filteredItems.value = facilitiesStore.facilityData.filter(facility => matchesFacilitySearch(facility, inputValue))
+    applyFacilitySearch(filteredItems, inputValue)
 
     if (currentFacilityRelations.value.length) {
         facilitiesStore.resetFacilitySectionFields()
@@ -220,10 +224,11 @@ const handleFacilitySearchInputChange = (filteredItems: Ref<Facility[]>, inputVa
 
 const facilitiesFieldsToDisplayCallback = (item: Facility) => [item.nameEn, item.nameJa]
 
+const applyHealthcareProfessionalSearch = useDirectoryPickerSearch(
+    query => healthcareProfessionalsStore.searchHealthcareProfessionals(query)
+)
 const handleHealthcareProfessionalsInputChange = (filteredItems: Ref<HealthcareProfessional[]>, inputValue: string) => {
-    filteredItems.value = healthcareProfessionalsStore.healthcareProfessionalsData
-        .filter((healthcareProfessional: HealthcareProfessional) =>
-            matchesHealthcareProfessionalSearch(healthcareProfessional, inputValue))
+    applyHealthcareProfessionalSearch(filteredItems, inputValue)
 
     if (currentExistingHealthcareProfessionals.value.length) {
         healthcareProfessionalsStore.resetHealthcareProfessionalSectionFields()

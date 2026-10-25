@@ -188,7 +188,12 @@
     "confirmExit": "Quitter sans enregistrer",
     "create": "Créer",
     "exit": "Quitter",
-    "unsavedChangesMessage": "Vous quittez sans enregistrer. Les données non enregistrées seront perdues."
+    "unsavedChangesMessage": "Vous quittez sans enregistrer. Les données non enregistrées seront perdues.",
+    "hasEmptyFieldsFacility": "Remplissez les champs obligatoires de l'établissement.",
+    "facilityCreatedSuccessfully": "Établissement créé",
+    "hasEmptyFieldsHealthcareProfessional": "Remplissez les champs obligatoires du professionnel de santé.",
+    "healthcareProfessionalEnglishNameRequired": "Le professionnel de santé doit avoir un nom en anglais",
+    "healthcareProfessionalCreatedSuccessfully": "Professionnel de santé créé"
   },
   "modDashboardLeftNav": {
     "facilities": "Établissements",

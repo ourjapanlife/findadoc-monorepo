@@ -290,7 +290,12 @@
     "confirmExit": "저장하지 않고 나가기",
     "create": "만들기",
     "exit": "나가기",
-    "unsavedChangesMessage": "저장하지 않고 나갑니다. 입력한 내용이 모두 사라집니다."
+    "unsavedChangesMessage": "저장하지 않고 나갑니다. 입력한 내용이 모두 사라집니다.",
+    "hasEmptyFieldsFacility": "의료기관의 필수 항목을 입력해 주세요.",
+    "facilityCreatedSuccessfully": "의료기관을 만들었습니다",
+    "hasEmptyFieldsHealthcareProfessional": "의료인의 필수 항목을 입력해 주세요.",
+    "healthcareProfessionalEnglishNameRequired": "의료인에게는 영문 이름이 필요합니다",
+    "healthcareProfessionalCreatedSuccessfully": "의료인을 만들었습니다"
   },
   "modDashboardLeftNav": {
     "facilities": "의료기관",

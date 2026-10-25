@@ -243,7 +243,12 @@
     "confirmExit": "Verlassen ohne zu Speichern",
     "create": "Erstellen",
     "exit": "Verlassen",
-    "unsavedChangesMessage": "Die Seite wird verlassen, ohne das Ihr Eintrag gespeichert wird. Alle nicht gespeicherten Daten gehen verloren."
+    "unsavedChangesMessage": "Die Seite wird verlassen, ohne das Ihr Eintrag gespeichert wird. Alle nicht gespeicherten Daten gehen verloren.",
+    "hasEmptyFieldsFacility": "Füllen Sie die Pflichtfelder der Einrichtung aus.",
+    "facilityCreatedSuccessfully": "Einrichtung erstellt",
+    "hasEmptyFieldsHealthcareProfessional": "Füllen Sie die Pflichtfelder der Gesundheitsfachkraft aus.",
+    "healthcareProfessionalEnglishNameRequired": "Die Gesundheitsfachkraft braucht einen englischen Namen",
+    "healthcareProfessionalCreatedSuccessfully": "Gesundheitsfachkraft erstellt"
   },
   "modDashboardLeftNav": {
     "facilities": "Einrichtungen",

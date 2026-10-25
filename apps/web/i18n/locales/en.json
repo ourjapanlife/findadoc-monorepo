@@ -290,7 +290,12 @@
     "confirmExit": "Exit without saving",
     "create": "Create",
     "exit": "Exit",
-    "unsavedChangesMessage": "This will exit without saving your entry. All unsaved data will be lost."
+    "unsavedChangesMessage": "This will exit without saving your entry. All unsaved data will be lost.",
+    "hasEmptyFieldsFacility": "Fill in the required facility fields.",
+    "facilityCreatedSuccessfully": "Facility created successfully",
+    "hasEmptyFieldsHealthcareProfessional": "Fill in the required healthcare professional fields.",
+    "healthcareProfessionalEnglishNameRequired": "Healthcare Professional must have an English name",
+    "healthcareProfessionalCreatedSuccessfully": "Healthcare professional created successfully"
   },
   "modDashboardLeftNav": {
     "facilities": "Facilities",

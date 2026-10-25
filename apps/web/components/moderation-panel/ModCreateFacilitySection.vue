@@ -314,7 +314,7 @@ import type { HealthcareProfessional } from '@findadoc/graphql'
 import type { CityOption } from '~/utils/cityOptions'
 import { listPrefectureJapanEn, listPrefectureJapanJa, pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
 import { checkPrefectureNameMatch } from '~/utils/facilitiesUtils'
-import { matchesHealthcareProfessionalSearch } from '~/utils/moderationSearchUtils'
+import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
 import type { FacilityMapsFillTarget } from '~/utils/mapsAutofill'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
@@ -345,12 +345,9 @@ const selectedHealthcareProfessionalsModel = computed({
 
 const defaultHealthcareProfessionalSuggestions: Ref<HealthcareProfessional[]> = ref([])
 
-const handleHealthcareProfessionalsInputChange = (filteredItems: Ref<HealthcareProfessional[]>, inputValue: string) => {
-    filteredItems.value = healthcareProfessionalsStore.healthcareProfessionalsData.filter(
-        (healthcareProfessional: HealthcareProfessional) =>
-            matchesHealthcareProfessionalSearch(healthcareProfessional, inputValue)
-    )
-}
+const handleHealthcareProfessionalsInputChange = useDirectoryPickerSearch(
+    query => healthcareProfessionalsStore.searchHealthcareProfessionals(query)
+)
 const healthcareProfessionalsToDisplayCallback = (healthcareProfessional: HealthcareProfessional) =>
     [formatFirstLocalizedFullName(healthcareProfessional.names)]
 

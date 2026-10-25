@@ -195,7 +195,12 @@
     "confirmExit": "保存せずに終了",
     "create": "作成",
     "exit": "終了",
-    "unsavedChangesMessage": "保存せずに終了します。未保存の内容は失われます。"
+    "unsavedChangesMessage": "保存せずに終了します。未保存の内容は失われます。",
+    "hasEmptyFieldsFacility": "医療機関の必須項目を入力してください。",
+    "facilityCreatedSuccessfully": "医療機関を作成しました",
+    "hasEmptyFieldsHealthcareProfessional": "医療従事者の必須項目を入力してください。",
+    "healthcareProfessionalEnglishNameRequired": "医療従事者には英語の氏名が必要です",
+    "healthcareProfessionalCreatedSuccessfully": "医療従事者を作成しました"
   },
   "modDashboardLeftNav": {
     "facilities": "医療機関",

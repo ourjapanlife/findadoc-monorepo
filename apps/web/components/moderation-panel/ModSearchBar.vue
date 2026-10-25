@@ -185,7 +185,15 @@ const placeMenu = () => {
 const stopTrackingMenu = () => {
     if (!import.meta.client) return
     window.removeEventListener('resize', placeMenu)
-    window.removeEventListener('scroll', placeMenu, true)
+    window.removeEventListener('scroll', onWindowScroll, true)
+}
+
+const onWindowScroll = (event: Event) => {
+    const target = event.target
+    if (target instanceof Node && resultListElement.value?.contains(target)) {
+        return
+    }
+    placeMenu()
 }
 
 const trackMenu = () => {
@@ -193,7 +201,7 @@ const trackMenu = () => {
     stopTrackingMenu()
     placeMenu()
     window.addEventListener('resize', placeMenu)
-    window.addEventListener('scroll', placeMenu, true)
+    window.addEventListener('scroll', onWindowScroll, true)
 }
 
 const handleListScroll = () => {
