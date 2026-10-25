@@ -45,6 +45,11 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      # 54322 is inside Linux's ephemeral range, so an outgoing connection (such as the
+      # image pull) can briefly hold it and Docker cannot bind it. Reserve it first.
+      - name: Reserve the database port
+        run: sudo sysctl -w net.ipv4.ip_local_reserved_ports=54322
+
       # Postgres 17 in Docker on 127.0.0.1:54322, with every migration applied.
       - name: Start the local database
         working-directory: apps/server

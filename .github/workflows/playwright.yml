@@ -43,6 +43,11 @@ jobs:
           pnpm --filter @findadoc/graphql build
           pnpm --filter @findadoc/utils build
 
+      # 54322 is inside Linux's ephemeral range, so an outgoing connection (such as the
+      # image pull) can briefly hold it and Docker cannot bind it. Reserve it first.
+      - name: Reserve the database port
+        run: sudo sysctl -w net.ipv4.ip_local_reserved_ports=54322
+
       - name: Start and seed the API database
         working-directory: apps/server
         run: |
