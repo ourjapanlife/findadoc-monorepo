@@ -6,10 +6,11 @@ import corsPlugin from '@fastify/cors'
 import rateLimitPlugin from '@fastify/rate-limit'
 import compressionPlugin from '@fastify/compress'
 import healthcheck from 'fastify-healthcheck'
-import { ApolloServer, BaseContext, GraphQLRequestContext } from '@apollo/server'
+import { ApolloServer, GraphQLRequestContext } from '@apollo/server'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { envVariables } from '../utils/environmentVariables.js'
 import { buildUserContext, initializeAuth } from './auth.js'
+import { createLoaders, type ApiContext } from './loaders.js'
 import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
 import { logger } from './logger.js'
@@ -75,7 +76,7 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
     await initializeAuth(fastify)    
 
     //set up the apollo graphql server
-    const apolloServer = new ApolloServer<BaseContext>({
+    const apolloServer = new ApolloServer<ApiContext>({
         typeDefs: loadSchema(),
         resolvers,
         //allows the sandbox to be used in production as well as locally
@@ -85,7 +86,7 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
             //enables the apollo sandbox as the landing page
             ApolloServerPluginLandingPageLocalDefault(),
             {
-                async requestDidStart(requestContext: GraphQLRequestContext<BaseContext>) {
+                async requestDidStart(requestContext: GraphQLRequestContext<ApiContext>) {
                     //we want to skip logging requests from the apollo query explorer internal introspection query
                     const isApolloIntrospectionQuery = requestContext.request.query?.includes('IntrospectionQuery')
 
@@ -128,7 +129,11 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
         method: ['GET', 'POST', 'OPTIONS'],
         handler: fastifyApolloHandler(apolloServer, {
             //this is where we add the Auth0 user authentication to the context. We can access this context in the resolvers
-            context: buildUserContext
+            //each request also gets its own batch loaders for relation ids (see loaders.ts)
+            context: async (request): Promise<ApiContext> => ({
+                ...await buildUserContext(request),
+                loaders: createLoaders()
+            })
         })
     })
 

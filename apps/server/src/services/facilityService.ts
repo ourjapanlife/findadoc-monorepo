@@ -10,14 +10,14 @@ import { asJsonb } from '../../utils/dbUtils.js'
 import { prefectureTranslations, resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
 import { databaseOrderColumn, FACILITY_ORDER_COLUMNS } from '../search/orderColumn.js'
-import { FACILITY_SEARCH_COLUMN } from '../../utils/fieldSelectionUtils.js'
 import { isCityRecordId, resolveFacilityPublication, verificationStatusForUpdate } from './facilityPublication.js'
 import { cityExists, findCityBySlug } from './cityService.js'
 import { FacilitySource } from '@findadoc/graphql'
 import { matchingFacilityId } from '../places/facilityMapsMatch.js'
 import { canonicalMapsFields, isShortMapsUrl, previewTargetFromMapsUrl, resolveMapsPlace } from '../places/mapsLink.js'
-import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
-import type { Database } from '../typeDefs/kyselyTypes.js'
+import { sql, type Selectable, type SelectQueryBuilder, type Transaction } from 'kysely'
+import type { Database, FacilitiesTable } from '../typeDefs/kyselyTypes.js'
+import type { FacilityParent } from '../typeDefs/resolverParents.js'
 
 function invalidCityId(): Result<gqlTypes.Facility> {
     return {
@@ -104,7 +104,7 @@ export function applyFacilityFilters<O>(
     }
     const queryText = listQueryValue(filters.query)
     if (queryText) {
-        filtered = filtered.where(`facilities.${FACILITY_SEARCH_COLUMN}`, 'ilike', likeContainsPattern(queryText))
+        filtered = filtered.where('facilities.search_text', 'ilike', likeContainsPattern(queryText))
     }
 
     // Prefecture: match the canonical key on the English side (any casing) or the Japanese name.
@@ -149,9 +149,8 @@ export function matchesThroughProfessional(filters: gqlTypes.FacilitySearchFilte
  * An invalid id is not a match.
  */
 export async function getFacilityByGooglePlaceId(
-    placeId: string,
-    needsHpIds = true
-): Promise<Result<gqlTypes.Facility | null>> {
+    placeId: string
+): Promise<Result<FacilityParent | null>> {
     if (!/^[A-Za-z0-9_-]{8,}$/.test(placeId)) {
         return { data: null, hasErrors: false }
     }
@@ -169,7 +168,7 @@ export async function getFacilityByGooglePlaceId(
             return { data: null, hasErrors: false }
         }
 
-        const facility = await getFacilityById(match.id, needsHpIds)
+        const facility = await getFacilityById(match.id)
         if (facility.hasErrors) {
             return { data: null, hasErrors: true, errors: facility.errors }
         }
@@ -195,9 +194,8 @@ export async function getFacilityByGooglePlaceId(
  * the clinic name inside the link, or a pin within 80 meters, is the same check.
  */
 export async function getFacilityMatchingMapsUrl(
-    url: string,
-    needsHpIds = true
-): Promise<Result<gqlTypes.Facility | null>> {
+    url: string
+): Promise<Result<FacilityParent | null>> {
     const trimmed = url.trim()
     if (!trimmed || trimmed.length > 2000) {
         return { data: null, hasErrors: false }
@@ -212,7 +210,7 @@ export async function getFacilityMatchingMapsUrl(
         }
 
         if (target.placeId) {
-            const byPlace = await getFacilityByGooglePlaceId(target.placeId, needsHpIds)
+            const byPlace = await getFacilityByGooglePlaceId(target.placeId)
             if (byPlace.hasErrors || byPlace.data) {
                 return byPlace
             }
@@ -233,7 +231,7 @@ export async function getFacilityMatchingMapsUrl(
             return { data: null, hasErrors: false }
         }
 
-        const facility = await getFacilityById(matchId, needsHpIds)
+        const facility = await getFacilityById(matchId)
         if (facility.hasErrors) {
             return { data: null, hasErrors: true, errors: facility.errors }
         }
@@ -263,15 +261,33 @@ export async function contactWithCanonicalMapsUrl<T extends { googleMapsUrl: str
 }
 
 /**
+ * Maps a facilities row to the GraphQL Facility without its professional ids.
+ * The `healthcareProfessionalIds` field resolver loads those.
+ */
+function facilityFromRow(row: Selectable<FacilitiesTable>): FacilityParent {
+    return {
+        id: row.id,
+        nameEn: row.name_en,
+        nameJa: row.name_ja,
+        contact: row.contact,
+        mapLatitude: row.map_latitude,
+        mapLongitude: row.map_longitude,
+        createdDate: row.created_date,
+        updatedDate: row.updated_date,
+        ...paymentOptionFields(row),
+        ...supportedLanguageFields(row),
+        ...facilityLocationFields(row)
+    }
+}
+
+/**
  * Gets the Facility from the database that matches on the id.
  * @param id The id of the Facility.
- * @param needsHpIds Whether to query the junction table for related HP IDs (defaults to true).
- * @returns A Facility object.
+ * @returns A Facility object, without its professional ids.
  */
 export const getFacilityById = async (
-    id: string,
-    needsHpIds = true
-): Promise<Result<gqlTypes.Facility>> => {
+    id: string
+): Promise<Result<FacilityParent>> => {
     try {
         // Validate the incoming id
         const validationResult = validateIdInput(id)
@@ -308,28 +324,8 @@ export const getFacilityById = async (
             }
         }
 
-        // Fetch related HP IDs from the join table (skip if not requested)
-        const healthcareProfessionalIds = needsHpIds
-            ? (await hpIdsByFacilityIds([id])).get(id) ?? []
-            : []
-
-        const gqlFacility: gqlTypes.Facility = {
-            id: facilityRow.id as string,
-            nameEn: facilityRow.name_en as string,
-            nameJa: facilityRow.name_ja as string,
-            contact: facilityRow.contact as gqlTypes.Contact,
-            mapLatitude: facilityRow.map_latitude as number,
-            mapLongitude: facilityRow.map_longitude as number,
-            healthcareProfessionalIds,
-            createdDate: facilityRow.created_date as string,
-            updatedDate: facilityRow.updated_date as string,
-            ...paymentOptionFields(facilityRow),
-            ...supportedLanguageFields(facilityRow),
-            ...facilityLocationFields(facilityRow)
-        }
-
         return {
-            data: gqlFacility,
+            data: facilityFromRow(facilityRow),
             hasErrors: false
         }
     } catch (error) {
@@ -368,12 +364,12 @@ async function getFacilityIdsByHpIds(hpIds: string[]): Promise<Set<string>> {
 }
 
 /**
- * Loads the professional ids for each facility from the junction table in one query,
- * so a page of facilities does not run one query per facility.
+ * Loads the professional ids for each facility from the junction table in one query.
+ * The per-request DataLoader in loaders.ts batches every facility in a response into one call.
  * @param facilityIds Facility ids to look up.
  * @returns A map from facility id to its professional ids. A facility with none is not in the map.
  */
-async function hpIdsByFacilityIds(facilityIds: string[]): Promise<Map<string, string[]>> {
+export async function hpIdsByFacilityIds(facilityIds: string[]): Promise<Map<string, string[]>> {
     const hpIdsByFacility = new Map<string, string[]>()
 
     if (!facilityIds.length) {
@@ -604,22 +600,20 @@ export async function createFacility(
  * by performing a preliminary lookup to get a subset of Facility IDs.
  * - It applies scalar filters, ordering, and pagination to the main facilities table.
  * @param filters Optional search and pagination filters for Facilities.
- * @param needsHpIds Whether to query the junction table for related HP IDs (defaults to true).
- * @returns A Promise that resolves to a Result object containing an array of Facilities.
+ * @param maxLimit The most rows one page may return (defaults to 100).
+ * @returns A Promise that resolves to a Result object containing an array of Facilities,
+ * without their professional ids.
  */
 export async function searchFacilities(
   filters: gqlTypes.FacilitySearchFilters = {},
-  needsHpIds = true
-): Promise<Result<gqlTypes.Facility[]>> {
+  maxLimit = 100
+): Promise<Result<FacilityParent[]>> {
     try {
         const validationResult = validateFacilitiesSearchInput(filters)
 
         if (validationResult.hasErrors) {
             return { data: [], hasErrors: true, errors: validationResult.errors }
         }
-
-        // A list without professional ids, such as the sitemap, can take up to 1000 rows.
-        const maxLimit = needsHpIds ? 100 : 1000
 
         const requestedLimit = filters.limit ?? 20
         const limit = requestedLimit > maxLimit ? maxLimit : requestedLimit
@@ -656,33 +650,7 @@ export async function searchFacilities(
         // Execute the main query, applying the offset and limit for the current page
         const paginationRows = await baseQuery.limit(limit).offset(offset).execute()
 
-        if (!paginationRows.length) {
-            return { data: [], hasErrors: false }
-        }
-
-        // Fetch the professional ids for every facility on this page in one query.
-        // Skip if not requested by the client
-        const hpIdsByFacility = needsHpIds
-            ? await hpIdsByFacilityIds(paginationRows.map(row => row.id))
-            : new Map<string, string[]>()
-
-        // Map the paginated DB rows to the final GraphQL shape, injecting the associated HP IDs
-        const list: gqlTypes.Facility[] = paginationRows.map(row => ({
-            id: row.id as string,
-            nameEn: row.name_en as string,
-            nameJa: row.name_ja as string,
-            contact: row.contact as gqlTypes.Contact,
-            mapLatitude: row.map_latitude as number,
-            mapLongitude: row.map_longitude as number,
-            healthcareProfessionalIds: hpIdsByFacility.get(row.id as string) ?? [],
-            ...paymentOptionFields(row),
-            createdDate: row.created_date as string,
-            updatedDate: row.updated_date as string,
-            ...supportedLanguageFields(row),
-            ...facilityLocationFields(row)
-        }))
-
-        return { data: list, hasErrors: false }
+        return { data: paginationRows.map(facilityFromRow), hasErrors: false }
     } catch (err) {
         logger.error(`ERROR: searchFacilities ${JSON.stringify(filters)} -> ${err}`)
         return {
@@ -1117,7 +1085,7 @@ export async function deleteFacility(
 export async function listPublishedCityFacilities(
     prefecture: string,
     citySlug: string
-): Promise<Result<gqlTypes.Facility[]>> {
+): Promise<Result<FacilityParent[]>> {
     try {
         const cityResult = await findCityBySlug(prefecture, citySlug)
 
@@ -1136,25 +1104,7 @@ export async function listPublishedCityFacilities(
             .where('verification_status', '<>', gqlTypes.FacilityVerificationStatus.UnverifiedLocation)
             .execute()
 
-        const hpIdsByFacility = await hpIdsByFacilityIds(rows.map(row => row.id))
-
-        return {
-            data: rows.map(row => ({
-                id: row.id,
-                nameEn: row.name_en,
-                nameJa: row.name_ja,
-                contact: row.contact as gqlTypes.Contact,
-                mapLatitude: row.map_latitude,
-                mapLongitude: row.map_longitude,
-                healthcareProfessionalIds: hpIdsByFacility.get(row.id) ?? [],
-                ...paymentOptionFields(row),
-                createdDate: row.created_date,
-                updatedDate: row.updated_date,
-                ...supportedLanguageFields(row),
-                ...facilityLocationFields(row)
-            })),
-            hasErrors: false
-        }
+        return { data: rows.map(facilityFromRow), hasErrors: false }
     } catch (error) {
         logger.error(`ERROR: listPublishedCityFacilities ${error}`)
         return {
