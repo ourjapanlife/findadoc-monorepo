@@ -12,7 +12,9 @@ import {
 import {
     BASIC_SEAT_LIMIT,
     callerMayAssign,
+    callerMayAttachLogin,
     callerMayRevoke,
+    callerMayRewriteRole,
     isLoginSubject,
     roleAllowed,
     seatIsAvailable
@@ -94,6 +96,11 @@ describe('hospital seats', () => {
         expect(callerMayRevoke(false, true, 'staff')).to.equal(true)
         expect(callerMayRevoke(false, true, 'owner')).to.equal(false)
         expect(callerMayRevoke(true, false, 'owner')).to.equal(true)
+        expect(callerMayRewriteRole(false, 'owner')).to.equal(false)
+        expect(callerMayRewriteRole(true, 'owner')).to.equal(true)
+        expect(callerMayRewriteRole(false, 'staff')).to.equal(true)
+        expect(callerMayAttachLogin(false)).to.equal(false)
+        expect(callerMayAttachLogin(true)).to.equal(true)
     })
 
     it('does not treat an anonymous request as a login', () => {

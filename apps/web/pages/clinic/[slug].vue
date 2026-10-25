@@ -3,7 +3,8 @@
         v-if="content"
         id="top"
         data-testid="clinic-landing"
-        class="clinic-theme bg-primary-bg"
+        class="bg-primary-bg"
+        :class="{ 'clinic-theme': themeStyle }"
         :style="themeStyle"
     >
         <ClinicLandingHeader

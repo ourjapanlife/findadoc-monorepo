@@ -72,7 +72,7 @@ pnpm dev
 
 ポスターに載せるリンクは `https://multilingual-online-clinic.findadoc.jp/` です。クリニックのパンくず、`/clinic/multilingual-online-clinic`、`--{id}` で終わるディレクトリのURLはそこへ転送されます。共有時の画像はそのクリニックのアイコンです。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけです。ヘッダーには、そのクリニックが保存したブランドカラーを使います。予約ボタンはまだどこにも飛びません。予約の流れはあとからこのボタンを置き換えます。病院の管理者は、これまでどおり施設そのものを編集します。
 
-同じページは2つのホストで開きます。`pnpm dev` だけで足ります。
+同じページは2つのホストで開きます。種データを入れたAPIとサイトは、次のコマンドで起動します。
 
 ```bash
 pnpm dev:seeded
@@ -92,10 +92,6 @@ pnpm dev:seeded
 `http://admin.localhost:3000/?preview=1` を開くと、30日間のCookieが保存され、`/admin` へ転送されます。Cookieがないとそのホストは404です。`?preview=0` でCookieを消します。そのホストの他のページ、`/submit` も含めて、`/admin` へ転送されます。ページは `noindex` のままです。人を追加するには、これまでどおりログインが必要です。環境変数はありません。
 
 病院は基本プランから始まり、有効な人は3人までです。Find a Doc のスタッフ（`write:users`）は、オーナーまたはスタッフを追加でき、その病院に既に所属する医療者を席に結びつけられます。その病院のオーナーは、3席の範囲でスタッフの追加と解除ができます。解除しても行は残り、監査ログが書かれます。最初のオーナーは Find a Doc のスタッフが追加します。
-
-```bash
-pnpm dev:seeded
-```
 
 ### Amplify と Route 53
 

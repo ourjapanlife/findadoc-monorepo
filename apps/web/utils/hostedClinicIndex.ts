@@ -21,6 +21,11 @@ export async function hostedClinicIndex(endpoint = graphqlEndpoint()): Promise<H
         return indexCache.sites
     }
 
+    const remember = (sites: HostedClinicRef[]): HostedClinicRef[] => {
+        indexCache = { at: now, endpoint, sites }
+        return sites
+    }
+
     try {
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -29,14 +34,19 @@ export async function hostedClinicIndex(endpoint = graphqlEndpoint()): Promise<H
             signal: AbortSignal.timeout(4000)
         })
         if (!response.ok) {
-            return indexCache?.sites ?? []
+            return remember(indexCache?.sites ?? [])
         }
-        const body = await response.json() as { data?: { clinicSites?: HostedClinicRef[] } }
-        const sites = (body.data?.clinicSites ?? []).filter(site => typeof site.slug === 'string' && site.slug.length > 0)
-        indexCache = { at: now, endpoint, sites }
-        return sites
+        const body = await response.json() as {
+            data?: { clinicSites?: HostedClinicRef[] }
+            errors?: unknown[]
+        }
+        if (body.errors?.length || !body.data?.clinicSites) {
+            return remember(indexCache?.sites ?? [])
+        }
+        const sites = body.data.clinicSites.filter(site => typeof site.slug === 'string' && site.slug.length > 0)
+        return remember(sites)
     } catch {
-        return indexCache?.sites ?? []
+        return remember(indexCache?.sites ?? [])
     }
 }
 

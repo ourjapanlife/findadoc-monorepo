@@ -162,7 +162,8 @@ export function clinicLandingHostSlug(hostname: string | null | undefined): stri
 
 /** Scripts, images, and Vite files stay on the host. A page path does not. */
 export function isStaticHostPath(pathname: string): boolean {
-    if (pathname.startsWith('/_nuxt') || pathname.startsWith('/__nuxt') || pathname.startsWith('/@')) {
+    if (pathname.startsWith('/_nuxt') || pathname.startsWith('/__nuxt') || pathname.startsWith('/@')
+        || pathname.startsWith('/api/')) {
         return true
     }
     const leaf = pathname.split('/').pop() ?? ''
@@ -236,11 +237,11 @@ function hostedSlug(segment: string, sites: readonly HostedClinicRef[]): string 
     const slug = (separator >= 0 ? segment.slice(0, separator) : segment).trim()
     const facilityId = separator >= 0 ? segment.slice(separator + ID_SEPARATOR.length) : undefined
     const bySlug = sites.find(site => site.slug === slug)
-    if (bySlug) {
-        return bySlug.slug
-    }
     if (!facilityId) {
-        return undefined
+        return bySlug?.slug
+    }
+    if (bySlug?.facilityId === facilityId) {
+        return bySlug.slug
     }
     return sites.find(site => site.facilityId === facilityId)?.slug
 }

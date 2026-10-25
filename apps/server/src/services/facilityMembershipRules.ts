@@ -30,6 +30,22 @@ export function callerMayAssign(platformStaff: boolean, ownerOfFacility: boolean
     return platformStaff || ownerOfFacility
 }
 
+/** A hospital owner may update staff. An owner row stays an owner unless Find a Doc staff changes it. */
+export function callerMayRewriteRole(
+    platformStaff: boolean,
+    currentRole: FacilitySeatRole | undefined
+): boolean {
+    if (currentRole !== 'owner') {
+        return true
+    }
+    return platformStaff
+}
+
+/** Only Find a Doc staff may attach a login to an account that does not have one. */
+export function callerMayAttachLogin(platformStaff: boolean): boolean {
+    return platformStaff
+}
+
 /** A hospital owner may free a staff seat. Staff, and another owner, stay put. */
 export function callerMayRevoke(
     platformStaff: boolean,

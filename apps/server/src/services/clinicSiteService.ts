@@ -75,13 +75,115 @@ export function clinicSiteStatusFromRow(status: string): ClinicSiteStatus | unde
     return STATUS_BY_ROW[status]
 }
 
+const LOCALE_STRING_KEYS = [
+    'book',
+    'seeFees',
+    'sectionNavLabel',
+    'heroBadge',
+    'heroTitleBefore',
+    'heroTitleHighlight',
+    'heroLead',
+    'heroNote',
+    'heroAlt',
+    'badgeTitle',
+    'badgeDetail',
+    'aboutEyebrow',
+    'aboutTitle',
+    'navDoctors',
+    'navCases',
+    'navFees',
+    'navFlow',
+    'doctorsEyebrow',
+    'doctorsTitle',
+    'casesEyebrow',
+    'casesTitle',
+    'casesLead',
+    'noticeEyebrow',
+    'noticeTitle',
+    'noticeLead',
+    'feesLink',
+    'feesEyebrow',
+    'feesTitle',
+    'feesLead',
+    'rangeLabel',
+    'includedLabel',
+    'referralNote',
+    'flowEyebrow',
+    'flowTitle',
+    'bookEyebrow',
+    'bookTitle',
+    'bookLead',
+    'bookNote',
+    'ctaTitle',
+    'ctaLead',
+    'ctaButton',
+    'emergency'
+] as const
+
+const LOCALE_STRING_LIST_KEYS = ['highlights', 'about', 'fees'] as const
+
+function isStringList(value: unknown): value is string[] {
+    return Array.isArray(value) && value.every(item => typeof item === 'string')
+}
+
+function hasStringFields(record: Record<string, unknown>, keys: readonly string[]): boolean {
+    return keys.every(key => typeof record[key] === 'string')
+}
+
+function hasCopyList(
+    value: unknown,
+    keys: readonly string[],
+    listKey?: string
+): boolean {
+    if (!Array.isArray(value)) {
+        return false
+    }
+    return value.every(item => {
+        if (!isRecord(item) || !hasStringFields(item, keys)) {
+            return false
+        }
+        return listKey === undefined || isStringList(item[listKey])
+    })
+}
+
+function localeDocument(value: unknown): Record<string, unknown> | undefined {
+    if (!isRecord(value) || !hasStringFields(value, LOCALE_STRING_KEYS)) {
+        return undefined
+    }
+    if (!LOCALE_STRING_LIST_KEYS.every(key => isStringList(value[key]))) {
+        return undefined
+    }
+    if (!hasCopyList(value.doctorCopy, ['role', 'tag', 'alt'], 'paragraphs')) {
+        return undefined
+    }
+    if (!hasCopyList(value.cases, ['title', 'detail'])) {
+        return undefined
+    }
+    if (!Array.isArray(value.notices) || value.notices.some(item => {
+        if (!isRecord(item) || typeof item.title !== 'string' || typeof item.detail !== 'string') {
+            return true
+        }
+        return item.feesLink !== undefined && typeof item.feesLink !== 'boolean'
+    })) {
+        return undefined
+    }
+    if (!hasCopyList(value.plans, ['amount', 'note'])) {
+        return undefined
+    }
+    if (!hasCopyList(value.steps, ['title', 'detail'])) {
+        return undefined
+    }
+    return value
+}
+
 function localeFromRow(row: LocaleRow): ClinicSiteLocale | undefined {
-    if (!isRecord(row.document) || typeof row.document.book !== 'string' || !Array.isArray(row.document.doctorCopy)) {
+    const document = localeDocument(row.document)
+    if (document === undefined) {
         return undefined
     }
 
     return {
-        ...(row.document as Omit<ClinicSiteLocale, 'locale' | 'name' | 'description'>),
+        ...(document as Omit<ClinicSiteLocale, 'locale' | 'name' | 'description'>),
         locale: row.locale,
         name: row.name,
         description: row.description

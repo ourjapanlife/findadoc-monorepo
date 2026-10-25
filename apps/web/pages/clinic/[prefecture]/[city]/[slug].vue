@@ -217,7 +217,7 @@ useHead({
             jsonLdScript('ld-medical-clinic', medicalClinicJsonLd({
                 name: displayName.value,
                 alternateName: alternateName.value,
-                pagePath: breadcrumbPath,
+                pagePath: hostedClinicUrl ?? localizedPath(canonicalPath, locale.value),
                 telephone: facilityPhone(record),
                 email: facilityEmail(record),
                 websiteUrl: facilityWebsiteUrl(record),

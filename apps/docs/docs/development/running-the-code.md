@@ -72,7 +72,7 @@ A clinic that owns a page is a `clinic_sites` row, seeded from `apps/server/scri
 
 The link to put on a poster is `https://multilingual-online-clinic.findadoc.jp/`. The clinic breadcrumb, `/clinic/multilingual-online-clinic`, and the directory address that ends in `--{id}` redirect there. The preview image is that clinic’s icon. The footer is the Find a Doc logo and “Powered by Find a Doc, Japan”. The header uses the clinic’s stored brand color. The booking buttons do not go anywhere yet. The appointment flow will replace them. An admin of that hospital still edits the facility itself.
 
-The same page answers two hosts. `pnpm dev` is enough:
+The same page answers two hosts. This starts the seeded API and the site:
 
 ```bash
 pnpm dev:seeded
@@ -92,10 +92,6 @@ The canonical URL is `https://{slug}.findadoc.jp/`. The www path and the shareab
 Open `http://admin.localhost:3000/?preview=1`. That stores a cookie for 30 days and redirects to `/admin`. Without the cookie the host is a 404. `?preview=0` clears the cookie. Other pages on that host, including `/submit`, redirect to `/admin`. The page stays `noindex`. Adding a person still requires a login. There is no environment variable.
 
 A hospital starts on the basic plan: three active people. Find a Doc staff (`write:users`) can add an owner or a staff member, and can attach an existing healthcare professional who already works at that hospital. An owner of that hospital can add and remove staff, still inside the three seats. Removing someone keeps the row and writes an audit log. The first owner is added by Find a Doc staff.
-
-```bash
-pnpm dev:seeded
-```
 
 ### Amplify and Route 53
 

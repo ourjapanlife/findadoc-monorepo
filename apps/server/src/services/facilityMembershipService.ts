@@ -8,7 +8,9 @@ import {
     BASIC_PLAN,
     BASIC_SEAT_LIMIT,
     callerMayAssign,
+    callerMayAttachLogin,
     callerMayRevoke,
+    callerMayRewriteRole,
     isLoginSubject,
     roleAllowed,
     seatIsAvailable,
@@ -182,7 +184,7 @@ export async function assignFacilityMember(
             }
 
             const seatLimit = await lockSubscription(trx, input.facilityId)
-            const existingUser = await lookupUser(trx, input)
+            const existingUser = await lookupUser(trx, input, actor.platformStaff)
             if (input.userId && !existingUser) {
                 return failure<AssignFacilityMemberPayload>('userId', ErrorCode.NOT_FOUND, 404)
             }
@@ -194,6 +196,10 @@ export async function assignFacilityMember(
                     .where('user_id', '=', existingUser.id)
                     .executeTakeFirst()
                 : undefined
+            const currentRole = current ? asRole(current.role) : undefined
+            if (!callerMayRewriteRole(actor.platformStaff, currentRole)) {
+                return failure<AssignFacilityMemberPayload>('role', ErrorCode.INVALID_INPUT, 403)
+            }
             const alreadyActive = current?.status === 'active'
             const activeSeats = await activeSeatCount(trx, input.facilityId)
             if (!seatIsAvailable(activeSeats, alreadyActive, seatLimit)) {
@@ -315,7 +321,8 @@ export async function revokeFacilityMember(
 
 async function lookupUser(
     trx: Transaction<Database>,
-    input: AssignFacilityMemberInput
+    input: AssignFacilityMemberInput,
+    platformStaff: boolean
 ): Promise<{
     id: string
     display_name: string | null
@@ -336,6 +343,9 @@ async function lookupUser(
             throw new Error('auth subject does not match this user')
         }
         if (!named.auth_subject) {
+            if (!callerMayAttachLogin(platformStaff)) {
+                throw new Error('auth subject does not match this user')
+            }
             const now = new Date().toISOString()
             return trx.updateTable('user')
                 .set({ auth_subject: subject, updated_date: now })
