@@ -19,6 +19,7 @@ describe('poolConfig', () => {
         expect(typeof config.password).toBe('string')
         expect(config.ssl).toBeUndefined()
         expect(config.max).toBe(100)
+        expect(config.connectionTimeoutMillis).toBe(2000)
     })
 
     it('signs an IAM token over TLS on RDS', async () => {
@@ -37,6 +38,7 @@ describe('poolConfig', () => {
 
         expect(config.port).toBe(5432)
         expect(config.max).toBe(2)
+        expect(config.connectionTimeoutMillis).toBe(10000)
         expect(config.ssl).toEqual({ rejectUnauthorized: true })
         expect(typeof config.password).toBe('function')
 

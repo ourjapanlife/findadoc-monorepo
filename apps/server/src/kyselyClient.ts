@@ -48,7 +48,9 @@ export function poolConfig(): PoolConfig {
         ssl: iamAuth || envVariables.dbSsl() ? { rejectUnauthorized: true } : undefined,
         max: Number(envVariables.dbPoolMax() ?? 100),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000,
+        // A new RDS connection signs an IAM token and opens TLS, which a cold Lambda can take more
+        // than 2 seconds to do while the request's other queries wait for it.
+        connectionTimeoutMillis: iamAuth ? 10000 : 2000,
         types: { getTypeParser }
     }
 }
@@ -74,7 +76,7 @@ export async function initializeKyselyClient(): Promise<void> {
  * - connectionString: Uses DATABASE_URL from .env (same database as Supabase)
  * - max: 10 connections in the pool (enough for dev and moderate production traffic)
  * - idleTimeoutMillis: Close idle connections after 30 seconds to free resources
- * - connectionTimeoutMillis: Fail fast if can't acquire a connection within 2 seconds
+ * - connectionTimeoutMillis: Fail fast if can't acquire a connection within 2 seconds (10 on RDS)
  */
     pool = new Pool(poolConfig())
 
