@@ -23,9 +23,12 @@ const CLIENT_PATHS = ['search', 'u/<*>', 'login', 'login/<*>', 'my-page', 'my-pa
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '../..')
 
-// Hosts the site on Amplify. The wildcard is one subdomain on the existing
-// findadoc.jp zone. Amplify writes that Route 53 record because the zone is
-// in this account. A name that already has a record stays on that record.
+// Hosts the site on Amplify. The apex and the wildcard are names on the
+// existing findadoc.jp zone. Amplify writes those Route 53 records because
+// the zone is in this account. The apex is an alias A record, and that write
+// replaces the A record already on findadoc.jp. A deeper name that already
+// has a record, such as www, stays on that record: the wildcard does not
+// override it.
 //
 // Pull request previews are separate Amplify branches. They are not names
 // under findadoc.jp, because the wildcard serves the production branch.
@@ -52,10 +55,18 @@ export class WebStack extends Stack {
         const domain = new CfnDomain(this, 'SiteDomain', {
             appId: app.attrAppId,
             domainName: props.domainName,
-            subDomainSettings: [{
-                branchName: branch.attrBranchName,
-                prefix: '*',
-            }],
+            // An empty prefix is the apex. The wildcard does not include it,
+            // and a browser cannot open https://*.findadoc.jp.
+            subDomainSettings: [
+                {
+                    branchName: branch.attrBranchName,
+                    prefix: '',
+                },
+                {
+                    branchName: branch.attrBranchName,
+                    prefix: '*',
+                },
+            ],
         })
 
         const providerArn = OpenIdConnectProvider.fromOpenIdConnectProviderArn(
@@ -82,6 +93,7 @@ export class WebStack extends Stack {
 
         new CfnOutput(this, 'AmplifyAppId', { value: app.attrAppId })
         new CfnOutput(this, 'AmplifyDefaultDomain', { value: app.attrDefaultDomain })
+        new CfnOutput(this, 'ApexUrl', { value: `https://${domain.attrDomainName}` })
         new CfnOutput(this, 'WildcardName', { value: `*.${domain.attrDomainName}` })
         new CfnOutput(this, 'CertificateRecord', { value: domain.attrCertificateRecord })
         new CfnOutput(this, 'WebDeployRoleArn', { value: deployRole.roleArn })

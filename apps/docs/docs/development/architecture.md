@@ -19,7 +19,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 
 ### Website (`apps/web`)
 
-- **Framework**: Nuxt 4, prerendered with `nuxi generate` and hosted on Netlify
+- **Framework**: Nuxt 4, prerendered with `nuxi generate` and hosted on AWS Amplify
 - **UI**: Vue 3 Composition API with Tailwind CSS
 - **State**: Pinia stores
 - **API**: GraphQL via `graphql-request`

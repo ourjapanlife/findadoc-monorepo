@@ -11,7 +11,7 @@ AWS CDK app for the Find a Doc AWS account.
 | Stack         | What it does                                                                                                 |
 | ------------- | ------------------------------------------------------------------------------------------------------------ |
 | `FindadocDns` | Looks up the existing `findadoc.jp` hosted zone and exposes it as `hostedZone`. It does not create the zone. |
-| `FindadocWeb` | Amplify Hosting app for the site. Associates `*.findadoc.jp` with the production branch, and lets GitHub Actions publish that branch and pull request previews. |
+| `FindadocWeb` | Amplify Hosting app for the site. Associates `findadoc.jp` and `*.findadoc.jp` with the production branch, and lets GitHub Actions publish that branch and pull request previews. |
 | `FindadocGithubDeploy` | GitHub OIDC provider and the `findadoc-github-cdk-deploy` role that the Infra workflow assumes. |
 | `FindadocNetwork` | VPC with two private dual-stack subnets (`ap-northeast-1a`, `ap-northeast-1c`). No NAT gateway. IPv6 traffic leaves through an egress-only internet gateway. |
 | `FindadocDatabase` | RDS PostgreSQL 17 for the API, plus the `DatabaseClients` security group that may connect to it and a monthly AWS Backup plan. |
@@ -119,9 +119,9 @@ After that, CI deploys every stack, including later changes to `FindadocGithubDe
 
 ## Subdomains
 
-The site is hosted on Amplify. `FindadocWeb` associates `*.findadoc.jp` with the `main` branch. Amplify provisions the certificate and writes the wildcard record, because `findadoc.jp` is a Route 53 zone in this account.
+The site is hosted on Amplify. `FindadocWeb` associates `findadoc.jp` and `*.findadoc.jp` with the `main` branch. Amplify provisions the certificate and writes both records, because `findadoc.jp` is a Route 53 zone in this account. The apex record is an alias A record. Deploying this stack replaces the A record that is already on `findadoc.jp`.
 
-`www`, `api`, and `docs` already have records, so those names stay where they are. Add a name to the Amplify domain when that name should move. The app has no Git repository connected, and auto-build is off. `.github/workflows/web.yml` builds the site and uploads `apps/web/.output/public`. A pull request sets `NUXT_SKIP_DIRECTORY_PRERENDER`, so that preview does not generate clinic, doctor, hub, and facet HTML. The `main` publish does not set it. Marketing pages are generated either way. The Playwright workflow does not set the flag.
+`www`, `api`, and `docs` already have records, so those names stay where they are. The wildcard does not override them. Add a name to the Amplify domain when that name should move. `https://*.findadoc.jp` is not a page: a browser cannot open the asterisk. The app has no Git repository connected, and auto-build is off. `.github/workflows/web.yml` builds the site and uploads `apps/web/.output/public`. A pull request sets `NUXT_SKIP_DIRECTORY_PRERENDER`, so that preview does not generate clinic, doctor, hub, and facet HTML. The `main` publish does not set it. Marketing pages are generated either way. The Playwright workflow does not set the flag.
 
 ## Previews
 

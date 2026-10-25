@@ -33,7 +33,7 @@
 | [Vitest](https://vitest.dev/) | ユニットテスト |
 | [Playwright](https://playwright.dev/) | E2Eテスト |
 | [Storybook](https://storybook.js.org/) | コンポーネント開発とドキュメント |
-| [Netlify](https://www.netlify.com/) | ホスティング |
+| [AWS Amplify](https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html) | ホスティング |
 
 ## API（`apps/server`）
 
