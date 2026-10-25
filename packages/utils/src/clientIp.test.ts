@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clientIpFrom } from '../src/clientIp.js'
+import { clientIpFrom } from './clientIp.js'
 
 const edge = { ip: '130.176.0.10' }
 
@@ -24,5 +24,10 @@ describe('clientIpFrom', () => {
             .toBe('130.176.0.10')
         expect(clientIpFrom({ ...edge, headers: { 'x-findadoc-viewer-ip': '203.0.113.7' } }, undefined))
             .toBe('130.176.0.10')
+        expect(clientIpFrom({
+            ...edge,
+            headers: { 'x-findadoc-viewer-ip': '203.0.113.7', 'x-findadoc-edge': 's3creT' }
+        }, 's3cret')).toBe('130.176.0.10')
+        expect(clientIpFrom({}, 's3cret')).toBe('unknown')
     })
 })

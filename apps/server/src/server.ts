@@ -17,7 +17,7 @@ import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
 import { logger } from './logger.js'
 import { requestErrorFields } from './requestErrors.js'
-import { clientIpFrom } from './clientIp.js'
+import { clientIpFrom } from '@findadoc/utils'
 
 /**
  * Builds the Fastify app with Apollo on `/`, ready to serve but not listening.
@@ -50,7 +50,7 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
         max: 100,
         timeWindow: '1 minute',
         // per person, not per CloudFront edge (see clientIp.ts)
-        keyGenerator: request => clientIpFrom(request)
+        keyGenerator: request => clientIpFrom(request, envVariables.edgeSharedSecret())
     })
 
     //add compression to reduce the size of the requests/responses (makes the api faster)

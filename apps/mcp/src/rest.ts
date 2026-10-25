@@ -118,7 +118,8 @@ export async function registerRestRoutes(app: FastifyInstance): Promise<void> {
 
     // Serve the OpenAPI manifest so ChatGPT (and other OpenAPI clients) can
     // import it directly from the running server.
-    const openapiPath = fileURLToPath(new URL('../openapi.yaml', import.meta.url))
+    // OPENAPI_PATH is set where the file is bundled elsewhere, such as the Lambda.
+    const openapiPath = process.env.OPENAPI_PATH ?? fileURLToPath(new URL('../openapi.yaml', import.meta.url))
 
     app.get('/openapi.yaml', async (req, reply) => {
         try {

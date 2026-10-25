@@ -29,6 +29,8 @@ const envVariables = {
     dbIamAuth: () => process.env.DB_IAM_AUTH === 'true',
     dbSsl: () => process.env.PGSSLMODE === 'require',
     dbPoolMax: () => process.env.DB_POOL_MAX,
+    // Sent by CloudFront in x-findadoc-edge. See clientIpFrom in @findadoc/utils.
+    edgeSharedSecret: () => process.env.EDGE_SHARED_SECRET,
     pgDatabase: () => process.env.DATABASE_URL,
     sentryDsn: () => process.env.SENTRY_DSN,
     sentryEnvironment: () =>

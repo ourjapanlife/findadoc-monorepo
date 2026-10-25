@@ -161,8 +161,8 @@ Tools live in `src/tools/` as individual modules. Each tool exports a registrati
 | Decision | Choice | Rationale |
 |---|---|---|
 | **Transport** | Streamable HTTP (primary), STDIO (local dev) | Streamable HTTP is the current MCP spec standard for remote servers. STDIO kept for local dev with Claude Code and MCP Inspector. |
-| **Hosting** | DigitalOcean Droplet | Direct control over the server environment. |
-| **Domain** | `mcp.findadoc.jp` | Dedicated subdomain for the MCP endpoint. |
+| **Hosting** | AWS Lambda behind CloudFront (`FindadocMcp` in `infra/`) | `src/lambda.ts` serves the same app as `src/http.ts`. MCP is stateless (no sessions), so any Lambda instance can answer any request. Inside the Lambda and CloudFront free tiers. |
+| **Domain** | `mcp-staging.findadoc.jp`, then `mcp.findadoc.jp` at the cutover | Dedicated subdomain for the MCP endpoint. The tools call `https://api.findadoc.jp`. |
 | **GraphQL client** | `graphql-request` | Lightweight, minimal client for querying the Find a Doc GraphQL API. |
 | **Test framework** | Vitest | Fast, native ESM support, compatible with the MCP SDK's `InMemoryTransport`. |
 | **Package manager** | pnpm (via Corepack) | One lockfile for web, server, MCP, and shared packages. |

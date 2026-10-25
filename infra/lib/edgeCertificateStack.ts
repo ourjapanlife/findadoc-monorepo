@@ -8,6 +8,7 @@ export interface EdgeCertificateStackProps extends StackProps {
     zoneName: string
     // The first name is the certificate's subject. The rest are alternative names.
     apiDomainNames: string[]
+    mcpDomainNames: string[]
 }
 
 // CloudFront only accepts certificates from us-east-1, so this one stack lives there.
@@ -15,6 +16,7 @@ export interface EdgeCertificateStackProps extends StackProps {
 // The CDK bootstrap has to exist in us-east-1 before the first deploy (see the README).
 export class EdgeCertificateStack extends Stack {
     readonly apiCertificate: Certificate
+    readonly mcpCertificate: Certificate
 
     constructor(scope: Construct, id: string, props: EdgeCertificateStackProps) {
         super(scope, id, props)
@@ -23,12 +25,14 @@ export class EdgeCertificateStack extends Stack {
             hostedZoneId: props.hostedZoneId,
             zoneName: props.zoneName,
         })
-        const [domainName, ...subjectAlternativeNames] = props.apiDomainNames
+        const certificate = (id: string, [domainName, ...subjectAlternativeNames]: string[]) =>
+            new Certificate(this, id, {
+                domainName,
+                subjectAlternativeNames,
+                validation: CertificateValidation.fromDns(zone),
+            })
 
-        this.apiCertificate = new Certificate(this, 'ApiCertificate', {
-            domainName,
-            subjectAlternativeNames,
-            validation: CertificateValidation.fromDns(zone),
-        })
+        this.apiCertificate = certificate('ApiCertificate', props.apiDomainNames)
+        this.mcpCertificate = certificate('McpCertificate', props.mcpDomainNames)
     }
 }
