@@ -6,6 +6,8 @@ import {
     GITHUB_DEPLOY_ROLE_NAME,
     GITHUB_OIDC_SUBJECT_PREFIX,
     GITHUB_REPOSITORY,
+    GITHUB_WEB_DEPLOY_ROLE_NAME,
+    GITHUB_WEB_PREVIEW_ROLE_NAME,
 } from '../lib/environment.js'
 import { GithubDeployStack } from '../lib/githubDeployStack.js'
 import { WebStack } from '../lib/webStack.js'
@@ -24,6 +26,10 @@ new WebStack(app, 'FindadocWeb', {
     env: FINDADOC_ENV,
     domainName: FINDADOC_DOMAIN,
     branchName: 'main',
+    repository: GITHUB_REPOSITORY,
+    subjectPrefix: GITHUB_OIDC_SUBJECT_PREFIX,
+    deployRoleName: GITHUB_WEB_DEPLOY_ROLE_NAME,
+    previewRoleName: GITHUB_WEB_PREVIEW_ROLE_NAME,
 })
 
 new GithubDeployStack(app, 'FindadocGithubDeploy', {
