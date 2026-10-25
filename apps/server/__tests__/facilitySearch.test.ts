@@ -20,8 +20,12 @@ describe('searchFacilities', () => {
         const input = generateRandomCreateFacilityInput()
 
         input.nameEn = `${searchTag} ${suffix}`
-        input.contact.address.prefectureEn = prefectureEn
-        input.contact.address.prefectureJa = prefectureJa
+        const address = input.contact.address
+        if (address === undefined || address === null) {
+            throw new Error('expected generateRandomCreateFacilityInput to include an address')
+        }
+        address.prefectureEn = prefectureEn
+        address.prefectureJa = prefectureJa
 
         const result = await request(gqlApiUrl).post('').send({
             query: createFacilityMutation,

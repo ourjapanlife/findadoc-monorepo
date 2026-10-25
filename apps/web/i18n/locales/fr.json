@@ -320,7 +320,7 @@
   "modFacilitySection": {
     "addresses": "Adresses",
     "onlineLabel": "Établissement en ligne",
-    "onlineHint": "Un établissement en ligne n'a pas d'adresse postale. L'adresse, la ville et la carte peuvent rester vides.",
+    "onlineHint": "Facultatif. Cochez uniquement si l'établissement n'a pas d'adresse postale. Adresse, ville et carte ne sont alors pas obligatoires.",
     "contactInformation": "Coordonnées",
     "facilityHeading": "Informations sur l’établissement",
     "googleMapsInformation": "Informations Google Maps",

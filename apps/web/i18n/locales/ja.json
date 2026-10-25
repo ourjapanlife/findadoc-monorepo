@@ -323,7 +323,7 @@
   "modFacilitySection": {
     "addresses": "住所",
     "onlineLabel": "オンラインの医療機関",
-    "onlineHint": "オンラインの医療機関には番地がありません。住所、市区町村、地図は空のままで構いません。",
+    "onlineHint": "任意です。番地のない医療機関のときだけ選んでください。選ぶと住所・市区町村・地図は不要になります。",
     "contactInformation": "連絡先",
     "facilityHeading": "医療機関の情報",
     "googleMapsInformation": "Google マップの情報",

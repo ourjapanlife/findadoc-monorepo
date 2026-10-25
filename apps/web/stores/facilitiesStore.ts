@@ -88,29 +88,15 @@ export function getChangedFacilityFieldsForUpdate(
     original: Facility
 ): MutationUpdateFacilityArgs['input'] {
     const updatedFields: MutationUpdateFacilityArgs['input'] = {}
+    const becomingOnline = current.online === true && original.online !== true
 
     if (current.nameEn !== original.nameEn) updatedFields.nameEn = current.nameEn
     if (current.nameJa !== original.nameJa) updatedFields.nameJa = current.nameJa
-    if (current.online !== original.online) updatedFields.online = current.online
-
-    const currentLatitude = parseFloat(current.mapLatitude)
-    if (!isNaN(currentLatitude) && currentLatitude !== original.mapLatitude) {
-        updatedFields.mapLatitude = currentLatitude
-    }
-
-    const currentLongitude = parseFloat(current.mapLongitude)
-    if (!isNaN(currentLongitude) && currentLongitude !== original.mapLongitude) {
-        updatedFields.mapLongitude = currentLongitude
-    }
+    // Online is opt-in: only include when the moderator changed the checkbox.
+    if (current.online !== original.online) updatedFields.online = current.online === true
 
     if (current.healthProfessionalsRelations?.length) {
         updatedFields.healthcareProfessionalIds = current.healthProfessionalsRelations
-    }
-
-    const nextCityId = current.cityId.trim()
-    const previousCityId = original.cityId ?? ''
-    if (nextCityId !== previousCityId) {
-        updatedFields.cityId = nextCityId || null
     }
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
@@ -126,6 +112,40 @@ export function getChangedFacilityFieldsForUpdate(
         updatedAddress[key] = current[key] ?? ''
     }
 
+    const phoneOrEmailChanged
+        = current.phone !== originalContactInput.phone
+          || current.email !== originalContactInput.email
+          || current.website !== originalContactInput.website
+
+    // When becoming online, the server clears city, map, and address. Still send
+    // phone/email/website changes. Skip location fields entirely.
+    if (becomingOnline) {
+        if (phoneOrEmailChanged || current.phone.trim()) {
+            updatedFields.contact = {
+                phone: current.phone,
+                ...(current.email !== originalContactInput.email ? { email: current.email } : {}),
+                ...(current.website !== originalContactInput.website ? { website: current.website } : {})
+            }
+        }
+        return updatedFields
+    }
+
+    const currentLatitude = parseFloat(current.mapLatitude)
+    if (!isNaN(currentLatitude) && currentLatitude !== original.mapLatitude) {
+        updatedFields.mapLatitude = currentLatitude
+    }
+
+    const currentLongitude = parseFloat(current.mapLongitude)
+    if (!isNaN(currentLongitude) && currentLongitude !== original.mapLongitude) {
+        updatedFields.mapLongitude = currentLongitude
+    }
+
+    const nextCityId = current.cityId.trim()
+    const previousCityId = original.cityId ?? ''
+    if (nextCityId !== previousCityId) {
+        updatedFields.cityId = nextCityId || null
+    }
+
     function isContactInfoPresent(contact: FacilitySectionFields): boolean {
         return (contact.phone ?? '') !== ''
           || (contact.email ?? '') !== ''
@@ -135,19 +155,19 @@ export function getChangedFacilityFieldsForUpdate(
     }
 
     const contactChanged
-        = current.phone !== originalContactInput.phone
-          || current.googlemapsURL !== originalContactInput.googleMapsUrl
-          || current.email !== originalContactInput.email
-          || current.website !== originalContactInput.website
+        = phoneOrEmailChanged
+          || current.googlemapsURL !== (originalContactInput.googleMapsUrl ?? '')
           || requiredAddressKeys.some(
-              key => updatedAddress[key] !== originalContactInput.address[key]
+              key => updatedAddress[key] !== (originalContactInput.address?.[key] ?? '')
           )
 
     if (contactChanged && isContactInfoPresent(current)) {
         const updatedContact: ContactInput = {
             phone: current.phone,
-            googleMapsUrl: current.googlemapsURL,
-            address: updatedAddress as PhysicalAddressInput
+            googleMapsUrl: current.googlemapsURL || undefined,
+            ...(current.online === true
+                ? {}
+                : { address: updatedAddress as PhysicalAddressInput })
         }
 
         if (current.email !== originalContactInput.email) {
@@ -355,6 +375,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
     }
 
     async function createFacility(): Promise<ServerResponse<Facility>> {
+        const isOnline = createFacilityFields.online === true
         const { prefectureEn, prefectureJa } = createFacilityFields.contact.address
 
         const CreateFacilityInput: MutationCreateFacilityArgs = {
@@ -362,29 +383,36 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                 nameEn: createFacilityFields.nameEn,
                 nameJa: createFacilityFields.nameJa,
                 contact: {
-                    address: {
-                        addressLine1En: createFacilityFields.contact.address.addressLine1En,
-                        addressLine1Ja: createFacilityFields.contact.address.addressLine1Ja,
-                        addressLine2En: createFacilityFields.contact.address.addressLine2En,
-                        addressLine2Ja: createFacilityFields.contact.address.addressLine2Ja,
-                        cityEn: createFacilityFields.contact.address.cityEn,
-                        cityJa: createFacilityFields.contact.address.cityJa,
-                        postalCode: createFacilityFields.contact.address.postalCode,
-                        prefectureEn,
-                        prefectureJa
-                    },
                     email: createFacilityFields.contact.email,
                     phone: createFacilityFields.contact.phone,
                     website: createFacilityFields.contact.website,
-                    googleMapsUrl: createFacilityFields.contact.googleMapsUrl
+                    ...(isOnline
+                        ? {}
+                        : {
+                            googleMapsUrl: createFacilityFields.contact.googleMapsUrl,
+                            address: {
+                                addressLine1En: createFacilityFields.contact.address.addressLine1En,
+                                addressLine1Ja: createFacilityFields.contact.address.addressLine1Ja,
+                                addressLine2En: createFacilityFields.contact.address.addressLine2En,
+                                addressLine2Ja: createFacilityFields.contact.address.addressLine2Ja,
+                                cityEn: createFacilityFields.contact.address.cityEn,
+                                cityJa: createFacilityFields.contact.address.cityJa,
+                                postalCode: createFacilityFields.contact.address.postalCode,
+                                prefectureEn,
+                                prefectureJa
+                            }
+                        })
                 },
-                mapLatitude: coordinateOrZero(createFacilityFields.mapLatitude),
-                mapLongitude: coordinateOrZero(createFacilityFields.mapLongitude),
                 healthcareProfessionalIds: createFacilityFields.healthcareProfessionalIds,
-                online: createFacilityFields.online === true,
-                ...(createFacilityFields.online === true || !createFacilityFields.cityId
+                // Online is opt-in: only send when the moderator checked it.
+                ...(isOnline ? { online: true } : {}),
+                ...(isOnline
                     ? {}
-                    : { cityId: createFacilityFields.cityId })
+                    : {
+                        mapLatitude: coordinateOrZero(createFacilityFields.mapLatitude),
+                        mapLongitude: coordinateOrZero(createFacilityFields.mapLongitude),
+                        ...(createFacilityFields.cityId ? { cityId: createFacilityFields.cityId } : {})
+                    })
             }
         }
 

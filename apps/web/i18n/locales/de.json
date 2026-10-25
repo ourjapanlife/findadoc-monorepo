@@ -371,7 +371,7 @@
   "modFacilitySection": {
     "addresses": "Adressen",
     "onlineLabel": "Online-Einrichtung",
-    "onlineHint": "Eine Online-Einrichtung hat keine Straßenadresse. Adresse, Ort und Karte können leer bleiben.",
+    "onlineHint": "Optional. Nur ankreuzen, wenn die Einrichtung keine Straßenadresse hat. Dann sind Adresse, Ort und Karte nicht erforderlich.",
     "contactInformation": "Kontakt",
     "facilityHeading": "Angaben zur Einrichtung",
     "googleMapsInformation": "Google Maps information",

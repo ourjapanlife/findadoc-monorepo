@@ -233,12 +233,40 @@ export function validateCreateFacilityInput(input: gqlTypes.CreateFacilityInput)
         }
     }
 
+    // Online is opt-in. Only when true may address and map be omitted.
+    if (input.online !== true) {
+        if (!input.contact?.address) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: 'contact.address',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+        if (input.mapLatitude === undefined || input.mapLatitude === null) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: 'mapLatitude',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+        if (input.mapLongitude === undefined || input.mapLongitude === null) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: 'mapLongitude',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+    }
+
     validateSupportedLanguages(input.supportedLanguages, validationResults)
 
     return validationResults
 }
 
-export function validateContactInput(contactInput: gqlTypes.Contact): Result<unknown> {
+export function validateContactInput(contactInput: gqlTypes.ContactInput | gqlTypes.Contact): Result<unknown> {
     const validationResults: Result<unknown> = {
         data: undefined,
         hasErrors: false,

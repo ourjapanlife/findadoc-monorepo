@@ -323,7 +323,7 @@
   "modFacilitySection": {
     "addresses": "地址",
     "onlineLabel": "在线医疗机构",
-    "onlineHint": "在线医疗机构没有街道地址。地址、城市和地图可以留空。",
+    "onlineHint": "可选。仅在医疗机构没有街道地址时勾选。勾选后不必填写地址、城市和地图。",
     "contactInformation": "联系方式",
     "facilityHeading": "医疗机构信息",
     "googleMapsInformation": "Google 地图信息",

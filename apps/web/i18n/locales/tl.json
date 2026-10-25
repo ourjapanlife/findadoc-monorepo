@@ -265,7 +265,7 @@
   "modFacilitySection": {
     "addresses": "Mga Address",
     "onlineLabel": "Online na pasilidad",
-    "onlineHint": "Walang street address ang online na pasilidad. Maaaring iwang blangko ang address, lungsod, at mapa.",
+    "onlineHint": "Opsyonal. Lagyan lang ng check kung walang street address ang pasilidad. Hindi na kailangan ang address, lungsod, at mapa.",
     "contactInformation": "Impormasyon sa pakikipag-ugnayan",
     "facilityHeading": "Impormasyon ng Pasilidad",
     "googleMapsInformation": "Impormasyon sa Google maps",

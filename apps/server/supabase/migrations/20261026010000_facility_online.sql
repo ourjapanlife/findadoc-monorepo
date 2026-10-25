@@ -1,4 +1,5 @@
--- An online facility has no street address. Address text stays in contact and may be empty.
--- Latitude and longitude stay required by the table. An online row with no pin stores 0.
+-- Moderators may mark a facility as online. Default is false (not online).
+-- An online facility has no street address: contact.address may be blank, and
+-- the table still stores map_latitude/map_longitude as 0 when there is no pin.
 ALTER TABLE facilities
   ADD COLUMN online boolean NOT NULL DEFAULT false;

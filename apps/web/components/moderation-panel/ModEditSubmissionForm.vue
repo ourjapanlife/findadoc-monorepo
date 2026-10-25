@@ -449,30 +449,36 @@ async function saveSubmissionDraft(
         nameEn: facilitiesStore.facilitySectionFields.nameEn,
         nameJa: facilitiesStore.facilitySectionFields.nameJa,
         contact: {
-            googleMapsUrl: facilitiesStore.facilitySectionFields.googlemapsURL,
             email: facilitiesStore.facilitySectionFields.email,
             phone: facilitiesStore.facilitySectionFields.phone,
             website: facilitiesStore.facilitySectionFields.website,
-            address: {
-                postalCode: facilitiesStore.facilitySectionFields.postalCode,
-                prefectureEn: facilitiesStore.facilitySectionFields.prefectureEn,
-                cityEn: facilitiesStore.facilitySectionFields.cityEn,
-                addressLine1En: facilitiesStore.facilitySectionFields.addressLine1En,
-                addressLine2En: facilitiesStore.facilitySectionFields.addressLine2En,
-                prefectureJa: facilitiesStore.facilitySectionFields.prefectureJa,
-                cityJa: facilitiesStore.facilitySectionFields.cityJa,
-                addressLine1Ja: facilitiesStore.facilitySectionFields.addressLine1Ja,
-                addressLine2Ja: facilitiesStore.facilitySectionFields.addressLine2Ja
-            }
+            ...(facilitiesStore.facilitySectionFields.online === true
+                ? { googleMapsUrl: '' }
+                : {
+                    googleMapsUrl: facilitiesStore.facilitySectionFields.googlemapsURL,
+                    address: {
+                        postalCode: facilitiesStore.facilitySectionFields.postalCode,
+                        prefectureEn: facilitiesStore.facilitySectionFields.prefectureEn,
+                        cityEn: facilitiesStore.facilitySectionFields.cityEn,
+                        addressLine1En: facilitiesStore.facilitySectionFields.addressLine1En,
+                        addressLine2En: facilitiesStore.facilitySectionFields.addressLine2En,
+                        prefectureJa: facilitiesStore.facilitySectionFields.prefectureJa,
+                        cityJa: facilitiesStore.facilitySectionFields.cityJa,
+                        addressLine1Ja: facilitiesStore.facilitySectionFields.addressLine1Ja,
+                        addressLine2Ja: facilitiesStore.facilitySectionFields.addressLine2Ja
+                    }
+                })
         },
         healthcareProfessionalIds: facilitiesStore.facilitySectionFields.healthcareProfessionalIds,
-        mapLatitude: parseFloat(facilitiesStore.facilitySectionFields.mapLatitude) || 0,
-        mapLongitude: parseFloat(facilitiesStore.facilitySectionFields.mapLongitude) || 0,
-        online: facilitiesStore.facilitySectionFields.online === true,
         ...(facilitiesStore.facilitySectionFields.online === true
-          || !facilitiesStore.facilitySectionFields.cityId
-            ? {}
-            : { cityId: facilitiesStore.facilitySectionFields.cityId })
+            ? { online: true, mapLatitude: 0, mapLongitude: 0 }
+            : {
+                mapLatitude: parseFloat(facilitiesStore.facilitySectionFields.mapLatitude) || 0,
+                mapLongitude: parseFloat(facilitiesStore.facilitySectionFields.mapLongitude) || 0,
+                ...(facilitiesStore.facilitySectionFields.cityId
+                    ? { cityId: facilitiesStore.facilitySectionFields.cityId }
+                    : {})
+            })
     }
 
     const healthcareProfessionalUpdate = [

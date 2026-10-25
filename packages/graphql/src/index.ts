@@ -92,12 +92,15 @@ export type Contact = {
 
 /** Input for providing contact information. */
 export type ContactInput = {
-  /** Physical mailing address. */
-  address: PhysicalAddressInput;
+  /**
+   * Physical mailing address.
+   * Required for a normal facility. Omit for an online facility.
+   */
+  address?: InputMaybe<PhysicalAddressInput>;
   /** Email address. */
   email?: InputMaybe<Scalars['String']['input']>;
-  /** Google Maps URL for the facility location. */
-  googleMapsUrl: Scalars['String']['input'];
+  /** Google Maps URL for the facility location. Omit or empty for an online facility. */
+  googleMapsUrl?: InputMaybe<Scalars['String']['input']>;
   /** Phone number. */
   phone: Scalars['String']['input'];
   /** Website URL. */
@@ -114,17 +117,24 @@ export type CreateFacilityInput = {
   googlePlaceId?: InputMaybe<Scalars['String']['input']>;
   /** IDs of healthcare professionals to associate with this facility. */
   healthcareProfessionalIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** Latitude coordinate for map placement. */
-  mapLatitude: Scalars['Float']['input'];
-  /** Longitude coordinate for map placement. */
-  mapLongitude: Scalars['Float']['input'];
+  /**
+   * Latitude for map placement.
+   * Required for a normal facility. Omit for an online facility.
+   */
+  mapLatitude?: InputMaybe<Scalars['Float']['input']>;
+  /**
+   * Longitude for map placement.
+   * Required for a normal facility. Omit for an online facility.
+   */
+  mapLongitude?: InputMaybe<Scalars['Float']['input']>;
   /** Name of the facility in English. */
   nameEn: Scalars['String']['input'];
   /** Name of the facility in Japanese. */
   nameJa: Scalars['String']['input'];
   /**
-   * True when this facility has no street address.
-   * Address, city, and map fields may be empty.
+   * Optional. Set true only for an online facility with no street address.
+   * Omit or false for a normal facility. Defaults to false.
+   * When true, address, city, and map may be omitted.
    */
   online?: InputMaybe<Scalars['Boolean']['input']>;
   /** Payment options for the facility, Type and Brand */
@@ -269,8 +279,8 @@ export type Facility = {
   /** Name of the facility in Japanese. */
   nameJa: Scalars['String']['output'];
   /**
-   * True when this facility has no street address.
-   * Address, city, and map fields are not required.
+   * True only when a moderator selected online (no street address).
+   * Default is false. Address, city, and map are not required when true.
    */
   online: Scalars['Boolean']['output'];
   /** The payment methods accepted by this facility. */
@@ -366,7 +376,10 @@ export type FacilitySubmission = {
   nameEn?: Maybe<Scalars['String']['output']>;
   /** Submitted facility name in Japanese. */
   nameJa?: Maybe<Scalars['String']['output']>;
-  /** True when the submitted facility has no street address. */
+  /**
+   * True when a moderator marked this facility as online (no street address).
+   * Absent or false means a normal facility. Not set by the public form.
+   */
   online?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -1257,15 +1270,18 @@ export type UpdateFacilityInput = {
   googlePlaceId?: InputMaybe<Scalars['String']['input']>;
   /** Healthcare professional relationships to add, update, or remove. */
   healthcareProfessionalIds?: InputMaybe<Array<Relationship>>;
-  /** Updated latitude coordinate. */
+  /** Updated latitude coordinate. Cleared when the facility becomes online. */
   mapLatitude?: InputMaybe<Scalars['Float']['input']>;
-  /** Updated longitude coordinate. */
+  /** Updated longitude coordinate. Cleared when the facility becomes online. */
   mapLongitude?: InputMaybe<Scalars['Float']['input']>;
   /** Updated name of the facility in English. */
   nameEn?: InputMaybe<Scalars['String']['input']>;
   /** Updated name of the facility in Japanese. */
   nameJa?: InputMaybe<Scalars['String']['input']>;
-  /** True when this facility has no street address. Address and map fields may be empty. */
+  /**
+   * Optional. Set true only for an online facility with no street address.
+   * Omit to leave the stored value unchanged.
+   */
   online?: InputMaybe<Scalars['Boolean']['input']>;
   /** Payment options for the facility, Type and Brand */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;

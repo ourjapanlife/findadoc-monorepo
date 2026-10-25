@@ -411,7 +411,7 @@
   "modFacilitySection": {
     "addresses": "Addresses",
     "onlineLabel": "Online facility",
-    "onlineHint": "An online facility has no street address. Address, city, and map fields can stay empty.",
+    "onlineHint": "Optional. Check only for a facility with no street address. Address, city, and map are then not required.",
     "contactInformation": "Contact Information",
     "errorMessageFacilityId": "Facility ID was not found",
     "existingHPHeading": "Current Healthcare Professionals at Facility",

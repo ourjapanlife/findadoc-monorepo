@@ -9,8 +9,8 @@ type Facility {
   """Name of the facility in Japanese."""
   nameJa: String!
   """
-  True when this facility has no street address.
-  Address, city, and map fields are not required.
+  True only when a moderator selected online (no street address).
+  Default is false. Address, city, and map are not required when true.
   """
   online: Boolean!
   """Contact information for the facility."""
@@ -51,16 +51,23 @@ input CreateFacilityInput {
   """Name of the facility in Japanese."""
   nameJa: String!
   """
-  True when this facility has no street address.
-  Address, city, and map fields may be empty.
+  Optional. Set true only for an online facility with no street address.
+  Omit or false for a normal facility. Defaults to false.
+  When true, address, city, and map may be omitted.
   """
   online: Boolean
   """Contact information for the facility."""
   contact: ContactInput!
-  """Latitude coordinate for map placement."""
-  mapLatitude: Float!
-  """Longitude coordinate for map placement."""
-  mapLongitude: Float!
+  """
+  Latitude for map placement.
+  Required for a normal facility. Omit for an online facility.
+  """
+  mapLatitude: Float
+  """
+  Longitude for map placement.
+  Required for a normal facility. Omit for an online facility.
+  """
+  mapLongitude: Float
   """IDs of healthcare professionals to associate with this facility."""
   healthcareProfessionalIds: [ID!]
   """Published languages this facility advertises. Does not create a professional."""
@@ -83,13 +90,16 @@ input UpdateFacilityInput {
   nameEn: String
   """Updated name of the facility in Japanese."""
   nameJa: String
-  """True when this facility has no street address. Address and map fields may be empty."""
+  """
+  Optional. Set true only for an online facility with no street address.
+  Omit to leave the stored value unchanged.
+  """
   online: Boolean
   """Updated contact information."""
   contact: ContactInput
-  """Updated latitude coordinate."""
+  """Updated latitude coordinate. Cleared when the facility becomes online."""
   mapLatitude: Float
-  """Updated longitude coordinate."""
+  """Updated longitude coordinate. Cleared when the facility becomes online."""
   mapLongitude: Float
   """Healthcare professional relationships to add, update, or remove."""
   healthcareProfessionalIds: [Relationship!]
@@ -301,7 +311,10 @@ type FacilitySubmission {
   mapLatitude: Float
   """Submitted longitude coordinate."""
   mapLongitude: Float
-  """True when the submitted facility has no street address."""
+  """
+  True when a moderator marked this facility as online (no street address).
+  Absent or false means a normal facility. Not set by the public form.
+  """
   online: Boolean
 }
 
@@ -675,16 +688,19 @@ type Contact {
 
 """Input for providing contact information."""
 input ContactInput {
-  """Google Maps URL for the facility location."""
-  googleMapsUrl: String!
+  """Google Maps URL for the facility location. Omit or empty for an online facility."""
+  googleMapsUrl: String
   """Email address."""
   email: String
   """Phone number."""
   phone: String!
   """Website URL."""
   website: String
-  """Physical mailing address."""
-  address: PhysicalAddressInput!
+  """
+  Physical mailing address.
+  Required for a normal facility. Omit for an online facility.
+  """
+  address: PhysicalAddressInput
 }
 
 """A physical address with bilingual (English and Japanese) fields."""

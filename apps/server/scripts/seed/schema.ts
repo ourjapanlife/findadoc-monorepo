@@ -312,7 +312,13 @@ export function validateSeed(seed: SeedFile, problems: string[] = []): void {
                 continue
             }
 
-            if (address.prefectureEn !== city.prefectureEn || address.cityEn !== city.nameEn || address.cityJa !== city.nameJa) {
+            if (
+                address === undefined
+                || address === null
+                || address.prefectureEn !== city.prefectureEn
+                || address.cityEn !== city.nameEn
+                || address.cityJa !== city.nameJa
+            ) {
                 problems.push(`${facility.id} address does not match ${city.prefectureEn}/${city.nameEn}`)
             }
         }

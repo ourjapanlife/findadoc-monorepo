@@ -323,7 +323,7 @@
   "modFacilitySection": {
     "addresses": "Endereços",
     "onlineLabel": "Estabelecimento online",
-    "onlineHint": "Um estabelecimento online não tem endereço. O endereço, a cidade e o mapa podem ficar em branco.",
+    "onlineHint": "Opcional. Marque só se o estabelecimento não tiver endereço. Então endereço, cidade e mapa não são obrigatórios.",
     "contactInformation": "Contato",
     "facilityHeading": "Informações da unidade",
     "googleMapsInformation": "Informações do Google Maps",

@@ -320,7 +320,7 @@
   "modFacilitySection": {
     "addresses": "Indirizzi",
     "onlineLabel": "Struttura online",
-    "onlineHint": "Una struttura online non ha un indirizzo. Indirizzo, città e mappa possono restare vuoti.",
+    "onlineHint": "Facoltativo. Seleziona solo se la struttura non ha un indirizzo. In quel caso indirizzo, città e mappa non sono obbligatori.",
     "contactInformation": "Informazioni di contatto",
     "errorMessageFacilityId": "ID della struttura non trovato",
     "existingHPHeading": "Professionisti sanitari attuali nella struttura",
