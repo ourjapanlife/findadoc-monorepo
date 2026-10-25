@@ -57,7 +57,7 @@ async function nameOnSecondPage(page: Page, navTestId: string, rowTestId: string
 async function expectDirectorySearch(page: Page, inputTestId: string, name: string) {
     const query = name.toLowerCase()
     const searchRequest = page.waitForRequest(request => directoryQuery(request, query))
-    const input = page.getByTestId(inputTestId)
+    const input = page.getByTestId(inputTestId).locator('input')
     await input.scrollIntoViewIfNeeded()
     await input.fill(name)
     await searchRequest
