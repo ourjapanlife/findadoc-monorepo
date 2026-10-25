@@ -2,35 +2,25 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
 import { logger } from '../logger.js'
-import { getSupabaseClient } from '../supabaseClient.js'
-import type { Database } from '../typeDefs/supabase-generated.js'
-
-type UserRow = Database['public']['Tables']['user']['Row']
+import { db } from '../kyselyClient.js'
 
 /**
  * Gets a user from the database that matches on the id.
  * @param id A string that matches the id of the User.
- * @param selectColumns Supabase select string. Defaults to '*' (all columns).
  * @returns A User object.
  */
-export async function getUserById(id: string, selectColumns = '*')
+export async function getUserById(id: string)
 : Promise<Result<gqlTypes.User>> {
     try {
-        const supabase = getSupabaseClient()
-        const { data } = await supabase
-            .from('user')
-            .select<string, UserRow>(selectColumns)
-            .eq('id', id)
+        const selectedUserData = await db
+            .selectFrom('user')
+            .selectAll()
+            .where('id', '=', id)
+            .executeTakeFirst()
 
-        if (!data) {
+        if (!selectedUserData) {
             throw new Error(`No data found for user with id: ${id}`)
         }
-
-        if (!data.length) {
-            throw new Error('data array is empty')
-        }
-
-        const selectedUserData = data[0]
 
         const selectedUser:gqlTypes.User = {
             createdDate: selectedUserData.created_date,
@@ -70,37 +60,31 @@ export async function createUser(
     try {
         const userToCreate:gqlTypes.User = {
             createdDate: new Date().toISOString(),
-            id: 'donotuse', //supabase will automatically assign an id upon creation, so will not use this value
+            id: 'donotuse', //the database assigns the id on insert, so will not use this value
             updatedDate: new Date().toISOString(),
             displayName: input.displayName,
             profilePicUrl: input.profilePicUrl
         }
 
-        const supabase = getSupabaseClient()
-
-        const { data } = await supabase
-            .from('user')
-            .insert([{created_date: userToCreate.createdDate,
+        const createdUserData = await db
+            .insertInto('user')
+            .values({
+                created_date: userToCreate.createdDate,
                 updated_date: userToCreate.updatedDate,
                 display_name: userToCreate.displayName,
-                profile_pic_url: userToCreate.profilePicUrl}
-            ])
-            .select('*')
+                profile_pic_url: userToCreate.profilePicUrl
+            })
+            .returningAll()
+            .executeTakeFirst()
 
-        if (!data) {
+        if (!createdUserData) {
             throw new Error('No data from create user call')
         }
-
-        if (!data.length) {
-            throw new Error('data array is empty')
-        }
-
-        const createdUserData = data[0]
 
         const createdUserResult:gqlTypes.User = {
             createdDate: createdUserData.created_date,
             id: createdUserData.id,
-            updatedDate: createdUserData.updated_date,
+            updatedDate: createdUserData.updated_date ?? '',
             displayName: createdUserData.display_name,
             profilePicUrl: createdUserData.profile_pic_url
         }
@@ -142,32 +126,25 @@ export async function updateUser(
             id: '' // dont update this
         }
 
-        const supabase = getSupabaseClient()
-        
-        const { data } = await supabase
-            .from('user')
-            .update({
+        const updatedUserData = await db
+            .updateTable('user')
+            .set({
                 updated_date: userToUpdate.updatedDate,
                 display_name: userToUpdate.displayName,
                 profile_pic_url: userToUpdate.profilePicUrl
             })
-            .eq('id', id)
-            .select('*')
+            .where('id', '=', id)
+            .returningAll()
+            .executeTakeFirst()
 
-        if (!data) {
+        if (!updatedUserData) {
             throw new Error('no data returned from update call')
         }
-
-        if (!data.length) {
-            throw new Error('data array is empty')
-        }
-
-        const updatedUserData = data[0]
 
         const updatedUser:gqlTypes.User = {
             createdDate: updatedUserData.created_date,
             id: updatedUserData.id,
-            updatedDate: updatedUserData.updated_date,
+            updatedDate: updatedUserData.updated_date ?? '',
             displayName: updatedUserData.display_name,
             profilePicUrl: updatedUserData.profile_pic_url
         }

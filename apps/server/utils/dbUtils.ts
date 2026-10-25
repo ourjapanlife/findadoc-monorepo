@@ -1,14 +1,6 @@
 import { sql } from 'kysely'
 
 /**
- * Type constraint for database query builders that support ILIKE operations.
- * Used primarily with Supabase client for case-insensitive text search.
- */
-export type HasIlike = {
-    ilike: (column: string, pattern: string) => unknown
-}
-
-/**
  * Serializes a value as JSONB for PostgreSQL insertion via Kysely.
  * 
  * WHY THIS EXISTS:
@@ -19,36 +11,7 @@ export type HasIlike = {
  *  * WHEN TO USE:
  * - ALWAYS use for INSERT operations with JSONB columns
  * - ALWAYS use for UPDATE operations that modify JSONB columns
+ * - Use for JSONB @> (contains) filters
  * - NOT needed for SELECT (Kysely handles deserialization correctly)
  */
 export const asJsonb = <T>(value: T) => sql<T>`${JSON.stringify(value)}::jsonb`
-
-/**
- * Type constraint for database query builders that support JSONB @> (contains) operations.
- * Used with both Supabase and Kysely for filtering on JSONB array fields.
- */
-export type HasContains = {
-    contains: (
-        column: string,
-        //eslint-disable-next-line
-        value: string | readonly any[] | Record<string, unknown>
-    ) => unknown
-}
-
-/**
- * Type constraint for Supabase query builders that support PostgREST OR filters.
- */
-export type HasOr = {
-    or: (filters: string) => unknown
-}
-
-/**
- * Type constraint for Supabase query builders that support PostgREST IN filters.
- */
-export type HasIn = {
-    in: (column: string, values: readonly unknown[]) => unknown
-}
-
-export type HasEq = {
-    eq: (column: string, value: unknown) => unknown
-}

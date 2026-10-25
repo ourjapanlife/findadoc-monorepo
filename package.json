@@ -12,7 +12,7 @@
         "dev:server": "pnpm exec turbo dev --filter=@findadoc/server",
         "dev:seeded": "pnpm exec turbo dev:seeded --filter=@findadoc/web --filter=@findadoc/server",
         "dev:api": "pnpm exec turbo dev:api --filter=@findadoc/web",
-        "check:supabase": "pnpm exec turbo check:supabase --filter=@findadoc/server",
+        "check:db": "pnpm exec turbo check:db --filter=@findadoc/server",
         "db:seed": "pnpm exec turbo db:seed",
         "db:reset": "pnpm exec turbo db:reset",
         "dev:mcp": "pnpm exec turbo dev --filter=@findadoc/mcp",

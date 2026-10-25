@@ -16,11 +16,7 @@ import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
 import {
     getRequestedFields,
     facilityNeedsHpIds,
-    hpNeedsFacilityIds,
-    buildFacilitySelectString,
-    buildHpSelectString,
-    buildSubmissionSelectString,
-    buildUserSelectString
+    hpNeedsFacilityIds
 } from '../utils/fieldSelectionUtils.js'
 
 const resolvers = {
@@ -50,9 +46,8 @@ const resolvers = {
             }
 
             const requestedFields = getRequestedFields(info)
-            const selectColumns = buildFacilitySelectString(requestedFields)
             const needsHpIds = facilityNeedsHpIds(requestedFields)
-            const queryResults = await facilityService.getFacilityById(args.id, selectColumns, needsHpIds)
+            const queryResults = await facilityService.getFacilityById(args.id, needsHpIds)
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data
@@ -72,11 +67,9 @@ const resolvers = {
             }
 
             const requestedFields = getRequestedFields(info)
-            const selectColumns = buildFacilitySelectString(requestedFields)
             const needsHpIds = facilityNeedsHpIds(requestedFields)
             const queryResults = await facilityService.getFacilityByGooglePlaceId(
                 args.placeId.trim(),
-                selectColumns,
                 needsHpIds
             )
 
@@ -98,11 +91,9 @@ const resolvers = {
             }
 
             const requestedFields = getRequestedFields(info)
-            const selectColumns = buildFacilitySelectString(requestedFields)
             const needsHpIds = facilityNeedsHpIds(requestedFields)
             const queryResults = await facilityService.getFacilityMatchingMapsUrl(
                 args.url.trim(),
-                selectColumns,
                 needsHpIds
             )
 
@@ -165,9 +156,8 @@ const resolvers = {
             }
 
             const requestedFields = getRequestedFields(info)
-            const selectColumns = buildFacilitySelectString(requestedFields)
             const needsHpIds = facilityNeedsHpIds(requestedFields)
-            const queryResults = await facilityService.searchFacilities(args.filters, selectColumns, needsHpIds)
+            const queryResults = await facilityService.searchFacilities(args.filters, needsHpIds)
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data as gqlType.Facility[]
@@ -207,11 +197,10 @@ const resolvers = {
             }
 
             const requestedFields = getRequestedFields(info)
-            const selectColumns = buildHpSelectString(requestedFields)
             const needsFacilityIds = hpNeedsFacilityIds(requestedFields)
             const matchingHealthcareProfessionalResult =
                 await healthcareProfessionalService
-                    .getHealthcareProfessionalById(args.id, selectColumns, needsFacilityIds)
+                    .getHealthcareProfessionalById(args.id, needsFacilityIds)
 
             convertErrorsToGqlErrors(matchingHealthcareProfessionalResult)
             return matchingHealthcareProfessionalResult.data
@@ -232,10 +221,9 @@ const resolvers = {
             }
 
             const requestedFields = getRequestedFields(info)
-            const selectColumns = buildHpSelectString(requestedFields)
             const needsFacilityIds = hpNeedsFacilityIds(requestedFields)
             const queryResults =
-                await healthcareProfessionalService.searchProfessionals(args.filters, selectColumns, needsFacilityIds)
+                await healthcareProfessionalService.searchProfessionals(args.filters, needsFacilityIds)
 
             convertErrorsToGqlErrors(queryResults)
 
@@ -264,8 +252,7 @@ const resolvers = {
             return countResults.data
         },
 
-        submission: async (_parent: unknown, args: { id: string }, context: UserContext,
-            info: GraphQLResolveInfo)
+        submission: async (_parent: unknown, args: { id: string }, context: UserContext)
         : Promise<gqlType.Submission | undefined> => {
             const isAuthorized = authorize(context.user, [Scope['read:submissions']])
 
@@ -278,16 +265,13 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const selectColumns = buildSubmissionSelectString(requestedFields)
-            const matchingSubmissionResult = await submissionService.getSubmissionById(args.id, selectColumns)
+            const matchingSubmissionResult = await submissionService.getSubmissionById(args.id)
 
             convertErrorsToGqlErrors(matchingSubmissionResult)
             return matchingSubmissionResult.data
         },
 
-        submissions: async (_parent: unknown, args: { filters: gqlType.SubmissionSearchFilters }, context: UserContext,
-            info: GraphQLResolveInfo)
+        submissions: async (_parent: unknown, args: { filters: gqlType.SubmissionSearchFilters }, context: UserContext)
         : Promise<gqlType.Submission[]> => {
             const isAuthorized = authorize(context.user, [Scope['read:submissions']])
 
@@ -300,9 +284,7 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const selectColumns = buildSubmissionSelectString(requestedFields)
-            const matchingSubmissionsResult = await submissionService.searchSubmissions(args.filters, selectColumns)
+            const matchingSubmissionsResult = await submissionService.searchSubmissions(args.filters)
 
             convertErrorsToGqlErrors(matchingSubmissionsResult)
 
@@ -328,8 +310,7 @@ const resolvers = {
             convertErrorsToGqlErrors(countResults)
             return countResults.data
         },
-        user: async (_parent: unknown, args: { id: string }, context: UserContext,
-            info: GraphQLResolveInfo)
+        user: async (_parent: unknown, args: { id: string }, context: UserContext)
         : Promise<gqlType.User | undefined> => {
             const isAuthorized = authorize(context.user, [Scope['read:users']])
 
@@ -342,9 +323,7 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const selectColumns = buildUserSelectString(requestedFields)
-            const matchingUserResult = await userService.getUserById(args.id, selectColumns)
+            const matchingUserResult = await userService.getUserById(args.id)
 
             return matchingUserResult.data
         },

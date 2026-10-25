@@ -45,7 +45,7 @@ pnpm dev:web             # same, without the MCP process
 pnpm dev:server          # local GraphQL API only
 pnpm dev:seeded          # reset and seed the local database, then the site against that API
 pnpm dev:api             # site against https://api.findadoc.jp
-pnpm check:supabase      # local Docker Supabase at http://127.0.0.1:54321
+pnpm check:db            # local Postgres from `supabase start` on 127.0.0.1:54322
 pnpm db:seed             # load the TypeScript seed into the local database
 pnpm db:reset            # drop and recreate the local database only
 pnpm dev:mcp
@@ -80,7 +80,7 @@ import { Facility, Locale } from '@findadoc/graphql'
 
 Do not add another codegen config or another copy of these types. On every pull request, and on pushes to `main`, CI regenerates `packages/graphql/src/index.ts` and fails if that file was not committed.
 
-Database types from Supabase stay in the API (`pnpm --filter @findadoc/server generate:db`). They describe Postgres, not the GraphQL schema.
+Database table types stay in the API (`apps/server/src/typeDefs/kyselyTypes.ts`). They describe Postgres, not the GraphQL schema.
 
 ## CI
 

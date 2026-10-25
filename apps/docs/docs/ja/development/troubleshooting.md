@@ -78,7 +78,7 @@ pnpm lint:locales
 ローカルのSupabaseが起動しない場合は、Dockerが起動していることを確認してから：
 
 ```bash
-pnpm check:supabase
+pnpm check:db
 pnpm db:reset
 pnpm db:seed
 ```

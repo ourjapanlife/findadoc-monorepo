@@ -2,12 +2,11 @@ import * as gqlTypes from '@findadoc/graphql'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import { logger } from '../logger.js'
-import { getSupabaseClient } from '../supabaseClient.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import { validateIdInput, validateCreateFacilityInput, validateFacilitiesSearchInput, validateUpdateFacilityInput } from '../validation/validateFacility.js'
 import { mapKyselyFacilityToGraphQL, facilityLocationFields, paymentOptionFields, supportedLanguageFields } from '../services/mappersEntityService.js'
 import { uniqueLocales } from '../languages/publishedLocales.js'
-import type { HasContains, HasIlike, HasOr } from '../../utils/dbUtils.js'
+import { asJsonb } from '../../utils/dbUtils.js'
 import { prefectureTranslations, resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
 import { databaseOrderColumn, FACILITY_ORDER_COLUMNS } from '../search/orderColumn.js'
@@ -17,11 +16,8 @@ import { cityExists, findCityBySlug } from './cityService.js'
 import { FacilitySource } from '@findadoc/graphql'
 import { matchingFacilityId } from '../places/facilityMapsMatch.js'
 import { canonicalMapsFields, isShortMapsUrl, previewTargetFromMapsUrl, resolveMapsPlace } from '../places/mapsLink.js'
-import { sql, type Transaction } from 'kysely'
+import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
-import type { Database as SupabaseDb } from '../typeDefs/supabase-generated.js'
-
-type FacilityRow = SupabaseDb['public']['Tables']['facilities']['Row']
 
 function invalidCityId(): Result<gqlTypes.Facility> {
     return {
@@ -86,29 +82,29 @@ export function buildFacilityUpdatePatch(fields: Partial<gqlTypes.UpdateFacility
 }
 
 /**
- * Applies text-based filters to a Supabase query builder for Facilities.
- * Can be reused by both search and count queries.
+ * Applies the facility search filters to a facilities query.
+ * Search and count use the same filters.
  *
- * @param facilitySelect - The base query builder instance.
+ * @param query - The base facilities query.
  * @param filters - The facility search filters from GraphQL input.
- * @returns The same query builder instance, modified with applied filters.
+ * @returns The query with the filters applied.
  */
-export function applyFacilityFilters<T extends HasIlike & HasOr & HasContains>(
-  facilitySelect: T,
+export function applyFacilityFilters<O>(
+  query: SelectQueryBuilder<Database, 'facilities', O>,
   filters: gqlTypes.FacilitySearchFilters
-): T {
-    let query = facilitySelect
+): SelectQueryBuilder<Database, 'facilities', O> {
+    let filtered = query
 
     // Text filters (case-insensitive contains)
     if (filters.nameEn) {
-        query = query.ilike('name_en', `%${filters.nameEn}%`) as T
+        filtered = filtered.where('facilities.name_en', 'ilike', `%${filters.nameEn}%`)
     }
     if (filters.nameJa) {
-        query = query.ilike('name_ja', `%${filters.nameJa}%`) as T
+        filtered = filtered.where('facilities.name_ja', 'ilike', `%${filters.nameJa}%`)
     }
     const queryText = listQueryValue(filters.query)
     if (queryText) {
-        query = query.ilike(FACILITY_SEARCH_COLUMN, likeContainsPattern(queryText)) as T
+        filtered = filtered.where(`facilities.${FACILITY_SEARCH_COLUMN}`, 'ilike', likeContainsPattern(queryText))
     }
 
     // Prefecture: match the canonical key on the English side (any casing) or the Japanese name.
@@ -116,66 +112,44 @@ export function applyFacilityFilters<T extends HasIlike & HasOr & HasContains>(
     const prefectureKey = filters.prefecture ? resolvePrefectureKey(filters.prefecture) : undefined
 
     if (prefectureKey) {
-        query = query.or([
-            `contact->address->>prefectureEn.ilike.${prefectureKey}`,
-            `contact->address->>prefectureJa.eq.${prefectureTranslations[prefectureKey]}`
-        ].join(',')) as T
+        filtered = filtered.where(eb => eb.or([
+            eb(sql<string>`facilities.contact->'address'->>'prefectureEn'`, 'ilike', prefectureKey),
+            eb(sql<string>`facilities.contact->'address'->>'prefectureJa'`, '=', prefectureTranslations[prefectureKey])
+        ]))
     }
 
-    // A specialty filter joins professionals, and the same professional must also
-    // speak every requested language. Language-only search is an id subset instead,
-    // so a facility language can match when there is no professional.
-    if (filters.spokenLanguages?.length && matchesThroughProfessional(filters)) {
-        query = query.contains('hps_facilities.hps.spoken_languages', JSON.stringify(filters.spokenLanguages)) as T
-    }
-    if (filters.specialties?.length) {
-        query = query.contains('hps_facilities.hps.specialties', JSON.stringify(filters.specialties)) as T
+    // A specialty filter needs one linked professional with every requested specialty,
+    // and that same professional must also speak every requested language. Language-only
+    // search is an id subset instead, so a facility language can match when there is no professional.
+    if (matchesThroughProfessional(filters)) {
+        const specialties = filters.specialties ?? []
+        const spokenLanguages = filters.spokenLanguages ?? []
+
+        filtered = filtered.where(eb => eb.exists(
+            eb.selectFrom('hps_facilities')
+                .innerJoin('hps', 'hps.id', 'hps_facilities.hps_id')
+                .select('hps.id')
+                .whereRef('hps_facilities.facilities_id', '=', 'facilities.id')
+                .where('hps.specialties', '@>', asJsonb(specialties))
+                .$if(spokenLanguages.length > 0, professionals =>
+                    professionals.where('hps.spoken_languages', '@>', asJsonb(spokenLanguages)))
+        ))
     }
 
-    return query
+    return filtered
 }
 
-/**
- * Whether the filters need facilities joined to their healthcare professionals.
- */
 /** Specialty search stays on one professional. Language-only search does not. */
 export function matchesThroughProfessional(filters: gqlTypes.FacilitySearchFilters): boolean {
     return !!filters.specialties?.length
 }
 
-function hasHpAttributeFilters(filters: gqlTypes.FacilitySearchFilters): boolean {
-    return matchesThroughProfessional(filters)
-}
-
-/**
- * Builds the select string for a facilities query. When filtering on HP attributes, adds an
- * inner-joined embed so PostgREST drops facilities without a matching professional.
- *
- * @param selectColumns - Comma-separated DB columns to fetch.
- * @param filters - The facility search filters from GraphQL input.
- */
-export function buildFacilitySelect(selectColumns: string, filters: gqlTypes.FacilitySearchFilters): string {
-    if (!hasHpAttributeFilters(filters)) {
-        return selectColumns
-    }
-
-    return `${selectColumns}, hps_facilities!inner(hps!inner(id))`
-}
-
-/**
- * Gets the Facility from the database that matches on the id.
- * @param id A string that matches the id of the Supabase for the Facility.
- * @param selectColumns Comma-separated DB columns to fetch (defaults to '*' for all columns).
- * @param needsHpIds Whether to query the junction table for related HP IDs (defaults to true).
- * @returns A Facility object.
- */
 /**
  * The facility that already stores this Google place id, or null when none does.
  * An invalid id is not a match.
  */
 export async function getFacilityByGooglePlaceId(
     placeId: string,
-    selectColumns = '*',
     needsHpIds = true
 ): Promise<Result<gqlTypes.Facility | null>> {
     if (!/^[A-Za-z0-9_-]{8,}$/.test(placeId)) {
@@ -183,24 +157,19 @@ export async function getFacilityByGooglePlaceId(
     }
 
     try {
-        const supabase = getSupabaseClient()
-        const { data, error } = await supabase
-            .from('facilities')
+        const match = await db
+            .selectFrom('facilities')
             .select('id')
-            .eq('google_place_id', placeId)
-            .order('updated_date', { ascending: false })
+            .where('google_place_id', '=', placeId)
+            .orderBy('updated_date', 'desc')
             .limit(1)
+            .executeTakeFirst()
 
-        if (error) {
-            throw error
-        }
-
-        const id = data?.[0]?.id
-        if (!id) {
+        if (!match) {
             return { data: null, hasErrors: false }
         }
 
-        const facility = await getFacilityById(id, selectColumns, needsHpIds)
+        const facility = await getFacilityById(match.id, needsHpIds)
         if (facility.hasErrors) {
             return { data: null, hasErrors: true, errors: facility.errors }
         }
@@ -227,7 +196,6 @@ export async function getFacilityByGooglePlaceId(
  */
 export async function getFacilityMatchingMapsUrl(
     url: string,
-    selectColumns = '*',
     needsHpIds = true
 ): Promise<Result<gqlTypes.Facility | null>> {
     const trimmed = url.trim()
@@ -244,7 +212,7 @@ export async function getFacilityMatchingMapsUrl(
         }
 
         if (target.placeId) {
-            const byPlace = await getFacilityByGooglePlaceId(target.placeId, selectColumns, needsHpIds)
+            const byPlace = await getFacilityByGooglePlaceId(target.placeId, needsHpIds)
             if (byPlace.hasErrors || byPlace.data) {
                 return byPlace
             }
@@ -265,7 +233,7 @@ export async function getFacilityMatchingMapsUrl(
             return { data: null, hasErrors: false }
         }
 
-        const facility = await getFacilityById(matchId, selectColumns, needsHpIds)
+        const facility = await getFacilityById(matchId, needsHpIds)
         if (facility.hasErrors) {
             return { data: null, hasErrors: true, errors: facility.errors }
         }
@@ -294,9 +262,14 @@ export async function contactWithCanonicalMapsUrl<T extends { googleMapsUrl: str
     }
 }
 
+/**
+ * Gets the Facility from the database that matches on the id.
+ * @param id The id of the Facility.
+ * @param needsHpIds Whether to query the junction table for related HP IDs (defaults to true).
+ * @returns A Facility object.
+ */
 export const getFacilityById = async (
     id: string,
-    selectColumns = '*',
     needsHpIds = true
 ): Promise<Result<gqlTypes.Facility>> => {
     try {
@@ -315,17 +288,15 @@ export const getFacilityById = async (
             }
         }
 
-        const supabase = getSupabaseClient()
-
         // Fetch the facility row
-        const { data: facilityRow, error: facilityRowError } = await supabase
-            .from('facilities')
-            .select<string, FacilityRow>(selectColumns)
-            .eq('id', id)
-            .single()
+        const facilityRow = await db
+            .selectFrom('facilities')
+            .selectAll()
+            .where('id', '=', id)
+            .executeTakeFirst()
 
-        // Supabase says "no rows" and tests want INTERNAL_SERVER_ERROR, not NOT_FOUND.
-        if (facilityRowError?.code === 'PGRST116' || !facilityRow) {
+        // A missing facility has always been INTERNAL_SERVER_ERROR, not NOT_FOUND, and tests expect that.
+        if (!facilityRow) {
             return {
                 data: {} as gqlTypes.Facility,
                 hasErrors: true,
@@ -337,27 +308,10 @@ export const getFacilityById = async (
             }
         }
 
-        if (facilityRowError) {
-            throw facilityRowError
-        }
-
         // Fetch related HP IDs from the join table (skip if not requested)
-        let healthcareProfessionalIds: string[] = []
-
-        if (needsHpIds) {
-            const { data: relatedRows, error: relatedRowsError } = await supabase
-                .from('hps_facilities')
-                .select('hps_id')
-                .eq('facilities_id', id)
-
-            if (relatedRowsError) {
-                throw relatedRowsError
-            }
-
-            healthcareProfessionalIds = (relatedRows ?? []).map(
-                row => row.hps_id as string
-            )
-        }
+        const healthcareProfessionalIds = needsHpIds
+            ? (await hpIdsByFacilityIds([id])).get(id) ?? []
+            : []
 
         const gqlFacility: gqlTypes.Facility = {
             id: facilityRow.id as string,
@@ -399,31 +353,47 @@ export const getFacilityById = async (
  * removes duplicates so the caller gets unique facility IDs.
  * @param hpIds Array of Healthcare Professional IDs to look up.
  * @returns A Set of facility IDs that have at least one relation with the provided HPs.
- * @throws Propagates a Supabase/PostgREST error if the query fails.
+ * @throws Propagates the database error if the query fails.
  */
 async function getFacilityIdsByHpIds(hpIds: string[]): Promise<Set<string>> {
-    const supabase = getSupabaseClient()
     // Query the junction table to find all facility ids related to the given HP ids
-    const { data, error } = await supabase
-        .from('hps_facilities')
+    const rows = await db
+        .selectFrom('hps_facilities')
         .select('facilities_id')
-        .in('hps_id', hpIds)
-
-    // If the DB call failed, bubble up the error to the caller
-    if (error) {
-        throw error
-    }
+        .where('hps_id', 'in', hpIds)
+        .execute()
 
     // Use a Set to ensure each facility id appears only once
-    const idsList = new Set<string>()
+    return new Set(rows.map(row => row.facilities_id))
+}
 
-    //data may be null
-    for (const row of data ?? []) {
-        if (row.facilities_id) {
-            idsList.add(row.facilities_id as string)
-        }
+/**
+ * Loads the professional ids for each facility from the junction table in one query,
+ * so a page of facilities does not run one query per facility.
+ * @param facilityIds Facility ids to look up.
+ * @returns A map from facility id to its professional ids. A facility with none is not in the map.
+ */
+async function hpIdsByFacilityIds(facilityIds: string[]): Promise<Map<string, string[]>> {
+    const hpIdsByFacility = new Map<string, string[]>()
+
+    if (!facilityIds.length) {
+        return hpIdsByFacility
     }
-    return idsList
+
+    const relations = await db
+        .selectFrom('hps_facilities')
+        .select(['hps_id', 'facilities_id'])
+        .where('facilities_id', 'in', facilityIds)
+        .execute()
+
+    for (const relation of relations) {
+        const list = hpIdsByFacility.get(relation.facilities_id) ?? []
+
+        list.push(relation.hps_id)
+        hpIdsByFacility.set(relation.facilities_id, list)
+    }
+
+    return hpIdsByFacility
 }
 
 /**
@@ -634,13 +604,11 @@ export async function createFacility(
  * by performing a preliminary lookup to get a subset of Facility IDs.
  * - It applies scalar filters, ordering, and pagination to the main facilities table.
  * @param filters Optional search and pagination filters for Facilities.
- * @param selectColumns Comma-separated DB columns to fetch (defaults to '*' for all columns).
  * @param needsHpIds Whether to query the junction table for related HP IDs (defaults to true).
  * @returns A Promise that resolves to a Result object containing an array of Facilities.
  */
 export async function searchFacilities(
   filters: gqlTypes.FacilitySearchFilters = {},
-  selectColumns = '*',
   needsHpIds = true
 ): Promise<Result<gqlTypes.Facility[]>> {
     try {
@@ -650,8 +618,8 @@ export async function searchFacilities(
             return { data: [], hasErrors: true, errors: validationResult.errors }
         }
 
-        const isLightweightQuery = selectColumns !== '*' && !needsHpIds
-        const maxLimit = isLightweightQuery ? 1000 : 100
+        // A list without professional ids, such as the sitemap, can take up to 1000 rows.
+        const maxLimit = needsHpIds ? 100 : 1000
 
         const requestedLimit = filters.limit ?? 20
         const limit = requestedLimit > maxLimit ? maxLimit : requestedLimit
@@ -664,17 +632,12 @@ export async function searchFacilities(
             return { data: [], hasErrors: false }
         }
 
-        const supabase = getSupabaseClient()
-
         // Base query on facilities + scalar filters.
-        let baseQuery = applyFacilityFilters(
-            supabase.from('facilities').select<string, FacilityRow>(buildFacilitySelect(selectColumns, filters)).limit(limit),
-            filters
-        )
+        let baseQuery = applyFacilityFilters(db.selectFrom('facilities').selectAll('facilities'), filters)
 
-        // If there is a subset of IDs (from HPs), filter with IN.
+        // If there is a subset of IDs (from HPs or languages), filter with IN.
         if (facilityIdSubset) {
-            baseQuery = baseQuery.in('id', facilityIdSubset)
+            baseQuery = baseQuery.where('facilities.id', 'in', facilityIdSubset)
         }
 
         // Determine the field and direction for ordering, falling back to nameEn if no order is specified
@@ -682,51 +645,29 @@ export async function searchFacilities(
         const orderColumn = databaseOrderColumn(orderBy?.fieldToOrder, FACILITY_ORDER_COLUMNS)
 
         if (orderColumn !== null) {
-            baseQuery = baseQuery.order(orderColumn, { ascending: orderBy?.orderDirection !== 'desc' })
+            baseQuery = baseQuery.orderBy(
+                sql.ref(`facilities.${orderColumn}`),
+                orderBy?.orderDirection === 'desc' ? 'desc' : 'asc'
+            )
         } else {
-            baseQuery = baseQuery.order('name_en', { ascending: true })
+            baseQuery = baseQuery.orderBy('facilities.name_en', 'asc')
         }
 
         // Execute the main query, applying the offset and limit for the current page
-        const { data: paginationRows, error: paginationRowsError } = await baseQuery.range(offset, offset + limit - 1)
+        const paginationRows = await baseQuery.limit(limit).offset(offset).execute()
 
-        if (paginationRowsError) {
-            throw paginationRowsError
-        }
-
-        if (!paginationRows || !paginationRows.length) {
+        if (!paginationRows.length) {
             return { data: [], hasErrors: false }
         }
 
-        // Extract the IDs of only the facilities that are present on the current, paginated results
-        const facilityIds = paginationRows.map(relatedRow => relatedRow.id as string)
-
-        // Fetching ALL Healthcare Professional (HP) relationships for the facilities on the current page with a SINGLE query
+        // Fetch the professional ids for every facility on this page in one query.
         // Skip if not requested by the client
-        const hpIdsByFacility = new Map<string, string[]>()
-
-        if (needsHpIds) {
-            const { data: hpRelationsForFacilities, error: hpRelationsForFacilitiesError } = await supabase
-                .from('hps_facilities')
-                .select('hps_id, facilities_id')
-                .in('facilities_id', facilityIds)
-
-            if (hpRelationsForFacilitiesError) { throw hpRelationsForFacilitiesError }
-
-            // Map for avoid N+1 issue, used like a lookup table because O(1)
-            for (const relationshipRow of hpRelationsForFacilities ?? []) {
-                const facilityId = relationshipRow.facilities_id as string
-                // All the Hps ID related to the Facility ID
-                const list = hpIdsByFacility.get(facilityId) ?? []
-
-                // Add the current HP ID to the list associated with the facility.
-                list.push(relationshipRow.hps_id as string)
-                hpIdsByFacility.set(facilityId, list)
-            }
-        }
+        const hpIdsByFacility = needsHpIds
+            ? await hpIdsByFacilityIds(paginationRows.map(row => row.id))
+            : new Map<string, string[]>()
 
         // Map the paginated DB rows to the final GraphQL shape, injecting the associated HP IDs
-        const list: gqlTypes.Facility[] = (paginationRows ?? []).map(row => ({
+        const list: gqlTypes.Facility[] = paginationRows.map(row => ({
             id: row.id as string,
             nameEn: row.name_en as string,
             nameJa: row.name_ja as string,
@@ -774,11 +715,9 @@ export async function countFacilities(
             return { data: 0, hasErrors: true, errors: validationResult.errors }
         }
 
-        const supabase = getSupabaseClient()
-
         // Base query on facilities + scalar filters
         let baseQuery = applyFacilityFilters(
-            supabase.from('facilities').select(buildFacilitySelect('*', filters), { count: 'exact', head: true }),
+            db.selectFrom('facilities').select(eb => eb.fn.countAll<string>().as('count')),
             filters
         )
 
@@ -789,14 +728,13 @@ export async function countFacilities(
         }
 
         if (facilityIdSubset) {
-            baseQuery = baseQuery.in('id', facilityIdSubset)
+            baseQuery = baseQuery.where('facilities.id', 'in', facilityIdSubset)
         }
 
-        const { count: facilyCount, error: facilityCountError } = await baseQuery
+        // Postgres returns count(*) as a bigint string.
+        const { count } = await baseQuery.executeTakeFirstOrThrow()
 
-        if (facilityCountError) { throw facilityCountError }
-
-        return { data: facilyCount ?? 0, hasErrors: false }
+        return { data: Number(count), hasErrors: false }
     } catch (err) {
         logger.error(`ERROR: countFacilities ${JSON.stringify(filters)} -> ${err}`)
         return {
@@ -1191,39 +1129,14 @@ export async function listPublishedCityFacilities(
             return { data: [], hasErrors: false }
         }
 
-        const supabase = getSupabaseClient()
-        const { data, error } = await supabase
-            .from('facilities')
-            .select('*')
-            .eq('city_id', cityResult.data.id)
-            .neq('verification_status', gqlTypes.FacilityVerificationStatus.UnverifiedLocation)
+        const rows = await db
+            .selectFrom('facilities')
+            .selectAll()
+            .where('city_id', '=', cityResult.data.id)
+            .where('verification_status', '<>', gqlTypes.FacilityVerificationStatus.UnverifiedLocation)
+            .execute()
 
-        if (error) {
-            throw error
-        }
-
-        const rows = data ?? []
-        const facilityIds = rows.map(row => row.id)
-        const hpIdsByFacility = new Map<string, string[]>()
-
-        if (facilityIds.length) {
-            const { data: relations, error: relationsError } = await supabase
-                .from('hps_facilities')
-                .select('hps_id, facilities_id')
-                .in('facilities_id', facilityIds)
-
-            if (relationsError) {
-                throw relationsError
-            }
-
-            for (const relationship of relations ?? []) {
-                const facilityId = relationship.facilities_id as string
-                const list = hpIdsByFacility.get(facilityId) ?? []
-
-                list.push(relationship.hps_id as string)
-                hpIdsByFacility.set(facilityId, list)
-            }
-        }
+        const hpIdsByFacility = await hpIdsByFacilityIds(rows.map(row => row.id))
 
         return {
             data: rows.map(row => ({

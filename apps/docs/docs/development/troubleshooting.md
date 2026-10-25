@@ -78,7 +78,7 @@ Add the translation. Do not copy the English sentence into another locale.
 If the local Supabase instance isn't starting, make sure Docker is running, then:
 
 ```bash
-pnpm check:supabase
+pnpm check:db
 pnpm db:reset
 pnpm db:seed
 ```

@@ -1,6 +1,5 @@
 import type { ColumnType, Generated } from 'kysely'
 import * as gqlTypes from '@findadoc/graphql'
-import type { Database as SupabaseDatabase } from './supabase-generated.js'
 
 /**
  * Kysely Database types with proper JSONB typing
@@ -151,6 +150,17 @@ export interface AuditLogsTable {
 }
 
 /**
+ * User Table
+ */
+export interface UserTable {
+    id: Generated<string>
+    created_date: Generated<string>
+    updated_date: string | null
+    display_name: string | null
+    profile_pic_url: string | null
+}
+
+/**
  * Database interface - combines all tables
  */
 export interface Database {
@@ -163,12 +173,13 @@ export interface Database {
     hps_facilities: HpsFacilitiesTable
     submissions: SubmissionsTable
     audit_logs: AuditLogsTable
+    user: UserTable
 }
 
 /**
  * Enums from the database
  */
-export type ActionTypeEnum = SupabaseDatabase['public']['Enums']['action_type_enum']
-export type ObjectTypeEnum = SupabaseDatabase['public']['Enums']['object_type_enum']
-export type SchemaVersionEnum = SupabaseDatabase['public']['Enums']['schema_version_enum']
-export type SubmissionStatusEnum = SupabaseDatabase['public']['Enums']['submission_status_enum']
+export type ActionTypeEnum = 'CREATE' | 'UPDATE' | 'DELETE'
+export type ObjectTypeEnum = 'Facility' | 'HealthcareProfessional' | 'Submission'
+export type SchemaVersionEnum = 'V1'
+export type SubmissionStatusEnum = 'pending' | 'under_review' | 'approved' | 'rejected'

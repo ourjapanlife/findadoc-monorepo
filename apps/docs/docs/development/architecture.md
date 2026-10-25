@@ -32,7 +32,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 - **Runtime**: Node.js with TypeScript
 - **API**: Apollo Server on Fastify
 - **Schema**: `apps/server/src/typeDefs/schema.graphql`, the only GraphQL schema in the repo
-- **Database**: Supabase (PostgreSQL), with migrations in `apps/server/supabase`
+- **Database**: Supabase (PostgreSQL), with migrations in `apps/server/supabase`. The API queries it with Kysely over a Postgres connection, not the Supabase client
 - **Production**: Docker containers managed by PM2
 
 ### MCP Server (`apps/mcp`)

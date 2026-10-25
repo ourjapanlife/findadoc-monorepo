@@ -10,9 +10,8 @@ import {
     validateUpdateSubmissionInput
 } from '../validation/validateSubmissions.js'
 import { logger } from '../logger.js'
-import { getSupabaseClient } from '../supabaseClient.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
-import type { Transaction } from 'kysely'
+import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
 import type { SubmissionsTable } from '../typeDefs/kyselyTypes.js'
 import type { Selectable } from 'kysely'
@@ -23,9 +22,6 @@ import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { canonicalMapsFields } from '../places/mapsLink.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import { databaseOrderColumn, SUBMISSION_ORDER_COLUMNS } from '../search/orderColumn.js'
-/** Row type used as Supabase select generic — matches SubmissionRow from dbSchema */
-type SubmissionRow = dbSchema.SubmissionRow
-
 type SubmissionStatusFlag = keyof Pick<
     gqlTypes.SubmissionSearchFilters,
     'isUnderReview' | 'isApproved' | 'isRejected'
@@ -252,63 +248,61 @@ function splitPersonName(full: string): { firstName: string; lastName: string; m
 }
 
 /**
- * Applies filtering logic to a Supabase query builder for the `submissions` table.
+ * Applies filtering logic to a query on the `submissions` table.
  * Filter definitions live in SUBMISSION_*_QUERY_FILTERS and SUBMISSION_STATUS_FILTERS.
  */
-//eslint-disable-next-line
-function applySubmissionQueryFilters<T extends Record<string, any>>(
-  queryBuilder: T,
+function applySubmissionQueryFilters<O>(
+  queryBuilder: SelectQueryBuilder<Database, 'submissions', O>,
   filters: gqlTypes.SubmissionSearchFilters
-): T {
+): SelectQueryBuilder<Database, 'submissions', O> {
     let query = queryBuilder
 
     for (const { flag, column } of SUBMISSION_ILIKE_QUERY_FILTERS) {
         const value = filters[flag]
 
         if (value) {
-            query = query.ilike(column, `%${value}%`) as T
+            query = query.where(column, 'ilike', `%${value}%`)
         }
     }
 
     const status = resolveSubmissionStatusFilter(filters)
 
     if (status) {
-        query = query.eq('status', status) as T
+        query = query.where('status', '=', status)
     }
 
     for (const { flag, column } of SUBMISSION_EQ_QUERY_FILTERS) {
         const value = filters[flag]
 
         if (value) {
-            query = query.eq(column, value) as T
+            query = query.where(column, '=', value)
         }
     }
 
     return query
 }
 
+const UUID_PATTERN = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
 /**
  * Gets the Submission from the database that matches the id.
  * @param id The ID of the Submission row in the database.
- * @param selectColumns Supabase select string. Defaults to '*' (all columns).
  * @returns A Submission object.
  */
 export const getSubmissionById = async (
-    id: string,
-    selectColumns = '*'
+    id: string
 ): Promise<Result<gqlTypes.Submission>> => {
     try {
-        const supabase = getSupabaseClient()
+        // An id that is not a uuid cannot match a row. It is NOT_FOUND, not a database error.
+        const submissionRow = UUID_PATTERN.test(id)
+            ? await db
+                .selectFrom('submissions')
+                .selectAll()
+                .where('id', '=', id)
+                .executeTakeFirst()
+            : undefined
 
-        // Query the 'submissions' table using the ID and expect exactly one row because of .single()
-        const { data: submissionRow, error: submissionRowError } = await supabase
-            .from('submissions')
-            .select<string, SubmissionRow>(selectColumns)
-            .eq('id', id)
-            .single()
-
-        // PGRST116 = no rows found for single()
-        if (submissionRowError?.code === 'PGRST116' || !submissionRow) {
+        if (!submissionRow) {
             return {
                 data: {} as gqlTypes.Submission,
                 hasErrors: true,
@@ -317,7 +311,7 @@ export const getSubmissionById = async (
         }
 
         // Map DB → GQL
-        const gqlSubmission = mapDbEntityTogqlEntity(submissionRow as dbSchema.SubmissionRow)
+        const gqlSubmission = mapDbEntityTogqlEntity(submissionRow as unknown as dbSchema.SubmissionRow)
 
         return { data: gqlSubmission, hasErrors: false }
     } catch (err) {
@@ -339,12 +333,10 @@ export const getSubmissionById = async (
  * Returns a paginated list of submissions.
  * This function is designed to serve the GraphQL query that returns only the array of submissions.
  * @param filters The search filters to apply.
- * @param selectColumns Supabase select string. Defaults to '*' (all columns).
  * @returns An object containing data (an array of GraphQL Submissions)
  */
 export async function searchSubmissions(
-  filters: gqlTypes.SubmissionSearchFilters = {},
-  selectColumns = '*'
+  filters: gqlTypes.SubmissionSearchFilters = {}
 ): Promise<Result<gqlTypes.Submission[]>> {
     try {
         const validation = validateSubmissionSearchFilters(filters)
@@ -356,31 +348,22 @@ export async function searchSubmissions(
         const limit = filters.limit ?? 20
         const offset = filters.offset ?? 0
 
-        const supabase = getSupabaseClient()
-
-        let base = applySubmissionQueryFilters(
-            supabase.from('submissions').select<string, SubmissionRow>(selectColumns),
-            filters
-        )
+        let base = applySubmissionQueryFilters(db.selectFrom('submissions').selectAll(), filters)
 
         const orderBy = filters.orderBy?.[0]
         const orderColumn = databaseOrderColumn(orderBy?.fieldToOrder, SUBMISSION_ORDER_COLUMNS)
 
         if (orderColumn !== null) {
-            base = base.order(orderColumn, {
-                ascending: orderBy?.orderDirection !== 'desc'
-            })
+            base = base.orderBy(sql.ref(orderColumn), orderBy?.orderDirection === 'desc' ? 'desc' : 'asc')
         } else {
-            base = base.order('created_date', { ascending: false })
+            base = base.orderBy('created_date', 'desc')
         }
 
         // Apply pagination
-        const { data: rows, error: paginationError } = await base.range(offset, offset + limit - 1)
-
-        if (paginationError) { throw paginationError }
+        const rows = await base.limit(limit).offset(offset).execute()
 
         // Convert DB → GQL
-        let listSubmissions = (rows ?? []).map(row => mapDbEntityTogqlEntity(row as dbSchema.SubmissionRow))
+        let listSubmissions = rows.map(row => mapDbEntityTogqlEntity(row as unknown as dbSchema.SubmissionRow))
 
         const langs = (filters.spokenLanguages ?? []).filter((l): l is gqlTypes.Locale => !!l)
 
@@ -418,19 +401,14 @@ export async function countSubmissions(
             return { data: 0, hasErrors: true, errors: validation.errors }
         }
 
-        const supabase = getSupabaseClient()
-
-        // Build a HEAD query that returns only the count
-        const headSelect = supabase
-            .from('submissions')
-            .select('id', { count: 'exact', head: true })
-
         // Apply the same filtering logic as searchSubmissions
-        const { count: countSubs, error: countSubsErr } = await applySubmissionQueryFilters(headSelect, filters)
+        const { count } = await applySubmissionQueryFilters(
+            db.selectFrom('submissions').select(eb => eb.fn.countAll<string>().as('count')),
+            filters
+        ).executeTakeFirstOrThrow()
 
-        if (countSubsErr) { throw countSubsErr }
-
-        return { data: countSubs ?? 0, hasErrors: false }
+        // Postgres returns count(*) as a bigint string.
+        return { data: Number(count), hasErrors: false }
     } catch (err) {
         logger.error(`ERROR: countSubmissions ${JSON.stringify(filters)} -> ${err}`)
         return {

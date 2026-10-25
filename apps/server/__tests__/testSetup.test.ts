@@ -7,7 +7,6 @@ import { generateRandomCreateFacilityInput } from '../src/fakeData/fakeFacilitie
 import { createFacilityMutation } from './facilities.test.js'
 import { createApolloFastifyServer } from '../src/server.js'
 import { initializeLogger, logger } from '../src/logger.js'
-import { initializeSupabaseClient } from '../src/supabaseClient.js'
 import { initializeKyselyClient } from '../src/kyselyClient.js'
 // import { createTestUser, deleteTestUser } from './auth.test.js'
 
@@ -26,9 +25,8 @@ beforeAll(async () => {
     process.env.TEST_ENABLED = 'true'
     const testPort = 0
 
-    //this initializes a shared supabase instance and supabase instance for all the tests.
+    //this initializes the logger and the shared database client for all the tests.
     initializeLogger()
-    await initializeSupabaseClient()
     await initializeKyselyClient()
     serverUrl = await createApolloFastifyServer(testPort)
     gqlApiUrl = `${serverUrl}/`
