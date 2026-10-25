@@ -148,6 +148,7 @@ describe('isUntitledRoute', () => {
         expect(isUntitledRoute('/u/someone/')).to.equal(true)
         expect(isUntitledRoute('/login')).to.equal(true)
         expect(isUntitledRoute('/404')).to.equal(true)
+        expect(isUntitledRoute('/admin')).to.equal(true)
         expect(isUntitledRoute('/about')).to.equal(false)
     })
 })

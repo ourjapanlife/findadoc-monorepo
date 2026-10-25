@@ -75,6 +75,7 @@ describe('isNoindexRoute', () => {
         expect(isNoindexRoute('/my-page')).to.equal(true)
         expect(isNoindexRoute('/my-page/edit-facility/1')).to.equal(true)
         expect(isNoindexRoute('/login')).to.equal(true)
+        expect(isNoindexRoute('/admin')).to.equal(true)
         expect(isNoindexRoute('/about')).to.equal(false)
         expect(isNoindexRoute('/u/someone')).to.equal(false)
         expect(isNoindexRoute('/search')).to.equal(false)

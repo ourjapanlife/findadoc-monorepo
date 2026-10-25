@@ -32,8 +32,13 @@
 /:locale/my-page/*  /200.html   200
 
 # Clinic-owned landings. Exact slugs only: a /clinic/* rewrite would turn
-# unknown clinic ids into 200 HTML. A prerendered file wins once the landing
-# is public. Preview traffic without the cookie is a 404.
+# unknown clinic ids into 200 HTML. An existing prerendered file wins when
+# NUXT_PUBLIC_ONLINE_CLINIC=public. The edge function 301s the id address
+# onto this path, and 404s preview traffic that has no cookie.
+# Staff site. Exact path only. The edge function 404s it when the flag is off
+# or the preview cookie is missing.
+/admin                                          /200.html   200
+/:locale/admin                                  /200.html   200
 
 /clinic/multilingual-online-clinic                 /200.html   200
 /:locale/clinic/multilingual-online-clinic         /200.html   200

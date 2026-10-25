@@ -87,9 +87,13 @@ pnpm dev:seeded
 
 正規URLは `https://{slug}.findadoc.jp/` です。www のパスと共有用の id は別の入口で、どちらもそのホストへ転送されます。
 
+### スタッフ用サイト
+
+`http://admin.localhost:3000/?preview=1` を開くと、30日間のCookieが保存され、`/admin` へ転送されます。Cookieがないとそのホストは404です。`?preview=0` でCookieを消します。そのホストの他のページ、`/submit` も含めて、`/admin` へ転送されます。ページは `noindex` のままです。環境変数はありません。
+
 ### Amplify と Route 53
 
-DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。Amplify は本番ブランチで `*.findadoc.jp` を既に配信しているので、クリニックのホスト名はそのワイルドカードです。プルリクエストのプレビューは別の Amplify ホストです。`{slug}.findadoc.jp` ではありません。そのホストで `/clinic/multilingual-online-clinic?preview=1` を開きます。ビルドがそのパスにアプリのシェルを置き、クエリが30日間のCookieを保存し、ページは `https://api.findadoc.jp` からクリニックを読みます。ショーケースの行がそのデータベースにある必要があります。`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。クリニックのスラッグは変わりません。
+DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。Amplify は本番ブランチで `*.findadoc.jp` を既に配信しているので、クリニックのホスト名はそのワイルドカードです。プルリクエストのプレビューは別の Amplify ホストです。`{slug}.findadoc.jp` ではありません。そのホストで `/clinic/multilingual-online-clinic?preview=1` を開きます。ビルドがそのパスにアプリのシェルを置き、クエリが30日間のCookieを保存し、ページは `https://api.findadoc.jp` からクリニックを読みます。ショーケースの行がそのデータベースにある必要があります。`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。`admin.findadoc.jp` はその `*` レコードに含まれます。クリニックのスラッグは変わりません。
 
 ### Storybook
 

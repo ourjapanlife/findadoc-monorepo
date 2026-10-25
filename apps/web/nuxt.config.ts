@@ -3,6 +3,7 @@ import i18nLocales from './i18n'
 import tailwindcss from '@tailwindcss/vite'
 import { VIEWPORT_BREAKPOINTS, VIEWPORT_FALLBACK_BREAKPOINT } from './utils/viewport'
 import { withLocaleVariants } from './utils/localePath'
+import { ADMIN_SITE_MODE } from './utils/adminSite'
 import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
@@ -179,6 +180,8 @@ export default defineNuxtConfig({
 
             onlineClinic: CLINIC_LANDING_MODE,
 
+            adminSite: ADMIN_SITE_MODE,
+
             sentry: {
                 dsn: process.env.NUXT_PUBLIC_SENTRY_DSN,
                 environment: process.env.NUXT_PUBLIC_SENTRY_ENVIRONMENT,
@@ -213,6 +216,8 @@ export default defineNuxtConfig({
          */
         '/search': { ssr: false },
         '/login': { ssr: false },
+        '/admin': { ssr: false },
+        '/:locale/admin': { ssr: false },
         '/my-page': { ssr: false },
         '/my-page/**': { ssr: false },
         // prefix_except_default: the same SPA surfaces under /ja-JP/search and so on.

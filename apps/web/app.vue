@@ -29,6 +29,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { initializeGqlClient } from './utils/graphql.js'
 import ClinicHostLanding from '~/pages/clinic/[slug].vue'
+import { isAdminPath } from '~/utils/adminSite'
 import {
     clinicLandingHostSlug,
     clinicLandingMode,
@@ -114,7 +115,7 @@ useHead(() => {
     let title: string | undefined
     // Landings set their own title and share image. An empty catalog title here
     // would replace both with the brand-only fallback.
-    if (!hostedClinicSlug.value && !isEntityRoute(route.path) && !isClinicLandingPath(route.path)) {
+    if (!hostedClinicSlug.value && !isEntityRoute(route.path) && !isClinicLandingPath(route.path) && !isAdminPath(route.path)) {
         const key = pageTitleKeyForPath(route.path)
         title = key ? t(pageMetaI18nKey(key)) : ''
         const descriptionKey = pageDescriptionKeyForPath(route.path)
