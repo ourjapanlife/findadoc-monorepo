@@ -39,37 +39,17 @@ describe('online facility updates', () => {
             email: '',
             website: '',
             googleMapsUrl: '',
-            address: {
-                postalCode: '',
-                prefectureEn: '',
-                cityEn: '',
-                addressLine1En: '',
-                addressLine2En: '',
-                prefectureJa: '',
-                cityJa: '',
-                addressLine1Ja: '',
-                addressLine2Ja: ''
-            }
+            address: null
         })
     })
 
-    it('fills a blank address when online create omits it', () => {
+    it('stores a null address when online create omits it', () => {
         expect(contactForStorage({ phone: '03-0000-0000' }, { clearLocation: true })).toEqual({
             phone: '03-0000-0000',
             email: '',
             website: '',
             googleMapsUrl: '',
-            address: {
-                postalCode: '',
-                prefectureEn: '',
-                cityEn: '',
-                addressLine1En: '',
-                addressLine2En: '',
-                prefectureJa: '',
-                cityJa: '',
-                addressLine1Ja: '',
-                addressLine2Ja: ''
-            }
+            address: null
         })
     })
 })

@@ -680,7 +680,7 @@ input LocalizedNameInput {
 
 """Contact information for a facility."""
 type Contact {
-  """Google Maps URL for the facility location."""
+  """Google Maps URL for the facility location. Empty on an online facility."""
   googleMapsUrl: String!
   """Email address."""
   email: String
@@ -688,8 +688,11 @@ type Contact {
   phone: String!
   """Website URL."""
   website: String
-  """Physical mailing address."""
-  address: PhysicalAddress!
+  """
+  Physical mailing address.
+  Null on an online facility (no street address).
+  """
+  address: PhysicalAddress
 }
 
 """Input for providing contact information."""

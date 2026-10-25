@@ -74,7 +74,9 @@ function mapFacilityContactToInput(contact: Contact): ContactInput {
         email: contact.email ?? '',
         website: contact.website ?? '',
         googleMapsUrl: contact.googleMapsUrl ?? '',
-        address: mapFacilityAddressToInput(contact.address ?? {} as PhysicalAddress)
+        ...(contact.address
+            ? { address: mapFacilityAddressToInput(contact.address) }
+            : { address: null })
     }
 }
 
@@ -278,17 +280,17 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.email = data?.contact?.email || undefined
         facilitySectionFields.value.website = data?.contact?.website || undefined
 
-        facilitySectionFields.value.postalCode = data.contact?.address.postalCode ?? ''
-        facilitySectionFields.value.prefectureEn = data?.contact?.address?.prefectureEn ?? ''
+        facilitySectionFields.value.postalCode = data.contact?.address?.postalCode ?? ''
+        facilitySectionFields.value.prefectureEn = data.contact?.address?.prefectureEn ?? ''
         facilitySectionFields.value.cityEn = data.contact?.address?.cityEn ?? ''
-        facilitySectionFields.value.addressLine1En = data?.contact?.address?.addressLine1En ?? ''
-        facilitySectionFields.value.addressLine2En = data?.contact?.address?.addressLine2En ?? ''
-        facilitySectionFields.value.prefectureJa = data?.contact?.address?.prefectureJa ?? ''
-        facilitySectionFields.value.cityJa = data?.contact?.address?.cityJa ?? ''
+        facilitySectionFields.value.addressLine1En = data.contact?.address?.addressLine1En ?? ''
+        facilitySectionFields.value.addressLine2En = data.contact?.address?.addressLine2En ?? ''
+        facilitySectionFields.value.prefectureJa = data.contact?.address?.prefectureJa ?? ''
+        facilitySectionFields.value.cityJa = data.contact?.address?.cityJa ?? ''
         facilitySectionFields.value.cityId = data.cityId ?? ''
-        facilitySectionFields.value.addressLine1Ja = data?.contact?.address?.addressLine1Ja ?? ''
-        facilitySectionFields.value.addressLine2Ja = data?.contact?.address?.addressLine2Ja ?? ''
-        facilitySectionFields.value.googlemapsURL = data?.contact?.googleMapsUrl ?? ''
+        facilitySectionFields.value.addressLine1Ja = data.contact?.address?.addressLine1Ja ?? ''
+        facilitySectionFields.value.addressLine2Ja = data.contact?.address?.addressLine2Ja ?? ''
+        facilitySectionFields.value.googlemapsURL = data.contact?.googleMapsUrl ?? ''
 
         facilitySectionFields.value.healthcareProfessionalIds = data.healthcareProfessionalIds ?? []
         facilitySectionFields.value.mapLatitude = data.mapLatitude?.toString() ?? ''

@@ -280,9 +280,9 @@ function createSubmissionDeepCopy(submissionData: Submission): Submission {
                 contact: submissionData.facility.contact
                     ? {
                         ...submissionData.facility.contact,
-                        address: {
-                            ...submissionData.facility.contact.address
-                        }
+                        address: submissionData.facility.contact.address
+                            ? { ...submissionData.facility.contact.address }
+                            : null
                     }
                     : undefined,
                 healthcareProfessionalIds: [...submissionData.facility.healthcareProfessionalIds]
@@ -324,24 +324,24 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
     facilitySectionFields.email = submissionData?.facility?.contact?.email ?? ''
     facilitySectionFields.website = submissionData?.facility?.contact?.website ?? ''
     facilitySectionFields.postalCode
-        = submissionData?.facility?.contact?.address.postalCode ?? ''
+        = submissionData?.facility?.contact?.address?.postalCode ?? ''
     facilitySectionFields.prefectureEn
-        = submissionData?.facility?.contact?.address.prefectureEn ?? ''
+        = submissionData?.facility?.contact?.address?.prefectureEn ?? ''
     facilitySectionFields.cityEn
-        = submissionData?.facility?.contact?.address.cityEn ?? ''
+        = submissionData?.facility?.contact?.address?.cityEn ?? ''
     facilitySectionFields.addressLine1En
-        = submissionData?.facility?.contact?.address.addressLine1En ?? ''
+        = submissionData?.facility?.contact?.address?.addressLine1En ?? ''
     facilitySectionFields.addressLine2En
-        = submissionData?.facility?.contact?.address.addressLine2En ?? ''
+        = submissionData?.facility?.contact?.address?.addressLine2En ?? ''
     facilitySectionFields.prefectureJa
-        = submissionData?.facility?.contact?.address.prefectureJa ?? ''
+        = submissionData?.facility?.contact?.address?.prefectureJa ?? ''
     facilitySectionFields.cityJa
-        = submissionData?.facility?.contact?.address.cityJa ?? ''
+        = submissionData?.facility?.contact?.address?.cityJa ?? ''
     facilitySectionFields.cityId = ''
     facilitySectionFields.addressLine1Ja
-        = submissionData?.facility?.contact?.address.addressLine1Ja ?? ''
+        = submissionData?.facility?.contact?.address?.addressLine1Ja ?? ''
     facilitySectionFields.addressLine2Ja
-        = submissionData?.facility?.contact?.address.addressLine2Ja ?? ''
+        = submissionData?.facility?.contact?.address?.addressLine2Ja ?? ''
     facilitySectionFields.mapLatitude
         = submissionData?.facility?.mapLatitude?.toString() ?? ''
     facilitySectionFields.mapLongitude

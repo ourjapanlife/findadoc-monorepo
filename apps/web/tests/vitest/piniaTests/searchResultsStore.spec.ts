@@ -227,7 +227,7 @@ describe('searchResultsStore', () => {
 
             expect(store.totalResults).to.equal(TARGET_CITY_COUNT)
             store.searchResultsList.forEach(facility => {
-                expect(facility.contact?.address.cityEn).to.equal(TARGET_CITY)
+                expect(facility.contact?.address?.cityEn).to.equal(TARGET_CITY)
             })
         })
 

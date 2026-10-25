@@ -52,22 +52,28 @@ function blankAddress(): gqlTypes.PhysicalAddressInput {
 }
 
 /**
- * Contact always stores a full address shape. An online facility keeps phone and
- * may omit address and Maps URL; those become empty strings here.
+ * Normal facilities store a full address. An online facility keeps phone and
+ * stores address as null; Maps URL becomes empty.
  */
 export function contactForStorage(
     contact: gqlTypes.ContactInput,
     options: { clearLocation: boolean }
 ): gqlTypes.ContactInput {
-    const address = options.clearLocation
-        ? blankAddress()
-        : (contact.address ?? blankAddress())
+    if (options.clearLocation) {
+        return {
+            phone: contact.phone,
+            email: contact.email ?? '',
+            website: contact.website ?? '',
+            googleMapsUrl: '',
+            address: null
+        }
+    }
     return {
         phone: contact.phone,
         email: contact.email ?? '',
         website: contact.website ?? '',
-        googleMapsUrl: options.clearLocation ? '' : (contact.googleMapsUrl ?? ''),
-        address
+        googleMapsUrl: contact.googleMapsUrl ?? '',
+        address: contact.address ?? blankAddress()
     }
 }
 

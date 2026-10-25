@@ -78,11 +78,14 @@ export type CitySuggestion = {
 /** Contact information for a facility. */
 export type Contact = {
   __typename?: 'Contact';
-  /** Physical mailing address. */
-  address: PhysicalAddress;
+  /**
+   * Physical mailing address.
+   * Null on an online facility (no street address).
+   */
+  address?: Maybe<PhysicalAddress>;
   /** Email address. */
   email?: Maybe<Scalars['String']['output']>;
-  /** Google Maps URL for the facility location. */
+  /** Google Maps URL for the facility location. Empty on an online facility. */
   googleMapsUrl: Scalars['String']['output'];
   /** Phone number. */
   phone: Scalars['String']['output'];
@@ -1585,7 +1588,7 @@ export type CitySuggestionResolvers<ContextType = any, ParentType extends Resolv
 };
 
 export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = {
-  address?: Resolver<ResolversTypes['PhysicalAddress'], ParentType, ContextType>;
+  address?: Resolver<Maybe<ResolversTypes['PhysicalAddress']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   googleMapsUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
