@@ -3,9 +3,9 @@ import { graphqlEndpoint } from '~/utils/graphqlEndpoint'
 import { hostedClinicIndex } from '~/utils/hostedClinicIndex'
 
 /**
- * Id addresses (and the prefecture/city form of the same slug) belong to the
- * clean link. The clinic list is the API. Returning `navigateTo` from middleware
- * stops the directory page from answering with its own 404.
+ * The subdomain is the clinic. The clean path, the breadcrumb, and the
+ * shareable `--{id}` address all leave for `{slug}.findadoc.jp`. Returning
+ * `navigateTo` from middleware stops the directory page from answering first.
  */
 export default defineNuxtRouteMiddleware(async to => {
     const config = useRuntimeConfig()
@@ -14,10 +14,11 @@ export default defineNuxtRouteMiddleware(async to => {
         return
     }
 
+    const requestUrl = useRequestURL()
     const sites = await hostedClinicIndex(graphqlEndpoint(config.public.NUXT_USE_LOCAL_API))
-    const target = clinicLandingRedirectTarget(to.fullPath, mode, sites)
+    const target = clinicLandingRedirectTarget(to.fullPath, mode, sites, requestUrl.host)
     if (!target || target === to.fullPath) {
         return
     }
-    return navigateTo(target, { redirectCode: 301 })
+    return navigateTo(target, { redirectCode: 301, external: true })
 })

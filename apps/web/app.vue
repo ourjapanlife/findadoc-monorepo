@@ -34,6 +34,8 @@ import {
     clinicLandingHostSlug,
     clinicLandingMode,
     clinicLandingPath,
+    clinicSubdomainHreflang,
+    clinicSubdomainUrl,
     isClinicHostPage,
     isClinicLandingPath
 } from '~/utils/clinicLanding'
@@ -65,7 +67,9 @@ const hostedClinicSlug = computed(() => {
 const canonical = computed(() => {
     const slug = hostedClinicSlug.value
     if (slug) {
-        return canonicalUrl(localizedPath(clinicLandingPath(slug), String(locale.value)))
+        const prefix = String(locale.value) === 'en-US' ? '' : `/${locale.value}`
+        const host = import.meta.server ? requestUrl.host : window.location.host
+        return clinicSubdomainUrl(slug, prefix, host)
     }
     return canonicalUrl(route.path)
 })
@@ -135,7 +139,14 @@ useHead(() => {
             // noindex directory URLs are not in the hreflang cluster. A one-way
             // alternate from /zh-CN/clinic/… to /clinic/… would point at a page
             // that does not link back.
-            ...(noindex ? [] : hreflangLinkTags(route.path))
+            ...(noindex
+                ? []
+                : hostedClinicSlug.value
+                    ? clinicSubdomainHreflang(
+                        hostedClinicSlug.value,
+                        import.meta.server ? requestUrl.host : window.location.host
+                    )
+                    : hreflangLinkTags(route.path))
         ],
         meta,
         script: [jsonLdScript('ld-organization', organizationJsonLd())]

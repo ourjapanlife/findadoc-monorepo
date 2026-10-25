@@ -65,24 +65,28 @@ describe('clinic landings', () => {
         )
     })
 
-    it('treats the clean link as the landing and the id address as a redirect', () => {
+    it('sends the breadcrumb, the clean path, and the shareable id to the subdomain', () => {
+        const home = `https://${slug}.findadoc.jp/`
         expect(isClinicLandingPath(clean)).to.equal(true)
         expect(isClinicLandingPath(`/ja-JP${clean}/`)).to.equal(true)
         expect(isClinicLandingPath(`/clinic/tokyo/minato/${slug}--abc`)).to.equal(false)
 
-        expect(clinicLandingRedirectTarget(`/clinic/tokyo/minato/${slug}`, 'preview', sites))
-            .to.equal(clean)
-        expect(clinicLandingRedirectTarget(`/clinic/tokyo/minato/${slug}--abc`, 'public', sites))
-            .to.equal(clean)
-        expect(clinicLandingRedirectTarget(`/ja-JP/clinic/osaka/kita/${slug}--abc?preview=1`, 'preview', sites))
-            .to.equal(`/ja-JP${clean}?preview=1`)
-        expect(clinicLandingRedirectTarget(`/clinic/${slug}--abc`, 'preview', sites)).to.equal(clean)
-        expect(clinicLandingRedirectTarget('/clinic/tokyo/minato/other--facility-1', 'public', sites))
-            .to.equal(clean)
-        expect(clinicLandingRedirectTarget(clean, 'preview', sites)).to.equal(undefined)
-        expect(clinicLandingRedirectTarget('/clinic/tokyo/minato/other-clinic--abc', 'public', sites))
+        expect(clinicLandingRedirectTarget(`/clinic/tokyo/minato/${slug}`, 'preview', sites, 'www.findadoc.jp'))
+            .to.equal(home)
+        expect(clinicLandingRedirectTarget(`/clinic/tokyo/minato/${slug}--abc`, 'public', sites, 'www.findadoc.jp'))
+            .to.equal(home)
+        expect(clinicLandingRedirectTarget(`/ja-JP/clinic/osaka/kita/${slug}--abc?preview=1`, 'preview', sites, '127.0.0.1:3000'))
+            .to.equal(`http://${slug}.localhost:3000/ja-JP?preview=1`)
+        expect(clinicLandingRedirectTarget(`/clinic/${slug}--abc`, 'preview', sites, 'findadoc.jp'))
+            .to.equal(home)
+        expect(clinicLandingRedirectTarget(clean, 'preview', sites, 'www.findadoc.jp'))
+            .to.equal(home)
+        expect(clinicLandingRedirectTarget('/clinic/tokyo/minato/other--facility-1', 'public', sites, 'www.findadoc.jp'))
+            .to.equal(home)
+        expect(clinicLandingRedirectTarget('/clinic/tokyo/minato/other-clinic--abc', 'public', sites, 'www.findadoc.jp'))
             .to.equal(undefined)
-        expect(clinicLandingRedirectTarget(`/clinic/tokyo/minato/${slug}--abc`, 'off', sites)).to.equal(undefined)
+        expect(clinicLandingRedirectTarget(`/clinic/tokyo/minato/${slug}--abc`, 'off', sites, 'www.findadoc.jp'))
+            .to.equal(undefined)
     })
 
     it('stays a 404 until preview grants a cookie, and public skips the cookie', () => {

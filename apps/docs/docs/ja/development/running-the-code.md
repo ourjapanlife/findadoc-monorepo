@@ -68,12 +68,12 @@ pnpm dev
 
 ### クリニックの独自ページ
 
-独自ページを持つクリニックは `clinic_sites` の1行で、種データは `apps/server/scripts/seed/clinicSiteContent.ts` です。最初のページは `/clinic/multilingual-online-clinic` です。ディレクトリの施設ができるまで、施設idは空です。アカウントは `clinic_memberships` で紐づけます。`pnpm dev` は Turbo です。サイトのタスクは、変数が未設定のときクリニックのページとスタッフ用サイトを preview にし、ローカルAPIへ接続します。Generate と Netlify は、変数を設定するまでオフです。`off` は開発中でも404にします。ページを読むために、種データを入れたAPIを起動します。
+独自ページを持つクリニックは `clinic_sites` の1行で、種データは `apps/server/scripts/seed/clinicSiteContent.ts` です。最初のページは `/clinic/multilingual-online-clinic` です。ディレクトリの施設ができるまで、施設idは空です。アカウントは `clinic_memberships` で紐づけます。`pnpm dev` は Turbo です。サイトのタスクは、変数が未設定のときクリニックのページとスタッフ用サイトを preview にし、ローカルAPIへ接続します。本番の generate は、変数を設定するまでオフです。`off` は開発中でも404にします。ページを読むために、種データを入れたAPIを起動します。
 
 - `preview` は関係者向けの公開です。`/clinic/multilingual-online-clinic?preview=1` を開くと、30日間有効なCookieが保存されます。CookieがないURLは404で、`noindex` になり、サイトマップにも入りません。`?preview=0` でCookieを消します。
 - `public` ではこの短いURLをプリレンダリングし、サイトマップに載せ、Cookieは不要になります。
 
-ポスターに載せるリンクは `/clinic/multilingual-online-clinic` です。`--{id}` で終わるディレクトリのURLはそこへ転送され、共有時の画像はそのクリニックのアイコンです。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけです。ヘッダーには、そのクリニックが保存したブランドカラーを使います。予約ボタンはまだどこにも飛びません。予約の流れはあとからこのボタンを置き換えます。病院の管理者は、これまでどおり施設そのものを編集します。
+ポスターに載せるリンクは `https://multilingual-online-clinic.findadoc.jp/` です。クリニックのパンくず、`/clinic/multilingual-online-clinic`、`--{id}` で終わるディレクトリのURLはそこへ転送されます。共有時の画像はそのクリニックのアイコンです。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけです。ヘッダーには、そのクリニックが保存したブランドカラーを使います。予約ボタンはまだどこにも飛びません。予約の流れはあとからこのボタンを置き換えます。病院の管理者は、これまでどおり施設そのものを編集します。
 
 同じページは2つのホストで開きます。`pnpm dev` だけで足ります。
 
@@ -84,11 +84,11 @@ pnpm dev:seeded
 - ドメインのパス: `http://127.0.0.1:3000/clinic/multilingual-online-clinic?preview=1`
 - クリニックのホスト名: `http://multilingual-online-clinic.localhost:3000/?preview=1`
 
-ブラウザは `*.localhost` をこのマシンに解決するので、hosts ファイルは要りません。ホスト名そのものがクリニックです。`http://multilingual-online-clinic.localhost:3000/` は `/` のままです。そのホストの他のページ、`/submit` と `/clinic/multilingual-online-clinic` も含めて、`/` へ転送されます。画像とスクリプトはそのままです。プレビューのCookieは、それを保存したホストにだけ付きます。それぞれのホストで `?preview=1` が必要です。`?preview=0` はそのホストのCookieを消します。変数を `off` にすると、そのホストは通常のサイトです。www 上のアドレスと正規URLは `/clinic/multilingual-online-clinic` のままです。
+ブラウザは `*.localhost` をこのマシンに解決するので、hosts ファイルは要りません。ホスト名そのものがクリニックです。`http://multilingual-online-clinic.localhost:3000/` は `/` のままです。そのホストの他のページ、`/submit` と `/clinic/multilingual-online-clinic` も含めて、`/` へ転送されます。画像とスクリプトはそのままです。プレビューのCookieは、それを保存したホストにだけ付きます。それぞれのホストで `?preview=1` が必要です。`?preview=0` はそのホストのCookieを消します。変数を `off` にすると、そのホストは通常のサイトです。クリニックを開いているあいだ、正規URLはサブドメインです。
 
 `www`、`api`、`mcp`、`docs` はクリニックのホストではありません。`admin.localhost` と `admin.findadoc.jp` はスタッフ用サイトで、クリニックのホストではありません。
 
-正規URLは `https://www.findadoc.jp/clinic/{slug}` のままです。クリニックのホスト名は、そのページへの別の入口です。
+正規URLは `https://{slug}.findadoc.jp/` です。www のパスと共有用の id は別の入口で、どちらもそのホストへ転送されます。
 
 ### スタッフ用サイト
 
@@ -96,7 +96,7 @@ pnpm dev:seeded
 
 - `preview` では `http://admin.localhost:3000/?preview=1` を開きます。30日間のCookieが保存され、`/admin` へ転送されます。Cookieがないとそのホストは404です。`?preview=0` でCookieを消します。そのホストの他のページ、`/submit` も含めて、`/admin` へ転送されます。
 - `public` ではCookieなしでページを開けます。サイトマップには入りません。
-- Generate と Netlify で未設定のとき、admin のホストと `/admin` は404です。`off` は開発中でも同じです。
+- 本番の generate で未設定のとき、admin のホストと `/admin` は404です。`off` は開発中でも同じです。
 
 病院は基本プランから始まり、有効な人は3人までです。Find a Doc のスタッフ（`write:users`）は、オーナーまたはスタッフを追加でき、その病院に既に所属する医療者を席に結びつけられます。その病院のオーナーは、3席の範囲でスタッフの追加と解除ができます。解除しても行は残り、監査ログが書かれます。最初のオーナーは Find a Doc のスタッフが追加します。
 
@@ -104,15 +104,9 @@ pnpm dev:seeded
 pnpm dev:seeded
 ```
 
-### Netlify と Route 53
+### Amplify と Route 53
 
-DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。
-
-1. Netlify のサイトにドメイン `*.findadoc.jp` を追加します。
-2. Netlify が証明書の確認用レコードを表示します。同じ Route 53 ゾーンにそのレコードを追加します。
-3. 名前が `*` の CNAME を追加し、向き先は Netlify がそのサイトに表示するホスト名にします。
-
-`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。`admin.findadoc.jp` はその `*` レコードに含まれます。サイトを Netlify から移すときは、その `*` レコードの向き先を変えます。クリニックのスラッグは変わりません。
+DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。Amplify は本番ブランチで `*.findadoc.jp` を既に配信しているので、クリニックのホスト名はそのワイルドカードです。`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。`admin.findadoc.jp` はその `*` レコードに含まれます。クリニックのスラッグは変わりません。
 
 ### Storybook
 

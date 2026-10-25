@@ -2,19 +2,20 @@ import { SITE_ORIGIN } from './site.ts'
 
 /**
  * Hosted clinic pages live in `clinic_sites`. This module only knows the URL
- * shape, the preview cookie, and how a directory address redirects to the clean link.
+ * shape, the preview cookie, and how every other clinic address redirects to
+ * the subdomain.
  *
- * The link to advertise is `/clinic/{slug}`. A directory address that ends in
- * the same slug, or in `--{facilityId}`, redirects here. The clinic row is what
- * an account and a future CRM attach to. `facility_id` on that row stays empty
- * until the directory listing exists.
+ * The address to share is `https://{slug}.findadoc.jp/`. `/clinic/{slug}`, the
+ * directory breadcrumb, and `/clinic/{prefecture}/{city}/{slug}--{id}` redirect
+ * there. The clinic row is what an account and a future CRM attach to.
+ * `facility_id` on that row stays empty until the directory listing exists.
  *
  * `NUXT_PUBLIC_ONLINE_CLINIC`:
  * - unset in `pnpm dev` — same as `preview`, so `turbo dev` does not need the variable
  * - unset for generate and Netlify — every landing is a 404, and the id address stays a clinic URL
  * - `off` — the 404, including in dev
  * - `preview` — showcase. `?preview=1` sets a cookie; without it the landing is a 404,
- *   noindex, and absent from the sitemap. The id address still redirects to the clean link
+ *   noindex, and absent from the sitemap. The id address still redirects to the subdomain
  * - `public` — a published clinic is prerendered, indexable, and listed in the sitemap.
  *   A clinic still in `preview` keeps the cookie.
  *
@@ -101,6 +102,52 @@ export function clinicLandingsArePublic(value?: string | null): boolean {
 
 export function clinicLandingPath(slug: string): string {
     return `/clinic/${slug}`
+}
+
+/**
+ * The subdomain is the clinic. Local dev uses `{slug}.localhost` and keeps the
+ * current port. Anywhere else, including an omitted host, is `findadoc.jp`.
+ */
+export function clinicSubdomainUrl(
+    slug: string,
+    localePrefix = '',
+    requestHost?: string | null,
+    query = ''
+): string {
+    const raw = (requestHost ?? '').trim().toLowerCase()
+    const hostname = raw.split(':')[0] ?? ''
+    const port = raw.includes(':') ? raw.slice(raw.indexOf(':')) : ''
+    const local = hostname === 'localhost' || hostname.endsWith('.localhost') || hostname === '127.0.0.1'
+    const origin = local
+        ? `http://${slug}.localhost${port || ':3000'}`
+        : `https://${slug}.findadoc.jp`
+    const path = localePrefix.length > 0 ? localePrefix : '/'
+
+    return `${origin}${path}${query}`
+}
+
+/** Alternates for a clinic hostname. English is the unprefixed root. */
+export function clinicSubdomainHreflang(slug: string, requestHost?: string | null): Array<{
+    rel: 'alternate'
+    hreflang: string
+    href: string
+    key: string
+}> {
+    const alternates = [
+        { hreflang: 'en-US', href: clinicSubdomainUrl(slug, '', requestHost) },
+        ...CLINIC_LANDING_LOCALE_PREFIXES.map(code => ({
+            hreflang: code,
+            href: clinicSubdomainUrl(slug, `/${code}`, requestHost)
+        })),
+        { hreflang: 'x-default', href: clinicSubdomainUrl(slug, '', requestHost) }
+    ]
+
+    return alternates.map(alternate => ({
+        rel: 'alternate' as const,
+        hreflang: alternate.hreflang,
+        href: alternate.href,
+        key: `hreflang-${alternate.hreflang}`
+    }))
 }
 
 /**
@@ -225,15 +272,15 @@ export function isClinicLandingPath(path: string): boolean {
 }
 
 /**
- * Directory URL for a clinic that owns a landing → the clean link.
- * `/clinic/tokyo/minato/multilingual-online-clinic--{id}` and the same path
- * without an id both come here. The clean link itself does not.
- * Off mode does not redirect, so a normal clinic page can still be served.
+ * A hosted clinic's breadcrumb, clean path, and shareable `--{id}` address
+ * all go to `{slug}.findadoc.jp`. A directory clinic that is not one of those
+ * rows stays on its own page. Off mode does not redirect.
  */
 export function clinicLandingRedirectTarget(
     path: string,
     mode: ClinicLandingMode,
-    sites: readonly HostedClinicRef[]
+    sites: readonly HostedClinicRef[],
+    requestHost?: string | null
 ): string | undefined {
     if (mode === 'off') {
         return undefined
@@ -244,15 +291,13 @@ export function clinicLandingRedirectTarget(
     }
 
     let owned: string | undefined
-    if (segments.length === 4) {
-        owned = hostedSlug(segments[3] ?? '', sites)
-    } else if (segments.length === 2 && (segments[1] ?? '').includes(ID_SEPARATOR)) {
-        owned = hostedSlug(segments[1] ?? '', sites)
+    if (segments.length === 4 || segments.length === 2) {
+        owned = hostedSlug(segments[segments.length - 1] ?? '', sites)
     }
     if (!owned) {
         return undefined
     }
-    return `${localePrefix}${clinicLandingPath(owned)}${query}`
+    return clinicSubdomainUrl(owned, localePrefix, requestHost, query)
 }
 
 export type ClinicLandingAccess = 'allow' | 'deny' | 'grant' | 'revoke'

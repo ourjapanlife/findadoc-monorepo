@@ -75,7 +75,7 @@ export default async function clinicLanding(request: Request, context: EdgeConte
     }
 
     const sites = await hostedClinicIndex(graphqlEndpoint(Netlify.env.get('NUXT_USE_LOCAL_API')))
-    const redirectTarget = clinicLandingRedirectTarget(`${url.pathname}${url.search}`, mode, sites)
+    const redirectTarget = clinicLandingRedirectTarget(`${url.pathname}${url.search}`, mode, sites, url.host)
     if (redirectTarget) {
         const headers = new Headers({
             location: redirectTarget,

@@ -427,10 +427,9 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { createError, useAsyncData, useHead, useRequestURL, useRoute, useRuntimeConfig } from '#imports'
 import { useUmami } from '~/composables/useUmamiTracking'
-import { clinicLandingHostSlug, clinicLandingMode, clinicLandingPath, clinicLandingShareImage } from '~/utils/clinicLanding'
+import { clinicLandingHostSlug, clinicLandingMode, clinicLandingShareImage, clinicSubdomainUrl } from '~/utils/clinicLanding'
 import { fetchClinicSite } from '~/utils/clinicSiteQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
-import { localizedPath } from '~/utils/localePath'
 import { formatPageTitle } from '~/utils/site'
 import { jsonLdScript, medicalClinicJsonLd } from '~/utils/structuredData'
 
@@ -529,7 +528,11 @@ useHead(() => ({
     script: [
         jsonLdScript('ld-clinic-landing', medicalClinicJsonLd({
             name: copy.value.name,
-            pagePath: localizedPath(clinicLandingPath(site.value?.slug ?? slug.value ?? ''), String(locale.value)),
+            pagePath: clinicSubdomainUrl(
+                site.value?.slug ?? slug.value ?? '',
+                String(locale.value) === 'en-US' ? '' : `/${locale.value}`,
+                import.meta.server ? requestUrl.host : window.location.host
+            ),
             availableLanguage: landing.languages.map(language => language.bcp47)
         }))
     ]
