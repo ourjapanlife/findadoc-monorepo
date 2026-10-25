@@ -95,7 +95,7 @@ pnpm dev:seeded
 
 ### Amplify と Route 53
 
-DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。Amplify は本番ブランチで `*.findadoc.jp` を既に配信しているので、クリニックのホスト名はそのワイルドカードです。`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。`admin.findadoc.jp` はその `*` レコードに含まれます。クリニックのスラッグは変わりません。
+DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。Amplify は本番ブランチで `*.findadoc.jp` を既に配信しているので、クリニックのホスト名はそのワイルドカードです。プルリクエストのプレビューは別の Amplify ホストです。`{slug}.findadoc.jp` ではありません。そのホストで `/clinic/multilingual-online-clinic?preview=1` を開きます。ビルドがそのパスにアプリのシェルを置き、クエリが30日間のCookieを保存し、ページは `https://api.findadoc.jp` からクリニックを読みます。ショーケースの行がそのデータベースにある必要があります。`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。`admin.findadoc.jp` はその `*` レコードに含まれます。クリニックのスラッグは変わりません。
 
 ### Storybook
 

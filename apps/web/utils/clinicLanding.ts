@@ -73,6 +73,13 @@ export type ClinicLandingMode = 'off' | 'preview' | 'public'
 /** Cookie gate for every deploy. Change this to `public` when search should index the clinic. */
 export const CLINIC_LANDING_MODE: ClinicLandingMode = 'preview'
 
+/**
+ * Slugs generate copies into `{path}.html` so an Amplify preview can open them.
+ * Keep this equal to `clinicSiteSeeds`. A public build prerenders the page and
+ * does not use the copy.
+ */
+export const CLINIC_PREVIEW_SHELL_SLUGS = ['multilingual-online-clinic'] as const
+
 export function clinicLandingMode(value: string | null | undefined): ClinicLandingMode {
     if (value === 'public') {
         return 'public'

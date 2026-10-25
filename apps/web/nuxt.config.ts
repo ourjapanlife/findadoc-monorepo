@@ -3,12 +3,13 @@ import i18nLocales from './i18n'
 import tailwindcss from '@tailwindcss/vite'
 import { VIEWPORT_BREAKPOINTS, VIEWPORT_FALLBACK_BREAKPOINT } from './utils/viewport'
 import { withLocaleVariants } from './utils/localePath'
-import { CLINIC_LANDING_MODE } from './utils/clinicLanding'
 import { ADMIN_SITE_MODE } from './utils/adminSite'
 import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
+import { CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
+import { writeClinicPreviewShells } from './utils/nuxt/clinicPreviewShell'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
 import {
     applyEntityDirectoryToNitro,
@@ -227,7 +228,8 @@ export default defineNuxtConfig({
         // `/clinic/:slug` is not `ssr: false`. Nuxt treats that rule as covering
         // `/clinic/{prefecture}/{city}/{slug}` and stubs the directory page, so
         // generate writes an empty shell. Preview landings stay off the prerender
-        // list. The showcase slug is a client rewrite in serve.json and _redirects.
+        // list. Generate copies the SPA shell to `{slug}.html` for Amplify, which
+        // serves that file. serve.json and _redirects do the same for local preview.
     },
     sourcemap: {
         client: true
@@ -292,7 +294,13 @@ export default defineNuxtConfig({
         'nitro:init'(nitro) {
             // Generate is static, so the proxy destinations have to be baked into
             // the publish dir. Dev never has the env vars in the browser tag.
-            nitro.hooks.hook('close', () => writeUmamiProxyRedirects(nitro.options.output.publicDir))
+            nitro.hooks.hook('close', async () => {
+                const publicDir = nitro.options.output.publicDir
+                writeUmamiProxyRedirects(publicDir)
+                for (const slug of CLINIC_PREVIEW_SHELL_SLUGS) {
+                    await writeClinicPreviewShells(publicDir, slug)
+                }
+            })
         }
     },
     eslint: {

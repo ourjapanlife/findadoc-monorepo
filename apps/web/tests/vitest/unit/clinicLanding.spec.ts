@@ -1,14 +1,17 @@
 import { expect } from 'chai'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { readFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { DEFAULT_LOCALE_CODE, LOCALE_CODES } from '@/utils/localePath'
 import {
     CLINIC_LANDING_LOCALE_PREFIXES,
+    CLINIC_LANDING_MODE,
+    CLINIC_PREVIEW_SHELL_SLUGS,
     clinicHostLandingTarget,
     clinicLandingAccess,
     clinicLandingHostSlug,
-    CLINIC_LANDING_MODE,
     clinicLandingMode,
     clinicLandingPath,
     clinicLandingPreviewCookie,
@@ -17,6 +20,7 @@ import {
     isClinicLandingPath,
     type HostedClinicRef
 } from '@/utils/clinicLanding'
+import { clinicPreviewShellPaths, writeClinicPreviewShells } from '@/utils/nuxt/clinicPreviewShell'
 import { indexableMarketingPaths } from '@/utils/sitemap'
 import { SITE_ORIGIN } from '@/utils/site'
 import { clinicSiteSeeds } from '../../../../server/scripts/seed/clinicSiteContent'
@@ -138,5 +142,43 @@ describe('clinic landings', () => {
         expect(redirects).to.match(new RegExp(`^${clean}\\s+/200\\.html\\s+200`, 'm'))
         expect(redirects).to.match(new RegExp(`^/:locale${clean}\\s+/200\\.html\\s+200`, 'm'))
         expect(serve).to.include(`"${clean}"`)
+        expect([...CLINIC_PREVIEW_SHELL_SLUGS]).to.deep.equal(clinicSiteSeeds.map(site => site.slug))
+    })
+})
+
+describe('clinic preview shells', () => {
+    it('copies the SPA shell to the html path Amplify serves', async () => {
+        const dir = await mkdtemp(join(tmpdir(), 'clinic-shell-'))
+        try {
+            await writeFile(join(dir, '200.html'), '<html>shell</html>')
+            await writeClinicPreviewShells(dir, 'multilingual-online-clinic', false)
+            for (const relative of clinicPreviewShellPaths('multilingual-online-clinic')) {
+                expect(await readFile(join(dir, relative), 'utf8')).to.equal('<html>shell</html>')
+            }
+            expect(clinicPreviewShellPaths('multilingual-online-clinic')).to.include(
+                `ja-JP/clinic/multilingual-online-clinic.html`
+            )
+            expect(CLINIC_LANDING_LOCALE_PREFIXES).to.include('ja-JP')
+        } finally {
+            await rm(dir, { recursive: true, force: true })
+        }
+    })
+
+    it('leaves a public build\'s prerendered page alone', async () => {
+        const dir = await mkdtemp(join(tmpdir(), 'clinic-shell-'))
+        try {
+            await writeFile(join(dir, '200.html'), '<html>shell</html>')
+            await writeClinicPreviewShells(dir, 'multilingual-online-clinic', true)
+            let found = false
+            try {
+                await readFile(join(dir, 'clinic/multilingual-online-clinic.html'), 'utf8')
+                found = true
+            } catch {
+                found = false
+            }
+            expect(found).to.equal(false)
+        } finally {
+            await rm(dir, { recursive: true, force: true })
+        }
     })
 })
