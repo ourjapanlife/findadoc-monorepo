@@ -370,6 +370,8 @@
   },
   "modFacilitySection": {
     "addresses": "Adressen",
+    "onlineLabel": "Online-Einrichtung",
+    "onlineHint": "Eine Online-Einrichtung hat keine Straßenadresse. Adresse, Ort und Karte können leer bleiben.",
     "contactInformation": "Kontakt",
     "facilityHeading": "Angaben zur Einrichtung",
     "googleMapsInformation": "Google Maps information",

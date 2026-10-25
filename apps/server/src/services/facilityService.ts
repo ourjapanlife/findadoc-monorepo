@@ -75,6 +75,9 @@ export function buildFacilityUpdatePatch(fields: Partial<gqlTypes.UpdateFacility
     if (fields.supportedLanguages !== undefined) {
         updatePatch.supported_languages = JSON.stringify(uniqueLocales(fields.supportedLanguages ?? []))
     }
+    if (fields.online !== undefined) {
+        updatePatch.online = fields.online === true
+    }
     // Business rule: always timestamp when the entity is updated
     updatePatch.updated_date = new Date().toISOString()
 
@@ -498,6 +501,7 @@ export async function createFacility(
                     source: facilityInput.source ?? FacilitySource.Manual,
                     verification_status: publication.data.verificationStatus,
                     supported_languages: JSON.stringify(uniqueLocales(facilityInput.supportedLanguages ?? [])),
+                    online: facilityInput.online === true,
                     created_date: new Date().toISOString(),
                     updated_date: new Date().toISOString()
                 })

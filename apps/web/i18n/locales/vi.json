@@ -315,6 +315,8 @@
   },
   "modFacilitySection": {
     "addresses": "Địa chỉ.",
+    "onlineLabel": "Cơ sở trực tuyến",
+    "onlineHint": "Cơ sở trực tuyến không có địa chỉ đường phố. Có thể để trống địa chỉ, thành phố và bản đồ.",
     "contactInformation": "Thông tin liên lạc",
     "facilityHeading": "Thông tin cơ sở",
     "googleMapsInformation": "Thông tin Google Maps",

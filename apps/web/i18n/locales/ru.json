@@ -322,6 +322,8 @@
   },
   "modFacilitySection": {
     "addresses": "Адреса",
+    "onlineLabel": "Онлайн-учреждение",
+    "onlineHint": "У онлайн-учреждения нет уличного адреса. Адрес, город и карту можно не заполнять.",
     "contactInformation": "Контакты",
     "facilityHeading": "Сведения об учреждении",
     "googleMapsInformation": "Сведения Google Maps",

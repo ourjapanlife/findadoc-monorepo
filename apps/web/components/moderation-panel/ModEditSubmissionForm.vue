@@ -346,6 +346,7 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
         = submissionData?.facility?.mapLatitude?.toString() ?? ''
     facilitySectionFields.mapLongitude
         = submissionData?.facility?.mapLongitude?.toString() ?? ''
+    facilitySectionFields.online = submissionData?.facility?.online === true
 
     facilitySectionFields.googlemapsURL
         = submissionData?.facility?.contact?.googleMapsUrl
@@ -467,9 +468,11 @@ async function saveSubmissionDraft(
         healthcareProfessionalIds: facilitiesStore.facilitySectionFields.healthcareProfessionalIds,
         mapLatitude: parseFloat(facilitiesStore.facilitySectionFields.mapLatitude) || 0,
         mapLongitude: parseFloat(facilitiesStore.facilitySectionFields.mapLongitude) || 0,
-        ...(facilitiesStore.facilitySectionFields.cityId
-            ? { cityId: facilitiesStore.facilitySectionFields.cityId }
-            : {})
+        online: facilitiesStore.facilitySectionFields.online === true,
+        ...(facilitiesStore.facilitySectionFields.online === true
+          || !facilitiesStore.facilitySectionFields.cityId
+            ? {}
+            : { cityId: facilitiesStore.facilitySectionFields.cityId })
     }
 
     const healthcareProfessionalUpdate = [

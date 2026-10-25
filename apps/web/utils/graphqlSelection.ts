@@ -95,7 +95,8 @@ export const facilitySelection = selection<Facility>({
     source: true,
     supportedLanguages: true,
     updatedDate: true,
-    verificationStatus: true
+    verificationStatus: true,
+    online: true
 })
 
 /** Every HealthcareProfessional field. */
@@ -123,7 +124,8 @@ export const facilitySubmissionSelection = selection<FacilitySubmission>({
     mapLatitude: true,
     mapLongitude: true,
     nameEn: true,
-    nameJa: true
+    nameJa: true,
+    online: true
 })
 
 export const professionalSubmissionSelection = selection<HealthcareProfessionalSubmission>({

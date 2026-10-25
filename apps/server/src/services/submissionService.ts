@@ -831,7 +831,8 @@ export const approveSubmission = async (
                         verification_status: 'UNVERIFIED_LOCATION',
                         supported_languages: JSON.stringify(
                             uniqueLocales(facilityInput.supportedLanguages ?? []).filter(isPublishedLocale)
-                        )
+                        ),
+                        online: facilityInput.online === true
                     })
                     .returningAll()
                     .executeTakeFirstOrThrow()

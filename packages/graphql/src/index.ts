@@ -122,6 +122,11 @@ export type CreateFacilityInput = {
   nameEn: Scalars['String']['input'];
   /** Name of the facility in Japanese. */
   nameJa: Scalars['String']['input'];
+  /**
+   * True when this facility has no street address.
+   * Address, city, and map fields may be empty.
+   */
+  online?: InputMaybe<Scalars['Boolean']['input']>;
   /** Payment options for the facility, Type and Brand */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
   /** Where this facility record came from. */
@@ -263,6 +268,11 @@ export type Facility = {
   nameEn: Scalars['String']['output'];
   /** Name of the facility in Japanese. */
   nameJa: Scalars['String']['output'];
+  /**
+   * True when this facility has no street address.
+   * Address, city, and map fields are not required.
+   */
+  online: Scalars['Boolean']['output'];
   /** The payment methods accepted by this facility. */
   paymentOptions?: Maybe<Array<PaymentOption>>;
   /** Where the facility record came from. Null on rows that have not been classified. */
@@ -356,6 +366,8 @@ export type FacilitySubmission = {
   nameEn?: Maybe<Scalars['String']['output']>;
   /** Submitted facility name in Japanese. */
   nameJa?: Maybe<Scalars['String']['output']>;
+  /** True when the submitted facility has no street address. */
+  online?: Maybe<Scalars['Boolean']['output']>;
 };
 
 /** Location check for a facility. UNVERIFIED_LOCATION means there is no cityId. */
@@ -1253,6 +1265,8 @@ export type UpdateFacilityInput = {
   nameEn?: InputMaybe<Scalars['String']['input']>;
   /** Updated name of the facility in Japanese. */
   nameJa?: InputMaybe<Scalars['String']['input']>;
+  /** True when this facility has no street address. Address and map fields may be empty. */
+  online?: InputMaybe<Scalars['Boolean']['input']>;
   /** Payment options for the facility, Type and Brand */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
   /** Where this facility record came from. */
@@ -1578,6 +1592,7 @@ export type FacilityResolvers<ContextType = any, ParentType extends ResolversPar
   mapLongitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  online?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   paymentOptions?: Resolver<Maybe<Array<ResolversTypes['PaymentOption']>>, ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes['FacilitySource']>, ParentType, ContextType>;
   supportedLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
@@ -1601,6 +1616,7 @@ export type FacilitySubmissionResolvers<ContextType = any, ParentType extends Re
   mapLongitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   nameEn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   nameJa?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  online?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
 };
 
 export type HealthcareProfessionalResolvers<ContextType = any, ParentType extends ResolversParentTypes['HealthcareProfessional'] = ResolversParentTypes['HealthcareProfessional']> = {

@@ -43,6 +43,10 @@ function validateAddress(address?: PhysicalAddressInput): FacilityValidationResu
  * Validation specific to facility creation (requires prefecture in both languages).
  */
 export function validateCreateFacility(input: CreateFacilityInput): FacilityValidationResult {
+    if (input.online === true) {
+        return { valid: true, errors: [] }
+    }
+
     const errors: string[] = []
 
     const addressValidation = validateAddress(input.contact.address)
@@ -64,32 +68,30 @@ export function validateUpdateFacility(
     updatedInput: UpdateFacilityInput
 ): FacilityValidationResult {
     const errors: string[] = []
-    const addressValidation = validateAddress(updatedInput.contact?.address)
-    const addressValidationErrorPresent = !addressValidation.valid
-
-    if (addressValidationErrorPresent) {
-        errors.push(...addressValidation.errors)
+    if (fields.online !== true) {
+        const addressValidation = validateAddress(updatedInput.contact?.address)
+        if (!addressValidation.valid) {
+            errors.push(...addressValidation.errors)
+        }
     }
 
-    // List of required keys that must not be empty
     const alwaysRequiredKeys: (keyof FacilitySectionFields)[] = [
         'nameEn', 'nameJa',
-        'phone',
+        'phone'
+    ]
+
+    const locationKeys: (keyof FacilitySectionFields)[] = [
         'postalCode',
         'cityEn', 'addressLine1En',
         'cityJa', 'addressLine1Ja',
         'googlemapsURL',
-        'mapLatitude', 'mapLongitude'
-    ]
-
-    const allRequiredKeys: (keyof FacilitySectionFields)[] = [
-        ...alwaysRequiredKeys,
+        'mapLatitude', 'mapLongitude',
         'prefectureEn', 'prefectureJa'
     ]
 
-    const keysToValidate = addressValidationErrorPresent
+    const keysToValidate = fields.online === true
         ? alwaysRequiredKeys
-        : allRequiredKeys
+        : [...alwaysRequiredKeys, ...locationKeys]
 
     for (const key of keysToValidate) {
         const value = fields[key]

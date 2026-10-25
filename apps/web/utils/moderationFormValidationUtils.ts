@@ -46,6 +46,7 @@ type FacilityValidationFields = {
     phone?: string
     email?: string
     website?: string
+    online?: boolean
     addressLine1En?: string
     addressLine1Ja?: string
     addressLine2En?: string
@@ -78,6 +79,7 @@ type NormalizedFacilityValidationFields = {
     cityEn: string
     cityJa: string
     postalCode: string
+    online: boolean
 }
 
 /** First defined value (nullish coalescing), without chaining ?? for eslint complexity. */
@@ -121,11 +123,23 @@ function normalizeFacilityValidationFields(
         addressLine2Ja: pickStr(address?.addressLine2Ja, fields.addressLine2Ja),
         cityEn: pickStr(address?.cityEn, fields.cityEn),
         cityJa: pickStr(address?.cityJa, fields.cityJa),
-        postalCode: pickStr(address?.postalCode, fields.postalCode)
+        postalCode: pickStr(address?.postalCode, fields.postalCode),
+        online: fields.online === true
     }
 }
 
 function getFacilityValidationResults(fields: NormalizedFacilityValidationFields): boolean[] {
+    const contactResults = [
+        validateNameEn(fields.nameEn),
+        validateNameJa(fields.nameJa),
+        validatePhoneNumber(fields.phone),
+        !fields.email || validateEmail(fields.email),
+        !fields.website || validateWebsite(fields.website)
+    ]
+    if (fields.online) {
+        return contactResults
+    }
+
     const prefecturesPresent
         = fields.prefectureEn.length > 0
           && fields.prefectureJa.length > 0
@@ -135,9 +149,7 @@ function getFacilityValidationResults(fields: NormalizedFacilityValidationFields
     })
 
     return [
-        validateNameEn(fields.nameEn),
-        validateNameJa(fields.nameJa),
-        validatePhoneNumber(fields.phone),
+        ...contactResults,
         validateAddressLineEn(fields.addressLine1En),
         validateAddressLineJa(fields.addressLine1Ja),
         validateCityEn(fields.cityEn),
@@ -147,8 +159,6 @@ function getFacilityValidationResults(fields: NormalizedFacilityValidationFields
         validateFloat(fields.mapLongitude),
         validateGoogleMapsUrlInput(fields.googleMapsUrl),
         prefecturesPresent && prefecturesConsistent,
-        !fields.email || validateEmail(fields.email),
-        !fields.website || validateWebsite(fields.website),
         !fields.addressLine2En || validateAddressLineEn(fields.addressLine2En),
         !fields.addressLine2Ja || validateAddressLineJa(fields.addressLine2Ja)
     ]

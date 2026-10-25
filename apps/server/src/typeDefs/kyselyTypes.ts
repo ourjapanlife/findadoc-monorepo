@@ -42,6 +42,7 @@ export interface FacilitiesTable {
     source: string | null
     verification_status: string
     supported_languages: ColumnType<gqlTypes.Locale[], string, string>
+    online: Generated<boolean>
     search_text: Generated<string>
 }
 

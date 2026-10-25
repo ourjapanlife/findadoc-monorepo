@@ -8,6 +8,11 @@ type Facility {
   nameEn: String!
   """Name of the facility in Japanese."""
   nameJa: String!
+  """
+  True when this facility has no street address.
+  Address, city, and map fields are not required.
+  """
+  online: Boolean!
   """Contact information for the facility."""
   contact: Contact!
   """Latitude coordinate for map placement."""
@@ -45,6 +50,11 @@ input CreateFacilityInput {
   nameEn: String!
   """Name of the facility in Japanese."""
   nameJa: String!
+  """
+  True when this facility has no street address.
+  Address, city, and map fields may be empty.
+  """
+  online: Boolean
   """Contact information for the facility."""
   contact: ContactInput!
   """Latitude coordinate for map placement."""
@@ -73,6 +83,8 @@ input UpdateFacilityInput {
   nameEn: String
   """Updated name of the facility in Japanese."""
   nameJa: String
+  """True when this facility has no street address. Address and map fields may be empty."""
+  online: Boolean
   """Updated contact information."""
   contact: ContactInput
   """Updated latitude coordinate."""
@@ -289,6 +301,8 @@ type FacilitySubmission {
   mapLatitude: Float
   """Submitted longitude coordinate."""
   mapLongitude: Float
+  """True when the submitted facility has no street address."""
+  online: Boolean
 }
 
 """Healthcare professional data embedded within a submission."""

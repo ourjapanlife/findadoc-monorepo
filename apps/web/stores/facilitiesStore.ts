@@ -48,6 +48,7 @@ export type FacilitySectionFields = {
     googlemapsURL: string
     mapLatitude: string
     mapLongitude: string
+    online: boolean
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -77,6 +78,11 @@ function mapFacilityContactToInput(contact: Contact): ContactInput {
     }
 }
 
+function coordinateOrZero(value: string): number {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : 0
+}
+
 export function getChangedFacilityFieldsForUpdate(
     current: FacilitySectionFields,
     original: Facility
@@ -85,6 +91,7 @@ export function getChangedFacilityFieldsForUpdate(
 
     if (current.nameEn !== original.nameEn) updatedFields.nameEn = current.nameEn
     if (current.nameJa !== original.nameJa) updatedFields.nameJa = current.nameJa
+    if (current.online !== original.online) updatedFields.online = current.online
 
     const currentLatitude = parseFloat(current.mapLatitude)
     if (!isNaN(currentLatitude) && currentLatitude !== original.mapLatitude) {
@@ -197,6 +204,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         googlemapsURL: '',
         mapLatitude: '',
         mapLongitude: '',
+        online: false,
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -224,7 +232,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         mapLatitude: '',
         mapLongitude: '',
         healthcareProfessionalIds: [] as string[],
-        cityId: ''
+        cityId: '',
+        online: false
     })
 
     /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
@@ -264,6 +273,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.healthcareProfessionalIds = data.healthcareProfessionalIds ?? []
         facilitySectionFields.value.mapLatitude = data.mapLatitude?.toString() ?? ''
         facilitySectionFields.value.mapLongitude = data.mapLongitude?.toString() ?? ''
+        facilitySectionFields.value.online = data.online === true
     }
 
     function resetFacilitySectionFields() {
@@ -286,6 +296,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             googlemapsURL: '',
             mapLatitude: '',
             mapLongitude: '',
+            online: false,
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }
@@ -367,10 +378,13 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                     website: createFacilityFields.contact.website,
                     googleMapsUrl: createFacilityFields.contact.googleMapsUrl
                 },
-                mapLatitude: Number(createFacilityFields.mapLatitude),
-                mapLongitude: Number(createFacilityFields.mapLongitude),
+                mapLatitude: coordinateOrZero(createFacilityFields.mapLatitude),
+                mapLongitude: coordinateOrZero(createFacilityFields.mapLongitude),
                 healthcareProfessionalIds: createFacilityFields.healthcareProfessionalIds,
-                ...(createFacilityFields.cityId ? { cityId: createFacilityFields.cityId } : {})
+                online: createFacilityFields.online === true,
+                ...(createFacilityFields.online === true || !createFacilityFields.cityId
+                    ? {}
+                    : { cityId: createFacilityFields.cityId })
             }
         }
 
@@ -490,6 +504,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.mapLongitude = ''
         createFacilityFields.healthcareProfessionalIds = []
         createFacilityFields.cityId = ''
+        createFacilityFields.online = false
     }
 
     async function deleteFacility(

@@ -322,6 +322,8 @@
   },
   "modFacilitySection": {
     "addresses": "Endereços",
+    "onlineLabel": "Estabelecimento online",
+    "onlineHint": "Um estabelecimento online não tem endereço. O endereço, a cidade e o mapa podem ficar em branco.",
     "contactInformation": "Contato",
     "facilityHeading": "Informações da unidade",
     "googleMapsInformation": "Informações do Google Maps",
