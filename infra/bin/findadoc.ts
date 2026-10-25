@@ -8,6 +8,7 @@ import {
     GITHUB_REPOSITORY,
 } from '../lib/environment.js'
 import { GithubDeployStack } from '../lib/githubDeployStack.js'
+import { WebStack } from '../lib/webStack.js'
 
 const app = new App()
 
@@ -17,6 +18,12 @@ Tags.of(app).add('managed-by', 'cdk')
 new DnsStack(app, 'FindadocDns', {
     env: FINDADOC_ENV,
     domainName: FINDADOC_DOMAIN,
+})
+
+new WebStack(app, 'FindadocWeb', {
+    env: FINDADOC_ENV,
+    domainName: FINDADOC_DOMAIN,
+    branchName: 'main',
 })
 
 new GithubDeployStack(app, 'FindadocGithubDeploy', {
