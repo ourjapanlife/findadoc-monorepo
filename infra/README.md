@@ -232,7 +232,7 @@ Delete `copy.json` afterwards.
 
 ## Cutover (#13)
 
-The API moves from DigitalOcean and Supabase to AWS. After #81's rehearsals and a soak on `api-staging.findadoc.jp`, the cutover is one data copy and one DNS change. `api.findadoc.jp` has A and AAAA records with a 5-minute TTL that predate CDK. One atomic Route 53 `UPSERT` moves them, so no deploy runs during the switch.
+The API moves from DigitalOcean and Supabase to AWS. After #81's rehearsals and a soak on `api-staging.findadoc.jp`, the cutover is one data copy and one DNS change. `api.findadoc.jp` has A and AAAA records with a 5-minute TTL that predate CDK. One Route 53 change batch moves them, so no deploy runs during the switch. Each batch deletes the current records and creates the new ones. Route 53 applies a batch whole or not at all, and refuses it when a `DELETE` does not match the live record exactly, so a stale file cannot half-apply.
 
 ### Before the day
 
@@ -255,9 +255,13 @@ The API moves from DigitalOcean and Supabase to AWS. After #81's rehearsals and 
    {
      "Comment": "api.findadoc.jp to AWS (#13)",
      "Changes": [
-       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A",
+       { "Action": "DELETE", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A", "TTL": 300,
+         "ResourceRecords": [{ "Value": "172.66.0.96" }] } },
+       { "Action": "DELETE", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA", "TTL": 300,
+         "ResourceRecords": [{ "Value": "2a06:98c1:58::60" }] } },
+       { "Action": "CREATE", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A",
          "AliasTarget": { "HostedZoneId": "Z2FDTNDATAQYW2", "DNSName": "$DIST", "EvaluateTargetHealth": false } } },
-       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA",
+       { "Action": "CREATE", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA",
          "AliasTarget": { "HostedZoneId": "Z2FDTNDATAQYW2", "DNSName": "$DIST", "EvaluateTargetHealth": false } } }
      ]
    }
@@ -269,9 +273,13 @@ The API moves from DigitalOcean and Supabase to AWS. After #81's rehearsals and 
    {
      "Comment": "api.findadoc.jp back to DigitalOcean (#13 rollback)",
      "Changes": [
-       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A", "TTL": 300,
+       { "Action": "DELETE", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A",
+         "AliasTarget": { "HostedZoneId": "Z2FDTNDATAQYW2", "DNSName": "$DIST", "EvaluateTargetHealth": false } } },
+       { "Action": "DELETE", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA",
+         "AliasTarget": { "HostedZoneId": "Z2FDTNDATAQYW2", "DNSName": "$DIST", "EvaluateTargetHealth": false } } },
+       { "Action": "CREATE", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A", "TTL": 300,
          "ResourceRecords": [{ "Value": "172.66.0.96" }] } },
-       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA", "TTL": 300,
+       { "Action": "CREATE", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA", "TTL": 300,
          "ResourceRecords": [{ "Value": "2a06:98c1:58::60" }] } }
      ]
    }
