@@ -18,7 +18,7 @@ import { SITE_ORIGIN, SITE_SITEMAP_URL } from './site'
  *
  * `/u` is a public profile and is intentionally not here.
  */
-export const ROBOTS_DISALLOW_PATHS = ['/moderation', '/my-page', '/login', '/admin'] as const
+export const ROBOTS_DISALLOW_PATHS = ['/moderation', '/my-page', '/login'] as const
 
 export const DEFAULT_OG_LOCALE = 'en_US'
 

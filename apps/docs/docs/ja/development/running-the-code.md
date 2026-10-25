@@ -83,19 +83,13 @@ pnpm dev:seeded
 
 ブラウザは `*.localhost` をこのマシンに解決するので、hosts ファイルは要りません。ホスト名そのものがクリニックです。`http://multilingual-online-clinic.localhost:3000/` は `/` のままです。そのホストの他のページ、`/submit` と `/clinic/multilingual-online-clinic` も含めて、`/` へ転送されます。画像とスクリプトはそのままです。プレビューのCookieは、それを保存したホストにだけ付きます。それぞれのホストで `?preview=1` が必要です。`?preview=0` はそのホストのCookieを消します。正規URLはサブドメインです。
 
-`www`、`api`、`mcp`、`docs` はクリニックのホストではありません。`admin.localhost` と `admin.findadoc.jp` はスタッフ用サイトで、クリニックのホストではありません。
+`www`、`api`、`mcp`、`docs`、`admin` はクリニックのホストではありません。
 
 正規URLは `https://{slug}.findadoc.jp/` です。www のパスと共有用の id は別の入口で、どちらもそのホストへ転送されます。
 
-### スタッフ用サイト
-
-`http://admin.localhost:3000/?preview=1` を開くと、30日間のCookieが保存され、`/admin` へ転送されます。Cookieがないとそのホストは404です。`?preview=0` でCookieを消します。そのホストの他のページ、`/submit` も含めて、`/admin` へ転送されます。ページは `noindex` のままです。人を追加するには、これまでどおりログインが必要です。環境変数はありません。
-
-病院は基本プランから始まり、有効な人は3人までです。Find a Doc のスタッフ（`write:users`）は、オーナーまたはスタッフを追加でき、その病院に既に所属する医療者を席に結びつけられます。その病院のオーナーは、3席の範囲でスタッフの追加と解除ができます。解除しても行は残り、監査ログが書かれます。最初のオーナーは Find a Doc のスタッフが追加します。
-
 ### Amplify と Route 53
 
-DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。Amplify は本番ブランチで `*.findadoc.jp` を既に配信しているので、クリニックのホスト名はそのワイルドカードです。プルリクエストのプレビューは別の Amplify ホストです。`{slug}.findadoc.jp` ではありません。そのホストで `/clinic/multilingual-online-clinic?preview=1` を開きます。ビルドがそのパスにアプリのシェルを置き、クエリが30日間のCookieを保存し、ページは `https://api.findadoc.jp` からクリニックを読みます。ショーケースの行がそのデータベースにある必要があります。`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。`admin.findadoc.jp` はその `*` レコードに含まれます。クリニックのスラッグは変わりません。
+DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。Amplify は本番ブランチで `*.findadoc.jp` を既に配信しているので、クリニックのホスト名はそのワイルドカードです。プルリクエストのプレビューは別の Amplify ホストです。`{slug}.findadoc.jp` ではありません。そのホストで `/clinic/multilingual-online-clinic?preview=1` を開きます。ビルドがそのパスにアプリのシェルを置き、クエリが30日間のCookieを保存し、ページは `https://api.findadoc.jp` からクリニックを読みます。ショーケースの行がそのデータベースにある必要があります。`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。クリニックのスラッグは変わりません。
 
 ### Storybook
 

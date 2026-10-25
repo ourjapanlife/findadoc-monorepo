@@ -24,6 +24,7 @@ import { clinicPreviewShellPaths, writeClinicPreviewShells } from '@/utils/nuxt/
 import { indexableMarketingPaths } from '@/utils/sitemap'
 import { SITE_ORIGIN } from '@/utils/site'
 import { clinicThemeVars } from '@/utils/clinicTheme'
+import { devServerEnv } from '../../../scripts/devFlags.mjs'
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '../../..')
 
@@ -170,5 +171,17 @@ describe('clinic preview shells', () => {
         } finally {
             await rm(dir, { recursive: true, force: true })
         }
+    })
+})
+
+describe('turbo dev flags', () => {
+    it('points pnpm dev at the local API when asked', () => {
+        const env = devServerEnv({}, { localApi: true })
+        expect(env.NUXT_USE_LOCAL_API).to.equal('true')
+    })
+
+    it('leaves the API target alone unless asked', () => {
+        const env = devServerEnv({})
+        expect(env.NUXT_USE_LOCAL_API).to.equal(undefined)
     })
 })

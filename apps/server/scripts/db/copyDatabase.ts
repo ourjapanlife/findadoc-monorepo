@@ -191,11 +191,6 @@ export async function copyDatabase(source: pg.Client, target: pg.Client, options
     await target.query('BEGIN')
 
     try {
-        // Membership rows reference hps_facilities, which this copy truncates first.
-        // Those checks are triggers, so a replica role skips them for this transaction
-        // and the target still computes generated columns that the COPY omits.
-        await target.query('SET LOCAL session_replication_role = \'replica\'')
-
         const tables = await sameTables(source, target)
 
         await target.query(`TRUNCATE ${tables.map(table => `public.${ident(table)}`).join(', ')}`)

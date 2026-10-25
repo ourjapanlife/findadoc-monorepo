@@ -26,7 +26,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **認証**：Auth0（モデレーションダッシュボード用）
 - **地図**：Google Maps API（医療機関の位置表示）
 - **国際化**：Nuxt i18n（11言語対応）。クリニック、医師、ハブ、ファセットのページは英語と日本語でプリレンダリング
-- **クリニックの独自ページ**：独自ページは `clinic_sites` の1行。アカウント（`clinic_memberships`）と、これからのCRMが紐づくのはこのid。ディレクトリの施設は、市区町村が分かるまで空のままでよい。共有するURLは `https://{slug}.findadoc.jp/` です。そのホストの `/` でクリニックを開きます。正規URLはそのサブドメインです。DNSは Route 53 のままです。`?preview=1` がCookieを保存します。Cookieが無いページは404で、noindex のまま、サイトマップにも入りません。環境変数はありません。クリニックのパンくず、`/clinic/{slug}`、`/clinic/{prefecture}/{city}/{slug}--{id}` はそこへ転送します。リンクのプレビュー画像はそのクリニックのアイコン。保存したテーマのプライマリ色は、そのページのヘッダーとボタンに使われる。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけ。`admin.findadoc.jp` はスタッフ用サイト（同じCookie、常に `noindex`）。病院の人は `facility_memberships`。基本プランは有効3席で、追加と解除は監査ログに残る。
+- **クリニックの独自ページ**：独自ページは `clinic_sites` の1行。アカウント（`clinic_memberships`）と、これからのCRMが紐づくのはこのid。ディレクトリの施設は、市区町村が分かるまで空のままでよい。共有するURLは `https://{slug}.findadoc.jp/` です。そのホストの `/` でクリニックを開きます。正規URLはそのサブドメインです。DNSは Route 53 のままです。`?preview=1` がCookieを保存します。Cookieが無いページは404で、noindex のまま、サイトマップにも入りません。環境変数はありません。クリニックのパンくず、`/clinic/{slug}`、`/clinic/{prefecture}/{city}/{slug}--{id}` はそこへ転送します。リンクのプレビュー画像はそのクリニックのアイコン。保存したテーマのプライマリ色は、そのページのヘッダーとボタンに使われる。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけ。
 
 ### API（`apps/server`）
 
