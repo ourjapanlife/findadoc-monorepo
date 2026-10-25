@@ -10,6 +10,7 @@ import type { ISecret } from 'aws-cdk-lib/aws-secretsmanager'
 import type { Construct } from 'constructs'
 import type { AlertsStack } from './alertsStack.js'
 import { addFunctionUrlEdge } from './functionUrlEdge.js'
+import type { HostnameState } from './environment.js'
 
 const repoRoot = fileURLToPath(new URL('../..', import.meta.url))
 
@@ -21,7 +22,9 @@ export interface McpStackProps extends StackProps {
     certificate: ICertificate
     hostedZoneId: string
     zoneName: string
-    domainName: string
+    hostnames: Record<string, HostnameState>
+    // For the distribution's comment and the McpUrl output.
+    primaryHostname: string
     alerts: AlertsStack
 }
 
@@ -70,7 +73,8 @@ export class McpStack extends Stack {
             fn: mcpFunction,
             label: 'MCP',
             name: 'findadoc-mcp',
-            domainName: props.domainName,
+            hostnames: props.hostnames,
+            description: props.primaryHostname,
             certificate: props.certificate,
             edgeSecret: props.apiSecret.secretValueFromJson('EDGE_SHARED_SECRET').unsafeUnwrap(),
             hostedZoneId: props.hostedZoneId,
@@ -79,8 +83,6 @@ export class McpStack extends Stack {
                 originRequest: 'McpOriginRequest',
                 viewerIp: 'ViewerIp',
                 distribution: 'McpDistribution',
-                aliasA: 'McpAliasA',
-                aliasAaaa: 'McpAliasAaaa',
             },
         })
 
@@ -94,6 +96,6 @@ export class McpStack extends Stack {
             treatMissingData: TreatMissingData.NOT_BREACHING,
         }))
 
-        new CfnOutput(this, 'McpUrl', { value: `https://${props.domainName}/mcp` })
+        new CfnOutput(this, 'McpUrl', { value: `https://${props.primaryHostname}/mcp` })
     }
 }

@@ -187,6 +187,15 @@ Every deploy of `FindadocApi` first runs `findadoc-db-migrate` (`apps/server/src
 
 Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-operations`, `findadoc/api/errors-by-operation`, `findadoc/api/failed-searches`.
 
+## Hostnames on CloudFront
+
+Every `*.findadoc.jp` name without its own Route 53 record resolves to the Amplify wildcard (`FindadocWeb`). CloudFront refuses to add a hostname whose DNS points at another distribution ("One or more aliases specified for the distribution includes an incorrectly configured DNS record that points to another CloudFront distribution"). So, as AWS documents for this error, a new hostname goes on in two deploys. Its state in `API_HOSTNAMES` or `MCP_HOSTNAMES` (`lib/environment.ts`) says which step it is at:
+
+1. `dns`: only its A and AAAA records, pointing at our distribution. Merge, and let it deploy.
+2. `live`: the records, plus the hostname and certificate on the distribution.
+
+`alias` puts a hostname on the distribution without records. It is for `api.findadoc.jp`, whose records predate CDK and move by hand at the cutover.
+
 ## MCP
 
 `FindadocMcp` runs `apps/mcp/src/lambda.ts` as `findadoc-mcp`, an arm64 Node 24 function with 512 MB, behind CloudFront at `mcp-staging.findadoc.jp`. It uses the same CloudFront setup as the API (`lib/functionUrlEdge.ts`). MCP is on `/mcp`, the REST routes for ChatGPT Actions are under `/api`, and the spec is at `/openapi.yaml`. The function has no database and runs outside the VPC. `findadoc-mcp-errors` posts to Slack `#alerts`. `mcp.findadoc.jp` moves at the cutover (#13).

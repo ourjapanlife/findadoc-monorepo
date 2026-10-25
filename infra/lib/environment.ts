@@ -24,6 +24,28 @@ export const API_DOMAIN = 'api.findadoc.jp'
 // The MCP server serves mcp-staging first. mcp.findadoc.jp moves at the cutover (#13).
 export const MCP_STAGING_DOMAIN = 'mcp-staging.findadoc.jp'
 export const MCP_DOMAIN = 'mcp.findadoc.jp'
+
+/**
+ * How each hostname is attached to its CloudFront distribution.
+ *
+ * CloudFront refuses a hostname while that name's DNS resolves to another distribution, and
+ * every *.findadoc.jp name without its own record resolves to the Amplify wildcard (FindadocWeb).
+ * So a new hostname goes on in two deploys, as AWS documents for this error:
+ * - 'dns': only its Route 53 A and AAAA records, pointing at our distribution
+ * - 'live': the records, plus the hostname and certificate on the distribution
+ * Merge 'dns', let it deploy, then change it to 'live'.
+ * - 'alias': the hostname on the distribution without records, for a name whose records live
+ *   outside CDK (api.findadoc.jp, switched by hand at the cutover)
+ */
+export type HostnameState = 'dns' | 'live' | 'alias'
+
+export const API_HOSTNAMES: Record<string, HostnameState> = {
+    [API_STAGING_DOMAIN]: 'dns',
+}
+
+export const MCP_HOSTNAMES: Record<string, HostnameState> = {
+    [MCP_STAGING_DOMAIN]: 'dns',
+}
 // The MCP tools read the live directory. After the cutover this is the AWS API.
 export const MCP_GRAPHQL_ENDPOINT = 'https://api.findadoc.jp'
 

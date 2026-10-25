@@ -9,6 +9,7 @@ import { EdgeCertificateStack } from '../lib/edgeCertificateStack.js'
 import { McpStack } from '../lib/mcpStack.js'
 import {
     API_DATABASE_USER,
+    API_HOSTNAMES,
     API_DOMAIN,
     API_SECRETS_REVISION,
     API_STAGING_DOMAIN,
@@ -23,6 +24,7 @@ import {
     GITHUB_WEB_PREVIEW_ROLE_NAME,
     MCP_DOMAIN,
     MCP_GRAPHQL_ENDPOINT,
+    MCP_HOSTNAMES,
     MCP_STAGING_DOMAIN,
     SLACK_ALERTS_CHANNEL_ID,
     SLACK_WORKSPACE_ID,
@@ -105,7 +107,8 @@ new ApiStack(app, 'FindadocApi', {
     certificate: edgeCertificates.apiCertificate,
     hostedZoneId: FINDADOC_HOSTED_ZONE_ID,
     zoneName: FINDADOC_DOMAIN,
-    domainName: API_STAGING_DOMAIN,
+    apiUrl: `https://${API_STAGING_DOMAIN}`,
+    hostnames: API_HOSTNAMES,
     alerts,
     secretsRevision: API_SECRETS_REVISION,
 })
@@ -118,7 +121,8 @@ new McpStack(app, 'FindadocMcp', {
     certificate: edgeCertificates.mcpCertificate,
     hostedZoneId: FINDADOC_HOSTED_ZONE_ID,
     zoneName: FINDADOC_DOMAIN,
-    domainName: MCP_STAGING_DOMAIN,
+    hostnames: MCP_HOSTNAMES,
+    primaryHostname: MCP_STAGING_DOMAIN,
     alerts,
 })
 
