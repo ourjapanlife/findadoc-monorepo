@@ -10,7 +10,7 @@ import {
     slugifySegment
 } from '@/utils/clinicPath'
 import { formatPageTitle, SITE_TITLE } from '@/utils/site'
-import { isNuxtGenerateCommand } from '@/utils/clinicPrerender'
+import { isNuxtGenerateCommand, skipDirectoryPrerender } from '@/utils/clinicPrerender'
 import type { Facility } from '@findadoc/graphql'
 
 function facility(overrides: Partial<Facility> & Pick<Facility, 'id' | 'nameEn'>): Pick<Facility, 'id' | 'nameEn'> & {
@@ -136,5 +136,11 @@ describe('isNuxtGenerateCommand', () => {
         expect(isNuxtGenerateCommand(['node', 'graphql-codegen', '--config', './typesgeneratorconfig.ts']))
             .to.equal(false)
         expect(isNuxtGenerateCommand(['vitest'])).to.equal(false)
+    })
+
+    it('skips directory prerender only when the CI flag is true', () => {
+        expect(skipDirectoryPrerender({ NUXT_SKIP_DIRECTORY_PRERENDER: 'true' })).to.equal(true)
+        expect(skipDirectoryPrerender({})).to.equal(false)
+        expect(skipDirectoryPrerender({ NUXT_SKIP_DIRECTORY_PRERENDER: 'false' })).to.equal(false)
     })
 })

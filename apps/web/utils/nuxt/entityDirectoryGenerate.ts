@@ -1,6 +1,6 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { NitroConfig } from 'nitropack'
-import { buildClinicPrerenderDirectory, isNuxtGenerateCommand } from '../clinicPrerender'
+import { buildClinicPrerenderDirectory, isNuxtGenerateCommand, skipDirectoryPrerender } from '../clinicPrerender'
 import { prefectureHubPaths } from '../hubIndex'
 import { DIRECTORY_PRERENDER_LOCALE_CODES, withDirectoryLocaleVariants } from '../localePath'
 
@@ -15,7 +15,7 @@ let entityDirectoryBuildPromise: Promise<EntityDirectoryBuild> | undefined
  * `healthcareProfessional(id)` per page.
  */
 export async function entityDirectoryForGenerate(): Promise<EntityDirectoryBuild> {
-    if (!isNuxtGenerateCommand()) {
+    if (!isNuxtGenerateCommand() || skipDirectoryPrerender()) {
         return null
     }
 
@@ -140,6 +140,9 @@ export async function applyEntityDirectoryToNitro(nitroConfig: NitroConfig) {
 
     const built = await entityDirectoryForGenerate()
     if (!built) {
+        if (skipDirectoryPrerender()) {
+            console.warn('[clinic prerender] directory routes skipped')
+        }
         nitroConfig.virtual = {
             ...nitroConfig.virtual,
             '#generated-prefecture-hubs': generatedPrefectureHubsModuleSource(),

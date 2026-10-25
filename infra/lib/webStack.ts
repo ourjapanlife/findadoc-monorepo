@@ -158,6 +158,7 @@ function siteBuildSpec(): string {
         '    build:',
         '      commands:',
         '        - export NODE_OPTIONS=--max-old-space-size=4096',
+        '        - export NUXT_SKIP_DIRECTORY_PRERENDER=true',
         '        - pnpm --filter @findadoc/graphql build',
         '        - pnpm --filter @findadoc/utils build',
         '        - pnpm --filter @findadoc/web build',
