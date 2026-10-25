@@ -1,4 +1,5 @@
 import { App, Tags } from 'aws-cdk-lib'
+import { AlertsStack } from '../lib/alertsStack.js'
 import { DatabaseStack } from '../lib/databaseStack.js'
 import { DnsStack } from '../lib/dnsStack.js'
 import {
@@ -10,6 +11,8 @@ import {
     GITHUB_REPOSITORY,
     GITHUB_WEB_DEPLOY_ROLE_NAME,
     GITHUB_WEB_PREVIEW_ROLE_NAME,
+    SLACK_ALERTS_CHANNEL_ID,
+    SLACK_WORKSPACE_ID,
 } from '../lib/environment.js'
 import { GithubDeployStack } from '../lib/githubDeployStack.js'
 import { NetworkStack } from '../lib/networkStack.js'
@@ -39,10 +42,17 @@ const network = new NetworkStack(app, 'FindadocNetwork', {
     env: FINDADOC_ENV,
 })
 
-new DatabaseStack(app, 'FindadocDatabase', {
+const database = new DatabaseStack(app, 'FindadocDatabase', {
     env: FINDADOC_ENV,
     vpc: network.vpc,
     apiDatabaseUser: API_DATABASE_USER,
+})
+
+new AlertsStack(app, 'FindadocAlerts', {
+    env: FINDADOC_ENV,
+    slackWorkspaceId: SLACK_WORKSPACE_ID,
+    slackChannelId: SLACK_ALERTS_CHANNEL_ID,
+    database: database.instance,
 })
 
 new GithubDeployStack(app, 'FindadocGithubDeploy', {

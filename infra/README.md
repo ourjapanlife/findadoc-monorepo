@@ -15,6 +15,7 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocGithubDeploy` | GitHub OIDC provider and the `findadoc-github-cdk-deploy` role that the Infra workflow assumes. |
 | `FindadocNetwork` | VPC with two private dual-stack subnets (`ap-northeast-1a`, `ap-northeast-1c`). No NAT gateway. IPv6 traffic leaves through an egress-only internet gateway. |
 | `FindadocDatabase` | RDS PostgreSQL 17 for the API, plus the `DatabaseClients` security group that may connect to it and a monthly AWS Backup plan. |
+| `FindadocAlerts` | SNS topic `findadoc-alarms`, the AWS Chatbot link that posts it to `#alerts` in Slack, and the database alarms. |
 
 ## Monthly cost
 
@@ -29,6 +30,7 @@ Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hou
 | Secrets Manager secret for the master password | $0.40 |
 | VPC, subnets, route tables, egress-only and internet gateways, security groups | $0 |
 | PostgreSQL logs in CloudWatch, kept 30 days | Inside the 5 GB free allowance |
+| SNS topic, AWS Chatbot, and alarms (the first 10 are free) | $0 |
 
 Not used, on purpose: NAT gateways (about $45/month each), Elastic IPs and public IPv4 addresses ($3.65/month each), VPC interface endpoints (about $7/month each), load balancers, Multi-AZ, Performance Insights, Enhanced Monitoring, and customer-managed KMS keys. Check `cdk diff` for any of these before merging an infra change.
 
@@ -123,3 +125,25 @@ The preview role can publish and delete only `pr-*` branches. Closing the pull r
 ## Context lookups
 
 `HostedZone.fromLookup` calls Route 53 on the first synth and caches the zone in `cdk.context.json`. Commit that file. Later synths, including CI, then read the cached zone instead of calling AWS. Delete the entry with `pnpm cdk context --reset <key>` if the zone is ever recreated.
+
+## Alarms in Slack
+
+Alarms go to the `findadoc-alarms` SNS topic. AWS Chatbot (now called Amazon Q Developer in chat applications) posts that topic to `#alerts` in the findadoc Slack workspace. The workspace and channel IDs are in `lib/environment.ts`. Each alarm posts when it fires and again when it recovers. The channel is read-only: it can show alarm details, but nobody can change AWS from Slack.
+
+Once per workspace, before the first deploy of `FindadocAlerts`, a Slack workspace admin must authorize Chatbot. CloudFormation cannot do this step.
+
+1. In the AWS console for account `677501681118`, open **Amazon Q Developer in chat applications**.
+2. Choose **Configure new client**, then **Slack**, and approve the findadoc workspace.
+3. In Slack, invite the app to the channel: `/invite @Amazon Q` in `#alerts`.
+
+| Alarm | Fires when |
+| --- | --- |
+| `findadoc-database-free-storage-low` | RDS has less than 2 GB free |
+| `findadoc-database-cpu-high` | RDS CPU is above 80% for 15 minutes |
+| `findadoc-database-surplus-credits-charged` | RDS is billed for CPU surplus credits (the t4g burst baseline was exceeded) |
+
+To check the Slack link after a deploy, force an alarm into ALARM. It returns to OK on the next evaluation:
+
+```bash
+aws cloudwatch set-alarm-state --alarm-name findadoc-database-cpu-high --state-value ALARM --state-reason "Testing the Slack link"
+```
