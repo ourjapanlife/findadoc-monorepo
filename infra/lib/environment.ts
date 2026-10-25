@@ -44,17 +44,20 @@ export type HostnameState = 'dns' | 'live' | 'alias'
 
 export const API_HOSTNAMES: Record<string, HostnameState> = {
     [API_STAGING_DOMAIN]: 'live',
+    // Cutover (#13): CloudFront answers api.findadoc.jp. Its records predate CDK and move by hand.
+    [API_DOMAIN]: 'alias',
 }
 
 export const MCP_HOSTNAMES: Record<string, HostnameState> = {
     [MCP_STAGING_DOMAIN]: 'live',
+    [MCP_DOMAIN]: 'dns',
 }
 // The MCP tools read the live directory. After the cutover this is the AWS API.
 export const MCP_GRAPHQL_ENDPOINT = 'https://api.findadoc.jp'
 
 // CloudFormation reads the findadoc/api secret only when the function changes. After
 // editing a value in Secrets Manager, bump this so the next deploy picks it up.
-export const API_SECRETS_REVISION = '1'
+export const API_SECRETS_REVISION = '2'
 
 export const GITHUB_REPOSITORY = 'ourjapanlife/findadoc-monorepo'
 
