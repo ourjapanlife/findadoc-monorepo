@@ -78,12 +78,15 @@ async function columns(client: pg.Client, table: string, insertableOnly: boolean
     return rows.map(row => row.name)
 }
 
+// Sorting uses the C collation: the two databases can have different locales, and identical
+// rows in a different order would hash differently.
+
 /**
  * Row count and an MD5 over every row's given columns, sorted by column name, so two databases
  * whose columns were added in a different physical order still compare equal.
  */
 async function fingerprint(client: pg.Client, table: string, columnNames: string[]): Promise<{ rows: number, hash: string }> {
-    const rowText = `ROW(${columnNames.map(name => `t.${ident(name)}`).join(', ')})::text`
+    const rowText = `ROW(${columnNames.map(name => `t.${ident(name)}`).join(', ')})::text COLLATE "C"`
     const { rows: [result] } = await client.query<{ rows: number, hash: string }>(`
         SELECT count(*)::int AS rows,
                coalesce(md5(string_agg(${rowText}, E'\\n' ORDER BY ${rowText})), '') AS hash
@@ -98,7 +101,7 @@ async function columnHashes(client: pg.Client, table: string, columnNames: strin
     const hashes = new Map<string, string>()
 
     for (const name of columnNames) {
-        const value = `t.${ident(name)}::text`
+        const value = `t.${ident(name)}::text COLLATE "C"`
         const { rows: [result] } = await client.query<{ hash: string }>(`
             SELECT coalesce(md5(string_agg(coalesce(${value}, '<null>'), E'\n' ORDER BY ${value})), '') AS hash
             FROM public.${ident(table)} t
@@ -205,7 +208,9 @@ export async function copyDatabase(source: pg.Client, target: pg.Client, options
         const different = reports.filter(report => !report.matches)
 
         if (different.length) {
-            throw new Error(`The copy does not match the source for: ${different.map(report => report.table).join(', ')}. Nothing was changed.`)
+            const details = different.map(report => `${report.table} (${report.differingColumns?.join(', ') || 'row count'})`)
+
+            throw new Error(`The copy does not match the source for: ${details.join('; ')}. Nothing was changed.`)
         }
 
         await target.query('COMMIT')
