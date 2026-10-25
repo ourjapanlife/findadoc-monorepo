@@ -36,6 +36,9 @@ export const MCP_DOMAIN = 'mcp.findadoc.jp'
  * Merge 'dns', let it deploy, then change it to 'live'.
  * - 'alias': the hostname on the distribution without records, for a name whose records live
  *   outside CDK (api.findadoc.jp, switched by hand at the cutover)
+ *
+ * The cutover (#13) adds [API_DOMAIN]: 'alias' here, which also reports the API to Sentry
+ * as production, and [MCP_DOMAIN]: 'dns' then 'live' below. See "Cutover" in the README.
  */
 export type HostnameState = 'dns' | 'live' | 'alias'
 
