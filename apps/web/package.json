@@ -3,9 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "dev": "wait-on -t 60000 http-get://127.0.0.1:4000/health && node ./scripts/dev.mjs --local-api",
-        "dev:seeded": "wait-on -t 300000 http-get://127.0.0.1:4000/health && node ./scripts/dev.mjs --local-api",
-        "dev:api": "node ./scripts/dev.mjs",
+        "dev": "wait-on -t 60000 http-get://127.0.0.1:4000/health && cross-env NUXT_USE_LOCAL_API=true nuxi dev",
+        "dev:seeded": "wait-on -t 300000 http-get://127.0.0.1:4000/health && cross-env NUXT_USE_LOCAL_API=true nuxi dev",
+        "dev:api": "nuxi dev",
         "lint": "pnpm prepare:ci && eslint . -c eslint.config.js",
         "lint:fix": "pnpm prepare:ci && eslint . -c eslint.config.js --fix",
         "lint:locales": "node i18n/checkLocaleKeys.js",
