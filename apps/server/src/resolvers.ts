@@ -335,7 +335,14 @@ const resolvers = {
             args: { input: gqlType.AssignFacilityMemberInput },
             context: UserContext
         ): Promise<gqlType.AssignFacilityMemberPayload> => {
+            // An owner assigns staff without write:users, so this is not withScope.
+            // A caller who is not platform staff and names no facility is rejected here.
             const platformStaff = authorize(context.user, [Scope['write:users']])
+            if (!platformStaff && !args.input?.facilityId) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
             const role = args.input.role === 'OWNER' ? 'owner' : 'staff'
             const result = await facilityMembershipService.assignFacilityMember({
                 facilityId: args.input.facilityId,
@@ -355,6 +362,11 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.FacilityMembership> => {
             const platformStaff = authorize(context.user, [Scope['write:users']])
+            if (!platformStaff && !args.facilityId) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
             const result = await facilityMembershipService.revokeFacilityMember(
                 args.facilityId,
                 args.userId,

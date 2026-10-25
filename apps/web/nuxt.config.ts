@@ -3,7 +3,7 @@ import i18nLocales from './i18n'
 import tailwindcss from '@tailwindcss/vite'
 import { VIEWPORT_BREAKPOINTS, VIEWPORT_FALLBACK_BREAKPOINT } from './utils/viewport'
 import { withLocaleVariants } from './utils/localePath'
-import { CLINIC_LANDING_MODE, clinicLandingsArePublic } from './utils/clinicLanding'
+import { CLINIC_LANDING_MODE } from './utils/clinicLanding'
 import { ADMIN_SITE_MODE } from './utils/adminSite'
 import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
@@ -223,15 +223,11 @@ export default defineNuxtConfig({
         '/:locale/search': { ssr: false },
         '/:locale/login': { ssr: false },
         '/:locale/my-page': { ssr: false },
-        '/:locale/my-page/**': { ssr: false },
-        // Preview stays a client route. `public` prerenders published clinics in the nitro hook.
-        // One segment only: `/clinic/{prefecture}/{city}/{slug}` is the directory page.
-        ...(clinicLandingsArePublic()
-            ? {}
-            : {
-                '/clinic/:slug': { ssr: false },
-                '/:locale/clinic/:slug': { ssr: false }
-            })
+        '/:locale/my-page/**': { ssr: false }
+        // `/clinic/:slug` is not `ssr: false`. Nuxt treats that rule as covering
+        // `/clinic/{prefecture}/{city}/{slug}` and stubs the directory page, so
+        // generate writes an empty shell. Preview landings stay off the prerender
+        // list. The showcase slug is a client rewrite in serve.json and _redirects.
     },
     sourcemap: {
         client: true
