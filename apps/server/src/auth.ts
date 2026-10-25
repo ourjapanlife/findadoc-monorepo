@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifyRequest } from 'fastify'
+import { GraphQLError, type GraphQLResolveInfo } from 'graphql'
 import fastifyJwt from '@fastify/jwt'
 import buildGetJwks from 'get-jwks'
 
@@ -155,6 +156,51 @@ export function authorize(user: User, requiredScopes: Scope[]): boolean {
         logger.error('Error parsing user object. Have we updated roles in Auth0 that don\'t match our required scopes above?:', err)
         return false
     }
+}
+
+type Resolver<TParent, TArgs, TContext, TResult> =
+    (parent: TParent, args: TArgs, context: TContext, info: GraphQLResolveInfo) => TResult
+
+function guardResolver<TParent, TArgs, TContext extends UserContext, TResult>(
+    isAllowed: (user: User) => boolean,
+    resolver: Resolver<TParent, TArgs, TContext, TResult>
+): Resolver<TParent, TArgs, TContext, TResult> {
+    return (parent, args, context, info) => {
+        if (!isAllowed(context.user)) {
+            throw new GraphQLError('User is not authorized', {
+                extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+            })
+        }
+
+        return resolver(parent, args, context, info)
+    }
+}
+
+/**
+ * Wraps a resolver so it runs only for a user who has every listed scope.
+ * Anyone else gets UNAUTHORIZED with HTTP 403. Sentry skips that code (see server.ts).
+ * @param requiredScopes - The scope, or scopes, the resolver needs. Ex. `Scope['read:facilities']`.
+ * @param resolver - The resolver to run once the user is authorized.
+ */
+export function withScope<TParent, TArgs, TContext extends UserContext, TResult>(
+    requiredScopes: Scope | Scope[],
+    resolver: Resolver<TParent, TArgs, TContext, TResult>
+): Resolver<TParent, TArgs, TContext, TResult> {
+    const scopes = Array.isArray(requiredScopes) ? requiredScopes : [requiredScopes]
+
+    return guardResolver(user => authorize(user, scopes), resolver)
+}
+
+/**
+ * Like withScope, but one of the listed scopes is enough.
+ * @param acceptedScopes - Any one of these lets the resolver run.
+ * @param resolver - The resolver to run once the user is authorized.
+ */
+export function withAnyScope<TParent, TArgs, TContext extends UserContext, TResult>(
+    acceptedScopes: Scope[],
+    resolver: Resolver<TParent, TArgs, TContext, TResult>
+): Resolver<TParent, TArgs, TContext, TResult> {
+    return guardResolver(user => acceptedScopes.some(scope => authorize(user, [scope])), resolver)
 }
 
 // This function builds the user context from the FastifyRequest object so it can be used in the graphQL resolvers.
