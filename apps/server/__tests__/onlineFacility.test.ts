@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { buildFacilityUpdatePatch, contactForStorage } from '../src/services/facilityService.js'
+import {
+    buildFacilityUpdatePatch,
+    contactForStorage,
+    contactUpdateForStorage,
+    facilityPartialForStorage
+} from '../src/services/facilityService.js'
 import {
     hasUsableMapPin,
     validateCreateFacilityInput,
@@ -65,6 +70,11 @@ describe('online facility updates', () => {
             googleMapsUrl: 'https://maps.google.com/?q=tokyo',
             address: phoneOnlyContact.address
         })
+        expect(contactUpdateForStorage(
+            { phone: '03-1111-2222' },
+            { phone: '03-0000-0000', googleMapsUrl: '', address: null },
+            { clearLocation: false }
+        ).address).toBeNull()
     })
 
     it('stores a null address when online create omits it', () => {
@@ -76,8 +86,28 @@ describe('online facility updates', () => {
             address: null
         })
     })
+})
 
-    it('fills missing Maps URL and address before storing a submission facility partial', () => {
+describe('submission facility_partial storage', () => {
+    it('normalizes omitted contact location fields before storage', () => {
+        expect(facilityPartialForStorage(null)).toBeNull()
+        expect(facilityPartialForStorage({
+            nameEn: 'Online clinic',
+            nameJa: 'オンラインクリニック',
+            online: true,
+            contact: { phone: '03-0000-0000' }
+        })).toEqual({
+            nameEn: 'Online clinic',
+            nameJa: 'オンラインクリニック',
+            online: true,
+            contact: {
+                phone: '03-0000-0000',
+                email: '',
+                website: '',
+                googleMapsUrl: '',
+                address: null
+            }
+        })
         expect(contactForStorage(
             { phone: '03-0000-0000' },
             { clearLocation: false }
@@ -98,10 +128,17 @@ describe('online facility updates', () => {
                 addressLine2Ja: ''
             }
         })
-        expect(contactForStorage(
-            { phone: '03-0000-0000' },
-            { clearLocation: true }
-        ).googleMapsUrl).toBe('')
+        expect(facilityPartialForStorage({
+            nameEn: 'Neighborhood clinic',
+            nameJa: '近所のクリニック',
+            contact: {
+                phone: '03-0000-0000',
+                googleMapsUrl: 'https://maps.google.com/?q=tokyo',
+                address: phoneOnlyContact.address
+            },
+            mapLatitude: 35.68,
+            mapLongitude: 139.76
+        })?.contact.googleMapsUrl).toBe('https://maps.google.com/?q=tokyo')
     })
 })
 

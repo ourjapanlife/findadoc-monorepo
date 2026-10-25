@@ -3,7 +3,13 @@ import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import { logger } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
-import { validateIdInput, validateCreateFacilityInput, validateFacilitiesSearchInput, validateUpdateFacilityInput } from '../validation/validateFacility.js'
+import {
+    hasUsableMapPin,
+    validateIdInput,
+    validateCreateFacilityInput,
+    validateFacilitiesSearchInput,
+    validateUpdateFacilityInput
+} from '../validation/validateFacility.js'
 import { facilityFromRow, facilityWithProfessionalIds } from '../services/mappersEntityService.js'
 import { uniqueLocales } from '../languages/publishedLocales.js'
 import { asJsonb } from '../../utils/dbUtils.js'
@@ -51,7 +57,8 @@ function blankAddress(): gqlTypes.PhysicalAddressInput {
     }
 }
 
-function addressInputFromStored(
+/** Maps a stored Contact address into ContactInput shape. Null stays null. */
+export function addressInputFromStored(
     address: gqlTypes.PhysicalAddress | gqlTypes.PhysicalAddressInput | null | undefined
 ): gqlTypes.PhysicalAddressInput | null | undefined {
     if (address === undefined) {
@@ -76,6 +83,7 @@ function addressInputFromStored(
 /**
  * Normal facilities store a full address. An online facility keeps phone and
  * stores address as null; Maps URL becomes empty.
+ * An omitted address becomes a blank shape; an explicit null stays null.
  */
 export function contactForStorage(
     contact: gqlTypes.ContactInput,
@@ -95,7 +103,46 @@ export function contactForStorage(
         email: contact.email ?? '',
         website: contact.website ?? '',
         googleMapsUrl: contact.googleMapsUrl ?? '',
-        address: contact.address ?? blankAddress()
+        address: contact.address === undefined ? blankAddress() : contact.address
+    }
+}
+
+/**
+ * Merges a contact update with the stored contact so omitted address and Maps URL
+ * are not wiped on a phone-only (or similar) patch.
+ */
+export function contactUpdateForStorage(
+    contact: gqlTypes.ContactInput,
+    existingContact: gqlTypes.ContactInput | gqlTypes.Contact | undefined,
+    options: { clearLocation: boolean }
+): gqlTypes.ContactInput {
+    const merged: gqlTypes.ContactInput = {
+        ...contact,
+        address: contact.address !== undefined
+            ? contact.address
+            : addressInputFromStored(existingContact?.address),
+        googleMapsUrl: contact.googleMapsUrl !== undefined
+            ? contact.googleMapsUrl
+            : (existingContact?.googleMapsUrl ?? '')
+    }
+    return contactForStorage(merged, options)
+}
+
+/**
+ * Normalizes facility contact before writing facility_partial so Contact.googleMapsUrl
+ * (non-null in GraphQL) and address shape are always present when read back.
+ */
+export function facilityPartialForStorage(
+    facility: gqlTypes.CreateFacilityInput | null | undefined
+): gqlTypes.CreateFacilityInput | null {
+    if (facility === undefined || facility === null) {
+        return null
+    }
+    return {
+        ...facility,
+        contact: contactForStorage(facility.contact, {
+            clearLocation: facility.online === true
+        })
     }
 }
 
@@ -119,16 +166,9 @@ export function buildFacilityUpdatePatch(
         updatePatch.name_ja = fields.nameJa
     }
     if (fields.contact !== undefined && fields.contact !== null) {
-        updatePatch.contact = contactForStorage(
-            {
-                ...fields.contact,
-                googleMapsUrl: fields.contact.googleMapsUrl
-                    ?? existingContact?.googleMapsUrl
-                    ?? undefined,
-                address: fields.contact.address !== undefined
-                    ? fields.contact.address
-                    : addressInputFromStored(existingContact?.address)
-            },
+        updatePatch.contact = contactUpdateForStorage(
+            fields.contact,
+            existingContact,
             { clearLocation: becomingOnline }
         )
     } else if (becomingOnline && existingContact) {
@@ -867,6 +907,60 @@ export const updateFacility = async (
             }
 
             const becomingOnline = fields.online === true
+            const goingOffline = fields.online === false && originalFacility.online === true
+            if (goingOffline) {
+                const existingContact = originalFacility.contact as gqlTypes.ContactInput | null
+                const mergedAddress = fields.contact?.address !== undefined
+                    ? fields.contact.address
+                    : existingContact?.address
+                const mergedMapsUrl = fields.contact?.googleMapsUrl !== undefined
+                    ? fields.contact.googleMapsUrl
+                    : (existingContact?.googleMapsUrl ?? '')
+                const mergedLat = fields.mapLatitude !== undefined
+                    ? fields.mapLatitude
+                    : originalFacility.map_latitude
+                const mergedLng = fields.mapLongitude !== undefined
+                    ? fields.mapLongitude
+                    : originalFacility.map_longitude
+                const offlineLocationErrors: NonNullable<Result<gqlTypes.Facility>['errors']> = []
+                if (!mergedAddress) {
+                    offlineLocationErrors.push({
+                        field: 'contact.address',
+                        errorCode: ErrorCode.REQUIRED,
+                        httpStatus: 400
+                    })
+                }
+                if (!(mergedMapsUrl ?? '').trim()) {
+                    offlineLocationErrors.push({
+                        field: 'contact.googleMapsUrl',
+                        errorCode: ErrorCode.REQUIRED,
+                        httpStatus: 400
+                    })
+                }
+                if (!hasUsableMapPin(
+                    mergedLat === null ? null : Number(mergedLat),
+                    mergedLng === null ? null : Number(mergedLng)
+                )) {
+                    offlineLocationErrors.push({
+                        field: 'mapLatitude',
+                        errorCode: ErrorCode.REQUIRED,
+                        httpStatus: 400
+                    })
+                    offlineLocationErrors.push({
+                        field: 'mapLongitude',
+                        errorCode: ErrorCode.REQUIRED,
+                        httpStatus: 400
+                    })
+                }
+                if (offlineLocationErrors.length > 0) {
+                    throw new FacilityUpdateRejected({
+                        data: {} as gqlTypes.Facility,
+                        hasErrors: true,
+                        errors: offlineLocationErrors
+                    })
+                }
+            }
+
             let publicationPatch: { city_id: string | null, verification_status: string } | undefined
 
             if (

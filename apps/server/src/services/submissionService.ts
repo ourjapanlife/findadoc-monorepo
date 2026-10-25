@@ -21,7 +21,7 @@ import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { canonicalMapsFields } from '../places/mapsLink.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import { databaseOrderColumn, SUBMISSION_ORDER_COLUMNS } from '../search/orderColumn.js'
-import { contactForStorage } from './facilityService.js'
+import { contactForStorage, facilityPartialForStorage } from './facilityService.js'
 type SubmissionStatusFlag = keyof Pick<
     gqlTypes.SubmissionSearchFilters,
     'isUnderReview' | 'isApproved' | 'isRejected'
@@ -128,17 +128,9 @@ function buildSubmissionUpdatePatch(
     }
 
     if (fieldsToUpdate.facility !== undefined) {
-        const facility = fieldsToUpdate.facility
         // Contact.googleMapsUrl is non-null on FacilitySubmission. Normalize so a
         // ContactInput that omits address or Maps URL still round-trips.
-        patch.facility_partial = asJsonb(facility
-            ? {
-                ...facility,
-                contact: contactForStorage(facility.contact, {
-                    clearLocation: facility.online === true
-                })
-            }
-            : null)
+        patch.facility_partial = asJsonb(facilityPartialForStorage(fieldsToUpdate.facility))
     }
 
     return patch
