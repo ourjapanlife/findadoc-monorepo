@@ -95,6 +95,17 @@ pnpm db:seed             # シードデータを投入
 pnpm dev:server          # APIを起動
 ```
 
+### オンラインクリニックのディレクトリ行
+
+多言語オンラインクリニックは、番地のない施設です。このスクリプトは、データベースに既にある弓野綾の行を結びつけ、クリニックのページから田中完を追加します。弓野綾の別の施設からは外しません。既定はドライランです。`--write` は `PGHOST`、`PGPORT`、`PGPASSWORD` を使い、それらが無いときはローカルのデータベースを使います。
+
+```bash
+pnpm --filter @findadoc/server backfill:online-clinic
+pnpm --filter @findadoc/server backfill:online-clinic:write
+```
+
+ベトナム語はクリニックのページにありますが、公開中の検索ファセットではないので、施設の言語一覧には入りません。田中完には免許を入れません。モデレーターが選びます。
+
 ### デバッグ
 
 VS CodeでAPIをデバッグできます：**Run and Debug**タブを開き、**JavaScript Debug Terminal**を選択し、そのターミナルで`pnpm dev:server`を実行してください。デバッガーが自動的に接続されます。行番号をクリックしてブレークポイントを追加してください。

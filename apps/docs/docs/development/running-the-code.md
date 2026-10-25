@@ -95,6 +95,17 @@ pnpm db:seed             # load the seed data
 pnpm dev:server          # start the API
 ```
 
+### Online clinic directory row
+
+The multilingual online clinic is a facility with no street address. The script links the Aya Yumino row already in the database and adds Kan Tanaka from the clinic page. It does not move Aya off her other facility. Dry-run is the default. `--write` uses `PGHOST`, `PGPORT`, and `PGPASSWORD`, and the local database when those are unset.
+
+```bash
+pnpm --filter @findadoc/server backfill:online-clinic
+pnpm --filter @findadoc/server backfill:online-clinic:write
+```
+
+Vietnamese is on the clinic page and is not a published search facet, so the facility does not list it. Tanaka is stored without a license. A moderator chooses that.
+
 ### Debugging
 
 You can debug the API with VS Code: open the **Run and Debug** tab, choose **JavaScript Debug Terminal**, then run `pnpm dev:server` in that terminal. The debugger connects automatically. Add breakpoints by clicking on line numbers.

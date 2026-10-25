@@ -26,6 +26,8 @@
         "backfill:maps-urls:write": "node --loader ts-node/esm utils/backfillCanonicalMapsUrls.ts --write",
         "backfill:licenses": "node --loader ts-node/esm utils/backfillProfessionalLicenses.ts",
         "backfill:licenses:write": "node --loader ts-node/esm utils/backfillProfessionalLicenses.ts --write",
+        "backfill:online-clinic": "node --loader ts-node/esm utils/backfillOnlineClinic.ts",
+        "backfill:online-clinic:write": "node --loader ts-node/esm utils/backfillOnlineClinic.ts --write",
         "prod": "pnpm db:push && pnpm prod:dockerstop && pnpm prod:dockerstart",
         "prod:startserver": "echo '💻 💻 💻✨ Starting prod server...' && cross-env NODE_ENV=production PIDUSAGE_USE_PS=true pm2 start dist/src/index.js --no-daemon && pm2 logs --lines 100",
         "prod:stopserver": "echo '💻 💻 💻✨ Stopping prod server...' && pm2 stop all && pm2 delete all",
