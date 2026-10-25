@@ -39,7 +39,6 @@ import {
     isClinicHostPage,
     isClinicLandingPath
 } from '~/utils/clinicLanding'
-import { localizedPath } from '~/utils/localePath'
 import { isEntityRoute, pageDescriptionKeyForPath, pageMetaI18nKey, pageTitleKeyForPath } from '~/utils/pageTitles'
 import { canonicalUrl, hreflangLinkTags, indexableLocaleCodes, isNoindexRoute, openGraphLocale } from '~/utils/seo'
 import { jsonLdScript, organizationJsonLd } from '~/utils/structuredData'
