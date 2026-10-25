@@ -4,7 +4,7 @@ import { ErrorCode, Result } from '../result.js'
 import { logger } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import { validateIdInput, validateCreateFacilityInput, validateFacilitiesSearchInput, validateUpdateFacilityInput } from '../validation/validateFacility.js'
-import { mapKyselyFacilityToGraphQL, facilityLocationFields, paymentOptionFields, supportedLanguageFields } from '../services/mappersEntityService.js'
+import { facilityFromRow, facilityWithProfessionalIds } from '../services/mappersEntityService.js'
 import { uniqueLocales } from '../languages/publishedLocales.js'
 import { asJsonb } from '../../utils/dbUtils.js'
 import { prefectureTranslations, resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
@@ -15,8 +15,8 @@ import { cityExists, findCityBySlug } from './cityService.js'
 import { FacilitySource } from '@findadoc/graphql'
 import { matchingFacilityId } from '../places/facilityMapsMatch.js'
 import { canonicalMapsFields, isShortMapsUrl, previewTargetFromMapsUrl, resolveMapsPlace } from '../places/mapsLink.js'
-import { sql, type Selectable, type SelectQueryBuilder, type Transaction } from 'kysely'
-import type { Database, FacilitiesTable } from '../typeDefs/kyselyTypes.js'
+import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
+import type { Database } from '../typeDefs/kyselyTypes.js'
 import type { FacilityParent } from '../typeDefs/resolverParents.js'
 
 function invalidCityId(): Result<gqlTypes.Facility> {
@@ -257,26 +257,6 @@ export async function contactWithCanonicalMapsUrl<T extends { googleMapsUrl: str
     return {
         contact: { ...contact, googleMapsUrl: maps.url },
         placeId: maps.placeId
-    }
-}
-
-/**
- * Maps a facilities row to the GraphQL Facility without its professional ids.
- * The `healthcareProfessionalIds` field resolver loads those.
- */
-function facilityFromRow(row: Selectable<FacilitiesTable>): FacilityParent {
-    return {
-        id: row.id,
-        nameEn: row.name_en,
-        nameJa: row.name_ja,
-        contact: row.contact,
-        mapLatitude: row.map_latitude,
-        mapLongitude: row.map_longitude,
-        createdDate: row.created_date,
-        updatedDate: row.updated_date,
-        ...paymentOptionFields(row),
-        ...supportedLanguageFields(row),
-        ...facilityLocationFields(row)
     }
 }
 
@@ -546,7 +526,7 @@ export async function createFacility(
             // Step 3: Convert Kysely result to plain GraphQL object
             // IMPORTANT: This removes Kysely's internal private members (#props)
             // which would cause serialization errors in GraphQL responses
-            const plainGqlFacility = mapKyselyFacilityToGraphQL(insertedFacility, hpIds)
+            const plainGqlFacility = facilityWithProfessionalIds(insertedFacility, hpIds)
 
             // Step 4: Record this creation in the audit log
             // Uses the same transaction (transaction) to ensure atomicity:
@@ -650,7 +630,7 @@ export async function searchFacilities(
         // Execute the main query, applying the offset and limit for the current page
         const paginationRows = await baseQuery.limit(limit).offset(offset).execute()
 
-        return { data: paginationRows.map(facilityFromRow), hasErrors: false }
+        return { data: paginationRows.map(row => facilityFromRow(row)), hasErrors: false }
     } catch (err) {
         logger.error(`ERROR: searchFacilities ${JSON.stringify(filters)} -> ${err}`)
         return {
@@ -854,8 +834,8 @@ export const updateFacility = async (
 
             // Create audit log entry
             // If this fails, the entire transaction (including updates) is rolled back
-            const oldGqlFacility = mapKyselyFacilityToGraphQL(originalFacility, originalHpIds)
-            const newGqlFacility = mapKyselyFacilityToGraphQL(updatedFacility, finalHpIds)
+            const oldGqlFacility = facilityWithProfessionalIds(originalFacility, originalHpIds)
+            const newGqlFacility = facilityWithProfessionalIds(updatedFacility, finalHpIds)
 
             await createAuditLog(transaction, {
                 actionType: gqlTypes.ActionType.Update,
@@ -870,7 +850,7 @@ export const updateFacility = async (
         })
 
         // Map database result to GraphQL type
-        const gqlFacility = mapKyselyFacilityToGraphQL(result.facility, result.hpIds)
+        const gqlFacility = facilityWithProfessionalIds(result.facility, result.hpIds)
 
         return { data: gqlFacility, hasErrors: false }
     } catch (error) {
@@ -1029,7 +1009,7 @@ export async function deleteFacility(
 
             //Create audit log entry
             // If this fails, the entire transaction (including the delete) is rolled back
-            const oldGqlFacility = mapKyselyFacilityToGraphQL(existingFacility, hpIds)
+            const oldGqlFacility = facilityWithProfessionalIds(existingFacility, hpIds)
 
             await createAuditLog(transaction, {
                 actionType: gqlTypes.ActionType.Delete,
@@ -1104,7 +1084,7 @@ export async function listPublishedCityFacilities(
             .where('verification_status', '<>', gqlTypes.FacilityVerificationStatus.UnverifiedLocation)
             .execute()
 
-        return { data: rows.map(facilityFromRow), hasErrors: false }
+        return { data: rows.map(row => facilityFromRow(row)), hasErrors: false }
     } catch (error) {
         logger.error(`ERROR: listPublishedCityFacilities ${error}`)
         return {
