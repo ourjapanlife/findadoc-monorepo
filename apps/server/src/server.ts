@@ -1,4 +1,5 @@
 
+import { randomUUID } from 'node:crypto'
 import * as Sentry from '@sentry/node'
 import Fastify from 'fastify'
 import { fastifyApolloDrainPlugin, fastifyApolloHandler } from '@as-integrations/fastify'
@@ -87,14 +88,26 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
             ApolloServerPluginLandingPageLocalDefault(),
             {
                 async requestDidStart(requestContext: GraphQLRequestContext<ApiContext>) {
-                    //we want to skip logging requests from the apollo query explorer internal introspection query
-                    const isApolloIntrospectionQuery = requestContext.request.query?.includes('IntrospectionQuery')
-
-                    if (!isApolloIntrospectionQuery) {
-                        logger.info(`Apollo Request received:\n Query: ' + ${requestContext.request.query} \nVariables: ${JSON.stringify(requestContext.request.variables)}`, { type: 'graphqlquery' })
-                    }
+                    const startedAt = performance.now()
+                    const requestId = requestContext.request.http?.headers.get('x-request-id') ?? randomUUID()
 
                     return {
+                        // One line per request: which operation, how long, and whether it failed.
+                        // The query text and variables stay out of the logs. Sentry gets them on errors.
+                        async willSendResponse(ctx) {
+                            //we want to skip logging requests from the apollo query explorer internal introspection query
+                            if (ctx.request.query?.includes('IntrospectionQuery')) {
+                                return
+                            }
+
+                            logger.info('graphql request', {
+                                type: 'graphql',
+                                requestId,
+                                operationName: ctx.operationName ?? ctx.request.operationName ?? null,
+                                durationMs: Math.round(performance.now() - startedAt),
+                                errorCount: ctx.errors?.length ?? 0
+                            })
+                        },
                         async didEncounterErrors(ctx) {
                             //skip user-input validation errors (already surfaced via GraphQL response)
                             for (const err of ctx.errors) {
