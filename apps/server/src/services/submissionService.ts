@@ -1,5 +1,4 @@
 import * as gqlTypes from '@findadoc/graphql'
-import * as dbSchema from '../typeDefs/dbSchema.js'
 import { ErrorCode, Result, type Error as ValidationError } from '../result.js'
 import {
     isValidHpInput,
@@ -13,10 +12,10 @@ import { logger } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
-import type { SubmissionsTable } from '../typeDefs/kyselyTypes.js'
+import { SUBMISSION_STATUS, type SubmissionStatusEnum, type SubmissionsTable } from '../typeDefs/kyselyTypes.js'
 import type { Selectable } from 'kysely'
 import { db } from '../kyselyClient.js'
-import { mapKyselySubmissionToGraphQL, mapDbEntityTogqlEntity } from '../services/mappersEntityService.js'
+import { submissionFromRow } from '../services/mappersEntityService.js'
 import { asJsonb } from '../../utils/dbUtils.js'
 import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { canonicalMapsFields } from '../places/mapsLink.js'
@@ -43,11 +42,11 @@ class SubmissionApprovalValidationError extends Error {
  * Shared by search filters and submission updates.
  */
 const SUBMISSION_STATUS_FILTERS: ReadonlyArray<
-    readonly [SubmissionStatusFlag, dbSchema.SubmissionStatusValue]
+    readonly [SubmissionStatusFlag, SubmissionStatusEnum]
 > = [
-    ['isUnderReview', dbSchema.SUBMISSION_STATUS.UNDER_REVIEW],
-    ['isApproved', dbSchema.SUBMISSION_STATUS.APPROVED],
-    ['isRejected', dbSchema.SUBMISSION_STATUS.REJECTED]
+    ['isUnderReview', SUBMISSION_STATUS.UNDER_REVIEW],
+    ['isApproved', SUBMISSION_STATUS.APPROVED],
+    ['isRejected', SUBMISSION_STATUS.REJECTED]
 ]
 
 /** Partial-match filters applied with ilike on the submissions table. */
@@ -78,8 +77,8 @@ const SUBMISSION_SCALAR_UPDATE_FIELDS = [
 function resolveSubmissionStatusFilter(
     flags: SubmissionStatusFlags,
     onConflict?: () => never
-): dbSchema.SubmissionStatusValue | undefined {
-    let resolved: dbSchema.SubmissionStatusValue | undefined
+): SubmissionStatusEnum | undefined {
+    let resolved: SubmissionStatusEnum | undefined
 
     for (const [flag, status] of SUBMISSION_STATUS_FILTERS) {
         if (!flags[flag]) {
@@ -101,7 +100,7 @@ function resolveSubmissionStatusFilter(
 }
 
 function buildSubmissionUpdatePatch(
-    currentStatus: dbSchema.SubmissionStatusValue,
+    currentStatus: SubmissionStatusEnum,
     fieldsToUpdate: Partial<gqlTypes.UpdateSubmissionInput>
 ): Record<string, unknown> {
     const patch: Record<string, unknown> = {
@@ -311,7 +310,7 @@ export const getSubmissionById = async (
         }
 
         // Map DB → GQL
-        const gqlSubmission = mapDbEntityTogqlEntity(submissionRow as unknown as dbSchema.SubmissionRow)
+        const gqlSubmission = submissionFromRow(submissionRow)
 
         return { data: gqlSubmission, hasErrors: false }
     } catch (err) {
@@ -363,7 +362,7 @@ export async function searchSubmissions(
         const rows = await base.limit(limit).offset(offset).execute()
 
         // Convert DB → GQL
-        let listSubmissions = rows.map(row => mapDbEntityTogqlEntity(row as unknown as dbSchema.SubmissionRow))
+        let listSubmissions = rows.map(row => submissionFromRow(row))
 
         const langs = (filters.spokenLanguages ?? []).filter((l): l is gqlTypes.Locale => !!l)
 
@@ -448,7 +447,7 @@ export const createSubmission = async (
             const insertedSubmission = await transaction
                 .insertInto('submissions')
                 .values({
-                    status: dbSchema.SUBMISSION_STATUS.PENDING,
+                    status: SUBMISSION_STATUS.PENDING,
                     google_maps_url: mapsUrl.url,
                     healthcare_professional_name: submissionInput.healthcareProfessionalName ?? '',
                     spoken_languages: asJsonb<gqlTypes.Locale[]>(submissionInput.spokenLanguages ?? []),
@@ -464,7 +463,7 @@ export const createSubmission = async (
                 .executeTakeFirstOrThrow()
 
             // Map to GraphQL
-            const plainGqlSubmission = mapKyselySubmissionToGraphQL(insertedSubmission)
+            const plainGqlSubmission = submissionFromRow(insertedSubmission)
             
             await createAuditLog(transaction, {
                 actionType: gqlTypes.ActionType.Create,
@@ -549,8 +548,8 @@ export const updateSubmission = async (
                 .executeTakeFirstOrThrow()
 
             // Map to GraphQL for audit log
-            const oldGqlSubmission = mapKyselySubmissionToGraphQL(currentSubmission)
-            const newGqlSubmission = mapKyselySubmissionToGraphQL(updatedSubmission)
+            const oldGqlSubmission = submissionFromRow(currentSubmission)
+            const newGqlSubmission = submissionFromRow(updatedSubmission)
 
             // Create audit log entry
             await createAuditLog(transaction, {
@@ -768,7 +767,7 @@ export const approveSubmission = async (
                 throw new Error(`Submission not found: ${submissionId}`)
             }
 
-            if (currentSubmission.status === dbSchema.SUBMISSION_STATUS.APPROVED) {
+            if (currentSubmission.status === SUBMISSION_STATUS.APPROVED) {
                 throw new Error('SUBMISSION_ALREADY_APPROVED')
             }
 
@@ -856,7 +855,7 @@ export const approveSubmission = async (
             const updated = await transaction
                 .updateTable('submissions')
                 .set({
-                    status: dbSchema.SUBMISSION_STATUS.APPROVED,
+                    status: SUBMISSION_STATUS.APPROVED,
                     facilities_id: finalFacilityId,
                     hps_id: createdHpId ?? currentSubmission.hps_id,
                     updated_date: new Date().toISOString()
@@ -866,8 +865,8 @@ export const approveSubmission = async (
                 .executeTakeFirstOrThrow()
 
             // Map to GraphQL
-            const oldGqlSubmission = mapKyselySubmissionToGraphQL(currentSubmission)
-            const newGqlSubmission = mapKyselySubmissionToGraphQL(updated)
+            const oldGqlSubmission = submissionFromRow(currentSubmission)
+            const newGqlSubmission = submissionFromRow(updated)
 
             // Audit log
             await createAuditLog(transaction, {
@@ -957,7 +956,7 @@ export async function deleteSubmission(
                 .execute()
 
             // Step 3: Audit log
-            const oldGqlSubmission = mapKyselySubmissionToGraphQL(existing)
+            const oldGqlSubmission = submissionFromRow(existing)
 
             await createAuditLog(transaction, {
                 actionType: gqlTypes.ActionType.Delete,

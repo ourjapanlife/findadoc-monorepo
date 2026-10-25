@@ -183,3 +183,11 @@ export type ActionTypeEnum = 'CREATE' | 'UPDATE' | 'DELETE'
 export type ObjectTypeEnum = 'Facility' | 'HealthcareProfessional' | 'Submission'
 export type SchemaVersionEnum = 'V1'
 export type SubmissionStatusEnum = 'pending' | 'under_review' | 'approved' | 'rejected'
+
+/** Submission status values as stored. GraphQL exposes them as isUnderReview, isApproved and isRejected. */
+export const SUBMISSION_STATUS = {
+    PENDING: 'pending',
+    UNDER_REVIEW: 'under_review',
+    APPROVED: 'approved',
+    REJECTED: 'rejected'
+} as const satisfies Record<string, SubmissionStatusEnum>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Locale, Specialty } from '@findadoc/graphql'
 import { isPublishedLocale, PUBLISHED_LOCALES } from '../src/languages/publishedLocales.js'
-import { supportedLanguageFields, mapKyselyHpToGraphQL } from '../src/services/mappersEntityService.js'
+import { supportedLanguageFields, professionalFromRow } from '../src/services/mappersEntityService.js'
 import {
     applyFacilityFilters,
     buildFacilityUpdatePatch,
@@ -51,7 +51,7 @@ describe('published language allowlist', () => {
     })
 
     it('still displays an existing English and Japanese professional as those languages', () => {
-        const professional = mapKyselyHpToGraphQL({
+        const professional = professionalFromRow({
             id: 'hp',
             names: [],
             spoken_languages: [Locale.EnUs, Locale.JaJp],
@@ -68,7 +68,7 @@ describe('published language allowlist', () => {
             search_text: '',
             created_date: '2023-08-28T00:00:00.000Z',
             updated_date: '2023-08-28T00:00:00.000Z'
-        } as Selectable<HpsTable>, [])
+        } as Selectable<HpsTable>)
 
         expect(professional.spokenLanguages).toEqual([Locale.EnUs, Locale.JaJp])
     })
