@@ -50,7 +50,7 @@ export const API_HOSTNAMES: Record<string, HostnameState> = {
 
 export const MCP_HOSTNAMES: Record<string, HostnameState> = {
     [MCP_STAGING_DOMAIN]: 'live',
-    [MCP_DOMAIN]: 'dns',
+    [MCP_DOMAIN]: 'live',
 }
 // The MCP tools read the live directory. After the cutover this is the AWS API.
 export const MCP_GRAPHQL_ENDPOINT = 'https://api.findadoc.jp'
