@@ -13,6 +13,7 @@ import { Trigger } from 'aws-cdk-lib/triggers'
 import type { Construct } from 'constructs'
 import type { AlertsStack } from './alertsStack.js'
 import { addFunctionUrlEdge } from './functionUrlEdge.js'
+import type { HostnameState } from './environment.js'
 
 const repoRoot = fileURLToPath(new URL('../..', import.meta.url))
 const serverRoot = path.join(repoRoot, 'apps/server')
@@ -29,7 +30,9 @@ export interface ApiStackProps extends StackProps {
     certificate: ICertificate
     hostedZoneId: string
     zoneName: string
-    domainName: string
+    // https://… for API_URL, such as https://api-staging.findadoc.jp
+    apiUrl: string
+    hostnames: Record<string, HostnameState>
     alerts: AlertsStack
     // Bumping it re-reads apiSecret on the next deploy.
     secretsRevision: string
@@ -129,7 +132,7 @@ export class ApiStack extends Stack {
             }),
             environment: {
                 NODE_ENV: 'production',
-                API_URL: `https://${props.domainName}`,
+                API_URL: props.apiUrl,
                 PGHOST: props.database.dbInstanceEndpointAddress,
                 PGPORT: props.database.dbInstanceEndpointPort,
                 PGUSER: props.apiDatabaseUser,
@@ -164,7 +167,8 @@ export class ApiStack extends Stack {
             fn: this.apiFunction,
             label: 'API',
             name: 'findadoc-api',
-            domainName: props.domainName,
+            hostnames: props.hostnames,
+            description: new URL(props.apiUrl).hostname,
             certificate: props.certificate,
             edgeSecret: secretValue('EDGE_SHARED_SECRET'),
             hostedZoneId: props.hostedZoneId,
@@ -173,15 +177,13 @@ export class ApiStack extends Stack {
                 originRequest: 'ApiOriginRequest',
                 viewerIp: 'ViewerIp',
                 distribution: 'ApiDistribution',
-                aliasA: 'ApiAliasA',
-                aliasAaaa: 'ApiAliasAaaa',
             },
         })
 
         this.addAlarms(props.alerts)
         this.addQueries()
 
-        new CfnOutput(this, 'ApiUrl', { value: `https://${props.domainName}` })
+        new CfnOutput(this, 'ApiUrl', { value: props.apiUrl })
         new CfnOutput(this, 'DistributionDomain', { value: distribution.distributionDomainName })
         new CfnOutput(this, 'FunctionUrl', { value: functionUrl.url })
     }
