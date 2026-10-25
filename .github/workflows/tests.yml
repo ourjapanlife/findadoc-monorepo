@@ -45,14 +45,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v3
-        with:
-          version: latest
-
-      - name: Start Supabase
+      # Postgres 17 in Docker on 127.0.0.1:54322, with every migration applied.
+      - name: Start the local database
         working-directory: apps/server
-        run: supabase start
+        run: pnpm db:reset
 
       - name: Run server tests
         run: pnpm exec turbo test --filter=@findadoc/server
@@ -61,10 +57,10 @@ jobs:
         if: failure()
         working-directory: apps/server
         run: |
-          supabase status || true
+          docker compose -f docker/docker-compose-db.yml logs || true
           docker ps -a || true
 
-      - name: Stop Supabase
+      - name: Stop the local database
         if: always()
         working-directory: apps/server
-        run: supabase stop
+        run: pnpm db:stop

@@ -6,7 +6,7 @@
 
 - **Node.js** 24.22.0（`.nvmrc`で固定。[nvm](https://github.com/nvm-sh/nvm)または[fnm](https://github.com/Schniz/fnm)を推奨）
 - **pnpm** 10.27.0（[Corepack](https://nodejs.org/api/corepack.html)経由）
-- **Docker**（APIのローカルSupabaseデータベースにのみ必要）
+- **Docker**（APIのローカルPostgresデータベースにのみ必要）
 - **Python** 3.10以上（このドキュメントサイトにのみ必要）
 
 **推奨IDEプラグイン**（VS Code）：
@@ -85,11 +85,12 @@ pnpm --filter @findadoc/web build
 ## API（`apps/server`）
 
 !!! note
-    APIにはDockerとローカルのSupabaseデータベースが必要です。
+    APIのローカルPostgresデータベースにはDockerが必要です。起動していなければ `pnpm db:reset` が起動します。
 
 ```bash
+pnpm db:start            # ローカルのPostgresデータベースをDockerで 127.0.0.1:54322 に起動
 pnpm check:db            # ローカルデータベースが 127.0.0.1:54322 で動いているか確認
-pnpm db:reset            # ローカルデータベースを削除して再作成
+pnpm db:reset            # ローカルデータベースを削除して再作成し、すべてのマイグレーションを適用
 pnpm db:seed             # シードデータを投入
 pnpm dev:server          # APIを起動
 ```
@@ -136,7 +137,7 @@ pnpm lint                # すべてのパッケージ
 pnpm lint:fix
 pnpm typecheck           # ロケールキーのチェックを含む
 pnpm test                # web、MCP、utilsのユニットテスト
-pnpm test:server         # APIのテスト（Supabaseの起動が必要）
+pnpm test:server         # APIのテスト（ローカルデータベースが必要）
 pnpm test:e2e            # ウェブサイトのPlaywright
 ```
 

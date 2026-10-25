@@ -16,7 +16,7 @@ pnpm workspace and Turborepo for the Find a Doc, Japan apps. One install, one se
 
 - Node.js 24.22.0 (see `.nvmrc`). Nuxt accepts `^22.21.0`, `^24.11.0`, or `>=26.0.0`.
 - Corepack, so pnpm 10.27.0 from the root `packageManager` field is used.
-- Docker, only for the API's local Supabase database.
+- Docker, only for the API's local Postgres database.
 
 ## Install
 
@@ -45,9 +45,11 @@ pnpm dev:web             # same, without the MCP process
 pnpm dev:server          # local GraphQL API only
 pnpm dev:seeded          # reset and seed the local database, then the site against that API
 pnpm dev:api             # site against https://api.findadoc.jp
-pnpm check:db            # local Postgres from `supabase start` on 127.0.0.1:54322
+pnpm db:start            # local Postgres in Docker on 127.0.0.1:54322 (db:reset starts it too)
+pnpm db:stop             # stop it; the data volume stays
+pnpm check:db            # confirm the local database answers
 pnpm db:seed             # load the TypeScript seed into the local database
-pnpm db:reset            # drop and recreate the local database only
+pnpm db:reset            # drop and recreate the local database only, then apply every migration
 pnpm dev:mcp
 pnpm dev:mcp:http
 
@@ -56,7 +58,7 @@ pnpm build
 pnpm lint
 pnpm typecheck           # includes the locale key check
 pnpm test                # web unit tests and MCP tests
-pnpm test:server         # API tests; needs Supabase running
+pnpm test:server         # API tests; needs the local database
 pnpm test:e2e            # Playwright, from the web app
 pnpm lint:locales        # the locale key check alone, without the rest of typecheck
 pnpm lint:docs           # check apps/docs against the scripts and versions in this repo
@@ -88,7 +90,7 @@ Database table types stay in the API (`apps/server/src/typeDefs/kyselyTypes.ts`)
 | --- | --- |
 | `lint.yml` | `pnpm exec turbo lint`. Pull requests pass `--affected` |
 | `typecheck.yml` | `pnpm exec turbo typecheck`, including the locale key check, and a check that committed GraphQL types match the schema |
-| `tests.yml` | Web, MCP, and utils unit tests, plus API tests against Supabase |
+| `tests.yml` | Web, MCP, and utils unit tests, plus API tests against Postgres in Docker |
 | `playwright.yml` | API and web together, then Playwright |
 | `lint-pr-title.yml` | Conventional Commits title |
 | `docs.yml` | Docs check and build on every pull request. Deploys `apps/docs` to GitHub Pages from `main` |
