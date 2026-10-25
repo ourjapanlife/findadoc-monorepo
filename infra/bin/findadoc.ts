@@ -1,6 +1,8 @@
 import { App, Tags } from 'aws-cdk-lib'
+import { DatabaseStack } from '../lib/databaseStack.js'
 import { DnsStack } from '../lib/dnsStack.js'
 import {
+    API_DATABASE_USER,
     FINDADOC_DOMAIN,
     FINDADOC_ENV,
     GITHUB_DEPLOY_ROLE_NAME,
@@ -10,6 +12,7 @@ import {
     GITHUB_WEB_PREVIEW_ROLE_NAME,
 } from '../lib/environment.js'
 import { GithubDeployStack } from '../lib/githubDeployStack.js'
+import { NetworkStack } from '../lib/networkStack.js'
 import { WebStack } from '../lib/webStack.js'
 
 const app = new App()
@@ -30,6 +33,16 @@ new WebStack(app, 'FindadocWeb', {
     subjectPrefix: GITHUB_OIDC_SUBJECT_PREFIX,
     deployRoleName: GITHUB_WEB_DEPLOY_ROLE_NAME,
     previewRoleName: GITHUB_WEB_PREVIEW_ROLE_NAME,
+})
+
+const network = new NetworkStack(app, 'FindadocNetwork', {
+    env: FINDADOC_ENV,
+})
+
+new DatabaseStack(app, 'FindadocDatabase', {
+    env: FINDADOC_ENV,
+    vpc: network.vpc,
+    apiDatabaseUser: API_DATABASE_USER,
 })
 
 new GithubDeployStack(app, 'FindadocGithubDeploy', {

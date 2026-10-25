@@ -20,3 +20,7 @@ export const GITHUB_DEPLOY_ROLE_NAME = 'findadoc-github-cdk-deploy'
 // .github/workflows/web.yml assumes these roles by name.
 export const GITHUB_WEB_DEPLOY_ROLE_NAME = 'findadoc-github-web-deploy'
 export const GITHUB_WEB_PREVIEW_ROLE_NAME = 'findadoc-github-web-preview'
+
+// The API connects to RDS as this login role with an IAM auth token, never a password.
+// The migration that creates it runs only on RDS, where the rds_iam role exists.
+export const API_DATABASE_USER = 'findadoc_api'
