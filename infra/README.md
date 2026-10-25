@@ -229,3 +229,69 @@ aws lambda invoke --function-name findadoc-db-copy --cli-binary-format raw-in-ba
 4. **Cutover (#13).** Pause moderation writes, run the copy once more, and switch DNS.
 
 Delete `copy.json` afterwards.
+
+## Cutover (#13)
+
+The API moves from DigitalOcean and Supabase to AWS. After #81's rehearsals and a soak on `api-staging.findadoc.jp`, the cutover is one data copy and one DNS change. `api.findadoc.jp` has A and AAAA records with a 5-minute TTL that predate CDK. One atomic Route 53 `UPSERT` moves them, so no deploy runs during the switch.
+
+### Before the day
+
+1. Merge a PR that adds `[API_DOMAIN]: 'alias'` to `API_HOSTNAMES` and `[MCP_DOMAIN]: 'dns'` to `MCP_HOSTNAMES` in `lib/environment.ts` (see "Hostnames on CloudFront"). After it deploys:
+   - the API distribution also answers `api.findadoc.jp`, but its DNS still points at DigitalOcean;
+   - the API reports to Sentry as `production`;
+   - `mcp.findadoc.jp` has records pointing at the MCP distribution.
+2. Merge a PR that changes `[MCP_DOMAIN]` to `'live'`. `mcp.findadoc.jp` then serves MCP.
+3. Check that CloudFront serves the production name before DNS moves:
+
+   ```bash
+   DIST=$(aws cloudformation describe-stacks --stack-name FindadocApi --region ap-northeast-1 \
+     --query "Stacks[0].Outputs[?OutputKey=='DistributionDomain'].OutputValue" --output text)
+   curl --connect-to api.findadoc.jp:443:$DIST:443 https://api.findadoc.jp/health
+   ```
+
+4. Write `to-aws.json`, with `$DIST` replaced by its value. `Z2FDTNDATAQYW2` is CloudFront's fixed alias zone:
+
+   ```json
+   {
+     "Comment": "api.findadoc.jp to AWS (#13)",
+     "Changes": [
+       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A",
+         "AliasTarget": { "HostedZoneId": "Z2FDTNDATAQYW2", "DNSName": "$DIST", "EvaluateTargetHealth": false } } },
+       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA",
+         "AliasTarget": { "HostedZoneId": "Z2FDTNDATAQYW2", "DNSName": "$DIST", "EvaluateTargetHealth": false } } }
+     ]
+   }
+   ```
+
+5. Write `to-digitalocean.json` for rollback. These are DigitalOcean's addresses as of 26 Oct 2026, so confirm them in the DigitalOcean console first:
+
+   ```json
+   {
+     "Comment": "api.findadoc.jp back to DigitalOcean (#13 rollback)",
+     "Changes": [
+       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A", "TTL": 300,
+         "ResourceRecords": [{ "Value": "172.66.0.96" }] } },
+       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA", "TTL": 300,
+         "ResourceRecords": [{ "Value": "2a06:98c1:58::60" }] } }
+     ]
+   }
+   ```
+
+### On the day (about 30 minutes)
+
+1. Announce the pause, and stop moderation writes.
+2. Run the final copy (`"dryRun": false`, see "Copying the data from Supabase"). Go on only with `allMatch: true`.
+3. Switch DNS:
+
+   ```bash
+   aws route53 change-resource-record-sets --hosted-zone-id Z02936621Z4BCXTP4RWL0 --change-batch file://to-aws.json
+   ```
+
+4. Within 5 minutes, traffic reaches AWS. Check `https://api.findadoc.jp/health`, a search on the site, and a moderator sign-in. Watch `#alerts`, Sentry and the saved log queries.
+5. End the pause.
+
+To roll back, run the same command with `to-digitalocean.json`. Writes made on AWS after the cutover must then be replayed on Supabase from `audit_logs`.
+
+### After two quiet weeks
+
+Stop the DigitalOcean app and cancel Grafana Cloud. Keep a final Supabase dump in S3, delete the Supabase project after 30 days, remove `FindadocDataCopy`, and update the docs (#13).

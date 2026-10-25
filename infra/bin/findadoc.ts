@@ -109,6 +109,8 @@ new ApiStack(app, 'FindadocApi', {
     zoneName: FINDADOC_DOMAIN,
     apiUrl: `https://${API_STAGING_DOMAIN}`,
     hostnames: API_HOSTNAMES,
+    // Production traffic arrives once api.findadoc.jp is on the distribution (#13).
+    sentryEnvironment: API_DOMAIN in API_HOSTNAMES ? 'production' : 'staging',
     alerts,
     secretsRevision: API_SECRETS_REVISION,
 })
