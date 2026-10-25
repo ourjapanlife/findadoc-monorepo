@@ -212,23 +212,26 @@ const handleListScroll = () => {
     })
 }
 
-const sameSelection = (selected: ArrayType<T>, item: ArrayType<T>) => {
-    if (selected === item) return true
-    if (typeof selected !== 'object' || selected === null || typeof item !== 'object' || item === null) {
-        return false
-    }
-    if (!('id' in selected) || !('id' in item)) return false
-    const selectedId = selected.id
-    const itemId = item.id
-    return typeof selectedId === 'string' && selectedId !== '' && selectedId === itemId
+const selectionId = (value: unknown): string | null => {
+    if (typeof value !== 'object' || value === null || !('id' in value)) return null
+    const id = value.id
+    return typeof id === 'string' && id !== '' ? id : null
 }
 
-const isSelected = (item: ArrayType<T>) => selectedItems.value.some(selected => sameSelection(selected, item))
+const sameSelection = (selected: unknown, item: unknown) => {
+    if (selected === item) return true
+    const selectedId = selectionId(selected)
+    const itemId = selectionId(item)
+    return selectedId !== null && selectedId === itemId
+}
+
+const isSelected = (item: unknown) => selectedItems.value.some(selected => sameSelection(selected, item))
 
 const handleListItem = () => {
     if (!isEditing.value || filteredItems.value.length === 0) return
 
     const item = filteredItems.value[selectedItemIndex.value]
+    if (item === undefined) return
     const itemIndex = selectedItems.value.findIndex(selected => sameSelection(selected, item))
 
     if (itemIndex !== -1) {
