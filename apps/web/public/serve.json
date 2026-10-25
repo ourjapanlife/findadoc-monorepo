@@ -13,8 +13,6 @@
     { "source": "/:locale/login", "destination": "/200.html" },
     { "source": "/:locale/login/:path*", "destination": "/200.html" },
     { "source": "/:locale/my-page", "destination": "/200.html" },
-    { "source": "/:locale/my-page/:path*", "destination": "/200.html" },
-    { "source": "/clinic/multilingual-online-clinic", "destination": "/200.html" },
-    { "source": "/:locale/clinic/multilingual-online-clinic", "destination": "/200.html" }
+    { "source": "/:locale/my-page/:path*", "destination": "/200.html" }
   ]
 }

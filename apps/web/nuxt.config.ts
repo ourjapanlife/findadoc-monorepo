@@ -223,8 +223,8 @@ export default defineNuxtConfig({
         // `/clinic/:slug` is not `ssr: false`. Nuxt treats that rule as covering
         // `/clinic/{prefecture}/{city}/{slug}` and stubs the directory page, so
         // generate writes an empty shell. Preview landings stay off the prerender
-        // list. Generate copies the SPA shell to `{slug}.html` for Amplify, which
-        // serves that file. serve.json and _redirects do the same for local preview.
+        // list. Generate copies the app shell to `{slug}.html`. Amplify's
+        // catch-all serves that file. There is no `/clinic/*` rewrite.
     },
     sourcemap: {
         client: true
@@ -241,15 +241,7 @@ export default defineNuxtConfig({
             // directory cache, not live facility(id)/healthcareProfessional(id) calls.
             concurrency: 8,
             routes: [
-                ...withLocaleVariants([
-                    '/',
-                    '/about',
-                    '/terms',
-                    '/privacypolicy',
-                    '/submit',
-                    '/npo',
-                    '/contact'
-                ]),
+                ...withLocaleVariants(['/', '/about', '/terms', '/privacypolicy', '/submit', '/npo', '/contact']),
                 '/sitemap.xml',
                 '/404'
             ],
