@@ -16,3 +16,7 @@ export const GITHUB_OIDC_SUBJECT_PREFIX = 'repo:ourjapanlife@85821867/findadoc-m
 
 // The deploy workflow assumes this role by name.
 export const GITHUB_DEPLOY_ROLE_NAME = 'findadoc-github-cdk-deploy'
+
+// .github/workflows/web.yml assumes these roles by name.
+export const GITHUB_WEB_DEPLOY_ROLE_NAME = 'findadoc-github-web-deploy'
+export const GITHUB_WEB_PREVIEW_ROLE_NAME = 'findadoc-github-web-preview'

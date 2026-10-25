@@ -1,0 +1,32 @@
+name: Web preview cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    name: Delete preview branch
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::677501681118:role/findadoc-github-web-preview
+          aws-region: ap-northeast-1
+
+      - name: Delete Amplify preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/amplify-hosting.sh delete "pr-${PR_NUMBER}"
