@@ -88,7 +88,7 @@ The site is hosted on Amplify. `FindadocWeb` associates `*.findadoc.jp` with the
 
 ## Previews
 
-A pull request that changes the site publishes an Amplify branch named `pr-<number>`. The URL is `https://pr-<number>.<default-domain>`, on `amplifyapp.com`. It is not a `findadoc.jp` name: `*.findadoc.jp` serves the production branch, and a preview hostname there would be the live site.
+A pull request that changes the site publishes an Amplify branch named `pr-<number>`. The URL is `https://pr-<number>.<default-domain>`, on `amplifyapp.com`. It is not a `findadoc.jp` name: `*.findadoc.jp` serves the production branch, and a preview hostname there would be the live site. The API allows that preview origin, and `https://main.<app-id>.amplifyapp.com`, so the page can read `https://api.findadoc.jp`.
 
 The preview role can publish and delete only `pr-*` branches. Closing the pull request deletes that branch. Deploy `FindadocWeb` once so `findadoc-github-web-preview` exists; until then the Web workflow cannot assume it.
 

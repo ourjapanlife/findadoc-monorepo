@@ -9,6 +9,7 @@ import healthcheck from 'fastify-healthcheck'
 import { ApolloServer, BaseContext, GraphQLRequestContext } from '@apollo/server'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { envVariables } from '../utils/environmentVariables.js'
+import { isAllowedApiOrigin } from './apiCors.js'
 import { buildUserContext, initializeAuth } from './auth.js'
 import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
@@ -26,31 +27,10 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
     //cors is a middleware that allows us to make requests from the a different url (findadoc.jp) to our server (api.findadoc.jp)
     await fastify.register(corsPlugin, {
         origin: (origin: string | undefined, cb: (err: Error | null, allow: boolean) => void): void => {
-            const allowedOrigins = [
-                envVariables.websiteURL(),
-                'http://localhost:3000',
-                'http://localhost:4242',
-                'http://127.0.0.1:4242',
-                'https://findadoc.jp',
-                'https://www.findadoc.jp',
-                'https://findadoc-monorepo-web.netlify.app'
-            ].filter((o): o is string => Boolean(o))
-
-            // Netlify deploy previews: https://deploy-preview-<pr>--<site>.netlify.app
-            const deployPreview = origin !== undefined
-                && /^https:\/\/deploy-preview-\d+--(?:findadoc|findadoc-monorepo-web)\.netlify\.app$/.test(origin)
-
-            const localDevBrowser =
-                envVariables.isLocal()
-                && origin !== undefined
-                && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
-
-            const isAllowed =
-                (origin !== undefined && allowedOrigins.includes(origin))
-                || deployPreview
-                || localDevBrowser
-
-            cb(null, isAllowed)
+            cb(null, isAllowedApiOrigin(origin, {
+                isLocal: envVariables.isLocal(),
+                websiteURL: envVariables.websiteURL()
+            }))
         },
         allowedHeaders: ['content-type', 'authorization'],
         // methods: ['GET', 'POST', 'OPTIONS'],
