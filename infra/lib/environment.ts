@@ -24,3 +24,7 @@ export const GITHUB_WEB_PREVIEW_ROLE_NAME = 'findadoc-github-web-preview'
 // The API connects to RDS as this login role with an IAM auth token, never a password.
 // The migration that creates it runs only on RDS, where the rds_iam role exists.
 export const API_DATABASE_USER = 'findadoc_api'
+
+// Alarms post to #alerts in the findadoc Slack workspace through AWS Chatbot.
+export const SLACK_WORKSPACE_ID = 'T0259MW3JAX'
+export const SLACK_ALERTS_CHANNEL_ID = 'C0CC371TLMS'
