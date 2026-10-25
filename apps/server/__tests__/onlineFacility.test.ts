@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { buildFacilityUpdatePatch, contactForStorage } from '../src/services/facilityService.js'
-import { hasUsableMapPin, validateCreateFacilityInput } from '../src/validation/validateFacility.js'
+import {
+    hasUsableMapPin,
+    validateCreateFacilityInput,
+    validateUpdateFacilityInput
+} from '../src/validation/validateFacility.js'
 
 const phoneOnlyContact = {
     phone: '03-0000-0000',
@@ -43,6 +47,26 @@ describe('online facility updates', () => {
         })
     })
 
+    it('keeps the stored address and Maps URL when a contact update omits them', () => {
+        const patch = buildFacilityUpdatePatch(
+            {
+                contact: {
+                    phone: '03-1111-2222',
+                    email: 'desk@example.com',
+                    website: 'https://example.com'
+                }
+            },
+            phoneOnlyContact
+        )
+        expect(patch.contact).toEqual({
+            phone: '03-1111-2222',
+            email: 'desk@example.com',
+            website: 'https://example.com',
+            googleMapsUrl: 'https://maps.google.com/?q=tokyo',
+            address: phoneOnlyContact.address
+        })
+    })
+
     it('stores a null address when online create omits it', () => {
         expect(contactForStorage({ phone: '03-0000-0000' }, { clearLocation: true })).toEqual({
             phone: '03-0000-0000',
@@ -51,6 +75,33 @@ describe('online facility updates', () => {
             googleMapsUrl: '',
             address: null
         })
+    })
+
+    it('fills missing Maps URL and address before storing a submission facility partial', () => {
+        expect(contactForStorage(
+            { phone: '03-0000-0000' },
+            { clearLocation: false }
+        )).toEqual({
+            phone: '03-0000-0000',
+            email: '',
+            website: '',
+            googleMapsUrl: '',
+            address: {
+                postalCode: '',
+                prefectureEn: '',
+                cityEn: '',
+                addressLine1En: '',
+                addressLine2En: '',
+                prefectureJa: '',
+                cityJa: '',
+                addressLine1Ja: '',
+                addressLine2Ja: ''
+            }
+        })
+        expect(contactForStorage(
+            { phone: '03-0000-0000' },
+            { clearLocation: true }
+        ).googleMapsUrl).toBe('')
     })
 })
 
@@ -91,5 +142,21 @@ describe('map pin requirements', () => {
             contact: { phone: '03-0000-0000' }
         })
         expect(onlineWithoutMaps.hasErrors).toBe(false)
+    })
+
+    it('requires address, Maps URL, and map pin when switching a facility offline', () => {
+        const bareOffline = validateUpdateFacilityInput({ online: false })
+        expect(bareOffline.hasErrors).toBe(true)
+        expect(bareOffline.errors?.some(error => error.field === 'contact.address')).toBe(true)
+        expect(bareOffline.errors?.some(error => error.field === 'contact.googleMapsUrl')).toBe(true)
+        expect(bareOffline.errors?.some(error => error.field === 'mapLatitude')).toBe(true)
+
+        const completeOffline = validateUpdateFacilityInput({
+            online: false,
+            contact: phoneOnlyContact,
+            mapLatitude: 35.68,
+            mapLongitude: 139.76
+        })
+        expect(completeOffline.hasErrors).toBe(false)
     })
 })

@@ -128,7 +128,17 @@ function buildSubmissionUpdatePatch(
     }
 
     if (fieldsToUpdate.facility !== undefined) {
-        patch.facility_partial = asJsonb(fieldsToUpdate.facility ?? null)
+        const facility = fieldsToUpdate.facility
+        // Contact.googleMapsUrl is non-null on FacilitySubmission. Normalize so a
+        // ContactInput that omits address or Maps URL still round-trips.
+        patch.facility_partial = asJsonb(facility
+            ? {
+                ...facility,
+                contact: contactForStorage(facility.contact, {
+                    clearLocation: facility.online === true
+                })
+            }
+            : null)
     }
 
     return patch

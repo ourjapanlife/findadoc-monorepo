@@ -51,6 +51,28 @@ function blankAddress(): gqlTypes.PhysicalAddressInput {
     }
 }
 
+function addressInputFromStored(
+    address: gqlTypes.PhysicalAddress | gqlTypes.PhysicalAddressInput | null | undefined
+): gqlTypes.PhysicalAddressInput | null | undefined {
+    if (address === undefined) {
+        return undefined
+    }
+    if (address === null) {
+        return null
+    }
+    return {
+        postalCode: address.postalCode ?? '',
+        prefectureEn: address.prefectureEn ?? '',
+        cityEn: address.cityEn ?? '',
+        addressLine1En: address.addressLine1En ?? '',
+        addressLine2En: address.addressLine2En ?? '',
+        prefectureJa: address.prefectureJa ?? '',
+        cityJa: address.cityJa ?? '',
+        addressLine1Ja: address.addressLine1Ja ?? '',
+        addressLine2Ja: address.addressLine2Ja ?? ''
+    }
+}
+
 /**
  * Normal facilities store a full address. An online facility keeps phone and
  * stores address as null; Maps URL becomes empty.
@@ -81,6 +103,7 @@ export function contactForStorage(
  * Builds a partial update patch for Facility rows.
  * When online becomes true, address, city, map, and place id are cleared.
  * Pass existingContact when contact is not in the update so phone is preserved.
+ * An omitted address or Maps URL on a contact update keeps the stored value.
  */
 export function buildFacilityUpdatePatch(
     fields: Partial<gqlTypes.UpdateFacilityInput>,
@@ -96,7 +119,18 @@ export function buildFacilityUpdatePatch(
         updatePatch.name_ja = fields.nameJa
     }
     if (fields.contact !== undefined && fields.contact !== null) {
-        updatePatch.contact = contactForStorage(fields.contact, { clearLocation: becomingOnline })
+        updatePatch.contact = contactForStorage(
+            {
+                ...fields.contact,
+                googleMapsUrl: fields.contact.googleMapsUrl
+                    ?? existingContact?.googleMapsUrl
+                    ?? undefined,
+                address: fields.contact.address !== undefined
+                    ? fields.contact.address
+                    : addressInputFromStored(existingContact?.address)
+            },
+            { clearLocation: becomingOnline }
+        )
     } else if (becomingOnline && existingContact) {
         updatePatch.contact = contactForStorage(
             {
@@ -104,19 +138,7 @@ export function buildFacilityUpdatePatch(
                 email: existingContact.email ?? '',
                 website: existingContact.website ?? '',
                 googleMapsUrl: existingContact.googleMapsUrl ?? '',
-                address: existingContact.address
-                    ? {
-                        postalCode: existingContact.address.postalCode ?? '',
-                        prefectureEn: existingContact.address.prefectureEn ?? '',
-                        cityEn: existingContact.address.cityEn ?? '',
-                        addressLine1En: existingContact.address.addressLine1En ?? '',
-                        addressLine2En: existingContact.address.addressLine2En ?? '',
-                        prefectureJa: existingContact.address.prefectureJa ?? '',
-                        cityJa: existingContact.address.cityJa ?? '',
-                        addressLine1Ja: existingContact.address.addressLine1Ja ?? '',
-                        addressLine2Ja: existingContact.address.addressLine2Ja ?? ''
-                    }
-                    : blankAddress()
+                address: addressInputFromStored(existingContact.address) ?? blankAddress()
             },
             { clearLocation: true }
         )
@@ -815,11 +837,14 @@ export const updateFacility = async (
 
         let fields = fieldsToUpdate
         let resolvedPlaceId: string | null = null
-        if (fields.contact && fields.online !== true) {
-            const canonicalContact = await contactWithCanonicalMapsUrl({
-                ...fields.contact,
-                googleMapsUrl: fields.contact.googleMapsUrl ?? ''
-            })
+        // Only canonicalize when this update supplies a Maps URL. An omitted URL
+        // keeps the stored one in buildFacilityUpdatePatch.
+        if (
+            fields.contact
+            && fields.online !== true
+            && (fields.contact.googleMapsUrl ?? '').trim()
+        ) {
+            const canonicalContact = await contactWithCanonicalMapsUrl(fields.contact)
             resolvedPlaceId = canonicalContact.placeId
             fields = {
                 ...fields,
