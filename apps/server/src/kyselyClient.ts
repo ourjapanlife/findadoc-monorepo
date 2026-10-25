@@ -26,13 +26,13 @@ let kyselyInstance: Kysely<Database> | null = null
 
 /**
  * Connection settings from the environment. PGPORT and DB_POOL_MAX override the defaults:
- * the Supabase pooler (6543) in production, local Docker (54322) otherwise, and 100 connections.
+ * 5432 in production, local Docker (54322) otherwise, and 100 connections.
  * With DB_IAM_AUTH=true (RDS), each new connection signs a 15-minute IAM token with the
  * function's role instead of using a password, and TLS is required.
  */
 export function poolConfig(): PoolConfig {
     const host = envVariables.pgHost()
-    const port = Number(envVariables.pgPort() ?? (envVariables.isProduction() ? 6543 : 54322))
+    const port = Number(envVariables.pgPort() ?? (envVariables.isProduction() ? 5432 : 54322))
     const user = envVariables.pgUser()
     const iamAuth = envVariables.dbIamAuth()
     const signer = iamAuth && host && user

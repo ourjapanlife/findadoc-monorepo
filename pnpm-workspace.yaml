@@ -18,7 +18,6 @@ onlyBuiltDependencies:
   - browser-tabs-lock
   - esbuild
   - protobufjs
-  - supabase
   - unrs-resolver
   - vue-demi
 

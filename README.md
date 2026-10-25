@@ -95,8 +95,4 @@ Database table types stay in the API (`apps/server/src/typeDefs/kyselyTypes.ts`)
 | `lint-pr-title.yml` | Conventional Commits title |
 | `docs.yml` | Docs check and build on every pull request. Deploys `apps/docs` to GitHub Pages from `main` |
 
-Node is pinned by `.nvmrc` in every workflow. The API image builds from the repository root so it can install `@findadoc/server` and `@findadoc/graphql` together:
-
-```bash
-docker compose -f apps/server/docker/docker-compose-api.yml up -d --build
-```
+Node is pinned by `.nvmrc` in every workflow. The API and the MCP server run on AWS Lambda, deployed by the Infra workflow from `infra/` (see `infra/README.md`).

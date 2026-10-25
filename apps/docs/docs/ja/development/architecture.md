@@ -6,7 +6,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 
 ```
 ┌─────────────────┐     GraphQL     ┌──────────────────┐     SQL      ┌─────────────────┐
-│    apps/web     │ ◄─────────────► │   apps/server    │ ◄──────────► │    Supabase     │
+│    apps/web     │ ◄─────────────► │   apps/server    │ ◄──────────► │  Amazon RDS     │
 │  (Nuxt 4 site)  │                 │ (Apollo GraphQL) │              │  (PostgreSQL)   │
 └─────────────────┘                 └──────────────────┘              └─────────────────┘
                                              ▲
@@ -32,8 +32,8 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **ランタイム**：Node.js + TypeScript
 - **API**：Fastify上のApollo Server
 - **スキーマ**：`apps/server/src/typeDefs/schema.graphql`（リポジトリ内で唯一のGraphQLスキーマ）
-- **データベース**：Supabase（PostgreSQL）。マイグレーションは `apps/server/supabase`。APIはSupabaseクライアントではなく、Postgres接続上のKyselyでクエリする
-- **本番環境**：PM2で管理されるDockerコンテナ
+- **データベース**：東京リージョンのAmazon RDS for PostgreSQL。マイグレーションは `apps/server/supabase/migrations` にあり、デプロイのたびに適用される。APIはKyselyでクエリする
+- **本番環境**：CloudFrontの背後にあるAWS Lambda（`api.findadoc.jp`）。`infra/` のCDKアプリでデプロイ
 
 ### MCPサーバー（`apps/mcp`）
 
@@ -64,7 +64,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 
 1. ユーザーが[findadoc.jp](https://www.findadoc.jp)で医療機関を検索
 2. ウェブサイトがAPIにGraphQLクエリを送信
-3. APIがSupabase PostgreSQLデータベースに対してクエリを実行
+3. APIがAmazon RDS上のPostgreSQLデータベースに対してクエリを実行
 4. 結果がインタラクティブな地図上に医療機関の詳細とともに表示される
 
 ## 関連資料

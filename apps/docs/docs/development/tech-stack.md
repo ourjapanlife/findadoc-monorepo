@@ -41,11 +41,12 @@
 |-----------|---------|
 | [Node.js](https://nodejs.org/) | Runtime |
 | [Apollo Server](https://www.apollographql.com/docs/apollo-server/) | GraphQL API on Fastify |
-| [Supabase](https://supabase.com/) | Database (PostgreSQL) |
+| [Amazon RDS for PostgreSQL](https://aws.amazon.com/rds/postgresql/) | Database |
 | [Kysely](https://kysely.dev/) | Typed SQL queries to PostgreSQL |
 | [Sentry](https://sentry.io/) | Error reporting |
-| [PM2](https://pm2.keymetrics.io/) | Process management (production) |
-| [Docker](https://www.docker.com/) | Containerization |
+| [AWS Lambda](https://aws.amazon.com/lambda/) and [CloudFront](https://aws.amazon.com/cloudfront/) | Hosting (production) |
+| [AWS CDK](https://aws.amazon.com/cdk/) | Infrastructure as code (`infra/`) |
+| [Docker](https://www.docker.com/) | Local Postgres database |
 | [Vitest](https://vitest.dev/) | Testing |
 
 ## MCP Server (`apps/mcp`)

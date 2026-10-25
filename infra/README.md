@@ -20,7 +20,6 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocApiSecrets` | The `findadoc/api` secret: `GOOGLE_API_KEY`, `SENTRY_DSN`, and a generated `EDGE_SHARED_SECRET`. |
 | `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, API alarms, and saved log queries. |
 | `FindadocMcp` | The MCP Lambda (`findadoc-mcp`, outside the VPC) behind CloudFront at `mcp-staging.findadoc.jp`, with an error alarm. Its tools call `https://api.findadoc.jp`. |
-| `FindadocDataCopy` | **Temporary (#81).** `findadoc-db-copy`, the one-off function that copies the Supabase database into RDS. Remove after the cutover (#13). |
 
 ## Monthly cost
 
@@ -200,98 +199,8 @@ Every `*.findadoc.jp` name without its own Route 53 record resolves to the Ampli
 
 `FindadocMcp` runs `apps/mcp/src/lambda.ts` as `findadoc-mcp`, an arm64 Node 24 function with 512 MB, behind CloudFront at `mcp-staging.findadoc.jp`. It uses the same CloudFront setup as the API (`lib/functionUrlEdge.ts`). MCP is on `/mcp`, the REST routes for ChatGPT Actions are under `/api`, and the spec is at `/openapi.yaml`. The function has no database and runs outside the VPC. `findadoc-mcp-errors` posts to Slack `#alerts`. `mcp.findadoc.jp` moves at the cutover (#13).
 
-## Copying the data from Supabase (#81)
-
-`findadoc-db-copy` (`apps/server/src/lambdaCopy.ts`) runs in the VPC. It reads Supabase over IPv6 and writes to RDS as the master user. It only runs when invoked, so it costs nothing.
-
-- **What it copies:** every public table except `schema_migrations`, including the city vocabulary, so `city_id` references stay valid. Parents load before the tables that reference them.
-- **How:** it reads the source from one read-only snapshot. On the target, it truncates the tables and loads everything with `COPY` in one transaction, leaving generated columns (`search_text`) for RDS to compute.
-- **Checks:** before committing, it compares every table by row count and an MD5 over all rows. Any difference rolls the whole copy back.
-- **Dry run:** compares only, and changes nothing.
-- **Requirement:** both databases need the same tables and columns, so apply the migrations to Supabase first (`db:push`).
-
-The event carries the Supabase connection string, so the password is never stored in AWS, and the function never logs it. Use the **direct** connection string from the Supabase dashboard (Connect → Direct connection, `db.<ref>.supabase.co:5432`, IPv6). The pooler hostnames are IPv4-only and cannot be reached from the VPC. Put it in a file outside the repo, not on the command line:
-
-```json
-{ "sourceDatabaseUrl": "postgresql://postgres:<password>@db.<ref>.supabase.co:5432/postgres", "dryRun": true }
-```
-
-To verify Supabase's certificate, add `"sourceCaCert"` with the PEM from Dashboard → Database → SSL. Without it, the connection is encrypted but the certificate is not checked.
-
-```bash
-aws lambda invoke --function-name findadoc-db-copy --cli-binary-format raw-in-base64-out \
-  --cli-read-timeout 900 --payload file://copy.json out.json && cat out.json
-```
-
-1. **Dry run** (`"dryRun": true`). Before the first copy, `allMatch` is false and `sourceRows` shows what will come over.
-2. **Rehearsal** (`"dryRun": false`). It should finish with `allMatch: true`, and `api-staging.findadoc.jp` then serves the copied directory. Run it twice, then compare a deploy preview against production.
-3. **Restore drill.** In the RDS console, restore `findadoc` to a point in time as a new instance, connect, check it, then delete it. Write down how long it took on #81.
-4. **Cutover (#13).** Pause moderation writes, run the copy once more, and switch DNS.
-
-Delete `copy.json` afterwards.
-
 ## Cutover (#13)
 
-The API moves from DigitalOcean and Supabase to AWS. After #81's rehearsals and a soak on `api-staging.findadoc.jp`, the cutover is one data copy and one DNS change. `api.findadoc.jp` has A and AAAA records with a 5-minute TTL that predate CDK. One atomic Route 53 `UPSERT` moves them, so no deploy runs during the switch.
+The API moved from DigitalOcean and Supabase to AWS on <cutover date>. The data was copied once with `findadoc-db-copy`, and every table matched by row count and content before commit. `api.findadoc.jp` then moved with one Route 53 `UPSERT`. DigitalOcean, Grafana Cloud and the Supabase project have since been shut down, and the copy tool was removed. Its code and the full runbook are in the git history: #106 and #107.
 
-### Before the day
-
-1. Merge a PR that adds `[API_DOMAIN]: 'alias'` to `API_HOSTNAMES` and `[MCP_DOMAIN]: 'dns'` to `MCP_HOSTNAMES` in `lib/environment.ts` (see "Hostnames on CloudFront"). After it deploys:
-   - the API distribution also answers `api.findadoc.jp`, but its DNS still points at DigitalOcean;
-   - the API reports to Sentry as `production`;
-   - `mcp.findadoc.jp` has records pointing at the MCP distribution.
-2. Merge a PR that changes `[MCP_DOMAIN]` to `'live'`. `mcp.findadoc.jp` then serves MCP.
-3. Check that CloudFront serves the production name before DNS moves:
-
-   ```bash
-   DIST=$(aws cloudformation describe-stacks --stack-name FindadocApi --region ap-northeast-1 \
-     --query "Stacks[0].Outputs[?OutputKey=='DistributionDomain'].OutputValue" --output text)
-   curl --connect-to api.findadoc.jp:443:$DIST:443 https://api.findadoc.jp/health
-   ```
-
-4. Write `to-aws.json`, with `$DIST` replaced by its value. `Z2FDTNDATAQYW2` is CloudFront's fixed alias zone:
-
-   ```json
-   {
-     "Comment": "api.findadoc.jp to AWS (#13)",
-     "Changes": [
-       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A",
-         "AliasTarget": { "HostedZoneId": "Z2FDTNDATAQYW2", "DNSName": "$DIST", "EvaluateTargetHealth": false } } },
-       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA",
-         "AliasTarget": { "HostedZoneId": "Z2FDTNDATAQYW2", "DNSName": "$DIST", "EvaluateTargetHealth": false } } }
-     ]
-   }
-   ```
-
-5. Write `to-digitalocean.json` for rollback. These are DigitalOcean's addresses as of 26 Oct 2026, so confirm them in the DigitalOcean console first:
-
-   ```json
-   {
-     "Comment": "api.findadoc.jp back to DigitalOcean (#13 rollback)",
-     "Changes": [
-       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "A", "TTL": 300,
-         "ResourceRecords": [{ "Value": "172.66.0.96" }] } },
-       { "Action": "UPSERT", "ResourceRecordSet": { "Name": "api.findadoc.jp", "Type": "AAAA", "TTL": 300,
-         "ResourceRecords": [{ "Value": "2a06:98c1:58::60" }] } }
-     ]
-   }
-   ```
-
-### On the day (about 30 minutes)
-
-1. Announce the pause, and stop moderation writes.
-2. Run the final copy (`"dryRun": false`, see "Copying the data from Supabase"). Go on only with `allMatch: true`.
-3. Switch DNS:
-
-   ```bash
-   aws route53 change-resource-record-sets --hosted-zone-id Z02936621Z4BCXTP4RWL0 --change-batch file://to-aws.json
-   ```
-
-4. Within 5 minutes, traffic reaches AWS. Check `https://api.findadoc.jp/health`, a search on the site, and a moderator sign-in. Watch `#alerts`, Sentry and the saved log queries.
-5. End the pause.
-
-To roll back, run the same command with `to-digitalocean.json`. Writes made on AWS after the cutover must then be replayed on Supabase from `audit_logs`.
-
-### After two quiet weeks
-
-Stop the DigitalOcean app and cancel Grafana Cloud. Keep a final Supabase dump in S3, delete the Supabase project after 30 days, remove `FindadocDataCopy`, and update the docs (#13).
+`api.findadoc.jp`'s A and AAAA records still predate CDK. They are aliases to the API distribution, and `API_HOSTNAMES` lists the name as `alias`. To bring them into CDK, delete them and change the state to `live` in the same maintenance window.
