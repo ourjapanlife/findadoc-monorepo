@@ -13,6 +13,8 @@ on:
       - .nvmrc
       - .github/workflows/web.yml
       - .github/scripts/amplify-hosting.sh
+      - .github/scripts/run-lighthouse.sh
+      - .github/scripts/preview-comment.mjs
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -24,6 +26,8 @@ on:
       - .nvmrc
       - .github/workflows/web.yml
       - .github/scripts/amplify-hosting.sh
+      - .github/scripts/run-lighthouse.sh
+      - .github/scripts/preview-comment.mjs
 
 permissions:
   contents: read
@@ -82,18 +86,45 @@ jobs:
             bash .github/scripts/amplify-hosting.sh deploy main
           fi
 
-      - name: Comment preview URL
+      - name: Measure the preview
+        if: github.event_name == 'pull_request'
+        env:
+          PREVIEW_URL: ${{ steps.publish.outputs.url }}
+          PRODUCTION_URL: https://www.findadoc.jp
+        run: |
+          bash .github/scripts/run-lighthouse.sh "$PREVIEW_URL" lighthouse/preview || true
+          bash .github/scripts/run-lighthouse.sh "$PRODUCTION_URL" lighthouse/production || true
+
+      - name: Upload Lighthouse reports
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-pr-${{ github.event.pull_request.number }}
+          path: lighthouse/*.html
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Comment on the pull request
         if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           PREVIEW_URL: ${{ steps.publish.outputs.url }}
+          PRODUCTION_URL: https://www.findadoc.jp
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPORTS_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          node .github/scripts/preview-comment.mjs \
+            --preview-url "$PREVIEW_URL" \
+            --preview lighthouse/preview.report.json \
+            --production lighthouse/production.report.json \
+            --production-url "$PRODUCTION_URL" \
+            --reports-url "$REPORTS_URL" \
+            | tee "$RUNNER_TEMP/preview-comment.md" | tee -a "$GITHUB_STEP_SUMMARY"
+          jq -n --rawfile body "$RUNNER_TEMP/preview-comment.md" '{body:$body}' > "$RUNNER_TEMP/preview-comment.json"
           MARKER='<!-- amplify-preview -->'
-          BODY="$(printf '%s\n\nPreview: %s\n' "$MARKER" "$PREVIEW_URL")"
           COMMENT_ID="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --jq ".[] | select(.body | contains(\"${MARKER}\")) | .id" | head -n 1)"
           if [ -n "$COMMENT_ID" ]; then
-            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}" -f body="$BODY"
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}" --input "$RUNNER_TEMP/preview-comment.json"
           else
-            gh pr comment "$PR_NUMBER" --body "$BODY"
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --input "$RUNNER_TEMP/preview-comment.json"
           fi
