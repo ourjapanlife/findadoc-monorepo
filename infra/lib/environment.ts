@@ -21,6 +21,12 @@ export const EDGE_CERTIFICATE_ENV = {
 export const API_STAGING_DOMAIN = 'api-staging.findadoc.jp'
 export const API_DOMAIN = 'api.findadoc.jp'
 
+// The MCP server serves mcp-staging first. mcp.findadoc.jp moves at the cutover (#13).
+export const MCP_STAGING_DOMAIN = 'mcp-staging.findadoc.jp'
+export const MCP_DOMAIN = 'mcp.findadoc.jp'
+// The MCP tools read the live directory. After the cutover this is the AWS API.
+export const MCP_GRAPHQL_ENDPOINT = 'https://api.findadoc.jp'
+
 // CloudFormation reads the findadoc/api secret only when the function changes. After
 // editing a value in Secrets Manager, bump this so the next deploy picks it up.
 export const API_SECRETS_REVISION = '1'

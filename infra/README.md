@@ -16,9 +16,10 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocNetwork` | VPC with two private dual-stack subnets (`ap-northeast-1a`, `ap-northeast-1c`). No NAT gateway. IPv6 traffic leaves through an egress-only internet gateway. |
 | `FindadocDatabase` | RDS PostgreSQL 17 for the API, plus the `DatabaseClients` security group that may connect to it and a monthly AWS Backup plan. |
 | `FindadocAlerts` | SNS topic `findadoc-alarms`, the AWS Chatbot link that posts it to `#alerts` in Slack, and the database alarms. |
-| `FindadocEdgeCertificates` | **us-east-1.** The ACM certificate for `api-staging.findadoc.jp` and `api.findadoc.jp`. CloudFront only accepts certificates from us-east-1. |
+| `FindadocEdgeCertificates` | **us-east-1.** The ACM certificates for `api-staging`/`api.findadoc.jp` and `mcp-staging`/`mcp.findadoc.jp`. CloudFront only accepts certificates from us-east-1. |
 | `FindadocApiSecrets` | The `findadoc/api` secret: `GOOGLE_API_KEY`, `SENTRY_DSN`, and a generated `EDGE_SHARED_SECRET`. |
 | `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, API alarms, and saved log queries. |
+| `FindadocMcp` | The MCP Lambda (`findadoc-mcp`, outside the VPC) behind CloudFront at `mcp-staging.findadoc.jp`, with an error alarm. Its tools call `https://api.findadoc.jp`. |
 
 ## Monthly cost
 
@@ -34,7 +35,7 @@ Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hou
 | VPC, subnets, route tables, egress-only and internet gateways, security groups | $0 |
 | PostgreSQL logs in CloudWatch, kept 30 days | Inside the 5 GB free allowance |
 | SNS topic, AWS Chatbot, and alarms (the first 10 are free) | $0 |
-| API and migration Lambdas | $0 inside the always-free 1M requests and 400k GB-seconds |
+| API, migration and MCP Lambdas | $0 inside the always-free 1M requests and 400k GB-seconds |
 | CloudFront distribution and the viewer-IP CloudFront Function | $0 inside the free 1 TB, 10M requests and 2M function invocations |
 | ACM certificate, Route 53 alias records | $0 |
 | Secrets Manager secret `findadoc/api` | $0.40 |
@@ -184,3 +185,7 @@ Every deploy of `FindadocApi` first runs `findadoc-db-migrate` (`apps/server/src
 | `findadoc-api-search-failures` | a facility or professional search fails on the server (metric filter on `searchFailed` in the request log) |
 
 Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-operations`, `findadoc/api/errors-by-operation`, `findadoc/api/failed-searches`.
+
+## MCP
+
+`FindadocMcp` runs `apps/mcp/src/lambda.ts` as `findadoc-mcp`, an arm64 Node 24 function with 512 MB, behind CloudFront at `mcp-staging.findadoc.jp`. It uses the same CloudFront setup as the API (`lib/functionUrlEdge.ts`). MCP is on `/mcp`, the REST routes for ChatGPT Actions are under `/api`, and the spec is at `/openapi.yaml`. The function has no database and runs outside the VPC. `findadoc-mcp-errors` posts to Slack `#alerts`. `mcp.findadoc.jp` moves at the cutover (#13).

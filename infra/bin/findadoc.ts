@@ -5,6 +5,7 @@ import { ApiStack } from '../lib/apiStack.js'
 import { DatabaseStack } from '../lib/databaseStack.js'
 import { DnsStack } from '../lib/dnsStack.js'
 import { EdgeCertificateStack } from '../lib/edgeCertificateStack.js'
+import { McpStack } from '../lib/mcpStack.js'
 import {
     API_DATABASE_USER,
     API_DOMAIN,
@@ -19,6 +20,9 @@ import {
     GITHUB_REPOSITORY,
     GITHUB_WEB_DEPLOY_ROLE_NAME,
     GITHUB_WEB_PREVIEW_ROLE_NAME,
+    MCP_DOMAIN,
+    MCP_GRAPHQL_ENDPOINT,
+    MCP_STAGING_DOMAIN,
     SLACK_ALERTS_CHANNEL_ID,
     SLACK_WORKSPACE_ID,
 } from '../lib/environment.js'
@@ -79,6 +83,7 @@ const edgeCertificates = new EdgeCertificateStack(app, 'FindadocEdgeCertificates
     hostedZoneId: FINDADOC_HOSTED_ZONE_ID,
     zoneName: FINDADOC_DOMAIN,
     apiDomainNames: [API_STAGING_DOMAIN, API_DOMAIN],
+    mcpDomainNames: [MCP_STAGING_DOMAIN, MCP_DOMAIN],
 })
 
 // The deploy role can use the us-east-1 bootstrap only after this change reaches it.
@@ -102,4 +107,16 @@ new ApiStack(app, 'FindadocApi', {
     domainName: API_STAGING_DOMAIN,
     alerts,
     secretsRevision: API_SECRETS_REVISION,
+})
+
+new McpStack(app, 'FindadocMcp', {
+    env: FINDADOC_ENV,
+    crossRegionReferences: true,
+    graphqlEndpoint: MCP_GRAPHQL_ENDPOINT,
+    apiSecret: apiSecrets.secret,
+    certificate: edgeCertificates.mcpCertificate,
+    hostedZoneId: FINDADOC_HOSTED_ZONE_ID,
+    zoneName: FINDADOC_DOMAIN,
+    domainName: MCP_STAGING_DOMAIN,
+    alerts,
 })

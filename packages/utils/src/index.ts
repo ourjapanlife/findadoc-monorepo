@@ -3,6 +3,7 @@ export {
     removeDuplicates,
     shuffleArray
 } from './array.js'
+export { clientIpFrom, type ClientIpRequest } from './clientIp.js'
 export {
     ADDITIONAL_CREDENTIALS,
     CLINICAL_LICENSES,

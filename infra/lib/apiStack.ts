@@ -2,35 +2,17 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { CfnOutput, Duration, RemovalPolicy, Stack, type StackProps } from 'aws-cdk-lib'
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager'
-import {
-    AllowedMethods,
-    CachePolicy,
-    Distribution,
-    FunctionCode,
-    FunctionEventType,
-    FunctionRuntime,
-    Function as CloudFrontFunction,
-    HttpVersion,
-    OriginRequestCookieBehavior,
-    OriginRequestHeaderBehavior,
-    OriginRequestPolicy,
-    OriginRequestQueryStringBehavior,
-    PriceClass,
-    ViewerProtocolPolicy,
-} from 'aws-cdk-lib/aws-cloudfront'
-import { FunctionUrlOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
 import { Alarm, ComparisonOperator, Stats, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch'
 import { SubnetType, type ISecurityGroup, type IVpc } from 'aws-cdk-lib/aws-ec2'
-import { Architecture, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda'
+import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction, OutputFormat, type BundlingOptions } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { FilterPattern, LogGroup, MetricFilter, QueryDefinition, QueryString, RetentionDays } from 'aws-cdk-lib/aws-logs'
-import { ARecord, AaaaRecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53'
-import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets'
 import type { DatabaseInstance } from 'aws-cdk-lib/aws-rds'
 import type { ISecret } from 'aws-cdk-lib/aws-secretsmanager'
 import { Trigger } from 'aws-cdk-lib/triggers'
 import type { Construct } from 'constructs'
 import type { AlertsStack } from './alertsStack.js'
+import { addFunctionUrlEdge } from './functionUrlEdge.js'
 
 const repoRoot = fileURLToPath(new URL('../..', import.meta.url))
 const serverRoot = path.join(repoRoot, 'apps/server')
@@ -178,60 +160,23 @@ export class ApiStack extends Stack {
         })
 
         // CloudFront calls the Function URL. CORS and auth stay in the app.
-        const functionUrl = this.apiFunction.addFunctionUrl({ authType: FunctionUrlAuthType.NONE })
-        // Every viewer header except Host: a Function URL only answers its own hostname.
-        const originRequestPolicy = new OriginRequestPolicy(this, 'ApiOriginRequest', {
-            originRequestPolicyName: 'findadoc-api',
-            comment: 'All viewer headers except Host',
-            headerBehavior: OriginRequestHeaderBehavior.denyList('host'),
-            queryStringBehavior: OriginRequestQueryStringBehavior.all(),
-            cookieBehavior: OriginRequestCookieBehavior.none(),
-        })
-
-        // Writes the viewer's address to x-findadoc-viewer-ip, replacing anything the client
-        // sent. The API trusts it only with the x-findadoc-edge secret (apps/server/src/clientIp.ts).
-        // CloudFront Functions are inside CloudFront's free 2M invocations a month.
-        const viewerIp = new CloudFrontFunction(this, 'ViewerIp', {
-            functionName: 'findadoc-api-viewer-ip',
-            comment: 'Sends the viewer IP to the API',
-            runtime: FunctionRuntime.JS_2_0,
-            code: FunctionCode.fromInline([
-                'function handler(event) {',
-                '    event.request.headers[\'x-findadoc-viewer-ip\'] = { value: event.viewer.ip }',
-                '    return event.request',
-                '}',
-            ].join('\n')),
-        })
-
-        const distribution = new Distribution(this, 'ApiDistribution', {
-            comment: `findadoc API (${props.domainName})`,
-            domainNames: [props.domainName],
+        const { distribution, functionUrl } = addFunctionUrlEdge(this, {
+            fn: this.apiFunction,
+            label: 'API',
+            name: 'findadoc-api',
+            domainName: props.domainName,
             certificate: props.certificate,
-            priceClass: PriceClass.PRICE_CLASS_200,
-            httpVersion: HttpVersion.HTTP2_AND_3,
-            enableIpv6: true,
-            defaultBehavior: {
-                origin: new FunctionUrlOrigin(functionUrl, {
-                    customHeaders: { 'x-findadoc-edge': secretValue('EDGE_SHARED_SECRET') },
-                }),
-                allowedMethods: AllowedMethods.ALLOW_ALL,
-                cachePolicy: CachePolicy.CACHING_DISABLED,
-                originRequestPolicy,
-                viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                compress: true,
-                functionAssociations: [{ function: viewerIp, eventType: FunctionEventType.VIEWER_REQUEST }],
-            },
-        })
-
-        const zone = HostedZone.fromHostedZoneAttributes(this, 'Zone', {
+            edgeSecret: secretValue('EDGE_SHARED_SECRET'),
             hostedZoneId: props.hostedZoneId,
             zoneName: props.zoneName,
+            ids: {
+                originRequest: 'ApiOriginRequest',
+                viewerIp: 'ViewerIp',
+                distribution: 'ApiDistribution',
+                aliasA: 'ApiAliasA',
+                aliasAaaa: 'ApiAliasAaaa',
+            },
         })
-        const target = RecordTarget.fromAlias(new CloudFrontTarget(distribution))
-        const recordName = props.domainName.replace(`.${props.zoneName}`, '')
-
-        new ARecord(this, 'ApiAliasA', { zone, recordName, target })
-        new AaaaRecord(this, 'ApiAliasAaaa', { zone, recordName, target })
 
         this.addAlarms(props.alerts)
         this.addQueries()

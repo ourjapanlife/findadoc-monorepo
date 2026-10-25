@@ -4,7 +4,7 @@ import fastifyJwt from '@fastify/jwt'
 import buildGetJwks from 'get-jwks'
 
 import { logger } from './logger.js'
-import { clientIpFrom } from './clientIp.js'
+import { clientIpFrom } from '@findadoc/utils'
 import { envVariables } from '../utils/environmentVariables.js'
 // import { envVariables } from '../utils/environmentVariables.js'
 
@@ -218,7 +218,7 @@ export async function buildUserContext(req: FastifyRequest): Promise<UserContext
             // They are JWT recommended prefixes with https://findadoc.jp/roles to avoid conflicts with standard JWT claims
             roles: userFromRequest['https://findadoc.jp/roles'] as Role[] || userFromRequest?.roles as Role[] || []
         } satisfies User,
-        clientIp: clientIpFrom(req)
+        clientIp: clientIpFrom(req, envVariables.edgeSharedSecret())
     } satisfies UserContext
 }
 
