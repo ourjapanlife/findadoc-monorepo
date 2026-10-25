@@ -26,6 +26,9 @@ beforeAll(async () => {
 
     target = await connect(targetName)
     await migrate(target, { importSupabaseHistory: false, log: () => undefined })
+    // Like Supabase's production database: the same generated column, built by a different expression.
+    await target.query('ALTER TABLE facilities DROP COLUMN search_text')
+    await target.query('ALTER TABLE facilities ADD COLUMN search_text text GENERATED ALWAYS AS (lower(name_en)) STORED')
     source = await connect('postgres')
 }, 60_000)
 
@@ -57,9 +60,17 @@ describe('copyDatabase', () => {
         expect(order.indexOf('cities')).toBeLessThan(order.indexOf('facilities'))
     }, 60_000)
 
-    it('recomputes generated columns and keeps the target migration history', async () => {
+    it('matches when only a generated column is built differently, and reports that column', async () => {
+        const reports = await compareDatabases(source, target)
+        const facilities = reports.find(report => report.table === 'facilities')
+
+        expect(reports.every(report => report.matches)).toBe(true)
+        expect(facilities?.generatedColumns).toEqual(['search_text'])
+    })
+
+    it('recomputes generated columns with the target\'s own expression and keeps its migration history', async () => {
         const { rows: [row] } = await target.query<{ ok: boolean }>(
-            'SELECT bool_and(search_text = id::text || \' \' || name_en || \' \' || name_ja) AS ok FROM facilities'
+            'SELECT bool_and(search_text = lower(name_en)) AS ok FROM facilities'
         )
         const { rows: [history] } = await target.query<{ count: number }>('SELECT count(*)::int AS count FROM schema_migrations')
 
@@ -71,8 +82,10 @@ describe('copyDatabase', () => {
         await target.query('UPDATE facilities SET name_en = name_en || \' changed\' WHERE id = (SELECT id FROM facilities LIMIT 1)')
 
         const reports = await compareDatabases(source, target)
+        const different = reports.filter(report => !report.matches)
 
-        expect(reports.filter(report => !report.matches).map(report => report.table)).toEqual(['facilities'])
+        expect(different.map(report => report.table)).toEqual(['facilities'])
+        expect(different[0].differingColumns).toEqual(['name_en'])
     })
 })
 
