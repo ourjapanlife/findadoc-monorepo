@@ -112,7 +112,7 @@ After that, CI deploys every stack, including later changes to `FindadocGithubDe
 
 The site is hosted on Amplify. `FindadocWeb` associates `*.findadoc.jp` with the `main` branch. Amplify provisions the certificate and writes the wildcard record, because `findadoc.jp` is a Route 53 zone in this account.
 
-`www`, `api`, and `docs` already have records, so those names stay where they are. Add a name to the Amplify domain when that name should move. The app has no Git repository connected, and auto-build is off. `.github/workflows/web.yml` builds the site and uploads `apps/web/.output/public`. That build sets `NUXT_SKIP_DIRECTORY_PRERENDER`, so clinic, doctor, hub, and facet HTML is not generated. Marketing pages still are. The Playwright workflow does not set the flag.
+`www`, `api`, and `docs` already have records, so those names stay where they are. Add a name to the Amplify domain when that name should move. The app has no Git repository connected, and auto-build is off. `.github/workflows/web.yml` builds the site and uploads `apps/web/.output/public`. A pull request sets `NUXT_SKIP_DIRECTORY_PRERENDER`, so that preview does not generate clinic, doctor, hub, and facet HTML. The `main` publish does not set it. Marketing pages are generated either way. The Playwright workflow does not set the flag.
 
 ## Previews
 
