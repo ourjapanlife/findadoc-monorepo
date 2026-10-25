@@ -119,9 +119,7 @@ function grantAmplifyBranch(role: Role, stack: Stack, branchName: string, manage
         resources: ['*'],
     }))
     role.addToPolicy(new PolicyStatement({
-        actions: manageBranch
-            ? ['amplify:GetApp', 'amplify:CreateBranch']
-            : ['amplify:GetApp'],
+        actions: ['amplify:GetApp'],
         resources: [appArn],
     }))
     role.addToPolicy(new PolicyStatement({
@@ -131,7 +129,7 @@ function grantAmplifyBranch(role: Role, stack: Stack, branchName: string, manage
             'amplify:StartDeployment',
             'amplify:GetJob',
             'amplify:ListJobs',
-            ...(manageBranch ? ['amplify:DeleteBranch'] : []),
+            ...(manageBranch ? ['amplify:CreateBranch', 'amplify:DeleteBranch'] : []),
         ],
         resources: [branchArn, `${branchArn}/*`],
     }))

@@ -29,8 +29,14 @@ if [[ -z "$APP_ID" || "$APP_ID" == "None" ]]; then
 fi
 
 if [[ "$ACTION" == "delete" ]]; then
-    aws amplify delete-branch --region "$REGION" --app-id "$APP_ID" --branch-name "$BRANCH" \
-        || echo "no Amplify branch ${BRANCH}"
+    if ! OUTPUT="$(aws amplify delete-branch --region "$REGION" --app-id "$APP_ID" --branch-name "$BRANCH" 2>&1)"; then
+        if [[ "$OUTPUT" == *NotFoundException* ]]; then
+            echo "no Amplify branch ${BRANCH}"
+        else
+            echo "$OUTPUT" >&2
+            exit 1
+        fi
+    fi
     exit 0
 fi
 

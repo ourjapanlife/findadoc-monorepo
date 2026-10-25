@@ -139,8 +139,8 @@ describe('isNuxtGenerateCommand', () => {
     })
 
     it('skips directory prerender only when the CI flag is true', () => {
-        expect(skipDirectoryPrerender({ NUXT_SKIP_DIRECTORY_PRERENDER: 'true' })).to.equal(true)
-        expect(skipDirectoryPrerender({})).to.equal(false)
-        expect(skipDirectoryPrerender({ NUXT_SKIP_DIRECTORY_PRERENDER: 'false' })).to.equal(false)
+        expect(skipDirectoryPrerender('true')).to.equal(true)
+        expect(skipDirectoryPrerender(undefined)).to.equal(false)
+        expect(skipDirectoryPrerender('false')).to.equal(false)
     })
 })

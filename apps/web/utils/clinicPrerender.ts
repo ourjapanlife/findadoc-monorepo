@@ -286,6 +286,6 @@ export function isNuxtGenerateCommand(argv: readonly string[] = process.argv): b
 }
 
 // The Amplify workflow sets this so a preview does not write clinic, doctor, hub, and facet HTML.
-export function skipDirectoryPrerender(env: NodeJS.ProcessEnv = process.env): boolean {
-    return env.NUXT_SKIP_DIRECTORY_PRERENDER === 'true'
+export function skipDirectoryPrerender(value: string | undefined = process.env.NUXT_SKIP_DIRECTORY_PRERENDER): boolean {
+    return value === 'true'
 }
