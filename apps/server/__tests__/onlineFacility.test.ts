@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { buildFacilityUpdatePatch, contactForStorage } from '../src/services/facilityService.js'
+import { hasUsableMapPin, validateCreateFacilityInput } from '../src/validation/validateFacility.js'
 
 const phoneOnlyContact = {
     phone: '03-0000-0000',
@@ -28,8 +29,8 @@ describe('online facility updates', () => {
 
     it('clears address, city, and map when a facility becomes online', () => {
         const patch = buildFacilityUpdatePatch({ online: true }, phoneOnlyContact)
-        expect(patch.map_latitude).toBe(0)
-        expect(patch.map_longitude).toBe(0)
+        expect(patch.map_latitude).toBeNull()
+        expect(patch.map_longitude).toBeNull()
         expect(patch.city_id).toBeNull()
         expect(patch.google_place_id).toBeNull()
         expect(patch.verification_status).toBe('UNVERIFIED_LOCATION')
@@ -70,5 +71,45 @@ describe('online facility updates', () => {
                 addressLine2Ja: ''
             }
         })
+    })
+})
+
+describe('map pin requirements', () => {
+    it('treats null and 0/0 as unusable pins', () => {
+        expect(hasUsableMapPin(null, null)).toBe(false)
+        expect(hasUsableMapPin(0, 0)).toBe(false)
+        expect(hasUsableMapPin(35.68, 139.76)).toBe(true)
+    })
+
+    it('requires Maps URL and map pin when the facility is not online', () => {
+        const missingMaps = validateCreateFacilityInput({
+            nameEn: 'Neighborhood clinic',
+            nameJa: '近所のクリニック',
+            contact: {
+                phone: '03-0000-0000',
+                address: phoneOnlyContact.address
+            },
+            mapLatitude: 35.68,
+            mapLongitude: 139.76
+        })
+        expect(missingMaps.hasErrors).toBe(true)
+        expect(missingMaps.errors?.some(error => error.field === 'contact.googleMapsUrl')).toBe(true)
+
+        const missingPin = validateCreateFacilityInput({
+            nameEn: 'Neighborhood clinic',
+            nameJa: '近所のクリニック',
+            contact: phoneOnlyContact,
+            mapLatitude: 0,
+            mapLongitude: 0
+        })
+        expect(missingPin.hasErrors).toBe(true)
+
+        const onlineWithoutMaps = validateCreateFacilityInput({
+            nameEn: 'Online clinic',
+            nameJa: 'オンラインクリニック',
+            online: true,
+            contact: { phone: '03-0000-0000' }
+        })
+        expect(onlineWithoutMaps.hasErrors).toBe(false)
     })
 })

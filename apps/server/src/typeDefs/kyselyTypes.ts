@@ -27,8 +27,8 @@ export interface FacilitiesTable {
     name_en: string
     name_ja: string
     contact: ColumnType<gqlTypes.Contact, gqlTypes.ContactInput, gqlTypes.ContactInput>
-    map_latitude: number
-    map_longitude: number
+    map_latitude: number | null
+    map_longitude: number | null
     created_date: string
     updated_date: string
     firestore_id: string | null

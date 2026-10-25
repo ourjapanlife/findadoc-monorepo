@@ -471,10 +471,10 @@ async function saveSubmissionDraft(
         },
         healthcareProfessionalIds: facilitiesStore.facilitySectionFields.healthcareProfessionalIds,
         ...(facilitiesStore.facilitySectionFields.online === true
-            ? { online: true, mapLatitude: 0, mapLongitude: 0 }
+            ? { online: true, mapLatitude: null, mapLongitude: null }
             : {
-                mapLatitude: parseFloat(facilitiesStore.facilitySectionFields.mapLatitude) || 0,
-                mapLongitude: parseFloat(facilitiesStore.facilitySectionFields.mapLongitude) || 0,
+                mapLatitude: parseFloat(facilitiesStore.facilitySectionFields.mapLatitude),
+                mapLongitude: parseFloat(facilitiesStore.facilitySectionFields.mapLongitude),
                 ...(facilitiesStore.facilitySectionFields.cityId
                     ? { cityId: facilitiesStore.facilitySectionFields.cityId }
                     : {})

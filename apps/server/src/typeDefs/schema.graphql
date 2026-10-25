@@ -15,10 +15,16 @@ type Facility {
   online: Boolean!
   """Contact information for the facility."""
   contact: Contact!
-  """Latitude coordinate for map placement."""
-  mapLatitude: Float!
-  """Longitude coordinate for map placement."""
-  mapLongitude: Float!
+  """
+  Latitude for map placement.
+  Null on an online facility (no street address / no pin).
+  """
+  mapLatitude: Float
+  """
+  Longitude for map placement.
+  Null on an online facility (no street address / no pin).
+  """
+  mapLongitude: Float
   """IDs of healthcare professionals associated with this facility."""
   healthcareProfessionalIds: [ID!]!
   """
@@ -60,12 +66,12 @@ input CreateFacilityInput {
   contact: ContactInput!
   """
   Latitude for map placement.
-  Required for a normal facility. Omit for an online facility.
+  Required for a normal facility (a real pin, not 0). Omit for an online facility; stored as null.
   """
   mapLatitude: Float
   """
   Longitude for map placement.
-  Required for a normal facility. Omit for an online facility.
+  Required for a normal facility (a real pin, not 0). Omit for an online facility; stored as null.
   """
   mapLongitude: Float
   """IDs of healthcare professionals to associate with this facility."""

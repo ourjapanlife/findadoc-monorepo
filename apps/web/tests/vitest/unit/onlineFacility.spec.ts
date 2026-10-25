@@ -72,10 +72,14 @@ describe('online facility validation', () => {
         }).valid).toBe(false)
     })
 
-    it('still requires an address when the facility is not online', () => {
+    it('still requires an address, Maps URL, and map pin when the facility is not online', () => {
         expect(validateCreateFacility({
             ...onlineInput,
             online: false
+        }).valid).toBe(false)
+        expect(validateCreateFacility({
+            ...offlineInput,
+            contact: { ...offlineInput.contact, googleMapsUrl: '' }
         }).valid).toBe(false)
         expect(validateCreateFacility(offlineInput).valid).toBe(true)
         expect(validateUpdateFacility(section(false), {}).valid).toBe(false)

@@ -116,8 +116,8 @@ export function buildFacilityUpdatePatch(
         )
     }
     if (becomingOnline) {
-        updatePatch.map_latitude = 0
-        updatePatch.map_longitude = 0
+        updatePatch.map_latitude = null
+        updatePatch.map_longitude = null
         updatePatch.city_id = null
         updatePatch.verification_status = 'UNVERIFIED_LOCATION'
         updatePatch.google_place_id = null
@@ -580,8 +580,8 @@ export async function createFacility(
                     name_en: facilityInput.nameEn,
                     name_ja: facilityInput.nameJa,
                     contact: canonicalContact.contact,
-                    map_latitude: isOnline ? 0 : (facilityInput.mapLatitude ?? 0),
-                    map_longitude: isOnline ? 0 : (facilityInput.mapLongitude ?? 0),
+                    map_latitude: isOnline ? null : (facilityInput.mapLatitude ?? null),
+                    map_longitude: isOnline ? null : (facilityInput.mapLongitude ?? null),
                     payment_options: JSON.stringify(facilityInput.paymentOptions ?? []),
                     city_id: cityId,
                     google_place_id: googlePlaceId,

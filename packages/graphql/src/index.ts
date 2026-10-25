@@ -119,12 +119,12 @@ export type CreateFacilityInput = {
   healthcareProfessionalIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   /**
    * Latitude for map placement.
-   * Required for a normal facility. Omit for an online facility.
+   * Required for a normal facility (a real pin, not 0). Omit for an online facility; stored as null.
    */
   mapLatitude?: InputMaybe<Scalars['Float']['input']>;
   /**
    * Longitude for map placement.
-   * Required for a normal facility. Omit for an online facility.
+   * Required for a normal facility (a real pin, not 0). Omit for an online facility; stored as null.
    */
   mapLongitude?: InputMaybe<Scalars['Float']['input']>;
   /** Name of the facility in English. */
@@ -270,10 +270,16 @@ export type Facility = {
   healthcareProfessionalIds: Array<Scalars['ID']['output']>;
   /** Unique identifier for the facility. */
   id: Scalars['ID']['output'];
-  /** Latitude coordinate for map placement. */
-  mapLatitude: Scalars['Float']['output'];
-  /** Longitude coordinate for map placement. */
-  mapLongitude: Scalars['Float']['output'];
+  /**
+   * Latitude for map placement.
+   * Null on an online facility (no street address / no pin).
+   */
+  mapLatitude?: Maybe<Scalars['Float']['output']>;
+  /**
+   * Longitude for map placement.
+   * Null on an online facility (no street address / no pin).
+   */
+  mapLongitude?: Maybe<Scalars['Float']['output']>;
   /** Name of the facility in English. */
   nameEn: Scalars['String']['output'];
   /** Name of the facility in Japanese. */
@@ -1604,8 +1610,8 @@ export type FacilityResolvers<ContextType = any, ParentType extends ResolversPar
   googlePlaceId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   healthcareProfessionalIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  mapLatitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  mapLongitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  mapLatitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  mapLongitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   online?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;

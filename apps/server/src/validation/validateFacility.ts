@@ -173,6 +173,27 @@ export function validateUpdateFacilityInput(input: Partial<gqlTypes.UpdateFacili
         }
     }
 
+    // Switching off online requires a real map pin and Maps URL in this update.
+    if (input.online === false) {
+        pushRequiredMapErrors(input, validationResults)
+        if (!(input.contact?.googleMapsUrl ?? '').trim()) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: 'contact.googleMapsUrl',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+        if (!input.contact?.address) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: 'contact.address',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+    }
+
     validateSupportedLanguages(input.supportedLanguages, validationResults)
 
     return validationResults
@@ -233,7 +254,7 @@ export function validateCreateFacilityInput(input: gqlTypes.CreateFacilityInput)
         }
     }
 
-    // Online is opt-in. Only when true may address and map be omitted.
+    // Online is opt-in. Only when true may address, Maps URL, and map pin be omitted.
     if (input.online !== true) {
         if (!input.contact?.address) {
             validationResults.hasErrors = true
@@ -243,27 +264,62 @@ export function validateCreateFacilityInput(input: gqlTypes.CreateFacilityInput)
                 httpStatus: 400
             })
         }
-        if (input.mapLatitude === undefined || input.mapLatitude === null) {
+        if (!(input.contact?.googleMapsUrl ?? '').trim()) {
             validationResults.hasErrors = true
             validationResults.errors?.push({
-                field: 'mapLatitude',
+                field: 'contact.googleMapsUrl',
                 errorCode: ErrorCode.REQUIRED,
                 httpStatus: 400
             })
         }
-        if (input.mapLongitude === undefined || input.mapLongitude === null) {
-            validationResults.hasErrors = true
-            validationResults.errors?.push({
-                field: 'mapLongitude',
-                errorCode: ErrorCode.REQUIRED,
-                httpStatus: 400
-            })
-        }
+        pushRequiredMapErrors(input, validationResults)
     }
 
     validateSupportedLanguages(input.supportedLanguages, validationResults)
 
     return validationResults
+}
+
+/**
+ * A normal facility needs a real map pin. Null/omitted or the old 0/0 sentinel are not enough.
+ */
+function pushRequiredMapErrors(
+    input: {
+        mapLatitude?: number | null
+        mapLongitude?: number | null
+    },
+    validationResults: Result<unknown>
+): void {
+    if (!hasUsableMapPin(input.mapLatitude, input.mapLongitude)) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: 'mapLatitude',
+            errorCode: ErrorCode.REQUIRED,
+            httpStatus: 400
+        })
+        validationResults.errors?.push({
+            field: 'mapLongitude',
+            errorCode: ErrorCode.REQUIRED,
+            httpStatus: 400
+        })
+    }
+}
+
+export function hasUsableMapPin(
+    latitude?: number | null,
+    longitude?: number | null
+): boolean {
+    if (latitude === undefined || latitude === null || longitude === undefined || longitude === null) {
+        return false
+    }
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        return false
+    }
+    // 0/0 was the previous empty-pin sentinel and is not a Japan clinic location.
+    if (latitude === 0 || longitude === 0) {
+        return false
+    }
+    return true
 }
 
 export function validateContactInput(contactInput: gqlTypes.ContactInput | gqlTypes.Contact): Result<unknown> {

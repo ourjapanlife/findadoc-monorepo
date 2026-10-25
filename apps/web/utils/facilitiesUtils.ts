@@ -76,6 +76,10 @@ export function validateCreateFacility(input: CreateFacilityInput): FacilityVali
         errors.push('Please add a prefecture for both Japanese and English.')
     }
 
+    if (!(input.contact?.googleMapsUrl ?? '').trim()) {
+        errors.push('Required fields cannot be empty.')
+    }
+
     if (input.mapLatitude === undefined || input.mapLatitude === null || input.mapLatitude === 0) {
         errors.push('Required fields cannot be empty.')
     }
