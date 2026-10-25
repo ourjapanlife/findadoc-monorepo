@@ -6,7 +6,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 
 ```
 ┌─────────────────┐     GraphQL     ┌──────────────────┐     SQL      ┌─────────────────┐
-│    apps/web     │ ◄─────────────► │   apps/server    │ ◄──────────► │    Supabase     │
+│    apps/web     │ ◄─────────────► │   apps/server    │ ◄──────────► │  Amazon RDS     │
 │  (Nuxt 4 site)  │                 │ (Apollo GraphQL) │              │  (PostgreSQL)   │
 └─────────────────┘                 └──────────────────┘              └─────────────────┘
                                              ▲
@@ -32,8 +32,8 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 - **Runtime**: Node.js with TypeScript
 - **API**: Apollo Server on Fastify
 - **Schema**: `apps/server/src/typeDefs/schema.graphql`, the only GraphQL schema in the repo
-- **Database**: Supabase (PostgreSQL), with migrations in `apps/server/supabase`. The API queries it with Kysely over a Postgres connection, not the Supabase client
-- **Production**: Docker containers managed by PM2
+- **Database**: Amazon RDS for PostgreSQL in Tokyo, with migrations in `apps/server/supabase/migrations` applied on every deploy. The API queries it with Kysely
+- **Production**: AWS Lambda behind CloudFront at `api.findadoc.jp`, deployed with the CDK app in `infra/`
 
 ### MCP Server (`apps/mcp`)
 
@@ -64,7 +64,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 
 1. Users search for healthcare providers on [findadoc.jp](https://www.findadoc.jp)
 2. The website sends GraphQL queries to the API
-3. The API resolves queries against the Supabase PostgreSQL database
+3. The API resolves queries against the PostgreSQL database on Amazon RDS
 4. Results are returned and displayed on an interactive map with provider details
 
 ## Further Reading

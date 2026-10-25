@@ -41,11 +41,12 @@
 |-----------|---------|
 | [Node.js](https://nodejs.org/) | ランタイム |
 | [Apollo Server](https://www.apollographql.com/docs/apollo-server/) | Fastify上のGraphQL API |
-| [Supabase](https://supabase.com/) | データベース（PostgreSQL） |
+| [Amazon RDS for PostgreSQL](https://aws.amazon.com/rds/postgresql/) | データベース |
 | [Kysely](https://kysely.dev/) | PostgreSQLへの型付きSQLクエリ |
 | [Sentry](https://sentry.io/) | エラー報告 |
-| [PM2](https://pm2.keymetrics.io/) | プロセス管理（本番環境） |
-| [Docker](https://www.docker.com/) | コンテナ化 |
+| [AWS Lambda](https://aws.amazon.com/lambda/) と [CloudFront](https://aws.amazon.com/cloudfront/) | ホスティング（本番環境） |
+| [AWS CDK](https://aws.amazon.com/cdk/) | インフラのコード化（`infra/`） |
+| [Docker](https://www.docker.com/) | ローカルのPostgresデータベース |
 | [Vitest](https://vitest.dev/) | テスト |
 
 ## MCPサーバー（`apps/mcp`）
