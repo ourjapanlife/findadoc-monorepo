@@ -32,13 +32,9 @@ const resolvers = {
             }
         },
         clinicSite: withScope(Scope['read:facilities'], async (_parent: unknown, args: { slug: string })
-        : Promise<gqlType.ClinicSite | null> => {
-            return clinicSiteService.getClinicSiteBySlug(args.slug)
-        }),
+        : Promise<gqlType.ClinicSite | null> => clinicSiteService.getClinicSiteBySlug(args.slug)),
         clinicSites: withScope(Scope['read:facilities'], async ()
-        : Promise<gqlType.ClinicSiteSummary[]> => {
-            return clinicSiteService.listPublicClinicSites()
-        }),
+        : Promise<gqlType.ClinicSiteSummary[]> => clinicSiteService.listPublicClinicSites()),
         facility: withScope(Scope['read:facilities'], async (_parent: unknown, args: { id: string; })
         : Promise<FacilityParent> => {
             const queryResults = await facilityService.getFacilityById(args.id)
