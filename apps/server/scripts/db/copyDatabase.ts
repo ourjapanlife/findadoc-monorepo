@@ -10,6 +10,10 @@ export type TableReport = {
     sourceRows: number
     targetRows: number
     matches: boolean
+    // Copied columns whose values differ, when the table does not match.
+    differingColumns?: string[]
+    // Columns each database computes itself, so they are neither copied nor compared.
+    generatedColumns?: string[]
 }
 
 export type CopyOptions = {
@@ -75,7 +79,7 @@ async function columns(client: pg.Client, table: string, insertableOnly: boolean
 }
 
 /**
- * Row count and an MD5 over every row's columns, sorted by column name, so two databases
+ * Row count and an MD5 over every row's given columns, sorted by column name, so two databases
  * whose columns were added in a different physical order still compare equal.
  */
 async function fingerprint(client: pg.Client, table: string, columnNames: string[]): Promise<{ rows: number, hash: string }> {
@@ -87,6 +91,23 @@ async function fingerprint(client: pg.Client, table: string, columnNames: string
     `)
 
     return result
+}
+
+// One MD5 per column over its values, to name the columns behind a mismatch.
+async function columnHashes(client: pg.Client, table: string, columnNames: string[]): Promise<Map<string, string>> {
+    const hashes = new Map<string, string>()
+
+    for (const name of columnNames) {
+        const value = `t.${ident(name)}::text`
+        const { rows: [result] } = await client.query<{ hash: string }>(`
+            SELECT coalesce(md5(string_agg(coalesce(${value}, '<null>'), E'\n' ORDER BY ${value})), '') AS hash
+            FROM public.${ident(table)} t
+        `)
+
+        hashes.set(name, result.hash)
+    }
+
+    return hashes
 }
 
 async function sameTables(source: pg.Client, target: pg.Client): Promise<string[]> {
@@ -110,7 +131,12 @@ async function sameTables(source: pg.Client, target: pg.Client): Promise<string[
     return sourceTables
 }
 
-/** Compares every table on both sides by row count and content. Writes nothing. */
+/**
+ * Compares every table on both sides by row count and the content of the columns the copy
+ * writes. Generated columns are left out: each database computes them from its own
+ * definition, which can differ (Supabase's production search_text did) while every copied
+ * value is identical. Writes nothing.
+ */
 export async function compareDatabases(source: pg.Client, target: pg.Client): Promise<TableReport[]> {
     await source.query('SET TIME ZONE \'UTC\'')
     await target.query('SET TIME ZONE \'UTC\'')
@@ -119,18 +145,29 @@ export async function compareDatabases(source: pg.Client, target: pg.Client): Pr
     const reports: TableReport[] = []
 
     for (const table of tables) {
-        const columnNames = await columns(source, table, false)
+        const copied = await columns(source, table, true)
+        const generated = (await columns(source, table, false)).filter(name => !copied.includes(name))
         const [fromSource, fromTarget] = await Promise.all([
-            fingerprint(source, table, columnNames),
-            fingerprint(target, table, columnNames)
+            fingerprint(source, table, copied),
+            fingerprint(target, table, copied)
         ])
+        const matches = fromSource.rows === fromTarget.rows && fromSource.hash === fromTarget.hash
+        const report: TableReport = { table, sourceRows: fromSource.rows, targetRows: fromTarget.rows, matches }
 
-        reports.push({
-            table,
-            sourceRows: fromSource.rows,
-            targetRows: fromTarget.rows,
-            matches: fromSource.rows === fromTarget.rows && fromSource.hash === fromTarget.hash
-        })
+        if (generated.length) {
+            report.generatedColumns = generated
+        }
+
+        if (!matches) {
+            const [sourceColumns, targetColumns] = await Promise.all([
+                columnHashes(source, table, copied),
+                columnHashes(target, table, copied)
+            ])
+
+            report.differingColumns = copied.filter(name => sourceColumns.get(name) !== targetColumns.get(name))
+        }
+
+        reports.push(report)
     }
 
     return reports
