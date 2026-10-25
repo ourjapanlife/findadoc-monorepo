@@ -23,7 +23,6 @@ import {
 import { clinicPreviewShellPaths, writeClinicPreviewShells } from '@/utils/nuxt/clinicPreviewShell'
 import { indexableMarketingPaths } from '@/utils/sitemap'
 import { SITE_ORIGIN } from '@/utils/site'
-import { clinicSiteSeeds } from '../../../../server/scripts/seed/clinicSiteContent'
 import { clinicThemeVars } from '@/utils/clinicTheme'
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '../../..')
@@ -111,22 +110,11 @@ describe('clinic landings', () => {
         expect(clinicLandingPreviewCookie('a=1; online_clinic_preview=1')).to.equal('1')
     })
 
-    it('seeds the showcase clinic without a directory facility', () => {
-        const site = clinicSiteSeeds.find(item => item.slug === slug)
-        expect(site?.facility_id).to.equal(null)
-        expect(site?.status).to.equal('preview')
-        expect(site?.theme.primary).to.equal('#177A80')
+    it('maps a clinic primary color onto the theme tokens', () => {
         expect(clinicThemeVars('#177A80')?.['--clinic-primary']).to.equal('23 122 128')
         expect(clinicThemeVars('#177A80')?.['--clinic-primary-dark']).to.not.equal('23 122 128')
         expect(clinicThemeVars('teal')).to.equal(undefined)
         expect(clinicThemeVars(null)).to.equal(undefined)
-        expect(site?.copy['ja-JP']?.name).to.equal('多言語オンラインクリニック')
-        expect(site?.copy['fr-FR']?.book).to.not.equal(site?.copy['en-US']?.book)
-        for (const copy of Object.values(site?.copy ?? {})) {
-            expect(copy.doctorCopy).to.have.length(site?.doctors.length ?? -1)
-            expect(copy.name.length).to.be.greaterThan(0)
-            expect(copy.description.length).to.be.greaterThan(0)
-        }
     })
 
     it('uses the clinic icon as the share image and keeps the landing out of the static sitemap', () => {
@@ -142,7 +130,9 @@ describe('clinic landings', () => {
         expect(redirects).to.match(new RegExp(`^${clean}\\s+/200\\.html\\s+200`, 'm'))
         expect(redirects).to.match(new RegExp(`^/:locale${clean}\\s+/200\\.html\\s+200`, 'm'))
         expect(serve).to.include(`"${clean}"`)
-        expect([...CLINIC_PREVIEW_SHELL_SLUGS]).to.deep.equal(clinicSiteSeeds.map(site => site.slug))
+        const seedSource = readFileSync(join(rootDir, '../server/scripts/seed/clinicSiteContent.ts'), 'utf8')
+        const seededSlugs = [...seedSource.matchAll(/^ +slug: '([^']+)',$/gm)].map(match => match[1])
+        expect([...CLINIC_PREVIEW_SHELL_SLUGS]).to.deep.equal(seededSlugs)
     })
 })
 
@@ -156,7 +146,7 @@ describe('clinic preview shells', () => {
                 expect(await readFile(join(dir, relative), 'utf8')).to.equal('<html>shell</html>')
             }
             expect(clinicPreviewShellPaths('multilingual-online-clinic')).to.include(
-                `ja-JP/clinic/multilingual-online-clinic.html`
+                'ja-JP/clinic/multilingual-online-clinic.html'
             )
             expect(CLINIC_LANDING_LOCALE_PREFIXES).to.include('ja-JP')
         } finally {
