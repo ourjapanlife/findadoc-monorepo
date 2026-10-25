@@ -6,8 +6,7 @@ import {
 } from '~/utils/adminSite'
 
 /**
- * Dev and the SPA shell. The Netlify edge function is what returns a real 404
- * before the static file is served. Both call `adminSiteAccess`.
+ * Dev and the SPA shell. A missing cookie is a 404.
  */
 export default defineNuxtRouteMiddleware(to => {
     const config = useRuntimeConfig()

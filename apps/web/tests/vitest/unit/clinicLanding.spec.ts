@@ -8,9 +8,9 @@ import {
     clinicHostLandingTarget,
     clinicLandingAccess,
     clinicLandingHostSlug,
+    CLINIC_LANDING_MODE,
     clinicLandingMode,
     clinicLandingPath,
-    hostedPreviewValue,
     clinicLandingPreviewCookie,
     clinicLandingRedirectTarget,
     clinicLandingShareImage,
@@ -90,12 +90,9 @@ describe('clinic landings', () => {
     })
 
     it('stays a 404 until preview grants a cookie, and public skips the cookie', () => {
+        expect(CLINIC_LANDING_MODE).to.equal('preview')
         expect(clinicLandingMode(undefined)).to.equal('off')
         expect(clinicLandingMode('off')).to.equal('off')
-        expect(hostedPreviewValue(undefined, true)).to.equal('preview')
-        expect(hostedPreviewValue(undefined, false)).to.equal(undefined)
-        expect(hostedPreviewValue('off', true)).to.equal('off')
-        expect(hostedPreviewValue('public', false)).to.equal('public')
         expect(clinicLandingMode('true')).to.equal('preview')
         expect(clinicLandingMode('public')).to.equal('public')
         expect(clinicLandingAccess('off', '1', '1')).to.equal('deny')

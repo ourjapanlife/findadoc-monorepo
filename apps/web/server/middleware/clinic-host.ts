@@ -3,8 +3,7 @@ import { useRuntimeConfig } from '#imports'
 import { clinicHostLandingTarget, clinicLandingMode } from '~/utils/clinicLanding'
 
 /**
- * Dev, and any server render. Netlify static hosting uses the edge function
- * for the same redirect. The browser stays on the clinic hostname.
+ * Dev, and any server render. The browser stays on the clinic hostname.
  * The mode comes from runtime config, so `pnpm dev` and the browser agree.
  */
 export default defineEventHandler(event => {

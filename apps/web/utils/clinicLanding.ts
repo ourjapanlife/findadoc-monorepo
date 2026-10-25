@@ -10,18 +10,14 @@ import { SITE_ORIGIN } from './site.ts'
  * there. The clinic row is what an account and a future CRM attach to.
  * `facility_id` on that row stays empty until the directory listing exists.
  *
- * `NUXT_PUBLIC_ONLINE_CLINIC`:
- * - unset in `pnpm dev` — same as `preview`, so `turbo dev` does not need the variable
- * - unset for generate and Netlify — every landing is a 404, and the id address stays a clinic URL
- * - `off` — the 404, including in dev
- * - `preview` — showcase. `?preview=1` sets a cookie; without it the landing is a 404,
- *   noindex, and absent from the sitemap. The id address still redirects to the subdomain
- * - `public` — a published clinic is prerendered, indexable, and listed in the sitemap.
- *   A clinic still in `preview` keeps the cookie.
+ * There is no environment variable. `CLINIC_LANDING_MODE` is `preview`:
+ * `?preview=1` sets a cookie; without it the landing is a 404, noindex, and absent
+ * from the sitemap. The id address still redirects to the subdomain.
+ * `public` is the later value that prerenders and indexes a published clinic.
  *
  * Booking buttons do not go anywhere yet. The appointment flow replaces them later.
  *
- * Locale prefixes are listed here so the Netlify edge function does not import i18n.
+ * Locale prefixes are listed here so host redirects share one list.
  * `clinicLanding.spec.ts` checks them against `LOCALE_CODES`.
  */
 
@@ -74,6 +70,9 @@ export type HostedClinicRef = {
 
 export type ClinicLandingMode = 'off' | 'preview' | 'public'
 
+/** Cookie gate for every deploy. Change this to `public` when search should index the clinic. */
+export const CLINIC_LANDING_MODE: ClinicLandingMode = 'preview'
+
 export function clinicLandingMode(value: string | null | undefined): ClinicLandingMode {
     if (value === 'public') {
         return 'public'
@@ -84,20 +83,8 @@ export function clinicLandingMode(value: string | null | undefined): ClinicLandi
     return 'off'
 }
 
-/**
- * A set flag always wins, including `off`.
- * `pnpm dev` uses preview when the variable is missing.
- * Generate and Netlify pass `isDev` false, so they stay off until the variable is set.
- */
-export function hostedPreviewValue(value: string | null | undefined, isDev: boolean): string | undefined {
-    if (typeof value === 'string' && value.length > 0) {
-        return value
-    }
-    return isDev ? 'preview' : undefined
-}
-
 export function clinicLandingsArePublic(value?: string | null): boolean {
-    return clinicLandingMode(value ?? process.env.NUXT_PUBLIC_ONLINE_CLINIC) === 'public'
+    return clinicLandingMode(value ?? CLINIC_LANDING_MODE) === 'public'
 }
 
 export function clinicLandingPath(slug: string): string {

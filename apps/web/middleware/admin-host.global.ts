@@ -2,7 +2,7 @@ import { adminHostTarget, adminSiteMode, isAdminHost } from '~/utils/adminSite'
 
 /**
  * A client navigation to the root of the admin hostname. The document request
- * is redirected by the server middleware and, on Netlify, by the edge function.
+ * is redirected by the server middleware.
  */
 export default defineNuxtRouteMiddleware(to => {
     if (import.meta.server) {

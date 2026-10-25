@@ -68,10 +68,7 @@ The moderation dashboard needs the local API:
 
 ### Clinic landings
 
-A clinic that owns a page is a `clinic_sites` row, seeded from `apps/server/scripts/seed/clinicSiteContent.ts`. The first one is `/clinic/multilingual-online-clinic`. It has no facility id until the directory listing exists. Accounts will attach through `clinic_memberships`. `pnpm dev` is Turbo. Its site task uses preview for the clinic pages and the staff site when those variables are unset, and it talks to the local API. A production generate stays off until the variable is set. `off` forces the 404, including in dev. Run the API against a seeded database so the page can load.
-
-- `preview` keeps it a showcase. Open `/clinic/multilingual-online-clinic?preview=1` to store a cookie for 30 days. Without that cookie the URL is a 404, `noindex`, and left out of the sitemap. `?preview=0` clears the cookie.
-- `public` prerenders the clean link, adds it to the sitemap, and drops the cookie.
+A clinic that owns a page is a `clinic_sites` row, seeded from `apps/server/scripts/seed/clinicSiteContent.ts`. The first one is `/clinic/multilingual-online-clinic`. It has no facility id until the directory listing exists. Accounts will attach through `clinic_memberships`. `pnpm dev` is Turbo and talks to the local API. Open `/clinic/multilingual-online-clinic?preview=1` to store a cookie for 30 days. Without that cookie the URL is a 404, `noindex`, and left out of the sitemap. `?preview=0` clears the cookie. There is no environment variable. Run the API against a seeded database so the page can load.
 
 The link to put on a poster is `https://multilingual-online-clinic.findadoc.jp/`. The clinic breadcrumb, `/clinic/multilingual-online-clinic`, and the directory address that ends in `--{id}` redirect there. The preview image is that clinic’s icon. The footer is the Find a Doc logo and “Powered by Find a Doc, Japan”. The header uses the clinic’s stored brand color. The booking buttons do not go anywhere yet. The appointment flow will replace them. An admin of that hospital still edits the facility itself.
 
@@ -84,7 +81,7 @@ pnpm dev:seeded
 - Domain path: `http://127.0.0.1:3000/clinic/multilingual-online-clinic?preview=1`
 - Clinic hostname: `http://multilingual-online-clinic.localhost:3000/?preview=1`
 
-Browsers resolve `*.localhost` to this machine, so no hosts-file entry is required. The hostname itself is the clinic: `http://multilingual-online-clinic.localhost:3000/` stays on `/`. Other pages on that host, including `/submit` and `/clinic/multilingual-online-clinic`, redirect to `/`. Images and scripts stay put. The preview cookie belongs to the host that set it, so each host needs its own `?preview=1`. `?preview=0` clears it on that host. With the variable set to `off`, the hostname is the normal site. While the clinic is on, the canonical URL is the subdomain.
+Browsers resolve `*.localhost` to this machine, so no hosts-file entry is required. The hostname itself is the clinic: `http://multilingual-online-clinic.localhost:3000/` stays on `/`. Other pages on that host, including `/submit` and `/clinic/multilingual-online-clinic`, redirect to `/`. Images and scripts stay put. The preview cookie belongs to the host that set it, so each host needs its own `?preview=1`. `?preview=0` clears it on that host. The canonical URL is the subdomain.
 
 `www`, `api`, `mcp`, and `docs` are not clinic hosts. `admin.localhost` and `admin.findadoc.jp` are the staff site, not a clinic.
 
@@ -92,11 +89,7 @@ The canonical URL is `https://{slug}.findadoc.jp/`. The www path and the shareab
 
 ### Staff site
 
-`NUXT_PUBLIC_ADMIN_SITE` uses the same three values as the clinic flag. `pnpm dev` uses preview when it is unset. The page stays `noindex`. Adding a person still requires a login.
-
-- `preview` opens `http://admin.localhost:3000/?preview=1`. That stores a cookie for 30 days and redirects to `/admin`. Without the cookie the host is a 404. `?preview=0` clears the cookie. Other pages on that host, including `/submit`, redirect to `/admin`.
-- `public` opens the page without the cookie. It is still left out of the sitemap.
-- Unset during a production generate, the admin host and `/admin` are a 404. `off` does the same in dev.
+Open `http://admin.localhost:3000/?preview=1`. That stores a cookie for 30 days and redirects to `/admin`. Without the cookie the host is a 404. `?preview=0` clears the cookie. Other pages on that host, including `/submit`, redirect to `/admin`. The page stays `noindex`. Adding a person still requires a login. There is no environment variable.
 
 A hospital starts on the basic plan: three active people. Find a Doc staff (`write:users`) can add an owner or a staff member, and can attach an existing healthcare professional who already works at that hospital. An owner of that hospital can add and remove staff, still inside the three seats. Removing someone keeps the row and writes an audit log. The first owner is added by Find a Doc staff.
 

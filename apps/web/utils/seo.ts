@@ -7,7 +7,7 @@ import {
     localizedPath,
     unlocalizedPath
 } from './localePath'
-import { clinicLandingMode, isClinicLandingPath } from './clinicLanding'
+import { CLINIC_LANDING_MODE, clinicLandingMode, isClinicLandingPath } from './clinicLanding'
 import { isEntityRoute } from './pageTitles'
 import { SITE_ORIGIN, SITE_SITEMAP_URL } from './site'
 
@@ -166,7 +166,7 @@ export function isNoindexRoute(
     onlineClinic?: string | null
 ): boolean {
     const normalised = unlocalizedPath(normalisePagePath(path))
-    const clinicMode = clinicLandingMode(onlineClinic ?? process.env.NUXT_PUBLIC_ONLINE_CLINIC)
+    const clinicMode = clinicLandingMode(onlineClinic ?? CLINIC_LANDING_MODE)
     if (isClinicLandingPath(normalised) && clinicMode !== 'public') {
         return true
     }

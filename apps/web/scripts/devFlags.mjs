@@ -1,6 +1,6 @@
 /**
- * Defaults for the Turbo `dev` task. A value already in the environment wins,
- * including `off`. Generate and Netlify do not call this.
+ * Defaults for the Turbo `dev` task. The clinic and staff preview cookies do not
+ * use an environment variable. This only points the site at the local API when asked.
  *
  * @param {NodeJS.ProcessEnv} env
  * @param {{ localApi?: boolean }} [options]
@@ -8,12 +8,6 @@
  */
 export function devServerEnv(env, options = {}) {
     const next = { ...env }
-    if (!next.NUXT_PUBLIC_ONLINE_CLINIC) {
-        next.NUXT_PUBLIC_ONLINE_CLINIC = 'preview'
-    }
-    if (!next.NUXT_PUBLIC_ADMIN_SITE) {
-        next.NUXT_PUBLIC_ADMIN_SITE = 'preview'
-    }
     if (options.localApi && !next.NUXT_USE_LOCAL_API) {
         next.NUXT_USE_LOCAL_API = 'true'
     }

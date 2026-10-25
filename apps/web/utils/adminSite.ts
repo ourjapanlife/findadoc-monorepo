@@ -2,11 +2,12 @@ import { CLINIC_LANDING_LOCALE_PREFIXES, isStaticHostPath, type ClinicLandingMod
 
 /**
  * `admin.findadoc.jp` and `admin.localhost` are the staff site.
- * `NUXT_PUBLIC_ADMIN_SITE` uses the same three values as the clinic landing flag.
- * `pnpm dev` uses preview when the variable is unset. Generate and Netlify stay off.
- * The page stays noindex in every mode. The flag is a shipping gate.
- * Assigning a person still requires a staff login or a hospital owner.
+ * There is no environment variable. `?preview=1` sets the cookie.
+ * The page stays noindex. Assigning a person still requires a staff login or a hospital owner.
  */
+
+/** Cookie gate for every deploy. The staff page stays noindex even if this becomes `public`. */
+export const ADMIN_SITE_MODE: ClinicLandingMode = 'preview'
 
 export const ADMIN_SITE_PREVIEW_COOKIE = 'admin_site_preview'
 

@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import {
+    ADMIN_SITE_MODE,
     ADMIN_SITE_PATH,
     adminHostTarget,
     adminSiteAccess,
@@ -20,6 +21,7 @@ import { devServerEnv } from '../../../scripts/devFlags.mjs'
 
 describe('admin site flag', () => {
     it('reads the same three modes as a clinic landing', () => {
+        expect(ADMIN_SITE_MODE).to.equal('preview')
         expect(adminSiteMode(undefined)).to.equal('off')
         expect(adminSiteMode('preview')).to.equal('preview')
         expect(adminSiteMode('true')).to.equal('preview')
@@ -64,20 +66,13 @@ describe('admin site flag', () => {
 })
 
 describe('turbo dev flags', () => {
-    it('turns preview on for pnpm dev when the variables are unset', () => {
+    it('points pnpm dev at the local API when asked', () => {
         const env = devServerEnv({}, { localApi: true })
-        expect(env.NUXT_PUBLIC_ONLINE_CLINIC).to.equal('preview')
-        expect(env.NUXT_PUBLIC_ADMIN_SITE).to.equal('preview')
         expect(env.NUXT_USE_LOCAL_API).to.equal('true')
     })
 
-    it('keeps an explicit off, and leaves the API target alone unless asked', () => {
-        const env = devServerEnv({
-            NUXT_PUBLIC_ONLINE_CLINIC: 'off',
-            NUXT_PUBLIC_ADMIN_SITE: 'public'
-        })
-        expect(env.NUXT_PUBLIC_ONLINE_CLINIC).to.equal('off')
-        expect(env.NUXT_PUBLIC_ADMIN_SITE).to.equal('public')
+    it('leaves the API target alone unless asked', () => {
+        const env = devServerEnv({})
         expect(env.NUXT_USE_LOCAL_API).to.equal(undefined)
     })
 })

@@ -68,10 +68,7 @@ pnpm dev
 
 ### クリニックの独自ページ
 
-独自ページを持つクリニックは `clinic_sites` の1行で、種データは `apps/server/scripts/seed/clinicSiteContent.ts` です。最初のページは `/clinic/multilingual-online-clinic` です。ディレクトリの施設ができるまで、施設idは空です。アカウントは `clinic_memberships` で紐づけます。`pnpm dev` は Turbo です。サイトのタスクは、変数が未設定のときクリニックのページとスタッフ用サイトを preview にし、ローカルAPIへ接続します。本番の generate は、変数を設定するまでオフです。`off` は開発中でも404にします。ページを読むために、種データを入れたAPIを起動します。
-
-- `preview` は関係者向けの公開です。`/clinic/multilingual-online-clinic?preview=1` を開くと、30日間有効なCookieが保存されます。CookieがないURLは404で、`noindex` になり、サイトマップにも入りません。`?preview=0` でCookieを消します。
-- `public` ではこの短いURLをプリレンダリングし、サイトマップに載せ、Cookieは不要になります。
+独自ページを持つクリニックは `clinic_sites` の1行で、種データは `apps/server/scripts/seed/clinicSiteContent.ts` です。最初のページは `/clinic/multilingual-online-clinic` です。ディレクトリの施設ができるまで、施設idは空です。アカウントは `clinic_memberships` で紐づけます。`pnpm dev` は Turbo で、ローカルAPIへ接続します。`/clinic/multilingual-online-clinic?preview=1` を開くと、30日間有効なCookieが保存されます。CookieがないURLは404で、`noindex` になり、サイトマップにも入りません。`?preview=0` でCookieを消します。環境変数はありません。ページを読むために、種データを入れたAPIを起動します。
 
 ポスターに載せるリンクは `https://multilingual-online-clinic.findadoc.jp/` です。クリニックのパンくず、`/clinic/multilingual-online-clinic`、`--{id}` で終わるディレクトリのURLはそこへ転送されます。共有時の画像はそのクリニックのアイコンです。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけです。ヘッダーには、そのクリニックが保存したブランドカラーを使います。予約ボタンはまだどこにも飛びません。予約の流れはあとからこのボタンを置き換えます。病院の管理者は、これまでどおり施設そのものを編集します。
 
@@ -84,7 +81,7 @@ pnpm dev:seeded
 - ドメインのパス: `http://127.0.0.1:3000/clinic/multilingual-online-clinic?preview=1`
 - クリニックのホスト名: `http://multilingual-online-clinic.localhost:3000/?preview=1`
 
-ブラウザは `*.localhost` をこのマシンに解決するので、hosts ファイルは要りません。ホスト名そのものがクリニックです。`http://multilingual-online-clinic.localhost:3000/` は `/` のままです。そのホストの他のページ、`/submit` と `/clinic/multilingual-online-clinic` も含めて、`/` へ転送されます。画像とスクリプトはそのままです。プレビューのCookieは、それを保存したホストにだけ付きます。それぞれのホストで `?preview=1` が必要です。`?preview=0` はそのホストのCookieを消します。変数を `off` にすると、そのホストは通常のサイトです。クリニックを開いているあいだ、正規URLはサブドメインです。
+ブラウザは `*.localhost` をこのマシンに解決するので、hosts ファイルは要りません。ホスト名そのものがクリニックです。`http://multilingual-online-clinic.localhost:3000/` は `/` のままです。そのホストの他のページ、`/submit` と `/clinic/multilingual-online-clinic` も含めて、`/` へ転送されます。画像とスクリプトはそのままです。プレビューのCookieは、それを保存したホストにだけ付きます。それぞれのホストで `?preview=1` が必要です。`?preview=0` はそのホストのCookieを消します。正規URLはサブドメインです。
 
 `www`、`api`、`mcp`、`docs` はクリニックのホストではありません。`admin.localhost` と `admin.findadoc.jp` はスタッフ用サイトで、クリニックのホストではありません。
 
@@ -92,11 +89,7 @@ pnpm dev:seeded
 
 ### スタッフ用サイト
 
-`NUXT_PUBLIC_ADMIN_SITE` はクリニックのフラグと同じ3つの値です。`pnpm dev` は未設定のとき preview です。ページは `noindex` のままです。人を追加するには、これまでどおりログインが必要です。
-
-- `preview` では `http://admin.localhost:3000/?preview=1` を開きます。30日間のCookieが保存され、`/admin` へ転送されます。Cookieがないとそのホストは404です。`?preview=0` でCookieを消します。そのホストの他のページ、`/submit` も含めて、`/admin` へ転送されます。
-- `public` ではCookieなしでページを開けます。サイトマップには入りません。
-- 本番の generate で未設定のとき、admin のホストと `/admin` は404です。`off` は開発中でも同じです。
+`http://admin.localhost:3000/?preview=1` を開くと、30日間のCookieが保存され、`/admin` へ転送されます。Cookieがないとそのホストは404です。`?preview=0` でCookieを消します。そのホストの他のページ、`/submit` も含めて、`/admin` へ転送されます。ページは `noindex` のままです。人を追加するには、これまでどおりログインが必要です。環境変数はありません。
 
 病院は基本プランから始まり、有効な人は3人までです。Find a Doc のスタッフ（`write:users`）は、オーナーまたはスタッフを追加でき、その病院に既に所属する医療者を席に結びつけられます。その病院のオーナーは、3席の範囲でスタッフの追加と解除ができます。解除しても行は残り、監査ログが書かれます。最初のオーナーは Find a Doc のスタッフが追加します。
 

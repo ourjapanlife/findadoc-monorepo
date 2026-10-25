@@ -3,8 +3,7 @@ import { useRuntimeConfig } from '#imports'
 import { adminHostTarget, adminSiteMode, isAdminHost } from '~/utils/adminSite'
 
 /**
- * Dev, and any server render. Netlify static hosting uses the edge function
- * for the same redirect. Off mode answers the admin host with 404.
+ * Dev, and any server render. Off mode answers the admin host with 404.
  * The mode comes from runtime config, so `pnpm dev` and the browser agree.
  */
 export default defineEventHandler(event => {
