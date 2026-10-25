@@ -11,7 +11,7 @@ AWS CDK app for the Find a Doc AWS account.
 | Stack         | What it does                                                                                                 |
 | ------------- | ------------------------------------------------------------------------------------------------------------ |
 | `FindadocDns` | Looks up the existing `findadoc.jp` hosted zone and exposes it as `hostedZone`. It does not create the zone. |
-| `FindadocWeb` | Amplify Hosting app for the site. Associates `*.findadoc.jp` with the production branch. Amplify writes that record into the zone. |
+| `FindadocWeb` | Amplify Hosting app for the site. Associates `*.findadoc.jp` with the production branch, and lets GitHub Actions publish that branch and pull request previews. |
 | `FindadocGithubDeploy` | GitHub OIDC provider and the `findadoc-github-cdk-deploy` role that the Infra workflow assumes. |
 
 ## Credentials (IAM Identity Center)
@@ -84,7 +84,13 @@ After that, CI deploys every stack, including later changes to `FindadocGithubDe
 
 The site is hosted on Amplify. `FindadocWeb` associates `*.findadoc.jp` with the `main` branch. Amplify provisions the certificate and writes the wildcard record, because `findadoc.jp` is a Route 53 zone in this account.
 
-`www`, `api`, and `docs` already have records, so those names stay where they are. Add a name to the Amplify domain when that name should move. The app has no Git repository connected yet, and auto-build is off. Publishing the built site is a later step.
+`www`, `api`, and `docs` already have records, so those names stay where they are. Add a name to the Amplify domain when that name should move. The app has no Git repository connected, and auto-build is off. `.github/workflows/web.yml` builds the site and uploads `apps/web/.output/public`. That build sets `NUXT_SKIP_DIRECTORY_PRERENDER`, so clinic, doctor, hub, and facet HTML is not generated. Marketing pages still are. The Playwright workflow does not set the flag.
+
+## Previews
+
+A pull request that changes the site publishes an Amplify branch named `pr-<number>`. The URL is `https://pr-<number>.<default-domain>`, on `amplifyapp.com`. It is not a `findadoc.jp` name: `*.findadoc.jp` serves the production branch, and a preview hostname there would be the live site. The API allows that preview origin, and `https://main.<app-id>.amplifyapp.com`, so the page can read `https://api.findadoc.jp`.
+
+The preview role can publish and delete only `pr-*` branches. Closing the pull request deletes that branch. Deploy `FindadocWeb` once so `findadoc-github-web-preview` exists; until then the Web workflow cannot assume it.
 
 ## Context lookups
 
