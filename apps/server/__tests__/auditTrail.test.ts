@@ -1,9 +1,10 @@
 import * as gqlTypes from '@findadoc/graphql'
-import * as dbSchema from '../src/typeDefs/dbSchema.js'
+import type { Insertable } from 'kysely'
+import type { SubmissionsTable } from '../src/typeDefs/kyselyTypes.js'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import * as auditLogService from '../src/services/auditLogServiceSupabase.js'
 import { generateRandomCreateSubmissionInput } from '../src/fakeData/fakeSubmissions.js'
-import { mapGqlEntityToDbEntity } from '../src/services/mappersEntityService.js'
+import { submissionInsertRow } from '../src/services/mappersEntityService.js'
 import { createSubmission, updateSubmission, deleteSubmission } from '../src/services/submissionService.js'
 import { db } from '../src/kyselyClient.js'
 
@@ -11,7 +12,7 @@ describe('Audit Log System', () => {
     describe('createAuditLog', () => {
         it('should create an audit log successfully', async () => {        
             const newSubmission: gqlTypes.CreateSubmissionInput = generateRandomCreateSubmissionInput()
-            const newAuditLog: dbSchema.SubmissionInsertRow = mapGqlEntityToDbEntity(newSubmission)
+            const newAuditLog: Insertable<SubmissionsTable> = submissionInsertRow(newSubmission)
             
             await expect(
                 auditLogService.createAuditLogSQL({
@@ -26,7 +27,7 @@ describe('Audit Log System', () => {
 
         it('should handle different action types (Create, Update, Delete)', async () => {
             const submission = generateRandomCreateSubmissionInput()
-            const dbSubmission = mapGqlEntityToDbEntity(submission)
+            const dbSubmission = submissionInsertRow(submission)
 
             // Test CREATE
             await expect(
@@ -184,7 +185,7 @@ describe('Audit Log System', () => {
 
     describe('Edge Cases', () => {
         it('should handle audit log with null values correctly', async () => {
-            const submission = mapGqlEntityToDbEntity(generateRandomCreateSubmissionInput())
+            const submission = submissionInsertRow(generateRandomCreateSubmissionInput())
 
             // CREATE with null oldValue
             await expect(
@@ -210,7 +211,7 @@ describe('Audit Log System', () => {
         })
 
         it('should use enum values correctly', async () => {
-            const submission = mapGqlEntityToDbEntity(generateRandomCreateSubmissionInput())
+            const submission = submissionInsertRow(generateRandomCreateSubmissionInput())
 
             // Test all ActionType enum values
             for (const actionType of Object.values(gqlTypes.ActionType)) {

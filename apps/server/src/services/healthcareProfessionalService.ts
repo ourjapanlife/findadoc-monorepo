@@ -1,5 +1,4 @@
 import * as gqlTypes from '@findadoc/graphql'
-import * as dbSchema from '../typeDefs/dbSchema.js'
 import { ErrorCode, Result } from '../result.js'
 import { validateProfessionalsSearchInput, validateUpdateProfessionalInput, validateCreateProfessionalInput } from '../validation/validationHealthcareProfessional.js'
 import { validateIdInput } from '../validation/validateFacility.js'
@@ -14,7 +13,7 @@ import type { ProfessionalParent } from '../typeDefs/resolverParents.js'
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
 import { databaseOrderColumn, PROFESSIONAL_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
-import { mapDbHpToGql, mapKyselyHpToGraphQL} from '../services/mappersEntityService.js'
+import { professionalFromRow, professionalWithFacilityIds } from '../services/mappersEntityService.js'
 type StoredLicenseContext = {
     primaryLicense: string | null
     licenseReview: string | null
@@ -208,8 +207,7 @@ export async function getHealthcareProfessionalById(
         }
 
         // Convert database entity to GraphQL shape
-        const dbHealthcareProfessional = hpEntity as unknown as dbSchema.DbHealthcareProfessionalRow
-        const gqlHealthcareProfessional = mapDbHpToGql(dbHealthcareProfessional)
+        const gqlHealthcareProfessional = professionalFromRow(hpEntity)
 
         return {
             data: gqlHealthcareProfessional,
@@ -285,8 +283,7 @@ export async function searchProfessionals(
         // Perform paged fetch after all filters are applied so the page is computed
         const matchingHps = await hpSelect.limit(limit).offset(offset).execute()
 
-        const result = (matchingHps as unknown as dbSchema.DbHealthcareProfessionalRow[])
-            .map(hp => mapDbHpToGql(hp))
+        const result = matchingHps.map(hp => professionalFromRow(hp))
 
         return { data: result, hasErrors: false }
     } catch (err) {
@@ -439,7 +436,7 @@ export async function createHealthcareProfessional(
 
             // Map Kysely row to plain GraphQL object
             // CRITICAL: This removes Kysely's internal #props members
-            const plainGqlHp = mapKyselyHpToGraphQL(insertedHp, [facilityId])
+            const plainGqlHp = professionalWithFacilityIds(insertedHp, [facilityId])
 
             // Create audit log entry
             // Uses the same transaction (transaction) to ensure atomicity
@@ -593,8 +590,8 @@ export const updateHealthcareProfessional = async (
             }
 
             // Map to GraphQL for audit log
-            const oldGqlHp = mapKyselyHpToGraphQL(currentHp, currentFacilityIds)
-            const newGqlHp = mapKyselyHpToGraphQL(updatedHp, finalFacilityIds)
+            const oldGqlHp = professionalWithFacilityIds(currentHp, currentFacilityIds)
+            const newGqlHp = professionalWithFacilityIds(updatedHp, finalFacilityIds)
 
             // Create audit log entry
             await createAuditLog(transaction, {
@@ -736,7 +733,7 @@ export async function deleteHealthcareProfessional(
 
             // Create audit log entry
             // Map Kysely row to GraphQL for audit log
-            const oldGqlHp = mapKyselyHpToGraphQL(existingHp, facilityIds)
+            const oldGqlHp = professionalWithFacilityIds(existingHp, facilityIds)
 
             await createAuditLog(transaction, {
                 actionType: gqlTypes.ActionType.Delete,

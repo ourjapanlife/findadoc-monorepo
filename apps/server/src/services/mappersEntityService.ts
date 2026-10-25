@@ -1,9 +1,8 @@
 import * as gqlTypes from '@findadoc/graphql'
-import * as dbSchema from '../typeDefs/dbSchema.js'
-import type { HpsTable, FacilitiesTable, SubmissionsTable } from '../typeDefs/kyselyTypes.js'
+import { SUBMISSION_STATUS, type HpsTable, type FacilitiesTable, type SubmissionsTable } from '../typeDefs/kyselyTypes.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
-import type { Selectable } from 'kysely'
-import type { ProfessionalParent } from '../typeDefs/resolverParents.js'
+import type { Insertable, Selectable } from 'kysely'
+import type { FacilityParent, ProfessionalParent } from '../typeDefs/resolverParents.js'
 
 function toLicenseReview(value: string | null | undefined): gqlTypes.LicenseReviewStatus | null {
     if (value === gqlTypes.LicenseReviewStatus.NeedsReview || value === gqlTypes.LicenseReviewStatus.Confirmed) {
@@ -22,101 +21,66 @@ function toPrimaryLicense(value: string | null | undefined): gqlTypes.Degree | n
 }
 
 // ==== HEALTHCARE PROFESSIONAL MAPPERS ====
+// Rows from Kysely are plain objects, so a mapper returns them to GraphQL without copying.
 
-/** Without facilityIds, the `facilityIds` field resolver loads them. */
-export function mapDbHpToGql(
-  hp: dbSchema.DbHealthcareProfessionalRow,
-  facilityIds?: string[]
-): ProfessionalParent {
+/**
+ * Maps an hps row to the GraphQL HealthcareProfessional.
+ * The `facilityIds` field resolver loads its facility ids.
+ */
+export function professionalFromRow(row: Selectable<HpsTable>): ProfessionalParent {
     return {
-        id: hp.id,
-        names: hp.names ?? [],
-        degrees: hp.degrees ?? [],
-        primaryLicense: toPrimaryLicense(hp.primary_license),
-        additionalCredentials: hp.additional_credentials ?? [],
-        licenseReview: toLicenseReview(hp.license_review),
-        licenseRecommendation: hp.license_recommendation ?? null,
-        spokenLanguages: hp.spoken_languages ?? [],
-        specialties: hp.specialties ?? [],
-        acceptedInsurance: hp.accepted_insurance ?? [],
-        facilityIds,
-        createdDate: hp.created_date,
-        updatedDate: hp.updated_date,
-        additionalInfoForPatients: hp.additional_info_for_patients
+        id: row.id,
+        names: row.names ?? [],
+        degrees: row.degrees ?? [],
+        primaryLicense: toPrimaryLicense(row.primary_license),
+        additionalCredentials: row.additional_credentials ?? [],
+        licenseReview: toLicenseReview(row.license_review),
+        licenseRecommendation: row.license_recommendation ?? null,
+        spokenLanguages: row.spoken_languages ?? [],
+        specialties: row.specialties ?? [],
+        acceptedInsurance: row.accepted_insurance ?? [],
+        createdDate: row.created_date,
+        updatedDate: row.updated_date,
+        additionalInfoForPatients: row.additional_info_for_patients ?? null
     }
 }
 
-/**
- * Maps Kysely HP result to plain GraphQL HealthcareProfessional object.
- * 
- * PURPOSE:
- * - Converts Kysely database row types to GraphQL types
- * - Removes Kysely internal members (like #props) that would break GraphQL serialization
- * - Handles nullable fields with proper fallbacks (?? operator)
- * 
- * CRITICAL FOR GRAPHQL:
- * - GraphQL cannot serialize objects with private JavaScript members
- * - Kysely rows returned from .returningAll() have internal #props
- * - This function creates a "plain" JavaScript object safe for GraphQL responses
- * 
- * @param hpRow - Raw Kysely row from database
- * @param facilityIds - Related facility IDs for this HP
- * @returns Plain GraphQL HealthcareProfessional object (safe for serialization)
- */
-export function mapKyselyHpToGraphQL(
-    hpRow: Selectable<HpsTable>,
+/** A professional with facility ids the caller already has, such as a mutation result or an audit log value. */
+export function professionalWithFacilityIds(
+    row: Selectable<HpsTable>,
     facilityIds: string[]
 ): gqlTypes.HealthcareProfessional {
-    const cleanHpRow = JSON.parse(JSON.stringify(hpRow))
-
-    return {
-        id: cleanHpRow.id,
-        names: cleanHpRow.names ?? [],
-        degrees: cleanHpRow.degrees ?? [],
-        primaryLicense: toPrimaryLicense(cleanHpRow.primary_license),
-        additionalCredentials: cleanHpRow.additional_credentials ?? [],
-        licenseReview: toLicenseReview(cleanHpRow.license_review),
-        licenseRecommendation: cleanHpRow.license_recommendation ?? null,
-        spokenLanguages: cleanHpRow.spoken_languages ?? [],
-        specialties: cleanHpRow.specialties ?? [],
-        acceptedInsurance: cleanHpRow.accepted_insurance ?? [],
-        facilityIds,
-        createdDate: cleanHpRow.created_date,
-        updatedDate: cleanHpRow.updated_date,
-        additionalInfoForPatients: cleanHpRow.additional_info_for_patients ?? null
-    }
+    return { ...professionalFromRow(row), facilityIds }
 }
 
 // ==== FACILITIES MAPPERS ====
 
 /**
- * Maps Kysely Facility result to GraphQL Facility type
- * Use this when you need to transform DB types to GraphQL types
+ * Maps a facilities row to the GraphQL Facility.
+ * The `healthcareProfessionalIds` field resolver loads its professional ids.
  */
-/**
- * Maps Kysely Facility result to plain GraphQL Facility object.
- * CRITICAL: This function MUST return a plain JavaScript object without any
- * Kysely internal members (#props) that would cause GraphQL serialization errors.
- */
-export function mapKyselyFacilityToGraphQL(
-    facilityRow: Selectable<FacilitiesTable>,
+export function facilityFromRow(row: Selectable<FacilitiesTable>): FacilityParent {
+    return {
+        id: row.id,
+        nameEn: row.name_en,
+        nameJa: row.name_ja,
+        contact: row.contact,
+        mapLatitude: row.map_latitude,
+        mapLongitude: row.map_longitude,
+        createdDate: row.created_date,
+        updatedDate: row.updated_date,
+        ...paymentOptionFields(row),
+        ...supportedLanguageFields(row),
+        ...facilityLocationFields(row)
+    }
+}
+
+/** A facility with professional ids the caller already has, such as a mutation result or an audit log value. */
+export function facilityWithProfessionalIds(
+    row: Selectable<FacilitiesTable>,
     healthcareProfessionalIds: string[]
 ): gqlTypes.Facility {
-    const cleanRow = JSON.parse(JSON.stringify(facilityRow))
-    
-    return {
-        id: cleanRow.id,
-        nameEn: cleanRow.name_en,
-        nameJa: cleanRow.name_ja,
-        contact: cleanRow.contact,
-        mapLatitude: cleanRow.map_latitude,
-        mapLongitude: cleanRow.map_longitude,
-        healthcareProfessionalIds,
-        createdDate: cleanRow.created_date,
-        updatedDate: cleanRow.updated_date,
-        ...supportedLanguageFields(cleanRow),
-        ...facilityLocationFields(cleanRow)
-    }
+    return { ...facilityFromRow(row), healthcareProfessionalIds }
 }
 
 export function paymentOptionFields(row: {
@@ -166,71 +130,41 @@ export function facilityLocationFields(row: {
 
 // ==== SUBMISSIONS MAPPERS ====
 
-export function mapDbEntityTogqlEntity(row: dbSchema.SubmissionRow): gqlTypes.Submission {
+/** Maps a submissions row to the GraphQL Submission. The three status flags come from `status`. */
+export function submissionFromRow(row: Selectable<SubmissionsTable>): gqlTypes.Submission {
     return {
         id: row.id,
-        googleMapsUrl: row.google_maps_url,
-        healthcareProfessionalName: row.healthcare_professional_name,
+        // Nullable in the table. Stored rows have always had them, so they pass through as stored.
+        googleMapsUrl: row.google_maps_url as string,
+        healthcareProfessionalName: row.healthcare_professional_name as string,
         spokenLanguages: row.spoken_languages as gqlTypes.Locale[],
         facility: row.facility_partial ? {
             ...row.facility_partial,
-            healthcareProfessionalIds: row.facility_partial.healthcareProfessionalIds ?? [] // ← FIX!
+            healthcareProfessionalIds: row.facility_partial.healthcareProfessionalIds ?? []
         } : undefined,
         healthcareProfessionals: row.healthcare_professionals_partial ?? [],
-        isUnderReview: row.status === dbSchema.SUBMISSION_STATUS.UNDER_REVIEW,
-        isApproved: row.status === dbSchema.SUBMISSION_STATUS.APPROVED,
-        isRejected: row.status === dbSchema.SUBMISSION_STATUS.REJECTED,
+        isUnderReview: row.status === SUBMISSION_STATUS.UNDER_REVIEW,
+        isApproved: row.status === SUBMISSION_STATUS.APPROVED,
+        isRejected: row.status === SUBMISSION_STATUS.REJECTED,
         createdDate: row.created_date,
         updatedDate: row.updated_date,
         notes: row.notes ?? undefined
     }
 }
 
-export function mapGqlEntityToDbEntity(
-    input: gqlTypes.CreateSubmissionInput
-): dbSchema.SubmissionInsertRow {
+/** The insert row for a new, pending submission. */
+export function submissionInsertRow(input: gqlTypes.CreateSubmissionInput): Insertable<SubmissionsTable> {
     return {
-        status: dbSchema.SUBMISSION_STATUS.PENDING,
+        status: SUBMISSION_STATUS.PENDING,
         google_maps_url: input.googleMapsUrl ?? '',
         healthcare_professional_name: input.healthcareProfessionalName ?? '',
         spoken_languages: (input.spokenLanguages ?? []) as gqlTypes.Locale[],
         facility_partial: null,
-         
         healthcare_professionals_partial: null,
-         
         hps_id: null,
-         
         facilities_id: null,
-        
         notes: input.notes ?? null,
         created_date: new Date().toISOString(),
         updated_date: new Date().toISOString()
     }
 }
-
-export function mapKyselySubmissionToGraphQL(
-    submissionRow: Selectable<SubmissionsTable>
-): gqlTypes.Submission {
-    // Test are failing because we didn't use
-    // clean and cleanInput inside functions
-    const cleanSubmissionRow = JSON.parse(JSON.stringify(submissionRow))
-
-    return {
-        id: cleanSubmissionRow.id,
-        googleMapsUrl: cleanSubmissionRow.google_maps_url!,
-        healthcareProfessionalName: cleanSubmissionRow.healthcare_professional_name!,
-        spokenLanguages: cleanSubmissionRow.spoken_languages!,
-        facility: cleanSubmissionRow.facility_partial ? {
-            ...cleanSubmissionRow.facility_partial,
-            healthcareProfessionalIds: cleanSubmissionRow.facility_partial.healthcareProfessionalIds ?? []
-        } : undefined,
-        healthcareProfessionals: cleanSubmissionRow.healthcare_professionals_partial ?? [],
-        isUnderReview: cleanSubmissionRow.status === 'under_review',
-        isApproved: cleanSubmissionRow.status === 'approved',
-        isRejected: cleanSubmissionRow.status === 'rejected',
-        createdDate: cleanSubmissionRow.created_date,
-        updatedDate: cleanSubmissionRow.updated_date,
-        notes: cleanSubmissionRow.notes ?? undefined
-    }
-}
-
