@@ -132,17 +132,6 @@
                     © {{ currentYear }} {{ t('footer.copyright') }}
                 </p>
                 <ThemeManager />
-                <!-- Hosting credit, deliberately the quietest thing here -->
-                <p class="m-0 text-xs">
-                    {{ t('footer.poweredBy') }}
-                    <NuxtLink
-                        to="https://www.netlify.com/"
-                        target="_blank"
-                        rel="noopener"
-                        class="underline underline-offset-4 transition-colors hover:text-primary"
-                        data-testid="netlify-link"
-                    >Netlify</NuxtLink>
-                </p>
             </div>
         </div>
     </footer>

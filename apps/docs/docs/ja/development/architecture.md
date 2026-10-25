@@ -19,7 +19,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 
 ### ウェブサイト（`apps/web`）
 
-- **フレームワーク**：Nuxt 4（`nuxi generate`でプリレンダリングし、Netlifyでホスティング）
+- **フレームワーク**：Nuxt 4（`nuxi generate`でプリレンダリングし、AWS Amplifyでホスティング）
 - **UI**：Vue 3 Composition API + Tailwind CSS
 - **状態管理**：Piniaストア
 - **API**：`graphql-request`によるGraphQL
