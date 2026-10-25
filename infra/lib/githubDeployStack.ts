@@ -10,6 +10,8 @@ export interface GithubDeployStackProps extends StackProps {
     // Only workflow runs on this branch can assume the deploy role.
     branch: string
     roleName: string
+    // Regions besides the stack's own where CI deploys (their CDK bootstrap roles).
+    additionalRegions?: string[]
 }
 
 // Lets GitHub Actions deploy the CDK app without stored AWS keys. The workflow
@@ -43,7 +45,8 @@ export class GithubDeployStack extends Stack {
 
         this.role.addToPolicy(new PolicyStatement({
             actions: ['sts:AssumeRole'],
-            resources: [`arn:${this.partition}:iam::${this.account}:role/cdk-hnb659fds-*-${this.account}-${this.region}`],
+            resources: [this.region, ...(props.additionalRegions ?? [])].map(region =>
+                `arn:${this.partition}:iam::${this.account}:role/cdk-hnb659fds-*-${this.account}-${region}`),
         }))
 
         new CfnOutput(this, 'DeployRoleArn', { value: this.role.roleArn })

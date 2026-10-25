@@ -16,6 +16,9 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocNetwork` | VPC with two private dual-stack subnets (`ap-northeast-1a`, `ap-northeast-1c`). No NAT gateway. IPv6 traffic leaves through an egress-only internet gateway. |
 | `FindadocDatabase` | RDS PostgreSQL 17 for the API, plus the `DatabaseClients` security group that may connect to it and a monthly AWS Backup plan. |
 | `FindadocAlerts` | SNS topic `findadoc-alarms`, the AWS Chatbot link that posts it to `#alerts` in Slack, and the database alarms. |
+| `FindadocEdgeCertificates` | **us-east-1.** The ACM certificate for `api-staging.findadoc.jp` and `api.findadoc.jp`. CloudFront only accepts certificates from us-east-1. |
+| `FindadocApiSecrets` | The `findadoc/api` secret: `GOOGLE_API_KEY`, `SENTRY_DSN`, and a generated `EDGE_SHARED_SECRET`. |
+| `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, API alarms, and saved log queries. |
 
 ## Monthly cost
 
@@ -31,6 +34,10 @@ Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hou
 | VPC, subnets, route tables, egress-only and internet gateways, security groups | $0 |
 | PostgreSQL logs in CloudWatch, kept 30 days | Inside the 5 GB free allowance |
 | SNS topic, AWS Chatbot, and alarms (the first 10 are free) | $0 |
+| API and migration Lambdas | $0 inside the always-free 1M requests and 400k GB-seconds |
+| CloudFront distribution and the viewer-IP CloudFront Function | $0 inside the free 1 TB, 10M requests and 2M function invocations |
+| ACM certificate, Route 53 alias records | $0 |
+| Secrets Manager secret `findadoc/api` | $0.40 |
 
 Not used, on purpose: NAT gateways (about $45/month each), Elastic IPs and public IPv4 addresses ($3.65/month each), VPC interface endpoints (about $7/month each), load balancers, Multi-AZ, Performance Insights, Enhanced Monitoring, and customer-managed KMS keys. Check `cdk diff` for any of these before merging an infra change.
 
@@ -147,3 +154,33 @@ To check the Slack link after a deploy, force an alarm into ALARM. It returns to
 ```bash
 aws cloudwatch set-alarm-state --alarm-name findadoc-database-cpu-high --state-value ALARM --state-reason "Testing the Slack link"
 ```
+
+## API
+
+`FindadocApi` runs `apps/server/src/lambda.ts`, bundled with esbuild, as `findadoc-api`. The function is arm64 with Node 24 and 1 GB. It sits in the private subnets and reaches Auth0, Google Places and Sentry over IPv6. It connects to RDS as `findadoc_api` with an IAM token. CloudFront serves it at `api-staging.findadoc.jp`, with caching off. A CloudFront Function adds the viewer IP, and the origin adds `x-findadoc-edge`, so rate limits and Places quotas count people, not CloudFront edges. `api.findadoc.jp` moves at the cutover (#13).
+
+There is no reserved concurrency. A new account can have a total Lambda concurrency of 10, and reserving any of it can fail the deploy. `findadoc-api-throttles` reports when the account limit is reached.
+
+Every deploy of `FindadocApi` first runs `findadoc-db-migrate` (`apps/server/src/lambdaMigrate.ts`), a CDK trigger in the VPC. It applies pending migrations as the master user. If a migration fails, the deploy fails and the API function does not change.
+
+### One-time setup before the first deploy
+
+1. An admin bootstraps us-east-1 once with an Identity Center session:
+
+   ```bash
+   pnpm --filter @findadoc/infra cdk bootstrap aws://677501681118/us-east-1
+   ```
+
+   CI can then deploy there. `FindadocGithubDeploy` lets the deploy role assume the us-east-1 bootstrap roles, and `FindadocEdgeCertificates` waits for that change.
+2. After the first deploy, open the `findadoc/api` secret in Secrets Manager. Fill in `GOOGLE_API_KEY` and `SENTRY_DSN`, and leave `EDGE_SHARED_SECRET` as generated. Then bump `API_SECRETS_REVISION` in `lib/environment.ts` and merge, so the function reads the new values.
+
+### API alarms (Slack `#alerts`)
+
+| Alarm | Fires when |
+| --- | --- |
+| `findadoc-api-errors` | more than 5 Lambda errors in 5 minutes |
+| `findadoc-api-p95-duration` | p95 duration above 3 s for 15 minutes |
+| `findadoc-api-throttles` | any throttled request |
+| `findadoc-api-search-failures` | a facility or professional search fails on the server (metric filter on `searchFailed` in the request log) |
+
+Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-operations`, `findadoc/api/errors-by-operation`, `findadoc/api/failed-searches`.

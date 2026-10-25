@@ -1,11 +1,19 @@
 import { App, Tags } from 'aws-cdk-lib'
 import { AlertsStack } from '../lib/alertsStack.js'
+import { ApiSecretsStack } from '../lib/apiSecretsStack.js'
+import { ApiStack } from '../lib/apiStack.js'
 import { DatabaseStack } from '../lib/databaseStack.js'
 import { DnsStack } from '../lib/dnsStack.js'
+import { EdgeCertificateStack } from '../lib/edgeCertificateStack.js'
 import {
     API_DATABASE_USER,
+    API_DOMAIN,
+    API_SECRETS_REVISION,
+    API_STAGING_DOMAIN,
+    EDGE_CERTIFICATE_ENV,
     FINDADOC_DOMAIN,
     FINDADOC_ENV,
+    FINDADOC_HOSTED_ZONE_ID,
     GITHUB_DEPLOY_ROLE_NAME,
     GITHUB_OIDC_SUBJECT_PREFIX,
     GITHUB_REPOSITORY,
@@ -48,17 +56,50 @@ const database = new DatabaseStack(app, 'FindadocDatabase', {
     apiDatabaseUser: API_DATABASE_USER,
 })
 
-new AlertsStack(app, 'FindadocAlerts', {
+const alerts = new AlertsStack(app, 'FindadocAlerts', {
     env: FINDADOC_ENV,
     slackWorkspaceId: SLACK_WORKSPACE_ID,
     slackChannelId: SLACK_ALERTS_CHANNEL_ID,
     database: database.instance,
 })
 
-new GithubDeployStack(app, 'FindadocGithubDeploy', {
+const githubDeploy = new GithubDeployStack(app, 'FindadocGithubDeploy', {
     env: FINDADOC_ENV,
     repository: GITHUB_REPOSITORY,
     subjectPrefix: GITHUB_OIDC_SUBJECT_PREFIX,
     branch: 'main',
     roleName: GITHUB_DEPLOY_ROLE_NAME,
+    // The CloudFront certificate stack deploys to us-east-1.
+    additionalRegions: [EDGE_CERTIFICATE_ENV.region],
+})
+
+const edgeCertificates = new EdgeCertificateStack(app, 'FindadocEdgeCertificates', {
+    env: EDGE_CERTIFICATE_ENV,
+    crossRegionReferences: true,
+    hostedZoneId: FINDADOC_HOSTED_ZONE_ID,
+    zoneName: FINDADOC_DOMAIN,
+    apiDomainNames: [API_STAGING_DOMAIN, API_DOMAIN],
+})
+
+// The deploy role can use the us-east-1 bootstrap only after this change reaches it.
+edgeCertificates.addStackDependency(githubDeploy)
+
+const apiSecrets = new ApiSecretsStack(app, 'FindadocApiSecrets', {
+    env: FINDADOC_ENV,
+})
+
+new ApiStack(app, 'FindadocApi', {
+    env: FINDADOC_ENV,
+    crossRegionReferences: true,
+    vpc: network.vpc,
+    database: database.instance,
+    databaseClients: database.clientSecurityGroup,
+    apiDatabaseUser: API_DATABASE_USER,
+    apiSecret: apiSecrets.secret,
+    certificate: edgeCertificates.apiCertificate,
+    hostedZoneId: FINDADOC_HOSTED_ZONE_ID,
+    zoneName: FINDADOC_DOMAIN,
+    domainName: API_STAGING_DOMAIN,
+    alerts,
+    secretsRevision: API_SECRETS_REVISION,
 })

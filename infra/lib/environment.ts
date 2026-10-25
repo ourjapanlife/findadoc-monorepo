@@ -7,6 +7,24 @@ export const FINDADOC_ENV = {
 
 export const FINDADOC_DOMAIN = 'findadoc.jp'
 
+// The existing Route 53 zone, also cached in cdk.context.json. Named here so stacks
+// outside ap-northeast-1 (the us-east-1 certificate) need no lookup.
+export const FINDADOC_HOSTED_ZONE_ID = 'Z02936621Z4BCXTP4RWL0'
+
+// CloudFront only accepts certificates from us-east-1.
+export const EDGE_CERTIFICATE_ENV = {
+    account: '677501681118',
+    region: 'us-east-1',
+} as const satisfies Environment
+
+// The AWS API serves api-staging first. api.findadoc.jp moves at the cutover (#13).
+export const API_STAGING_DOMAIN = 'api-staging.findadoc.jp'
+export const API_DOMAIN = 'api.findadoc.jp'
+
+// CloudFormation reads the findadoc/api secret only when the function changes. After
+// editing a value in Secrets Manager, bump this so the next deploy picks it up.
+export const API_SECRETS_REVISION = '1'
+
 export const GITHUB_REPOSITORY = 'ourjapanlife/findadoc-monorepo'
 
 // The repository uses GitHub's immutable OIDC subject, which names the owner and

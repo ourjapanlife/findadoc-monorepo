@@ -4,12 +4,20 @@ on:
   pull_request:
     paths:
       - infra/**
+      # The API and migration Lambdas are bundled from the server and the shared packages.
+      - apps/server/**
+      - packages/graphql/**
+      - packages/utils/**
       - .github/workflows/infra.yml
       - pnpm-lock.yaml
   push:
     branches: [main]
     paths:
       - infra/**
+      # The API and migration Lambdas are bundled from the server and the shared packages.
+      - apps/server/**
+      - packages/graphql/**
+      - packages/utils/**
       - .github/workflows/infra.yml
       - pnpm-lock.yaml
 
@@ -31,6 +39,12 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      # CDK bundles the API Lambdas, which import the shared packages' dist/.
+      - name: Build shared packages
+        run: |
+          pnpm --filter @findadoc/graphql build
+          pnpm --filter @findadoc/utils build
 
       # No AWS credentials here. Lookups come from the committed cdk.context.json,
       # so a new lookup that is not in that file fails the check.
@@ -63,6 +77,12 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::677501681118:role/findadoc-github-cdk-deploy
           aws-region: ap-northeast-1
+
+      # CDK bundles the API Lambdas, which import the shared packages' dist/.
+      - name: Build shared packages
+        run: |
+          pnpm --filter @findadoc/graphql build
+          pnpm --filter @findadoc/utils build
 
       - name: Deploy
         run: pnpm --filter @findadoc/infra run deploy --all --require-approval never
