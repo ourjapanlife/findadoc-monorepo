@@ -2,5 +2,10 @@
   "hosted-zone:account=677501681118:domainName=findadoc.jp:region=ap-northeast-1": {
     "Id": "/hostedzone/Z02936621Z4BCXTP4RWL0",
     "Name": "findadoc.jp."
-  }
+  },
+  "availability-zones:account=677501681118:region=ap-northeast-1": [
+    "ap-northeast-1a",
+    "ap-northeast-1c",
+    "ap-northeast-1d"
+  ]
 }
