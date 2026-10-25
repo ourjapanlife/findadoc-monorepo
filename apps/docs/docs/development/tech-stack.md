@@ -42,6 +42,7 @@
 | [Node.js](https://nodejs.org/) | Runtime |
 | [Apollo Server](https://www.apollographql.com/docs/apollo-server/) | GraphQL API on Fastify |
 | [Supabase](https://supabase.com/) | Database (PostgreSQL) |
+| [Kysely](https://kysely.dev/) | Typed SQL queries to PostgreSQL |
 | [Sentry](https://sentry.io/) | Error reporting |
 | [PM2](https://pm2.keymetrics.io/) | Process management (production) |
 | [Docker](https://www.docker.com/) | Containerization |

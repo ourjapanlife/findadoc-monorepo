@@ -5,7 +5,7 @@ import * as auditLogService from '../src/services/auditLogServiceSupabase.js'
 import { generateRandomCreateSubmissionInput } from '../src/fakeData/fakeSubmissions.js'
 import { mapGqlEntityToDbEntity } from '../src/services/mappersEntityService.js'
 import { createSubmission, updateSubmission, deleteSubmission } from '../src/services/submissionService.js'
-import { getSupabaseClient } from '../src/supabaseClient.js'
+import { db } from '../src/kyselyClient.js'
 
 describe('Audit Log System', () => {
     describe('createAuditLog', () => {
@@ -73,7 +73,6 @@ describe('Audit Log System', () => {
                 .mockRejectedValue(new Error('Audit log failed'))
 
             const submissionInput = generateRandomCreateSubmissionInput()
-            const supabase = getSupabaseClient()
 
             // Attempt to create submission (should fail due to audit log)
             const result = await createSubmission(submissionInput, 'testUser')
@@ -87,20 +86,18 @@ describe('Audit Log System', () => {
 
             // If a submission ID exists, verify it was rolled back
             if (result.data?.id) {
-                const { data: checkSubmission } = await supabase
-                    .from('submissions')
+                const checkSubmission = await db
+                    .selectFrom('submissions')
                     .select('id')
-                    .eq('id', result.data.id)
-                    .maybeSingle()
+                    .where('id', '=', result.data.id)
+                    .executeTakeFirst()
 
-                // Should be null because rollback deleted it
-                expect(checkSubmission).toBeNull()
+                // Should be missing because rollback deleted it
+                expect(checkSubmission).toBeUndefined()
             }
         })
 
         it('should rollback submission update if audit log fails', async () => {
-            const supabase = getSupabaseClient()
-
             // First, create a submission successfully (no mock yet)
             const submissionInput = generateRandomCreateSubmissionInput()
             const createResult = await createSubmission(submissionInput, 'testUser')
@@ -109,11 +106,11 @@ describe('Audit Log System', () => {
             const submissionId = createResult.data.id
 
             // Get original state
-            const { data: originalData } = await supabase
-                .from('submissions')
-                .select('notes, updatedDate')
-                .eq('id', submissionId)
-                .single()
+            const originalData = await db
+                .selectFrom('submissions')
+                .select(['notes', 'updated_date'])
+                .where('id', '=', submissionId)
+                .executeTakeFirstOrThrow()
 
             // NOW mock the audit log to fail
             const spy = vi.spyOn(auditLogService, 'createAuditLog')
@@ -130,22 +127,20 @@ describe('Audit Log System', () => {
             expect(updateResult.hasErrors).toBe(true)
 
             // Verify data was rolled back to original
-            const { data: afterRollback } = await supabase
-                .from('submissions')
-                .select('notes, updatedDate')
-                .eq('id', submissionId)
-                .single()
+            const afterRollback = await db
+                .selectFrom('submissions')
+                .select(['notes', 'updated_date'])
+                .where('id', '=', submissionId)
+                .executeTakeFirstOrThrow()
 
-            expect(afterRollback?.notes).toBe(originalData?.notes)
-            expect(afterRollback?.updatedDate).toBe(originalData?.updatedDate)
+            expect(afterRollback.notes).toBe(originalData.notes)
+            expect(afterRollback.updated_date).toBe(originalData.updated_date)
 
             // Cleanup
-            await supabase.from('submissions').delete().eq('id', submissionId)
+            await db.deleteFrom('submissions').where('id', '=', submissionId).execute()
         })
 
         it('should rollback submission deletion if audit log fails', async () => {
-            const supabase = getSupabaseClient()
-
             // First, create a submission
             const submissionInput = generateRandomCreateSubmissionInput()
             const createResult = await createSubmission(submissionInput, 'testUser')
@@ -154,11 +149,11 @@ describe('Audit Log System', () => {
             const submissionId = createResult.data.id
 
             // Save original data
-            const { data: originalData } = await supabase
-                .from('submissions')
-                .select('*')
-                .eq('id', submissionId)
-                .single()
+            const originalData = await db
+                .selectFrom('submissions')
+                .selectAll()
+                .where('id', '=', submissionId)
+                .executeTakeFirstOrThrow()
 
             // Mock audit log to fail
             const spy = vi.spyOn(auditLogService, 'createAuditLog')
@@ -172,18 +167,18 @@ describe('Audit Log System', () => {
             expect(deleteResult.data.isSuccessful).toBe(false)
 
             // Verify submission still exists (rollback worked)
-            const { data: afterRollback } = await supabase
-                .from('submissions')
-                .select('id, google_maps_url')
-                .eq('id', submissionId)
-                .single()
+            const afterRollback = await db
+                .selectFrom('submissions')
+                .select(['id', 'google_maps_url'])
+                .where('id', '=', submissionId)
+                .executeTakeFirst()
 
-            expect(afterRollback).not.toBeNull()
-            expect(afterRollback?.id).toBe(originalData?.id)
-            expect(afterRollback?.google_maps_url).toBe(originalData?.google_maps_url)
+            expect(afterRollback).toBeDefined()
+            expect(afterRollback?.id).toBe(originalData.id)
+            expect(afterRollback?.google_maps_url).toBe(originalData.google_maps_url)
 
             // Cleanup
-            await supabase.from('submissions').delete().eq('id', submissionId)
+            await db.deleteFrom('submissions').where('id', '=', submissionId).execute()
         })
     })
 

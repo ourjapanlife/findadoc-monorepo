@@ -88,7 +88,7 @@ pnpm --filter @findadoc/web build
     APIにはDockerとローカルのSupabaseデータベースが必要です。
 
 ```bash
-pnpm check:supabase      # ローカルSupabaseが http://127.0.0.1:54321 で動いているか確認
+pnpm check:db            # ローカルデータベースが 127.0.0.1:54322 で動いているか確認
 pnpm db:reset            # ローカルデータベースを削除して再作成
 pnpm db:seed             # シードデータを投入
 pnpm dev:server          # APIを起動

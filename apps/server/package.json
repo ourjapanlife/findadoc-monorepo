@@ -8,7 +8,7 @@
         "dev:seeded": "pnpm db:reset && pnpm db:seed && pnpm dev:startserver",
         "dev:startserver": "echo '💻 💻 💻✨ Starting dev server...' && cross-env NODE_ENV=development nodemon --exec 'node --inspect --loader ts-node/esm src/index.ts'",
         "dev:startlocaldb": "pnpm exec supabase start",
-        "check:supabase": "node --loader ts-node/esm src/supabaseCheck.ts",
+        "check:db": "node --loader ts-node/esm src/dbCheck.ts",
         "test": "vitest run",
         "db:seed": "node --loader ts-node/esm scripts/seed/index.ts",
         "db:reset": "node --loader ts-node/esm scripts/db/reset.ts",
@@ -36,7 +36,6 @@
         "migrate:local:dry": "echo '🔍 DRY RUN: LOCAL migration (no data written)...' && cross-env NODE_ENV=development DRY_RUN=true node --loader ts-node/esm src/migration.ts",
         "migrate:prod": "echo '⚠️  Running PRODUCTION migration...' && cross-env NODE_ENV=production node --loader ts-node/esm src/migration.ts",
         "migrate:prod:dry": "echo '🔍 DRY RUN: PRODUCTION migration (no data written)...' && cross-env NODE_ENV=production DRY_RUN=true node --loader ts-node/esm src/migration.ts",
-        "generate:db": "pnpm exec supabase gen types typescript --local > src/typeDefs/supabase-generated.ts",
         "typecheck": "tsc --noEmit && node --loader ts-node/esm scripts/seed/data.ts"
     },
     "repository": {
@@ -74,7 +73,6 @@
         "copyfiles": "^2.4.1",
         "eslint": "^10.0.0",
         "globals": "^15.0.0",
-        "kysely-supabase": "^0.2.1",
         "pg": "^8.16.3",
         "rimraf": "^6.0.1",
         "supabase": "2.121.0",
@@ -93,7 +91,6 @@
         "@fastify/jwt": "^9.1.0",
         "@fastify/rate-limit": "^10.2.2",
         "@sentry/node": "^10.53.1",
-        "@supabase/supabase-js": "^2.75.0",
         "@types/googlemaps": "^3.43.3",
         "cross-env": "^7.0.3",
         "csv-parse": "^5.3.3",

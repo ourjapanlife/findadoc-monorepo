@@ -32,7 +32,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **ランタイム**：Node.js + TypeScript
 - **API**：Fastify上のApollo Server
 - **スキーマ**：`apps/server/src/typeDefs/schema.graphql`（リポジトリ内で唯一のGraphQLスキーマ）
-- **データベース**：Supabase（PostgreSQL）。マイグレーションは `apps/server/supabase`
+- **データベース**：Supabase（PostgreSQL）。マイグレーションは `apps/server/supabase`。APIはSupabaseクライアントではなく、Postgres接続上のKyselyでクエリする
 - **本番環境**：PM2で管理されるDockerコンテナ
 
 ### MCPサーバー（`apps/mcp`）

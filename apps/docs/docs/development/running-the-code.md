@@ -88,7 +88,7 @@ This prerenders the site into `apps/web/.output/public`.
     The API needs Docker and a local Supabase database.
 
 ```bash
-pnpm check:supabase      # confirm local Supabase is running at http://127.0.0.1:54321
+pnpm check:db            # confirm the local database is running on 127.0.0.1:54322
 pnpm db:reset            # drop and recreate the local database
 pnpm db:seed             # load the seed data
 pnpm dev:server          # start the API

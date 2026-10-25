@@ -42,6 +42,7 @@
 | [Node.js](https://nodejs.org/) | ランタイム |
 | [Apollo Server](https://www.apollographql.com/docs/apollo-server/) | Fastify上のGraphQL API |
 | [Supabase](https://supabase.com/) | データベース（PostgreSQL） |
+| [Kysely](https://kysely.dev/) | PostgreSQLへの型付きSQLクエリ |
 | [Sentry](https://sentry.io/) | エラー報告 |
 | [PM2](https://pm2.keymetrics.io/) | プロセス管理（本番環境） |
 | [Docker](https://www.docker.com/) | コンテナ化 |

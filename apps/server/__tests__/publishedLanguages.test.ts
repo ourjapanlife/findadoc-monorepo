@@ -4,7 +4,6 @@ import { isPublishedLocale, PUBLISHED_LOCALES } from '../src/languages/published
 import { supportedLanguageFields, mapKyselyHpToGraphQL } from '../src/services/mappersEntityService.js'
 import {
     applyFacilityFilters,
-    buildFacilitySelect,
     buildFacilityUpdatePatch,
     matchesThroughProfessional
 } from '../src/services/facilityService.js'
@@ -12,27 +11,15 @@ import { validateSupportedLanguages } from '../src/validation/validateFacility.j
 import { ErrorCode, Result } from '../src/result.js'
 import type { Selectable } from 'kysely'
 import type { HpsTable } from '../src/typeDefs/kyselyTypes.js'
+import { compileOnlyDb } from './fixtures/compileOnlyDb.js'
+import type { FacilitySearchFilters } from '@findadoc/graphql'
 
 function validationResult(): Result<unknown> {
     return { data: undefined, hasErrors: false, errors: [] }
 }
 
-function filterRecorder() {
-    const contains: string[] = []
-    const query = {
-        ilike() {
-            return query
-        },
-        or() {
-            return query
-        },
-        contains(column: string) {
-            contains.push(column)
-            return query
-        }
-    }
-
-    return { query, contains }
+function facilitySearchSql(filters: FacilitySearchFilters): string {
+    return applyFacilityFilters(compileOnlyDb.selectFrom('facilities').selectAll('facilities'), filters).compile().sql
 }
 
 describe('published language allowlist', () => {
@@ -111,28 +98,25 @@ describe('published language allowlist', () => {
             spokenLanguages: [Locale.EnUs],
             specialties: []
         })).toBe(false)
-        expect(buildFacilitySelect('id', { spokenLanguages: [Locale.EnUs] })).toBe('id')
 
-        const languagesOnly = filterRecorder()
+        const languagesOnly = facilitySearchSql({ spokenLanguages: [Locale.EnUs, Locale.JaJp] })
 
-        applyFacilityFilters(languagesOnly.query, { spokenLanguages: [Locale.EnUs, Locale.JaJp] })
-        expect(languagesOnly.contains).toEqual([])
+        expect(languagesOnly).not.toContain('hps_facilities')
+        expect(languagesOnly).not.toContain('spoken_languages')
 
         expect(matchesThroughProfessional({
             spokenLanguages: [Locale.EnUs],
             specialties: [Specialty.Pediatrics]
         })).toBe(true)
-        expect(buildFacilitySelect('id', {
-            spokenLanguages: [Locale.EnUs],
-            specialties: [Specialty.Pediatrics]
-        })).toContain('hps_facilities!inner')
 
-        const withSpecialty = filterRecorder()
-
-        applyFacilityFilters(withSpecialty.query, {
+        const withSpecialty = facilitySearchSql({
             spokenLanguages: [Locale.EnUs],
             specialties: [Specialty.Pediatrics]
         })
-        expect(withSpecialty.contains).toContain('hps_facilities.hps.spoken_languages')
+
+        // One EXISTS, so the same professional has the specialty and speaks the language.
+        expect(withSpecialty.match(/exists/g)).toHaveLength(1)
+        expect(withSpecialty).toContain('"hps"."specialties" @>')
+        expect(withSpecialty).toContain('"hps"."spoken_languages" @>')
     })
 })

@@ -1,10 +1,26 @@
 import { Kysely, PostgresDialect } from 'kysely'
-import { Pool } from 'pg'
+import { Pool, types } from 'pg'
 import type { Database } from './typeDefs/kyselyTypes.js'
 import { logger } from './logger.js'
 import { envVariables } from '../utils/environmentVariables.js'
 
 let pool: Pool | null = null
+
+const TIMESTAMPTZ_OID = 1184
+
+/**
+ * Reads a timestamptz as the ISO string PostgREST used to return, such as
+ * 2026-10-25T03:00:00.123456+00:00, instead of a Date. A Date would reach a
+ * GraphQL String field as epoch milliseconds.
+ */
+export function timestamptzToIso(value: string): string {
+    return value.replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00')
+}
+
+const getTypeParser: typeof types.getTypeParser = ((oid: number, format?: 'text' | 'binary') =>
+    oid === TIMESTAMPTZ_OID && format !== 'binary'
+        ? timestamptzToIso
+        : types.getTypeParser(oid, format)) as typeof types.getTypeParser
 let kyselyInstance: Kysely<Database> | null = null
 
 /**
@@ -38,7 +54,8 @@ export async function initializeKyselyClient(): Promise<void> {
         password: envVariables.pgPassword(),
         max: 100,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000
+        connectionTimeoutMillis: 2000,
+        types: { getTypeParser }
     })
 
     /**

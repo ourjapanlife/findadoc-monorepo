@@ -2,21 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { likeContainsPattern, listQueryValue } from '../src/search/listQuery.js'
 import { applyFacilityFilters } from '../src/services/facilityService.js'
 import { applyHpFilters } from '../src/services/healthcareProfessionalService.js'
+import { compileOnlyDb } from './fixtures/compileOnlyDb.js'
 
-function recordingBuilder() {
-    const calls: Array<[string, string]> = []
-    const builder = {
-        ilike(column: string, pattern: string) {
-            calls.push([column, pattern])
-            return builder
-        },
-        or() { return builder },
-        contains() { return builder },
-        in() { return builder },
-        eq() { return builder }
-    }
+function facilityFilterQuery(query: string) {
+    return applyFacilityFilters(compileOnlyDb.selectFrom('facilities').selectAll(), { query }).compile()
+}
 
-    return { builder, calls }
+function professionalFilterQuery(query: string) {
+    return applyHpFilters(compileOnlyDb.selectFrom('hps').selectAll(), { query }).compile()
 }
 
 describe('listQueryValue', () => {
@@ -32,19 +25,15 @@ describe('listQueryValue', () => {
     })
 
     it('does not filter a facility or professional list when the query is blank', () => {
-        const facilities = recordingBuilder()
-        const professionals = recordingBuilder()
+        expect(facilityFilterQuery('   ').sql).not.toContain('where')
+        expect(professionalFilterQuery('   ').sql).not.toContain('where')
 
-        applyFacilityFilters(facilities.builder, { query: '   ' })
-        applyHpFilters(professionals.builder, { query: '   ' })
+        const facilities = facilityFilterQuery('Tokyo')
+        const professionals = professionalFilterQuery('Ada')
 
-        expect(facilities.calls).toEqual([])
-        expect(professionals.calls).toEqual([])
-
-        applyFacilityFilters(facilities.builder, { query: 'Tokyo' })
-        applyHpFilters(professionals.builder, { query: 'Ada' })
-
-        expect(facilities.calls).toEqual([['search_text', '%Tokyo%']])
-        expect(professionals.calls).toEqual([['search_text', '%Ada%']])
+        expect(facilities.sql).toContain('"facilities"."search_text" ilike $1')
+        expect(facilities.parameters).toEqual(['%Tokyo%'])
+        expect(professionals.sql).toContain('"hps"."search_text" ilike $1')
+        expect(professionals.parameters).toEqual(['%Ada%'])
     })
 })
