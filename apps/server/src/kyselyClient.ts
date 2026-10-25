@@ -1,5 +1,6 @@
 import { Kysely, PostgresDialect } from 'kysely'
-import { Pool, types } from 'pg'
+import { Signer } from '@aws-sdk/rds-signer'
+import { Pool, types, type PoolConfig } from 'pg'
 import type { Database } from './typeDefs/kyselyTypes.js'
 import { logger } from './logger.js'
 import { envVariables } from '../utils/environmentVariables.js'
@@ -24,6 +25,35 @@ const getTypeParser: typeof types.getTypeParser = ((oid: number, format?: 'text'
 let kyselyInstance: Kysely<Database> | null = null
 
 /**
+ * Connection settings from the environment. PGPORT and DB_POOL_MAX override the defaults:
+ * the Supabase pooler (6543) in production, local Docker (54322) otherwise, and 100 connections.
+ * With DB_IAM_AUTH=true (RDS), each new connection signs a 15-minute IAM token with the
+ * function's role instead of using a password, and TLS is required.
+ */
+export function poolConfig(): PoolConfig {
+    const host = envVariables.pgHost()
+    const port = Number(envVariables.pgPort() ?? (envVariables.isProduction() ? 6543 : 54322))
+    const user = envVariables.pgUser()
+    const iamAuth = envVariables.dbIamAuth()
+    const signer = iamAuth && host && user
+        ? new Signer({ hostname: host, port, username: user, region: process.env.AWS_REGION })
+        : null
+
+    return {
+        host,
+        port,
+        database: 'postgres',
+        user,
+        password: signer ? () => signer.getAuthToken() : envVariables.pgPassword(),
+        ssl: iamAuth || envVariables.dbSsl() ? { rejectUnauthorized: true } : undefined,
+        max: Number(envVariables.dbPoolMax() ?? 100),
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
+        types: { getTypeParser }
+    }
+}
+
+/**
  * Initialize Kysely client with connection pool
  * Should be called once at application startup, after environment variables are loaded
  */
@@ -46,17 +76,7 @@ export async function initializeKyselyClient(): Promise<void> {
  * - idleTimeoutMillis: Close idle connections after 30 seconds to free resources
  * - connectionTimeoutMillis: Fail fast if can't acquire a connection within 2 seconds
  */
-    pool = new Pool({
-        host: envVariables.pgHost(),
-        port: process.env.NODE_ENV === 'production' ? 6543 : 54322,
-        database: 'postgres',
-        user: envVariables.pgUser(),
-        password: envVariables.pgPassword(),
-        max: 100,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000,
-        types: { getTypeParser }
-    })
+    pool = new Pool(poolConfig())
 
     /**
  * Pool error handler

@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import type pg from 'pg'
 
-export const migrationsDir = fileURLToPath(new URL('../../supabase/migrations', import.meta.url))
+// MIGRATIONS_DIR is set where the files are bundled elsewhere, such as the migration Lambda.
+export const migrationsDir = process.env.MIGRATIONS_DIR
+    ?? fileURLToPath(new URL('../../supabase/migrations', import.meta.url))
 
 // Session lock, so two deploys cannot apply the same file at once.
 const MIGRATION_LOCK_ID = 7_318_204_551

@@ -25,6 +25,10 @@ const envVariables = {
     pgHost: () => process.env.PGHOST,
     dbUrl: () => process.env.DB_URL || process.env.DATABASE_URL,
     pgPort: () => process.env.PGPORT,
+    // RDS: sign in with an IAM auth token instead of PGPASSWORD. Implies TLS.
+    dbIamAuth: () => process.env.DB_IAM_AUTH === 'true',
+    dbSsl: () => process.env.PGSSLMODE === 'require',
+    dbPoolMax: () => process.env.DB_POOL_MAX,
     pgDatabase: () => process.env.DATABASE_URL,
     sentryDsn: () => process.env.SENTRY_DSN,
     sentryEnvironment: () =>
