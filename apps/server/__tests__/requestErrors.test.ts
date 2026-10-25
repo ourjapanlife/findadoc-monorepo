@@ -18,6 +18,8 @@ describe('isServerError', () => {
     it('counts a wrapped service failure and an unexpected error, not a client mistake', () => {
         expect(isServerError(serviceError('facilities', 500))).toBe(true)
         expect(isServerError(serviceError('facilities', 400))).toBe(false)
+        // A missing record is the caller's problem: not a Sentry event, not a failed search.
+        expect(isServerError(serviceError('facility', 404))).toBe(false)
         expect(isServerError(new GraphQLError('boom'))).toBe(true)
         expect(isServerError(new GraphQLError('no', { extensions: { code: 'UNAUTHORIZED' } }))).toBe(false)
         expect(isServerError(new GraphQLError('bad', { extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } }))).toBe(false)
