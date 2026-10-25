@@ -57,6 +57,13 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
           # Previews skip clinic, doctor, hub, and facet HTML. Production on main does not.
           NUXT_SKIP_DIRECTORY_PRERENDER: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+          # Baked into the static site by nuxi generate. Amplify only hosts the zip.
+          NUXT_PUBLIC_SENTRY_DSN: ${{ secrets.NUXT_PUBLIC_SENTRY_DSN }}
+          NUXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ secrets.NUXT_PUBLIC_SENTRY_ENVIRONMENT }}
+          NUXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: ${{ secrets.NUXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE }}
+          NUXT_PUBLIC_UMAMI_URL: ${{ secrets.NUXT_PUBLIC_UMAMI_URL }}
+          NUXT_PUBLIC_UMAMI_SITE_ID: ${{ secrets.NUXT_PUBLIC_UMAMI_SITE_ID }}
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
