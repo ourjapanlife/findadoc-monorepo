@@ -1,10 +1,21 @@
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import pg from 'pg'
+import { migrate } from './migrations.js'
 
 const remoteFlags = ['--linked', '--db-url']
-const remoteEnv = ['SUPABASE_DB_URL', 'DATABASE_URL', 'DB_URL', 'POSTGRES_URL', 'SUPABASE_DB_PASSWORD']
 const serverRoot = fileURLToPath(new URL('../..', import.meta.url))
+const composeFile = 'docker/docker-compose-db.yml'
+
+// Always the local database. Remote connection settings in the environment are ignored.
+const localDatabase: pg.ClientConfig = {
+    host: '127.0.0.1',
+    port: 54322,
+    user: 'postgres',
+    password: 'postgres',
+    database: 'postgres',
+    connectionTimeoutMillis: 2000
+}
 
 if (process.env.NODE_ENV === 'production') {
     console.error('db:reset only runs against the local database.')
@@ -18,66 +29,75 @@ if (extraArgs.some(arg => remoteFlags.some(flag => arg === flag || arg.startsWit
     process.exit(1)
 }
 
-const env: NodeJS.ProcessEnv = { ...process.env, NODE_ENV: 'development' }
+const client = await connectToLocalDatabase()
 
-for (const name of remoteEnv) {
-    delete env[name]
+try {
+    await closeOtherConnections(client)
+    // Drops every app table, including the migration history, then rebuilds from the files.
+    await client.query('DROP SCHEMA IF EXISTS public CASCADE')
+    await client.query('CREATE SCHEMA public')
+    await client.query('GRANT ALL ON SCHEMA public TO postgres, public')
+    await migrate(client, { importSupabaseHistory: false })
+    console.log('Reset local database.')
+} catch (error) {
+    console.error(error instanceof Error ? error.message : error)
+    process.exitCode = 1
+} finally {
+    await client.end().catch(() => undefined)
 }
 
-await closeLocalAppConnections()
+/**
+ * Connects to the local database. When nothing is listening, starts the Docker
+ * database once (`pnpm db:start`) and waits for it.
+ */
+async function connectToLocalDatabase(): Promise<pg.Client> {
+    const first = await tryConnect()
 
-let status = supabase(['db', 'reset', '--local', '--no-seed', '--yes'])
-
-if (status !== 0) {
-    console.error('Local reset did not finish. Starting the local Supabase containers and trying once more.')
-    const started = supabase(['start'])
-
-    if (started === 0) {
-        await closeLocalAppConnections()
-        status = supabase(['db', 'reset', '--local', '--no-seed', '--yes'])
+    if (first) {
+        return first
     }
-}
 
-process.exit(status)
-
-function supabase(args: string[]): number {
-    const result = spawnSync('pnpm', ['exec', 'supabase', ...args], {
+    console.error('The local database is not running. Starting it with Docker.')
+    const started = spawnSync('docker', ['compose', '-f', composeFile, 'up', '-d', '--wait'], {
         cwd: serverRoot,
         stdio: 'inherit',
-        env,
         shell: process.platform === 'win32'
     })
 
-    if (result.error) {
-        console.error('The Supabase CLI is required to reset the local database.')
-        return 1
+    if (started.error || started.status !== 0) {
+        console.error('Docker is required to run the local database. Start Docker, then run `pnpm db:reset` again.')
+        process.exit(1)
     }
 
-    return result.status ?? 1
+    const second = await tryConnect()
+
+    if (!second) {
+        console.error('The local database started but did not accept a connection on 127.0.0.1:54322.')
+        process.exit(1)
+    }
+
+    return second
 }
 
-async function closeLocalAppConnections(): Promise<void> {
-    const client = new pg.Client({
-        host: '127.0.0.1',
-        port: 54322,
-        user: 'postgres',
-        password: 'postgres',
-        database: 'postgres',
-        connectionTimeoutMillis: 2000
-    })
+async function tryConnect(): Promise<pg.Client | null> {
+    const candidate = new pg.Client(localDatabase)
 
     try {
-        await client.connect()
-        await client.query(`
-            SELECT pg_terminate_backend(pid)
-            FROM pg_stat_activity
-            WHERE datname = 'postgres'
-              AND pid <> pg_backend_pid()
-              AND usename = 'postgres'
-        `)
+        await candidate.connect()
+        return candidate
     } catch {
-        // The local database may already be stopped. supabase db reset starts it.
-    } finally {
-        await client.end().catch(() => undefined)
+        await candidate.end().catch(() => undefined)
+        return null
     }
+}
+
+// A dev server or test run holding a connection would block DROP SCHEMA.
+async function closeOtherConnections(connection: pg.Client): Promise<void> {
+    await connection.query(`
+        SELECT pg_terminate_backend(pid)
+        FROM pg_stat_activity
+        WHERE datname = 'postgres'
+          AND pid <> pg_backend_pid()
+          AND usename = 'postgres'
+    `)
 }

@@ -38,31 +38,25 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v3
-        with:
-          version: latest
-
       - name: Build shared packages
         run: |
           pnpm --filter @findadoc/graphql build
           pnpm --filter @findadoc/utils build
 
-      - name: Start Supabase and seed the API database
+      - name: Start and seed the API database
         working-directory: apps/server
         run: |
           cp .env.dev .env 2>/dev/null || true
-          # public.ecr.aws rate-limits the Postgres image. Retry the pull instead of
+          # A registry can rate-limit the Postgres image. Retry the start instead of
           # failing the job before any test runs.
           for attempt in 1 2 3 4 5; do
-            if supabase start; then
+            if pnpm db:start; then
               break
             fi
-            echo "supabase start failed (attempt ${attempt})"
+            echo "db:start failed (attempt ${attempt})"
             if [ "$attempt" -eq 5 ]; then
               exit 1
             fi
-            supabase stop --no-backup || true
             sleep $((attempt * 20))
           done
           pnpm db:reset
@@ -110,7 +104,7 @@ jobs:
           path: apps/web/playwright-report/
           retention-days: 7
 
-      - name: Stop Supabase
+      - name: Stop the local database
         if: always()
         working-directory: apps/server
-        run: supabase stop
+        run: pnpm db:stop

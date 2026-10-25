@@ -3,7 +3,7 @@ import pg from 'pg'
 import { envVariables } from '../utils/environmentVariables.js'
 import { initializeLogger, logger } from './logger.js'
 
-// The local database that `supabase start` serves. kyselyClient uses the same port outside production.
+// The local Docker database from `pnpm db:start`. kyselyClient uses the same port outside production.
 const localDatabasePort = 54322
 
 export type DatabaseCheck = {

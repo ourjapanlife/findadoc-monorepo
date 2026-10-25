@@ -73,9 +73,9 @@ pnpm lint:locales
 
 Add the translation. Do not copy the English sentence into another locale.
 
-### Supabase Issues (API)
+### Local Database Issues (API)
 
-If the local Supabase instance isn't starting, make sure Docker is running, then:
+If the local database isn't starting, make sure Docker is running, then:
 
 ```bash
 pnpm check:db
@@ -84,6 +84,8 @@ pnpm db:seed
 ```
 
 A local database that is behind the current migrations can make the API return `INTERNAL_SERVER_ERROR`. Reset and seed it.
+
+If an old local Supabase is still running, it holds port 54322. `pnpm db:reset` works against it too, because it is Postgres. To switch to the new container, stop the Supabase containers first (`docker stop` on the `supabase_*` containers), then run `pnpm db:reset`.
 
 ### Docs Check Fails
 

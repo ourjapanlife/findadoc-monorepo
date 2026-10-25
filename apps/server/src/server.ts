@@ -1,4 +1,5 @@
 
+import { randomUUID } from 'node:crypto'
 import * as Sentry from '@sentry/node'
 import Fastify from 'fastify'
 import { fastifyApolloDrainPlugin, fastifyApolloHandler } from '@as-integrations/fastify'
@@ -9,6 +10,7 @@ import healthcheck from 'fastify-healthcheck'
 import { ApolloServer, GraphQLRequestContext } from '@apollo/server'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { envVariables } from '../utils/environmentVariables.js'
+import { isAllowedApiOrigin } from './apiCors.js'
 import { buildUserContext, initializeAuth } from './auth.js'
 import { createLoaders, type ApiContext } from './loaders.js'
 import loadSchema from './schema.js'
@@ -27,31 +29,10 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
     //cors is a middleware that allows us to make requests from the a different url (findadoc.jp) to our server (api.findadoc.jp)
     await fastify.register(corsPlugin, {
         origin: (origin: string | undefined, cb: (err: Error | null, allow: boolean) => void): void => {
-            const allowedOrigins = [
-                envVariables.websiteURL(),
-                'http://localhost:3000',
-                'http://localhost:4242',
-                'http://127.0.0.1:4242',
-                'https://findadoc.jp',
-                'https://www.findadoc.jp',
-                'https://findadoc-monorepo-web.netlify.app'
-            ].filter((o): o is string => Boolean(o))
-
-            // Netlify deploy previews: https://deploy-preview-<pr>--<site>.netlify.app
-            const deployPreview = origin !== undefined
-                && /^https:\/\/deploy-preview-\d+--(?:findadoc|findadoc-monorepo-web)\.netlify\.app$/.test(origin)
-
-            const localDevBrowser =
-                envVariables.isLocal()
-                && origin !== undefined
-                && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
-
-            const isAllowed =
-                (origin !== undefined && allowedOrigins.includes(origin))
-                || deployPreview
-                || localDevBrowser
-
-            cb(null, isAllowed)
+            cb(null, isAllowedApiOrigin(origin, {
+                isLocal: envVariables.isLocal(),
+                websiteURL: envVariables.websiteURL()
+            }))
         },
         allowedHeaders: ['content-type', 'authorization'],
         // methods: ['GET', 'POST', 'OPTIONS'],
@@ -87,14 +68,26 @@ export const createApolloFastifyServer = async (customPort?: number): Promise<st
             ApolloServerPluginLandingPageLocalDefault(),
             {
                 async requestDidStart(requestContext: GraphQLRequestContext<ApiContext>) {
-                    //we want to skip logging requests from the apollo query explorer internal introspection query
-                    const isApolloIntrospectionQuery = requestContext.request.query?.includes('IntrospectionQuery')
-
-                    if (!isApolloIntrospectionQuery) {
-                        logger.info(`Apollo Request received:\n Query: ' + ${requestContext.request.query} \nVariables: ${JSON.stringify(requestContext.request.variables)}`, { type: 'graphqlquery' })
-                    }
+                    const startedAt = performance.now()
+                    const requestId = requestContext.request.http?.headers.get('x-request-id') ?? randomUUID()
 
                     return {
+                        // One line per request: which operation, how long, and whether it failed.
+                        // The query text and variables stay out of the logs. Sentry gets them on errors.
+                        async willSendResponse(ctx) {
+                            //we want to skip logging requests from the apollo query explorer internal introspection query
+                            if (ctx.request.query?.includes('IntrospectionQuery')) {
+                                return
+                            }
+
+                            logger.info('graphql request', {
+                                type: 'graphql',
+                                requestId,
+                                operationName: ctx.operationName ?? ctx.request.operationName ?? null,
+                                durationMs: Math.round(performance.now() - startedAt),
+                                errorCount: ctx.errors?.length ?? 0
+                            })
+                        },
                         async didEncounterErrors(ctx) {
                             //skip user-input validation errors (already surfaced via GraphQL response)
                             for (const err of ctx.errors) {

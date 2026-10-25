@@ -6,7 +6,7 @@ Everything lives in one repository, [findadoc-monorepo](https://github.com/ourja
 
 - **Node.js** 24.22.0, pinned in `.nvmrc` (we recommend [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm))
 - **pnpm** 10.27.0, through [Corepack](https://nodejs.org/api/corepack.html)
-- **Docker**, only for the API's local Supabase database
+- **Docker**, only for the API's local Postgres database
 - **Python** 3.10 or later, only for this documentation site
 
 **Recommended IDE plugins** (VS Code):
@@ -85,11 +85,12 @@ This prerenders the site into `apps/web/.output/public`.
 ## API (`apps/server`)
 
 !!! note
-    The API needs Docker and a local Supabase database.
+    The API needs Docker for its local Postgres database. `pnpm db:reset` starts it if it is not running.
 
 ```bash
+pnpm db:start            # start the local Postgres database in Docker on 127.0.0.1:54322
 pnpm check:db            # confirm the local database is running on 127.0.0.1:54322
-pnpm db:reset            # drop and recreate the local database
+pnpm db:reset            # drop and recreate the local database, then apply every migration
 pnpm db:seed             # load the seed data
 pnpm dev:server          # start the API
 ```
@@ -136,7 +137,7 @@ pnpm lint                # every package
 pnpm lint:fix
 pnpm typecheck           # includes the locale key check
 pnpm test                # web, MCP, and utils unit tests
-pnpm test:server         # API tests; needs Supabase running
+pnpm test:server         # API tests; needs the local database
 pnpm test:e2e            # Playwright, from the website
 ```
 

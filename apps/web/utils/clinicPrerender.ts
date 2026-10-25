@@ -284,3 +284,8 @@ export async function listClinicPrerenderPaths(): Promise<string[]> {
 export function isNuxtGenerateCommand(argv: readonly string[] = process.argv): boolean {
     return argv.includes('generate') && !argv.some(arg => arg.includes('typesgeneratorconfig'))
 }
+
+// The Amplify workflow sets this so a preview does not write clinic, doctor, hub, and facet HTML.
+export function skipDirectoryPrerender(value: string | undefined = process.env.NUXT_SKIP_DIRECTORY_PRERENDER): boolean {
+    return value === 'true'
+}

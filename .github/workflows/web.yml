@@ -1,0 +1,91 @@
+name: Web
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - apps/web/**
+      - packages/**
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - package.json
+      - .nvmrc
+      - .github/workflows/web.yml
+      - .github/scripts/amplify-hosting.sh
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - apps/web/**
+      - packages/**
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - package.json
+      - .nvmrc
+      - .github/workflows/web.yml
+      - .github/scripts/amplify-hosting.sh
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Publish site
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    concurrency:
+      group: web-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build
+        run: |
+          pnpm --filter @findadoc/graphql build
+          pnpm --filter @findadoc/utils build
+          pnpm --filter @findadoc/web build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          NUXT_SKIP_DIRECTORY_PRERENDER: true
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ github.event_name == 'pull_request' && 'arn:aws:iam::677501681118:role/findadoc-github-web-preview' || 'arn:aws:iam::677501681118:role/findadoc-github-web-deploy' }}
+          aws-region: ap-northeast-1
+
+      - name: Publish to Amplify
+        id: publish
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            bash .github/scripts/amplify-hosting.sh deploy "pr-${PR_NUMBER}"
+          else
+            bash .github/scripts/amplify-hosting.sh deploy main
+          fi
+
+      - name: Comment preview URL
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_URL: ${{ steps.publish.outputs.url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          MARKER='<!-- amplify-preview -->'
+          BODY="$(printf '%s\n\nPreview: %s\n' "$MARKER" "$PREVIEW_URL")"
+          COMMENT_ID="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --jq ".[] | select(.body | contains(\"${MARKER}\")) | .id" | head -n 1)"
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}" -f body="$BODY"
+          else
+            gh pr comment "$PR_NUMBER" --body "$BODY"
+          fi
