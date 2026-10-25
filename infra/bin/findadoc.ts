@@ -3,6 +3,7 @@ import { AlertsStack } from '../lib/alertsStack.js'
 import { ApiSecretsStack } from '../lib/apiSecretsStack.js'
 import { ApiStack } from '../lib/apiStack.js'
 import { DatabaseStack } from '../lib/databaseStack.js'
+import { DataCopyStack } from '../lib/dataCopyStack.js'
 import { DnsStack } from '../lib/dnsStack.js'
 import { EdgeCertificateStack } from '../lib/edgeCertificateStack.js'
 import { McpStack } from '../lib/mcpStack.js'
@@ -119,4 +120,12 @@ new McpStack(app, 'FindadocMcp', {
     zoneName: FINDADOC_DOMAIN,
     domainName: MCP_STAGING_DOMAIN,
     alerts,
+})
+
+// Temporary: the Supabase-to-RDS copy (#81). Remove after the cutover (#13).
+new DataCopyStack(app, 'FindadocDataCopy', {
+    env: FINDADOC_ENV,
+    vpc: network.vpc,
+    database: database.instance,
+    databaseClients: database.clientSecurityGroup,
 })

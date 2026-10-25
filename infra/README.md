@@ -20,6 +20,7 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocApiSecrets` | The `findadoc/api` secret: `GOOGLE_API_KEY`, `SENTRY_DSN`, and a generated `EDGE_SHARED_SECRET`. |
 | `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, API alarms, and saved log queries. |
 | `FindadocMcp` | The MCP Lambda (`findadoc-mcp`, outside the VPC) behind CloudFront at `mcp-staging.findadoc.jp`, with an error alarm. Its tools call `https://api.findadoc.jp`. |
+| `FindadocDataCopy` | **Temporary (#81).** `findadoc-db-copy`, the one-off function that copies the Supabase database into RDS. Remove after the cutover (#13). |
 
 ## Monthly cost
 
@@ -189,3 +190,33 @@ Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-o
 ## MCP
 
 `FindadocMcp` runs `apps/mcp/src/lambda.ts` as `findadoc-mcp`, an arm64 Node 24 function with 512 MB, behind CloudFront at `mcp-staging.findadoc.jp`. It uses the same CloudFront setup as the API (`lib/functionUrlEdge.ts`). MCP is on `/mcp`, the REST routes for ChatGPT Actions are under `/api`, and the spec is at `/openapi.yaml`. The function has no database and runs outside the VPC. `findadoc-mcp-errors` posts to Slack `#alerts`. `mcp.findadoc.jp` moves at the cutover (#13).
+
+## Copying the data from Supabase (#81)
+
+`findadoc-db-copy` (`apps/server/src/lambdaCopy.ts`) runs in the VPC. It reads Supabase over IPv6 and writes to RDS as the master user. It only runs when invoked, so it costs nothing.
+
+- **What it copies:** every public table except `schema_migrations`, including the city vocabulary, so `city_id` references stay valid. Parents load before the tables that reference them.
+- **How:** it reads the source from one read-only snapshot. On the target, it truncates the tables and loads everything with `COPY` in one transaction, leaving generated columns (`search_text`) for RDS to compute.
+- **Checks:** before committing, it compares every table by row count and an MD5 over all rows. Any difference rolls the whole copy back.
+- **Dry run:** compares only, and changes nothing.
+- **Requirement:** both databases need the same tables and columns, so apply the migrations to Supabase first (`db:push`).
+
+The event carries the Supabase connection string, so the password is never stored in AWS, and the function never logs it. Use the **direct** connection string from the Supabase dashboard (Connect → Direct connection, `db.<ref>.supabase.co:5432`, IPv6). The pooler hostnames are IPv4-only and cannot be reached from the VPC. Put it in a file outside the repo, not on the command line:
+
+```json
+{ "sourceDatabaseUrl": "postgresql://postgres:<password>@db.<ref>.supabase.co:5432/postgres", "dryRun": true }
+```
+
+To verify Supabase's certificate, add `"sourceCaCert"` with the PEM from Dashboard → Database → SSL. Without it, the connection is encrypted but the certificate is not checked.
+
+```bash
+aws lambda invoke --function-name findadoc-db-copy --cli-binary-format raw-in-base64-out \
+  --cli-read-timeout 900 --payload file://copy.json out.json && cat out.json
+```
+
+1. **Dry run** (`"dryRun": true`). Before the first copy, `allMatch` is false and `sourceRows` shows what will come over.
+2. **Rehearsal** (`"dryRun": false`). It should finish with `allMatch: true`, and `api-staging.findadoc.jp` then serves the copied directory. Run it twice, then compare a deploy preview against production.
+3. **Restore drill.** In the RDS console, restore `findadoc` to a point in time as a new instance, connect, check it, then delete it. Write down how long it took on #81.
+4. **Cutover (#13).** Pause moderation writes, run the copy once more, and switch DNS.
+
+Delete `copy.json` afterwards.
