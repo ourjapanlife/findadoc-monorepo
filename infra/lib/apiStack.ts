@@ -33,6 +33,8 @@ export interface ApiStackProps extends StackProps {
     // https://… for API_URL, such as https://api-staging.findadoc.jp
     apiUrl: string
     hostnames: Record<string, HostnameState>
+    // staging, then production once api.findadoc.jp is attached
+    sentryEnvironment: string
     alerts: AlertsStack
     // Bumping it re-reads apiSecret on the next deploy.
     secretsRevision: string
@@ -140,7 +142,7 @@ export class ApiStack extends Stack {
                 DB_POOL_MAX: '2',
                 NODE_EXTRA_CA_CERTS: RDS_CA_BUNDLE,
                 LOG_LEVEL: 'info',
-                SENTRY_ENVIRONMENT: 'staging',
+                SENTRY_ENVIRONMENT: props.sentryEnvironment,
                 GOOGLE_API_KEY: secretValue('GOOGLE_API_KEY'),
                 SENTRY_DSN: secretValue('SENTRY_DSN'),
                 EDGE_SHARED_SECRET: secretValue('EDGE_SHARED_SECRET'),
