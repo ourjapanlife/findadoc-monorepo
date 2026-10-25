@@ -3,6 +3,7 @@ import * as dbSchema from '../typeDefs/dbSchema.js'
 import type { HpsTable, FacilitiesTable, SubmissionsTable } from '../typeDefs/kyselyTypes.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import type { Selectable } from 'kysely'
+import type { ProfessionalParent } from '../typeDefs/resolverParents.js'
 
 function toLicenseReview(value: string | null | undefined): gqlTypes.LicenseReviewStatus | null {
     if (value === gqlTypes.LicenseReviewStatus.NeedsReview || value === gqlTypes.LicenseReviewStatus.Confirmed) {
@@ -22,10 +23,11 @@ function toPrimaryLicense(value: string | null | undefined): gqlTypes.Degree | n
 
 // ==== HEALTHCARE PROFESSIONAL MAPPERS ====
 
+/** Without facilityIds, the `facilityIds` field resolver loads them. */
 export function mapDbHpToGql(
   hp: dbSchema.DbHealthcareProfessionalRow,
-  facilityIds: string[]
-): gqlTypes.HealthcareProfessional {
+  facilityIds?: string[]
+): ProfessionalParent {
     return {
         id: hp.id,
         names: hp.names ?? [],

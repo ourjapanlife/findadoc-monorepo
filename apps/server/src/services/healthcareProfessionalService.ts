@@ -10,9 +10,9 @@ import { sql } from 'kysely'
 import { asJsonb } from '../../utils/dbUtils.js'
 import type { SelectQueryBuilder } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
+import type { ProfessionalParent } from '../typeDefs/resolverParents.js'
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
 import { databaseOrderColumn, PROFESSIONAL_ORDER_COLUMNS } from '../search/orderColumn.js'
-import { HP_SEARCH_COLUMN } from '../../utils/fieldSelectionUtils.js'
 import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { mapDbHpToGql, mapKyselyHpToGraphQL} from '../services/mappersEntityService.js'
 type StoredLicenseContext = {
@@ -75,7 +75,7 @@ export function applyHpFilters<O>(
     let filtered = query
 
     const queryText = listQueryValue(filters.query)
-    if (queryText) { filtered = filtered.where(`hps.${HP_SEARCH_COLUMN}`, 'ilike', likeContainsPattern(queryText)) }
+    if (queryText) { filtered = filtered.where('hps.search_text', 'ilike', likeContainsPattern(queryText)) }
     if (filters.degrees?.length) { filtered = filtered.where('hps.degrees', '@>', asJsonb(filters.degrees)) }
     if (filters.licenseReview) { filtered = filtered.where('hps.license_review', '=', filters.licenseReview) }
     if (filters.specialties?.length) { filtered = filtered.where('hps.specialties', '@>', asJsonb(filters.specialties)) }
@@ -95,12 +95,12 @@ export function applyHpFilters<O>(
 }
 
 /**
- * Loads the facility ids for each professional from the junction table in one query,
- * so a page of professionals does not run one query per professional.
+ * Loads the facility ids for each professional from the junction table in one query.
+ * The per-request DataLoader in loaders.ts batches every professional in a response into one call.
  * @param hpIds Professional ids to look up.
  * @returns A map from professional id to its facility ids. A professional with none is not in the map.
  */
-async function facilityIdsByHpIds(hpIds: string[]): Promise<Map<string, string[]>> {
+export async function facilityIdsByHpIds(hpIds: string[]): Promise<Map<string, string[]>> {
     const facilityIdsByHp = new Map<string, string[]>()
 
     if (!hpIds.length) {
@@ -166,13 +166,11 @@ export function resolveFacilityIdFromRelationships(
 /**
  * Gets the Healthcare Professional from the database that matches on the id.
  * @param id The id of the professional.
- * @param needsFacilityIds Whether to query the junction table for related facility IDs (defaults to true).
- * @returns A Healthcare Professional object.
+ * @returns A Healthcare Professional object, without its facility ids.
  */
 export async function getHealthcareProfessionalById(
-    id: string,
-    needsFacilityIds = true
-): Promise<Result<gqlTypes.HealthcareProfessional>> {
+    id: string
+): Promise<Result<ProfessionalParent>> {
     try {
         const validationResult = validateIdInput(id)
 
@@ -209,14 +207,9 @@ export async function getHealthcareProfessionalById(
             }
         }
 
-        // Load relations from junction table (facility links for this HP, skip if not requested)
-        const facilityIds = needsFacilityIds
-            ? (await facilityIdsByHpIds([id])).get(id) ?? []
-            : []
-
         // Convert database entity to GraphQL shape
         const dbHealthcareProfessional = hpEntity as unknown as dbSchema.DbHealthcareProfessionalRow
-        const gqlHealthcareProfessional = mapDbHpToGql(dbHealthcareProfessional, facilityIds)
+        const gqlHealthcareProfessional = mapDbHpToGql(dbHealthcareProfessional)
 
         return {
             data: gqlHealthcareProfessional,
@@ -242,13 +235,11 @@ export async function getHealthcareProfessionalById(
  * - Facility filtering is an EXISTS on hps_facilities, so it stays in the main query.
  * - It applies scalar filters, ordering, and pagination to the main hps table.
  * @param filters Optional search and pagination filters for HP.
- * @param needsFacilityIds Whether to query the junction table for related facility IDs (defaults to true).
- * @returns A Promise that resolves to a Result object containing an array of HPs.
+ * @returns A Promise that resolves to a Result object containing an array of HPs, without their facility ids.
  */
 export async function searchProfessionals(
-  filters: gqlTypes.HealthcareProfessionalSearchFilters = {},
-  needsFacilityIds = true
-): Promise<Result<gqlTypes.HealthcareProfessional[]>> {
+  filters: gqlTypes.HealthcareProfessionalSearchFilters = {}
+): Promise<Result<ProfessionalParent[]>> {
     try {
         const validation = validateProfessionalsSearchInput(filters)
 
@@ -294,24 +285,8 @@ export async function searchProfessionals(
         // Perform paged fetch after all filters are applied so the page is computed
         const matchingHps = await hpSelect.limit(limit).offset(offset).execute()
 
-        if (!matchingHps.length) {
-            return { data: [], hasErrors: false }
-        }
-
-        // Load facilities relations for this page in one query to avoid N+1 queries
-        // Skip if not requested by the client
-        const facilityIdsByHpId = needsFacilityIds
-            ? await facilityIdsByHpIds(matchingHps.map(row => row.id))
-            : new Map<string, string[]>()
-
-        // Map DB rows to GraphQL shape, merging each HP row with its facilityIds
-        const result: gqlTypes.HealthcareProfessional[] =
-            (matchingHps as unknown as dbSchema.DbHealthcareProfessionalRow[])
-                .map(hp => {
-                    const facilityIds = facilityIdsByHpId.get(hp.id) ?? []
-
-                    return mapDbHpToGql(hp, facilityIds)
-                })
+        const result = (matchingHps as unknown as dbSchema.DbHealthcareProfessionalRow[])
+            .map(hp => mapDbHpToGql(hp))
 
         return { data: result, hasErrors: false }
     } catch (err) {

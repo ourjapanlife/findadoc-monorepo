@@ -129,6 +129,9 @@ importers:
       csv-parse:
         specifier: ^5.3.3
         version: 5.6.0
+      dataloader:
+        specifier: 2.2.3
+        version: 2.2.3
       dotenv:
         specifier: ^16.3.1
         version: 16.6.1

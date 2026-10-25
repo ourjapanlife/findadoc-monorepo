@@ -56,6 +56,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.18.0",
+        "@findadoc/tsconfig": "workspace:*",
         "@graphql-eslint/eslint-plugin": "^3.20.1",
         "@graphql-tools/mock": "^9.0.0",
         "@graphql-tools/schema": "^10.0.0",
@@ -78,8 +79,7 @@
         "supabase": "2.121.0",
         "typescript": "catalog:",
         "vite": "^6.0.7",
-        "vitest": "^2.1.8",
-        "@findadoc/tsconfig": "workspace:*"
+        "vitest": "^2.1.8"
     },
     "dependencies": {
         "@apollo/server": "^4.9.3",
@@ -90,10 +90,13 @@
         "@fastify/cors": "^11.0.1",
         "@fastify/jwt": "^9.1.0",
         "@fastify/rate-limit": "^10.2.2",
+        "@findadoc/graphql": "workspace:*",
+        "@findadoc/utils": "workspace:*",
         "@sentry/node": "^10.53.1",
         "@types/googlemaps": "^3.43.3",
         "cross-env": "^7.0.3",
         "csv-parse": "^5.3.3",
+        "dataloader": "2.2.3",
         "dotenv": "^16.3.1",
         "fastify": "^5.2.2",
         "fastify-healthcheck": "^5.1.0",
@@ -108,8 +111,6 @@
         "triple-beam": "^1.4.1",
         "ts-node": "^10.9.2",
         "winston": "^3.11.0",
-        "winston-loki": "^6.0.8",
-        "@findadoc/graphql": "workspace:*",
-        "@findadoc/utils": "workspace:*"
+        "winston-loki": "^6.0.8"
     }
 }

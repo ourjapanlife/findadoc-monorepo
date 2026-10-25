@@ -13,11 +13,9 @@ import * as facilityPlaceService from './services/facilityPlaceService.js'
 import { Result } from './result.js'
 import { logger } from './logger.js'
 import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
-import {
-    getRequestedFields,
-    facilityNeedsHpIds,
-    hpNeedsFacilityIds
-} from '../utils/fieldSelectionUtils.js'
+import { facilityListMaxLimit } from '../utils/requestedFields.js'
+import type { ApiContext } from './loaders.js'
+import type { FacilityParent, ProfessionalParent } from './typeDefs/resolverParents.js'
 
 const resolvers = {
     Query: {
@@ -31,9 +29,8 @@ const resolvers = {
                 effectiveScopes: getEffectiveScopes(user)
             }
         },
-        facility: async (_parent: gqlType.Facility, args: { id: string; }, context: UserContext,
-            info: GraphQLResolveInfo)
-        : Promise<gqlType.Facility> => {
+        facility: async (_parent: unknown, args: { id: string; }, context: UserContext)
+        : Promise<FacilityParent> => {
             const isAuthorized = authorize(context.user, [Scope['read:facilities']])
 
             if (!isAuthorized) {
@@ -45,9 +42,7 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const needsHpIds = facilityNeedsHpIds(requestedFields)
-            const queryResults = await facilityService.getFacilityById(args.id, needsHpIds)
+            const queryResults = await facilityService.getFacilityById(args.id)
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data
@@ -55,9 +50,8 @@ const resolvers = {
         facilityByGooglePlaceId: async (
             _parent: unknown,
             args: { placeId: string },
-            context: UserContext,
-            info: GraphQLResolveInfo
-        ): Promise<gqlType.Facility | null> => {
+            context: UserContext
+        ): Promise<FacilityParent | null> => {
             const isAuthorized = authorize(context.user, [Scope['read:facilities']])
 
             if (!isAuthorized) {
@@ -66,12 +60,7 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const needsHpIds = facilityNeedsHpIds(requestedFields)
-            const queryResults = await facilityService.getFacilityByGooglePlaceId(
-                args.placeId.trim(),
-                needsHpIds
-            )
+            const queryResults = await facilityService.getFacilityByGooglePlaceId(args.placeId.trim())
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data
@@ -79,9 +68,8 @@ const resolvers = {
         facilityMatchingMapsUrl: async (
             _parent: unknown,
             args: { url: string },
-            context: UserContext,
-            info: GraphQLResolveInfo
-        ): Promise<gqlType.Facility | null> => {
+            context: UserContext
+        ): Promise<FacilityParent | null> => {
             const isAuthorized = authorize(context.user, [Scope['read:facilities']])
 
             if (!isAuthorized) {
@@ -90,12 +78,7 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const needsHpIds = facilityNeedsHpIds(requestedFields)
-            const queryResults = await facilityService.getFacilityMatchingMapsUrl(
-                args.url.trim(),
-                needsHpIds
-            )
+            const queryResults = await facilityService.getFacilityMatchingMapsUrl(args.url.trim())
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data
@@ -143,7 +126,7 @@ const resolvers = {
         },
         facilities: async (_parent: unknown, args: { filters: gqlType.FacilitySearchFilters }, context: UserContext,
             info: GraphQLResolveInfo)
-        : Promise<gqlType.Facility[]> => {
+        : Promise<FacilityParent[]> => {
             const isAuthorized = authorize(context.user, [Scope['read:facilities']])
 
             if (!isAuthorized) {
@@ -155,12 +138,10 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const needsHpIds = facilityNeedsHpIds(requestedFields)
-            const queryResults = await facilityService.searchFacilities(args.filters, needsHpIds)
+            const queryResults = await facilityService.searchFacilities(args.filters, facilityListMaxLimit(info))
 
             convertErrorsToGqlErrors(queryResults)
-            return queryResults.data as gqlType.Facility[]
+            return queryResults.data
         },
         facilitiesTotalCount: async (_parent: unknown, args: { filters: gqlType.FacilitySearchFilters },
             context: UserContext)
@@ -182,9 +163,8 @@ const resolvers = {
             return countResults.data
         },
 
-        healthcareProfessional: async (_parent: unknown, args: { id: string; }, context: UserContext,
-            info: GraphQLResolveInfo)
-        : Promise<gqlType.HealthcareProfessional> => {
+        healthcareProfessional: async (_parent: unknown, args: { id: string; }, context: UserContext)
+        : Promise<ProfessionalParent> => {
             const isAuthorized = authorize(context.user, [Scope['read:healthcareprofessionals']])
 
             if (!isAuthorized) {
@@ -196,19 +176,16 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const needsFacilityIds = hpNeedsFacilityIds(requestedFields)
             const matchingHealthcareProfessionalResult =
-                await healthcareProfessionalService
-                    .getHealthcareProfessionalById(args.id, needsFacilityIds)
+                await healthcareProfessionalService.getHealthcareProfessionalById(args.id)
 
             convertErrorsToGqlErrors(matchingHealthcareProfessionalResult)
             return matchingHealthcareProfessionalResult.data
         },
         healthcareProfessionals: async (_parent: unknown, args: {
             filters: gqlType.HealthcareProfessionalSearchFilters
-        }, context: UserContext, info: GraphQLResolveInfo)
-        : Promise<gqlType.HealthcareProfessional[]> => {
+        }, context: UserContext)
+        : Promise<ProfessionalParent[]> => {
             const isAuthorized = authorize(context.user, [Scope['read:healthcareprofessionals']])
 
             if (!isAuthorized) {
@@ -220,10 +197,7 @@ const resolvers = {
                 })
             }
 
-            const requestedFields = getRequestedFields(info)
-            const needsFacilityIds = hpNeedsFacilityIds(requestedFields)
-            const queryResults =
-                await healthcareProfessionalService.searchProfessionals(args.filters, needsFacilityIds)
+            const queryResults = await healthcareProfessionalService.searchProfessionals(args.filters)
 
             convertErrorsToGqlErrors(queryResults)
 
@@ -403,7 +377,7 @@ const resolvers = {
             _parent: unknown,
             args: { prefecture: string, citySlug: string },
             context: UserContext
-        ): Promise<gqlType.Facility[]> => {
+        ): Promise<FacilityParent[]> => {
             const isAuthorized = authorize(context.user, [Scope['read:facilities']])
 
             if (!isAuthorized) {
@@ -420,13 +394,22 @@ const resolvers = {
     },
 
     Facility: {
-        city: (parent: gqlType.Facility): Promise<gqlType.City | null> => {
+        healthcareProfessionalIds: (parent: FacilityParent, _args: unknown, context: ApiContext)
+        : string[] | Promise<string[]> =>
+            parent.healthcareProfessionalIds ?? context.loaders.healthcareProfessionalIdsByFacility.load(parent.id),
+        city: (parent: FacilityParent): Promise<gqlType.City | null> => {
             if (!parent.cityId) {
                 return Promise.resolve(null)
             }
 
             return cityService.getCityById(parent.cityId)
         }
+    },
+
+    HealthcareProfessional: {
+        facilityIds: (parent: ProfessionalParent, _args: unknown, context: ApiContext)
+        : string[] | Promise<string[]> =>
+            parent.facilityIds ?? context.loaders.facilityIdsByProfessional.load(parent.id)
     },
 
     Mutation: {
