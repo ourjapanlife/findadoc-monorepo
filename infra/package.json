@@ -18,6 +18,7 @@
         "@findadoc/tsconfig": "workspace:*",
         "@types/node": "^22.10.7",
         "aws-cdk": "2.1146.1",
+        "esbuild": "0.25.11",
         "tsx": "^4.23.15",
         "typescript": "catalog:"
     }
