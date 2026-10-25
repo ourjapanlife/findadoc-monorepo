@@ -7,6 +7,7 @@
             :no-match-text="noMatchText"
             :fields-to-display-callback="fieldsToDisplay"
             :default-suggestions="suggestions"
+            @search-input-blur="handleSearchInputChange.cancel"
             @search-input-change="handleSearchInputChange"
         />
         <ul
@@ -39,11 +40,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, type Ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { Facility } from '@findadoc/graphql'
+import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useLinkedFacilities } from '~/composables/useLinkedFacilities'
 import { addFacilityLink, facilityLinkLabel, removeFacilityLink, type LinkedFacilityName } from '~/utils/linkedFacilities'
-import { matchesFacilitySearch } from '~/utils/moderationSearchUtils'
+import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 
 const facilityIds = defineModel<string[]>({ required: true })
 
@@ -83,9 +85,10 @@ function removeFacility(facilityId: string) {
     facilityIds.value = removeFacilityLink(facilityIds.value, facilityId)
 }
 
-function handleSearchInputChange(filteredItems: Ref<Facility[]>, inputValue: string) {
-    filteredItems.value = props.suggestions.filter(facility => matchesFacilitySearch(facility, inputValue))
-}
+const facilitiesStore = useFacilitiesStore()
+const handleSearchInputChange = useDirectoryPickerSearch(
+    query => facilitiesStore.searchFacilities(query)
+)
 
 function fieldsToDisplay(facility: Facility) {
     return [facility.nameEn, facility.nameJa]

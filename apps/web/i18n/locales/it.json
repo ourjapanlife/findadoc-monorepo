@@ -199,7 +199,12 @@
     "confirmExit": "Esci senza salvare",
     "create": "Crea",
     "exit": "Esci",
-    "unsavedChangesMessage": "Uscirai senza salvare. I dati non salvati andranno persi."
+    "unsavedChangesMessage": "Uscirai senza salvare. I dati non salvati andranno persi.",
+    "hasEmptyFieldsFacility": "Compila i campi obbligatori della struttura.",
+    "facilityCreatedSuccessfully": "Struttura creata",
+    "hasEmptyFieldsHealthcareProfessional": "Compila i campi obbligatori del professionista sanitario.",
+    "healthcareProfessionalEnglishNameRequired": "Il professionista sanitario deve avere un nome in inglese",
+    "healthcareProfessionalCreatedSuccessfully": "Professionista sanitario creato"
   },
   "modDashboardLeftNav": {
     "facilities": "Strutture",

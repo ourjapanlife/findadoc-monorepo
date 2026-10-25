@@ -188,7 +188,12 @@
     "confirmExit": "Sair sem salvar",
     "create": "Criar",
     "exit": "Sair",
-    "unsavedChangesMessage": "Você sairá sem salvar. Os dados não salvos serão perdidos."
+    "unsavedChangesMessage": "Você sairá sem salvar. Os dados não salvos serão perdidos.",
+    "hasEmptyFieldsFacility": "Preencha os campos obrigatórios da unidade.",
+    "facilityCreatedSuccessfully": "Unidade criada",
+    "hasEmptyFieldsHealthcareProfessional": "Preencha os campos obrigatórios do profissional de saúde.",
+    "healthcareProfessionalEnglishNameRequired": "O profissional de saúde precisa de um nome em inglês",
+    "healthcareProfessionalCreatedSuccessfully": "Profissional de saúde criado"
   },
   "modDashboardLeftNav": {
     "facilities": "Instalações",

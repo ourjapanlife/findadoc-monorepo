@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, type Ref, reactive } from 'vue'
 import { gql } from 'graphql-request'
 import { fetchFacilitiesWithCount } from '../utils/graphqlHelpers'
+import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { facilitySelection } from '../utils/graphqlSelection'
 import type {
     Facility,
@@ -290,14 +291,20 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         }
     }
 
-    async function getFacilities() {
+    async function searchFacilities(query: string): Promise<Facility[]> {
+        const trimmed = query.trim()
         const filters: FacilitySearchFilters = {
             offset: 0,
-            limit: itemsPerPage.value
+            limit: DIRECTORY_PICKER_LIMIT,
+            ...(trimmed ? { query: trimmed } : {})
         }
+        const { filteredSearchResults } = await fetchFacilitiesWithCount(filters)
+        return filteredSearchResults
+    }
+
+    async function getFacilities() {
         try {
-            const { filteredSearchResults } = await fetchFacilitiesWithCount(filters)
-            facilityData.value = filteredSearchResults
+            facilityData.value = await searchFacilities('')
         } catch (error) {
             console.error(`Error fetching facilities: ${JSON.stringify(error)}`)
             // eslint-disable-next-line no-alert
@@ -529,6 +536,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
 
     return {
         getFacilities,
+        searchFacilities,
         loadFacilityList,
         createFacility,
         createFacilityFields,

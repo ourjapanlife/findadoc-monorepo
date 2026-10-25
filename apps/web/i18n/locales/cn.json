@@ -195,7 +195,12 @@
     "confirmExit": "不保存并退出",
     "create": "创建",
     "exit": "退出",
-    "unsavedChangesMessage": "将不保存并退出。未保存的内容会丢失。"
+    "unsavedChangesMessage": "将不保存并退出。未保存的内容会丢失。",
+    "hasEmptyFieldsFacility": "请填写医疗机构的必填项。",
+    "facilityCreatedSuccessfully": "医疗机构已创建",
+    "hasEmptyFieldsHealthcareProfessional": "请填写医疗人员的必填项。",
+    "healthcareProfessionalEnglishNameRequired": "医疗人员必须有英文姓名",
+    "healthcareProfessionalCreatedSuccessfully": "医疗人员已创建"
   },
   "modDashboardLeftNav": {
     "facilities": "机构",

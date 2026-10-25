@@ -195,7 +195,12 @@
     "confirmExit": "Lumabas nang hindi sine-save",
     "create": "Gumawa",
     "exit": "Lumabas",
-    "unsavedChangesMessage": "Lalabas ka nang hindi sine-save. Mawawala ang hindi naka-save na datos."
+    "unsavedChangesMessage": "Lalabas ka nang hindi sine-save. Mawawala ang hindi naka-save na datos.",
+    "hasEmptyFieldsFacility": "Punan ang mga kinakailangang field ng pasilidad.",
+    "facilityCreatedSuccessfully": "Nagawa ang pasilidad",
+    "hasEmptyFieldsHealthcareProfessional": "Punan ang mga kinakailangang field ng propesyonal sa kalusugan.",
+    "healthcareProfessionalEnglishNameRequired": "Kailangan ng propesyonal sa kalusugan ang pangalan sa Ingles",
+    "healthcareProfessionalCreatedSuccessfully": "Nagawa ang propesyonal sa kalusugan"
   },
   "modDashboardLeftNav": {
     "facilities": "Pasilidad",

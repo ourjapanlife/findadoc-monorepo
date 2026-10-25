@@ -195,7 +195,12 @@
     "confirmExit": "Thoát mà không lưu",
     "create": "Tạo",
     "exit": "Thoát",
-    "unsavedChangesMessage": "Bạn sẽ thoát mà không lưu. Mọi dữ liệu chưa lưu sẽ mất."
+    "unsavedChangesMessage": "Bạn sẽ thoát mà không lưu. Mọi dữ liệu chưa lưu sẽ mất.",
+    "hasEmptyFieldsFacility": "Điền các mục bắt buộc của cơ sở.",
+    "facilityCreatedSuccessfully": "Đã tạo cơ sở",
+    "hasEmptyFieldsHealthcareProfessional": "Điền các mục bắt buộc của nhân viên y tế.",
+    "healthcareProfessionalEnglishNameRequired": "Nhân viên y tế phải có tên tiếng Anh",
+    "healthcareProfessionalCreatedSuccessfully": "Đã tạo nhân viên y tế"
   },
   "modDashboardLeftNav": {
     "facilities": "Cơ sở vật chất",

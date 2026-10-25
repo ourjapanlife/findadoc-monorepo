@@ -285,6 +285,7 @@
                 :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
                 :fields-to-display-callback="healthcareProfessionalsToDisplayCallback"
                 :default-suggestions="defaultHealthcareProfessionalSuggestions"
+                @search-input-blur="handleHealthcareProfessionalsInputChange.cancel"
                 @search-input-change="handleHealthcareProfessionalsInputChange"
             />
             <p
@@ -346,7 +347,7 @@ import type { CityOption } from '~/utils/cityOptions'
 import { listPrefectureJapanEn, listPrefectureJapanJa, pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
 import { checkPrefectureNameMatch } from '~/utils/facilitiesUtils'
 import { stableStringify } from '~/utils/stableStringify'
-import { matchesHealthcareProfessionalSearch } from '~/utils/moderationSearchUtils'
+import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { provideModerationFormEditing, useModerationFormEditing } from '~/composables/useModerationFormMode'
@@ -438,15 +439,11 @@ const selectedHealthcareProfessionalsModel = computed({
 })
 const defaultHealthcareProfessionalSuggestions: Ref<HealthcareProfessional[]> = ref([])
 
-const handleHealthcareProfessionalsInputChange = (filteredItems: Ref<HealthcareProfessional[]>, inputValue: string) => {
-    filteredItems.value = healthcareProfessionalsStore.healthcareProfessionalsData
-        .filter((healthcareProfessional: HealthcareProfessional) => {
-            if (facilityStore.facilitySectionFields.healthcareProfessionalIds.includes(healthcareProfessional.id)) {
-                return false
-            }
-            return matchesHealthcareProfessionalSearch(healthcareProfessional, inputValue)
-        })
-}
+const handleHealthcareProfessionalsInputChange = useDirectoryPickerSearch(
+    query => healthcareProfessionalsStore.searchHealthcareProfessionals(query),
+    rows => rows.filter(healthcareProfessional =>
+        !facilityStore.facilitySectionFields.healthcareProfessionalIds.includes(healthcareProfessional.id))
+)
 
 const healthcareProfessionalsToDisplayCallback = (healthcareProfessional: HealthcareProfessional) =>
     [formatFirstLocalizedFullName(healthcareProfessional.names)]

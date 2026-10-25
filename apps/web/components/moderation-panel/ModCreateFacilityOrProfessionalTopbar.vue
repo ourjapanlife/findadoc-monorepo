@@ -30,12 +30,11 @@ import { useI18n } from '#imports'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useModalStore } from '~/stores/modalStore'
-import { useModerationSubmissionsStore, SelectedModerationListView } from '~/stores/moderationSubmissionsStore'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
 import { hasEnglishLocalizedName } from '~/utils/nameUtils'
-import { navigateToModerationDashboard } from '~/utils/moderationUtils'
+import { leaveToModerationDashboard } from '~/utils/moderationUtils'
 import {
     hasRequiredHealthcareProfessionalSelections,
     validateModerationFacilityFields
@@ -48,7 +47,6 @@ const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
 const facilitiesStore = useFacilitiesStore()
 const moderationScreenStore = useModerationScreenStore()
 const modalStore = useModalStore()
-const moderationSubmissionsStore = useModerationSubmissionsStore()
 
 const toast = useAppToast()
 
@@ -106,10 +104,9 @@ const createFacilityOrHealthcareProfessional = async () => {
             response,
             toast,
             t,
-            'modCreateFacilityOrHPTopbar.heathcareProfessionalCreatedSuccessfully'
+            'modCreateFacilityOrHPTopbar.healthcareProfessionalCreatedSuccessfully'
         )
-        await navigateToModerationDashboard(router, moderationScreenStore)
-        moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.HealthcareProfessionals)
+        await leaveToModerationDashboard(router, moderationScreenStore)
         healthcareProfessionalsStore.resetCreateHealthcareProfessionalFields()
         return response
     }
@@ -136,10 +133,7 @@ const createFacilityOrHealthcareProfessional = async () => {
             t,
             'modCreateFacilityOrHPTopbar.facilityCreatedSuccessfully'
         )
-        await navigateToModerationDashboard(router, moderationScreenStore)
-        moderationSubmissionsStore.setSelectedModerationListViewChosen(
-            SelectedModerationListView.Facilities
-        )
+        await leaveToModerationDashboard(router, moderationScreenStore)
         facilitiesStore.resetCreateFacilityFields()
         return response
     }
@@ -152,7 +146,7 @@ const navigateBackToDashboardWithoutCreation = async () => {
     if (moderationScreenStore.createFacilityScreenIsActive()) {
         facilitiesStore.resetCreateFacilityFields()
     }
-    await navigateToModerationDashboard(router, moderationScreenStore, modalStore)
+    await leaveToModerationDashboard(router, moderationScreenStore, modalStore)
 }
 
 const openExitConfirmation = () => {

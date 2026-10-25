@@ -188,7 +188,12 @@
     "confirmExit": "Выйти без сохранения",
     "create": "Создать",
     "exit": "Выйти",
-    "unsavedChangesMessage": "Выход без сохранения. Несохранённые данные будут потеряны."
+    "unsavedChangesMessage": "Выход без сохранения. Несохранённые данные будут потеряны.",
+    "hasEmptyFieldsFacility": "Заполните обязательные поля учреждения.",
+    "facilityCreatedSuccessfully": "Учреждение создано",
+    "hasEmptyFieldsHealthcareProfessional": "Заполните обязательные поля специалиста.",
+    "healthcareProfessionalEnglishNameRequired": "У специалиста должно быть имя на английском",
+    "healthcareProfessionalCreatedSuccessfully": "Специалист создан"
   },
   "modDashboardLeftNav": {
     "facilities": "Услуги",
