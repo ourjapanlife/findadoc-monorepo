@@ -17,6 +17,7 @@ import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
 import { logger } from './logger.js'
 import { requestErrorFields } from './requestErrors.js'
+import { clientIpFrom } from './clientIp.js'
 
 /**
  * Builds the Fastify app with Apollo on `/`, ready to serve but not listening.
@@ -47,7 +48,9 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
     //add rate limiting to prevent abuse
     await fastify.register(rateLimitPlugin, {
         max: 100,
-        timeWindow: '1 minute'
+        timeWindow: '1 minute',
+        // per person, not per CloudFront edge (see clientIp.ts)
+        keyGenerator: request => clientIpFrom(request)
     })
 
     //add compression to reduce the size of the requests/responses (makes the api faster)
