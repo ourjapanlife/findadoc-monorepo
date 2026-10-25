@@ -199,12 +199,12 @@ const resolvers = {
         healthcareProfessionalIds: (parent: FacilityParent, _args: unknown, context: ApiContext)
         : string[] | Promise<string[]> =>
             parent.healthcareProfessionalIds ?? context.loaders.healthcareProfessionalIdsByFacility.load(parent.id),
-        city: (parent: FacilityParent): Promise<gqlType.City | null> => {
+        city: (parent: FacilityParent, _args: unknown, context: ApiContext): Promise<gqlType.City | null> => {
             if (!parent.cityId) {
                 return Promise.resolve(null)
             }
 
-            return cityService.getCityById(parent.cityId)
+            return context.loaders.cityById.load(parent.cityId)
         }
     },
 

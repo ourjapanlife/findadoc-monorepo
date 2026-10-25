@@ -120,6 +120,21 @@ export async function getCityById(id: string): Promise<City | null> {
     return row ? mapCity(row) : null
 }
 
+/**
+ * Loads several cities in one query. The per-request DataLoader in loaders.ts batches every
+ * Facility.city in a response into one call.
+ * @returns A map from city id to city. An id with no city is not in the map.
+ */
+export async function getCitiesByIds(ids: readonly string[]): Promise<Map<string, City>> {
+    if (!ids.length) {
+        return new Map()
+    }
+
+    const rows = await cityQuery().where('cities.id', 'in', [...ids]).execute()
+
+    return new Map(rows.map(row => [row.id, mapCity(row)]))
+}
+
 export async function cityExists(id: string): Promise<boolean> {
     const row = await db.selectFrom('cities').select('id').where('id', '=', id).executeTakeFirst()
 
