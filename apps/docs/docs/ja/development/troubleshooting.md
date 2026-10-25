@@ -73,9 +73,9 @@ pnpm lint:locales
 
 翻訳を追加してください。英語の文をほかのロケールにコピーしないでください。
 
-### Supabaseの問題（API）
+### ローカルデータベースの問題（API）
 
-ローカルのSupabaseが起動しない場合は、Dockerが起動していることを確認してから：
+ローカルデータベースが起動しない場合は、Dockerが起動していることを確認してから：
 
 ```bash
 pnpm check:db
@@ -84,6 +84,8 @@ pnpm db:seed
 ```
 
 ローカルデータベースが最新のマイグレーションより古いと、APIが`INTERNAL_SERVER_ERROR`を返すことがあります。リセットしてシードしてください。
+
+古いローカルSupabaseがまだ動いている場合は、ポート54322を使っています。Postgresなので `pnpm db:reset` はそのままでも動きます。新しいコンテナに切り替えるには、先にSupabaseのコンテナ（`supabase_*`）を `docker stop` で止めてから `pnpm db:reset` を実行してください。
 
 ### ドキュメントのチェックが失敗する
 
