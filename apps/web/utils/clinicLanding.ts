@@ -163,7 +163,7 @@ export function clinicLandingHostSlug(hostname: string | null | undefined): stri
 /** Scripts, images, and Vite files stay on the host. A page path does not. */
 export function isStaticHostPath(pathname: string): boolean {
     if (pathname.startsWith('/_nuxt') || pathname.startsWith('/__nuxt') || pathname.startsWith('/@')
-        || pathname.startsWith('/api/')) {
+      || pathname.startsWith('/api/')) {
         return true
     }
     const leaf = pathname.split('/').pop() ?? ''
