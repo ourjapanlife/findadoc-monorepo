@@ -55,7 +55,8 @@ jobs:
           pnpm --filter @findadoc/web build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-          NUXT_SKIP_DIRECTORY_PRERENDER: true
+          # Previews skip clinic, doctor, hub, and facet HTML. Production on main does not.
+          NUXT_SKIP_DIRECTORY_PRERENDER: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
