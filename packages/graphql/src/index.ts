@@ -26,6 +26,28 @@ export enum ActionType {
   Update = 'UPDATE'
 }
 
+/**
+ * Assign a person to a hospital. Pass userId to use an existing account.
+ * Pass authSubject to remember their login, so they can manage this hospital later.
+ */
+export type AssignFacilityMemberInput = {
+  authSubject?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  facilityId: Scalars['ID']['input'];
+  hpId?: InputMaybe<Scalars['ID']['input']>;
+  role: FacilityMembershipRole;
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+/** How many seats the hospital's plan allows, and how many are active. */
+export type AssignFacilityMemberPayload = {
+  __typename?: 'AssignFacilityMemberPayload';
+  membership: FacilityMembership;
+  seatLimit: Scalars['Int']['output'];
+  seatsUsed: Scalars['Int']['output'];
+  user: User;
+};
+
 /** A record of a create, update, or delete action performed on an entity. */
 export type AuditLog = {
   __typename?: 'AuditLog';
@@ -457,6 +479,33 @@ export type Facility = {
   verificationStatus: FacilityVerificationStatus;
 };
 
+/** A person's seat at one hospital. */
+export type FacilityMembership = {
+  __typename?: 'FacilityMembership';
+  createdDate: Scalars['String']['output'];
+  facilityId: Scalars['ID']['output'];
+  hpId?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
+  role: FacilityMembershipRole;
+  status: FacilityMembershipStatus;
+  userId: Scalars['ID']['output'];
+};
+
+/**
+ * Role of a person at a hospital. Owner may assign and revoke staff.
+ * Staff has a seat and does not manage other seats.
+ */
+export enum FacilityMembershipRole {
+  Owner = 'OWNER',
+  Staff = 'STAFF'
+}
+
+/** An active seat counts toward the plan. Revoked keeps the history and frees the seat. */
+export enum FacilityMembershipStatus {
+  Active = 'ACTIVE',
+  Revoked = 'REVOKED'
+}
+
 /** A live Google place a moderator can confirm. Do not store the name or address from this type. */
 export type FacilityPlaceCandidate = {
   __typename?: 'FacilityPlaceCandidate';
@@ -466,6 +515,11 @@ export type FacilityPlaceCandidate = {
   name?: Maybe<Scalars['String']['output']>;
   placeId: Scalars['String']['output'];
 };
+
+/** The only plan today. Three active people per hospital. */
+export enum FacilityPlan {
+  Basic = 'BASIC'
+}
 
 /** Search filters for querying facilities. All filters are combined with AND logic. */
 export type FacilitySearchFilters = {
@@ -811,6 +865,13 @@ export type MapsPlacePreview = {
 export type Mutation = {
   __typename?: 'Mutation';
   /**
+   * Give a person a seat at a hospital. Creates the account when no user id is sent.
+   * The basic plan has three active seats. An optional professional id means this
+   * person is that healthcare professional, and they must already work at the hospital.
+   * Find a Doc staff may assign an owner. A hospital owner may assign staff.
+   */
+  assignFacilityMember: AssignFacilityMemberPayload;
+  /**
    * Store a Google place id a moderator confirmed.
    * The facility name and address are not changed.
    */
@@ -833,6 +894,11 @@ export type Mutation = {
   deleteSubmission: DeleteResult;
   /** Store a city place id. Does not store a Places name, address, or coordinate. */
   recordCityPlaceId: City;
+  /**
+   * Free a seat. The membership row stays, with status revoked, and an audit log is written.
+   * A hospital owner may revoke staff. Find a Doc staff may revoke anyone.
+   */
+  revokeFacilityMember: FacilityMembership;
   /** Update an existing facility by ID. */
   updateFacility: Facility;
   /** Update an existing healthcare professional by ID. */
@@ -843,6 +909,11 @@ export type Mutation = {
   updateSubmission: Submission;
   /** Update an existing user by ID. */
   updateUser: User;
+};
+
+
+export type MutationAssignFacilityMemberArgs = {
+  input: AssignFacilityMemberInput;
 };
 
 
@@ -898,6 +969,12 @@ export type MutationRecordCityPlaceIdArgs = {
 };
 
 
+export type MutationRevokeFacilityMemberArgs = {
+  facilityId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+
 export type MutationUpdateFacilityArgs = {
   id: Scalars['ID']['input'];
   input: UpdateFacilityInput;
@@ -930,10 +1007,14 @@ export type MutationUpdateUserArgs = {
 export enum ObjectType {
   /** A facility entity. */
   Facility = 'Facility',
+  /** A person's seat at a hospital. */
+  FacilityMembership = 'FacilityMembership',
   /** A healthcare professional entity. */
   HealthcareProfessional = 'HealthcareProfessional',
   /** A submission entity. */
-  Submission = 'Submission'
+  Submission = 'Submission',
+  /** A user account. */
+  User = 'User'
 }
 
 /** Specifies a field and direction to order query results by. */
@@ -1598,6 +1679,8 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   ActionType: ActionType;
+  AssignFacilityMemberInput: AssignFacilityMemberInput;
+  AssignFacilityMemberPayload: ResolverTypeWrapper<AssignFacilityMemberPayload>;
   AuditLog: ResolverTypeWrapper<AuditLog>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   City: ResolverTypeWrapper<City>;
@@ -1627,7 +1710,11 @@ export type ResolversTypes = {
   Degree: Degree;
   DeleteResult: ResolverTypeWrapper<DeleteResult>;
   Facility: ResolverTypeWrapper<Facility>;
+  FacilityMembership: ResolverTypeWrapper<FacilityMembership>;
+  FacilityMembershipRole: FacilityMembershipRole;
+  FacilityMembershipStatus: FacilityMembershipStatus;
   FacilityPlaceCandidate: ResolverTypeWrapper<FacilityPlaceCandidate>;
+  FacilityPlan: FacilityPlan;
   FacilitySearchFilters: FacilitySearchFilters;
   FacilitySource: FacilitySource;
   FacilitySubmission: ResolverTypeWrapper<FacilitySubmission>;
@@ -1676,6 +1763,8 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AssignFacilityMemberInput: AssignFacilityMemberInput;
+  AssignFacilityMemberPayload: AssignFacilityMemberPayload;
   AuditLog: AuditLog;
   Boolean: Scalars['Boolean']['output'];
   City: City;
@@ -1702,6 +1791,7 @@ export type ResolversParentTypes = {
   CurrentUserAccess: CurrentUserAccess;
   DeleteResult: DeleteResult;
   Facility: Facility;
+  FacilityMembership: FacilityMembership;
   FacilityPlaceCandidate: FacilityPlaceCandidate;
   FacilitySearchFilters: FacilitySearchFilters;
   FacilitySubmission: FacilitySubmission;
@@ -1733,6 +1823,13 @@ export type ResolversParentTypes = {
   UpdateSubmissionInput: UpdateSubmissionInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
+};
+
+export type AssignFacilityMemberPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AssignFacilityMemberPayload'] = ResolversParentTypes['AssignFacilityMemberPayload']> = {
+  membership?: Resolver<ResolversTypes['FacilityMembership'], ParentType, ContextType>;
+  seatLimit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  seatsUsed?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
 };
 
 export type AuditLogResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuditLog'] = ResolversParentTypes['AuditLog']> = {
@@ -1931,6 +2028,16 @@ export type FacilityResolvers<ContextType = any, ParentType extends ResolversPar
   verificationStatus?: Resolver<ResolversTypes['FacilityVerificationStatus'], ParentType, ContextType>;
 };
 
+export type FacilityMembershipResolvers<ContextType = any, ParentType extends ResolversParentTypes['FacilityMembership'] = ResolversParentTypes['FacilityMembership']> = {
+  createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  hpId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['FacilityMembershipRole'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['FacilityMembershipStatus'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
 export type FacilityPlaceCandidateResolvers<ContextType = any, ParentType extends ResolversParentTypes['FacilityPlaceCandidate'] = ResolversParentTypes['FacilityPlaceCandidate']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   category?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1992,6 +2099,7 @@ export type MapsPlacePreviewResolvers<ContextType = any, ParentType extends Reso
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  assignFacilityMember?: Resolver<ResolversTypes['AssignFacilityMemberPayload'], ParentType, ContextType, RequireFields<MutationAssignFacilityMemberArgs, 'input'>>;
   confirmFacilityPlaceId?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationConfirmFacilityPlaceIdArgs, 'facilityId' | 'placeId'>>;
   createFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationCreateFacilityArgs, 'input'>>;
   createHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationCreateHealthcareProfessionalArgs, 'input'>>;
@@ -2002,6 +2110,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteHealthcareProfessional?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteHealthcareProfessionalArgs, 'id'>>;
   deleteSubmission?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteSubmissionArgs, 'id'>>;
   recordCityPlaceId?: Resolver<ResolversTypes['City'], ParentType, ContextType, RequireFields<MutationRecordCityPlaceIdArgs, 'cityId' | 'placeId'>>;
+  revokeFacilityMember?: Resolver<ResolversTypes['FacilityMembership'], ParentType, ContextType, RequireFields<MutationRevokeFacilityMemberArgs, 'facilityId' | 'userId'>>;
   updateFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationUpdateFacilityArgs, 'id' | 'input'>>;
   updateHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationUpdateHealthcareProfessionalArgs, 'id' | 'input'>>;
   updateReservation?: Resolver<ResolversTypes['Reservation'], ParentType, ContextType, RequireFields<MutationUpdateReservationArgs, 'input'>>;
@@ -2092,6 +2201,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type Resolvers<ContextType = any> = {
+  AssignFacilityMemberPayload?: AssignFacilityMemberPayloadResolvers<ContextType>;
   AuditLog?: AuditLogResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   CitySuggestion?: CitySuggestionResolvers<ContextType>;
@@ -2111,6 +2221,7 @@ export type Resolvers<ContextType = any> = {
   CurrentUserAccess?: CurrentUserAccessResolvers<ContextType>;
   DeleteResult?: DeleteResultResolvers<ContextType>;
   Facility?: FacilityResolvers<ContextType>;
+  FacilityMembership?: FacilityMembershipResolvers<ContextType>;
   FacilityPlaceCandidate?: FacilityPlaceCandidateResolvers<ContextType>;
   FacilitySubmission?: FacilitySubmissionResolvers<ContextType>;
   HealthcareProfessional?: HealthcareProfessionalResolvers<ContextType>;

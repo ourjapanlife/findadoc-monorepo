@@ -1,5 +1,5 @@
 import { GraphQLError, GraphQLResolveInfo } from 'graphql'
-import { withAnyScope, withScope, UserContext, Scope, getEffectiveScopes } from './auth.js'
+import { authorize, withAnyScope, withScope, UserContext, Scope, getEffectiveScopes } from './auth.js'
 import * as facilityService from './services/facilityService.js'
 import * as healthcareProfessionalService from './services/healthcareProfessionalService.js'
 import * as gqlType from '@findadoc/graphql'
@@ -11,6 +11,7 @@ import * as citySuggestionService from './services/citySuggestionService.js'
 import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
 import * as facilityPlaceService from './services/facilityPlaceService.js'
 import * as clinicSiteService from './services/clinicSiteService.js'
+import * as facilityMembershipService from './services/facilityMembershipService.js'
 import { Result } from './result.js'
 import { logger } from './logger.js'
 import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
@@ -329,6 +330,52 @@ const resolvers = {
 
             return createUserResult.data
         }),
+        assignFacilityMember: async (
+            _parent: unknown,
+            args: { input: gqlType.AssignFacilityMemberInput },
+            context: UserContext
+        ): Promise<gqlType.AssignFacilityMemberPayload> => {
+            // An owner assigns staff without write:users, so this is not withScope.
+            // A caller who is not platform staff and names no facility is rejected here.
+            const platformStaff = authorize(context.user, [Scope['write:users']])
+            if (!platformStaff && !args.input?.facilityId) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+            const role = args.input.role === 'OWNER' ? 'owner' : 'staff'
+            const result = await facilityMembershipService.assignFacilityMember({
+                facilityId: args.input.facilityId,
+                displayName: args.input.displayName,
+                role,
+                hpId: args.input.hpId,
+                userId: args.input.userId,
+                authSubject: args.input.authSubject
+            }, { sub: context.user.sub, platformStaff })
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        },
+        revokeFacilityMember: async (
+            _parent: unknown,
+            args: { facilityId: string, userId: string },
+            context: UserContext
+        ): Promise<gqlType.FacilityMembership> => {
+            const platformStaff = authorize(context.user, [Scope['write:users']])
+            if (!platformStaff && !args.facilityId) {
+                throw new GraphQLError('User is not authorized', {
+                    extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
+                })
+            }
+            const result = await facilityMembershipService.revokeFacilityMember(
+                args.facilityId,
+                args.userId,
+                { sub: context.user.sub, platformStaff }
+            )
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        },
         updateUser: withScope(Scope['write:users'], async (_parent: unknown, args: { id: string, input: gqlType.UpdateUserInput })
         : Promise<gqlType.User> => {
             const updateUserResult = await userService.updateUser(args.id, args.input)

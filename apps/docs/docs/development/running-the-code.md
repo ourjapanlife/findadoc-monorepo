@@ -87,6 +87,10 @@ Browsers resolve `*.localhost` to this machine, so no hosts-file entry is requir
 
 The canonical URL is `https://{slug}.findadoc.jp/`. The www path and the shareable id are other doors, and both redirect to that host.
 
+### Hospital seats
+
+A hospital starts on the basic plan: three active people. Find a Doc staff (`write:users`) can add an owner or a staff member, and can attach an existing healthcare professional who already works at that hospital. An owner of that hospital can add and remove staff, still inside the three seats. Removing someone keeps the row and writes an audit log. The first owner is added by Find a Doc staff.
+
 ### Amplify and Route 53
 
 The DNS zone stays in Route 53. Do not change the nameservers. Amplify already serves `*.findadoc.jp` for the production branch, so a clinic hostname is that wildcard. A pull request preview is a separate Amplify host. It is not `{slug}.findadoc.jp`. On that host, open `/clinic/multilingual-online-clinic?preview=1`. The build copies the app shell to that path, the query stores the cookie for 30 days, and the page reads the clinic from `https://api.findadoc.jp`. The showcase row has to be in that database. `*` does not include `findadoc.jp` itself. Records that already exist for `www`, `api`, `mcp`, and `docs` are more specific than `*` and stay as they are. The clinic slug does not change.
