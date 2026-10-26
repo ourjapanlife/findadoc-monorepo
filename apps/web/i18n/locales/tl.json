@@ -264,6 +264,8 @@
   },
   "modFacilitySection": {
     "addresses": "Mga Address",
+    "onlineLabel": "Online na pasilidad",
+    "onlineHint": "Opsyonal. Lagyan lang ng check kung walang street address ang pasilidad. Hindi na kailangan ang address, lungsod, at mapa.",
     "contactInformation": "Impormasyon sa pakikipag-ugnayan",
     "facilityHeading": "Impormasyon ng Pasilidad",
     "googleMapsInformation": "Impormasyon sa Google maps",
@@ -620,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "Bumalik sa paghahanap",
     "metaDescription": "{name} sa {city}, {prefecture}. Adres, telepono, at mga wika ng kawani.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Online na pasilidad na walang street address. Telepono at mga wika ng kawani.",
     "locationNav": "Lokasyon",
     "relatedSpecialtiesHeading": "Mag-browse ayon sa specialty",
     "relatedLanguagesHeading": "Mag-browse ayon sa wika"

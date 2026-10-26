@@ -322,6 +322,8 @@
   },
   "modFacilitySection": {
     "addresses": "Адреса",
+    "onlineLabel": "Онлайн-учреждение",
+    "onlineHint": "Необязательно. Отметьте только если у учреждения нет уличного адреса. Тогда адрес, город и карта не нужны.",
     "contactInformation": "Контакты",
     "facilityHeading": "Сведения об учреждении",
     "googleMapsInformation": "Сведения Google Maps",
@@ -620,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "К поиску",
     "metaDescription": "{name} в {city}, {prefecture}. Адрес, телефон и языки персонала.",
+    "onlineBreadcrumb": "Онлайн",
+    "onlineMetaDescription": "{name}. Онлайн-учреждение без уличного адреса. Телефон и языки персонала.",
     "locationNav": "Место",
     "relatedSpecialtiesHeading": "Просмотр по специальности",
     "relatedLanguagesHeading": "Просмотр по языку"

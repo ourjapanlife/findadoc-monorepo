@@ -410,6 +410,8 @@
   },
   "modFacilitySection": {
     "addresses": "Addresses",
+    "onlineLabel": "Online facility",
+    "onlineHint": "Optional. Check only for a facility with no street address. Address, city, and map are then not required.",
     "contactInformation": "Contact Information",
     "errorMessageFacilityId": "Facility ID was not found",
     "existingHPHeading": "Current Healthcare Professionals at Facility",
@@ -631,6 +633,8 @@
     "backToSearch": "Back to search",
     "locationNav": "Location",
     "metaDescription": "{name} in {city}, {prefecture}. Address, phone and the languages spoken by staff.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Online clinic with no street address. Phone and the languages spoken by staff.",
     "relatedSpecialtiesHeading": "Browse by specialty",
     "relatedLanguagesHeading": "Browse by language"
   },

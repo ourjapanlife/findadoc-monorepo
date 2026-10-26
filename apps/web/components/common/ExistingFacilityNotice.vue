@@ -81,6 +81,7 @@ const label = computed(() =>
 const pageHref = computed(() => facilityPath({
     id: props.facility.id,
     nameEn: props.facility.nameEn,
+    online: props.facility.online === true,
     contact: {
         address: {
             prefectureEn: props.facility.prefectureEn,

@@ -322,6 +322,8 @@
   },
   "modFacilitySection": {
     "addresses": "Endereços",
+    "onlineLabel": "Estabelecimento online",
+    "onlineHint": "Opcional. Marque só se o estabelecimento não tiver endereço. Então endereço, cidade e mapa não são obrigatórios.",
     "contactInformation": "Contato",
     "facilityHeading": "Informações da unidade",
     "googleMapsInformation": "Informações do Google Maps",
@@ -620,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "Voltar à pesquisa",
     "metaDescription": "{name} em {city}, {prefecture}. Endereço, telefone e idiomas falados pela equipe.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Estabelecimento online sem endereço. Telefone e idiomas falados pela equipe.",
     "locationNav": "Local",
     "relatedSpecialtiesHeading": "Navegar por especialidade",
     "relatedLanguagesHeading": "Navegar por idioma"

@@ -85,6 +85,24 @@ describe('buildHubIndex', () => {
         const { prefectures } = buildHubIndex([facility('s1', 'Search', 'Somewhere')])
         expect(prefectures).to.deep.equal([])
     })
+
+    it('excludes online facilities so they do not create /japan hubs', () => {
+        const online: HubLocationSource = {
+            id: 'online-1',
+            nameEn: 'Multilingual online clinic',
+            online: true,
+            contact: { address: { prefectureEn: '', cityEn: '' } },
+            updatedDate: '2026-10-01T00:00:00.000Z'
+        }
+        const { prefectures } = buildHubIndex([
+            online,
+            facility('f1', 'Tokyo', 'Minato')
+        ])
+
+        expect(prefectures.map(hub => hub.path)).to.deep.equal(['/tokyo'])
+        expect(hubPathsFromFacilities([online])).to.deep.equal([])
+        expect(hubSitemapUrls([online])).to.deep.equal([])
+    })
 })
 
 describe('hub sitemap and prerender paths', () => {

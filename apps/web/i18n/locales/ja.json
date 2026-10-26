@@ -322,6 +322,8 @@
   },
   "modFacilitySection": {
     "addresses": "住所",
+    "onlineLabel": "オンラインの医療機関",
+    "onlineHint": "任意です。番地のない医療機関のときだけ選んでください。選ぶと住所・市区町村・地図は不要になります。",
     "contactInformation": "連絡先",
     "facilityHeading": "医療機関の情報",
     "googleMapsInformation": "Google マップの情報",
@@ -626,6 +628,8 @@
   "clinicPage": {
     "backToSearch": "検索に戻る",
     "metaDescription": "{prefecture}{city}の{name}。住所、電話番号、スタッフが話す言語。",
+    "onlineBreadcrumb": "オンライン",
+    "onlineMetaDescription": "{name}。番地のないオンラインの医療機関。電話番号とスタッフが話す言語。",
     "locationNav": "所在地",
     "relatedSpecialtiesHeading": "専門分野から探す",
     "relatedLanguagesHeading": "言語から探す"

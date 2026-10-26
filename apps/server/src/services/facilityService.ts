@@ -3,7 +3,13 @@ import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import { logger } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
-import { validateIdInput, validateCreateFacilityInput, validateFacilitiesSearchInput, validateUpdateFacilityInput } from '../validation/validateFacility.js'
+import {
+    hasUsableMapPin,
+    validateIdInput,
+    validateCreateFacilityInput,
+    validateFacilitiesSearchInput,
+    validateUpdateFacilityInput
+} from '../validation/validateFacility.js'
 import { facilityFromRow, facilityWithProfessionalIds } from '../services/mappersEntityService.js'
 import { uniqueLocales } from '../languages/publishedLocales.js'
 import { asJsonb } from '../../utils/dbUtils.js'
@@ -37,45 +43,183 @@ class FacilityUpdateRejected extends Error {
     }
 }
 
-// Builds a partial update patch for Facility rows.
-export function buildFacilityUpdatePatch(fields: Partial<gqlTypes.UpdateFacilityInput>) {
-    const updatePatch: Record<string, unknown> = {}
+function blankAddress(): gqlTypes.PhysicalAddressInput {
+    return {
+        postalCode: '',
+        prefectureEn: '',
+        cityEn: '',
+        addressLine1En: '',
+        addressLine2En: '',
+        prefectureJa: '',
+        cityJa: '',
+        addressLine1Ja: '',
+        addressLine2Ja: ''
+    }
+}
 
-    // Map only requested field
+/** Maps a stored Contact address into ContactInput shape. Null stays null. */
+export function addressInputFromStored(
+    address: gqlTypes.PhysicalAddress | gqlTypes.PhysicalAddressInput | null | undefined
+): gqlTypes.PhysicalAddressInput | null | undefined {
+    if (address === undefined) {
+        return undefined
+    }
+    if (address === null) {
+        return null
+    }
+    return {
+        postalCode: address.postalCode ?? '',
+        prefectureEn: address.prefectureEn ?? '',
+        cityEn: address.cityEn ?? '',
+        addressLine1En: address.addressLine1En ?? '',
+        addressLine2En: address.addressLine2En ?? '',
+        prefectureJa: address.prefectureJa ?? '',
+        cityJa: address.cityJa ?? '',
+        addressLine1Ja: address.addressLine1Ja ?? '',
+        addressLine2Ja: address.addressLine2Ja ?? ''
+    }
+}
+
+/**
+ * Normal facilities store a full address. An online facility keeps phone and
+ * stores address as null; Maps URL becomes empty.
+ * An omitted address becomes a blank shape; an explicit null stays null.
+ */
+export function contactForStorage(
+    contact: gqlTypes.ContactInput,
+    options: { clearLocation: boolean }
+): gqlTypes.ContactInput {
+    if (options.clearLocation) {
+        return {
+            phone: contact.phone,
+            email: contact.email ?? '',
+            website: contact.website ?? '',
+            googleMapsUrl: '',
+            address: null
+        }
+    }
+    return {
+        phone: contact.phone,
+        email: contact.email ?? '',
+        website: contact.website ?? '',
+        googleMapsUrl: contact.googleMapsUrl ?? '',
+        address: contact.address === undefined ? blankAddress() : contact.address
+    }
+}
+
+/**
+ * Merges a contact update with the stored contact so omitted address and Maps URL
+ * are not wiped on a phone-only (or similar) patch.
+ */
+export function contactUpdateForStorage(
+    contact: gqlTypes.ContactInput,
+    existingContact: gqlTypes.ContactInput | gqlTypes.Contact | undefined,
+    options: { clearLocation: boolean }
+): gqlTypes.ContactInput {
+    const merged: gqlTypes.ContactInput = {
+        ...contact,
+        address: contact.address !== undefined
+            ? contact.address
+            : addressInputFromStored(existingContact?.address),
+        googleMapsUrl: contact.googleMapsUrl !== undefined
+            ? contact.googleMapsUrl
+            : (existingContact?.googleMapsUrl ?? '')
+    }
+    return contactForStorage(merged, options)
+}
+
+/**
+ * Normalizes facility contact before writing facility_partial so Contact.googleMapsUrl
+ * (non-null in GraphQL) and address shape are always present when read back.
+ */
+export function facilityPartialForStorage(
+    facility: gqlTypes.CreateFacilityInput | null | undefined
+): gqlTypes.CreateFacilityInput | null {
+    if (facility === undefined || facility === null) {
+        return null
+    }
+    return {
+        ...facility,
+        contact: contactForStorage(facility.contact, {
+            clearLocation: facility.online === true
+        })
+    }
+}
+
+/**
+ * Builds a partial update patch for Facility rows.
+ * When online becomes true, address, city, map, and place id are cleared.
+ * Pass existingContact when contact is not in the update so phone is preserved.
+ * An omitted address or Maps URL on a contact update keeps the stored value.
+ */
+export function buildFacilityUpdatePatch(
+    fields: Partial<gqlTypes.UpdateFacilityInput>,
+    existingContact?: gqlTypes.ContactInput | gqlTypes.Contact
+) {
+    const updatePatch: Record<string, unknown> = {}
+    const becomingOnline = fields.online === true
+
     if (fields.nameEn !== undefined) {
         updatePatch.name_en = fields.nameEn
     }
     if (fields.nameJa !== undefined) {
         updatePatch.name_ja = fields.nameJa
     }
-    if (fields.contact !== undefined) {
-        updatePatch.contact = fields.contact
+    if (fields.contact !== undefined && fields.contact !== null) {
+        updatePatch.contact = contactUpdateForStorage(
+            fields.contact,
+            existingContact,
+            { clearLocation: becomingOnline }
+        )
+    } else if (becomingOnline && existingContact) {
+        updatePatch.contact = contactForStorage(
+            {
+                phone: existingContact.phone,
+                email: existingContact.email ?? '',
+                website: existingContact.website ?? '',
+                googleMapsUrl: existingContact.googleMapsUrl ?? '',
+                address: addressInputFromStored(existingContact.address) ?? blankAddress()
+            },
+            { clearLocation: true }
+        )
     }
-    if (fields.mapLatitude !== undefined) {
-        updatePatch.map_latitude = fields.mapLatitude
-    }
-    if (fields.mapLongitude !== undefined) {
-        updatePatch.map_longitude = fields.mapLongitude
+    if (becomingOnline) {
+        updatePatch.map_latitude = null
+        updatePatch.map_longitude = null
+        updatePatch.city_id = null
+        updatePatch.verification_status = 'UNVERIFIED_LOCATION'
+        updatePatch.google_place_id = null
+    } else {
+        if (fields.mapLatitude !== undefined) {
+            updatePatch.map_latitude = fields.mapLatitude
+        }
+        if (fields.mapLongitude !== undefined) {
+            updatePatch.map_longitude = fields.mapLongitude
+        }
+        if (fields.cityId !== undefined) {
+            updatePatch.city_id = fields.cityId
+        }
+        if (fields.verificationStatus !== undefined) {
+            updatePatch.verification_status = fields.verificationStatus
+        }
+        if (fields.googlePlaceId !== undefined) {
+            updatePatch.google_place_id = fields.googlePlaceId?.trim()
+                ? fields.googlePlaceId.trim()
+                : null
+        }
     }
     if (fields.paymentOptions !== undefined) {
         updatePatch.payment_options = JSON.stringify(fields.paymentOptions)
     }
-    if (fields.googlePlaceId !== undefined) {
-        updatePatch.google_place_id = fields.googlePlaceId?.trim() ? fields.googlePlaceId.trim() : null
-    }
     if (fields.source !== undefined) {
         updatePatch.source = fields.source
-    }
-    if (fields.cityId !== undefined) {
-        updatePatch.city_id = fields.cityId
-    }
-    if (fields.verificationStatus !== undefined) {
-        updatePatch.verification_status = fields.verificationStatus
     }
     if (fields.supportedLanguages !== undefined) {
         updatePatch.supported_languages = JSON.stringify(uniqueLocales(fields.supportedLanguages ?? []))
     }
-    // Business rule: always timestamp when the entity is updated
+    if (fields.online !== undefined) {
+        updatePatch.online = fields.online === true
+    }
     updatePatch.updated_date = new Date().toISOString()
 
     return updatePatch
@@ -250,10 +394,10 @@ export async function getFacilityMatchingMapsUrl(
     }
 }
 
-export async function contactWithCanonicalMapsUrl<T extends { googleMapsUrl: string }>(
+export async function contactWithCanonicalMapsUrl<T extends { googleMapsUrl?: string | null }>(
     contact: T
-): Promise<{ contact: T, placeId: string | null }> {
-    const maps = await canonicalMapsFields(contact.googleMapsUrl)
+): Promise<{ contact: T & { googleMapsUrl: string }, placeId: string | null }> {
+    const maps = await canonicalMapsFields(contact.googleMapsUrl ?? '')
     return {
         contact: { ...contact, googleMapsUrl: maps.url },
         placeId: maps.placeId
@@ -450,33 +594,47 @@ export async function createFacility(
             return validationResult as Result<gqlTypes.Facility>
         }
 
-        const publication = resolveFacilityPublication({
-            cityId: facilityInput.cityId,
-            verificationStatus: facilityInput.verificationStatus
-        })
+        const isOnline = facilityInput.online === true
+        let cityId: string | null = null
+        let verificationStatus: string = 'UNVERIFIED_LOCATION'
 
-        if (publication.hasErrors) {
-            return {
-                data: {} as gqlTypes.Facility,
-                hasErrors: true,
-                errors: publication.errors
+        if (!isOnline) {
+            const publication = resolveFacilityPublication({
+                cityId: facilityInput.cityId,
+                verificationStatus: facilityInput.verificationStatus
+            })
+
+            if (publication.hasErrors) {
+                return {
+                    data: {} as gqlTypes.Facility,
+                    hasErrors: true,
+                    errors: publication.errors
+                }
             }
-        }
 
-        if (publication.data.cityId && !isCityRecordId(publication.data.cityId)) {
-            return invalidCityId()
-        }
+            if (publication.data.cityId && !isCityRecordId(publication.data.cityId)) {
+                return invalidCityId()
+            }
 
-        if (publication.data.cityId && !(await cityExists(publication.data.cityId))) {
-            return invalidCityId()
+            if (publication.data.cityId && !(await cityExists(publication.data.cityId))) {
+                return invalidCityId()
+            }
+
+            cityId = publication.data.cityId
+            verificationStatus = publication.data.verificationStatus
         }
 
         // Extract HP IDs for convenience
         const hpIds = (facilityInput.healthcareProfessionalIds ?? []) as string[]
-        const canonicalContact = await contactWithCanonicalMapsUrl(facilityInput.contact)
-        const googlePlaceId = facilityInput.googlePlaceId?.trim()
-            ? facilityInput.googlePlaceId.trim()
-            : canonicalContact.placeId
+        const storedContact = contactForStorage(facilityInput.contact, { clearLocation: isOnline })
+        const canonicalContact = isOnline
+            ? { contact: storedContact, placeId: null as string | null }
+            : await contactWithCanonicalMapsUrl(storedContact)
+        const googlePlaceId = isOnline
+            ? null
+            : (facilityInput.googlePlaceId?.trim()
+                ? facilityInput.googlePlaceId.trim()
+                : canonicalContact.placeId)
 
         // Execute all database operations in a single atomic transaction.
         // The transaction returns the final plain GraphQL object (not the Kysely result).
@@ -490,14 +648,15 @@ export async function createFacility(
                     name_en: facilityInput.nameEn,
                     name_ja: facilityInput.nameJa,
                     contact: canonicalContact.contact,
-                    map_latitude: facilityInput.mapLatitude ?? 0,
-                    map_longitude: facilityInput.mapLongitude ?? 0,
+                    map_latitude: isOnline ? null : (facilityInput.mapLatitude ?? null),
+                    map_longitude: isOnline ? null : (facilityInput.mapLongitude ?? null),
                     payment_options: JSON.stringify(facilityInput.paymentOptions ?? []),
-                    city_id: publication.data.cityId,
+                    city_id: cityId,
                     google_place_id: googlePlaceId,
                     source: facilityInput.source ?? FacilitySource.Manual,
-                    verification_status: publication.data.verificationStatus,
+                    verification_status: verificationStatus,
                     supported_languages: JSON.stringify(uniqueLocales(facilityInput.supportedLanguages ?? [])),
+                    online: isOnline,
                     created_date: new Date().toISOString(),
                     updated_date: new Date().toISOString()
                 })
@@ -718,7 +877,13 @@ export const updateFacility = async (
 
         let fields = fieldsToUpdate
         let resolvedPlaceId: string | null = null
-        if (fields.contact) {
+        // Only canonicalize when this update supplies a Maps URL. An omitted URL
+        // keeps the stored one in buildFacilityUpdatePatch.
+        if (
+            fields.contact
+            && fields.online !== true
+            && (fields.contact.googleMapsUrl ?? '').trim()
+        ) {
             const canonicalContact = await contactWithCanonicalMapsUrl(fields.contact)
             resolvedPlaceId = canonicalContact.placeId
             fields = {
@@ -741,9 +906,67 @@ export const updateFacility = async (
                 throw new Error(`Could not find facility with id ${facilityId} to update.`)
             }
 
+            const becomingOnline = fields.online === true
+            const goingOffline = fields.online === false && originalFacility.online === true
+            if (goingOffline) {
+                const existingContact = originalFacility.contact as gqlTypes.ContactInput | null
+                const mergedAddress = fields.contact?.address !== undefined
+                    ? fields.contact.address
+                    : existingContact?.address
+                const mergedMapsUrl = fields.contact?.googleMapsUrl !== undefined
+                    ? fields.contact.googleMapsUrl
+                    : (existingContact?.googleMapsUrl ?? '')
+                const mergedLat = fields.mapLatitude !== undefined
+                    ? fields.mapLatitude
+                    : originalFacility.map_latitude
+                const mergedLng = fields.mapLongitude !== undefined
+                    ? fields.mapLongitude
+                    : originalFacility.map_longitude
+                const offlineLocationErrors: NonNullable<Result<gqlTypes.Facility>['errors']> = []
+                if (!mergedAddress) {
+                    offlineLocationErrors.push({
+                        field: 'contact.address',
+                        errorCode: ErrorCode.REQUIRED,
+                        httpStatus: 400
+                    })
+                }
+                if (!(mergedMapsUrl ?? '').trim()) {
+                    offlineLocationErrors.push({
+                        field: 'contact.googleMapsUrl',
+                        errorCode: ErrorCode.REQUIRED,
+                        httpStatus: 400
+                    })
+                }
+                if (!hasUsableMapPin(
+                    mergedLat === null ? null : Number(mergedLat),
+                    mergedLng === null ? null : Number(mergedLng)
+                )) {
+                    offlineLocationErrors.push({
+                        field: 'mapLatitude',
+                        errorCode: ErrorCode.REQUIRED,
+                        httpStatus: 400
+                    })
+                    offlineLocationErrors.push({
+                        field: 'mapLongitude',
+                        errorCode: ErrorCode.REQUIRED,
+                        httpStatus: 400
+                    })
+                }
+                if (offlineLocationErrors.length > 0) {
+                    throw new FacilityUpdateRejected({
+                        data: {} as gqlTypes.Facility,
+                        hasErrors: true,
+                        errors: offlineLocationErrors
+                    })
+                }
+            }
+
             let publicationPatch: { city_id: string | null, verification_status: string } | undefined
 
-            if (fieldsToUpdate.cityId !== undefined || fieldsToUpdate.verificationStatus !== undefined) {
+            if (
+                !becomingOnline
+                && (fieldsToUpdate.cityId !== undefined || fieldsToUpdate.verificationStatus !== undefined)
+            ) {
                 const requestedStatus = verificationStatusForUpdate(
                     originalFacility.city_id,
                     originalFacility.verification_status as gqlTypes.FacilityVerificationStatus,
@@ -788,11 +1011,15 @@ export const updateFacility = async (
 
             // Update scalar fields on facilities table (if any provided)
             const updatePayload: Record<string, unknown> = {
-                ...buildFacilityUpdatePatch(fields),
+                ...buildFacilityUpdatePatch(
+                    fields,
+                    originalFacility.contact as gqlTypes.ContactInput
+                ),
                 ...publicationPatch
             }
             if (
-                resolvedPlaceId
+                !becomingOnline
+                && resolvedPlaceId
                 && !originalFacility.google_place_id
                 && fields.googlePlaceId === undefined
             ) {

@@ -370,6 +370,8 @@
   },
   "modFacilitySection": {
     "addresses": "Adressen",
+    "onlineLabel": "Online-Einrichtung",
+    "onlineHint": "Optional. Nur ankreuzen, wenn die Einrichtung keine Straßenadresse hat. Dann sind Adresse, Ort und Karte nicht erforderlich.",
     "contactInformation": "Kontakt",
     "facilityHeading": "Angaben zur Einrichtung",
     "googleMapsInformation": "Google Maps information",
@@ -620,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "Zurück zur Suche",
     "metaDescription": "{name} in {city}, {prefecture}. Adresse, Telefon und Sprachen des Personals.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Online-Einrichtung ohne Straßenadresse. Telefon und Sprachen des Personals.",
     "locationNav": "Ort",
     "relatedSpecialtiesHeading": "Nach Fachgebiet stöbern",
     "relatedLanguagesHeading": "Nach Sprache stöbern"

@@ -67,7 +67,20 @@
                 />
             </div>
         </ModAccordion>
+        <label class="mb-3 flex items-start gap-2 text-sm text-primary-text">
+            <input
+                v-model="facilityStore.createFacilityFields.online"
+                data-testid="mod-facility-section-online"
+                class="mt-1"
+                type="checkbox"
+            >
+            <span>
+                <span class="font-medium">{{ t('modFacilitySection.onlineLabel') }}</span>
+                <span class="mt-1 block text-primary-text-muted">{{ t('modFacilitySection.onlineHint') }}</span>
+            </span>
+        </label>
         <ModAccordion
+            v-if="!facilityStore.createFacilityFields.online"
             tone="facility"
             class="mod-facility-address-section"
             :title="t('modFacilitySection.addresses')"
@@ -208,6 +221,7 @@
             </div>
         </ModAccordion>
         <ModAccordion
+            v-if="!facilityStore.createFacilityFields.online"
             tone="facility"
             class="google-maps-section"
             :title="t('modFacilitySection.googleMapsInformation')"

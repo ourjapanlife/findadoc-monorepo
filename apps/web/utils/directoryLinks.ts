@@ -58,15 +58,21 @@ export function facilityCrumbs(input: {
     prefecturePath?: string
     cityLabel: string
     cityPath?: string
+    /** When set, geography crumbs are skipped and this label is used instead. */
+    onlineLabel?: string
     facilityLabel: string
 }): BreadcrumbItem[] {
     const crumbs: BreadcrumbItem[] = [{ label: input.homeLabel, to: '/' }]
 
-    if (input.prefectureLabel && input.prefecturePath) {
-        crumbs.push({ label: input.prefectureLabel, to: input.prefecturePath })
-    }
-    if (input.cityLabel && input.cityPath) {
-        crumbs.push({ label: input.cityLabel, to: input.cityPath })
+    if (input.onlineLabel) {
+        crumbs.push({ label: input.onlineLabel })
+    } else {
+        if (input.prefectureLabel && input.prefecturePath) {
+            crumbs.push({ label: input.prefectureLabel, to: input.prefecturePath })
+        }
+        if (input.cityLabel && input.cityPath) {
+            crumbs.push({ label: input.cityLabel, to: input.cityPath })
+        }
     }
 
     crumbs.push({ label: input.facilityLabel })
@@ -130,10 +136,16 @@ export function professionalCrumbs(input: {
     return crumbs
 }
 
-export function facilityHubPaths(address: {
-    prefectureEn?: string | null
-    cityEn?: string | null
-} | null | undefined): { prefecturePath?: string, cityPath?: string } {
+export function facilityHubPaths(
+    address: {
+        prefectureEn?: string | null
+        cityEn?: string | null
+    } | null | undefined,
+    online?: boolean | null
+): { prefecturePath?: string, cityPath?: string } {
+    if (online === true) {
+        return {}
+    }
     return {
         prefecturePath: prefectureHubPath(address?.prefectureEn),
         cityPath: cityHubPath(address?.prefectureEn, address?.cityEn)
@@ -304,6 +316,7 @@ export function professionalFacetLinks(
  */
 export function facilityFacetLinks(
     facility: {
+        online?: boolean | null
         contact?: { address?: { prefectureEn?: string | null } | null } | null
         healthcareProfessionals?: readonly {
             specialties?: Specialty[] | null
@@ -312,6 +325,10 @@ export function facilityFacetLinks(
     },
     byPrefecture: FacetIndexByPrefecture
 ): ProfessionalFacetLink[] {
+    if (facility.online === true) {
+        return []
+    }
+
     const professionals = facility.healthcareProfessionals ?? []
     if (!professionals.length) {
         return []

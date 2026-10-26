@@ -315,6 +315,8 @@
   },
   "modFacilitySection": {
     "addresses": "Địa chỉ.",
+    "onlineLabel": "Cơ sở trực tuyến",
+    "onlineHint": "Tùy chọn. Chỉ chọn khi cơ sở không có địa chỉ đường phố. Khi đó không cần địa chỉ, thành phố và bản đồ.",
     "contactInformation": "Thông tin liên lạc",
     "facilityHeading": "Thông tin cơ sở",
     "googleMapsInformation": "Thông tin Google Maps",
@@ -620,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "Về tìm kiếm",
     "metaDescription": "{name} tại {city}, {prefecture}. Địa chỉ, điện thoại và ngôn ngữ của nhân viên.",
+    "onlineBreadcrumb": "Trực tuyến",
+    "onlineMetaDescription": "{name}. Cơ sở trực tuyến không có địa chỉ đường phố. Điện thoại và ngôn ngữ của nhân viên.",
     "locationNav": "Địa điểm",
     "relatedSpecialtiesHeading": "Duyệt theo chuyên khoa",
     "relatedLanguagesHeading": "Duyệt theo ngôn ngữ"

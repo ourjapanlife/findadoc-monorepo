@@ -76,7 +76,7 @@ const GET_FACILITY = gql`
 // stay in sync with the schema via `yarn generate`.
 export type FacilitySummary = Pick<GqlFacility, 'id' | 'nameEn' | 'nameJa' | 'healthcareProfessionalIds'> & {
     contact: Pick<Contact, 'phone' | 'website'> & {
-        address: Pick<PhysicalAddress, 'postalCode' | 'prefectureEn' | 'cityEn' | 'addressLine1En' | 'addressLine2En'>
+        address?: Pick<PhysicalAddress, 'postalCode' | 'prefectureEn' | 'cityEn' | 'addressLine1En' | 'addressLine2En'> | null
     }
 }
 

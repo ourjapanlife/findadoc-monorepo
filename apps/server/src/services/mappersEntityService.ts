@@ -67,6 +67,7 @@ export function facilityFromRow(row: Selectable<FacilitiesTable>): FacilityParen
         contact: row.contact,
         mapLatitude: row.map_latitude,
         mapLongitude: row.map_longitude,
+        online: row.online,
         createdDate: row.created_date,
         updatedDate: row.updated_date,
         ...paymentOptionFields(row),

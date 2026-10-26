@@ -319,6 +319,8 @@
   },
   "modFacilitySection": {
     "addresses": "Adresses",
+    "onlineLabel": "Établissement en ligne",
+    "onlineHint": "Facultatif. Cochez uniquement si l'établissement n'a pas d'adresse postale. Adresse, ville et carte ne sont alors pas obligatoires.",
     "contactInformation": "Coordonnées",
     "facilityHeading": "Informations sur l’établissement",
     "googleMapsInformation": "Informations Google Maps",
@@ -620,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "Retour à la recherche",
     "metaDescription": "{name} à {city}, {prefecture}. Adresse, téléphone et langues parlées par le personnel.",
+    "onlineBreadcrumb": "En ligne",
+    "onlineMetaDescription": "{name}. Établissement en ligne sans adresse postale. Téléphone et langues parlées par le personnel.",
     "locationNav": "Lieu",
     "relatedSpecialtiesHeading": "Parcourir par spécialité",
     "relatedLanguagesHeading": "Parcourir par langue"

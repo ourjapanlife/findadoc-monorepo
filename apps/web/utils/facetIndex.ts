@@ -23,6 +23,8 @@ export type FacetFacilitySource = {
     nameEn?: string | null
     nameJa?: string | null
     updatedDate?: string | null
+    /** Online clinics are not prefecture specialty/language facets. */
+    online?: boolean | null
     contact?: {
         address?: {
             cityEn?: string | null
@@ -198,6 +200,10 @@ export function buildFacetIndex(
     const facets = new Map<string, MutableFacet>()
 
     for (const facility of facilities) {
+        if (facility.online === true) {
+            continue
+        }
+
         const address = facility.contact?.address
         const prefectureSlug = locationPrefectureSlug(address?.prefectureEn)
         const prefecturePath = prefectureHubPathFromSlug(prefectureSlug)

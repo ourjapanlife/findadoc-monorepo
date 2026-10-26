@@ -322,6 +322,8 @@
   },
   "modFacilitySection": {
     "addresses": "地址",
+    "onlineLabel": "在线医疗机构",
+    "onlineHint": "可选。仅在医疗机构没有街道地址时勾选。勾选后不必填写地址、城市和地图。",
     "contactInformation": "联系方式",
     "facilityHeading": "医疗机构信息",
     "googleMapsInformation": "Google 地图信息",
@@ -620,6 +622,8 @@
   "clinicPage": {
     "backToSearch": "返回搜索",
     "metaDescription": "{prefecture}{city}的{name}。地址、电话，以及工作人员使用的语言。",
+    "onlineBreadcrumb": "在线",
+    "onlineMetaDescription": "{name}。无街道地址的在线医疗机构。电话以及工作人员使用的语言。",
     "locationNav": "位置",
     "relatedSpecialtiesHeading": "按专科浏览",
     "relatedLanguagesHeading": "按语言浏览"
