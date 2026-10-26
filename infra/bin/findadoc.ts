@@ -6,6 +6,7 @@ import { DatabaseStack } from '../lib/databaseStack.js'
 import { DataCopyStack } from '../lib/dataCopyStack.js'
 import { DnsStack } from '../lib/dnsStack.js'
 import { EdgeCertificateStack } from '../lib/edgeCertificateStack.js'
+import { EmailStack } from '../lib/emailStack.js'
 import { McpStack } from '../lib/mcpStack.js'
 import {
     API_DATABASE_USER,
@@ -96,7 +97,7 @@ const apiSecrets = new ApiSecretsStack(app, 'FindadocApiSecrets', {
     env: FINDADOC_ENV,
 })
 
-new ApiStack(app, 'FindadocApi', {
+const api = new ApiStack(app, 'FindadocApi', {
     env: FINDADOC_ENV,
     crossRegionReferences: true,
     vpc: network.vpc,
@@ -113,6 +114,14 @@ new ApiStack(app, 'FindadocApi', {
     sentryEnvironment: API_DOMAIN in API_HOSTNAMES ? 'production' : 'staging',
     alerts,
     secretsRevision: API_SECRETS_REVISION,
+})
+
+new EmailStack(app, 'FindadocEmail', {
+    env: FINDADOC_ENV,
+    domainName: FINDADOC_DOMAIN,
+    hostedZoneId: FINDADOC_HOSTED_ZONE_ID,
+    apiFunction: api.apiFunction,
+    alerts,
 })
 
 new McpStack(app, 'FindadocMcp', {
