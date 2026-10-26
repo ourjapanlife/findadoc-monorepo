@@ -283,7 +283,7 @@ export default defineNuxtConfig({
             // the publish dir. Dev never has the env vars in the browser tag.
             nitro.hooks.hook('close', async () => {
                 const publicDir = nitro.options.output.publicDir
-                writeUmamiProxyRedirects(publicDir)
+                await writeUmamiProxyRedirects(publicDir)
                 for (const slug of CLINIC_PREVIEW_SHELL_SLUGS) {
                     await writeClinicPreviewShells(publicDir, slug)
                 }

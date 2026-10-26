@@ -4,8 +4,63 @@
  * Spoken-language codes here (ne, id) are clinic languages, not site UI locales.
  */
 
+import {
+    FacilitySource,
+    FacilityVerificationStatus,
+    Locale
+} from '@findadoc/graphql'
+import type { FacilitySeed } from './schema.js'
+
 /** Stable id. Accounts and a future CRM attach to this, not to a directory facility. */
 export const SHOWCASE_CLINIC_SITE_ID = 'a303a8ac-31c9-45d8-96d1-cf6630aa11bd'
+
+/** Directory listing created for this page. The row stays unresolved: the page has no municipality. */
+export const SHOWCASE_FACILITY_ID = 'c32c316a-a368-499b-abaf-c5c973cb67e5'
+
+const SHOWCASE_SEEDED_AT = '2026-10-26T00:00:00.000Z'
+
+export const showcaseClinicFacility: FacilitySeed = {
+    id: SHOWCASE_FACILITY_ID,
+    code: null,
+    name_en: 'Multilingual online clinic',
+    name_ja: '多言語オンラインクリニック',
+    contact: {
+        email: null,
+        phone: '000-0000-0000',
+        website: null,
+        googleMapsUrl: 'https://www.google.com/maps',
+        address: {
+            postalCode: '',
+            prefectureEn: '',
+            prefectureJa: '',
+            cityEn: '',
+            cityJa: '',
+            addressLine1En: '',
+            addressLine1Ja: '',
+            addressLine2En: '',
+            addressLine2Ja: ''
+        }
+    },
+    map_latitude: 0,
+    map_longitude: 0,
+    created_date: SHOWCASE_SEEDED_AT,
+    updated_date: SHOWCASE_SEEDED_AT,
+    firestore_id: null,
+    payment_options: [],
+    city_id: null,
+    google_place_id: null,
+    source: FacilitySource.Manual,
+    verification_status: FacilityVerificationStatus.UnverifiedLocation,
+    supported_languages: [
+        Locale.JaJp,
+        Locale.EnUs,
+        Locale.ZhCn,
+        Locale.TlPh,
+        Locale.FrFr,
+        Locale.NeNp,
+        Locale.IdId
+    ]
+}
 
 export type ClinicLandingLanguage = {
     code: string
@@ -815,7 +870,7 @@ export type ClinicSiteSeed = {
 export const clinicSiteSeeds: readonly ClinicSiteSeed[] = [
     {
         id: SHOWCASE_CLINIC_SITE_ID,
-        facility_id: null,
+        facility_id: SHOWCASE_FACILITY_ID,
         slug: 'multilingual-online-clinic',
         status: 'preview',
         share_image_path: HERO,

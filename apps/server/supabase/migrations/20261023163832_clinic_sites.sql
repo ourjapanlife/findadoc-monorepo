@@ -1,9 +1,8 @@
 -- A clinic that hosts a page on Find a Doc.
 --
 -- clinic_sites.id is the id an account and a future CRM (appointments, patients,
--- messages) attach to. facility_id is the directory listing, and it stays null
--- until that listing is a real facility with a known municipality. This
--- migration does not insert a facility and does not invent an address.
+-- messages) attach to. facility_id is the directory listing. The showcase seed
+-- sets it. This migration does not insert a facility and does not invent an address.
 --
 -- clinic_memberships is the account link. It is empty until a user is invited.
 -- The public page does not read it.

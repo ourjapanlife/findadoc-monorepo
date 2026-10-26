@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { clinicSiteSeeds } from './clinicSiteContent.js'
+import { clinicSiteSeeds, SHOWCASE_FACILITY_ID, showcaseClinicFacility } from './clinicSiteContent.js'
 
 describe('clinic site seed', () => {
-    it('seeds the showcase clinic without a directory facility', () => {
+    it('seeds the showcase clinic on its directory facility', () => {
         const site = clinicSiteSeeds.find(item => item.slug === 'multilingual-online-clinic')
 
-        expect(site?.facility_id).toBe(null)
+        expect(site?.facility_id).toBe(SHOWCASE_FACILITY_ID)
+        expect(showcaseClinicFacility.id).toBe(SHOWCASE_FACILITY_ID)
+        expect(showcaseClinicFacility.verification_status).toBe('UNVERIFIED_LOCATION')
+        expect(showcaseClinicFacility.city_id).toBe(null)
         expect(site?.status).toBe('preview')
         expect(site?.theme.primary).toBe('#177A80')
         expect(site?.copy['ja-JP']?.name).toBe('多言語オンラインクリニック')

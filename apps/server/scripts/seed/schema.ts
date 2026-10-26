@@ -137,7 +137,7 @@ export type RelationSeed = {
     facilities_id: string
 }
 
-/** Insert row for a hosted clinic. facility_id stays null until a real directory listing exists. */
+/** Insert row for a hosted clinic. facility_id is the directory listing when the seed has one. */
 export type ClinicSiteInsert = {
     id: string
     facility_id: string | null

@@ -160,7 +160,7 @@ export interface UserTable {
 
 /**
  * A clinic-owned page. id is what an account and a future CRM attach to.
- * facility_id stays null until the directory listing exists.
+ * facility_id is the directory listing for this page.
  */
 export interface ClinicSitesTable {
     id: Generated<string>

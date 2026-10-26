@@ -8,7 +8,7 @@ import { SITE_ORIGIN } from './site.ts'
  * The address to share is `https://{slug}.findadoc.jp/`. `/clinic/{slug}`, the
  * directory breadcrumb, and `/clinic/{prefecture}/{city}/{slug}--{id}` redirect
  * there. The clinic row is what an account and a future CRM attach to.
- * `facility_id` on that row stays empty until the directory listing exists.
+ * `facility_id` on the showcase row is the directory listing in the seed.
  *
  * There is no environment variable. `CLINIC_LANDING_MODE` is `preview`:
  * `?preview=1` sets a cookie; without it the landing is a 404, noindex, and absent
