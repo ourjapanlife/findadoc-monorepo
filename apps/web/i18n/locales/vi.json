@@ -414,8 +414,7 @@
     "useExistingFacility": "Dùng cơ sở này"
   },
   "serverErrorMessages": {
-    "errorCodeMessagingNeeded": "Mã lỗi máy chủ này chưa có thông báo cho người dùng. Hãy thêm một thông báo.",
-    "genericErrorMessage": "Đã xảy ra lỗi khi gửi biểu mẫu. Vui lòng thử lại",
+    "genericErrorMessage": "Không thể hoàn tất. Vui lòng thử lại.",
     "englishNameRequired": "Nhân viên y tế cần có tên bằng tiếng Anh.",
     "facilityFieldsIncomplete": "Hãy điền các mục bắt buộc của cơ sở y tế trước khi tiếp tục.",
     "healthcareProfessionalFieldsIncomplete": "Hãy điền các mục bắt buộc của nhân viên y tế trước khi tiếp tục.",
@@ -438,7 +437,7 @@
     "fieldTooShort": "Một mục quá ngắn.",
     "negativeNumber": "Số không được là số âm.",
     "nothingToSave": "Không có nội dung mới để lưu.",
-    "signInRequired": "Bạn cần đăng nhập để làm việc này."
+    "notAllowed": "Bạn không có quyền làm việc này. Hãy đăng nhập lại hoặc xin quyền truy cập từ quản trị viên."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Ngôn ngữ sử dụng",

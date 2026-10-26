@@ -414,8 +414,7 @@
     "deleteConfirmationHealthcareProfessional": "Excluir o profissional de saúde {healthcareProfessional}, ID {id}?"
   },
   "serverErrorMessages": {
-    "genericErrorMessage": "Ocorreu um erro ao enviar o formulário. Tente novamente",
-    "errorCodeMessagingNeeded": "Este código de erro do servidor não tem uma mensagem para o usuário. Adicione uma.",
+    "genericErrorMessage": "Não foi possível concluir. Tente novamente.",
     "englishNameRequired": "O profissional de saúde precisa de um nome em inglês.",
     "facilityFieldsIncomplete": "Preencha os campos obrigatórios da clínica antes de continuar.",
     "healthcareProfessionalFieldsIncomplete": "Preencha os campos obrigatórios do profissional de saúde antes de continuar.",
@@ -438,7 +437,7 @@
     "fieldTooShort": "Um dos campos é curto demais.",
     "negativeNumber": "Um número não pode ser negativo.",
     "nothingToSave": "Não há nada novo para salvar.",
-    "signInRequired": "É preciso entrar na conta para fazer isso."
+    "notAllowed": "Você não tem permissão para fazer isso. Entre novamente ou peça acesso a um administrador."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Idiomas falados",

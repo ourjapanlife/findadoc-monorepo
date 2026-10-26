@@ -109,8 +109,7 @@
     "notFound": "Unknown language"
   },
   "serverErrorMessages": {
-    "errorCodeMessagingNeeded": "The server error code does not have a message for the user. Please add one.",
-    "genericErrorMessage": "There was an error submitting your form, please try again",
+    "genericErrorMessage": "That did not work. Please try again.",
     "englishNameRequired": "The healthcare professional needs an English name.",
     "facilityFieldsIncomplete": "Fill in the required clinic fields before continuing.",
     "healthcareProfessionalFieldsIncomplete": "Fill in the required healthcare professional fields before continuing.",
@@ -133,7 +132,7 @@
     "fieldTooShort": "One of the fields is too short.",
     "negativeNumber": "A number cannot be negative.",
     "nothingToSave": "There is nothing new to save.",
-    "signInRequired": "You need to be signed in to do that."
+    "notAllowed": "You do not have permission to do that. Sign in again, or ask an administrator for access."
   },
   "footer": {
     "terms": "Terms",

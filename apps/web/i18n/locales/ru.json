@@ -414,8 +414,7 @@
     "deleteConfirmationHealthcareProfessional": "Удалить специалиста {healthcareProfessional}, ID {id}?"
   },
   "serverErrorMessages": {
-    "genericErrorMessage": "При отправке формы произошла ошибка. Попробуйте ещё раз",
-    "errorCodeMessagingNeeded": "Для этого кода ошибки сервера нет сообщения пользователю. Добавьте его.",
+    "genericErrorMessage": "Не удалось выполнить действие. Попробуйте ещё раз.",
     "englishNameRequired": "У специалиста должно быть имя на английском.",
     "facilityFieldsIncomplete": "Заполните обязательные поля клиники, прежде чем продолжить.",
     "healthcareProfessionalFieldsIncomplete": "Заполните обязательные поля специалиста, прежде чем продолжить.",
@@ -438,7 +437,7 @@
     "fieldTooShort": "Одно из полей слишком короткое.",
     "negativeNumber": "Число не может быть отрицательным.",
     "nothingToSave": "Нет новых данных для сохранения.",
-    "signInRequired": "Для этого нужно войти в аккаунт."
+    "notAllowed": "У вас нет прав на это действие. Войдите снова или попросите доступ у администратора."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Языки общения",

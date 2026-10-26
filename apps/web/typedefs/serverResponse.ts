@@ -1,4 +1,4 @@
-import type { GraphQLError, SourceLocation } from 'graphql'
+import type { GraphQLError } from 'graphql'
 
 export type ServerResponse<T> = {
     data: T
@@ -8,8 +8,9 @@ export type ServerResponse<T> = {
 
 export type ServerError = {
     message: string
-    fieldWithError: readonly SourceLocation[] | undefined
     code: ErrorCode
+    /** The input field the server refused, such as `email`. Only validation errors name one. */
+    field: string | undefined
 }
 
 export type ServerErrorResponse = {
@@ -47,7 +48,6 @@ export enum ErrorCode {
     INVALID_LANGUAGE_INPUT = 'INVALID_LANGUAGE_INPUT',
     INVALID_INPUT = 'INVALID_INPUT',
     BAD_USER_INPUT = 'BAD_USER_INPUT',
-    UNAUTHENTICATED = 'UNAUTHENTICATED',
     UNAUTHORIZED = 'UNAUTHORIZED',
     NO_UPDATES_FOUND = 'NO_UPDATES_FOUND'
 }

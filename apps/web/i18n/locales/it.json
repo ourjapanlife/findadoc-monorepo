@@ -72,8 +72,7 @@
     "sectionNavLabel": "In questa pagina"
   },
   "serverErrorMessages": {
-    "errorCodeMessagingNeeded": "Il codice di errore del server non ha un messaggio per l'utente. Si prega di aggiungerne uno.",
-    "genericErrorMessage": "Si è verificato un errore nell'invio del modulo, riprova",
+    "genericErrorMessage": "Non è stato possibile completare l’operazione. Riprova.",
     "englishNameRequired": "Il professionista sanitario deve avere un nome in inglese.",
     "facilityFieldsIncomplete": "Compila i campi obbligatori della struttura prima di continuare.",
     "healthcareProfessionalFieldsIncomplete": "Compila i campi obbligatori del professionista sanitario prima di continuare.",
@@ -96,7 +95,7 @@
     "fieldTooShort": "Uno dei campi è troppo corto.",
     "negativeNumber": "Un numero non può essere negativo.",
     "nothingToSave": "Non c’è nulla di nuovo da salvare.",
-    "signInRequired": "Devi aver effettuato l’accesso per farlo."
+    "notAllowed": "Non hai l’autorizzazione per farlo. Accedi di nuovo o chiedi l’accesso a un amministratore."
   },
   "footer": {
     "terms": "Termini",

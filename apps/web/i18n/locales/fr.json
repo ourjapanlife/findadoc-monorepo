@@ -410,8 +410,7 @@
     "deleteConfirmationHealthcareProfessional": "Supprimer le professionnel de santé {healthcareProfessional}, ID {id} ?"
   },
   "serverErrorMessages": {
-    "genericErrorMessage": "Une erreur s’est produite lors de l’envoi du formulaire. Veuillez réessayer",
-    "errorCodeMessagingNeeded": "Ce code d’erreur serveur n’a pas de message pour l’utilisateur. Veuillez en ajouter un.",
+    "genericErrorMessage": "Cela n’a pas fonctionné. Veuillez réessayer.",
     "englishNameRequired": "Le professionnel de santé doit avoir un nom en anglais.",
     "facilityFieldsIncomplete": "Renseignez les champs obligatoires de l’établissement avant de continuer.",
     "healthcareProfessionalFieldsIncomplete": "Renseignez les champs obligatoires du professionnel de santé avant de continuer.",
@@ -434,7 +433,7 @@
     "fieldTooShort": "L’un des champs est trop court.",
     "negativeNumber": "Un nombre ne peut pas être négatif.",
     "nothingToSave": "Il n’y a rien de nouveau à enregistrer.",
-    "signInRequired": "Vous devez être connecté pour faire cela."
+    "notAllowed": "Vous n’avez pas l’autorisation de faire cela. Reconnectez-vous ou demandez l’accès à un administrateur."
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",

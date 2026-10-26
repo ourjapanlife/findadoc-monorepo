@@ -414,8 +414,7 @@
     "deleteConfirmationHealthcareProfessional": "确定删除医疗人员：{healthcareProfessional}，ID：{id}？"
   },
   "serverErrorMessages": {
-    "genericErrorMessage": "提交表单时出错，请重试",
-    "errorCodeMessagingNeeded": "此服务器错误代码没有面向用户的说明。请补充一条。",
+    "genericErrorMessage": "操作未成功，请重试。",
     "englishNameRequired": "医疗人员需要英文姓名。",
     "facilityFieldsIncomplete": "继续之前，请填写必填的医疗机构项目。",
     "healthcareProfessionalFieldsIncomplete": "继续之前，请填写必填的医疗人员项目。",
@@ -438,7 +437,7 @@
     "fieldTooShort": "有字段过短。",
     "negativeNumber": "数字不能为负数。",
     "nothingToSave": "没有新的内容可保存。",
-    "signInRequired": "需要登录后才能进行此操作。"
+    "notAllowed": "您没有执行此操作的权限。请重新登录，或联系管理员获取权限。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "使用语言",

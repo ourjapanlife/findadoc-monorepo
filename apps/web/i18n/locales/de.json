@@ -462,8 +462,7 @@
     "deleteConfirmationHealthcareProfessional": "Gesundheitsfachkraft {healthcareProfessional} mit der ID {id} wirklich löschen?"
   },
   "serverErrorMessages": {
-    "genericErrorMessage": "Beim Senden des Formulars ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut",
-    "errorCodeMessagingNeeded": "Für diesen Serverfehler gibt es keine Meldung an Nutzende. Bitte ergänzen Sie eine.",
+    "genericErrorMessage": "Das hat nicht funktioniert. Bitte versuchen Sie es erneut.",
     "englishNameRequired": "Die Gesundheitsfachkraft braucht einen englischen Namen.",
     "facilityFieldsIncomplete": "Füllen Sie die Pflichtfelder der Klinik aus, bevor Sie fortfahren.",
     "healthcareProfessionalFieldsIncomplete": "Füllen Sie die Pflichtfelder der Gesundheitsfachkraft aus, bevor Sie fortfahren.",
@@ -486,7 +485,7 @@
     "fieldTooShort": "Eines der Felder ist zu kurz.",
     "negativeNumber": "Eine Zahl darf nicht negativ sein.",
     "nothingToSave": "Es gibt nichts Neues zu speichern.",
-    "signInRequired": "Dafür müssen Sie angemeldet sein."
+    "notAllowed": "Sie haben keine Berechtigung dafür. Melden Sie sich erneut an oder bitten Sie die Administration um Zugriff."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Gesprochene Sprachen",

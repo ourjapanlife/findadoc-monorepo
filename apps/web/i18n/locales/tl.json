@@ -362,8 +362,7 @@
     "useExistingFacility": "Gamitin ang klinikang ito"
   },
   "serverErrorMessages": {
-    "errorCodeMessagingNeeded": "Walang mensahe sa user ang error code ng server. Pakidagdagan ng isa.",
-    "genericErrorMessage": "Nagkaroon ng error sa pagsusumite ng iyong form, pakisubukan muli.",
+    "genericErrorMessage": "Hindi ito natuloy. Pakisubukan muli.",
     "englishNameRequired": "Kailangan ng propesyonal sa kalusugan ang pangalan sa Ingles.",
     "facilityFieldsIncomplete": "Punan ang mga kinakailangang field ng klinika bago magpatuloy.",
     "healthcareProfessionalFieldsIncomplete": "Punan ang mga kinakailangang field ng propesyonal sa kalusugan bago magpatuloy.",
@@ -386,7 +385,7 @@
     "fieldTooShort": "Masyadong maikli ang isa sa mga field.",
     "negativeNumber": "Hindi puwedeng negatibo ang numero.",
     "nothingToSave": "Walang bago na ise-save.",
-    "signInRequired": "Kailangan mong naka-sign in para gawin ito."
+    "notAllowed": "Wala kang pahintulot na gawin ito. Mag-sign in muli, o humingi ng access sa isang administrator."
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",

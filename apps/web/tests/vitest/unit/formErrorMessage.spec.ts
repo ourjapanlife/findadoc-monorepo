@@ -13,7 +13,19 @@ function catalog(messages: Record<string, string>) {
     return (key: string) => messages[key] ?? key
 }
 
-const generic = 'There was an error submitting your form, please try again'
+const generic = 'That did not work. Please try again.'
+
+describe('sentenceKeyForServerCode', () => {
+    it('does not return an inherited property for an unknown code', () => {
+        expect(sentenceKeyForServerCode('constructor')).toBe(GENERIC_FORM_ERROR_KEY)
+        expect(sentenceKeyForServerCode('toString')).toBe(GENERIC_FORM_ERROR_KEY)
+        expect(sentenceKeyForServerCode(undefined)).toBe(GENERIC_FORM_ERROR_KEY)
+    })
+
+    it('does not tell a signed-in user without the scope to sign in', () => {
+        expect(sentenceKeyForServerCode(ErrorCode.UNAUTHORIZED)).toBe('serverErrorMessages.notAllowed')
+    })
+})
 
 describe('translatedFormError', () => {
     it('uses one sentence for a server code and the matching field check', () => {
@@ -35,16 +47,31 @@ describe('translatedFormError', () => {
 })
 
 describe('serverErrorsFromGraphQL', () => {
-    it('reads the refused rule inside a validation error', () => {
+    it('keeps the code and field of each refused rule inside a validation error', () => {
         const errors = serverErrorsFromGraphQL([{
             message: 'Validation Failed',
             extensions: {
                 code: 'BAD_USER_INPUT',
-                errors: [{ field: 'status', errorCode: 'SUBMISSION_ALREADY_APPROVED' }]
+                errors: [
+                    { field: 'nameEn', errorCode: 'REQUIRED' },
+                    { field: 'nameJa', errorCode: 'REQUIRED' }
+                ]
             }
         }])
 
-        expect(errors.map(error => error.code)).toEqual(['SUBMISSION_ALREADY_APPROVED'])
+        expect(errors.map(({ code, field }) => ({ code, field }))).toEqual([
+            { code: 'REQUIRED', field: 'nameEn' },
+            { code: 'REQUIRED', field: 'nameJa' }
+        ])
+    })
+
+    it('uses the wrapper code when there is no nested rule', () => {
+        const errors = serverErrorsFromGraphQL([{
+            message: 'User is not authorized',
+            extensions: { code: 'UNAUTHORIZED' }
+        }])
+
+        expect(errors).toEqual([{ message: 'User is not authorized', code: 'UNAUTHORIZED', field: undefined }])
     })
 })
 
@@ -54,20 +81,42 @@ describe('handleServerErrorMessaging', () => {
         const t = catalog({
             [formErrorKey.invalidEmail]: 'Enter a valid email address.',
             [formErrorKey.submissionAlreadyApproved]: 'This submission has already been approved.',
-            [GENERIC_FORM_ERROR_KEY]: generic,
-            'serverErrorMessages.errorCodeMessagingNeeded': 'Add a sentence.'
+            [GENERIC_FORM_ERROR_KEY]: generic
         })
         const errors: ServerError[] = [
-            { message: 'Validation Failed', fieldWithError: undefined, code: ErrorCode.INVALID_EMAIL },
-            { message: 'Validation Failed', fieldWithError: undefined, code: ErrorCode.SUBMISSION_ALREADY_APPROVED },
-            { message: 'Validation Failed', fieldWithError: undefined, code: ErrorCode.INVALID_EMAIL }
+            { message: 'Validation Failed', field: undefined, code: ErrorCode.INVALID_EMAIL },
+            { message: 'Validation Failed', field: undefined, code: ErrorCode.SUBMISSION_ALREADY_APPROVED },
+            { message: 'Validation Failed', field: undefined, code: ErrorCode.INVALID_EMAIL }
         ]
 
         handleServerErrorMessaging(errors, toast as never, t)
 
         expect(toast.error).toHaveBeenCalledTimes(2)
-        expect(toast.error).toHaveBeenCalledWith('Enter a valid email address.')
-        expect(toast.error).toHaveBeenCalledWith('This submission has already been approved.')
+        expect(toast.error).toHaveBeenCalledWith('Enter a valid email address.', undefined)
+        expect(toast.error).toHaveBeenCalledWith('This submission has already been approved.', undefined)
+    })
+
+    it('names each refused field that the form labels', () => {
+        const toast = { error: vi.fn() }
+        const t = catalog({
+            'serverErrorMessages.requiredFieldEmpty': 'A required field is empty.',
+            'modFacilitySection.labelFacilityNameEn': 'English Name Facility',
+            'modFacilitySection.labelFacilityNameJa': 'Japanese Name Facility',
+            [GENERIC_FORM_ERROR_KEY]: generic
+        })
+
+        handleServerErrorMessaging(
+            [
+                { message: 'Validation Failed', field: 'nameEn', code: ErrorCode.REQUIRED },
+                { message: 'Validation Failed', field: 'nameJa', code: ErrorCode.REQUIRED }
+            ],
+            toast as never,
+            t
+        )
+
+        expect(toast.error).toHaveBeenCalledTimes(2)
+        expect(toast.error).toHaveBeenCalledWith('A required field is empty.', { title: 'English Name Facility' })
+        expect(toast.error).toHaveBeenCalledWith('A required field is empty.', { title: 'Japanese Name Facility' })
     })
 
     it('falls back when a code has no sentence', () => {
@@ -75,16 +124,12 @@ describe('handleServerErrorMessaging', () => {
         const t = catalog({ [GENERIC_FORM_ERROR_KEY]: generic })
 
         handleServerErrorMessaging(
-            [{
-                message: 'nope',
-                fieldWithError: undefined,
-                code: ErrorCode.ORDERBY_OPTION_INVALID
-            }],
+            [{ message: 'nope', field: undefined, code: ErrorCode.ORDERBY_OPTION_INVALID }],
             toast as never,
             t
         )
 
         expect(toast.error).toHaveBeenCalledTimes(1)
-        expect(toast.error).toHaveBeenCalledWith(generic)
+        expect(toast.error).toHaveBeenCalledWith(generic, undefined)
     })
 })

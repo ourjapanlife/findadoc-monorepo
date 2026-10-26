@@ -1,11 +1,17 @@
 import type { AppToast } from '~/composables/useAppToast'
 import type { ServerError } from '~/typedefs/serverResponse'
 import {
+    fieldLabelKeyForServerField,
     GENERIC_FORM_ERROR_KEY,
     sentenceKeyForServerCode,
-    translatedFormError
+    translatedFormError,
+    translationOrUndefined
 } from '~/utils/formErrorMessage'
 
+/**
+ * Toasts one translated sentence per distinct problem. A field the form labels
+ * becomes the toast title, so two refused fields with the same rule show twice.
+ */
 export function handleServerErrorMessaging(
     serverErrors: ServerError[],
     toast: AppToast,
@@ -19,14 +25,16 @@ export function handleServerErrorMessaging(
     const shown = new Set<string>()
     for (const error of serverErrors) {
         const key = sentenceKeyForServerCode(error.code)
-        const translated = t(key)
-        const missingSentence = !translated || translated === key
-        if (missingSentence) {
-            console.error(error.code)
-            console.info(t('serverErrorMessages.errorCodeMessagingNeeded'))
+        if (translationOrUndefined(t, key) === undefined) {
+            console.error(`No translated sentence for server code ${error.code}`)
         }
-        if (shown.has(key)) continue
-        shown.add(key)
-        toast.error(translatedFormError(t, key))
+
+        const labelKey = fieldLabelKeyForServerField(error.field)
+        const title = labelKey === undefined ? undefined : translationOrUndefined(t, labelKey)
+        const toastId = `${title ?? ''}|${key}`
+        if (shown.has(toastId)) continue
+        shown.add(toastId)
+
+        toast.error(translatedFormError(t, key), title === undefined ? undefined : { title })
     }
 }

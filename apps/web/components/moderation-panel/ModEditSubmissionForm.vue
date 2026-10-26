@@ -594,11 +594,14 @@ async function confirmAndApproveSubmission(e?: Event) {
             return
         }
         const result = await moderationSubmissionStore.approveSubmission()
-        if (handleModerationResponseErrors(result, toast, t)) {
-            await resetModalRefs()
+        await resetModalRefs()
+        if (!result) {
+            toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
             return
         }
-        await resetModalRefs()
+        if (handleModerationResponseErrors(result, toast, t)) {
+            return
+        }
         returnWithSuccessToast(result, toast, t, 'modSubmissionForm.successMessageApproved')
         await leaveToModerationDashboard(router, screenStore, modalStore, 'submissions')
     } catch {
@@ -613,8 +616,15 @@ const resetModalRefs = async () => {
 }
 
 const rejectSubmission = async () => {
-    await moderationSubmissionStore.rejectSubmission()
+    const result = await moderationSubmissionStore.rejectSubmission()
     await resetModalRefs()
+    if (!result) {
+        toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
+        return
+    }
+    if (handleModerationResponseErrors(result, toast, t)) {
+        return
+    }
     toast.success(t('modSubmissionForm.facilitySuccessfullyRejected'))
     await leaveToModerationDashboard(router, screenStore, modalStore, 'submissions')
 }
