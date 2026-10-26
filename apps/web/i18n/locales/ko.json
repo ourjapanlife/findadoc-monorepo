@@ -384,7 +384,7 @@
     "selectInsurances": "취급 보험",
     "selectLocales": "구사 언어",
     "selectSpecialties": "전문 과목",
-    "facilities": "의료인 소속 기관",
+    "facilities": "연결된 의료기관",
     "placeholderTextAcceptedInsurances": "보험으로 검색",
     "placeholderTextSpecialties": "전문 과목으로 검색",
     "placeholderTextDegrees": "학위로 검색",
@@ -392,6 +392,7 @@
     "placeholderTextFacilitySearchBar": "의료기관 이름 또는 ID로 검색",
     "removeFacility": "{name} 제거",
     "noFacilitiesWereFound": "의료기관을 찾을 수 없습니다",
+    "noFacilitiesLinked": "아직 연결된 의료기관이 없습니다. 위에서 검색해 추가하세요.",
     "noSpecialtiesWereFound": "전문 과목을 찾을 수 없습니다",
     "noInsurancesWereFound": "보험을 찾을 수 없습니다",
     "noDegreesWereFound": "학위를 찾을 수 없습니다",
@@ -518,7 +519,9 @@
     "lastName": "성",
     "firstName": "이름",
     "middleName": "중간 이름",
-    "nameLocale": "이름 언어"
+    "nameLocale": "이름 언어",
+    "editName": "이 이름 편집",
+    "closeEditName": "이 이름 편집 종료"
   },
   "noteInputField": {
     "optional": "(선택)"

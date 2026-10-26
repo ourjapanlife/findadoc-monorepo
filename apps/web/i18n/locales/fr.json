@@ -434,10 +434,11 @@
     "selectInsurances": "Assurances acceptées",
     "selectLocales": "Langues parlées",
     "selectSpecialties": "Spécialités",
-    "facilities": "Établissements du professionnel de santé",
+    "facilities": "Établissements associés",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "Retirer {name}",
     "noFacilitiesWereFound": "Aucun établissement trouvé",
+    "noFacilitiesLinked": "Aucun établissement associé pour le moment. Recherchez ci-dessus pour en ajouter un.",
     "errorMessageHealthcareProfessionalId": "ID du professionnel de santé introuvable",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Rechercher par assurance",
@@ -475,7 +476,9 @@
     "lastName": "Nom",
     "firstName": "Prénom",
     "middleName": "Deuxième prénom",
-    "nameLocale": "Langue du nom"
+    "nameLocale": "Langue du nom",
+    "editName": "Modifier ce nom",
+    "closeEditName": "Arrêter de modifier ce nom"
   },
   "noteInputField": {
     "optional": "(facultatif)"

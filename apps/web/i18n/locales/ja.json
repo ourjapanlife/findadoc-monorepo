@@ -248,10 +248,11 @@
     "selectInsurances": "対応する保険",
     "selectLocales": "対応言語",
     "selectSpecialties": "専門",
-    "facilities": "医療従事者の勤務先",
+    "facilities": "関連する医療機関",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "{name}を外す",
     "noFacilitiesWereFound": "医療機関は見つかりませんでした",
+    "noFacilitiesLinked": "関連する医療機関はまだありません。上で検索して追加してください。",
     "errorMessageHealthcareProfessionalId": "医療従事者の ID が見つかりません",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "保険で検索",
@@ -427,7 +428,9 @@
     "lastName": "姓",
     "firstName": "名",
     "middleName": "ミドルネーム",
-    "nameLocale": "氏名の言語"
+    "nameLocale": "氏名の言語",
+    "editName": "この名前を編集",
+    "closeEditName": "この名前の編集をやめる"
   },
   "specialties": {
     "allergyAndImmunology": "アレルギー科・免疫科",

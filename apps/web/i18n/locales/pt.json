@@ -241,10 +241,11 @@
     "selectSpecialties": "Especialidades",
     "selectDegrees": "Títulos",
     "selectLocales": "Idiomas falados",
-    "facilities": "Unidades do profissional de saúde",
+    "facilities": "Unidades associadas",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "Remover {name}",
     "noFacilitiesWereFound": "Nenhuma unidade encontrada",
+    "noFacilitiesLinked": "Nenhuma unidade associada ainda. Pesquise acima para adicionar.",
     "errorMessageHealthcareProfessionalId": "ID do profissional de saúde não encontrado",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Pesquisar por seguro",
@@ -427,7 +428,9 @@
     "lastName": "Sobrenome",
     "firstName": "Nome",
     "middleName": "Nome do meio",
-    "nameLocale": "Idioma do nome"
+    "nameLocale": "Idioma do nome",
+    "editName": "Editar este nome",
+    "closeEditName": "Parar de editar este nome"
   },
   "specialties": {
     "allergyAndImmunology": "Alergista/Imunologista",

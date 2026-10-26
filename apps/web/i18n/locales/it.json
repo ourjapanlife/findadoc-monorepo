@@ -282,10 +282,11 @@
     "selectInsurances": "Selezione assicurazione",
     "selectLocales": "Seleziona le lingue parlate",
     "selectSpecialties": "Specializzazioni",
-    "facilities": "Strutture del professionista sanitario",
+    "facilities": "Strutture associate",
     "placeholderTextFacilitySearchBar": "Cerca per nome o ID",
     "removeFacility": "Rimuovi {name}",
     "noFacilitiesWereFound": "Nessuna struttura è stata trovata",
+    "noFacilitiesLinked": "Nessuna struttura associata. Cerca qui sopra per aggiungerne una.",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Cerca per assicurazione",
     "placeholderTextSpecialties": "Cerca per specialità",
@@ -475,7 +476,9 @@
     "lastName": "Nome",
     "firstName": "Cognome",
     "middleName": "Secondo nome",
-    "nameLocale": "Lingua del nome"
+    "nameLocale": "Lingua del nome",
+    "editName": "Modifica questo nome",
+    "closeEditName": "Interrompi la modifica di questo nome"
   },
   "noteInputField": {
     "optional": "(facoltativo)"

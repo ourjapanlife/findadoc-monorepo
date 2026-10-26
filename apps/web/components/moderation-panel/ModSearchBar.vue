@@ -232,14 +232,12 @@ const handleListItem = () => {
 
     const item = filteredItems.value[selectedItemIndex.value]
     if (item === undefined) return
-    const itemIndex = selectedItems.value.findIndex(selected => sameSelection(selected, item))
+    const alreadySelected = selectedItems.value.some(selected => sameSelection(selected, item))
 
-    if (itemIndex !== -1) {
-        selectedItems.value.splice(itemIndex, 1)
-        return
-    }
-
-    selectedItems.value.push(item)
+    // Assign a new array so a computed v-model setter runs; an in-place push never reaches it.
+    selectedItems.value = (alreadySelected
+        ? selectedItems.value.filter(selected => !sameSelection(selected, item))
+        : [...selectedItems.value, item]) as T
 }
 
 const handleListItemClick = (event: MouseEvent) => {

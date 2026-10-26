@@ -394,7 +394,7 @@
     "selectInsurances": "Accepted Insurance",
     "selectLocales": "Spoken Languages",
     "selectSpecialties": "Specialties",
-    "facilities": "Healthcare Professional Facilities",
+    "facilities": "Associated facilities",
     "placeholderTextAcceptedInsurances": "Search by insurance",
     "placeholderTextSpecialties": "Search by specialty",
     "placeholderTextDegrees": "Search by degree",
@@ -402,6 +402,7 @@
     "placeholderTextFacilitySearchBar": "Search by Facility name or ID",
     "removeFacility": "Remove {name}",
     "noFacilitiesWereFound": "No Facilities were found",
+    "noFacilitiesLinked": "No facilities are associated yet. Search above to add one.",
     "noSpecialtiesWereFound": "No specialties were found",
     "noInsurancesWereFound": "No insurance was found",
     "noDegreesWereFound": "No degrees were found",
@@ -518,7 +519,9 @@
     "lastName": "Last name",
     "firstName": "First name",
     "middleName": "Middle name",
-    "nameLocale": "Name language"
+    "nameLocale": "Name language",
+    "editName": "Edit this name",
+    "closeEditName": "Stop editing this name"
   },
   "noteInputField": {
     "optional": "(optional)"

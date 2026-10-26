@@ -131,7 +131,7 @@
                 <div
                     v-if="isEditOrCreateHealthcareProfessional || isEditSubmission"
                     class="mod-edit-only flex w-8 shrink-0 items-center justify-center
-                        cursor-pointer font-bold text-secondary text-sm p-1"
+                        cursor-pointer font-bold text-primary-text text-sm p-1"
                 >
                     <div id="edit-healthcare-professional-button-container">
                         <!-- If the chosen index is not 0 we want them to be able to click the pencil to reorder
@@ -140,20 +140,28 @@
                             v-if="!isEditable || chosenLocaleIndex !== 0"
                             id="edit-healthcare-professional-professional-locale-name"
                             type="button"
-                            class="flex items-center justify-center w-6 h-6"
+                            class="flex items-center justify-center w-6 h-6 rounded hover:text-primary"
+                            :aria-label="t('modDashboardHealthcareProfessionalCard.editName')"
                             @click="() => setChangeToEditable()"
                         >
-                            <SVGPencilIcon />
+                            <SVGPencilIcon
+                                class="h-4 w-4"
+                                aria-hidden="true"
+                            />
                         </button>
                         <!-- If the chosen index is 0 that is the current locale name chosen being edited  -->
                         <button
                             v-if="isEditable && chosenLocaleIndex === 0"
                             id="close-edit-healthcare-professional-locale-name"
-                            class="flex items-center justify-center w-6 h-6"
+                            class="flex items-center justify-center w-6 h-6 rounded hover:text-primary"
                             type="button"
+                            :aria-label="t('modDashboardHealthcareProfessionalCard.closeEditName')"
                             @click="() => setToUneditable()"
                         >
-                            <SVGXCloseIcon />
+                            <SVGXCloseIcon
+                                class="h-4 w-4"
+                                aria-hidden="true"
+                            />
                         </button>
                     </div>
                 </div>

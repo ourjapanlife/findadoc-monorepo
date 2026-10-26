@@ -296,10 +296,11 @@
     "selectSpecialties": "Fachgebiete",
     "selectDegrees": "Abschlüsse",
     "selectLocales": "Gesprochene Sprachen",
-    "facilities": "Einrichtungen der Gesundheitsfachkraft",
+    "facilities": "Zugehörige Einrichtungen",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "{name} entfernen",
     "noFacilitiesWereFound": "Keine Einrichtungen gefunden",
+    "noFacilitiesLinked": "Noch keine Einrichtungen zugeordnet. Oben suchen, um eine hinzuzufügen.",
     "errorMessageHealthcareProfessionalId": "ID der Gesundheitsfachkraft wurde nicht gefunden",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Nach Versicherung suchen",
@@ -475,7 +476,9 @@
     "lastName": "Nachname",
     "firstName": "Vorname",
     "middleName": "Zweiter Vorname",
-    "nameLocale": "Sprache des Namens"
+    "nameLocale": "Sprache des Namens",
+    "editName": "Diesen Namen bearbeiten",
+    "closeEditName": "Bearbeitung dieses Namens beenden"
   },
   "noteInputField": {
     "optional": "(freiwillig)"

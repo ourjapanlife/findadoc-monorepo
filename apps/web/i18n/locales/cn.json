@@ -248,10 +248,11 @@
     "selectSpecialties": "专科",
     "selectDegrees": "学位",
     "selectLocales": "使用语言",
-    "facilities": "医疗人员所在机构",
+    "facilities": "关联机构",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "移除{name}",
     "noFacilitiesWereFound": "未找到医疗机构",
+    "noFacilitiesLinked": "尚未关联任何机构。请在上方搜索并添加。",
     "errorMessageHealthcareProfessionalId": "未找到医疗人员 ID",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "按保险搜索",
@@ -427,7 +428,9 @@
     "lastName": "姓",
     "firstName": "名",
     "middleName": "中间名",
-    "nameLocale": "姓名语言"
+    "nameLocale": "姓名语言",
+    "editName": "编辑此姓名",
+    "closeEditName": "停止编辑此姓名"
   },
   "specialties": {
     "allergyAndImmunology": "过敏与免疫科医生",

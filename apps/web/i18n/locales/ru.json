@@ -241,10 +241,11 @@
     "selectSpecialties": "Специальности",
     "selectDegrees": "Степени",
     "selectLocales": "Языки общения",
-    "facilities": "Учреждения медицинского специалиста",
+    "facilities": "Связанные учреждения",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "Убрать {name}",
     "noFacilitiesWereFound": "Учреждения не найдены",
+    "noFacilitiesLinked": "Связанных учреждений пока нет. Найдите учреждение выше, чтобы добавить его.",
     "errorMessageHealthcareProfessionalId": "ID специалиста не найден",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Поиск по страховке",
@@ -427,7 +428,9 @@
     "lastName": "Фамилия",
     "firstName": "Имя",
     "middleName": "Второе имя",
-    "nameLocale": "Язык имени"
+    "nameLocale": "Язык имени",
+    "editName": "Изменить это имя",
+    "closeEditName": "Закончить изменение имени"
   },
   "specialties": {
     "allergyAndImmunology": "Аллергология и иммунология",
