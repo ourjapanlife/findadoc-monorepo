@@ -441,17 +441,26 @@ const selectedHealthcareProfessionalsModel = computed({
     get: () => selectedHealthcareProfessionals.value,
     set: (newValue: HealthcareProfessional[]) => {
         selectedHealthcareProfessionals.value = newValue
-        if (newValue.length) {
-            const professionalsToAdd = newValue.filter(healthcareProfessional =>
-                !facilityStore.facilitySectionFields.healthcareProfessionalIds.includes(healthcareProfessional.id))
-            facilityStore.facilitySectionFields.healthProfessionalsRelations = professionalsToAdd.map(healthcareProfessional => ({
+        const fields = facilityStore.facilitySectionFields
+        const removals = fields.healthProfessionalsRelations
+            .filter(relation => relation.action === RelationshipAction.Delete)
+        const additions = newValue
+            .filter(healthcareProfessional => !fields.healthcareProfessionalIds.includes(healthcareProfessional.id))
+            .map(healthcareProfessional => ({
                 action: RelationshipAction.Create,
                 otherEntityId: healthcareProfessional.id
             }))
-            selectedHealthcareProfessionals.value = []
-        }
+        fields.healthProfessionalsRelations = [...removals, ...additions]
     }
 })
+
+watch(
+    () => facilityStore.facilitySectionFields.healthcareProfessionalIds,
+    linkedIds => {
+        selectedHealthcareProfessionals.value = selectedHealthcareProfessionals.value
+            .filter(healthcareProfessional => !linkedIds.includes(healthcareProfessional.id))
+    }
+)
 const defaultHealthcareProfessionalSuggestions: Ref<HealthcareProfessional[]> = ref([])
 
 const handleHealthcareProfessionalsInputChange = useDirectoryPickerSearch(

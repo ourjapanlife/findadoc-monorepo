@@ -57,6 +57,7 @@ describe('linked facilities', () => {
                     :suggestions="[]"
                     place-holder-text="Search"
                     no-match-text="None"
+                    empty-text="No facilities"
                     :remove-label="removeLabel"
                     :load-facilities="loadFacilities"
                 />
@@ -81,5 +82,49 @@ describe('linked facilities', () => {
 
         expect(ids.value).to.deep.equal([])
         expect(wrapper.find('[data-testid="linked-facilities"]').exists()).to.equal(false)
+    })
+
+    it('links a facility picked from the search results and unlinks it on a second pick', async () => {
+        const ids = ref<string[]>([])
+        const Host = defineComponent({
+            components: { ModLinkedFacilities },
+            setup() {
+                return {
+                    ids,
+                    suggestions: [{ id: 'clinic-1', nameEn: 'Harbor Clinic', nameJa: '港クリニック' }]
+                }
+            },
+            template: `
+                <ModLinkedFacilities
+                    v-model="ids"
+                    :suggestions="suggestions"
+                    place-holder-text="Search"
+                    no-match-text="None"
+                    empty-text="No facilities"
+                    :remove-label="removeLabel"
+                    :load-facilities="loadFacilities"
+                />
+            `,
+            methods: {
+                removeLabel: (name: string) => `Remove ${name}`,
+                loadFacilities: async () => []
+            }
+        })
+        const wrapper = mount(Host, { attachTo: document.body })
+        const result = () => document.body.querySelector<HTMLElement>('[data-testid="mod-search-bar-search-result"]')
+
+        await wrapper.get('input').trigger('focus')
+        result()?.click()
+        await flushPromises()
+
+        expect(ids.value).to.deep.equal(['clinic-1'])
+        expect(wrapper.get('[data-testid="linked-facilities"]').text()).to.include('Harbor Clinic')
+        expect(wrapper.get('[data-testid="linked-facilities"]').text()).to.include('港クリニック')
+
+        result()?.click()
+        await flushPromises()
+
+        expect(ids.value).to.deep.equal([])
+        wrapper.unmount()
     })
 })

@@ -278,10 +278,11 @@
     "selectLocales": "Chọn các ngôn ngữ địa phương được sử dụng",
     "selectSpecialties": "Chuyên ngành.",
     "errorMessageHealthcareProfessionalId": "Không tìm thấy ID nhân viên y tế",
-    "facilities": "Cơ sở của nhân viên y tế",
+    "facilities": "Cơ sở liên kết",
     "placeholderTextFacilitySearchBar": "Search by name or ID add a Facility",
     "removeFacility": "Bỏ {name}",
     "noFacilitiesWereFound": "Không tìm thấy cơ sở",
+    "noFacilitiesLinked": "Chưa có cơ sở nào được liên kết. Tìm ở trên để thêm.",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Tìm theo bảo hiểm",
     "placeholderTextSpecialties": "Tìm theo chuyên khoa",
@@ -427,7 +428,9 @@
     "lastName": "Họ",
     "firstName": "Tên",
     "middleName": "Tên đệm",
-    "nameLocale": "Ngôn ngữ của tên"
+    "nameLocale": "Ngôn ngữ của tên",
+    "editName": "Sửa tên này",
+    "closeEditName": "Dừng sửa tên này"
   },
   "specialties": {
     "allergyAndImmunology": "Bác sĩ Dị ứng và Miễn dịch học",

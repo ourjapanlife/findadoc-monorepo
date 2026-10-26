@@ -386,10 +386,11 @@
     "selectInsurances": "Tinatanggap na insurance",
     "selectLocales": "Mga wikang sinasalita",
     "selectSpecialties": "Mga espesyalidad",
-    "facilities": "Mga pasilidad ng propesyonal sa kalusugan",
+    "facilities": "Mga kaugnay na pasilidad",
     "placeholderTextFacilitySearchBar": "Search by name or ID add a Facility",
     "removeFacility": "Alisin ang {name}",
     "noFacilitiesWereFound": "Walang nahanap na pasilidad",
+    "noFacilitiesLinked": "Wala pang kaugnay na pasilidad. Maghanap sa itaas para magdagdag.",
     "errorMessageHealthcareProfessionalId": "Hindi nahanap ang ID ng propesyonal sa kalusugan",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Hanapin ayon sa insurance",
@@ -427,7 +428,9 @@
     "lastName": "Apelyido",
     "firstName": "Pangalan",
     "middleName": "Gitnang pangalan",
-    "nameLocale": "Wika ng pangalan"
+    "nameLocale": "Wika ng pangalan",
+    "editName": "I-edit ang pangalang ito",
+    "closeEditName": "Itigil ang pag-edit ng pangalang ito"
   },
   "specialties": {
     "allergyAndImmunology": "Alerhiya at Immunolohiya",

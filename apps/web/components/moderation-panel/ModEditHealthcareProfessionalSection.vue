@@ -238,6 +238,7 @@
                 :suggestions="facilitiesStore.facilityData"
                 :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextFacilitySearchBar')"
                 :no-match-text="t('modHealthcareProfessionalSection.noFacilitiesWereFound')"
+                :empty-text="t('modHealthcareProfessionalSection.noFacilitiesLinked')"
                 :remove-label="facilityRemoveLabel"
             />
         </ModAccordion>
