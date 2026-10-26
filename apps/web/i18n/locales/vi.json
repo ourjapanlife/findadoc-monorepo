@@ -264,6 +264,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Thêm tên theo địa phương",
+    "addAnotherName": "Thêm tên khác",
+    "removeName": "Xóa tên",
     "healthcareProfessionalMedicalInfoHeading": "Thông tin Y tế của Chuyên gia Chăm sóc Sức khỏe.",
     "healthcareProfessionalNameHeading": "Tên Chuyên gia Chăm sóc Sức khỏe",
     "labelHealthcareProfessionalFirstName": "Tên",

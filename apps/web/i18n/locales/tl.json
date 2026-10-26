@@ -373,6 +373,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "Magdagdag ng isa pang pangalan",
+    "removeName": "Alisin ang pangalan",
     "healthcareProfessionalMedicalInfoHeading": "Detalye ng propesyonal sa kalusugan",
     "healthcareProfessionalNameHeading": "Pangalan ng propesyonal sa kalusugan",
     "labelHealthcareProfessionalFirstName": "Pangalan",

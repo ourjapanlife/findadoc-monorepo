@@ -30,95 +30,73 @@
                     <div
                         v-show="addingLocaleName || editingLocaleName"
                         :class="[
-                            'mod-edit-only name-locale-input-fields mod-form-grid rounded-lg',
+                            'mod-edit-only name-locale-input-fields flex flex-col gap-4 rounded-lg',
                             'border border-accent-bg bg-secondary-bg p-4',
                             editingLocaleName ? 'rounded-b-none border-b-0' : '',
                         ]"
                     >
-                        <ModInputField
-                            v-model="nameLocaleInputs.lastName"
-                            data-testid="mod-healthcare-professional-section-lastName"
-                            :label="t('modHealthcareProfessionalSection.labelHealthcareProfessionalLastName')"
-                            type="text"
-                            :placeholder="t('modHealthcareProfessionalSection.placeholderTextHealthcareProfessionalLastName')"
-                            :required="true"
+                        <template v-if="addingLocaleName">
+                            <ModLocalizedNameRow
+                                v-for="(draft, index) in newNameDrafts"
+                                :key="index"
+                                v-model="newNameDrafts[index]!"
+                                :removable="newNameDrafts.length > 1"
+                                @remove="newNameDrafts.splice(index, 1)"
+                            />
+                        </template>
+                        <ModLocalizedNameRow
+                            v-else
+                            v-model="nameLocaleInputs"
                         />
-                        <ModInputField
-                            v-model="nameLocaleInputs.firstName"
-                            data-testid="mod-healthcare-professional-section-firstName"
-                            :label="t('modHealthcareProfessionalSection.labelHealthcareProfessionalFirstName')"
-                            type="text"
-                            :placeholder="t('modHealthcareProfessionalSection.placeholderTextHealthcareProfessionalFirstName')"
-                            :required="true"
-                        />
-                        <ModInputField
-                            v-model="nameLocaleInputs.middleName as string"
-                            data-testid="mod-healthcare-professional-section-middleName"
-                            :label="t('modHealthcareProfessionalSection.labelHealthcareProfessionalMiddleName')"
-                            type="text"
-                            :placeholder="t('modHealthcareProfessionalSection.placeholderTextHealthcareProfessionalMiddleName')"
-                            :required="false"
-                        />
-                        <div class="mod-span-2">
-                            <label
-                                for="mod-edit-healthcare-professional-section-select-name-locales"
-                                class="field-label"
+                        <div
+                            v-show="addingLocaleName"
+                            class="flex flex-wrap items-center gap-2"
+                        >
+                            <button
+                                class="btn btn-secondary btn-sm"
+                                data-testid="mod-healthcare-professional-section-add-name-row"
+                                type="button"
+                                @click="newNameDrafts.push(emptyNameDraft())"
                             >
-                                {{ t('modHealthcareProfessionalSection.labelHealthcareProfessionalNameLocale') }}
-                            </label>
-                            <select
-                                id="mod-edit-healthcare-professional-section-select-name-locales"
-                                v-model="nameLocaleInputs.locale"
-                                data-testid="mod-healthcare-professional-section-name-locale"
-                                name="name-locales"
-                                class="field"
-                            >
-                                <option
-                                    v-for="(locale, index) in Locale"
-                                    :key="`${locale}-${index}`"
-                                    :value="locale"
-                                >
-                                    {{ localesStore.formatLanguageCodeToSimpleText(locale) }}
-                                </option>
-                            </select>
-                            <div
-                                v-show="addingLocaleName"
-                                class="flex gap-2"
-                            >
+                                {{ t('modHealthcareProfessionalSection.addAnotherName') }}
+                            </button>
+                            <div class="ml-auto flex gap-2">
                                 <button
                                     class="btn btn-primary btn-sm"
+                                    data-testid="mod-healthcare-professional-section-save-name"
                                     type="button"
-                                    @click="handleAddLocalizedName"
+                                    @click="handleAddLocalizedNames"
                                 >
                                     {{ t('modHealthcareProfessionalSection.save') }}
                                 </button>
                                 <button
                                     class="btn btn-sm bg-error text-primary-text-inverted"
+                                    data-testid="mod-healthcare-professional-section-close-name-section"
                                     type="button"
                                     @click="handleCloseAddingNewLocalizedName"
                                 >
                                     {{ t('modHealthcareProfessionalSection.exit') }}
                                 </button>
                             </div>
-                            <div
-                                v-show="editingLocaleName"
-                                class="flex gap-2"
+                        </div>
+                        <div
+                            v-show="editingLocaleName"
+                            class="flex justify-end gap-2"
+                        >
+                            <button
+                                class="btn btn-primary btn-sm"
+                                type="button"
+                                @click="handleUpdateExistingName"
                             >
-                                <button
-                                    class="btn btn-primary btn-sm"
-                                    type="button"
-                                    @click="handleUpdateExistingName"
-                                >
-                                    {{ t('modHealthcareProfessionalSection.update') }}
-                                </button>
-                                <button
-                                    class="btn btn-sm bg-error text-primary-text-inverted"
-                                    type="button"
-                                    @click="handleDeleteExistingName"
-                                >
-                                    {{ t('modHealthcareProfessionalSection.delete') }}
-                                </button>
-                            </div>
+                                {{ t('modHealthcareProfessionalSection.update') }}
+                            </button>
+                            <button
+                                class="btn btn-sm bg-error text-primary-text-inverted"
+                                type="button"
+                                @click="handleDeleteExistingName"
+                            >
+                                {{ t('modHealthcareProfessionalSection.delete') }}
+                            </button>
                         </div>
                     </div>
                 </Transition>
@@ -145,6 +123,7 @@
                     </div>
                 </div>
                 <button
+                    v-show="!addingLocaleName"
                     type="button"
                     data-testid="mod-healthcare-add-name-button"
                     class="btn btn-primary btn-sm mod-edit-only"
@@ -255,7 +234,7 @@ import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useLocaleStore } from '~/stores/localeStore'
 import { Insurance, Locale, Specialty, type LocalizedNameInput } from '@findadoc/graphql'
 import { useI18n } from '#imports'
-import { validateNameLocaleMatchesLanguage } from '~/utils/formValidations'
+import { emptyNameDraft, validateLocalizedNameDrafts } from '~/utils/localizedNameDrafts'
 import { stableStringify } from '~/utils/stableStringify'
 import { filterByCaseInsensitiveIncludes } from '~/utils/moderationSearchUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
@@ -320,6 +299,8 @@ const nameLocaleInputs: LocalizedNameInput = reactive(
         middleName: '',
         locale: Locale.Und }
 )
+// The names being added together before one Save
+const newNameDrafts: Ref<LocalizedNameInput[]> = ref([emptyNameDraft()])
 // This keeps track of the original locale of the name being edited for validation
 const originalNameLocale: Ref<Locale> = ref(Locale.Und)
 
@@ -357,6 +338,7 @@ const resetNameLocaleInputs = () => {
     nameLocaleInputs.middleName = ''
     nameLocaleInputs.lastName = ''
     nameLocaleInputs.locale = Locale.Und
+    newNameDrafts.value = [emptyNameDraft()]
 }
 
 // This autofills the inputs if a name is being edited
@@ -460,57 +442,19 @@ const handleDeleteExistingName = () => {
     }, 301)
 }
 
-const handleAddLocalizedName = () => {
-    const localizedNameToAdd: LocalizedNameInput = {
-        firstName: nameLocaleInputs.firstName,
-        lastName: nameLocaleInputs.lastName,
-        locale: nameLocaleInputs.locale || Locale.Und,
-        middleName: nameLocaleInputs.middleName
-    }
+const handleAddLocalizedNames = () => {
+    const result = validateLocalizedNameDrafts(
+        newNameDrafts.value,
+        hpStore.healthcareProfessionalSectionFields.names,
+        { checkCharacters: true }
+    )
 
-    // Checks to keep user from adding a name with same locale instead of editing
-    const existingNameForLocale = hpStore.healthcareProfessionalSectionFields.names
-        .find(name => name.locale === nameLocaleInputs.locale)
-
-    // Displays message if user is trying to add a locale for name that exists and they aren't editing a healthcare professional
-    if (existingNameForLocale) {
-        toast.error(t('modHealthcareProfessionalSection.nameForLocaleAlreadyExists'))
+    if (result.error) {
+        toast.error(t(`modHealthcareProfessionalSection.${result.error}`))
         return
     }
 
-    // Displays message for user if they haven't entered a last name
-    if (!nameLocaleInputs.lastName) {
-        toast.error(t('modHealthcareProfessionalSection.missingLastName'))
-        return
-    }
-
-    // Displays message for user if they haven't entered a first name
-    if (!nameLocaleInputs.firstName) {
-        toast.error(t('modHealthcareProfessionalSection.missingFirstName'))
-        return
-    }
-
-    // Displays message for user if they haven't chosen a locale
-    if (!nameLocaleInputs.locale || nameLocaleInputs.locale === Locale.Und) {
-        toast.error(t('modHealthcareProfessionalSection.missingLocale'))
-        return
-    }
-
-    // Check to make sure the input is valid for the Locale entered
-    if (!validateNameLocaleMatchesLanguage(nameLocaleInputs)) {
-        toast.error(t('modHealthcareProfessionalSection.charactersOfLanguageDoNotMatchNameLocale'))
-        return
-    }
-
-    if (nameLocaleInputs.firstName
-      && nameLocaleInputs.lastName
-      && nameLocaleInputs.firstName.length
-      && nameLocaleInputs.lastName.length
-      && hpStore.healthcareProfessionalSectionFields.names) {
-        hpStore.healthcareProfessionalSectionFields.names.push(localizedNameToAdd)
-    }
-
-    // Sets the chosen healthcare professional to undefined to reset
+    hpStore.healthcareProfessionalSectionFields.names.push(...result.names)
     handleCloseAddingNewLocalizedName()
 }
 

@@ -283,6 +283,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "Weiteren Namen hinzufügen",
+    "removeName": "Namen entfernen",
     "healthcareProfessionalMedicalInfoHeading": "Angaben zur Gesundheitsfachkraft",
     "healthcareProfessionalNameHeading": "Name der Gesundheitsfachkraft",
     "labelHealthcareProfessionalFirstName": "Vorname",
