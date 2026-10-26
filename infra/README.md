@@ -13,7 +13,7 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocDns` | Looks up the existing `findadoc.jp` hosted zone and exposes it as `hostedZone`. It does not create the zone. |
 | `FindadocWeb` | Amplify Hosting app for the site. Associates `findadoc.jp` and `*.findadoc.jp` with the production branch, and lets GitHub Actions publish that branch and pull request previews. |
 | `FindadocGithubDeploy` | GitHub OIDC provider and the `findadoc-github-cdk-deploy` role that the Infra workflow assumes. |
-| `FindadocNetwork` | VPC with two private dual-stack subnets (`ap-northeast-1a`, `ap-northeast-1c`). No NAT gateway. IPv6 traffic leaves through an egress-only internet gateway. |
+| `FindadocNetwork` | VPC with two private dual-stack subnets (`ap-northeast-1a`, `ap-northeast-1c`). No NAT gateway. IPv6 traffic leaves through an egress-only internet gateway. An S3 gateway endpoint reaches the uploads bucket. |
 | `FindadocDatabase` | RDS PostgreSQL 17 for the API, plus the `DatabaseClients` security group that may connect to it and a monthly AWS Backup plan. |
 | `FindadocAlerts` | SNS topic `findadoc-alarms`, the AWS Chatbot link that posts it to `#alerts` in Slack, and the database alarms. |
 | `FindadocEdgeCertificates` | **us-east-1.** The ACM certificates for `api-staging`/`api.findadoc.jp` and `mcp-staging`/`mcp.findadoc.jp`. CloudFront only accepts certificates from us-east-1. |
@@ -21,6 +21,7 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, API alarms, and saved log queries. |
 | `FindadocMcp` | The MCP Lambda (`findadoc-mcp`, outside the VPC) behind CloudFront at `mcp-staging.findadoc.jp`, with an error alarm. Its tools call `https://api.findadoc.jp`. |
 | `FindadocDataCopy` | **Temporary (#81).** `findadoc-db-copy`, the one-off function that copies the Supabase database into RDS. Remove after the cutover (#13). |
+| `FindadocUploads` | Private S3 bucket. The API Lambda may presign `uploads/*`. `STORAGE_BACKEND` stays `none` until a feature writes files. |
 
 ## Monthly cost
 
@@ -36,12 +37,13 @@ Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hou
 | VPC, subnets, route tables, egress-only and internet gateways, security groups | $0 |
 | PostgreSQL logs in CloudWatch, kept 30 days | Inside the 5 GB free allowance |
 | SNS topic, AWS Chatbot, and alarms (the first 10 are free) | $0 |
+| S3 uploads bucket and the S3 gateway endpoint | $0 while empty. Stored bytes are $0.025/GB-month |
 | API, migration and MCP Lambdas | $0 inside the always-free 1M requests and 400k GB-seconds |
 | CloudFront distribution and the viewer-IP CloudFront Function | $0 inside the free 1 TB, 10M requests and 2M function invocations |
 | ACM certificate, Route 53 alias records | $0 |
 | Secrets Manager secret `findadoc/api` | $0.40 |
 
-Not used, on purpose: NAT gateways (about $45/month each), Elastic IPs and public IPv4 addresses ($3.65/month each), VPC interface endpoints (about $7/month each), load balancers, Multi-AZ, Performance Insights, Enhanced Monitoring, and customer-managed KMS keys. Check `cdk diff` for any of these before merging an infra change.
+Not used, on purpose: NAT gateways (about $45/month each), Elastic IPs and public IPv4 addresses ($3.65/month each), VPC interface endpoints (about $7/month each), load balancers, Multi-AZ, Performance Insights, Enhanced Monitoring, and customer-managed KMS keys. The S3 gateway endpoint is free, so it is not one of those. Check `cdk diff` for any of these before merging an infra change.
 
 ## Database
 
@@ -188,6 +190,25 @@ Every deploy of `FindadocApi` first runs `findadoc-db-migrate` (`apps/server/src
 | `findadoc-api-search-failures` | a facility or professional search fails on the server (metric filter on `searchFailed` in the request log) |
 
 Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-operations`, `findadoc/api/errors-by-operation`, `findadoc/api/failed-searches`.
+
+## Uploads
+
+`FindadocUploads` is a private bucket for clinic images, and later for documents such as insurance scans (#12). The site stays on Amplify. This bucket is not a website, and objects are never public.
+
+- The bucket `findadoc-uploads-677501681118` blocks public access, encrypts with SSE-S3, disables ACLs, and denies any request that is not TLS. CloudFormation has no resource for the account-level setting, so turn that on once before the first upload:
+
+  ```bash
+  aws s3control put-public-access-block --profile findadoc --account-id 677501681118 \
+    --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+  ```
+
+  Deleting this stack does not change that account setting. The bucket block stays either way.
+- The API role may `s3:PutObject` and `s3:GetObject` on `uploads/*` only. A browser uploads or downloads with a presigned URL signed by that role. There is no access key.
+- `STORAGE_BACKEND=none`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api`. Nothing writes an object until a feature changes the backend to `s3`. Local development leaves the variables unset and does not need AWS.
+- An incomplete multipart upload is aborted after 7 days.
+- CORS allows `PUT` and `GET` from the site, Amplify previews, Netlify previews, and localhost. The signature is what authorizes the call.
+
+The API reaches S3 through the gateway endpoint on `FindadocNetwork`, so a later feature can read and write without a NAT gateway. Signing a URL does not call S3.
 
 ## Hostnames on CloudFront
 
