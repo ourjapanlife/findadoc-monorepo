@@ -4,9 +4,10 @@
         data-testid="footer"
         class="w-full border-t border-accent-bg bg-secondary-bg text-primary-text"
     >
-        <div
-            class="page-container grid gap-10 px-6 py-12 landscape:grid-cols-[1.6fr_1fr_1fr_1fr] landscape:px-12"
-        >
+        <div class="px-6 py-12 landscape:px-12">
+            <div
+                class="page-container grid gap-10 landscape:grid-cols-[1.6fr_1fr_1fr_1fr]"
+            >
             <!-- Brand -->
             <div class="flex flex-col gap-3">
                 <NuxtLink
@@ -121,17 +122,20 @@
                     </li>
                 </ul>
             </nav>
+            </div>
         </div>
 
         <div class="border-t border-accent-bg">
-            <div
-                class="page-container flex flex-col gap-4 px-6 py-4 text-sm text-primary-text-muted
-                       landscape:flex-row landscape:items-center landscape:justify-between landscape:px-12"
-            >
-                <p class="m-0">
-                    © {{ currentYear }} {{ t('footer.copyright') }}
-                </p>
-                <ThemeManager />
+            <div class="px-6 py-4 landscape:px-12">
+                <div
+                    class="page-container flex flex-col gap-4 text-sm text-primary-text-muted
+                           landscape:flex-row landscape:items-center landscape:justify-between"
+                >
+                    <p class="m-0">
+                        © {{ currentYear }} {{ t('footer.copyright') }}
+                    </p>
+                    <ThemeManager />
+                </div>
             </div>
         </div>
     </footer>

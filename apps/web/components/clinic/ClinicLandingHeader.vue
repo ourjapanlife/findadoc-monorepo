@@ -1,55 +1,61 @@
 <template>
+    <!--
+        Out of flow so the sticky bar sits on the viewport. An in-flow `h-2` left an
+        8px strip of page ground above the header.
+    -->
     <div
         ref="sentinel"
-        class="h-2"
+        class="pointer-events-none absolute top-0 left-0 h-2 w-full"
         aria-hidden="true"
     />
     <header
-        class="sticky top-0 z-30 border-b bg-primary text-primary-text-inverted transition-shadow"
+        class="sticky top-0 z-30 w-full border-b bg-primary text-primary-text-inverted transition-shadow"
         :class="stuck ? 'border-primary-hover shadow-raised' : 'border-transparent'"
         data-testid="clinic-landing-header"
     >
-        <div class="page-container flex h-16 items-center gap-3 px-6 landscape:px-12">
-            <a
-                href="#top"
-                class="flex min-w-0 items-center gap-2 font-semibold"
-            >
-                <span
-                    class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary-text-inverted/15 text-sm"
-                    aria-hidden="true"
-                >{{ mark }}</span>
-                <span class="truncate">{{ name }}</span>
-            </a>
-            <nav
-                class="portrait:hidden"
-                :aria-label="navLabel"
-            >
-                <ul class="m-0 flex list-none gap-1 p-0">
-                    <li
-                        v-for="section in sections"
-                        :key="section.id"
-                    >
-                        <a
-                            :href="`#${section.id}`"
-                            class="inline-flex h-10 items-center rounded-lg px-3 text-sm"
-                            :class="activeId === section.id
-                                ? 'bg-primary-text-inverted/20'
-                                : 'hover:bg-primary-text-inverted/10'"
-                            :aria-current="activeId === section.id ? 'true' : undefined"
-                        >{{ section.label }}</a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="ml-auto flex shrink-0 items-center gap-2">
-                <LocaleSelector />
-                <button
-                    type="button"
-                    class="btn btn-sm btn-on-primary portrait:hidden"
-                    data-testid="clinic-landing-header-book"
-                    @click="emit('book')"
+        <div class="px-6 landscape:px-12">
+            <div class="page-container flex h-16 items-center justify-between gap-4">
+                <a
+                    href="#top"
+                    class="flex min-w-0 items-center gap-2 font-semibold"
                 >
-                    {{ bookLabel }}
-                </button>
+                    <span
+                        class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary-text-inverted/15 text-sm"
+                        aria-hidden="true"
+                    >{{ mark }}</span>
+                    <span class="truncate">{{ name }}</span>
+                </a>
+                <nav
+                    class="min-w-0 portrait:hidden"
+                    :aria-label="navLabel"
+                >
+                    <ul class="m-0 flex list-none gap-1 p-0">
+                        <li
+                            v-for="section in sections"
+                            :key="section.id"
+                        >
+                            <a
+                                :href="`#${section.id}`"
+                                class="inline-flex h-10 items-center whitespace-nowrap rounded-lg px-3 text-sm font-medium"
+                                :class="activeId === section.id
+                                    ? 'bg-primary-text-inverted/20'
+                                    : 'hover:bg-primary-text-inverted/10'"
+                                :aria-current="activeId === section.id ? 'true' : undefined"
+                            >{{ section.label }}</a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="flex shrink-0 items-center gap-2">
+                    <LocaleSelector on-primary />
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-on-primary portrait:hidden"
+                        data-testid="clinic-landing-header-book"
+                        @click="emit('book')"
+                    >
+                        {{ bookLabel }}
+                    </button>
+                </div>
             </div>
         </div>
     </header>

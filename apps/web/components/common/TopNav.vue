@@ -3,7 +3,8 @@
         data-testid="top-nav"
         class="sticky top-0 z-30 w-full border-b border-accent-bg bg-primary-bg/90 backdrop-blur-md"
     >
-        <div class="page-container flex h-16 items-center justify-between gap-4 px-6 landscape:px-12">
+        <div class="px-6 landscape:px-12">
+            <div class="page-container flex h-16 items-center justify-between gap-4">
             <!-- Brand -->
             <NuxtLink
                 to="/"
@@ -144,6 +145,7 @@
             <div class="flex items-center gap-2">
                 <LocaleSelector class="portrait:hidden" />
                 <HamburgerMenu class="landscape:hidden" />
+            </div>
             </div>
         </div>
     </header>
