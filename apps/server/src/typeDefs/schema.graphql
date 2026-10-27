@@ -1168,6 +1168,16 @@ enum BookingFormFieldType {
   SELECT
 }
 
+"""
+How carefully an answer or upload must be retained.
+IDENTITY_DOCUMENT covers insurance cards and My Number / eligibility photos.
+"""
+enum BookingFieldSensitivity {
+  STANDARD
+  IDENTITY_DOCUMENT
+  MEDICAL
+}
+
 """One choice on a SELECT booking field."""
 type BookingFormFieldOption {
   value: String!
@@ -1191,6 +1201,7 @@ type BookingFormField {
   maxBytes: Int
   min: Float
   max: Float
+  sensitivity: BookingFieldSensitivity!
   options: [BookingFormFieldOption!]
 }
 
@@ -1229,6 +1240,7 @@ type BookingSubmissionResult {
   id: ID!
   clinicSiteId: ID!
   status: BookingSubmissionStatus!
+  appointmentId: ID
   createdDate: String!
 }
 
@@ -1236,6 +1248,85 @@ enum BookingSubmissionStatus {
   RECEIVED
   NOTIFIED
   FAILED_NOTIFY
+}
+
+"""Staff list row. Identity files are never inlined; use bookingUploadDownloadUrl."""
+type BookingSubmissionListItem {
+  id: ID!
+  clinicSiteId: ID!
+  clinicSiteSlug: String!
+  clinicName: String!
+  locale: String!
+  status: BookingSubmissionStatus!
+  formDefinitionId: String!
+  formVersion: Int!
+  startsAt: String
+  endsAt: String
+  createdDate: String!
+  updatedDate: String!
+  hasIdentityUploads: Boolean!
+}
+
+"""Read-only staff detail. Scalar answers only; files are separate download links."""
+type BookingSubmissionDetail {
+  id: ID!
+  clinicSiteId: ID!
+  clinicSiteSlug: String!
+  clinicName: String!
+  locale: String!
+  status: BookingSubmissionStatus!
+  formDefinitionId: String!
+  formVersion: Int!
+  startsAt: String
+  endsAt: String
+  createdDate: String!
+  updatedDate: String!
+  answers: [BookingAnswerView!]!
+  uploads: [BookingUploadView!]!
+}
+
+type BookingAnswerView {
+  fieldId: String!
+  value: String
+}
+
+type BookingUploadView {
+  id: ID!
+  fieldId: String!
+  fileName: String!
+  contentType: String!
+  sensitivity: BookingFieldSensitivity!
+  retainUntil: String
+  purgedAt: String
+  byteSize: Int
+}
+
+type BookingUploadDownloadUrl {
+  uploadId: ID!
+  downloadUrl: String!
+  expiresAt: String!
+}
+
+input BookingSubmissionSearchFilters {
+  clinicSiteId: ID
+  limit: Int
+  offset: Int
+  orderBy: [OrderBy!]
+}
+
+"""Staff-painted availability. Boundaries are 30-minute aligned."""
+type ClinicAvailabilityWindow {
+  id: ID!
+  clinicSiteId: ID!
+  startsAt: String!
+  endsAt: String!
+  createdDate: String!
+}
+
+input CreateClinicAvailabilityWindowInput {
+  clinicSiteId: ID!
+  startsAt: String!
+  endsAt: String!
 }
 
 input CreateBookingUploadUrlInput {
@@ -1261,6 +1352,8 @@ input SubmitBookingInput {
   formVersion: Int!
   locale: String!
   answers: [BookingAnswerInput!]!
+  """Optional 15-minute-aligned start inside a staff availability window."""
+  startsAt: String
 }
 
 type Query {
@@ -1280,6 +1373,23 @@ type Query {
   Pass the clinic site id or slug. Drafts and unknown clinics are null.
   """
   bookingForm(clinicSiteId: ID!): BookingForm
+
+  """
+  Open 15-minute appointment starts inside staff 30-minute availability.
+  Public for the patient booking form. Times are ISO 8601 UTC.
+  """
+  availableBookingStarts(clinicSiteId: ID!, from: String!, to: String!): [String!]!
+
+  """Staff list of booking submissions. Read-only; not for editing answers."""
+  bookingSubmissions(filters: BookingSubmissionSearchFilters!): [BookingSubmissionListItem!]!
+
+  bookingSubmissionsTotalCount(filters: BookingSubmissionSearchFilters!): Int!
+
+  """Staff read-only detail for one booking submission."""
+  bookingSubmission(id: ID!): BookingSubmissionDetail
+
+  """Staff availability windows for the calendar editor."""
+  clinicAvailabilityWindows(clinicSiteId: ID!, from: String!, to: String!): [ClinicAvailabilityWindow!]!
 
   """Look up a single facility by its unique ID. Returns null if not found."""
   facility(id: ID!): Facility
@@ -1521,4 +1631,13 @@ type Mutation {
   Sends a SES notification when email is configured; otherwise records the row only.
   """
   submitBooking(input: SubmitBookingInput!): BookingSubmissionResult!
+
+  """Short-lived GET URL for a booking upload. Identity files are never inlined in GraphQL."""
+  bookingUploadDownloadUrl(uploadId: ID!): BookingUploadDownloadUrl!
+
+  """Paint a 30-minute-aligned availability window on the clinic calendar."""
+  createClinicAvailabilityWindow(input: CreateClinicAvailabilityWindowInput!): ClinicAvailabilityWindow!
+
+  """Remove one availability window. Existing appointments are unchanged."""
+  deleteClinicAvailabilityWindow(id: ID!): DeleteResult!
 }

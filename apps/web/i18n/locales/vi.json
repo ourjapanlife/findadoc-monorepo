@@ -212,7 +212,9 @@
     "rejected": "Bị từ chối",
     "submissions": "Các bài gửi",
     "collapse": "Thu gọn thanh bên",
-    "expand": "Mở rộng thanh bên"
+    "expand": "Mở rộng thanh bên",
+    "bookings": "Đặt lịch",
+    "availability": "Khung giờ trống"
   },
   "accessPanel": {
     "loading": "Đang tải quyền truy cập…",
@@ -751,6 +753,54 @@
       "uploadFailed": "Tải lên thất bại. Thử lại.",
       "form": "Kiểm tra các trường được tô sáng",
       "submitFailed": "Không gửi được yêu cầu. Thử lại."
+    },
+    "slotLabel": "Giờ mong muốn",
+    "slotHelp": "Tùy chọn. Bắt đầu mỗi 15 phút trong khung trống của phòng khám.",
+    "slotLoading": "Đang tải giờ trống…",
+    "slotEmpty": "Không có giờ trống trong hai tuần tới. Bạn vẫn có thể gửi yêu cầu."
+  },
+  "bookingDashboard": {
+    "readOnly": "Yêu cầu đặt lịch (chỉ xem)",
+    "detailHeading": "Đặt lịch",
+    "back": "Quay lại danh sách đặt lịch",
+    "loadError": "Không tải được yêu cầu này.",
+    "empty": "Chưa có yêu cầu đặt lịch",
+    "answersHeading": "Câu trả lời",
+    "uploadsHeading": "Tệp tải lên",
+    "uploadsRetentionNote": "Ảnh giấy tờ và bảo hiểm chỉ giữ đến hạn retention rồi bị xóa.",
+    "download": "Tải xuống",
+    "purged": "Đã xóa",
+    "retainUntil": "Giữ đến {date}",
+    "noAppointment": "Chưa chọn khung giờ",
+    "identityBadge": "Giấy tờ",
+    "identityYes": "Có",
+    "identityNo": "Không",
+    "columns": {
+      "clinic": "Phòng khám",
+      "status": "Trạng thái",
+      "appointment": "Cuộc hẹn",
+      "identity": "Tải giấy tờ",
+      "created": "Tạo lúc",
+      "locale": "Ngôn ngữ"
+    },
+    "status": {
+      "received": "Đã nhận",
+      "notified": "Đã thông báo",
+      "failedNotify": "Thông báo thất bại"
+    },
+    "sensitivity": {
+      "standard": "Thường",
+      "identityDocument": "Giấy tờ / bảo hiểm",
+      "medical": "Y tế"
     }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Trang phòng khám",
+    "help": "Kéo để tô khung trống 30 phút. Bấm một khối để xóa. Bệnh nhân đặt theo bước 15 phút.",
+    "loading": "Đang tải lịch…",
+    "windowTitle": "Trống",
+    "createFailed": "Không lưu được khung trống.",
+    "deleteConfirm": "Xóa khung trống này?",
+    "deleteFailed": "Không xóa được khung trống."
   }
 }

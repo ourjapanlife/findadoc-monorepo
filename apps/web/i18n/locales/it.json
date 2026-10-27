@@ -238,7 +238,9 @@
     "rejected": "Rifiutato",
     "submissions": "Inoltrato",
     "collapse": "Comprimi la barra laterale",
-    "expand": "Espandi la barra laterale"
+    "expand": "Espandi la barra laterale",
+    "bookings": "Prenotazioni",
+    "availability": "Disponibilità"
   },
   "accessPanel": {
     "loading": "Caricamento autorizzazioni…",
@@ -751,6 +753,54 @@
       "uploadFailed": "Caricamento non riuscito. Riprova.",
       "form": "Controlla i campi evidenziati",
       "submitFailed": "Impossibile inviare. Riprova."
+    },
+    "slotLabel": "Orario preferito",
+    "slotHelp": "Facoltativo. Inizi ogni 15 minuti entro la disponibilità della clinica.",
+    "slotLoading": "Caricamento orari…",
+    "slotEmpty": "Nessun orario nelle prossime due settimane. Puoi comunque inviare la richiesta."
+  },
+  "bookingDashboard": {
+    "readOnly": "Richiesta di prenotazione (sola lettura)",
+    "detailHeading": "Prenotazione",
+    "back": "Torna alle prenotazioni",
+    "loadError": "Impossibile caricare questa prenotazione.",
+    "empty": "Nessuna richiesta di prenotazione",
+    "answersHeading": "Risposte",
+    "uploadsHeading": "Caricamenti",
+    "uploadsRetentionNote": "Le foto di identità e assicurazione restano solo fino alla data di conservazione, poi vengono eliminate.",
+    "download": "Scarica",
+    "purged": "Eliminato",
+    "retainUntil": "Conservare fino al {date}",
+    "noAppointment": "Nessuno slot scelto",
+    "identityBadge": "Documento",
+    "identityYes": "Sì",
+    "identityNo": "Nessuno",
+    "columns": {
+      "clinic": "Clinica",
+      "status": "Stato",
+      "appointment": "Appuntamento",
+      "identity": "Caricamento identità",
+      "created": "Creato",
+      "locale": "Lingua"
+    },
+    "status": {
+      "received": "Ricevuto",
+      "notified": "Notificato",
+      "failedNotify": "Notifica non riuscita"
+    },
+    "sensitivity": {
+      "standard": "Generale",
+      "identityDocument": "Identità / assicurazione",
+      "medical": "Medico"
     }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Sito della clinica",
+    "help": "Trascina per impostare disponibilità di 30 minuti. Clicca un blocco per rimuoverlo. I pazienti prenotano a intervalli di 15 minuti.",
+    "loading": "Caricamento calendario…",
+    "windowTitle": "Disponibile",
+    "createFailed": "Impossibile salvare la disponibilità.",
+    "deleteConfirm": "Rimuovere questa disponibilità?",
+    "deleteFailed": "Impossibile rimuovere la disponibilità."
   }
 }

@@ -22,6 +22,7 @@ const BOOKING_FORM_FIELDS = `
     maxBytes
     min
     max
+    sensitivity
     options { value labelKey label }
   }
 `
@@ -52,6 +53,7 @@ const submitBookingMutation = gql`
       id
       clinicSiteId
       status
+      appointmentId
       createdDate
     }
   }
@@ -100,6 +102,7 @@ export async function submitBookingForm(input: {
     formVersion: number
     locale: string
     answers: Array<{ fieldId: string, value?: string | null, uploadId?: string | null }>
+    startsAt?: string | null
 }): Promise<BookingSubmissionResult | null> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ submitBooking: BookingSubmissionResult }>(

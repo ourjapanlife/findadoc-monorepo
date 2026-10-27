@@ -212,7 +212,9 @@
     "rejected": "Hindi na-aprubahan",
     "submissions": "Mga Isinumite",
     "collapse": "Tiklupin ang gilid na menu",
-    "expand": "Palawakin ang gilid na menu"
+    "expand": "Palawakin ang gilid na menu",
+    "bookings": "Mga booking",
+    "availability": "Mga oras na bukas"
   },
   "accessPanel": {
     "loading": "Nilo-load ang mga pahintulot…",
@@ -751,6 +753,54 @@
       "uploadFailed": "Hindi na-upload. Subukan ulit.",
       "form": "Suriin ang mga naka-highlight na field",
       "submitFailed": "Hindi maipadala ang kahilingan. Subukan ulit."
+    },
+    "slotLabel": "Gustong oras",
+    "slotHelp": "Opsyonal. Nagsisimula tuwing 15 minuto sa loob ng availability ng clinic.",
+    "slotLoading": "Naglo-load ng bukas na oras…",
+    "slotEmpty": "Walang bukas na oras sa susunod na dalawang linggo. Maaari pa ring magpadala ng request."
+  },
+  "bookingDashboard": {
+    "readOnly": "Booking submission (basahin lang)",
+    "detailHeading": "Pagpapareserba",
+    "back": "Bumalik sa mga booking",
+    "loadError": "Hindi ma-load ang booking na ito.",
+    "empty": "Wala pang booking submissions",
+    "answersHeading": "Mga sagot",
+    "uploadsHeading": "Mga upload",
+    "uploadsRetentionNote": "Ang mga larawan ng ID at insurance ay itinatago hanggang sa retain-until date, tapos buburahin.",
+    "download": "I-download",
+    "purged": "Nabura na",
+    "retainUntil": "Itago hanggang {date}",
+    "noAppointment": "Walang napiling oras",
+    "identityBadge": "File ng ID",
+    "identityYes": "Oo",
+    "identityNo": "Hindi",
+    "columns": {
+      "clinic": "Klinika",
+      "status": "Katayuan",
+      "appointment": "Takdang oras",
+      "identity": "Upload ng ID",
+      "created": "Ginawa",
+      "locale": "Wika"
+    },
+    "status": {
+      "received": "Natanggap",
+      "notified": "Na-notify",
+      "failedNotify": "Hindi na-notify"
+    },
+    "sensitivity": {
+      "standard": "Karaniwan",
+      "identityDocument": "Pagkakakilanlan / insurance",
+      "medical": "Pangmedikal"
     }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Site ng klinika",
+    "help": "I-drag para magpinta ng 30-minutong availability. I-click ang block para tanggalin. Ang mga pasyente ay nagbu-book sa 15-minutong simula.",
+    "loading": "Naglo-load ang calendar…",
+    "windowTitle": "Bukas",
+    "createFailed": "Hindi ma-save ang availability window.",
+    "deleteConfirm": "Tanggalin ang availability window na ito?",
+    "deleteFailed": "Hindi matanggal ang window."
   }
 }

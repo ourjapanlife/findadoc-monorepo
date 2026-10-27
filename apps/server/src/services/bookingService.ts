@@ -8,7 +8,15 @@ import {
     type SubmitBookingInput
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
-import { assembleBookingForm, fieldById } from '../booking/formDefinitions.js'
+import { assembleBookingForm, fieldById, storedSensitivity } from '../booking/formDefinitions.js'
+import { retainUntilFromNow } from '../booking/retention.js'
+import {
+    appointmentEndFromStart,
+    availableStarts,
+    DEFAULT_APPOINTMENT_DURATION_MINUTES,
+    isAlignedToMinutes,
+    BOOKING_SLOT_STEP_MINUTES
+} from '../booking/schedule.js'
 import { sendTransactionalEmail } from '../email/sesClient.js'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
@@ -152,6 +160,7 @@ export async function createBookingUploadUrl(
         apiBaseUrl
     })
 
+    const sensitivity = storedSensitivity(field)
     await db.insertInto('booking_uploads')
         .values({
             id: uploadId,
@@ -161,7 +170,10 @@ export async function createBookingUploadUrl(
             object_key: signed.objectKey,
             content_type: contentType,
             file_name: fileName,
-            byte_size: input.byteSize ?? null
+            byte_size: input.byteSize ?? null,
+            sensitivity,
+            retain_until: retainUntilFromNow(sensitivity).toISOString(),
+            purged_at: null
         })
         .execute()
 
@@ -359,6 +371,23 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         return uploadsOk as Result<never>
     }
 
+    let appointmentId: string | null = null
+    let startsAt: Date | null = null
+    let endsAt: Date | null = null
+
+    if (input.startsAt !== null && input.startsAt !== undefined && input.startsAt.trim() !== '') {
+        startsAt = new Date(input.startsAt)
+        if (Number.isNaN(startsAt.getTime()) || !isAlignedToMinutes(startsAt, BOOKING_SLOT_STEP_MINUTES)) {
+            return validationError('startsAt')
+        }
+        endsAt = appointmentEndFromStart(startsAt)
+        const open = await listAvailableStartsForClinic(clinic.id, startsAt, endsAt)
+        const allowed = open.some(start => start.getTime() === startsAt!.getTime())
+        if (!allowed) {
+            return validationError('startsAt')
+        }
+    }
+
     const inserted = await db.insertInto('booking_submissions')
         .values({
             clinic_site_id: clinic.id,
@@ -379,6 +408,20 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
             .execute()
     }
 
+    if (startsAt !== null && endsAt !== null) {
+        const appointment = await db.insertInto('booking_appointments')
+            .values({
+                clinic_site_id: clinic.id,
+                booking_submission_id: inserted.id,
+                starts_at: startsAt.toISOString(),
+                ends_at: endsAt.toISOString(),
+                status: 'held'
+            })
+            .returning(['id'])
+            .executeTakeFirstOrThrow()
+        appointmentId = appointment.id
+    }
+
     const status = await notifyClinicOfBooking({
         form,
         clinic,
@@ -392,8 +435,57 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
             id: inserted.id,
             clinicSiteId: clinic.id,
             status,
+            appointmentId,
             createdDate: inserted.created_date
         },
         hasErrors: false
     }
+}
+
+export async function listAvailableStartsForClinic(
+    clinicSiteId: string,
+    from: Date,
+    to: Date
+): Promise<Date[]> {
+    const [windows, booked] = await Promise.all([
+        db.selectFrom('clinic_availability_windows')
+            .select(['starts_at', 'ends_at'])
+            .where('clinic_site_id', '=', clinicSiteId)
+            .where('starts_at', '<', to.toISOString())
+            .where('ends_at', '>', from.toISOString())
+            .execute(),
+        db.selectFrom('booking_appointments')
+            .select(['starts_at', 'ends_at'])
+            .where('clinic_site_id', '=', clinicSiteId)
+            .where('status', 'in', ['held', 'confirmed'])
+            .where('starts_at', '<', to.toISOString())
+            .where('ends_at', '>', from.toISOString())
+            .execute()
+    ])
+
+    return availableStarts({
+        windows: windows.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
+        booked: booked.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
+        rangeStart: from,
+        rangeEnd: to,
+        durationMs: DEFAULT_APPOINTMENT_DURATION_MINUTES * 60 * 1000
+    })
+}
+
+export async function getAvailableBookingStarts(
+    clinicSiteIdOrSlug: string,
+    fromIso: string,
+    toIso: string
+): Promise<string[]> {
+    const clinic = await loadPublicClinic(clinicSiteIdOrSlug)
+    if (clinic === undefined) {
+        return []
+    }
+    const from = new Date(fromIso)
+    const to = new Date(toIso)
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || !(to > from)) {
+        return []
+    }
+    const starts = await listAvailableStartsForClinic(clinic.id, from, to)
+    return starts.map(start => start.toISOString())
 }

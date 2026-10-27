@@ -236,7 +236,33 @@ export interface BookingUploadsTable {
     content_type: string
     file_name: string
     byte_size: number | null
+    sensitivity: string
+    retain_until: string | null
+    purged_at: string | null
     created_date: Generated<string>
+}
+
+/** Staff-painted availability. 30-minute aligned. */
+export interface ClinicAvailabilityWindowsTable {
+    id: Generated<string>
+    clinic_site_id: string
+    starts_at: string
+    ends_at: string
+    created_by: string | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** Patient appointment inside availability. 15-minute start alignment. */
+export interface BookingAppointmentsTable {
+    id: Generated<string>
+    clinic_site_id: string
+    booking_submission_id: string | null
+    starts_at: string
+    ends_at: string
+    status: string
+    created_date: Generated<string>
+    updated_date: Generated<string>
 }
 
 /**
@@ -260,6 +286,8 @@ export interface Database {
     clinic_site_locales: ClinicSiteLocalesTable
     booking_submissions: BookingSubmissionsTable
     booking_uploads: BookingUploadsTable
+    clinic_availability_windows: ClinicAvailabilityWindowsTable
+    booking_appointments: BookingAppointmentsTable
 }
 
 /**

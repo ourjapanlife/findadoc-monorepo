@@ -12,6 +12,8 @@ import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
 import * as facilityPlaceService from './services/facilityPlaceService.js'
 import * as clinicSiteService from './services/clinicSiteService.js'
 import * as bookingService from './services/bookingService.js'
+import * as availabilityService from './services/availabilityService.js'
+import * as staffBookingService from './services/staffBookingService.js'
 import { envVariables } from '../utils/environmentVariables.js'
 import { Result } from './result.js'
 import { logger } from './logger.js'
@@ -38,6 +40,29 @@ const resolvers = {
         : Promise<gqlType.ClinicSiteSummary[]> => clinicSiteService.listPublicClinicSites()),
         bookingForm: withScope(Scope['read:facilities'], async (_parent: unknown, args: { clinicSiteId: string })
         : Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId)),
+        availableBookingStarts: withScope(Scope['read:facilities'], async (
+            _parent: unknown,
+            args: { clinicSiteId: string, from: string, to: string }
+        ): Promise<string[]> => bookingService.getAvailableBookingStarts(args.clinicSiteId, args.from, args.to)),
+        bookingSubmissions: withScope(Scope['read:bookings'], async (
+            _parent: unknown,
+            args: { filters: gqlType.BookingSubmissionSearchFilters }
+        ): Promise<gqlType.BookingSubmissionListItem[]> =>
+            staffBookingService.searchBookingSubmissions(args.filters)),
+        bookingSubmissionsTotalCount: withScope(Scope['read:bookings'], async (
+            _parent: unknown,
+            args: { filters: gqlType.BookingSubmissionSearchFilters }
+        ): Promise<number> => staffBookingService.countBookingSubmissions(args.filters)),
+        bookingSubmission: withScope(Scope['read:bookings'], async (
+            _parent: unknown,
+            args: { id: string }
+        ): Promise<gqlType.BookingSubmissionDetail | null> =>
+            staffBookingService.getBookingSubmissionDetail(args.id)),
+        clinicAvailabilityWindows: withScope(Scope['write:clinic_availability'], async (
+            _parent: unknown,
+            args: { clinicSiteId: string, from: string, to: string }
+        ): Promise<gqlType.ClinicAvailabilityWindow[]> =>
+            availabilityService.listClinicAvailabilityWindows(args.clinicSiteId, args.from, args.to)),
         facility: withScope(Scope['read:facilities'], async (_parent: unknown, args: { id: string; })
         : Promise<FacilityParent> => {
             const queryResults = await facilityService.getFacilityById(args.id)
@@ -375,6 +400,39 @@ const resolvers = {
             input: gqlType.SubmitBookingInput
         }): Promise<gqlType.BookingSubmissionResult> => {
             const result = await bookingService.submitBooking(args.input)
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        bookingUploadDownloadUrl: withScope(Scope['read:bookings'], async (_parent: unknown, args: {
+            uploadId: string
+        }): Promise<gqlType.BookingUploadDownloadUrl> => {
+            const result = await staffBookingService.createStaffBookingDownloadUrl(
+                args.uploadId,
+                envVariables.apiURL() || 'http://127.0.0.1:4000'
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        createClinicAvailabilityWindow: withScope(Scope['write:clinic_availability'], async (
+            _parent: unknown,
+            args: { input: gqlType.CreateClinicAvailabilityWindowInput },
+            context: UserContext
+        ): Promise<gqlType.ClinicAvailabilityWindow> => {
+            const result = await availabilityService.createClinicAvailabilityWindow(
+                args.input,
+                context.user?.sub
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        deleteClinicAvailabilityWindow: withScope(Scope['write:clinic_availability'], async (
+            _parent: unknown,
+            args: { id: string }
+        ): Promise<gqlType.DeleteResult> => {
+            const result = await availabilityService.deleteClinicAvailabilityWindow(args.id)
             convertErrorsToGqlErrors(result)
             return result.data
         })

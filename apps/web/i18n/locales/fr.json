@@ -205,7 +205,9 @@
     "rejected": "Rejeté",
     "submissions": "Soumissions",
     "collapse": "Réduire la barre latérale",
-    "expand": "Ouvrir la barre latérale"
+    "expand": "Ouvrir la barre latérale",
+    "bookings": "Réservations",
+    "availability": "Disponibilités"
   },
   "accessPanel": {
     "loading": "Chargement des autorisations…",
@@ -751,6 +753,54 @@
       "uploadFailed": "Échec du téléversement. Réessayez.",
       "form": "Vérifiez les champs surlignés",
       "submitFailed": "Impossible d’envoyer. Réessayez."
+    },
+    "slotLabel": "Horaire souhaité",
+    "slotHelp": "Facultatif. Départs toutes les 15 minutes dans les disponibilités de la clinique.",
+    "slotLoading": "Chargement des créneaux…",
+    "slotEmpty": "Aucun créneau dans les deux prochaines semaines. Vous pouvez quand même envoyer une demande."
+  },
+  "bookingDashboard": {
+    "readOnly": "Demande de réservation (lecture seule)",
+    "detailHeading": "Réservation",
+    "back": "Retour aux réservations",
+    "loadError": "Impossible de charger cette réservation.",
+    "empty": "Aucune demande de réservation pour le moment",
+    "answersHeading": "Réponses",
+    "uploadsHeading": "Fichiers",
+    "uploadsRetentionNote": "Les photos d’identité et d’assurance ne sont conservées que jusqu’à leur date limite, puis purgées.",
+    "download": "Télécharger",
+    "purged": "Purgé",
+    "retainUntil": "Conserver jusqu’au {date}",
+    "noAppointment": "Aucun créneau choisi",
+    "identityBadge": "Pièce d’identité",
+    "identityYes": "Oui",
+    "identityNo": "Non",
+    "columns": {
+      "clinic": "Clinique",
+      "status": "Statut",
+      "appointment": "Rendez-vous",
+      "identity": "Fichier d’identité",
+      "created": "Créé",
+      "locale": "Langue"
+    },
+    "status": {
+      "received": "Reçu",
+      "notified": "Notifié",
+      "failedNotify": "Échec de notification"
+    },
+    "sensitivity": {
+      "standard": "Général",
+      "identityDocument": "Identité / assurance",
+      "medical": "Médical"
     }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Site de clinique",
+    "help": "Glissez pour peindre des disponibilités de 30 minutes. Cliquez un bloc pour le retirer. Les patients réservent par pas de 15 minutes.",
+    "loading": "Chargement du calendrier…",
+    "windowTitle": "Disponible",
+    "createFailed": "Impossible d’enregistrer cette disponibilité.",
+    "deleteConfirm": "Retirer cette disponibilité ?",
+    "deleteFailed": "Impossible de retirer cette disponibilité."
   }
 }

@@ -260,7 +260,9 @@
     "rejected": "Abgelehnt",
     "submissions": "Einreichungen",
     "collapse": "Seitenleiste einklappen",
-    "expand": "Seitenleiste ausklappen"
+    "expand": "Seitenleiste ausklappen",
+    "bookings": "Buchungen",
+    "availability": "Verfügbarkeit"
   },
   "accessPanel": {
     "loading": "Berechtigungen werden geladen…",
@@ -751,6 +753,54 @@
       "uploadFailed": "Upload fehlgeschlagen. Erneut versuchen.",
       "form": "Markierte Felder prüfen",
       "submitFailed": "Senden fehlgeschlagen. Erneut versuchen."
+    },
+    "slotLabel": "Wunschzeit",
+    "slotHelp": "Optional. Starts alle 15 Minuten innerhalb der Klinikverfügbarkeit.",
+    "slotLoading": "Freie Zeiten werden geladen…",
+    "slotEmpty": "Keine freien Zeiten in den nächsten zwei Wochen. Sie können trotzdem anfragen."
+  },
+  "bookingDashboard": {
+    "readOnly": "Buchungsanfrage (nur Lesen)",
+    "detailHeading": "Buchung",
+    "back": "Zurück zu Buchungen",
+    "loadError": "Diese Buchung konnte nicht geladen werden.",
+    "empty": "Noch keine Buchungsanfragen",
+    "answersHeading": "Antworten",
+    "uploadsHeading": "Hochgeladene Dateien",
+    "uploadsRetentionNote": "Identitäts- und Versicherungsfotos werden nur bis zum Aufbewahrungsdatum gespeichert und danach gelöscht.",
+    "download": "Herunterladen",
+    "purged": "Gelöscht",
+    "retainUntil": "Aufbewahren bis {date}",
+    "noAppointment": "Kein Termin gewählt",
+    "identityBadge": "Ausweisdatei",
+    "identityYes": "Ja",
+    "identityNo": "Nein",
+    "columns": {
+      "clinic": "Klinik",
+      "status": "Zustand",
+      "appointment": "Termin",
+      "identity": "Identitätsupload",
+      "created": "Erstellt",
+      "locale": "Sprache"
+    },
+    "status": {
+      "received": "Empfangen",
+      "notified": "Benachrichtigt",
+      "failedNotify": "Benachrichtigung fehlgeschlagen"
+    },
+    "sensitivity": {
+      "standard": "Allgemein",
+      "identityDocument": "Identität / Versicherung",
+      "medical": "Medizinisch"
     }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Klinikseite",
+    "help": "Ziehen Sie, um 30-Minuten-Verfügbarkeit zu setzen. Klicken Sie einen Block zum Entfernen. Patienten buchen in 15-Minuten-Schritten.",
+    "loading": "Kalender wird geladen…",
+    "windowTitle": "Verfügbar",
+    "createFailed": "Verfügbarkeit konnte nicht gespeichert werden.",
+    "deleteConfirm": "Diese Verfügbarkeit entfernen?",
+    "deleteFailed": "Verfügbarkeit konnte nicht entfernt werden."
   }
 }

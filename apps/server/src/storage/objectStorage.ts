@@ -1,13 +1,21 @@
 import { randomUUID } from 'node:crypto'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { envVariables } from '../../utils/environmentVariables.js'
 import { logger } from '../logger.js'
 
 const LOCAL_UPLOAD_ROOT = join(process.cwd(), '.booking-uploads')
 const PRESIGN_TTL_SECONDS = 15 * 60
+const DOWNLOAD_TTL_SECONDS = 5 * 60
+
+function s3Client(): S3Client {
+    return new S3Client({
+        region: envVariables.s3Region(),
+        useDualstackEndpoint: true
+    })
+}
 
 export type SignedUpload = {
     uploadUrl: string
@@ -52,17 +60,12 @@ export async function createBookingUploadTarget(input: {
             throw new Error('S3_BUCKET is required when STORAGE_BACKEND=s3')
         }
 
-        const client = new S3Client({
-            region: envVariables.s3Region(),
-            // Dual-stack so the VPC IPv6 path can reach S3 when signing is not enough alone.
-            useDualstackEndpoint: true
-        })
         const command = new PutObjectCommand({
             Bucket: bucket,
             Key: objectKey,
             ContentType: input.contentType
         })
-        const uploadUrl = await getSignedUrl(client, command, { expiresIn: PRESIGN_TTL_SECONDS })
+        const uploadUrl = await getSignedUrl(s3Client(), command, { expiresIn: PRESIGN_TTL_SECONDS })
         return {
             uploadUrl,
             objectKey,
@@ -101,4 +104,55 @@ export async function storeLocalBookingUpload(objectKey: string, body: Buffer, c
 
 export function newUploadId(): string {
     return randomUUID()
+}
+
+/** Short-lived GET URL for staff download. Purged objects must not call this. */
+export async function createBookingDownloadUrl(input: {
+    objectKey: string
+    apiBaseUrl: string
+}): Promise<{ downloadUrl: string, expiresAt: string }> {
+    const expiresAt = new Date(Date.now() + DOWNLOAD_TTL_SECONDS * 1000).toISOString()
+    if (usesS3()) {
+        const bucket = envVariables.s3Bucket()
+        if (bucket === undefined || bucket === '') {
+            throw new Error('S3_BUCKET is required when STORAGE_BACKEND=s3')
+        }
+        const command = new GetObjectCommand({ Bucket: bucket, Key: input.objectKey })
+        const downloadUrl = await getSignedUrl(s3Client(), command, { expiresIn: DOWNLOAD_TTL_SECONDS })
+        return { downloadUrl, expiresAt }
+    }
+    return {
+        downloadUrl: `${input.apiBaseUrl.replace(/\/$/, '')}/dev-uploads/${encodeURIComponent(input.objectKey)}`,
+        expiresAt
+    }
+}
+
+export async function deleteBookingObject(objectKey: string): Promise<void> {
+    if (!objectKey.startsWith('uploads/booking/')) {
+        throw new Error('Invalid booking upload key')
+    }
+    if (usesS3()) {
+        const bucket = envVariables.s3Bucket()
+        if (bucket === undefined || bucket === '') {
+            throw new Error('S3_BUCKET is required when STORAGE_BACKEND=s3')
+        }
+        await s3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: objectKey }))
+        return
+    }
+    try {
+        await unlink(join(LOCAL_UPLOAD_ROOT, objectKey))
+    } catch (error) {
+        logger.warn(`Local booking object missing during purge: ${objectKey} (${String(error)})`)
+    }
+}
+
+export async function readLocalBookingUpload(objectKey: string): Promise<Buffer> {
+    if (usesS3()) {
+        throw new Error('Local read is disabled when STORAGE_BACKEND=s3')
+    }
+    return readFile(join(LOCAL_UPLOAD_ROOT, objectKey))
+}
+
+export function localUploadRoot(): string {
+    return LOCAL_UPLOAD_ROOT
 }

@@ -38,7 +38,7 @@
                     <ModLeftNavbar />
                     <div class="w-full flex flex-col items-stretch gap-3 md:gap-4 min-h-0 flex-1 overflow-hidden">
                         <div
-                            v-if="!isSettingsView"
+                            v-if="!isSettingsView && !isBookingDetailView"
                             class="shrink-0 bg-secondary-bg border border-accent-bg rounded-xl
                             shadow-sm px-3 md:px-5 py-3 md:py-4"
                         >
@@ -96,6 +96,8 @@ const isSettingsView = computed(() => {
     }
     return hidesModerationListTopbar(route.query.view)
 })
+const isBookingDetailView = computed(() =>
+    /^\/(?:my-page|moderation)\/booking\//.test(unlocalizedPath(route.path)))
 
 const runModerationAuthRedirect = () => {
     void authStore.redirectIfUnauthenticatedUser('/my-page', doesTheUserHaveAccess)

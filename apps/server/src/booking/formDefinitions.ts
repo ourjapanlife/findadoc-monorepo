@@ -1,8 +1,10 @@
 import {
+    BookingFieldSensitivity,
     BookingFormFieldType,
     type BookingForm,
     type BookingFormField
 } from '@findadoc/graphql'
+import { BOOKING_FIELD_SENSITIVITY, type BookingFieldSensitivity as StoredSensitivity } from './retention.js'
 
 /**
  * Code-defined booking forms keyed by clinic_sites.id.
@@ -20,91 +22,77 @@ type FormSource = {
     fields: BookingFormField[]
 }
 
+function field(
+    partial: Omit<BookingFormField, 'sensitivity' | 'label' | 'placeholderKey' | 'accept' | 'maxLength' | 'maxBytes' | 'min' | 'max' | 'options'>
+    & Partial<BookingFormField>
+    & { sensitivity?: BookingFormField['sensitivity'] }
+): BookingFormField {
+    return {
+        label: null,
+        placeholderKey: null,
+        accept: null,
+        maxLength: null,
+        maxBytes: null,
+        min: null,
+        max: null,
+        options: null,
+        sensitivity: BookingFieldSensitivity.Standard,
+        ...partial
+    }
+}
+
 const showcaseFields: BookingFormField[] = [
-    {
+    field({
         id: 'email',
         type: BookingFormFieldType.Email,
         required: true,
         labelKey: 'bookingPage.fields.email',
-        label: null,
         placeholderKey: 'bookingPage.placeholders.email',
-        accept: null,
-        maxLength: 254,
-        maxBytes: null,
-        min: null,
-        max: null,
-        options: null
-    },
-    {
+        maxLength: 254
+    }),
+    field({
         id: 'phone',
         type: BookingFormFieldType.Phone,
         required: true,
         labelKey: 'bookingPage.fields.phone',
-        label: null,
         placeholderKey: 'bookingPage.placeholders.phone',
-        accept: null,
-        maxLength: 40,
-        maxBytes: null,
-        min: null,
-        max: null,
-        options: null
-    },
-    {
+        maxLength: 40
+    }),
+    field({
         id: 'fullName',
         type: BookingFormFieldType.Text,
         required: true,
         labelKey: 'bookingPage.fields.fullName',
-        label: null,
         placeholderKey: 'bookingPage.placeholders.fullName',
-        accept: null,
-        maxLength: 120,
-        maxBytes: null,
-        min: null,
-        max: null,
-        options: null
-    },
-    {
+        maxLength: 120
+    }),
+    field({
         id: 'age',
         type: BookingFormFieldType.Number,
         required: true,
         labelKey: 'bookingPage.fields.age',
-        label: null,
         placeholderKey: 'bookingPage.placeholders.age',
-        accept: null,
-        maxLength: null,
-        maxBytes: null,
         min: 0,
-        max: 120,
-        options: null
-    },
-    {
+        max: 120
+    }),
+    field({
         id: 'reason',
         type: BookingFormFieldType.Textarea,
         required: true,
         labelKey: 'bookingPage.fields.reason',
-        label: null,
         placeholderKey: 'bookingPage.placeholders.reason',
-        accept: null,
         maxLength: 2000,
-        maxBytes: null,
-        min: null,
-        max: null,
-        options: null
-    },
-    {
+        sensitivity: BookingFieldSensitivity.Medical
+    }),
+    field({
         id: 'insuranceDocument',
         type: BookingFormFieldType.File,
         required: true,
         labelKey: 'bookingPage.fields.insuranceDocument',
-        label: null,
-        placeholderKey: null,
         accept: 'image/jpeg,image/png,image/webp,application/pdf',
-        maxLength: null,
         maxBytes: 8 * 1024 * 1024,
-        min: null,
-        max: null,
-        options: null
-    }
+        sensitivity: BookingFieldSensitivity.IdentityDocument
+    })
 ]
 
 const FORMS_BY_CLINIC_SITE_ID: Record<string, FormSource> = {
@@ -145,5 +133,15 @@ export function assembleBookingForm(input: {
 }
 
 export function fieldById(form: BookingForm, fieldId: string): BookingFormField | undefined {
-    return form.fields.find(field => field.id === fieldId)
+    return form.fields.find(item => item.id === fieldId)
+}
+
+export function storedSensitivity(bookingField: BookingFormField): StoredSensitivity {
+    if (bookingField.sensitivity === BookingFieldSensitivity.IdentityDocument) {
+        return BOOKING_FIELD_SENSITIVITY.IDENTITY_DOCUMENT
+    }
+    if (bookingField.sensitivity === BookingFieldSensitivity.Medical) {
+        return BOOKING_FIELD_SENSITIVITY.MEDICAL
+    }
+    return BOOKING_FIELD_SENSITIVITY.STANDARD
 }

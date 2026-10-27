@@ -38,6 +38,8 @@ export enum Scope {
     'delete:users' = 'delete:users',
     'create:submissions' = 'create:submissions',
     'create:bookings' = 'create:bookings',
+    'read:bookings' = 'read:bookings',
+    'write:clinic_availability' = 'write:clinic_availability',
     'read:reservations' = 'read:reservations',
     'write:reservations' = 'write:reservations'
 }
@@ -56,7 +58,7 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['write:posts'],
         Scope['read:logs'], Scope['write:logs'],
         Scope['read:reservations'], Scope['write:reservations'],
-        Scope['create:bookings']
+        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability']
     ],
     [Role.Moderator]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -65,7 +67,7 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['read:profile'], 
         Scope['write:posts'],
         Scope['read:reservations'], Scope['write:reservations'],
-        Scope['create:bookings']
+        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability']
     ],
     [Role.Dev]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -76,7 +78,7 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['write:posts'],
         Scope['read:logs'], Scope['write:logs'],
         Scope['read:reservations'], Scope['write:reservations'],
-        Scope['create:bookings']
+        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability']
     ],
     [Role.User]: [
         Scope['read:healthcareprofessionals'], 

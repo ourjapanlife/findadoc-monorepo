@@ -329,7 +329,9 @@
     "rejected": "Rejected",
     "submissions": "Submissions",
     "collapse": "Collapse sidebar",
-    "expand": "Expand sidebar"
+    "expand": "Expand sidebar",
+    "bookings": "Bookings",
+    "availability": "Availability"
   },
   "accessPanel": {
     "loading": "Loading permissions…",
@@ -751,6 +753,54 @@
       "uploadFailed": "Upload failed. Try again.",
       "form": "Check the highlighted fields",
       "submitFailed": "Could not send the request. Try again."
+    },
+    "slotLabel": "Preferred time",
+    "slotHelp": "Optional. Starts every 15 minutes inside clinic availability.",
+    "slotLoading": "Loading open times…",
+    "slotEmpty": "No open times in the next two weeks. You can still send a request without a slot."
+  },
+  "bookingDashboard": {
+    "readOnly": "Read-only booking submission",
+    "detailHeading": "Booking",
+    "back": "Back to bookings",
+    "loadError": "Could not load this booking.",
+    "empty": "No booking submissions yet",
+    "answersHeading": "Answers",
+    "uploadsHeading": "Uploads",
+    "uploadsRetentionNote": "Identity and insurance photos are kept only until their retain-until date, then purged.",
+    "download": "Download",
+    "purged": "Purged",
+    "retainUntil": "Retain until {date}",
+    "noAppointment": "No slot chosen",
+    "identityBadge": "ID file",
+    "identityYes": "Yes",
+    "identityNo": "No",
+    "columns": {
+      "clinic": "Clinic",
+      "status": "Status",
+      "appointment": "Appointment",
+      "identity": "Identity upload",
+      "created": "Created",
+      "locale": "Locale"
+    },
+    "status": {
+      "received": "Received",
+      "notified": "Notified",
+      "failedNotify": "Notify failed"
+    },
+    "sensitivity": {
+      "standard": "Standard",
+      "identityDocument": "Identity / insurance",
+      "medical": "Medical"
     }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Clinic site",
+    "help": "Drag to paint 30-minute availability. Click a block to remove it. Patients book in 15-minute starts.",
+    "loading": "Loading calendar…",
+    "windowTitle": "Available",
+    "createFailed": "Could not save that availability window.",
+    "deleteConfirm": "Remove this availability window?",
+    "deleteFailed": "Could not remove that window."
   }
 }

@@ -212,7 +212,9 @@
     "rejected": "已驳回",
     "submissions": "提交",
     "collapse": "收起侧边栏",
-    "expand": "展开侧边栏"
+    "expand": "展开侧边栏",
+    "bookings": "预约申请",
+    "availability": "可预约时段"
   },
   "accessPanel": {
     "loading": "正在加载权限…",
@@ -751,6 +753,54 @@
       "uploadFailed": "上传失败，请重试。",
       "form": "请检查标出的字段",
       "submitFailed": "无法发送申请，请重试。"
+    },
+    "slotLabel": "希望时间",
+    "slotHelp": "可选。在诊所可预约时段内每 15 分钟一个起点。",
+    "slotLoading": "正在加载可预约时间…",
+    "slotEmpty": "未来两周没有可预约时间。仍可发送申请。"
+  },
+  "bookingDashboard": {
+    "readOnly": "预约申请（只读）",
+    "detailHeading": "预约",
+    "back": "返回预约列表",
+    "loadError": "无法加载此预约。",
+    "empty": "暂无预约申请",
+    "answersHeading": "回答",
+    "uploadsHeading": "上传文件",
+    "uploadsRetentionNote": "身份与保险照片仅保留至保留期限，到期后清除。",
+    "download": "下载",
+    "purged": "已清除",
+    "retainUntil": "保留至 {date}",
+    "noAppointment": "未选择时段",
+    "identityBadge": "身份文件",
+    "identityYes": "有",
+    "identityNo": "无",
+    "columns": {
+      "clinic": "诊所",
+      "status": "状态",
+      "appointment": "预约时段",
+      "identity": "身份上传",
+      "created": "创建时间",
+      "locale": "语言"
+    },
+    "status": {
+      "received": "已接收",
+      "notified": "已通知",
+      "failedNotify": "通知失败"
+    },
+    "sensitivity": {
+      "standard": "标准",
+      "identityDocument": "身份 / 保险",
+      "medical": "医疗"
     }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "诊所站点",
+    "help": "拖选以设置 30 分钟可预约时段。点击区块可删除。患者按 15 分钟起点预约。",
+    "loading": "正在加载日历…",
+    "windowTitle": "可预约",
+    "createFailed": "无法保存该可预约时段。",
+    "deleteConfirm": "删除此可预约时段？",
+    "deleteFailed": "无法删除该时段。"
   }
 }

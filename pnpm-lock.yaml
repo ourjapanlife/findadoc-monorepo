@@ -252,7 +252,7 @@ importers:
         version: 6.26.1
       axios:
         specifier: ^1.7.9
-        version: 1.20.0(debug@4.4.3)
+        version: 1.20.0
       concurrently:
         specifier: ^9.2.0
         version: 9.2.5
@@ -301,6 +301,18 @@ importers:
       '@fontsource/noto-sans-kr':
         specifier: ^5.3.0
         version: 5.3.1
+      '@fullcalendar/core':
+        specifier: 6.1.19
+        version: 6.1.19
+      '@fullcalendar/interaction':
+        specifier: 6.1.19
+        version: 6.1.19(@fullcalendar/core@6.1.19)
+      '@fullcalendar/timegrid':
+        specifier: 6.1.19
+        version: 6.1.19(@fullcalendar/core@6.1.19)
+      '@fullcalendar/vue3':
+        specifier: 6.1.19
+        version: 6.1.19(@fullcalendar/core@6.1.19)(vue@3.5.44(typescript@5.9.3))
       '@pinia/nuxt':
         specifier: ^0.11.3
         version: 0.11.3(@nuxt/schema@4.6.1)(confbox@0.2.4)(dotenv@16.6.1)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(oxc-parser@0.141.0)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3)))(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.14)(rollup@4.64.7)(vite@8.3.4(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))
@@ -1892,6 +1904,30 @@ packages:
 
   '@fontsource/noto-sans@5.3.0':
     resolution: {integrity: sha512-fBCog2PY7DiVVTEEqtI/Qdinx/knobHYfoGpjFXdfBX5RoJaBp1Prw2G75p0OIsdlMZg3cLo0c+YbIUYOxnQJw==}
+
+  '@fullcalendar/core@6.1.19':
+    resolution: {integrity: sha512-z0aVlO5e4Wah6p6mouM0UEqtRf1MZZPt4mwzEyU6kusaNL+dlWQgAasF2cK23hwT4cmxkEmr4inULXgpyeExdQ==}
+
+  '@fullcalendar/daygrid@6.1.22':
+    resolution: {integrity: sha512-cpom5+bAvsGG5nX+snsCtpMIyyhAr+QlseD9mhz5Vq7rMBTzx43mSkz6IBvQ3vz5h2idbDmT1cggEn/dzZwt9Q==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.22
+
+  '@fullcalendar/interaction@6.1.19':
+    resolution: {integrity: sha512-GOciy79xe8JMVp+1evAU3ytdwN/7tv35t5i1vFkifiuWcQMLC/JnLg/RA2s4sYmQwoYhTw/p4GLcP0gO5B3X5w==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.19
+
+  '@fullcalendar/timegrid@6.1.19':
+    resolution: {integrity: sha512-OuzpUueyO9wB5OZ8rs7TWIoqvu4v3yEqdDxZ2VcsMldCpYJRiOe7yHWKr4ap5Tb0fs7Rjbserc/b6Nt7ol6BRg==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.19
+
+  '@fullcalendar/vue3@6.1.19':
+    resolution: {integrity: sha512-j5eUSxx0xIy3ADljo0f5B9PhjqXnCQ+7nUMPfsslc2eGVjp4F74YvY3dyd6OBbg13IvpsjowkjncGipYMQWmTA==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.19
+      vue: ^3.0.11
 
   '@googlemaps/js-api-loader@2.1.3':
     resolution: {integrity: sha512-1t6umwRufEGzIPjHPjPeuuY1dCal0zU2bZeomkf4OA0MprFdlKCnXY3zeFkzDaCvKjwbFubeapm61P5+EbrAoA==}
@@ -9028,6 +9064,9 @@ packages:
     resolution: {integrity: sha512-C+y9x90UElAddDZmV4qOx9W53B61PO7cIqWz2dQsWlwswuq4mr8NEwytdGKboYbQlGZ3awrkTeNvcZiZNHnQ8A==}
     engines: {node: '>=20'}
 
+  preact@10.12.1:
+    resolution: {integrity: sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -12500,6 +12539,28 @@ snapshots:
   '@fontsource/noto-sans-kr@5.3.1': {}
 
   '@fontsource/noto-sans@5.3.0': {}
+
+  '@fullcalendar/core@6.1.19':
+    dependencies:
+      preact: 10.12.1
+
+  '@fullcalendar/daygrid@6.1.22(@fullcalendar/core@6.1.19)':
+    dependencies:
+      '@fullcalendar/core': 6.1.19
+
+  '@fullcalendar/interaction@6.1.19(@fullcalendar/core@6.1.19)':
+    dependencies:
+      '@fullcalendar/core': 6.1.19
+
+  '@fullcalendar/timegrid@6.1.19(@fullcalendar/core@6.1.19)':
+    dependencies:
+      '@fullcalendar/core': 6.1.19
+      '@fullcalendar/daygrid': 6.1.22(@fullcalendar/core@6.1.19)
+
+  '@fullcalendar/vue3@6.1.19(@fullcalendar/core@6.1.19)(vue@3.5.44(typescript@5.9.3))':
+    dependencies:
+      '@fullcalendar/core': 6.1.19
+      vue: 3.5.44(typescript@5.9.3)
 
   '@googlemaps/js-api-loader@2.1.3':
     dependencies:
@@ -16715,6 +16776,16 @@ snapshots:
   aws-cdk@2.1146.1: {}
 
   axe-core@4.14.0: {}
+
+  axios@1.20.0:
+    dependencies:
+      follow-redirects: 1.16.1(debug@4.3.7)
+      form-data: 4.0.6
+      https-proxy-agent: 5.0.1
+      proxy-from-env: 2.1.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
 
   axios@1.20.0(debug@4.4.3):
     dependencies:
@@ -21134,6 +21205,8 @@ snapshots:
 
   powershell-utils@0.2.1: {}
 
+  preact@10.12.1: {}
+
   prelude-ls@1.2.1: {}
 
   prettier@2.8.8:
@@ -23180,7 +23253,7 @@ snapshots:
 
   wait-on@8.0.5:
     dependencies:
-      axios: 1.20.0(debug@4.4.3)
+      axios: 1.20.0
       joi: 18.2.9
       lodash: 4.18.1
       minimist: 1.2.8

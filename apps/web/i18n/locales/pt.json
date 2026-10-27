@@ -205,7 +205,9 @@
     "rejected": "Rejeitado",
     "submissions": "Envios",
     "collapse": "Recolher a barra lateral",
-    "expand": "Expandir a barra lateral"
+    "expand": "Expandir a barra lateral",
+    "bookings": "Reservas",
+    "availability": "Disponibilidade"
   },
   "accessPanel": {
     "loading": "Carregando permissões…",
@@ -751,6 +753,54 @@
       "uploadFailed": "O envio falhou. Tente novamente.",
       "form": "Verifique os campos assinalados",
       "submitFailed": "Não foi possível enviar. Tente novamente."
+    },
+    "slotLabel": "Horário preferido",
+    "slotHelp": "Opcional. Inícios a cada 15 minutos dentro da disponibilidade da clínica.",
+    "slotLoading": "Carregando horários…",
+    "slotEmpty": "Sem horários nas próximas duas semanas. Você ainda pode enviar o pedido."
+  },
+  "bookingDashboard": {
+    "readOnly": "Pedido de reserva (somente leitura)",
+    "detailHeading": "Reserva",
+    "back": "Voltar às reservas",
+    "loadError": "Não foi possível carregar esta reserva.",
+    "empty": "Ainda não há pedidos de reserva",
+    "answersHeading": "Respostas",
+    "uploadsHeading": "Envios",
+    "uploadsRetentionNote": "Fotos de identidade e seguro são guardadas só até a data de retenção e depois apagadas.",
+    "download": "Baixar",
+    "purged": "Apagado",
+    "retainUntil": "Reter até {date}",
+    "noAppointment": "Nenhum horário escolhido",
+    "identityBadge": "Documento",
+    "identityYes": "Sim",
+    "identityNo": "Não",
+    "columns": {
+      "clinic": "Clínica",
+      "status": "Situação",
+      "appointment": "Consulta",
+      "identity": "Upload de identidade",
+      "created": "Criado",
+      "locale": "Idioma"
+    },
+    "status": {
+      "received": "Recebido",
+      "notified": "Notificado",
+      "failedNotify": "Falha na notificação"
+    },
+    "sensitivity": {
+      "standard": "Padrão",
+      "identityDocument": "Identidade / seguro",
+      "medical": "Médico"
     }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Site da clínica",
+    "help": "Arraste para marcar disponibilidade de 30 minutos. Clique num bloco para remover. Pacientes reservam em intervalos de 15 minutos.",
+    "loading": "Carregando calendário…",
+    "windowTitle": "Disponível",
+    "createFailed": "Não foi possível salvar a disponibilidade.",
+    "deleteConfirm": "Remover esta disponibilidade?",
+    "deleteFailed": "Não foi possível remover a disponibilidade."
   }
 }

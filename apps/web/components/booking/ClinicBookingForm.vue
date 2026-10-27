@@ -46,6 +46,11 @@
             data-testid="clinic-booking-form"
             @submit.prevent="onSubmit"
         >
+            <BookingSlotPicker
+                v-model="selectedStart"
+                :clinic-site-id="form.clinicSiteId"
+            />
+
             <div
                 v-for="field in form.fields"
                 :key="field.id"
@@ -224,6 +229,7 @@ const submitting = ref(false)
 const submitted = ref(false)
 const submissionId = ref('')
 const autofillMessage = ref('')
+const selectedStart = ref<string | null>(null)
 
 const themeStyle = clinicThemeVars(props.form.themePrimary)
 const autofillEnabled = computed(() => isBookingAutofillHost(hostname))
@@ -237,7 +243,8 @@ for (const field of props.form.fields) {
 const formSnapshot = computed(() => ({
     values: { ...values },
     uploadIds: { ...uploadIds },
-    fileNames: { ...fileNames }
+    fileNames: { ...fileNames },
+    selectedStart: selectedStart.value
 }))
 
 const { makeNonDirty, isDirty } = useUnsavedChanges({
@@ -478,7 +485,8 @@ async function onSubmit() {
             formDefinitionId: props.form.id,
             formVersion: props.form.version,
             locale: String(locale.value),
-            answers
+            answers,
+            startsAt: selectedStart.value
         })
 
         if (result === null) {
