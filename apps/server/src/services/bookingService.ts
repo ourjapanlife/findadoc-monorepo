@@ -185,26 +185,39 @@ function asAnswerMap(answers: SubmitBookingInput['answers']): Map<string, { valu
     return map
 }
 
-export async function submitBooking(input: SubmitBookingInput): Promise<Result<BookingSubmissionResult>> {
-    const clinic = await loadPublicClinic(input.clinicSiteId)
-    if (clinic === undefined) {
-        return validationError('clinicSiteId')
+function scalarAnswerIsValid(
+    field: NonNullable<ReturnType<typeof fieldById>>,
+    raw: string
+): boolean {
+    if (field.maxLength !== null && field.maxLength !== undefined && raw.length > field.maxLength) {
+        return false
     }
-
-    const form = bookingFormForClinic(clinic)
-    if (form === null) {
-        return validationError('clinicSiteId')
+    if (field.type === BookingFormFieldType.Email) {
+        return EMAIL_PATTERN.test(raw)
     }
-
-    if (input.formDefinitionId !== form.id || input.formVersion !== form.version) {
-        return validationError('formVersion')
+    if (field.type === BookingFormFieldType.Phone) {
+        return raw.replace(/\D/g, '').length >= 8
     }
-
-    if (!SITE_LOCALES.has(input.locale)) {
-        return validationError('locale')
+    if (field.type === BookingFormFieldType.Number) {
+        const number = Number(raw)
+        if (!Number.isFinite(number)) {
+            return false
+        }
+        if (field.min !== null && field.min !== undefined && number < field.min) {
+            return false
+        }
+        if (field.max !== null && field.max !== undefined && number > field.max) {
+            return false
+        }
     }
+    return true
+}
 
-    const answersByField = asAnswerMap(input.answers)
+function collectAnswers(
+    form: BookingForm,
+    answers: SubmitBookingInput['answers']
+): Result<{ storedAnswers: Record<string, string>, uploadIds: string[] }> {
+    const answersByField = asAnswerMap(answers)
     const storedAnswers: Record<string, string> = {}
     const uploadIds: string[] = []
 
@@ -230,53 +243,120 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         if (raw === '') {
             continue
         }
-
-        if (field.maxLength !== null && field.maxLength !== undefined && raw.length > field.maxLength) {
+        if (!scalarAnswerIsValid(field, raw)) {
             return validationError(field.id)
         }
-
-        if (field.type === BookingFormFieldType.Email && !EMAIL_PATTERN.test(raw)) {
-            return validationError(field.id)
-        }
-
-        if (field.type === BookingFormFieldType.Number) {
-            const number = Number(raw)
-            if (!Number.isFinite(number)) {
-                return validationError(field.id)
-            }
-            if (field.min !== null && field.min !== undefined && number < field.min) {
-                return validationError(field.id)
-            }
-            if (field.max !== null && field.max !== undefined && number > field.max) {
-                return validationError(field.id)
-            }
-        }
-
-        if (field.type === BookingFormFieldType.Phone && raw.replace(/\D/g, '').length < 8) {
-            return validationError(field.id)
-        }
-
         storedAnswers[field.id] = raw
     }
 
-    if (uploadIds.length > 0) {
-        const uploads = await db.selectFrom('booking_uploads')
-            .select(['id', 'clinic_site_id', 'field_id', 'booking_submission_id'])
-            .where('id', 'in', uploadIds)
-            .execute()
+    return { data: { storedAnswers, uploadIds }, hasErrors: false }
+}
 
-        if (uploads.length !== uploadIds.length) {
+async function assertUploadsBelongToClinic(
+    form: BookingForm,
+    clinicId: string,
+    uploadIds: readonly string[]
+): Promise<Result<true>> {
+    if (uploadIds.length === 0) {
+        return { data: true, hasErrors: false }
+    }
+
+    const uploads = await db.selectFrom('booking_uploads')
+        .select(['id', 'clinic_site_id', 'field_id', 'booking_submission_id'])
+        .where('id', 'in', [...uploadIds])
+        .execute()
+
+    if (uploads.length !== uploadIds.length) {
+        return validationError('answers')
+    }
+    for (const upload of uploads) {
+        if (upload.clinic_site_id !== clinicId || upload.booking_submission_id !== null) {
             return validationError('answers')
         }
-        for (const upload of uploads) {
-            if (upload.clinic_site_id !== clinic.id || upload.booking_submission_id !== null) {
-                return validationError('answers')
-            }
-            const field = fieldById(form, upload.field_id)
-            if (field === undefined || field.type !== BookingFormFieldType.File) {
-                return validationError('answers')
-            }
+        const field = fieldById(form, upload.field_id)
+        if (field === undefined || field.type !== BookingFormFieldType.File) {
+            return validationError('answers')
         }
+    }
+    return { data: true, hasErrors: false }
+}
+
+async function notifyClinicOfBooking(input: {
+    form: BookingForm
+    clinic: PublicClinicRow
+    bookingId: string
+    locale: string
+    storedAnswers: Record<string, string>
+}): Promise<BookingSubmissionStatus> {
+    const notifyTo = input.form.notifyEmail?.trim() || envVariables.bookingNotifyEmail()?.trim()
+    if (!notifyTo) {
+        return BookingSubmissionStatus.Received
+    }
+
+    try {
+        await sendTransactionalEmail({
+            to: notifyTo,
+            subject: `New booking · ${input.clinic.name ?? input.clinic.slug}`,
+            textBody: [
+                `Clinic: ${input.clinic.name ?? input.clinic.slug} (${input.clinic.slug})`,
+                `Booking id: ${input.bookingId}`,
+                `Locale: ${input.locale}`,
+                `Form: ${input.form.id} v${input.form.version}`,
+                '',
+                'Answers:',
+                ...Object.entries(input.storedAnswers).map(([key, value]) => `- ${key}: ${value}`)
+            ].join('\n')
+        })
+        await db.updateTable('booking_submissions')
+            .set({
+                status: 'notified',
+                notify_email_sent_at: sql`now()`,
+                updated_date: sql`now()`
+            })
+            .where('id', '=', input.bookingId)
+            .execute()
+        return BookingSubmissionStatus.Notified
+    } catch (error) {
+        logger.error(`Booking notify failed for ${input.bookingId}: ${String(error)}`)
+        await db.updateTable('booking_submissions')
+            .set({
+                status: 'failed_notify',
+                updated_date: sql`now()`
+            })
+            .where('id', '=', input.bookingId)
+            .execute()
+        return BookingSubmissionStatus.FailedNotify
+    }
+}
+
+export async function submitBooking(input: SubmitBookingInput): Promise<Result<BookingSubmissionResult>> {
+    const clinic = await loadPublicClinic(input.clinicSiteId)
+    if (clinic === undefined) {
+        return validationError('clinicSiteId')
+    }
+
+    const form = bookingFormForClinic(clinic)
+    if (form === null) {
+        return validationError('clinicSiteId')
+    }
+
+    if (input.formDefinitionId !== form.id || input.formVersion !== form.version) {
+        return validationError('formVersion')
+    }
+
+    if (!SITE_LOCALES.has(input.locale)) {
+        return validationError('locale')
+    }
+
+    const collected = collectAnswers(form, input.answers)
+    if (collected.hasErrors) {
+        return collected as Result<never>
+    }
+
+    const { storedAnswers, uploadIds } = collected.data
+    const uploadsOk = await assertUploadsBelongToClinic(form, clinic.id, uploadIds)
+    if (uploadsOk.hasErrors) {
+        return uploadsOk as Result<never>
     }
 
     const inserted = await db.insertInto('booking_submissions')
@@ -299,47 +379,13 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
             .execute()
     }
 
-    const notifyTo = form.notifyEmail?.trim() || envVariables.bookingNotifyEmail()?.trim()
-    let status = BookingSubmissionStatus.Received
-
-    if (notifyTo) {
-        try {
-            const outcome = await sendTransactionalEmail({
-                to: notifyTo,
-                subject: `New booking · ${clinic.name ?? clinic.slug}`,
-                textBody: [
-                    `Clinic: ${clinic.name ?? clinic.slug} (${clinic.slug})`,
-                    `Booking id: ${inserted.id}`,
-                    `Locale: ${input.locale}`,
-                    `Form: ${form.id} v${form.version}`,
-                    '',
-                    'Answers:',
-                    ...Object.entries(storedAnswers).map(([key, value]) => `- ${key}: ${value}`)
-                ].join('\n')
-            })
-            if (outcome === 'sent' || outcome === 'logged') {
-                status = BookingSubmissionStatus.Notified
-                await db.updateTable('booking_submissions')
-                    .set({
-                        status: 'notified',
-                        notify_email_sent_at: sql`now()`,
-                        updated_date: sql`now()`
-                    })
-                    .where('id', '=', inserted.id)
-                    .execute()
-            }
-        } catch (error) {
-            logger.error(`Booking notify failed for ${inserted.id}: ${String(error)}`)
-            status = BookingSubmissionStatus.FailedNotify
-            await db.updateTable('booking_submissions')
-                .set({
-                    status: 'failed_notify',
-                    updated_date: sql`now()`
-                })
-                .where('id', '=', inserted.id)
-                .execute()
-        }
-    }
+    const status = await notifyClinicOfBooking({
+        form,
+        clinic,
+        bookingId: inserted.id,
+        locale: input.locale,
+        storedAnswers
+    })
 
     return {
         data: {
