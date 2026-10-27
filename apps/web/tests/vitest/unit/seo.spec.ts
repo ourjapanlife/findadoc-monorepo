@@ -135,7 +135,7 @@ describe('inert Nuxt 2 head leftovers', () => {
 })
 
 describe('prerender HTML layout', () => {
-    it('writes extensionful files so Netlify Pretty URLs match slashless canonicals', () => {
+    it('writes extensionful files so slashless canonicals stay 200', () => {
         const nuxtConfig = readFileSync(join(rootDir, 'nuxt.config.ts'), 'utf8')
         const prerender = nitroPrerenderBlock(nuxtConfig)
 

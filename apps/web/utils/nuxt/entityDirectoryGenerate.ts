@@ -168,7 +168,7 @@ export async function applyEntityDirectoryToNitro(nitroConfig: NitroConfig) {
     const existing = nitroConfig.prerender.routes
     // Slugs stay romanised (#1796). Only DIRECTORY_PRERENDER_LOCALE_CODES are
     // written to disk. Every locale would multiply about 1,100 pages past
-    // Netlify's build limit. The directory payload is already in memory either way.
+    // Amplify's generate time. The directory payload is already in memory either way.
     const entityPaths = withDirectoryLocaleVariants([
         ...built.paths,
         ...built.professionalPaths,

@@ -17,7 +17,7 @@ import {
  * `Unexpected token '<'` before the app can hydrate.
  *
  * The src is a same-origin path, not NUXT_PUBLIC_UMAMI_URL. That variable is the
- * upstream script (cloud.umami.is or a self-hosted tracker). Netlify proxies
+ * upstream script (cloud.umami.is or a self-hosted tracker). Amplify proxies
  * `/stats.js` and `/api/send` to it so the browser never contacts Umami's hosts,
  * which ad blockers drop. See public/_redirects.
  */

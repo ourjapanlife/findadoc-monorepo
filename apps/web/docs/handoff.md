@@ -183,12 +183,11 @@ accepts, not what the query can serve. Measure the endpoint.
 
 ### Second round of browser feedback, fixed
 
-- **Moving search to `/search` silently broke the map on Netlify previews.** The Maps API key's
-  HTTP-referrer allowlist carried `*findadoc.netlify.app/` — a path of `/` and nothing else.
-  That was fine while the map lived on the homepage. Once the map moved to `/search` the path
-  stopped matching and Google returned `RefererNotAllowedMapError` on every preview. The fix was
-  one character: `*findadoc.netlify.app/*`. Partial-label wildcards do work, so the host pattern
-  was never the problem.
+- **Moving search to `/search` silently broke the map on deploy previews.** The Maps API key's
+  HTTP-referrer allowlist carried a host path of `/` and nothing else. That was fine while the
+  map lived on the homepage. Once the map moved to `/search` the path stopped matching and
+  Google returned `RefererNotAllowedMapError` on every preview. The fix was to allow `/*` on
+  the preview host. Partial-label wildcards do work, so the host pattern was never the problem.
 
   **The allowlist is coupled to our route structure.** Moving or adding a page that renders a
   map can break previews without any code looking wrong. `MapContainer` now implements

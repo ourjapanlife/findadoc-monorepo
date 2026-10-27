@@ -37,8 +37,8 @@ function normalisePagePath(path: string): string {
  * to that URL and the unprefixed path stays the English URL.
  *
  * Trailing slashes are stripped to match sitemap locs. Generate must emit
- * `about.html` (`nitro.prerender.autoSubfolderIndex: false`) so Netlify Pretty
- * URLs serve `/about` as 200 instead of 301ing it to `/about/`.
+ * `about.html` (`nitro.prerender.autoSubfolderIndex: false`) so Amplify
+ * serves `/about` as 200 instead of 301ing it to `/about/`.
  */
 export function canonicalUrl(path: string): string {
     const normalised = normalisePagePath(path)

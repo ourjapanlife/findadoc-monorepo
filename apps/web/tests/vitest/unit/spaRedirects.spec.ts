@@ -96,7 +96,7 @@ describe('SPA fallbacks', () => {
 
     /*
      * English and Japanese directory HTML is generated. Other locales would
-     * 404 on refresh, so Netlify rewrites only the missing paths under those
+     * 404 on refresh, so `_redirects` rewrites only the missing paths under those
      * prefixes. `serve` must not get the same splat: a matching rewrite
      * replaces /zh-CN/about.html instead of falling through to it.
      */

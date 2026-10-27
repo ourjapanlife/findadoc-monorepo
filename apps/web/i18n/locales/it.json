@@ -98,6 +98,7 @@
     "notAllowed": "Non hai l’autorizzazione per farlo. Accedi di nuovo o chiedi l’accesso a un amministratore."
   },
   "footer": {
+    "poweredBy": "Offerto da {name}",
     "terms": "Termini",
     "npo": "Ente non profit",
     "privacy": "Privacy",

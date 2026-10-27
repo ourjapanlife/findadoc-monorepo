@@ -6,7 +6,7 @@ export const DEFAULT_LOCALE_CODE = 'en-US'
 /**
  * Locales whose clinic, doctor, hub, and facet HTML is written at generate time.
  * Production is about 1,100 of those pages. All 11 locales is about 12,000 renders
- * and Netlify stops the build at 18 minutes. English is the default URL.
+ * and the generate step stays under Amplify's time limit. English is the default URL.
  * Japanese is the host-country language. Marketing pages still generate for
  * every locale. Other directory URLs render in the browser. See `public/_redirects`.
  */

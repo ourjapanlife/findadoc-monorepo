@@ -1,8 +1,9 @@
+import { DEFAULT_LOCALE_CODE, LOCALE_CODES, localeCodeFromPath, unlocalizedPath } from './localePath.ts'
 import { SITE_ORIGIN } from './site.ts'
 
 /**
  * Hosted clinic pages live in `clinic_sites`. This module only knows the URL
- * shape, the preview cookie, and how every other clinic address redirects to
+ * shape, the preview gate, and how every other clinic address redirects to
  * the subdomain.
  *
  * The address to share is `https://{slug}.findadoc.jp/`. `/clinic/{slug}`, the
@@ -16,27 +17,16 @@ import { SITE_ORIGIN } from './site.ts'
  * `public` is the later value that prerenders and indexes a published clinic.
  *
  * Booking buttons do not go anywhere yet. The appointment flow replaces them later.
- *
- * Locale prefixes are listed here so host redirects share one list.
- * `clinicLanding.spec.ts` checks them against `LOCALE_CODES`.
  */
 
 export const CLINIC_LANDING_PREVIEW_COOKIE = 'online_clinic_preview'
 
 export const CLINIC_LANDING_PREVIEW_MAX_AGE = 60 * 60 * 24 * 30
 
-export const CLINIC_LANDING_LOCALE_PREFIXES = [
-    'ja-JP',
-    'zh-CN',
-    'vi-VN',
-    'ko-KR',
-    'tl-PH',
-    'pt-BR',
-    'fr-FR',
-    'ru-RU',
-    'de-DE',
-    'it-IT'
-] as const
+/** Site locales that carry a URL prefix. English is the unprefixed root. */
+export const CLINIC_LANDING_LOCALE_PREFIXES: readonly string[] = LOCALE_CODES.filter(
+    code => code !== DEFAULT_LOCALE_CODE
+)
 
 const ID_SEPARATOR = '--'
 
@@ -60,6 +50,44 @@ const RESERVED_HOST_LABELS = new Set([
 
 const CLINIC_HOST_PARENTS = ['localhost', 'findadoc.jp'] as const
 
+const LOCAL_DEV_PORT = ':3000'
+
+/**
+ * Runs in <head> before first paint. Amplify serves the same prerendered
+ * `index.html` (the main homepage) on every `*.findadoc.jp` name. On a clinic
+ * host that HTML is the wrong page, so this hides `#__nuxt` until `app.vue`
+ * marks the clinic (or its 404) ready.
+ */
+export const CLINIC_HOST_BOOTSTRAP = `(function () {
+  try {
+    var reserved = new Set(${JSON.stringify([...RESERVED_HOST_LABELS])})
+    var parents = ${JSON.stringify([...CLINIC_HOST_PARENTS])}
+    var host = location.hostname.toLowerCase().split(':')[0]
+    var parent
+    for (var i = 0; i < parents.length; i++) {
+      if (host.length > parents[i].length + 1 && host.slice(-(parents[i].length + 1)) === '.' + parents[i]) {
+        parent = parents[i]
+        break
+      }
+    }
+    if (!parent) return
+    var label = host.slice(0, -(parent.length + 1))
+    if (!label || label.indexOf('.') !== -1 || reserved.has(label) || !/${SLUG_PATTERN.source}/.test(label)) return
+    document.documentElement.setAttribute('data-clinic-host', label)
+    var style = document.createElement('style')
+    style.textContent = 'html[data-clinic-host]:not([data-clinic-ready]) #__nuxt{visibility:hidden}'
+    document.head.appendChild(style)
+  } catch (e) {}
+})()`
+
+/** Show the clinic host page after Vue has replaced the prerendered homepage. */
+export function markClinicHostReady(): void {
+    if (!document.documentElement.hasAttribute('data-clinic-host')) {
+        return
+    }
+    document.documentElement.setAttribute('data-clinic-ready', '')
+}
+
 /** A hosted clinic the API already decided is preview or published. */
 export type HostedClinicRef = {
     slug: string
@@ -81,11 +109,8 @@ export const CLINIC_LANDING_MODE: ClinicLandingMode = 'preview'
 export const CLINIC_PREVIEW_SHELL_SLUGS = ['multilingual-online-clinic'] as const
 
 export function clinicLandingMode(value: string | null | undefined): ClinicLandingMode {
-    if (value === 'public') {
-        return 'public'
-    }
-    if (value === 'preview' || value === 'true') {
-        return 'preview'
+    if (value === 'public' || value === 'preview') {
+        return value
     }
     return 'off'
 }
@@ -98,29 +123,54 @@ export function clinicLandingPath(slug: string): string {
     return `/clinic/${slug}`
 }
 
+/** `''` for English, `/{code}` for every other site locale. */
+export function clinicLocalePrefix(localeCode: string | null | undefined): string {
+    const code = localeCode ?? DEFAULT_LOCALE_CODE
+    return CLINIC_LANDING_LOCALE_PREFIXES.includes(code) ? `/${code}` : ''
+}
+
+function trimTrailingSlash(pathname: string): string {
+    return pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
+}
+
+function isLocalHostname(hostname: string): boolean {
+    return hostname === 'localhost' || hostname.endsWith('.localhost') || hostname === '127.0.0.1'
+}
+
+/** `host:port` from a request. The port stays attached to the colon so it can be re-appended. */
+function splitRequestHost(requestHost: string | null | undefined): { hostname: string, port: string } {
+    const raw = (requestHost ?? '').trim().toLowerCase()
+    const colon = raw.lastIndexOf(':')
+    if (colon < 0) {
+        return { hostname: raw, port: '' }
+    }
+    return { hostname: raw.slice(0, colon), port: raw.slice(colon) }
+}
+
+export type ClinicSubdomainOptions = {
+    /** Site locale of the page. English and an omitted locale are the unprefixed root. */
+    localeCode?: string | null
+    /** The host the request arrived on, with its port. Decides local versus production. */
+    requestHost?: string | null
+    /** A `?query` to carry over, already prefixed with `?`. */
+    query?: string
+}
+
 /**
  * The subdomain is the clinic. Local dev uses `{slug}.localhost` and keeps the
  * current port. Anywhere else, including an omitted host, is `findadoc.jp`.
  */
-export function clinicSubdomainUrl(
-    slug: string,
-    localePrefix = '',
-    requestHost?: string | null,
-    query = ''
-): string {
-    const raw = (requestHost ?? '').trim().toLowerCase()
-    const hostname = raw.split(':')[0] ?? ''
-    const port = raw.includes(':') ? raw.slice(raw.indexOf(':')) : ''
-    const local = hostname === 'localhost' || hostname.endsWith('.localhost') || hostname === '127.0.0.1'
-    const origin = local
-        ? `http://${slug}.localhost${port || ':3000'}`
+export function clinicSubdomainUrl(slug: string, options: ClinicSubdomainOptions = {}): string {
+    const { hostname, port } = splitRequestHost(options.requestHost)
+    const origin = isLocalHostname(hostname)
+        ? `http://${slug}.localhost${port || LOCAL_DEV_PORT}`
         : `https://${slug}.findadoc.jp`
-    const path = localePrefix.length > 0 ? localePrefix : '/'
+    const path = clinicLocalePrefix(options.localeCode) || '/'
 
-    return `${origin}${path}${query}`
+    return `${origin}${path}${options.query ?? ''}`
 }
 
-/** Alternates for a clinic hostname. English is the unprefixed root. */
+/** Alternates for a clinic hostname. English is the unprefixed root and the x-default. */
 export function clinicSubdomainHreflang(slug: string, requestHost?: string | null): Array<{
     rel: 'alternate'
     hreflang: string
@@ -128,18 +178,14 @@ export function clinicSubdomainHreflang(slug: string, requestHost?: string | nul
     key: string
 }> {
     const alternates = [
-        { hreflang: 'en-US', href: clinicSubdomainUrl(slug, '', requestHost) },
-        ...CLINIC_LANDING_LOCALE_PREFIXES.map(code => ({
-            hreflang: code,
-            href: clinicSubdomainUrl(slug, `/${code}`, requestHost)
-        })),
-        { hreflang: 'x-default', href: clinicSubdomainUrl(slug, '', requestHost) }
+        ...LOCALE_CODES.map(code => ({ hreflang: code, localeCode: code })),
+        { hreflang: 'x-default', localeCode: DEFAULT_LOCALE_CODE }
     ]
 
     return alternates.map(alternate => ({
         rel: 'alternate' as const,
         hreflang: alternate.hreflang,
-        href: alternate.href,
+        href: clinicSubdomainUrl(slug, { localeCode: alternate.localeCode, requestHost }),
         key: `hreflang-${alternate.hreflang}`
     }))
 }
@@ -153,9 +199,9 @@ export function clinicLandingHostSlug(hostname: string | null | undefined): stri
         return undefined
     }
 
-    const host = hostname.toLowerCase().split(':')[0] ?? ''
+    const host = splitRequestHost(hostname).hostname
     const parent = CLINIC_HOST_PARENTS.find(item => host.endsWith(`.${item}`))
-    if (!parent) {
+    if (parent === undefined) {
         return undefined
     }
 
@@ -179,17 +225,11 @@ export function isStaticHostPath(pathname: string): boolean {
 
 /** `/` or `/{locale}` on a clinic hostname. The clinic path is not part of this URL. */
 export function clinicHostPagePath(pathname: string): string {
-    const trimmed = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
-    const locale = trimmed.split('/').filter(Boolean)[0]
-    if (locale && (CLINIC_LANDING_LOCALE_PREFIXES as readonly string[]).includes(locale)) {
-        return `/${locale}`
-    }
-    return '/'
+    return clinicLocalePrefix(localeCodeFromPath(pathname)) || '/'
 }
 
 export function isClinicHostPage(pathname: string): boolean {
-    const trimmed = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
-    return trimmed === clinicHostPagePath(pathname)
+    return unlocalizedPath(pathname) === '/'
 }
 
 /**
@@ -202,16 +242,11 @@ export function clinicHostLandingTarget(
     pathname: string,
     mode: ClinicLandingMode
 ): string | undefined {
-    if (mode === 'off') {
+    if (mode === 'off' || clinicLandingHostSlug(hostname) === undefined) {
         return undefined
     }
 
-    if (!clinicLandingHostSlug(hostname)) {
-        return undefined
-    }
-
-    const trimmed = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
-    if (isStaticHostPath(trimmed) || isClinicHostPage(pathname)) {
+    if (isStaticHostPath(trimTrailingSlash(pathname)) || isClinicHostPage(pathname)) {
         return undefined
     }
 
@@ -223,20 +258,18 @@ export function clinicLandingShareImage(shareImagePath: string): string {
     return `${SITE_ORIGIN}${shareImagePath}`
 }
 
-export function splitClinicLandingPath(path: string): { localePrefix: string, segments: string[], query: string } {
+/** The locale the URL chose, the path segments after it, and the `?query` that follows. */
+export function splitClinicLandingPath(path: string): { localeCode: string, segments: string[], query: string } {
     const hashIndex = path.indexOf('#')
     const withoutHash = hashIndex >= 0 ? path.slice(0, hashIndex) : path
     const queryIndex = withoutHash.indexOf('?')
     const query = queryIndex >= 0 ? withoutHash.slice(queryIndex) : ''
     const pathname = queryIndex >= 0 ? withoutHash.slice(0, queryIndex) : withoutHash
-    const trimmed = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
-    const segments = trimmed.split('/').filter(Boolean)
-    let localePrefix = ''
-    const first = segments[0]
-    if (first && (CLINIC_LANDING_LOCALE_PREFIXES as readonly string[]).includes(first)) {
-        localePrefix = `/${segments.shift()}`
+    return {
+        localeCode: localeCodeFromPath(pathname),
+        segments: unlocalizedPath(pathname).split('/').filter(Boolean),
+        query
     }
-    return { localePrefix, segments, query }
 }
 
 function hostedSlug(segment: string, sites: readonly HostedClinicRef[]): string | undefined {
@@ -263,7 +296,7 @@ export function isClinicLandingPath(path: string): boolean {
         return false
     }
     const slug = segments[1]
-    return !!slug && SLUG_PATTERN.test(slug)
+    return slug !== undefined && SLUG_PATTERN.test(slug)
 }
 
 /**
@@ -280,19 +313,18 @@ export function clinicLandingRedirectTarget(
     if (mode === 'off') {
         return undefined
     }
-    const { localePrefix, segments, query } = splitClinicLandingPath(path)
+    const { localeCode, segments, query } = splitClinicLandingPath(path)
     if (segments[0] !== 'clinic') {
         return undefined
     }
 
-    let owned: string | undefined
-    if (segments.length === 4 || segments.length === 2) {
-        owned = hostedSlug(segments[segments.length - 1] ?? '', sites)
-    }
-    if (!owned) {
+    // `/clinic/{slug}` or `/clinic/{prefecture}/{city}/{slug}--{id}`.
+    const isClinicAddress = segments.length === 2 || segments.length === 4
+    const owned = isClinicAddress ? hostedSlug(segments[segments.length - 1] ?? '', sites) : undefined
+    if (owned === undefined) {
         return undefined
     }
-    return clinicSubdomainUrl(owned, localePrefix, requestHost, query)
+    return clinicSubdomainUrl(owned, { localeCode, requestHost, query })
 }
 
 export type ClinicLandingAccess = 'allow' | 'deny' | 'grant' | 'revoke'
@@ -322,28 +354,4 @@ export function clinicLandingAccess(
         return 'allow'
     }
     return 'deny'
-}
-
-export function clinicLandingPreviewCookie(header: string | null | undefined): string | undefined {
-    if (!header) {
-        return undefined
-    }
-    for (const part of header.split(';')) {
-        const trimmed = part.trim()
-        const splitAt = trimmed.indexOf('=')
-        if (splitAt < 0) {
-            continue
-        }
-        if (trimmed.slice(0, splitAt) === CLINIC_LANDING_PREVIEW_COOKIE) {
-            return trimmed.slice(splitAt + 1)
-        }
-    }
-    return undefined
-}
-
-export function clinicLandingPreviewCookieHeader(secure: boolean, clear = false): string {
-    const value = clear ? '' : '1'
-    const age = clear ? 0 : CLINIC_LANDING_PREVIEW_MAX_AGE
-    const secureFlag = secure ? '; Secure' : ''
-    return `${CLINIC_LANDING_PREVIEW_COOKIE}=${value}; Path=/; Max-Age=${age}; SameSite=Lax${secureFlag}`
 }

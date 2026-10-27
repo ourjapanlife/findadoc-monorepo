@@ -236,7 +236,7 @@ async function fetchDirectoryRows(): Promise<{
  *
  * The directory is stored on private `runtimeConfig` so prerender workers can
  * fill each page without calling `facility(id)`. Disk cache + env were invisible
- * to those workers, which 429'd production and failed Netlify.
+ * to those workers, which 429'd production and failed generate.
  *
  * If the API is unreachable the generate still succeeds — it just ships no clinic,
  * doctor, or hub HTML, and those URLs 404 until the next build that can see the directory.

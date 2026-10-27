@@ -72,6 +72,7 @@
     "sectionNavLabel": "На этой странице"
   },
   "footer": {
+    "poweredBy": "При поддержке {name}",
     "terms": "Правила",
     "npo": "НКО",
     "privacy": "Конфиденциальность",

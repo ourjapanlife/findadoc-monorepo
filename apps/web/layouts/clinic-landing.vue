@@ -14,7 +14,7 @@
                         class="h-8 w-8 fill-primary"
                         aria-hidden="true"
                     />
-                    <span>{{ t('footer.poweredBy') }} {{ t('common.siteName') }}</span>
+                    <span>{{ t('footer.poweredBy', { name: t('common.siteName') }) }}</span>
                 </a>
             </div>
         </footer>

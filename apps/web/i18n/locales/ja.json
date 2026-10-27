@@ -72,6 +72,7 @@
     "sectionNavLabel": "このページの内容"
   },
   "footer": {
+    "poweredBy": "{name} 提供",
     "terms": "利用規約",
     "npo": "情報公開",
     "privacy": "プライバシーポリシー",

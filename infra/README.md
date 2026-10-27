@@ -210,7 +210,7 @@ Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-o
 - The API role may `s3:PutObject` and `s3:GetObject` on `uploads/*` only. A browser uploads or downloads with a presigned URL signed by that role. There is no access key.
 - `STORAGE_BACKEND=none`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api`. Nothing writes an object until a feature changes the backend to `s3`. Local development leaves the variables unset and does not need AWS.
 - An incomplete multipart upload is aborted after 7 days.
-- CORS allows `PUT` and `GET` from the site, Amplify previews, Netlify previews, and localhost. The signature is what authorizes the call.
+- CORS allows `PUT` and `GET` from the site, clinic hostnames, Amplify previews, and localhost. The signature is what authorizes the call.
 
 The API reaches S3 through the gateway endpoint on `FindadocNetwork`, so a later feature can read and write without a NAT gateway. Signing a URL does not call S3.
 

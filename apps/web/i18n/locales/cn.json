@@ -72,6 +72,7 @@
     "sectionNavLabel": "本页内容"
   },
   "footer": {
+    "poweredBy": "由 {name} 提供技术支持",
     "terms": "条款",
     "npo": "信息公开",
     "privacy": "隐私政策",

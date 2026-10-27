@@ -123,7 +123,7 @@ if (!prefectureSlug || isReservedHubSegment(prefectureSlug)) {
 }
 
 // Client only: the static 404 hydrates onto this route for unknown URLs.
-// Prerender must not throw here, or a list mismatch fails the Netlify build.
+// Prerender must not throw here, or a list mismatch fails the generate.
 if (
     import.meta.client
       && Array.isArray(generatedPrefectureHubs)

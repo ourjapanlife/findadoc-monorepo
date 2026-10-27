@@ -1,8 +1,7 @@
 /**
- * Static generate cannot vary a response on Accept. Netlify's edge function
- * uses this map: a request that prefers text/markdown is rewritten to the
- * sibling file, and a 404 is replaced with /404.md. Dev and the preview
- * server serve the .md URLs directly.
+ * Static generate cannot vary a response on Accept. Sibling `.md` files sit
+ * next to the HTML pages. Dev and the preview server serve those URLs
+ * directly. A request that prefers text/markdown maps here.
  */
 const MARKDOWN_PAGES: Record<string, string> = {
     '/': '/index.md',

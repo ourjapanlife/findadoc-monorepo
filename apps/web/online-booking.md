@@ -263,12 +263,12 @@ These are live issues that will surface as soon as the reservation model is pick
 
 ## A.4 Architectural constraint: the web app has no server runtime
 
-`findadoc-web` is a client-rendered static site deployed to Netlify — `ssr: false` (`nuxt.config.ts:26`), SPA catch-all redirect and `Access-Control-Allow-Origin = "*"` (`netlify.toml`). There are no Nuxt server routes and no Netlify functions. The GraphQL client talks directly to `https://api.findadoc.jp` from the browser, attaching an Auth0 bearer token (`utils/graphql.ts:12-20, 38-47`).
+`findadoc-web` is a static site on Amplify. The GraphQL client talks directly to `https://api.findadoc.jp` from the browser, attaching an Auth0 bearer token (`utils/graphql.ts`).
 
 Payment secrets, file upload, payment-provider webhooks and Excel generation all require a trusted server context. So §6.4, §6.5 and §6.7 imply one of:
 
-1. Adding server routes or Netlify functions to `findadoc-web`, changing its deployment model; or
-2. Putting all of it behind `findadoc-server` (Fastify + Apollo + Supabase); or
+1. Adding a server runtime to the web app, changing its deployment model; or
+2. Putting all of it behind `findadoc-server`; or
 3. Accepting the §9.7 interim option.
 
 **Recommended:** option 2 — booking logic in `findadoc-server`, uploads to Supabase Storage via short-lived signed URLs, export as an authenticated server endpoint. The web app stays a static client, and no secret ever reaches it.
