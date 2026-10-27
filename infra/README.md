@@ -18,6 +18,7 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocAlerts` | SNS topic `findadoc-alarms`, the AWS Chatbot link that posts it to `#alerts` in Slack, and the database alarms. |
 | `FindadocEdgeCertificates` | **us-east-1.** The ACM certificates for `api-staging`/`api.findadoc.jp` and `mcp-staging`/`mcp.findadoc.jp`. CloudFront only accepts certificates from us-east-1. |
 | `FindadocApiSecrets` | The `findadoc/api` secret: `GOOGLE_API_KEY`, `SENTRY_DSN`, and a generated `EDGE_SHARED_SECRET`. |
+| `FindadocEmail` | Verifies `findadoc.jp` in Amazon SES, writes the DKIM and MAIL FROM records, and lets the API Lambda send from `noreply@findadoc.jp`. |
 | `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, API alarms, and saved log queries. |
 | `FindadocMcp` | The MCP Lambda (`findadoc-mcp`, outside the VPC) behind CloudFront at `mcp-staging.findadoc.jp`, with an error alarm. Its tools call `https://api.findadoc.jp`. |
 | `FindadocDataCopy` | **Temporary (#81).** `findadoc-db-copy`, the one-off function that copies the Supabase database into RDS. Remove after the cutover (#13). |
@@ -40,6 +41,7 @@ Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hou
 | CloudFront distribution and the viewer-IP CloudFront Function | $0 inside the free 1 TB, 10M requests and 2M function invocations |
 | ACM certificate, Route 53 alias records | $0 |
 | Secrets Manager secret `findadoc/api` | $0.40 |
+| SES domain, configuration set, and DNS records | $0 while nothing sends, then $0.10 per 1,000 emails |
 
 Not used, on purpose: NAT gateways (about $45/month each), Elastic IPs and public IPv4 addresses ($3.65/month each), VPC interface endpoints (about $7/month each), load balancers, Multi-AZ, Performance Insights, Enhanced Monitoring, and customer-managed KMS keys. Check `cdk diff` for any of these before merging an infra change.
 
@@ -201,6 +203,27 @@ Every `*.findadoc.jp` name without its own Route 53 record resolves to the Ampli
 ## MCP
 
 `FindadocMcp` runs `apps/mcp/src/lambda.ts` as `findadoc-mcp`, an arm64 Node 24 function with 512 MB, behind CloudFront at `mcp-staging.findadoc.jp`. It uses the same CloudFront setup as the API (`lib/functionUrlEdge.ts`). MCP is on `/mcp`, the REST routes for ChatGPT Actions are under `/api`, and the spec is at `/openapi.yaml`. The function has no database and runs outside the VPC. `findadoc-mcp-errors` posts to Slack `#alerts`. `mcp.findadoc.jp` moves at the cutover (#13).
+
+## Email
+
+`FindadocEmail` verifies `findadoc.jp` in Amazon SES so the API can send from `noreply@findadoc.jp`. The apex MX already points at Google (`smtp.google.com`). This stack does not change it, and it does not change the apex TXT record (Google site verification). Google keeps receiving mail sent to `@findadoc.jp`.
+
+- Easy DKIM. The stack writes the three DKIM CNAME records into the existing hosted zone.
+- MAIL FROM is `mail.findadoc.jp`. The stack writes that name's MX and SPF records. `https://mail.findadoc.jp` still opens the site, because the Amplify wildcard still owns the A and AAAA records. The new MX and TXT are only for SES.
+- The configuration set `findadoc` requires TLS, publishes reputation metrics, and adds bounces and complaints to the account suppression list. Feedback is not forwarded to `noreply@`, which is not a mailbox we read.
+- The API role may `ses:SendEmail` and `ses:SendRawEmail` for this identity and this configuration set only. There is no access key.
+- `SES_FROM_ADDRESS`, `SES_CONFIGURATION_SET`, and `SES_REGION` are set on `findadoc-api`. Nothing in the API sends yet.
+
+A new SES account can send only to verified addresses until AWS enables production access. CloudFormation cannot request that. In the SES console for `ap-northeast-1`, open the account dashboard and request production access.
+
+The API Lambda has no IPv4 route to the internet. A sender has to call the dual-stack endpoint `https://email.ap-northeast-1.api.aws`. `email.ap-northeast-1.amazonaws.com` is IPv4-only and will not connect from this VPC.
+
+| Alarm | Fires when |
+| --- | --- |
+| `findadoc-email-bounce-rate` | the configuration set's bounce rate is above 5% |
+| `findadoc-email-complaint-rate` | the configuration set's complaint rate is above 0.1% |
+
+Both post to Slack `#alerts`. They stay quiet until SES publishes reputation data. With the alarms already on the database, API, and MCP, these two use the last of the 10 free alarms.
 
 ## Copying the data from Supabase (#81)
 
