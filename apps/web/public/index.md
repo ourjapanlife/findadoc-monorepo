@@ -1,6 +1,6 @@
-# Find a Doc Japan
+# Find a Doc, Japan
 
-Find a Doc Japan is a free directory of clinics and healthcare professionals in Japan. You can filter by the languages the staff actually speak, by medical specialty, and by prefecture and city.
+Find a Doc, Japan is a free directory of clinics and healthcare professionals in Japan. You can filter by the languages the staff actually speak, by medical specialty, and by prefecture and city.
 
 The publisher is NPO法人Find a Doc Japan, a specified non-profit certified in Tokyo on 28 August 2023. Registration number 9011005010215. Contact: contact@findadoc.jp.
 

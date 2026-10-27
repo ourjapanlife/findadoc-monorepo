@@ -1,4 +1,4 @@
-# Find a Doc Japan - Storybook Documentation
+# Find a Doc, Japan - Storybook Documentation
 
 ## 1. What is Storybook?
 

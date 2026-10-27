@@ -11,17 +11,17 @@
   },
   "contactPage": {
     "heading": "문의",
-    "intro": "Find a Doc Japan은 등록된 비영리단체입니다. 검색만으로 부족하면 사람에게 편지를 보내 주세요.",
+    "intro": "Find a Doc, Japan은 등록된 비영리단체입니다. 검색만으로 부족하면 사람에게 편지를 보내 주세요.",
     "emailLabel": "이메일",
     "whatHeading": "도움을 드릴 수 있는 일",
     "whatBody": "목록에 올라야 할 병원이나 의사, 이미 공개된 페이지의 정정, 사이트를 쓰다가 생긴 문제를 알려 주세요. 단체 자체에 대한 취재, 협력, 공공기관의 질문에도 답합니다. 의학적 조언, 진단, 예약 대행은 하지 않습니다. 진료는 디렉터리에서 병원을 찾은 뒤 그 병원에 직접 연락하세요.",
     "npoHeading": "단체",
-    "npoBody": "등록 명칭은 NPO법인Find a Doc Japan이고 등록 번호는 9011005010215입니다. 2023년 8월 28일 도쿄도에서 인증받았습니다. 대차대조표를 포함한 제출 서류는 정보공개 페이지에 있습니다. 등록 사무소는 가상 사무실이라 번지는 여기에 적지 않고, 요청하시면 보내 드립니다.",
+    "npoBody": "등록 명칭은 NPO법인Find a Doc, Japan이고 등록 번호는 9011005010215입니다. 2023년 8월 28일 도쿄도에서 인증받았습니다. 대차대조표를 포함한 제출 서류는 정보공개 페이지에 있습니다. 등록 사무소는 가상 사무실이라 번지는 여기에 적지 않고, 요청하시면 보내 드립니다.",
     "addressNote": "일본 각지에서 원격으로 일합니다."
   },
   "npoPage": {
     "heading": "NPO 정보공개",
-    "intro": "Find a Doc Japan은 일본에 등록된 특정비영리활동법인입니다. 아래 서류는 등록 비영리법인에 요구되는 공고로서 여기에 게시합니다.",
+    "intro": "Find a Doc, Japan은 일본에 등록된 특정비영리활동법인입니다. 아래 서류는 등록 비영리법인에 요구되는 공고로서 여기에 게시합니다.",
     "entityLabel": "등록 명칭",
     "numberLabel": "NPO 등록번호",
     "documentsHeading": "제출 서류",
@@ -74,14 +74,14 @@
   "common": {
     "loading": "불러오는 중",
     "menu": "메뉴",
-    "siteName": "Find a Doc Japan",
+    "siteName": "Find a Doc, Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "close": "닫기",
     "cancel": "취소"
   },
   "about": {
-    "heroHeading": "Find a Doc Japan",
+    "heroHeading": "Find a Doc, Japan",
     "heroSubheading": "필요한 의료 서비스를, 당신이 쓰는 말로 연결합니다",
     "heroGetStarted": "시작하기",
     "storyHeader": "우리의 이야기",
@@ -725,7 +725,7 @@
     "chooseFile": "파일 선택",
     "choosePhoto": "사진 선택",
     "browse": "찾아보기",
-    "privacyNote": "클리닉이 이 요청을 받습니다. Find a Doc Japan은 의학적 조언을 하지 않습니다.",
+    "privacyNote": "클리닉이 이 요청을 받습니다. Find a Doc, Japan은 의학적 조언을 하지 않습니다.",
     "successHeading": "요청이 전송되었습니다",
     "successBody": "클리닉에서 예약에 대해 연락드립니다.",
     "reference": "접수 번호: {id}",

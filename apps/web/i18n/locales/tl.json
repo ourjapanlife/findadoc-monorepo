@@ -11,7 +11,7 @@
   },
   "contactPage": {
     "heading": "Makipag-ugnayan",
-    "intro": "Ang Find a Doc Japan ay isang rehistradong non-profit. Sumulat sa amin kapag kailangan mo ng tao, hindi lang ng search box.",
+    "intro": "Ang Find a Doc, Japan ay isang rehistradong non-profit. Sumulat sa amin kapag kailangan mo ng tao, hindi lang ng search box.",
     "emailLabel": "E-mail",
     "whatHeading": "Mga bagay na matutulungan namin",
     "whatBody": "Sabihin sa amin ang klinik o doktor na dapat mailista, ang pagwawasto sa pahinang naka-publish na, o ang problemang nae-encounter sa paggamit ng site. Sinasagot din namin ang mga tanong ng kasosyo, mamamahayag, at tanggapan ng gobyerno tungkol sa samahan. Hindi kami nagbibigay ng medikal na payo, diagnosis, o appointment. Para magpagamot, hanapin ang klinik sa direktoryo at direktang kontakin ang klinik na iyon.",
@@ -21,7 +21,7 @@
   },
   "npoPage": {
     "heading": "Pagsisiwalat ng NPO",
-    "intro": "Ang Find a Doc Japan ay isang rehistradong non-profit na organisasyon sa Japan. Ang mga dokumento sa ibaba ay inilalathala dito ayon sa hinihingi sa mga rehistradong non-profit.",
+    "intro": "Ang Find a Doc, Japan ay isang rehistradong non-profit na organisasyon sa Japan. Ang mga dokumento sa ibaba ay inilalathala dito ayon sa hinihingi sa mga rehistradong non-profit.",
     "entityLabel": "Rehistradong pangalan",
     "numberLabel": "Numero ng pagpaparehistro ng NPO",
     "documentsHeading": "Mga isinumiteng dokumento",
@@ -40,7 +40,7 @@
   },
   "common": {
     "menu": "Menu",
-    "siteName": "Find a Doc Japan",
+    "siteName": "Find a Doc, Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "Naglo-load",
@@ -48,7 +48,7 @@
     "cancel": "Kanselahin"
   },
   "about": {
-    "heroHeading": "Find a Doc Japan",
+    "heroHeading": "Find a Doc, Japan",
     "heroSubheading": "Ikokonekta ka namin sa mga serbisyong pangkalusugan na kailangan mo, sa iyong wika",
     "heroGetStarted": "Magsimula",
     "storyHeader": "Aming Kuwento",
@@ -725,7 +725,7 @@
     "chooseFile": "Pumili ng file",
     "choosePhoto": "Pumili ng larawan",
     "browse": "Hanapin",
-    "privacyNote": "Tatanggapin ng klinika ang kahilingang ito. Hindi nagbibigay ng payong medikal ang Find a Doc Japan.",
+    "privacyNote": "Tatanggapin ng klinika ang kahilingang ito. Hindi nagbibigay ng payong medikal ang Find a Doc, Japan.",
     "successHeading": "Naipadala ang kahilingan",
     "successBody": "Makikipag-ugnayan ang klinika tungkol sa appointment.",
     "reference": "Sanggunian: {id}",

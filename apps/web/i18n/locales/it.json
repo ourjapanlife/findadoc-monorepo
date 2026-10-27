@@ -11,7 +11,7 @@
   },
   "contactPage": {
     "heading": "Contatti",
-    "intro": "Find a Doc Japan è un'organizzazione non profit registrata. Scriveteci quando vi serve una persona, non solo la ricerca.",
+    "intro": "Find a Doc, Japan è un'organizzazione non profit registrata. Scriveteci quando vi serve una persona, non solo la ricerca.",
     "emailLabel": "E-mail",
     "whatHeading": "Per che cosa possiamo aiutare",
     "whatBody": "Segnalate una clinica o un medico da inserire, una correzione a una pagina già pubblicata, o un problema nell'uso del sito. Rispondiamo anche a partner, giornalisti ed enti pubblici sull'organizzazione. Non diamo consigli medici, diagnosi né appuntamenti. Per le cure, trovate una clinica nell'elenco e contattatela direttamente.",
@@ -21,7 +21,7 @@
   },
   "npoPage": {
     "heading": "Informazioni legali dell’ente",
-    "intro": "Find a Doc Japan è un ente non profit registrato in Giappone. I documenti seguenti sono pubblicati qui come richiesto agli enti non profit registrati.",
+    "intro": "Find a Doc, Japan è un ente non profit registrato in Giappone. I documenti seguenti sono pubblicati qui come richiesto agli enti non profit registrati.",
     "entityLabel": "Denominazione registrata",
     "numberLabel": "Numero di registrazione",
     "documentsHeading": "Documenti depositati",
@@ -40,7 +40,7 @@
   },
   "common": {
     "menu": "Menu",
-    "siteName": "Find a Doc Japan",
+    "siteName": "Find a Doc, Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "Caricamento",
@@ -48,7 +48,7 @@
     "cancel": "Annulla"
   },
   "about": {
-    "heroHeading": "Find a Doc Japan",
+    "heroHeading": "Find a Doc, Japan",
     "heroSubheading": "Ti mettiamo in contatto con i servizi sanitari di cui hai bisogno, nella tua lingua",
     "heroGetStarted": "Inizia",
     "storyHeader": "La nostra storia",
@@ -725,7 +725,7 @@
     "chooseFile": "Scegli un file",
     "choosePhoto": "Scegli una foto",
     "browse": "Sfoglia",
-    "privacyNote": "La clinica riceve questa richiesta. Find a Doc Japan non fornisce consigli medici.",
+    "privacyNote": "La clinica riceve questa richiesta. Find a Doc, Japan non fornisce consigli medici.",
     "successHeading": "Richiesta inviata",
     "successBody": "La clinica ti contatterà per l’appuntamento.",
     "reference": "Riferimento: {id}",

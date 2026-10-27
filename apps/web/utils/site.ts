@@ -6,7 +6,7 @@
  * formats titles at runtime with `formatPageTitle`. Canonicals always use
  * SITE_ORIGIN so prerendered HTML points at production, not localhost.
  */
-export const SITE_TITLE = 'Find a Doc Japan'
+export const SITE_TITLE = 'Find a Doc, Japan'
 
 export const SITE_ORIGIN = 'https://www.findadoc.jp'
 
@@ -26,7 +26,7 @@ const BRAND_SUFFIX = ` · ${SITE_TITLE}`
  *
  * Untitled pages (and pages whose title is already the brand) fall back to the
  * brand alone, so the homepage can opt into a descriptive title without
- * `titleTemplate` rendering "Find a Doc Japan · Find a Doc Japan".
+ * `titleTemplate` rendering "Find a Doc, Japan · Find a Doc, Japan".
  */
 export function formatPageTitle(title?: string | null): string {
     const trimmed = title?.trim() ?? ''

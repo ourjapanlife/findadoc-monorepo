@@ -1,6 +1,6 @@
 # Contact
 
-Find a Doc Japan is a registered non-profit. Write when you need a person rather than the search page.
+Find a Doc, Japan is a registered non-profit. Write when you need a person rather than the search page.
 
 Email: contact@findadoc.jp
 

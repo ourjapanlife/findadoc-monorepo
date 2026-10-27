@@ -20,7 +20,7 @@ describe('agent discovery files', () => {
     it('publishes an llms.txt guide that names the directory, the API, and the MCP server', () => {
         const guide = readPublic('llms.txt')
 
-        expect(guide).to.include('# Find a Doc Japan')
+        expect(guide).to.include('# Find a Doc, Japan')
         expect(guide).to.include(`${SITE_ORIGIN}/contact.md`)
         expect(guide).to.include(`${SITE_ORIGIN}/sitemap.xml`)
         expect(guide).to.include(MCP_SERVER_URL)

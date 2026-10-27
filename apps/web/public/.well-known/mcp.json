@@ -1,5 +1,5 @@
 {
-  "name": "Find a Doc Japan",
+  "name": "Find a Doc, Japan",
   "description": "Search clinics and healthcare professionals in Japan by language, specialty, and location, and fetch one record by id.",
   "endpoint": "https://mcp.findadoc.jp/mcp",
   "transport": "streamable-http",

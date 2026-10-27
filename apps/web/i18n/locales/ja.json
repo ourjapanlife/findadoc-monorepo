@@ -11,7 +11,7 @@
   },
   "contactPage": {
     "heading": "お問い合わせ",
-    "intro": "Find a Doc Japan は登録された非営利団体です。検索では足りないときは、人に手紙を書いてください。",
+    "intro": "Find a Doc, Japan は登録された非営利団体です。検索では足りないときは、人に手紙を書いてください。",
     "emailLabel": "メール",
     "whatHeading": "ご相談いただけること",
     "whatBody": "掲載すべきクリニックや医師、すでに公開されているページの訂正、サイトの不具合をお知らせください。団体そのものについての取材、連携、公的機関からの問い合わせにもお答えします。医療上の助言、診断、予約の代行はしません。受診はディレクトリでクリニックを見つけ、そのクリニックに直接連絡してください。",
@@ -40,7 +40,7 @@
   },
   "common": {
     "menu": "メニュー",
-    "siteName": "Find a Doc Japan",
+    "siteName": "Find a Doc, Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "読み込み中",
@@ -48,7 +48,7 @@
     "cancel": "キャンセル"
   },
   "about": {
-    "heroHeading": "Find a Doc Japan",
+    "heroHeading": "Find a Doc, Japan",
     "heroSubheading": "必要な医療サービスを、あなたの言語でつなげます",
     "heroGetStarted": "はじめる",
     "storyHeader": "私たちのストーリー",
@@ -725,7 +725,7 @@
     "chooseFile": "ファイルを選ぶ",
     "choosePhoto": "写真を選ぶ",
     "browse": "参照",
-    "privacyNote": "この内容はクリニックに届きます。Find a Doc Japanは医療アドバイスを行いません。",
+    "privacyNote": "この内容はクリニックに届きます。Find a Doc, Japanは医療アドバイスを行いません。",
     "successHeading": "送信しました",
     "successBody": "クリニックから予約について連絡があります。",
     "reference": "受付番号: {id}",

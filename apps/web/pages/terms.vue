@@ -9,7 +9,7 @@
                     Terms and Conditions
                 </h1>
                 <p class="text-lg text-primary-text-muted">
-                    How you may use Find a Doc Japan, and what you can expect from us.
+                    How you may use Find a Doc, Japan, and what you can expect from us.
                 </p>
             </header>
 
@@ -20,19 +20,19 @@
             <div class="prose-legal [&>:first-child]:mt-0">
                 <h2>1. Acceptance of Terms</h2>
                 <p>
-                    By accessing or using Find a Doc Japan, you agree to comply with and be bound by these
+                    By accessing or using Find a Doc, Japan, you agree to comply with and be bound by these
                     terms and conditions. If you do not agree with any part of these terms, you should not use
                     the website.
                 </p>
 
                 <h2>2. Use of the Website</h2>
                 <p>
-                    You may use Find a Doc Japan to look up healthcare providers and, if you choose, to suggest
+                    You may use Find a Doc, Japan to look up healthcare providers and, if you choose, to suggest
                     additions or corrections. The following conditions apply to that use.
                 </p>
                 <h3>a. Eligibility</h3>
                 <p>
-                    You must be at least 18 years old to use Find a Doc Japan.
+                    You must be at least 18 years old to use Find a Doc, Japan.
                 </p>
                 <h3>b. User Accounts</h3>
                 <p>
@@ -56,7 +56,7 @@
                 </p>
                 <h3>b. Rights to User-Provided Content</h3>
                 <p>
-                    By submitting content to Find a Doc Japan, you grant the website a non-exclusive,
+                    By submitting content to Find a Doc, Japan, you grant the website a non-exclusive,
                     royalty-free, worldwide license to use, reproduce, modify, distribute, and display the
                     content.
                 </p>
@@ -64,7 +64,7 @@
                 <h2>4. Privacy</h2>
                 <h3>a. Privacy Policy</h3>
                 <p>
-                    Your use of Find a Doc Japan is also governed by our Privacy Policy, which can be found
+                    Your use of Find a Doc, Japan is also governed by our Privacy Policy, which can be found
                     <NuxtLink
                         to="/privacypolicy"
                         data-testid="terms-privacy-link"
@@ -74,25 +74,25 @@
                 <h2>5. Limitation of Liability</h2>
                 <h3>a. Disclaimer</h3>
                 <p>
-                    Find a Doc Japan provides information about hospitals and doctors as a service to users. We
+                    Find a Doc, Japan provides information about hospitals and doctors as a service to users. We
                     do not endorse or guarantee the accuracy of the information provided on the website. Users
                     are encouraged to verify information independently.
                 </p>
                 <h3>b. No Medical Advice</h3>
                 <p>
-                    Find a Doc Japan does not provide medical advice. Users are advised to consult with
+                    Find a Doc, Japan does not provide medical advice. Users are advised to consult with
                     qualified healthcare professionals for medical advice and assistance.
                 </p>
 
                 <h2>6. Termination</h2>
                 <p>
-                    Find a Doc Japan reserves the right to terminate or suspend your account and access to the
+                    Find a Doc, Japan reserves the right to terminate or suspend your account and access to the
                     website at any time without notice, for any reason, including a breach of these terms.
                 </p>
 
                 <h2>7. Changes to Terms and Conditions</h2>
                 <p>
-                    Find a Doc Japan reserves the right to update or modify these terms and conditions at any
+                    Find a Doc, Japan reserves the right to update or modify these terms and conditions at any
                     time without prior notice. Users are encouraged to review the terms regularly.
                 </p>
 

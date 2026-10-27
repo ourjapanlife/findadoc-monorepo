@@ -2,7 +2,7 @@
 
 This is a short guide for agents and readers. The page people agree to is https://www.findadoc.jp/privacypolicy. Effective date published there: 3 December 2023.
 
-Find a Doc Japan collects information you provide while using the directory, such as a preferred language, search queries, and feedback you choose to send. That information is used to show results in your language, to fix and improve the service, and to reply when you write to us.
+Find a Doc, Japan collects information you provide while using the directory, such as a preferred language, search queries, and feedback you choose to send. That information is used to show results in your language, to fix and improve the service, and to reply when you write to us.
 
 We share information with a third party when you consent, and when the law or a valid legal request requires it. We do not sell the directory. Clinic and doctor pages repeat contact details those clinics already publish.
 

@@ -1,6 +1,6 @@
 # NPO disclosures
 
-Find a Doc Japan is a registered specified non-profit corporation in Japan. The documents required of a registered non-profit are published at https://www.findadoc.jp/npo.
+Find a Doc, Japan is a registered specified non-profit corporation in Japan. The documents required of a registered non-profit are published at https://www.findadoc.jp/npo.
 
 - Registered name: NPO法人Find a Doc Japan
 - NPO registration number: 9011005010215
