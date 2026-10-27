@@ -3,7 +3,9 @@
         v-if="hostedClinicSlug !== undefined"
         name="clinic-landing"
     >
-        <ClinicLanding :slug="hostedClinicSlug" />
+        <Suspense>
+            <ClinicLanding :slug="hostedClinicSlug" />
+        </Suspense>
     </NuxtLayout>
     <NuxtLayout v-else>
         <NuxtPage />
