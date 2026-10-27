@@ -208,7 +208,7 @@ Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-o
 
   Deleting this stack does not change that account setting. The bucket block stays either way.
 - The API role may `s3:PutObject` and `s3:GetObject` on `uploads/*` only. A browser uploads or downloads with a presigned URL signed by that role. There is no access key.
-- `STORAGE_BACKEND=s3`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api` so clinic booking can store insurance uploads under `uploads/booking/*`. Local development leaves the variables unset and uses the API’s `/dev-uploads/*` path instead.
+- `STORAGE_BACKEND=s3`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api` so clinic booking can store insurance uploads under `uploads/booking/*`. Local development can point the same client at the Docker bucket (`pnpm storage:start`, `S3_ENDPOINT=http://127.0.0.1:9000`). Leaving storage unset keeps the API’s `/dev-uploads/*` path.
 - An incomplete multipart upload is aborted after 7 days.
 - CORS allows `PUT` and `GET` from the site, clinic hostnames, Amplify previews, and localhost. The signature is what authorizes the call.
 

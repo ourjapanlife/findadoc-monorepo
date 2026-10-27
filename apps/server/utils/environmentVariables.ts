@@ -49,6 +49,16 @@ const envVariables = {
     storageBackend: () => process.env.STORAGE_BACKEND ?? 'none',
     s3Bucket: () => process.env.S3_BUCKET,
     s3Region: () => process.env.S3_REGION ?? process.env.AWS_REGION ?? 'ap-northeast-1',
+    /** Set for the local Docker bucket. Unset in production so the client uses AWS. */
+    s3Endpoint: () => {
+        const value = process.env.S3_ENDPOINT
+        if (value === undefined || value === '') {
+            return undefined
+        }
+        return value
+    },
+    s3AccessKeyId: () => process.env.S3_ACCESS_KEY_ID,
+    s3SecretAccessKey: () => process.env.S3_SECRET_ACCESS_KEY,
     sesFromAddress: () => process.env.SES_FROM_ADDRESS,
     sesConfigurationSet: () => process.env.SES_CONFIGURATION_SET,
     sesRegion: () => process.env.SES_REGION ?? process.env.AWS_REGION ?? 'ap-northeast-1'

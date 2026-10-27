@@ -6,7 +6,7 @@ Everything lives in one repository, [findadoc-monorepo](https://github.com/ourja
 
 - **Node.js** 24.22.0, pinned in `.nvmrc` (we recommend [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm))
 - **pnpm** 10.27.0, through [Corepack](https://nodejs.org/api/corepack.html)
-- **Docker**, only for the API's local Postgres database
+- **Docker**, for the API's local Postgres database and the local uploads bucket
 - **Python** 3.10 or later, only for this documentation site
 
 **Recommended IDE plugins** (VS Code):
@@ -110,15 +110,18 @@ This prerenders the site into `apps/web/.output/public`.
 ## API (`apps/server`)
 
 !!! note
-    The API needs Docker for its local Postgres database. `pnpm db:reset` starts it if it is not running.
+    The API needs Docker for its local Postgres database and, for booking uploads, the local bucket. `pnpm db:reset` starts Postgres if it is not running.
 
 ```bash
 pnpm db:start            # start the local Postgres database in Docker on 127.0.0.1:54322
 pnpm check:db            # confirm the local database is running on 127.0.0.1:54322
 pnpm db:reset            # drop and recreate the local database, then apply every migration
 pnpm db:seed             # load the seed data
+pnpm storage:start       # local S3-compatible bucket for booking uploads on 127.0.0.1:9000
 pnpm dev:server          # start the API
 ```
+
+Booking uploads use that bucket when `apps/server/.env.dev` sets `STORAGE_BACKEND=s3`, `S3_BUCKET=findadoc-uploads`, `S3_REGION=us-east-1`, `S3_ENDPOINT=http://127.0.0.1:9000`, `S3_ACCESS_KEY_ID`, and `S3_SECRET_ACCESS_KEY`. The container is [OpenBucket](https://github.com/wrkode/openbucket), an S3-compatible server, with the local root user `minioadmin` / `minioadmin`. The console is `http://127.0.0.1:9001`. Stop the bucket with `pnpm storage:stop`. Production does not set `S3_ENDPOINT`. With `STORAGE_BACKEND` unset, the API keeps files on its `/dev-uploads` path.
 
 ### Debugging
 

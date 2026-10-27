@@ -17,6 +17,8 @@
         "db:reset": "pnpm exec turbo db:reset",
         "db:start": "pnpm --filter @findadoc/server db:start",
         "db:stop": "pnpm --filter @findadoc/server db:stop",
+        "storage:start": "pnpm --filter @findadoc/server storage:start",
+        "storage:stop": "pnpm --filter @findadoc/server storage:stop",
         "dev:mcp": "pnpm exec turbo dev --filter=@findadoc/mcp",
         "dev:mcp:http": "pnpm exec turbo dev:http --filter=@findadoc/mcp",
         "build": "pnpm exec turbo build",

@@ -6,7 +6,7 @@
 
 - **Node.js** 24.22.0（`.nvmrc`で固定。[nvm](https://github.com/nvm-sh/nvm)または[fnm](https://github.com/Schniz/fnm)を推奨）
 - **pnpm** 10.27.0（[Corepack](https://nodejs.org/api/corepack.html)経由）
-- **Docker**（APIのローカルPostgresデータベースにのみ必要）
+- **Docker**（APIのローカルPostgresデータベースと、ローカルのアップロード用バケットに必要）
 - **Python** 3.10以上（このドキュメントサイトにのみ必要）
 
 **推奨IDEプラグイン**（VS Code）：
@@ -110,15 +110,18 @@ pnpm --filter @findadoc/web build
 ## API（`apps/server`）
 
 !!! note
-    APIのローカルPostgresデータベースにはDockerが必要です。起動していなければ `pnpm db:reset` が起動します。
+    APIのローカルPostgresデータベースと、予約アップロード用のローカルバケットにはDockerが必要です。Postgresが止まっていれば `pnpm db:reset` が起動します。
 
 ```bash
 pnpm db:start            # ローカルのPostgresデータベースをDockerで 127.0.0.1:54322 に起動
 pnpm check:db            # ローカルデータベースが 127.0.0.1:54322 で動いているか確認
 pnpm db:reset            # ローカルデータベースを削除して再作成し、すべてのマイグレーションを適用
 pnpm db:seed             # シードデータを投入
+pnpm storage:start       # 予約アップロード用のS3互換バケットを 127.0.0.1:9000 で起動
 pnpm dev:server          # APIを起動
 ```
+
+予約ファイルは、`apps/server/.env.dev` に `STORAGE_BACKEND=s3`、`S3_BUCKET=findadoc-uploads`、`S3_REGION=us-east-1`、`S3_ENDPOINT=http://127.0.0.1:9000`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY` があるとき、そのバケットへ入ります。コンテナは S3 互換の [OpenBucket](https://github.com/wrkode/openbucket) で、ローカルのルートユーザーは `minioadmin` / `minioadmin` です。コンソールは `http://127.0.0.1:9001` です。止めるときは `pnpm storage:stop` です。本番では `S3_ENDPOINT` を設定しません。`STORAGE_BACKEND` が未設定のとき、APIは `/dev-uploads` にファイルを置きます。
 
 ### デバッグ
 

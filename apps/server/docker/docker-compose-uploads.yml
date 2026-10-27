@@ -1,0 +1,28 @@
+# Local S3-compatible bucket for booking uploads.
+# MinIO no longer publishes a public image, so this is OpenBucket, which speaks the same API.
+# Production uses the AWS bucket and does not set S3_ENDPOINT.
+name: findadoc-uploads
+services:
+  bucket:
+    image: ghcr.io/wrkode/openbucket:latest
+    container_name: findadoc-uploads
+    command: server /data --console-address ":9001"
+    environment:
+      OPENBUCKET_ROOT_USER: minioadmin
+      OPENBUCKET_ROOT_PASSWORD: minioadmin
+      OPENBUCKET_API_CORS_ALLOW_ORIGIN: "*"
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_API_CORS_ALLOW_ORIGIN: "*"
+    ports:
+      - 9000:9000
+      - 9001:9001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - findadoc-uploads:/data
+volumes:
+  findadoc-uploads:

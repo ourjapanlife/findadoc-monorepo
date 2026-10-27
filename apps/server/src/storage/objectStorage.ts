@@ -12,9 +12,26 @@ const PRESIGN_TTL_SECONDS = 15 * 60
 const DOWNLOAD_TTL_SECONDS = 5 * 60
 
 function s3Client(): S3Client {
+    const endpoint = envVariables.s3Endpoint()
+    if (endpoint === undefined) {
+        return new S3Client({
+            region: envVariables.s3Region(),
+            useDualstackEndpoint: true
+        })
+    }
+
+    const accessKeyId = envVariables.s3AccessKeyId()
+    const secretAccessKey = envVariables.s3SecretAccessKey()
+    if (accessKeyId === undefined || accessKeyId === '' || secretAccessKey === undefined || secretAccessKey === '') {
+        throw new Error('S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY are required when S3_ENDPOINT is set')
+    }
+
+    // A local bucket is path-style and uses the static key. AWS keeps the default credential chain.
     return new S3Client({
         region: envVariables.s3Region(),
-        useDualstackEndpoint: true
+        endpoint,
+        forcePathStyle: true,
+        credentials: { accessKeyId, secretAccessKey }
     })
 }
 

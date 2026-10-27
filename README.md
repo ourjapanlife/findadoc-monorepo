@@ -16,7 +16,7 @@ pnpm workspace and Turborepo for the Find a Doc, Japan apps. One install, one se
 
 - Node.js 24.22.0 (see `.nvmrc`). Nuxt accepts `^22.21.0`, `^24.11.0`, or `>=26.0.0`.
 - Corepack, so pnpm 10.27.0 from the root `packageManager` field is used.
-- Docker, only for the API's local Postgres database.
+- Docker, for the API's local Postgres database and the local uploads bucket.
 
 ## Install
 
@@ -47,6 +47,8 @@ pnpm dev:seeded          # reset and seed the local database, then the site agai
 pnpm dev:api             # site against https://api.findadoc.jp
 pnpm db:start            # local Postgres in Docker on 127.0.0.1:54322 (db:reset starts it too)
 pnpm db:stop             # stop it; the data volume stays
+pnpm storage:start       # local S3-compatible bucket for booking uploads on 127.0.0.1:9000
+pnpm storage:stop        # stop it; the data volume stays
 pnpm check:db            # confirm the local database answers
 pnpm db:seed             # load the TypeScript seed into the local database
 pnpm db:reset            # drop and recreate the local database only, then apply every migration
