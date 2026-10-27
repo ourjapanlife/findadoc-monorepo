@@ -32,6 +32,7 @@ import {
 } from '../lib/environment.js'
 import { GithubDeployStack } from '../lib/githubDeployStack.js'
 import { NetworkStack } from '../lib/networkStack.js'
+import { UploadsStack } from '../lib/uploadsStack.js'
 import { WebStack } from '../lib/webStack.js'
 
 const app = new App()
@@ -143,4 +144,9 @@ new DataCopyStack(app, 'FindadocDataCopy', {
     vpc: network.vpc,
     database: database.instance,
     databaseClients: database.clientSecurityGroup,
+})
+
+new UploadsStack(app, 'FindadocUploads', {
+    env: FINDADOC_ENV,
+    apiFunction: api.apiFunction,
 })
