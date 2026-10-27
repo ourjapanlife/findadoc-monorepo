@@ -757,7 +757,8 @@
     "slotLabel": "Orario preferito",
     "slotHelp": "Facoltativo. Inizi ogni 15 minuti entro la disponibilità della clinica.",
     "slotLoading": "Caricamento orari…",
-    "slotEmpty": "Nessun orario nelle prossime due settimane. Puoi comunque inviare la richiesta."
+    "slotEmpty": "Nessun orario nelle prossime due settimane. Puoi comunque inviare la richiesta.",
+    "authRequired": "Accedi per aprire questo modulo di prenotazione…"
   },
   "bookingDashboard": {
     "readOnly": "Richiesta di prenotazione (sola lettura)",

@@ -757,7 +757,8 @@
     "slotLabel": "Preferred time",
     "slotHelp": "Optional. Starts every 15 minutes inside clinic availability.",
     "slotLoading": "Loading open times…",
-    "slotEmpty": "No open times in the next two weeks. You can still send a request without a slot."
+    "slotEmpty": "No open times in the next two weeks. You can still send a request without a slot.",
+    "authRequired": "Sign in to open this booking form…"
   },
   "bookingDashboard": {
     "readOnly": "Read-only booking submission",

@@ -235,10 +235,11 @@ const canReadFacilities = computed(() => allowLinksWhileAccessUnknown.value || a
 const canReadHealthcareProfessionals = computed(
     () => allowLinksWhileAccessUnknown.value || accessStore.hasScope('read:healthcareprofessionals')
 )
-const canReadBookings = computed(() => allowLinksWhileAccessUnknown.value || accessStore.hasScope('read:bookings'))
-const canWriteAvailability = computed(
-    () => allowLinksWhileAccessUnknown.value || accessStore.hasScope('write:clinic_availability')
-)
+// Booking dashboards stay hidden until scopes load — no anonymous or unknown-access peek.
+const canReadBookings = computed(() =>
+    accessStore.isLoaded && !accessStore.loadError && accessStore.hasScope('read:bookings'))
+const canWriteAvailability = computed(() =>
+    accessStore.isLoaded && !accessStore.loadError && accessStore.hasScope('write:clinic_availability'))
 
 const settingsPages = computed<NavPage[]>(() => [{
     id: 'my-page',

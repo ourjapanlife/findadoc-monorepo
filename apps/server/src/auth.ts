@@ -169,6 +169,9 @@ export function authorize(user: User, requiredScopes: Scope[]): boolean {
     }
 }
 
+/** JWT-less requests are stamped with this sub (see initializeAuth). */
+export const ANONYMOUS_USER_SUB = 'Anonymous User'
+
 type Resolver<TParent, TArgs, TContext, TResult> =
     (parent: TParent, args: TArgs, context: TContext, info: GraphQLResolveInfo) => TResult
 
@@ -187,6 +190,17 @@ function guardResolver<TParent, TArgs, TContext extends UserContext, TResult>(
     }
 }
 
+/** True when the request carried a real Auth0 token (not the anonymous stub). */
+export function isAuthenticatedUser(user: User | null | undefined): boolean {
+    if (user === null || user === undefined) {
+        return false
+    }
+    if (typeof user.sub !== 'string' || user.sub.trim() === '') {
+        return false
+    }
+    return user.sub !== ANONYMOUS_USER_SUB
+}
+
 /**
  * Wraps a resolver so it runs only for a user who has every listed scope.
  * Anyone else gets UNAUTHORIZED with HTTP 403. Sentry skips that code (see server.ts).
@@ -200,6 +214,24 @@ export function withScope<TParent, TArgs, TContext extends UserContext, TResult>
     const scopes = Array.isArray(requiredScopes) ? requiredScopes : [requiredScopes]
 
     return guardResolver(user => authorize(user, scopes), resolver)
+}
+
+/**
+ * Like withScope, but also rejects the anonymous stub user.
+ * Use for booking intake and staff booking dashboards until those stay intentionally public.
+ */
+export function withAuthenticatedScope<TParent, TArgs, TContext extends UserContext, TResult>(
+    requiredScopes: Scope | Scope[],
+    resolver: Resolver<TParent, TArgs, TContext, TResult>
+): Resolver<TParent, TArgs, TContext, TResult> {
+    const scopes = Array.isArray(requiredScopes) ? requiredScopes : [requiredScopes]
+
+    return guardResolver(user => {
+        if (envVariables.isTestingEnvironment()) {
+            return authorize(user, scopes)
+        }
+        return isAuthenticatedUser(user) && authorize(user, scopes)
+    }, resolver)
 }
 
 /**
@@ -282,7 +314,7 @@ export async function initializeAuth(fastify: FastifyInstance) {
             
         // If no token, continue without authentication (as anonymous user)
         request.user = {
-            sub: 'Anonymous User',
+            sub: ANONYMOUS_USER_SUB,
             name: 'Anonymous',
             email: '',
             roles: [Role.User],

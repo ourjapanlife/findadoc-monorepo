@@ -757,7 +757,8 @@
     "slotLabel": "Giờ mong muốn",
     "slotHelp": "Tùy chọn. Bắt đầu mỗi 15 phút trong khung trống của phòng khám.",
     "slotLoading": "Đang tải giờ trống…",
-    "slotEmpty": "Không có giờ trống trong hai tuần tới. Bạn vẫn có thể gửi yêu cầu."
+    "slotEmpty": "Không có giờ trống trong hai tuần tới. Bạn vẫn có thể gửi yêu cầu.",
+    "authRequired": "Đăng nhập để mở biểu mẫu đặt lịch này…"
   },
   "bookingDashboard": {
     "readOnly": "Yêu cầu đặt lịch (chỉ xem)",

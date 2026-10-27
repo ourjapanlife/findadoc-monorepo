@@ -231,7 +231,7 @@ export async function fetchAvailableBookingStarts(
         gqlClient.request.bind(gqlClient),
         availableStartsQuery,
         { clinicSiteId, from, to },
-        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
+        { retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
         return []

@@ -757,7 +757,8 @@
     "slotLabel": "Gustong oras",
     "slotHelp": "Opsyonal. Nagsisimula tuwing 15 minuto sa loob ng availability ng clinic.",
     "slotLoading": "Naglo-load ng bukas na oras…",
-    "slotEmpty": "Walang bukas na oras sa susunod na dalawang linggo. Maaari pa ring magpadala ng request."
+    "slotEmpty": "Walang bukas na oras sa susunod na dalawang linggo. Maaari pa ring magpadala ng request.",
+    "authRequired": "Mag-sign in upang buksan ang form ng booking na ito…"
   },
   "bookingDashboard": {
     "readOnly": "Booking submission (basahin lang)",

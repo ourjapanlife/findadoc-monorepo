@@ -757,7 +757,8 @@
     "slotLabel": "Wunschzeit",
     "slotHelp": "Optional. Starts alle 15 Minuten innerhalb der Klinikverfügbarkeit.",
     "slotLoading": "Freie Zeiten werden geladen…",
-    "slotEmpty": "Keine freien Zeiten in den nächsten zwei Wochen. Sie können trotzdem anfragen."
+    "slotEmpty": "Keine freien Zeiten in den nächsten zwei Wochen. Sie können trotzdem anfragen.",
+    "authRequired": "Melden Sie sich an, um dieses Buchungsformular zu öffnen…"
   },
   "bookingDashboard": {
     "readOnly": "Buchungsanfrage (nur Lesen)",

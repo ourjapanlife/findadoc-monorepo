@@ -1371,12 +1371,13 @@ type Query {
   """
   The booking intake form for a hosted clinic.
   Pass the clinic site id or slug. Drafts and unknown clinics are null.
+  Requires an authenticated session with create:bookings (not anonymous).
   """
   bookingForm(clinicSiteId: ID!): BookingForm
 
   """
   Open 15-minute appointment starts inside staff 30-minute availability.
-  Public for the patient booking form. Times are ISO 8601 UTC.
+  Requires an authenticated session with create:bookings. Times are ISO 8601 UTC.
   """
   availableBookingStarts(clinicSiteId: ID!, from: String!, to: String!): [String!]!
 

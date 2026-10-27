@@ -1,5 +1,12 @@
 import { GraphQLError, GraphQLResolveInfo } from 'graphql'
-import { withAnyScope, withScope, UserContext, Scope, getEffectiveScopes } from './auth.js'
+import {
+    withAnyScope,
+    withAuthenticatedScope,
+    withScope,
+    UserContext,
+    Scope,
+    getEffectiveScopes
+} from './auth.js'
 import * as facilityService from './services/facilityService.js'
 import * as healthcareProfessionalService from './services/healthcareProfessionalService.js'
 import * as gqlType from '@findadoc/graphql'
@@ -38,27 +45,30 @@ const resolvers = {
         : Promise<gqlType.ClinicSite | null> => clinicSiteService.getClinicSiteBySlug(args.slug)),
         clinicSites: withScope(Scope['read:facilities'], async ()
         : Promise<gqlType.ClinicSiteSummary[]> => clinicSiteService.listPublicClinicSites()),
-        bookingForm: withScope(Scope['read:facilities'], async (_parent: unknown, args: { clinicSiteId: string })
-        : Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId)),
-        availableBookingStarts: withScope(Scope['read:facilities'], async (
+        // Booking intake + staff dashboards require a real Auth0 session for now.
+        bookingForm: withAuthenticatedScope(Scope['create:bookings'], async (
+            _parent: unknown,
+            args: { clinicSiteId: string }
+        ): Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId)),
+        availableBookingStarts: withAuthenticatedScope(Scope['create:bookings'], async (
             _parent: unknown,
             args: { clinicSiteId: string, from: string, to: string }
         ): Promise<string[]> => bookingService.getAvailableBookingStarts(args.clinicSiteId, args.from, args.to)),
-        bookingSubmissions: withScope(Scope['read:bookings'], async (
+        bookingSubmissions: withAuthenticatedScope(Scope['read:bookings'], async (
             _parent: unknown,
             args: { filters: gqlType.BookingSubmissionSearchFilters }
         ): Promise<gqlType.BookingSubmissionListItem[]> =>
             staffBookingService.searchBookingSubmissions(args.filters)),
-        bookingSubmissionsTotalCount: withScope(Scope['read:bookings'], async (
+        bookingSubmissionsTotalCount: withAuthenticatedScope(Scope['read:bookings'], async (
             _parent: unknown,
             args: { filters: gqlType.BookingSubmissionSearchFilters }
         ): Promise<number> => staffBookingService.countBookingSubmissions(args.filters)),
-        bookingSubmission: withScope(Scope['read:bookings'], async (
+        bookingSubmission: withAuthenticatedScope(Scope['read:bookings'], async (
             _parent: unknown,
             args: { id: string }
         ): Promise<gqlType.BookingSubmissionDetail | null> =>
             staffBookingService.getBookingSubmissionDetail(args.id)),
-        clinicAvailabilityWindows: withScope(Scope['write:clinic_availability'], async (
+        clinicAvailabilityWindows: withAuthenticatedScope(Scope['write:clinic_availability'], async (
             _parent: unknown,
             args: { clinicSiteId: string, from: string, to: string }
         ): Promise<gqlType.ClinicAvailabilityWindow[]> =>
@@ -385,7 +395,7 @@ const resolvers = {
             return createReservationResult.data
         }),
 
-        createBookingUploadUrl: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
+        createBookingUploadUrl: withAuthenticatedScope(Scope['create:bookings'], async (_parent: unknown, args: {
             input: gqlType.CreateBookingUploadUrlInput
         }): Promise<gqlType.BookingUploadUrl> => {
             const result = await bookingService.createBookingUploadUrl(
@@ -396,7 +406,7 @@ const resolvers = {
             return result.data
         }),
 
-        submitBooking: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
+        submitBooking: withAuthenticatedScope(Scope['create:bookings'], async (_parent: unknown, args: {
             input: gqlType.SubmitBookingInput
         }): Promise<gqlType.BookingSubmissionResult> => {
             const result = await bookingService.submitBooking(args.input)
@@ -404,7 +414,7 @@ const resolvers = {
             return result.data
         }),
 
-        bookingUploadDownloadUrl: withScope(Scope['read:bookings'], async (_parent: unknown, args: {
+        bookingUploadDownloadUrl: withAuthenticatedScope(Scope['read:bookings'], async (_parent: unknown, args: {
             uploadId: string
         }): Promise<gqlType.BookingUploadDownloadUrl> => {
             const result = await staffBookingService.createStaffBookingDownloadUrl(
@@ -415,7 +425,7 @@ const resolvers = {
             return result.data
         }),
 
-        createClinicAvailabilityWindow: withScope(Scope['write:clinic_availability'], async (
+        createClinicAvailabilityWindow: withAuthenticatedScope(Scope['write:clinic_availability'], async (
             _parent: unknown,
             args: { input: gqlType.CreateClinicAvailabilityWindowInput },
             context: UserContext
@@ -428,7 +438,7 @@ const resolvers = {
             return result.data
         }),
 
-        deleteClinicAvailabilityWindow: withScope(Scope['write:clinic_availability'], async (
+        deleteClinicAvailabilityWindow: withAuthenticatedScope(Scope['write:clinic_availability'], async (
             _parent: unknown,
             args: { id: string }
         ): Promise<gqlType.DeleteResult> => {

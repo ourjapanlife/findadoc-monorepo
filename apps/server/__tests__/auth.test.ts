@@ -1,5 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { authorize, buildUserContext, getEffectiveScopes, Role, Scope } from '../src/auth'
+import {
+    ANONYMOUS_USER_SUB,
+    authorize,
+    buildUserContext,
+    getEffectiveScopes,
+    isAuthenticatedUser,
+    Role,
+    Scope
+} from '../src/auth'
 import { envVariables } from '../utils/environmentVariables'
 import { FastifyRequest } from 'fastify'
 
@@ -325,6 +333,40 @@ describe('roleScopes invariant: no accidental changes', () => {
             })
         })
     }
+})
+
+describe('isAuthenticatedUser()', () => {
+    it('rejects the anonymous stub stamped on JWT-less requests', () => {
+        expect(isAuthenticatedUser({
+            sub: ANONYMOUS_USER_SUB,
+            name: 'Anonymous',
+            email: '',
+            roles: [Role.User],
+            scope: ''
+        })).toBe(false)
+    })
+
+    it('accepts a real Auth0 subject', () => {
+        expect(isAuthenticatedUser({
+            sub: 'auth0|abc',
+            name: 'Someone',
+            email: 's@example.com',
+            roles: [Role.User],
+            scope: ''
+        })).toBe(true)
+    })
+
+    it('rejects missing users', () => {
+        expect(isAuthenticatedUser(null)).toBe(false)
+        expect(isAuthenticatedUser(undefined)).toBe(false)
+        expect(isAuthenticatedUser({
+            sub: '',
+            name: '',
+            email: '',
+            roles: [],
+            scope: ''
+        })).toBe(false)
+    })
 })
 
 describe('buildUserContext()', () => {

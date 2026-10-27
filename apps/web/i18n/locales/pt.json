@@ -757,7 +757,8 @@
     "slotLabel": "Horário preferido",
     "slotHelp": "Opcional. Inícios a cada 15 minutos dentro da disponibilidade da clínica.",
     "slotLoading": "Carregando horários…",
-    "slotEmpty": "Sem horários nas próximas duas semanas. Você ainda pode enviar o pedido."
+    "slotEmpty": "Sem horários nas próximas duas semanas. Você ainda pode enviar o pedido.",
+    "authRequired": "Entre para abrir este formulário de reserva…"
   },
   "bookingDashboard": {
     "readOnly": "Pedido de reserva (somente leitura)",

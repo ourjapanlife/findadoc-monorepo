@@ -68,7 +68,7 @@ export async function fetchBookingForm(clinicSiteId: string): Promise<BookingFor
         gqlClient.request.bind(gqlClient),
         bookingFormQuery,
         { clinicSiteId },
-        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
+        { retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
         return null
@@ -88,7 +88,7 @@ export async function requestBookingUploadUrl(input: {
         gqlClient.request.bind(gqlClient),
         createUploadMutation,
         { input },
-        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
+        { retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
         return null
@@ -109,7 +109,7 @@ export async function submitBookingForm(input: {
         gqlClient.request.bind(gqlClient),
         submitBookingMutation,
         { input },
-        { skipAuth: true, retryAmount: 0, abortAfterMs: 15000 }
+        { retryAmount: 0, abortAfterMs: 15000 }
     )
     if (response.hasErrors) {
         return null
