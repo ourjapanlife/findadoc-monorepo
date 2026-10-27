@@ -1,6 +1,6 @@
 > This package lives in the [findadoc monorepo](../../README.md). Install and run tasks from the repository root with pnpm and Turborepo.
 
-# Find a Doc, Japan
+# Find a Doc Japan
 
 [![All Contributors](https://img.shields.io/github/all-contributors/ourjapanlife/findadoc-web?color=ee8449&style=for-the-badge)](#contributors)
 

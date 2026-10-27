@@ -423,7 +423,7 @@ All of it is in `stores/searchResultsStore.ts`:
 | **Footer / header / navbars** | Done 2026-09-03 (§1b). |
 | **`pages/terms.vue`** | 35 hardcoded strings, zero i18n, and §1 and §2 share word-for-word identical body text. Needs real legal copy, not just extraction. |
 | **Theme consolidation** | Done 2026-09-03 (§1b): light/dark/auto, migration from the stored `theme`/`isDarkMode` keys. |
-| **`titleTemplate`** | Done 2026-09-03: `%s · Find a Doc, Japan`, every public page sets a title. |
+| **`titleTemplate`** | Done 2026-09-03: `%s · Find a Doc Japan`, every public page sets a title. |
 | **Auth0 on every route** | `vue-auth0-plugin.client.ts` initialises globally, so the homepage loads it for anonymous visitors. Bundle-splitting work. |
 | **`/u/[username]`** | Still live. #1812 proposed deleting it (the form reports success while persisting nothing); #1804 kept it and added `profileDirectEntry.spec.ts`. Someone should decide deliberately. |
 

@@ -11,17 +11,17 @@
   },
   "contactPage": {
     "heading": "Liên hệ",
-    "intro": "Find a Doc, Japan là tổ chức phi lợi nhuận đã đăng ký. Hãy viết cho chúng tôi khi bạn cần một người, không chỉ ô tìm kiếm.",
+    "intro": "Find a Doc Japan là tổ chức phi lợi nhuận đã đăng ký. Hãy viết cho chúng tôi khi bạn cần một người, không chỉ ô tìm kiếm.",
     "emailLabel": "E-mail",
     "whatHeading": "Việc chúng tôi có thể giúp",
     "whatBody": "Hãy cho chúng tôi biết phòng khám hoặc bác sĩ cần được liệt kê, chỗ cần sửa trên trang đã đăng, hoặc sự cố khi dùng trang web. Chúng tôi cũng trả lời câu hỏi của đối tác, nhà báo và cơ quan công về chính tổ chức. Chúng tôi không đưa ra lời khuyên y khoa, chẩn đoán hay đặt lịch hộ. Để được khám, hãy tìm phòng khám trong danh bạ và liên hệ trực tiếp phòng khám đó.",
     "npoHeading": "Tổ chức",
-    "npoBody": "Tên đăng ký là NPO法人Find a Doc, Japan, số đăng ký 9011005010215, được Tokyo chứng nhận ngày 28 tháng 8 năm 2023. Hồ sơ đã nộp, kể cả bảng cân đối kế toán, được công bố trên trang công bố NPO. Văn phòng đăng ký là văn phòng ảo, nên địa chỉ đường phố không in ở đây mà cung cấp khi được yêu cầu.",
+    "npoBody": "Tên đăng ký là NPO法人Find a Doc Japan, số đăng ký 9011005010215, được Tokyo chứng nhận ngày 28 tháng 8 năm 2023. Hồ sơ đã nộp, kể cả bảng cân đối kế toán, được công bố trên trang công bố NPO. Văn phòng đăng ký là văn phòng ảo, nên địa chỉ đường phố không in ở đây mà cung cấp khi được yêu cầu.",
     "addressNote": "Chúng tôi làm việc từ xa trên khắp Nhật Bản."
   },
   "npoPage": {
     "heading": "Công bố thông tin tổ chức phi lợi nhuận",
-    "intro": "Find a Doc, Japan là tổ chức phi lợi nhuận đã đăng ký tại Nhật Bản. Các tài liệu dưới đây được công bố tại đây theo quy định đối với tổ chức phi lợi nhuận đã đăng ký.",
+    "intro": "Find a Doc Japan là tổ chức phi lợi nhuận đã đăng ký tại Nhật Bản. Các tài liệu dưới đây được công bố tại đây theo quy định đối với tổ chức phi lợi nhuận đã đăng ký.",
     "entityLabel": "Tên đăng ký",
     "numberLabel": "Số đăng ký tổ chức",
     "documentsHeading": "Tài liệu đã nộp",
@@ -40,7 +40,7 @@
   },
   "common": {
     "menu": "Menu",
-    "siteName": "Find a Doc, Japan",
+    "siteName": "Find a Doc Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "Đang tải",
@@ -48,7 +48,7 @@
     "cancel": "Hủy"
   },
   "about": {
-    "heroHeading": "Find a Doc, Japan",
+    "heroHeading": "Find a Doc Japan",
     "heroSubheading": "Kết nối bạn với các dịch vụ chăm sóc sức khỏe bạn cần, bằng ngôn ngữ của bạn",
     "heroGetStarted": "Bắt đầu",
     "storyHeader": "Câu chuyện của chúng tôi",
@@ -78,7 +78,7 @@
     "privacy": "Chính Sách Bảo Mật",
     "contribute": "Đóng góp",
     "contact": "Liên hệ",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Khám phá",
     "communityHeading": "Cộng đồng",
     "legalHeading": "Pháp lý"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "Đăng xuất",
     "languageDropdownTitle": "Ngôn Ngữ:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Đăng nhập",
     "logoutToast": "Đã đăng xuất"
   },
@@ -722,8 +722,10 @@
     "selectPlaceholder": "Chọn một mục",
     "submit": "Gửi yêu cầu",
     "submitting": "Đang gửi…",
-    "autofillRestored": "Đã khôi phục câu trả lời localhost đã lưu.",
-    "privacyNote": "Phòng khám nhận yêu cầu này. Find a Doc không tư vấn y tế.",
+    "chooseFile": "Chọn tệp",
+    "choosePhoto": "Chọn ảnh",
+    "browse": "Duyệt",
+    "privacyNote": "Phòng khám nhận yêu cầu này. Find a Doc Japan không tư vấn y tế.",
     "successHeading": "Đã gửi yêu cầu",
     "successBody": "Phòng khám sẽ liên hệ về lịch hẹn.",
     "reference": "Mã tham chiếu: {id}",
@@ -733,7 +735,8 @@
       "fullName": "Họ và tên",
       "age": "Tuổi",
       "reason": "Lý do khám",
-      "insuranceDocument": "Thẻ bảo hiểm hoặc giấy xác nhận tư cách"
+      "insuranceDocument": "Thẻ bảo hiểm hoặc giấy xác nhận tư cách",
+      "selfie": "Ảnh của bạn"
     },
     "placeholders": {
       "email": "name{'@'}example.com",

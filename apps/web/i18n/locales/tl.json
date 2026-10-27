@@ -11,17 +11,17 @@
   },
   "contactPage": {
     "heading": "Makipag-ugnayan",
-    "intro": "Ang Find a Doc, Japan ay isang rehistradong non-profit. Sumulat sa amin kapag kailangan mo ng tao, hindi lang ng search box.",
+    "intro": "Ang Find a Doc Japan ay isang rehistradong non-profit. Sumulat sa amin kapag kailangan mo ng tao, hindi lang ng search box.",
     "emailLabel": "E-mail",
     "whatHeading": "Mga bagay na matutulungan namin",
     "whatBody": "Sabihin sa amin ang klinik o doktor na dapat mailista, ang pagwawasto sa pahinang naka-publish na, o ang problemang nae-encounter sa paggamit ng site. Sinasagot din namin ang mga tanong ng kasosyo, mamamahayag, at tanggapan ng gobyerno tungkol sa samahan. Hindi kami nagbibigay ng medikal na payo, diagnosis, o appointment. Para magpagamot, hanapin ang klinik sa direktoryo at direktang kontakin ang klinik na iyon.",
     "npoHeading": "Ang samahan",
-    "npoBody": "Ang rehistradong pangalan ay NPO法人Find a Doc, Japan, numerong 9011005010215, sertipikado sa Tokyo noong 28 Agosto 2023. Ang mga isinumiteng dokumento, kasama ang balance sheet, ay nasa pahina ng pagsisiwalat ng NPO. Virtual office ang rehistradong opisina, kaya ang street address ay ibinibigay kapag hiniling, hindi inilalathala rito.",
+    "npoBody": "Ang rehistradong pangalan ay NPO法人Find a Doc Japan, numerong 9011005010215, sertipikado sa Tokyo noong 28 Agosto 2023. Ang mga isinumiteng dokumento, kasama ang balance sheet, ay nasa pahina ng pagsisiwalat ng NPO. Virtual office ang rehistradong opisina, kaya ang street address ay ibinibigay kapag hiniling, hindi inilalathala rito.",
     "addressNote": "Nagtatrabaho kami nang malayo sa iba't ibang lugar ng Japan."
   },
   "npoPage": {
     "heading": "Pagsisiwalat ng NPO",
-    "intro": "Ang Find a Doc, Japan ay isang rehistradong non-profit na organisasyon sa Japan. Ang mga dokumento sa ibaba ay inilalathala dito ayon sa hinihingi sa mga rehistradong non-profit.",
+    "intro": "Ang Find a Doc Japan ay isang rehistradong non-profit na organisasyon sa Japan. Ang mga dokumento sa ibaba ay inilalathala dito ayon sa hinihingi sa mga rehistradong non-profit.",
     "entityLabel": "Rehistradong pangalan",
     "numberLabel": "Numero ng pagpaparehistro ng NPO",
     "documentsHeading": "Mga isinumiteng dokumento",
@@ -40,7 +40,7 @@
   },
   "common": {
     "menu": "Menu",
-    "siteName": "Find a Doc, Japan",
+    "siteName": "Find a Doc Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "Naglo-load",
@@ -48,7 +48,7 @@
     "cancel": "Kanselahin"
   },
   "about": {
-    "heroHeading": "Find a Doc, Japan",
+    "heroHeading": "Find a Doc Japan",
     "heroSubheading": "Ikokonekta ka namin sa mga serbisyong pangkalusugan na kailangan mo, sa iyong wika",
     "heroGetStarted": "Magsimula",
     "storyHeader": "Aming Kuwento",
@@ -78,7 +78,7 @@
     "privacy": "Pribasiya",
     "contribute": "Mag-ambag",
     "contact": "Makipag-ugnayan",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Tuklasin",
     "communityHeading": "Komunidad",
     "legalHeading": "Impormasyong legal"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "Mag-logout",
     "languageDropdownTitle": "Lengwahe:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Mag-login",
     "logoutToast": "Naka-logout na"
   },
@@ -722,8 +722,10 @@
     "selectPlaceholder": "Pumili",
     "submit": "Ipadala ang kahilingan",
     "submitting": "Ipinapadala…",
-    "autofillRestored": "Naibalik ang naka-save na localhost sagot.",
-    "privacyNote": "Tatanggapin ng klinika ang kahilingang ito. Hindi nagbibigay ng payong medikal ang Find a Doc.",
+    "chooseFile": "Pumili ng file",
+    "choosePhoto": "Pumili ng larawan",
+    "browse": "Hanapin",
+    "privacyNote": "Tatanggapin ng klinika ang kahilingang ito. Hindi nagbibigay ng payong medikal ang Find a Doc Japan.",
     "successHeading": "Naipadala ang kahilingan",
     "successBody": "Makikipag-ugnayan ang klinika tungkol sa appointment.",
     "reference": "Sanggunian: {id}",
@@ -733,7 +735,8 @@
       "fullName": "Buong pangalan",
       "age": "Edad",
       "reason": "Dahilan ng pagbisita",
-      "insuranceDocument": "Insurance card o eligibility certificate"
+      "insuranceDocument": "Insurance card o eligibility certificate",
+      "selfie": "Larawan ng mukha"
     },
     "placeholders": {
       "email": "name{'@'}example.com",

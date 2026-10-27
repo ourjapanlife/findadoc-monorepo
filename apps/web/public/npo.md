@@ -1,8 +1,8 @@
 # NPO disclosures
 
-Find a Doc, Japan is a registered specified non-profit corporation in Japan. The documents required of a registered non-profit are published at https://www.findadoc.jp/npo.
+Find a Doc Japan is a registered specified non-profit corporation in Japan. The documents required of a registered non-profit are published at https://www.findadoc.jp/npo.
 
-- Registered name: NPO法人Find a Doc, Japan
+- Registered name: NPO法人Find a Doc Japan
 - NPO registration number: 9011005010215
 - Certified as an NPO: 28 August 2023
 - Representative: Russell James Miller, Representative Director

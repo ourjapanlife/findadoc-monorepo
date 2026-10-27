@@ -39,6 +39,25 @@ describe('booking localhost autofill', () => {
         )).to.equal(true)
         expect(readBookingAutofill('form-1', 'clinic.localhost')?.startsAt).to.equal('2026-10-28T11:30:00.000Z')
 
+        expect(writeBookingAutofill(
+            'form-1',
+            1,
+            { email: 'a@b.com', card: 'data:application/pdf;base64,abc' },
+            'clinic.localhost'
+        )).to.equal(true)
+        expect(readBookingAutofill('form-1', 'clinic.localhost')?.values).to.deep.equal({ email: 'a@b.com' })
+
+        expect(writeBookingAutofill(
+            'form-1',
+            1,
+            { email: 'a@b.com', age: 40 } as unknown as Record<string, string>,
+            'clinic.localhost'
+        )).to.equal(true)
+        expect(readBookingAutofill('form-1', 'clinic.localhost')?.values).to.deep.equal({
+            email: 'a@b.com',
+            age: '40'
+        })
+
         clearBookingAutofill('form-1', 'clinic.localhost')
         expect(readBookingAutofill('form-1', 'clinic.localhost')).to.equal(null)
     })

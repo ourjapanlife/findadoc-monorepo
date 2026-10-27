@@ -45,7 +45,7 @@ export function readBookingAutofill(formId: string, hostname: string): BookingAu
         }
         const values: Record<string, string> = {}
         for (const [key, value] of Object.entries(draft.values)) {
-            if (typeof value === 'string') {
+            if (typeof value === 'string' && !value.startsWith('data:')) {
                 values[key] = value
             }
         }
@@ -71,10 +71,23 @@ export function writeBookingAutofill(
     if (!isBookingAutofillHost(hostname) || typeof localStorage === 'undefined') {
         return false
     }
+    const textValues: Record<string, string> = {}
+    for (const [key, value] of Object.entries(values as Record<string, unknown>)) {
+        let text = ''
+        if (typeof value === 'string') {
+            text = value
+        } else if (typeof value === 'number' && Number.isFinite(value)) {
+            text = String(value)
+        }
+        if (text.startsWith('data:')) {
+            continue
+        }
+        textValues[key] = text
+    }
     const draft: BookingAutofillDraft = {
         formId,
         formVersion,
-        values,
+        values: textValues,
         startsAt,
         savedAt: new Date().toISOString()
     }

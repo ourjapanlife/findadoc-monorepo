@@ -352,6 +352,7 @@ async function notifyBookingParties(input: {
             subject: `We received your request · ${clinicName}`,
             textBody: [
                 'Your appointment request was received.',
+                'Sent through Find a Doc Japan.',
                 `Clinic: ${clinicName}`,
                 `Reference: ${input.bookingId}`
             ].join('\n')
@@ -377,7 +378,7 @@ async function notifyBookingParties(input: {
                 bookingId: input.bookingId,
                 subject: `New appointment request · ${clinicName}`,
                 textBody: [
-                    'A patient requested an appointment. Open the booking in Find a Doc for the full intake.',
+                    'A patient requested an appointment. Open the booking in Find a Doc Japan for the full intake.',
                     `Clinic: ${clinicName}`,
                     `Booking id: ${input.bookingId}`,
                     `Name: ${input.storedAnswers.fullName ?? ''}`,

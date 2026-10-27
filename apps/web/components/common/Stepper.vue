@@ -16,7 +16,7 @@
                 >
                     <button
                         type="button"
-                        class="flex h-full w-full items-center justify-start gap-2 rounded-full border px-3 py-1
+                        class="flex h-full w-full items-center justify-start gap-1.5 rounded-full border px-2 py-1
                             text-left text-sm transition-colors disabled:cursor-default"
                         :class="stepClass(index)"
                         :aria-current="index === currentIndex ? 'step' : undefined"
@@ -30,7 +30,7 @@
                         >
                             {{ index + 1 }}
                         </span>
-                        <span class="min-w-0 truncate font-medium">{{ step.label }}</span>
+                        <span class="min-w-0 font-medium leading-tight">{{ step.label }}</span>
                     </button>
                 </li>
             </ol>

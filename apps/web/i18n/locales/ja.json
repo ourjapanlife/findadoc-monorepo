@@ -11,17 +11,17 @@
   },
   "contactPage": {
     "heading": "お問い合わせ",
-    "intro": "Find a Doc, Japan は登録された非営利団体です。検索では足りないときは、人に手紙を書いてください。",
+    "intro": "Find a Doc Japan は登録された非営利団体です。検索では足りないときは、人に手紙を書いてください。",
     "emailLabel": "メール",
     "whatHeading": "ご相談いただけること",
     "whatBody": "掲載すべきクリニックや医師、すでに公開されているページの訂正、サイトの不具合をお知らせください。団体そのものについての取材、連携、公的機関からの問い合わせにもお答えします。医療上の助言、診断、予約の代行はしません。受診はディレクトリでクリニックを見つけ、そのクリニックに直接連絡してください。",
     "npoHeading": "団体について",
-    "npoBody": "登録名称は NPO法人Find a Doc, Japan、登録番号は 9011005010215 です。2023年8月28日に東京都の認証を受けました。貸借対照表を含む提出書類は情報公開のページに掲載しています。登記上の事務所はバーチャルオフィスのため、番地はここには載せず、請求があればお渡しします。",
+    "npoBody": "登録名称は NPO法人Find a Doc Japan、登録番号は 9011005010215 です。2023年8月28日に東京都の認証を受けました。貸借対照表を含む提出書類は情報公開のページに掲載しています。登記上の事務所はバーチャルオフィスのため、番地はここには載せず、請求があればお渡しします。",
     "addressNote": "日本各地から遠隔で活動しています。"
   },
   "npoPage": {
     "heading": "情報公開",
-    "intro": "NPO法人Find a Doc, Japanは、日本で登記された特定非営利活動法人です。以下の書類は、特定非営利活動法人に義務づけられた公告として掲載しています。",
+    "intro": "NPO法人Find a Doc Japanは、日本で登記された特定非営利活動法人です。以下の書類は、特定非営利活動法人に義務づけられた公告として掲載しています。",
     "entityLabel": "法人名",
     "numberLabel": "法人番号",
     "documentsHeading": "提出書類",
@@ -40,7 +40,7 @@
   },
   "common": {
     "menu": "メニュー",
-    "siteName": "Find a Doc, Japan",
+    "siteName": "Find a Doc Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "読み込み中",
@@ -48,7 +48,7 @@
     "cancel": "キャンセル"
   },
   "about": {
-    "heroHeading": "Find a Doc, Japan",
+    "heroHeading": "Find a Doc Japan",
     "heroSubheading": "必要な医療サービスを、あなたの言語でつなげます",
     "heroGetStarted": "はじめる",
     "storyHeader": "私たちのストーリー",
@@ -78,7 +78,7 @@
     "privacy": "プライバシーポリシー",
     "contribute": "活動に参加する",
     "contact": "お問い合わせ",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "サイト内",
     "communityHeading": "コミュニティ",
     "legalHeading": "法的情報"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "ログアウト",
     "languageDropdownTitle": "対応言語:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "ログイン",
     "logoutToast": "ログアウトしました"
   },
@@ -722,8 +722,10 @@
     "selectPlaceholder": "選択してください",
     "submit": "リクエストを送る",
     "submitting": "送信中…",
-    "autofillRestored": "保存したlocalhostの回答を復元しました。",
-    "privacyNote": "この内容はクリニックに届きます。Find a Docは医療アドバイスを行いません。",
+    "chooseFile": "ファイルを選ぶ",
+    "choosePhoto": "写真を選ぶ",
+    "browse": "参照",
+    "privacyNote": "この内容はクリニックに届きます。Find a Doc Japanは医療アドバイスを行いません。",
     "successHeading": "送信しました",
     "successBody": "クリニックから予約について連絡があります。",
     "reference": "受付番号: {id}",
@@ -733,7 +735,8 @@
       "fullName": "氏名",
       "age": "年齢",
       "reason": "受診理由",
-      "insuranceDocument": "保険証または資格確認書"
+      "insuranceDocument": "保険証または資格確認書",
+      "selfie": "顔写真"
     },
     "placeholders": {
       "email": "name{'@'}example.com",

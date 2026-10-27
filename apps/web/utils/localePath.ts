@@ -57,6 +57,11 @@ export function localeCodeFromPath(path: string): string {
     return prefix && PREFIXED_LOCALE_CODES.has(prefix) ? prefix : DEFAULT_LOCALE_CODE
 }
 
+/** Same page with only the locale prefix changed. Query and hash stay part of the page. */
+export function isLocaleOnlyNavigation(from: string, to: string): boolean {
+    return localizedPath(from, DEFAULT_LOCALE_CODE) === localizedPath(to, DEFAULT_LOCALE_CODE)
+}
+
 /**
  * Same page under another locale. Default locale stays unprefixed.
  * `/clinic/tokyo/...` becomes `/ja-JP/clinic/tokyo/...`; the slug does not change.

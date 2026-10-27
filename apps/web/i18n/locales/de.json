@@ -11,17 +11,17 @@
   },
   "contactPage": {
     "heading": "Kontakt",
-    "intro": "Find a Doc, Japan ist eine eingetragene gemeinnützige Organisation. Schreiben Sie uns, wenn Sie eine Person brauchen und nicht nur das Suchfeld.",
+    "intro": "Find a Doc Japan ist eine eingetragene gemeinnützige Organisation. Schreiben Sie uns, wenn Sie eine Person brauchen und nicht nur das Suchfeld.",
     "emailLabel": "E-Mail",
     "whatHeading": "Wobei wir helfen können",
     "whatBody": "Nennen Sie eine Klinik oder einen Arzt, die aufgenommen werden sollten, eine Korrektur an einer bereits veröffentlichten Seite oder ein Problem mit der Website. Wir beantworten auch Fragen von Partnern, Journalisten und Behörden zur Organisation selbst. Wir geben keine medizinische Beratung, keine Diagnose und keine Termine. Für Behandlung finden Sie eine Klinik im Verzeichnis und kontaktieren diese direkt.",
     "npoHeading": "Die Organisation",
-    "npoBody": "Der eingetragene Name ist NPO法人Find a Doc, Japan, Nummer 9011005010215, am 28. August 2023 in Tokio zertifiziert. Eingereichte Unterlagen, einschließlich der Bilanz, stehen auf der Seite zur NPO-Offenlegung. Der eingetragene Sitz ist ein virtuelles Büro, die Straße wird daher nicht abgedruckt und auf Anfrage mitgeteilt.",
+    "npoBody": "Der eingetragene Name ist NPO法人Find a Doc Japan, Nummer 9011005010215, am 28. August 2023 in Tokio zertifiziert. Eingereichte Unterlagen, einschließlich der Bilanz, stehen auf der Seite zur NPO-Offenlegung. Der eingetragene Sitz ist ein virtuelles Büro, die Straße wird daher nicht abgedruckt und auf Anfrage mitgeteilt.",
     "addressNote": "Wir arbeiten ortsunabhängig in ganz Japan."
   },
   "npoPage": {
     "heading": "Offenlegung der gemeinnützigen Organisation",
-    "intro": "Find a Doc, Japan ist eine in Japan eingetragene gemeinnützige Organisation. Die folgenden Dokumente werden hier veröffentlicht, wie es für eingetragene gemeinnützige Organisationen vorgeschrieben ist.",
+    "intro": "Find a Doc Japan ist eine in Japan eingetragene gemeinnützige Organisation. Die folgenden Dokumente werden hier veröffentlicht, wie es für eingetragene gemeinnützige Organisationen vorgeschrieben ist.",
     "entityLabel": "Eingetragener Name",
     "numberLabel": "Registernummer",
     "documentsHeading": "Eingereichte Dokumente",
@@ -40,7 +40,7 @@
   },
   "common": {
     "menu": "Menü",
-    "siteName": "Find a Doc, Japan",
+    "siteName": "Find a Doc Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "Wird geladen",
@@ -48,7 +48,7 @@
     "cancel": "Abbrechen"
   },
   "about": {
-    "heroHeading": "Find a Doc, Japan",
+    "heroHeading": "Find a Doc Japan",
     "heroSubheading": "Wir verbinden dich mit den Gesundheitsdiensten, die du in deiner Sprache benötigst",
     "heroGetStarted": "Loslegen",
     "storyHeader": "Unsere Geschichte",
@@ -78,7 +78,7 @@
     "privacy": "Datenschutz",
     "contribute": "Mitmachen",
     "contact": "Kontakt",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Entdecken",
     "communityHeading": "Gemeinschaft",
     "legalHeading": "Rechtliches"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "Abmelden",
     "languageDropdownTitle": "Sprache:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Anmelden",
     "logoutToast": "Erfolgreich abgemeldet"
   },
@@ -722,8 +722,10 @@
     "selectPlaceholder": "Auswählen",
     "submit": "Anfrage senden",
     "submitting": "Wird gesendet…",
-    "autofillRestored": "Gespeicherte localhost-Antworten wiederhergestellt.",
-    "privacyNote": "Die Klinik erhält diese Anfrage. Find a Doc gibt keine medizinische Beratung.",
+    "chooseFile": "Datei auswählen",
+    "choosePhoto": "Foto auswählen",
+    "browse": "Durchsuchen",
+    "privacyNote": "Die Klinik erhält diese Anfrage. Find a Doc Japan gibt keine medizinische Beratung.",
     "successHeading": "Anfrage gesendet",
     "successBody": "Die Klinik meldet sich wegen des Termins.",
     "reference": "Referenz: {id}",
@@ -733,7 +735,8 @@
       "fullName": "Vollständiger Name",
       "age": "Alter",
       "reason": "Grund des Besuchs",
-      "insuranceDocument": "Versicherungskarte oder Berechtigungsnachweis"
+      "insuranceDocument": "Versicherungskarte oder Berechtigungsnachweis",
+      "selfie": "Foto von Ihnen"
     },
     "placeholders": {
       "email": "name{'@'}example.com",

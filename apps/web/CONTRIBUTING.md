@@ -1,4 +1,4 @@
-Welcome to Find a Doc, Japan! We're grateful for our volunteers 😊
+Welcome to Find a Doc Japan! We're grateful for our volunteers 😊
 
 We are working on the V2 version of the site, so if you've volunteered in the past, you might notice things look a little different.
 

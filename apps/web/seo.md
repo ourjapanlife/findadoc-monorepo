@@ -119,7 +119,7 @@ These are small, individually cheap, and mostly independent of the larger phases
 
 ```ts
 titleTemplate: 'Health Services in Japan',   // no %s placeholder
-title: SITE_TITLE,                            // 'Find a Doc, Japan!' — discarded
+title: SITE_TITLE,                            // 'Find a Doc Japan!' — discarded
 ```
 
 A `titleTemplate` without `%s` replaces the title outright. Live HTML confirms `<title>Health Services in Japan</title>`. **No page on the site has "Find a Doc" in its title tag**, so branded queries do not match it.
@@ -157,7 +157,7 @@ Ship as one PR. None of these depend on SSR.
 
 | ID | Task | Effort | Acceptance criteria |
 |---|---|---|---|
-| P1-1 | Fix `titleTemplate` to `'%s \| Find a Doc, Japan'`; set a distinct `title` per public page | S | `curl` of each public page shows a unique title containing the brand |
+| P1-1 | Fix `titleTemplate` to `'%s \| Find a Doc Japan'`; set a distinct `title` per public page | S | `curl` of each public page shows a unique title containing the brand |
 | P1-2 | Add `public/robots.txt` with a `Sitemap:` directive | XS | `/robots.txt` returns 200 `text/plain` |
 | P1-3 | Move `pages/_headers` to `public/_headers` (or delete as redundant) | XS | No `_headers` entry in the route manifest |
 | P1-4 | Investigate and fix the deep-link 404 (§5.2) | S | A valid dynamic route returns 200 on direct entry |

@@ -1,6 +1,6 @@
 # Contact
 
-Find a Doc, Japan is a registered non-profit. Write when you need a person rather than the search page.
+Find a Doc Japan is a registered non-profit. Write when you need a person rather than the search page.
 
 Email: contact@findadoc.jp
 
@@ -12,7 +12,7 @@ We do not provide medical advice, diagnoses, or appointments. For care, use the 
 
 ## The organisation
 
-The registered name is NPO法人Find a Doc, Japan. The NPO registration number is 9011005010215. The Tokyo Metropolitan Government certified the organisation on 28 August 2023. Filed documents, including the balance sheet, are published at https://www.findadoc.jp/npo.
+The registered name is NPO法人Find a Doc Japan. The NPO registration number is 9011005010215. The Tokyo Metropolitan Government certified the organisation on 28 August 2023. Filed documents, including the balance sheet, are published at https://www.findadoc.jp/npo.
 
 We work remotely. The registered office is a virtual office, so the street address is available on request rather than printed on the site. Ask for it by email if you need it for a filing or a payment.
 

@@ -1,4 +1,4 @@
-# Find a Doc, Japan — brand and UI foundations
+# Find a Doc Japan — brand and UI foundations
 
 **Status:** In use since 2026-09-03
 **Implementation:** `assets/css/tailwind.css` (tokens and primitives), `composables/useColorScheme.ts` (light/dark/auto)

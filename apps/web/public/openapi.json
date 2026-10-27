@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Find a Doc, Japan",
+    "title": "Find a Doc Japan",
     "version": "1.0.0",
     "description": "Public directory of clinics and healthcare professionals in Japan. Directory records are served as GraphQL at https://api.findadoc.jp. The same records are available to agents through the MCP server at https://mcp.findadoc.jp/mcp, whose REST wrappers are described by https://mcp.findadoc.jp/openapi.yaml.",
     "contact": {

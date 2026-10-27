@@ -11,17 +11,17 @@
   },
   "contactPage": {
     "heading": "Contact",
-    "intro": "Find a Doc, Japan is a registered non-profit. Write to us when you need a person, not the search box.",
+    "intro": "Find a Doc Japan is a registered non-profit. Write to us when you need a person, not the search box.",
     "emailLabel": "Email",
     "whatHeading": "What we can help with",
     "whatBody": "Tell us about a clinic or doctor that should be listed, a correction to a page that is already up, or a problem using the site. We also answer questions from partners, journalists, and public offices about the organisation itself. We do not provide medical advice, diagnoses, or appointments. For care, use the directory to find a clinic and contact that clinic directly.",
     "npoHeading": "The organisation",
-    "npoBody": "The registered name is NPO法人Find a Doc, Japan, registration number 9011005010215, certified in Tokyo on 28 August 2023. Filed documents, including the balance sheet, are published on the NPO disclosures page. The registered office is a virtual office, so the street address is available on request rather than printed here.",
+    "npoBody": "The registered name is NPO法人Find a Doc Japan, registration number 9011005010215, certified in Tokyo on 28 August 2023. Filed documents, including the balance sheet, are published on the NPO disclosures page. The registered office is a virtual office, so the street address is available on request rather than printed here.",
     "addressNote": "We work remotely across Japan."
   },
   "npoPage": {
     "heading": "NPO disclosures",
-    "intro": "Find a Doc, Japan is a registered specified non-profit corporation in Japan. The documents below are published here as required of registered non-profits.",
+    "intro": "Find a Doc Japan is a registered specified non-profit corporation in Japan. The documents below are published here as required of registered non-profits.",
     "entityLabel": "Registered name",
     "numberLabel": "NPO registration number",
     "documentsHeading": "Filed documents",
@@ -74,14 +74,14 @@
   "common": {
     "loading": "Loading",
     "menu": "Menu",
-    "siteName": "Find a Doc, Japan",
+    "siteName": "Find a Doc Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "close": "Close",
     "cancel": "Cancel"
   },
   "about": {
-    "heroHeading": "Find a Doc, Japan",
+    "heroHeading": "Find a Doc Japan",
     "heroSubheading": "Connecting you to the healthcare services you need, in your language",
     "heroGetStarted": "Get Started",
     "storyHeader": "Our Story",
@@ -141,7 +141,7 @@
     "privacy": "Privacy",
     "contribute": "Contribute",
     "contact": "Contact",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Explore",
     "communityHeading": "Community",
     "legalHeading": "Legal"
@@ -149,7 +149,7 @@
   "hamburgerMenu": {
     "logout": "Log out",
     "languageDropdownTitle": "Language:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Login",
     "logoutToast": "Successfully logged out"
   },
@@ -722,8 +722,10 @@
     "selectPlaceholder": "Choose one",
     "submit": "Send request",
     "submitting": "Sending…",
-    "autofillRestored": "Restored your saved localhost answers.",
-    "privacyNote": "The clinic receives this request. Find a Doc does not provide medical advice.",
+    "chooseFile": "Choose a file",
+    "choosePhoto": "Choose a photo",
+    "browse": "Browse",
+    "privacyNote": "The clinic receives this request. Find a Doc Japan does not provide medical advice.",
     "successHeading": "Request sent",
     "successBody": "The clinic will contact you about the appointment.",
     "reference": "Reference: {id}",
@@ -733,7 +735,8 @@
       "fullName": "Full name",
       "age": "Age",
       "reason": "Reason for visit",
-      "insuranceDocument": "Insurance card or eligibility certificate"
+      "insuranceDocument": "Insurance card or eligibility certificate",
+      "selfie": "Photo of you"
     },
     "placeholders": {
       "email": "name{'@'}example.com",

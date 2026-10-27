@@ -11,17 +11,17 @@
   },
   "contactPage": {
     "heading": "联系我们",
-    "intro": "Find a Doc, Japan 是已注册的非营利组织。需要找人而不是搜索框时，请写信给我们。",
+    "intro": "Find a Doc Japan 是已注册的非营利组织。需要找人而不是搜索框时，请写信给我们。",
     "emailLabel": "电子邮件",
     "whatHeading": "我们可以协助的事",
     "whatBody": "请告诉我们应当收录的诊所或医生、已发布页面的更正，或使用网站时遇到的问题。我们也回答合作方、记者和公共机构关于本组织的问题。我们不提供医疗建议、诊断或代为预约。就医时请在名录中找到诊所，并直接联系该诊所。",
     "npoHeading": "组织",
-    "npoBody": "注册名称为 NPO法人Find a Doc, Japan，登记号码 9011005010215，于 2023年8月28日 获得东京都认证。包括资产负债表在内的申报文件公布在信息公开页面。注册办事处是虚拟办公室，因此街道地址不印在这里，需要时来信索取。",
+    "npoBody": "注册名称为 NPO法人Find a Doc Japan，登记号码 9011005010215，于 2023年8月28日 获得东京都认证。包括资产负债表在内的申报文件公布在信息公开页面。注册办事处是虚拟办公室，因此街道地址不印在这里，需要时来信索取。",
     "addressNote": "我们在日本各地远程工作。"
   },
   "npoPage": {
     "heading": "信息公开",
-    "intro": "Find a Doc, Japan 是在日本登记的特定非营利活动法人。以下文件依照对非营利法人的公开要求在此发布。",
+    "intro": "Find a Doc Japan 是在日本登记的特定非营利活动法人。以下文件依照对非营利法人的公开要求在此发布。",
     "entityLabel": "法人名称",
     "numberLabel": "法人编号",
     "documentsHeading": "提交文件",
@@ -40,7 +40,7 @@
   },
   "common": {
     "menu": "菜单",
-    "siteName": "Find a Doc, Japan",
+    "siteName": "Find a Doc Japan",
     "siteNameLine1": "Find a Doc",
     "siteNameLine2": "Japan",
     "loading": "加载中",
@@ -48,7 +48,7 @@
     "cancel": "取消"
   },
   "about": {
-    "heroHeading": "Find a Doc, Japan",
+    "heroHeading": "Find a Doc Japan",
     "heroSubheading": "用您的语言连接您与所需的医疗服务",
     "heroGetStarted": "开始使用",
     "storyHeader": "我们的故事",
@@ -78,7 +78,7 @@
     "privacy": "隐私政策",
     "contribute": "参与贡献",
     "contact": "联系我们",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "探索",
     "communityHeading": "社区",
     "legalHeading": "法律信息"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "退出登录",
     "languageDropdownTitle": "语言:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "登录",
     "logoutToast": "已退出登录"
   },
@@ -722,8 +722,10 @@
     "selectPlaceholder": "请选择",
     "submit": "发送申请",
     "submitting": "发送中…",
-    "autofillRestored": "已恢复您保存的 localhost 填写内容。",
-    "privacyNote": "诊所会收到此申请。Find a Doc 不提供医疗建议。",
+    "chooseFile": "选择文件",
+    "choosePhoto": "选择照片",
+    "browse": "浏览",
+    "privacyNote": "诊所会收到此申请。Find a Doc Japan 不提供医疗建议。",
     "successHeading": "申请已发送",
     "successBody": "诊所会就预约与您联系。",
     "reference": "参考编号：{id}",
@@ -733,7 +735,8 @@
       "fullName": "全名",
       "age": "年龄",
       "reason": "就诊原因",
-      "insuranceDocument": "保险证或资格确认书"
+      "insuranceDocument": "保险证或资格确认书",
+      "selfie": "本人照片"
     },
     "placeholders": {
       "email": "name{'@'}example.com",

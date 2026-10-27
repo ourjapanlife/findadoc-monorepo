@@ -98,6 +98,16 @@ const showcaseFields: BookingFormField[] = [
         accept: 'image/jpeg,image/png,image/webp,application/pdf',
         maxBytes: BOOKING_UPLOAD_MAX_BYTES,
         sensitivity: BookingFieldSensitivity.IdentityDocument
+    }),
+    field({
+        id: 'selfie',
+        stepKey: 'documents',
+        type: BookingFormFieldType.File,
+        required: true,
+        labelKey: 'bookingPage.fields.selfie',
+        accept: 'image/jpeg,image/png,image/webp',
+        maxBytes: BOOKING_UPLOAD_MAX_BYTES,
+        sensitivity: BookingFieldSensitivity.IdentityDocument
     })
 ]
 
