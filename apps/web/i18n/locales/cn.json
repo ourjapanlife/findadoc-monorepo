@@ -195,7 +195,12 @@
     "confirmExit": "不保存并退出",
     "create": "创建",
     "exit": "退出",
-    "unsavedChangesMessage": "将不保存并退出。未保存的内容会丢失。"
+    "unsavedChangesMessage": "将不保存并退出。未保存的内容会丢失。",
+    "hasEmptyFieldsFacility": "请填写医疗机构的必填项。",
+    "facilityCreatedSuccessfully": "医疗机构已创建",
+    "hasEmptyFieldsHealthcareProfessional": "请填写医疗人员的必填项。",
+    "healthcareProfessionalEnglishNameRequired": "医疗人员必须有英文姓名",
+    "healthcareProfessionalCreatedSuccessfully": "医疗人员已创建"
   },
   "modDashboardLeftNav": {
     "facilities": "机构",
@@ -230,6 +235,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "再添加一个名字",
+    "removeName": "删除名字",
     "healthcareProfessionalMedicalInfoHeading": "医疗人员详情",
     "healthcareProfessionalNameHeading": "医疗人员姓名",
     "labelHealthcareProfessionalFirstName": "名",
@@ -243,10 +250,11 @@
     "selectSpecialties": "专科",
     "selectDegrees": "学位",
     "selectLocales": "使用语言",
-    "facilities": "医疗人员所在机构",
+    "facilities": "关联机构",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "移除{name}",
     "noFacilitiesWereFound": "未找到医疗机构",
+    "noFacilitiesLinked": "尚未关联任何机构。请在上方搜索并添加。",
     "errorMessageHealthcareProfessionalId": "未找到医疗人员 ID",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "按保险搜索",
@@ -317,6 +325,8 @@
   },
   "modFacilitySection": {
     "addresses": "地址",
+    "onlineLabel": "在线医疗机构",
+    "onlineHint": "可选。仅在医疗机构没有街道地址时勾选。勾选后不必填写地址、城市和地图。",
     "contactInformation": "联系方式",
     "facilityHeading": "医疗机构信息",
     "googleMapsInformation": "Google 地图信息",
@@ -420,7 +430,9 @@
     "lastName": "姓",
     "firstName": "名",
     "middleName": "中间名",
-    "nameLocale": "姓名语言"
+    "nameLocale": "姓名语言",
+    "editName": "编辑此姓名",
+    "closeEditName": "停止编辑此姓名"
   },
   "specialties": {
     "allergyAndImmunology": "过敏与免疫科医生",
@@ -615,6 +627,8 @@
   "clinicPage": {
     "backToSearch": "返回搜索",
     "metaDescription": "{prefecture}{city}的{name}。地址、电话，以及工作人员使用的语言。",
+    "onlineBreadcrumb": "在线",
+    "onlineMetaDescription": "{name}。无街道地址的在线医疗机构。电话以及工作人员使用的语言。",
     "locationNav": "位置",
     "relatedSpecialtiesHeading": "按专科浏览",
     "relatedLanguagesHeading": "按语言浏览"

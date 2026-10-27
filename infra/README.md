@@ -13,14 +13,16 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocDns` | Looks up the existing `findadoc.jp` hosted zone and exposes it as `hostedZone`. It does not create the zone. |
 | `FindadocWeb` | Amplify Hosting app for the site. Associates `findadoc.jp` and `*.findadoc.jp` with the production branch, and lets GitHub Actions publish that branch and pull request previews. |
 | `FindadocGithubDeploy` | GitHub OIDC provider and the `findadoc-github-cdk-deploy` role that the Infra workflow assumes. |
-| `FindadocNetwork` | VPC with two private dual-stack subnets (`ap-northeast-1a`, `ap-northeast-1c`). No NAT gateway. IPv6 traffic leaves through an egress-only internet gateway. |
+| `FindadocNetwork` | VPC with two private dual-stack subnets (`ap-northeast-1a`, `ap-northeast-1c`). No NAT gateway. IPv6 traffic leaves through an egress-only internet gateway. An S3 gateway endpoint reaches the uploads bucket. |
 | `FindadocDatabase` | RDS PostgreSQL 17 for the API, plus the `DatabaseClients` security group that may connect to it and a monthly AWS Backup plan. |
 | `FindadocAlerts` | SNS topic `findadoc-alarms`, the AWS Chatbot link that posts it to `#alerts` in Slack, and the database alarms. |
 | `FindadocEdgeCertificates` | **us-east-1.** The ACM certificates for `api-staging`/`api.findadoc.jp` and `mcp-staging`/`mcp.findadoc.jp`. CloudFront only accepts certificates from us-east-1. |
 | `FindadocApiSecrets` | The `findadoc/api` secret: `GOOGLE_API_KEY`, `SENTRY_DSN`, and a generated `EDGE_SHARED_SECRET`. |
+| `FindadocEmail` | Verifies `findadoc.jp` in Amazon SES, writes the DKIM and MAIL FROM records, and lets the API Lambda send from `noreply@findadoc.jp`. |
 | `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, API alarms, and saved log queries. |
 | `FindadocMcp` | The MCP Lambda (`findadoc-mcp`, outside the VPC) behind CloudFront at `mcp-staging.findadoc.jp`, with an error alarm. Its tools call `https://api.findadoc.jp`. |
 | `FindadocDataCopy` | **Temporary (#81).** `findadoc-db-copy`, the one-off function that copies the Supabase database into RDS. Remove after the cutover (#13). |
+| `FindadocUploads` | Private S3 bucket. The API Lambda may presign `uploads/*`. `STORAGE_BACKEND` stays `none` until a feature writes files. |
 
 ## Monthly cost
 
@@ -36,12 +38,14 @@ Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hou
 | VPC, subnets, route tables, egress-only and internet gateways, security groups | $0 |
 | PostgreSQL logs in CloudWatch, kept 30 days | Inside the 5 GB free allowance |
 | SNS topic, AWS Chatbot, and alarms (the first 10 are free) | $0 |
+| S3 uploads bucket and the S3 gateway endpoint | $0 while empty. Stored bytes are $0.025/GB-month |
 | API, migration and MCP Lambdas | $0 inside the always-free 1M requests and 400k GB-seconds |
 | CloudFront distribution and the viewer-IP CloudFront Function | $0 inside the free 1 TB, 10M requests and 2M function invocations |
 | ACM certificate, Route 53 alias records | $0 |
 | Secrets Manager secret `findadoc/api` | $0.40 |
+| SES domain, configuration set, and DNS records | $0 while nothing sends, then $0.10 per 1,000 emails |
 
-Not used, on purpose: NAT gateways (about $45/month each), Elastic IPs and public IPv4 addresses ($3.65/month each), VPC interface endpoints (about $7/month each), load balancers, Multi-AZ, Performance Insights, Enhanced Monitoring, and customer-managed KMS keys. Check `cdk diff` for any of these before merging an infra change.
+Not used, on purpose: NAT gateways (about $45/month each), Elastic IPs and public IPv4 addresses ($3.65/month each), VPC interface endpoints (about $7/month each), load balancers, Multi-AZ, Performance Insights, Enhanced Monitoring, and customer-managed KMS keys. The S3 gateway endpoint is free, so it is not one of those. Check `cdk diff` for any of these before merging an infra change.
 
 ## Database
 
@@ -131,6 +135,8 @@ A pull request that changes the site publishes an Amplify branch named `pr-<numb
 
 The preview role can publish and delete only `pr-*` branches. Closing the pull request deletes that branch. Deploy `FindadocWeb` once so `findadoc-github-web-preview` exists; until then the Web workflow cannot assume it.
 
+The pull request comment is replaced on each publish. It shows the preview URL, then mobile Lighthouse scores for the homepage: performance, accessibility, best practices, and SEO. Under those it shows first contentful paint, largest contentful paint, total blocking time, cumulative layout shift, and speed index, each beside the same run of `https://www.findadoc.jp`. A lower timing is the faster one. The three largest savings opportunities are listed, and the HTML reports are attached to the workflow run.
+
 ## Context lookups
 
 `HostedZone.fromLookup` calls Route 53 on the first synth and caches the zone in `cdk.context.json`. Commit that file. Later synths, including CI, then read the cached zone instead of calling AWS. Delete the entry with `pnpm cdk context --reset <key>` if the zone is ever recreated.
@@ -187,6 +193,25 @@ Every deploy of `FindadocApi` first runs `findadoc-db-migrate` (`apps/server/src
 
 Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-operations`, `findadoc/api/errors-by-operation`, `findadoc/api/failed-searches`.
 
+## Uploads
+
+`FindadocUploads` is a private bucket for clinic images, and later for documents such as insurance scans (#12). The site stays on Amplify. This bucket is not a website, and objects are never public.
+
+- The bucket `findadoc-uploads-677501681118` blocks public access, encrypts with SSE-S3, disables ACLs, and denies any request that is not TLS. CloudFormation has no resource for the account-level setting, so turn that on once before the first upload:
+
+  ```bash
+  aws s3control put-public-access-block --profile findadoc --account-id 677501681118 \
+    --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+  ```
+
+  Deleting this stack does not change that account setting. The bucket block stays either way.
+- The API role may `s3:PutObject` and `s3:GetObject` on `uploads/*` only. A browser uploads or downloads with a presigned URL signed by that role. There is no access key.
+- `STORAGE_BACKEND=none`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api`. Nothing writes an object until a feature changes the backend to `s3`. Local development leaves the variables unset and does not need AWS.
+- An incomplete multipart upload is aborted after 7 days.
+- CORS allows `PUT` and `GET` from the site, Amplify previews, Netlify previews, and localhost. The signature is what authorizes the call.
+
+The API reaches S3 through the gateway endpoint on `FindadocNetwork`, so a later feature can read and write without a NAT gateway. Signing a URL does not call S3.
+
 ## Hostnames on CloudFront
 
 Every `*.findadoc.jp` name without its own Route 53 record resolves to the Amplify wildcard (`FindadocWeb`). CloudFront refuses to add a hostname whose DNS points at another distribution ("One or more aliases specified for the distribution includes an incorrectly configured DNS record that points to another CloudFront distribution"). So, as AWS documents for this error, a new hostname goes on in two deploys. Its state in `API_HOSTNAMES` or `MCP_HOSTNAMES` (`lib/environment.ts`) says which step it is at:
@@ -199,6 +224,27 @@ Every `*.findadoc.jp` name without its own Route 53 record resolves to the Ampli
 ## MCP
 
 `FindadocMcp` runs `apps/mcp/src/lambda.ts` as `findadoc-mcp`, an arm64 Node 24 function with 512 MB, behind CloudFront at `mcp-staging.findadoc.jp`. It uses the same CloudFront setup as the API (`lib/functionUrlEdge.ts`). MCP is on `/mcp`, the REST routes for ChatGPT Actions are under `/api`, and the spec is at `/openapi.yaml`. The function has no database and runs outside the VPC. `findadoc-mcp-errors` posts to Slack `#alerts`. `mcp.findadoc.jp` moves at the cutover (#13).
+
+## Email
+
+`FindadocEmail` verifies `findadoc.jp` in Amazon SES so the API can send from `noreply@findadoc.jp`. The apex MX already points at Google (`smtp.google.com`). This stack does not change it, and it does not change the apex TXT record (Google site verification). Google keeps receiving mail sent to `@findadoc.jp`.
+
+- Easy DKIM. The stack writes the three DKIM CNAME records into the existing hosted zone.
+- MAIL FROM is `mail.findadoc.jp`. The stack writes that name's MX and SPF records. `https://mail.findadoc.jp` still opens the site, because the Amplify wildcard still owns the A and AAAA records. The new MX and TXT are only for SES.
+- The configuration set `findadoc` requires TLS, publishes reputation metrics, and adds bounces and complaints to the account suppression list. Feedback is not forwarded to `noreply@`, which is not a mailbox we read.
+- The API role may `ses:SendEmail` and `ses:SendRawEmail` for this identity and this configuration set only. There is no access key.
+- `SES_FROM_ADDRESS`, `SES_CONFIGURATION_SET`, and `SES_REGION` are set on `findadoc-api`. Nothing in the API sends yet.
+
+A new SES account can send only to verified addresses until AWS enables production access. CloudFormation cannot request that. In the SES console for `ap-northeast-1`, open the account dashboard and request production access.
+
+The API Lambda has no IPv4 route to the internet. A sender has to call the dual-stack endpoint `https://email.ap-northeast-1.api.aws`. `email.ap-northeast-1.amazonaws.com` is IPv4-only and will not connect from this VPC.
+
+| Alarm | Fires when |
+| --- | --- |
+| `findadoc-email-bounce-rate` | the configuration set's bounce rate is above 5% |
+| `findadoc-email-complaint-rate` | the configuration set's complaint rate is above 0.1% |
+
+Both post to Slack `#alerts`. They stay quiet until SES publishes reputation data. With the alarms already on the database, API, and MCP, these two use the last of the 10 free alarms.
 
 ## Copying the data from Supabase (#81)
 

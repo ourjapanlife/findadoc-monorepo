@@ -9,7 +9,7 @@
         <select
             id="primary-license"
             data-testid="mod-healthcare-professional-primary-license"
-            class="field"
+            class="field mod-edit-only"
             :disabled="keepBoth || !isEditing"
             :value="primaryLicense"
             @change="onPrimaryChange"
@@ -25,6 +25,10 @@
                 {{ license }}
             </option>
         </select>
+        <ModTokenList
+            :labels="primaryLicenseLabels"
+            data-testid="mod-primary-license-tokens"
+        />
         <p
             v-if="recommendationText"
             class="mt-2 text-sm text-primary-text-muted"
@@ -107,6 +111,13 @@ const keepBoth = ref(false)
 const preservedClinicalLicenses = ref<Degree[]>([])
 const hiddenDegrees = ref<Degree[]>([])
 const recommendation = ref<LicenseRecommendation | null>(null)
+
+const primaryLicenseLabels = computed<string[]>(() => {
+    if (primaryLicense.value) {
+        return [primaryLicense.value]
+    }
+    return [...preservedClinicalLicenses.value]
+})
 
 const recommendationText = computed(() => {
     if (!recommendation.value || keepBoth.value) {

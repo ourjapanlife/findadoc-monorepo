@@ -157,7 +157,15 @@ const availableLanguage = computed(() => displayedLanguageCodes(
     knownLanguageCodes
 ))
 
+const isOnline = computed(() => facility.value.online === true)
+
 const metaDescription = computed(() => {
+    if (isOnline.value) {
+        return t('clinicPage.onlineMetaDescription', {
+            name: displayName.value
+        })
+    }
+
     const address = facility.value.contact?.address
     const city = japanese.value
         ? (address?.cityJa || address?.cityEn || '')
@@ -191,13 +199,14 @@ const locationCity = computed(() => {
 })
 
 const crumbs = computed(() => {
-    const hubs = facilityHubPaths(facility.value.contact?.address)
+    const hubs = facilityHubPaths(facility.value.contact?.address, facility.value.online)
     return facilityCrumbs({
         homeLabel: t('breadcrumbs.home'),
         prefectureLabel: locationPrefecture.value,
         prefecturePath: hubs.prefecturePath,
         cityLabel: locationCity.value,
         cityPath: hubs.cityPath,
+        onlineLabel: isOnline.value ? t('clinicPage.onlineBreadcrumb') : undefined,
         facilityLabel: displayName.value
     })
 })

@@ -104,6 +104,39 @@ describe('ModSearchBar results', () => {
         expect(selected.value).to.deep.equal([])
         wrapper.unmount()
     })
+
+    it('removes a clinic when a later search returns the same id on a new object', async () => {
+        const selected = ref<Array<{ id: string, name: string }>>([])
+        const suggestions = ref([{ id: 'clinic-1', name: 'Minato Dental' }])
+        const Host = defineComponent({
+            components: { ModSearchBar },
+            setup() {
+                const label = (item: { name: string }) => [item.name]
+                return { selected, suggestions, label }
+            },
+            template: `<ModSearchBar
+                v-model="selected"
+                place-holder-text="Clinics"
+                no-match-text="None"
+                :fields-to-display-callback="label"
+                :default-suggestions="suggestions"
+            />`
+        })
+        const wrapper = mount(Host, { attachTo: document.body })
+        const result = () => document.body.querySelector<HTMLElement>('[data-testid="mod-search-bar-search-result"]')
+
+        await wrapper.find('input').trigger('focus')
+        result()?.click()
+        await wrapper.vm.$nextTick()
+        expect(selected.value.map(item => item.id)).to.deep.equal(['clinic-1'])
+
+        suggestions.value = [{ id: 'clinic-1', name: 'Minato Dental' }]
+        await wrapper.find('input').trigger('focus')
+        result()?.click()
+        await wrapper.vm.$nextTick()
+        expect(selected.value).to.deep.equal([])
+        wrapper.unmount()
+    })
 })
 
 describe('preview edit controls', () => {

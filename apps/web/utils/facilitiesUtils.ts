@@ -1,5 +1,6 @@
 import { prefectureLanguageMatch } from '~/stores/locationsStore'
 import type { CreateFacilityInput, UpdateFacilityInput, PhysicalAddressInput } from '@findadoc/graphql'
+import type { FacilitySectionFields } from '~/stores/facilitiesStore'
 
 export interface FacilityValidationResult {
     valid: boolean
@@ -27,7 +28,7 @@ export function checkPrefectureNameMatch(fields: { prefectureEn?: string, prefec
 /**
  * Base validation for a facility address (only validates prefectures at the moment).
  */
-function validateAddress(address?: PhysicalAddressInput): FacilityValidationResult {
+function validateAddress(address?: PhysicalAddressInput | null): FacilityValidationResult {
     const errors: string[] = []
     if (!address) return { valid: true, errors }
 
@@ -39,21 +40,61 @@ function validateAddress(address?: PhysicalAddressInput): FacilityValidationResu
     return { valid: errors.length === 0, errors }
 }
 
+function hasNonEmptyNameAndPhone(input: {
+    nameEn?: string | null
+    nameJa?: string | null
+    phone?: string | null
+}): string[] {
+    const errors: string[] = []
+    if (!input.nameEn?.trim()) errors.push('Required fields cannot be empty.')
+    if (!input.nameJa?.trim()) errors.push('Required fields cannot be empty.')
+    if (!input.phone?.trim()) errors.push('Required fields cannot be empty.')
+    return errors
+}
+
 /**
- * Validation specific to facility creation (requires prefecture in both languages).
+ * Validation specific to facility creation.
+ * Online is opt-in: when true, address and map may be omitted. Names and phone stay required.
  */
 export function validateCreateFacility(input: CreateFacilityInput): FacilityValidationResult {
-    const errors: string[] = []
+    const errors = hasNonEmptyNameAndPhone({
+        nameEn: input.nameEn,
+        nameJa: input.nameJa,
+        phone: input.contact?.phone
+    })
 
-    const addressValidation = validateAddress(input.contact.address)
+    if (input.online === true) {
+        return { valid: errors.length === 0, errors }
+    }
+
+    const addressValidation = validateAddress(input.contact?.address)
     errors.push(...addressValidation.errors)
 
-    const { prefectureEn, prefectureJa } = input.contact.address
+    const prefectureEn = input.contact?.address?.prefectureEn
+    const prefectureJa = input.contact?.address?.prefectureJa
     if (!prefectureEn || !prefectureJa) {
         errors.push('Please add a prefecture for both Japanese and English.')
     }
 
+    if (!(input.contact?.googleMapsUrl ?? '').trim()) {
+        errors.push('Required fields cannot be empty.')
+    }
+
+    if (input.mapLatitude === undefined || input.mapLatitude === null || input.mapLatitude === 0) {
+        errors.push('Required fields cannot be empty.')
+    }
+    if (input.mapLongitude === undefined || input.mapLongitude === null || input.mapLongitude === 0) {
+        errors.push('Required fields cannot be empty.')
+    }
+
     return { valid: errors.length === 0, errors }
+}
+
+function isZeroCoordinatePlaceholder(value: string): boolean {
+    const trimmed = value.trim()
+    if (!trimmed) return true
+    const parsed = Number(trimmed)
+    return Number.isFinite(parsed) && parsed === 0
 }
 
 /**
@@ -64,32 +105,30 @@ export function validateUpdateFacility(
     updatedInput: UpdateFacilityInput
 ): FacilityValidationResult {
     const errors: string[] = []
-    const addressValidation = validateAddress(updatedInput.contact?.address)
-    const addressValidationErrorPresent = !addressValidation.valid
-
-    if (addressValidationErrorPresent) {
-        errors.push(...addressValidation.errors)
+    if (fields.online !== true) {
+        const addressValidation = validateAddress(updatedInput.contact?.address)
+        if (!addressValidation.valid) {
+            errors.push(...addressValidation.errors)
+        }
     }
 
-    // List of required keys that must not be empty
     const alwaysRequiredKeys: (keyof FacilitySectionFields)[] = [
         'nameEn', 'nameJa',
-        'phone',
+        'phone'
+    ]
+
+    const locationKeys: (keyof FacilitySectionFields)[] = [
         'postalCode',
         'cityEn', 'addressLine1En',
         'cityJa', 'addressLine1Ja',
         'googlemapsURL',
-        'mapLatitude', 'mapLongitude'
-    ]
-
-    const allRequiredKeys: (keyof FacilitySectionFields)[] = [
-        ...alwaysRequiredKeys,
+        'mapLatitude', 'mapLongitude',
         'prefectureEn', 'prefectureJa'
     ]
 
-    const keysToValidate = addressValidationErrorPresent
+    const keysToValidate = fields.online === true
         ? alwaysRequiredKeys
-        : allRequiredKeys
+        : [...alwaysRequiredKeys, ...locationKeys]
 
     for (const key of keysToValidate) {
         const value = fields[key]
@@ -97,5 +136,13 @@ export function validateUpdateFacility(
             errors.push('Required fields cannot be empty.')
         }
     }
+
+    if (fields.online !== true) {
+        if (isZeroCoordinatePlaceholder(fields.mapLatitude)
+          || isZeroCoordinatePlaceholder(fields.mapLongitude)) {
+            errors.push('Required fields cannot be empty.')
+        }
+    }
+
     return { valid: errors.length === 0, errors }
 }

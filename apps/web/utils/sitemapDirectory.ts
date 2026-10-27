@@ -42,6 +42,7 @@ export type SitemapDirectoryEntry = {
     nameEn?: string | null
     cityEn?: string | null
     prefectureEn?: string | null
+    online?: boolean | null
     names?: LocalizedName[] | null
 }
 
@@ -68,6 +69,7 @@ export function directorySitemapLoc(
         return facilityPath({
             id: entry.id,
             nameEn: entry.nameEn ?? '',
+            online: entry.online === true,
             contact: {
                 address: {
                     cityEn: entry.cityEn,
@@ -150,6 +152,7 @@ type SitemapFacilityRow = {
     id: string
     nameEn?: string | null
     updatedDate?: string | null
+    online?: boolean | null
     contact?: {
         address?: {
             cityEn?: string | null
@@ -267,6 +270,7 @@ export async function loadDirectorySitemapUrls(
                 nameEn: row.nameEn,
                 cityEn: row.contact?.address?.cityEn,
                 prefectureEn: row.contact?.address?.prefectureEn,
+                online: row.online === true,
                 updatedDate: row.updatedDate
             })))
         }

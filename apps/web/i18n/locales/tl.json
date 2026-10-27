@@ -195,7 +195,12 @@
     "confirmExit": "Lumabas nang hindi sine-save",
     "create": "Gumawa",
     "exit": "Lumabas",
-    "unsavedChangesMessage": "Lalabas ka nang hindi sine-save. Mawawala ang hindi naka-save na datos."
+    "unsavedChangesMessage": "Lalabas ka nang hindi sine-save. Mawawala ang hindi naka-save na datos.",
+    "hasEmptyFieldsFacility": "Punan ang mga kinakailangang field ng pasilidad.",
+    "facilityCreatedSuccessfully": "Nagawa ang pasilidad",
+    "hasEmptyFieldsHealthcareProfessional": "Punan ang mga kinakailangang field ng propesyonal sa kalusugan.",
+    "healthcareProfessionalEnglishNameRequired": "Kailangan ng propesyonal sa kalusugan ang pangalan sa Ingles",
+    "healthcareProfessionalCreatedSuccessfully": "Nagawa ang propesyonal sa kalusugan"
   },
   "modDashboardLeftNav": {
     "facilities": "Pasilidad",
@@ -259,6 +264,8 @@
   },
   "modFacilitySection": {
     "addresses": "Mga Address",
+    "onlineLabel": "Online na pasilidad",
+    "onlineHint": "Opsyonal. Lagyan lang ng check kung walang street address ang pasilidad. Hindi na kailangan ang address, lungsod, at mapa.",
     "contactInformation": "Impormasyon sa pakikipag-ugnayan",
     "facilityHeading": "Impormasyon ng Pasilidad",
     "googleMapsInformation": "Impormasyon sa Google maps",
@@ -366,6 +373,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "Magdagdag ng isa pang pangalan",
+    "removeName": "Alisin ang pangalan",
     "healthcareProfessionalMedicalInfoHeading": "Detalye ng propesyonal sa kalusugan",
     "healthcareProfessionalNameHeading": "Pangalan ng propesyonal sa kalusugan",
     "labelHealthcareProfessionalFirstName": "Pangalan",
@@ -379,10 +388,11 @@
     "selectInsurances": "Tinatanggap na insurance",
     "selectLocales": "Mga wikang sinasalita",
     "selectSpecialties": "Mga espesyalidad",
-    "facilities": "Mga pasilidad ng propesyonal sa kalusugan",
+    "facilities": "Mga kaugnay na pasilidad",
     "placeholderTextFacilitySearchBar": "Search by name or ID add a Facility",
     "removeFacility": "Alisin ang {name}",
     "noFacilitiesWereFound": "Walang nahanap na pasilidad",
+    "noFacilitiesLinked": "Wala pang kaugnay na pasilidad. Maghanap sa itaas para magdagdag.",
     "errorMessageHealthcareProfessionalId": "Hindi nahanap ang ID ng propesyonal sa kalusugan",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Hanapin ayon sa insurance",
@@ -420,7 +430,9 @@
     "lastName": "Apelyido",
     "firstName": "Pangalan",
     "middleName": "Gitnang pangalan",
-    "nameLocale": "Wika ng pangalan"
+    "nameLocale": "Wika ng pangalan",
+    "editName": "I-edit ang pangalang ito",
+    "closeEditName": "Itigil ang pag-edit ng pangalang ito"
   },
   "specialties": {
     "allergyAndImmunology": "Alerhiya at Immunolohiya",
@@ -615,6 +627,8 @@
   "clinicPage": {
     "backToSearch": "Bumalik sa paghahanap",
     "metaDescription": "{name} sa {city}, {prefecture}. Adres, telepono, at mga wika ng kawani.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Online na pasilidad na walang street address. Telepono at mga wika ng kawani.",
     "locationNav": "Lokasyon",
     "relatedSpecialtiesHeading": "Mag-browse ayon sa specialty",
     "relatedLanguagesHeading": "Mag-browse ayon sa wika"

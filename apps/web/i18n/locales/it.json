@@ -199,7 +199,12 @@
     "confirmExit": "Esci senza salvare",
     "create": "Crea",
     "exit": "Esci",
-    "unsavedChangesMessage": "Uscirai senza salvare. I dati non salvati andranno persi."
+    "unsavedChangesMessage": "Uscirai senza salvare. I dati non salvati andranno persi.",
+    "hasEmptyFieldsFacility": "Compila i campi obbligatori della struttura.",
+    "facilityCreatedSuccessfully": "Struttura creata",
+    "hasEmptyFieldsHealthcareProfessional": "Compila i campi obbligatori del professionista sanitario.",
+    "healthcareProfessionalEnglishNameRequired": "Il professionista sanitario deve avere un nome in inglese",
+    "healthcareProfessionalCreatedSuccessfully": "Professionista sanitario creato"
   },
   "modDashboardLeftNav": {
     "facilities": "Strutture",
@@ -263,6 +268,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Aggiungi nome per località",
+    "addAnotherName": "Aggiungi un altro nome",
+    "removeName": "Rimuovi nome",
     "errorMessageHealthcareProfessionalId": "ID professionista sanitario non trovato",
     "healthcareProfessionalMedicalInfoHeading": "Informazioni mediche del professionista sanitario",
     "healthcareProfessionalNameHeading": "Nome del professionista sanitario",
@@ -277,10 +284,11 @@
     "selectInsurances": "Selezione assicurazione",
     "selectLocales": "Seleziona le lingue parlate",
     "selectSpecialties": "Specializzazioni",
-    "facilities": "Strutture del professionista sanitario",
+    "facilities": "Strutture associate",
     "placeholderTextFacilitySearchBar": "Cerca per nome o ID",
     "removeFacility": "Rimuovi {name}",
     "noFacilitiesWereFound": "Nessuna struttura è stata trovata",
+    "noFacilitiesLinked": "Nessuna struttura associata. Cerca qui sopra per aggiungerne una.",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Cerca per assicurazione",
     "placeholderTextSpecialties": "Cerca per specialità",
@@ -314,6 +322,8 @@
   },
   "modFacilitySection": {
     "addresses": "Indirizzi",
+    "onlineLabel": "Struttura online",
+    "onlineHint": "Facoltativo. Seleziona solo se la struttura non ha un indirizzo. In quel caso indirizzo, città e mappa non sono obbligatori.",
     "contactInformation": "Informazioni di contatto",
     "errorMessageFacilityId": "ID della struttura non trovato",
     "existingHPHeading": "Professionisti sanitari attuali nella struttura",
@@ -468,7 +478,9 @@
     "lastName": "Nome",
     "firstName": "Cognome",
     "middleName": "Secondo nome",
-    "nameLocale": "Lingua del nome"
+    "nameLocale": "Lingua del nome",
+    "editName": "Modifica questo nome",
+    "closeEditName": "Interrompi la modifica di questo nome"
   },
   "noteInputField": {
     "optional": "(facoltativo)"
@@ -615,6 +627,8 @@
   "clinicPage": {
     "backToSearch": "Torna alla ricerca",
     "metaDescription": "{name} a {city}, {prefecture}. Indirizzo, telefono e lingue parlate dal personale.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Struttura online senza indirizzo. Telefono e lingue parlate dal personale.",
     "locationNav": "Luogo",
     "relatedSpecialtiesHeading": "Sfoglia per specialità",
     "relatedLanguagesHeading": "Sfoglia per lingua"

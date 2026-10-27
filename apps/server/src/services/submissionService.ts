@@ -21,6 +21,7 @@ import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { canonicalMapsFields } from '../places/mapsLink.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import { databaseOrderColumn, SUBMISSION_ORDER_COLUMNS } from '../search/orderColumn.js'
+import { contactForStorage, facilityPartialForStorage } from './facilityService.js'
 type SubmissionStatusFlag = keyof Pick<
     gqlTypes.SubmissionSearchFilters,
     'isUnderReview' | 'isApproved' | 'isRejected'
@@ -127,7 +128,9 @@ function buildSubmissionUpdatePatch(
     }
 
     if (fieldsToUpdate.facility !== undefined) {
-        patch.facility_partial = asJsonb(fieldsToUpdate.facility ?? null)
+        // Contact.googleMapsUrl is non-null on FacilitySubmission. Normalize so a
+        // ContactInput that omits address or Maps URL still round-trips.
+        patch.facility_partial = asJsonb(facilityPartialForStorage(fieldsToUpdate.facility))
     }
 
     return patch
@@ -180,7 +183,7 @@ async function canonicalizeSubmissionMapsUrls(
             ...next.facility,
             contact: {
                 ...next.facility.contact,
-                googleMapsUrl: await storedUrl(next.facility.contact.googleMapsUrl)
+                googleMapsUrl: await storedUrl(next.facility.contact.googleMapsUrl ?? '')
             }
         }
     }
@@ -814,24 +817,32 @@ export const approveSubmission = async (
 
                 // CRITICAL NESTED TRANSACTION
                 // I'm tryin inline inside transaction
+                const isOnline = facilityInput.online === true
+                const storedContact = contactForStorage(
+                    facilityInput.contact ?? createBlankContact(),
+                    { clearLocation: isOnline }
+                )
                 const insertedFacility = await transaction
                     .insertInto('facilities')
                     .values({
                         name_en: facilityInput.nameEn,
                         name_ja: facilityInput.nameJa,
-                        contact: asJsonb<gqlTypes.ContactInput>(facilityInput.contact),
-                        map_latitude: facilityInput.mapLatitude ?? 0,
-                        map_longitude: facilityInput.mapLongitude ?? 0,
+                        contact: asJsonb<gqlTypes.ContactInput>(storedContact),
+                        map_latitude: isOnline ? null : (facilityInput.mapLatitude ?? null),
+                        map_longitude: isOnline ? null : (facilityInput.mapLongitude ?? null),
                         created_date: new Date().toISOString(),
                         updated_date: new Date().toISOString(),
                         payment_options: JSON.stringify(facilityInput.paymentOptions ?? []),
                         city_id: null,
-                        google_place_id: useResolvedMaps && resolvedMaps ? resolvedMaps.placeId : null,
+                        google_place_id: isOnline
+                            ? null
+                            : (useResolvedMaps && resolvedMaps ? resolvedMaps.placeId : null),
                         source: null,
                         verification_status: 'UNVERIFIED_LOCATION',
                         supported_languages: JSON.stringify(
                             uniqueLocales(facilityInput.supportedLanguages ?? []).filter(isPublishedLocale)
-                        )
+                        ),
+                        online: isOnline
                     })
                     .returningAll()
                     .executeTakeFirstOrThrow()

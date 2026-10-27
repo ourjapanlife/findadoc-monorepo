@@ -290,7 +290,12 @@
     "confirmExit": "Exit without saving",
     "create": "Create",
     "exit": "Exit",
-    "unsavedChangesMessage": "This will exit without saving your entry. All unsaved data will be lost."
+    "unsavedChangesMessage": "This will exit without saving your entry. All unsaved data will be lost.",
+    "hasEmptyFieldsFacility": "Fill in the required facility fields.",
+    "facilityCreatedSuccessfully": "Facility created successfully",
+    "hasEmptyFieldsHealthcareProfessional": "Fill in the required healthcare professional fields.",
+    "healthcareProfessionalEnglishNameRequired": "Healthcare Professional must have an English name",
+    "healthcareProfessionalCreatedSuccessfully": "Healthcare professional created successfully"
   },
   "modDashboardLeftNav": {
     "facilities": "Facilities",
@@ -354,6 +359,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add New Name",
+    "addAnotherName": "Add another name",
+    "removeName": "Remove name",
     "delete": "Permanently delete",
     "errorMessageHealthcareProfessionalId": "Healthcare Professional ID was not found",
     "exit": "Exit",
@@ -389,7 +396,7 @@
     "selectInsurances": "Accepted Insurance",
     "selectLocales": "Spoken Languages",
     "selectSpecialties": "Specialties",
-    "facilities": "Healthcare Professional Facilities",
+    "facilities": "Associated facilities",
     "placeholderTextAcceptedInsurances": "Search by insurance",
     "placeholderTextSpecialties": "Search by specialty",
     "placeholderTextDegrees": "Search by degree",
@@ -397,6 +404,7 @@
     "placeholderTextFacilitySearchBar": "Search by Facility name or ID",
     "removeFacility": "Remove {name}",
     "noFacilitiesWereFound": "No Facilities were found",
+    "noFacilitiesLinked": "No facilities are associated yet. Search above to add one.",
     "noSpecialtiesWereFound": "No specialties were found",
     "noInsurancesWereFound": "No insurance was found",
     "noDegreesWereFound": "No degrees were found",
@@ -405,6 +413,8 @@
   },
   "modFacilitySection": {
     "addresses": "Addresses",
+    "onlineLabel": "Online facility",
+    "onlineHint": "Optional. Check only for a facility with no street address. Address, city, and map are then not required.",
     "contactInformation": "Contact Information",
     "errorMessageFacilityId": "Facility ID was not found",
     "existingHPHeading": "Current Healthcare Professionals at Facility",
@@ -511,7 +521,9 @@
     "lastName": "Last name",
     "firstName": "First name",
     "middleName": "Middle name",
-    "nameLocale": "Name language"
+    "nameLocale": "Name language",
+    "editName": "Edit this name",
+    "closeEditName": "Stop editing this name"
   },
   "noteInputField": {
     "optional": "(optional)"
@@ -626,6 +638,8 @@
     "backToSearch": "Back to search",
     "locationNav": "Location",
     "metaDescription": "{name} in {city}, {prefecture}. Address, phone and the languages spoken by staff.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Online clinic with no street address. Phone and the languages spoken by staff.",
     "relatedSpecialtiesHeading": "Browse by specialty",
     "relatedLanguagesHeading": "Browse by language"
   },

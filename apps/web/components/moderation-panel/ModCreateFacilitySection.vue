@@ -67,7 +67,20 @@
                 />
             </div>
         </ModAccordion>
+        <label class="mb-3 flex items-start gap-2 text-sm text-primary-text">
+            <input
+                v-model="facilityStore.createFacilityFields.online"
+                data-testid="mod-facility-section-online"
+                class="mt-1"
+                type="checkbox"
+            >
+            <span>
+                <span class="font-medium">{{ t('modFacilitySection.onlineLabel') }}</span>
+                <span class="mt-1 block text-primary-text-muted">{{ t('modFacilitySection.onlineHint') }}</span>
+            </span>
+        </label>
         <ModAccordion
+            v-if="!facilityStore.createFacilityFields.online"
             tone="facility"
             class="mod-facility-address-section"
             :title="t('modFacilitySection.addresses')"
@@ -208,6 +221,7 @@
             </div>
         </ModAccordion>
         <ModAccordion
+            v-if="!facilityStore.createFacilityFields.online"
             tone="facility"
             class="google-maps-section"
             :title="t('modFacilitySection.googleMapsInformation')"
@@ -270,6 +284,7 @@
                 :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
                 :fields-to-display-callback="healthcareProfessionalsToDisplayCallback"
                 :default-suggestions="defaultHealthcareProfessionalSuggestions"
+                @search-input-blur="handleHealthcareProfessionalsInputChange.cancel"
                 @search-input-change="handleHealthcareProfessionalsInputChange"
             />
             <p
@@ -314,7 +329,7 @@ import type { HealthcareProfessional } from '@findadoc/graphql'
 import type { CityOption } from '~/utils/cityOptions'
 import { listPrefectureJapanEn, listPrefectureJapanJa, pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
 import { checkPrefectureNameMatch } from '~/utils/facilitiesUtils'
-import { matchesHealthcareProfessionalSearch } from '~/utils/moderationSearchUtils'
+import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
 import type { FacilityMapsFillTarget } from '~/utils/mapsAutofill'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
@@ -345,12 +360,9 @@ const selectedHealthcareProfessionalsModel = computed({
 
 const defaultHealthcareProfessionalSuggestions: Ref<HealthcareProfessional[]> = ref([])
 
-const handleHealthcareProfessionalsInputChange = (filteredItems: Ref<HealthcareProfessional[]>, inputValue: string) => {
-    filteredItems.value = healthcareProfessionalsStore.healthcareProfessionalsData.filter(
-        (healthcareProfessional: HealthcareProfessional) =>
-            matchesHealthcareProfessionalSearch(healthcareProfessional, inputValue)
-    )
-}
+const handleHealthcareProfessionalsInputChange = useDirectoryPickerSearch(
+    query => healthcareProfessionalsStore.searchHealthcareProfessionals(query)
+)
 const healthcareProfessionalsToDisplayCallback = (healthcareProfessional: HealthcareProfessional) =>
     [formatFirstLocalizedFullName(healthcareProfessional.names)]
 

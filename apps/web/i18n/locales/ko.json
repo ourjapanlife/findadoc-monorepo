@@ -290,7 +290,12 @@
     "confirmExit": "저장하지 않고 나가기",
     "create": "만들기",
     "exit": "나가기",
-    "unsavedChangesMessage": "저장하지 않고 나갑니다. 입력한 내용이 모두 사라집니다."
+    "unsavedChangesMessage": "저장하지 않고 나갑니다. 입력한 내용이 모두 사라집니다.",
+    "hasEmptyFieldsFacility": "의료기관의 필수 항목을 입력해 주세요.",
+    "facilityCreatedSuccessfully": "의료기관을 만들었습니다",
+    "hasEmptyFieldsHealthcareProfessional": "의료인의 필수 항목을 입력해 주세요.",
+    "healthcareProfessionalEnglishNameRequired": "의료인에게는 영문 이름이 필요합니다",
+    "healthcareProfessionalCreatedSuccessfully": "의료인을 만들었습니다"
   },
   "modDashboardLeftNav": {
     "facilities": "의료기관",
@@ -354,6 +359,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "새 이름 추가",
+    "addAnotherName": "이름 하나 더 추가",
+    "removeName": "이름 삭제",
     "delete": "영구 삭제",
     "errorMessageHealthcareProfessionalId": "의료인 ID를 찾을 수 없습니다",
     "exit": "나가기",
@@ -379,7 +386,7 @@
     "selectInsurances": "취급 보험",
     "selectLocales": "구사 언어",
     "selectSpecialties": "전문 과목",
-    "facilities": "의료인 소속 기관",
+    "facilities": "연결된 의료기관",
     "placeholderTextAcceptedInsurances": "보험으로 검색",
     "placeholderTextSpecialties": "전문 과목으로 검색",
     "placeholderTextDegrees": "학위로 검색",
@@ -387,6 +394,7 @@
     "placeholderTextFacilitySearchBar": "의료기관 이름 또는 ID로 검색",
     "removeFacility": "{name} 제거",
     "noFacilitiesWereFound": "의료기관을 찾을 수 없습니다",
+    "noFacilitiesLinked": "아직 연결된 의료기관이 없습니다. 위에서 검색해 추가하세요.",
     "noSpecialtiesWereFound": "전문 과목을 찾을 수 없습니다",
     "noInsurancesWereFound": "보험을 찾을 수 없습니다",
     "noDegreesWereFound": "학위를 찾을 수 없습니다",
@@ -405,6 +413,8 @@
   },
   "modFacilitySection": {
     "addresses": "주소",
+    "onlineLabel": "온라인 의료기관",
+    "onlineHint": "선택 사항입니다. 거리 주소가 없는 의료기관일 때만 선택하세요. 선택하면 주소, 도시, 지도가 필요하지 않습니다.",
     "contactInformation": "연락처",
     "errorMessageFacilityId": "의료기관 ID를 찾을 수 없습니다",
     "existingHPHeading": "이 기관의 현재 의료인",
@@ -511,7 +521,9 @@
     "lastName": "성",
     "firstName": "이름",
     "middleName": "중간 이름",
-    "nameLocale": "이름 언어"
+    "nameLocale": "이름 언어",
+    "editName": "이 이름 편집",
+    "closeEditName": "이 이름 편집 종료"
   },
   "noteInputField": {
     "optional": "(선택)"
@@ -620,6 +632,8 @@
     "backToSearch": "검색으로 돌아가기",
     "locationNav": "위치",
     "metaDescription": "{prefecture} {city}의 {name}. 주소, 전화, 직원이 구사하는 언어.",
+    "onlineBreadcrumb": "온라인",
+    "onlineMetaDescription": "{name}. 거리 주소가 없는 온라인 의료기관. 전화와 직원이 구사하는 언어.",
     "relatedSpecialtiesHeading": "전문 과목으로 찾기",
     "relatedLanguagesHeading": "언어로 찾기"
   },

@@ -188,7 +188,12 @@
     "confirmExit": "Quitter sans enregistrer",
     "create": "Créer",
     "exit": "Quitter",
-    "unsavedChangesMessage": "Vous quittez sans enregistrer. Les données non enregistrées seront perdues."
+    "unsavedChangesMessage": "Vous quittez sans enregistrer. Les données non enregistrées seront perdues.",
+    "hasEmptyFieldsFacility": "Remplissez les champs obligatoires de l'établissement.",
+    "facilityCreatedSuccessfully": "Établissement créé",
+    "hasEmptyFieldsHealthcareProfessional": "Remplissez les champs obligatoires du professionnel de santé.",
+    "healthcareProfessionalEnglishNameRequired": "Le professionnel de santé doit avoir un nom en anglais",
+    "healthcareProfessionalCreatedSuccessfully": "Professionnel de santé créé"
   },
   "modDashboardLeftNav": {
     "facilities": "Établissements",
@@ -314,6 +319,8 @@
   },
   "modFacilitySection": {
     "addresses": "Adresses",
+    "onlineLabel": "Établissement en ligne",
+    "onlineHint": "Facultatif. Cochez uniquement si l'établissement n'a pas d'adresse postale. Adresse, ville et carte ne sont alors pas obligatoires.",
     "contactInformation": "Coordonnées",
     "facilityHeading": "Informations sur l’établissement",
     "googleMapsInformation": "Informations Google Maps",
@@ -414,6 +421,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "Ajouter un autre nom",
+    "removeName": "Supprimer le nom",
     "healthcareProfessionalMedicalInfoHeading": "Informations sur le professionnel de santé",
     "healthcareProfessionalNameHeading": "Nom du professionnel de santé",
     "labelHealthcareProfessionalFirstName": "Prénom",
@@ -427,10 +436,11 @@
     "selectInsurances": "Assurances acceptées",
     "selectLocales": "Langues parlées",
     "selectSpecialties": "Spécialités",
-    "facilities": "Établissements du professionnel de santé",
+    "facilities": "Établissements associés",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "Retirer {name}",
     "noFacilitiesWereFound": "Aucun établissement trouvé",
+    "noFacilitiesLinked": "Aucun établissement associé pour le moment. Recherchez ci-dessus pour en ajouter un.",
     "errorMessageHealthcareProfessionalId": "ID du professionnel de santé introuvable",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Rechercher par assurance",
@@ -468,7 +478,9 @@
     "lastName": "Nom",
     "firstName": "Prénom",
     "middleName": "Deuxième prénom",
-    "nameLocale": "Langue du nom"
+    "nameLocale": "Langue du nom",
+    "editName": "Modifier ce nom",
+    "closeEditName": "Arrêter de modifier ce nom"
   },
   "noteInputField": {
     "optional": "(facultatif)"
@@ -615,6 +627,8 @@
   "clinicPage": {
     "backToSearch": "Retour à la recherche",
     "metaDescription": "{name} à {city}, {prefecture}. Adresse, téléphone et langues parlées par le personnel.",
+    "onlineBreadcrumb": "En ligne",
+    "onlineMetaDescription": "{name}. Établissement en ligne sans adresse postale. Téléphone et langues parlées par le personnel.",
     "locationNav": "Lieu",
     "relatedSpecialtiesHeading": "Parcourir par spécialité",
     "relatedLanguagesHeading": "Parcourir par langue"

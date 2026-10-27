@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, type Ref, reactive } from 'vue'
 import { gql } from 'graphql-request'
 import { fetchFacilitiesWithCount } from '../utils/graphqlHelpers'
+import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { facilitySelection } from '../utils/graphqlSelection'
 import type {
     Facility,
@@ -47,6 +48,7 @@ export type FacilitySectionFields = {
     googlemapsURL: string
     mapLatitude: string
     mapLongitude: string
+    online: boolean
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -72,8 +74,15 @@ function mapFacilityContactToInput(contact: Contact): ContactInput {
         email: contact.email ?? '',
         website: contact.website ?? '',
         googleMapsUrl: contact.googleMapsUrl ?? '',
-        address: mapFacilityAddressToInput(contact.address ?? {} as PhysicalAddress)
+        ...(contact.address
+            ? { address: mapFacilityAddressToInput(contact.address) }
+            : { address: null })
     }
+}
+
+function coordinateOrZero(value: string): number {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : 0
 }
 
 export function getChangedFacilityFieldsForUpdate(
@@ -81,28 +90,15 @@ export function getChangedFacilityFieldsForUpdate(
     original: Facility
 ): MutationUpdateFacilityArgs['input'] {
     const updatedFields: MutationUpdateFacilityArgs['input'] = {}
+    const becomingOnline = current.online === true && original.online !== true
 
     if (current.nameEn !== original.nameEn) updatedFields.nameEn = current.nameEn
     if (current.nameJa !== original.nameJa) updatedFields.nameJa = current.nameJa
-
-    const currentLatitude = parseFloat(current.mapLatitude)
-    if (!isNaN(currentLatitude) && currentLatitude !== original.mapLatitude) {
-        updatedFields.mapLatitude = currentLatitude
-    }
-
-    const currentLongitude = parseFloat(current.mapLongitude)
-    if (!isNaN(currentLongitude) && currentLongitude !== original.mapLongitude) {
-        updatedFields.mapLongitude = currentLongitude
-    }
+    // Online is opt-in: only include when the moderator changed the checkbox.
+    if (current.online !== original.online) updatedFields.online = current.online === true
 
     if (current.healthProfessionalsRelations?.length) {
         updatedFields.healthcareProfessionalIds = current.healthProfessionalsRelations
-    }
-
-    const nextCityId = current.cityId.trim()
-    const previousCityId = original.cityId ?? ''
-    if (nextCityId !== previousCityId) {
-        updatedFields.cityId = nextCityId || null
     }
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
@@ -118,6 +114,40 @@ export function getChangedFacilityFieldsForUpdate(
         updatedAddress[key] = current[key] ?? ''
     }
 
+    const phoneOrEmailChanged
+        = current.phone !== originalContactInput.phone
+          || current.email !== originalContactInput.email
+          || current.website !== originalContactInput.website
+
+    // When becoming online, the server clears city, map, and address. Still send
+    // phone/email/website changes. Skip location fields entirely.
+    if (becomingOnline) {
+        if (phoneOrEmailChanged || current.phone.trim()) {
+            updatedFields.contact = {
+                phone: current.phone,
+                ...(current.email !== originalContactInput.email ? { email: current.email } : {}),
+                ...(current.website !== originalContactInput.website ? { website: current.website } : {})
+            }
+        }
+        return updatedFields
+    }
+
+    const currentLatitude = parseFloat(current.mapLatitude)
+    if (!isNaN(currentLatitude) && currentLatitude !== original.mapLatitude) {
+        updatedFields.mapLatitude = currentLatitude
+    }
+
+    const currentLongitude = parseFloat(current.mapLongitude)
+    if (!isNaN(currentLongitude) && currentLongitude !== original.mapLongitude) {
+        updatedFields.mapLongitude = currentLongitude
+    }
+
+    const nextCityId = current.cityId.trim()
+    const previousCityId = original.cityId ?? ''
+    if (nextCityId !== previousCityId) {
+        updatedFields.cityId = nextCityId || null
+    }
+
     function isContactInfoPresent(contact: FacilitySectionFields): boolean {
         return (contact.phone ?? '') !== ''
           || (contact.email ?? '') !== ''
@@ -127,19 +157,19 @@ export function getChangedFacilityFieldsForUpdate(
     }
 
     const contactChanged
-        = current.phone !== originalContactInput.phone
-          || current.googlemapsURL !== originalContactInput.googleMapsUrl
-          || current.email !== originalContactInput.email
-          || current.website !== originalContactInput.website
+        = phoneOrEmailChanged
+          || current.googlemapsURL !== (originalContactInput.googleMapsUrl ?? '')
           || requiredAddressKeys.some(
-              key => updatedAddress[key] !== originalContactInput.address[key]
+              key => updatedAddress[key] !== (originalContactInput.address?.[key] ?? '')
           )
 
     if (contactChanged && isContactInfoPresent(current)) {
         const updatedContact: ContactInput = {
             phone: current.phone,
-            googleMapsUrl: current.googlemapsURL,
-            address: updatedAddress as PhysicalAddressInput
+            googleMapsUrl: current.googlemapsURL || undefined,
+            ...(current.online === true
+                ? {}
+                : { address: updatedAddress as PhysicalAddressInput })
         }
 
         if (current.email !== originalContactInput.email) {
@@ -196,6 +226,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         googlemapsURL: '',
         mapLatitude: '',
         mapLongitude: '',
+        online: false,
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -223,7 +254,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         mapLatitude: '',
         mapLongitude: '',
         healthcareProfessionalIds: [] as string[],
-        cityId: ''
+        cityId: '',
+        online: false
     })
 
     /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
@@ -248,21 +280,22 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.email = data?.contact?.email || undefined
         facilitySectionFields.value.website = data?.contact?.website || undefined
 
-        facilitySectionFields.value.postalCode = data.contact?.address.postalCode ?? ''
-        facilitySectionFields.value.prefectureEn = data?.contact?.address?.prefectureEn ?? ''
+        facilitySectionFields.value.postalCode = data.contact?.address?.postalCode ?? ''
+        facilitySectionFields.value.prefectureEn = data.contact?.address?.prefectureEn ?? ''
         facilitySectionFields.value.cityEn = data.contact?.address?.cityEn ?? ''
-        facilitySectionFields.value.addressLine1En = data?.contact?.address?.addressLine1En ?? ''
-        facilitySectionFields.value.addressLine2En = data?.contact?.address?.addressLine2En ?? ''
-        facilitySectionFields.value.prefectureJa = data?.contact?.address?.prefectureJa ?? ''
-        facilitySectionFields.value.cityJa = data?.contact?.address?.cityJa ?? ''
+        facilitySectionFields.value.addressLine1En = data.contact?.address?.addressLine1En ?? ''
+        facilitySectionFields.value.addressLine2En = data.contact?.address?.addressLine2En ?? ''
+        facilitySectionFields.value.prefectureJa = data.contact?.address?.prefectureJa ?? ''
+        facilitySectionFields.value.cityJa = data.contact?.address?.cityJa ?? ''
         facilitySectionFields.value.cityId = data.cityId ?? ''
-        facilitySectionFields.value.addressLine1Ja = data?.contact?.address?.addressLine1Ja ?? ''
-        facilitySectionFields.value.addressLine2Ja = data?.contact?.address?.addressLine2Ja ?? ''
-        facilitySectionFields.value.googlemapsURL = data?.contact?.googleMapsUrl ?? ''
+        facilitySectionFields.value.addressLine1Ja = data.contact?.address?.addressLine1Ja ?? ''
+        facilitySectionFields.value.addressLine2Ja = data.contact?.address?.addressLine2Ja ?? ''
+        facilitySectionFields.value.googlemapsURL = data.contact?.googleMapsUrl ?? ''
 
         facilitySectionFields.value.healthcareProfessionalIds = data.healthcareProfessionalIds ?? []
         facilitySectionFields.value.mapLatitude = data.mapLatitude?.toString() ?? ''
         facilitySectionFields.value.mapLongitude = data.mapLongitude?.toString() ?? ''
+        facilitySectionFields.value.online = data.online === true
     }
 
     function resetFacilitySectionFields() {
@@ -285,19 +318,26 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             googlemapsURL: '',
             mapLatitude: '',
             mapLongitude: '',
+            online: false,
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }
     }
 
-    async function getFacilities() {
+    async function searchFacilities(query: string): Promise<Facility[]> {
+        const trimmed = query.trim()
         const filters: FacilitySearchFilters = {
             offset: 0,
-            limit: itemsPerPage.value
+            limit: DIRECTORY_PICKER_LIMIT,
+            ...(trimmed ? { query: trimmed } : {})
         }
+        const { filteredSearchResults } = await fetchFacilitiesWithCount(filters)
+        return filteredSearchResults
+    }
+
+    async function getFacilities() {
         try {
-            const { filteredSearchResults } = await fetchFacilitiesWithCount(filters)
-            facilityData.value = filteredSearchResults
+            facilityData.value = await searchFacilities('')
         } catch (error) {
             console.error(`Error fetching facilities: ${JSON.stringify(error)}`)
             // eslint-disable-next-line no-alert
@@ -337,6 +377,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
     }
 
     async function createFacility(): Promise<ServerResponse<Facility>> {
+        const isOnline = createFacilityFields.online === true
         const { prefectureEn, prefectureJa } = createFacilityFields.contact.address
 
         const CreateFacilityInput: MutationCreateFacilityArgs = {
@@ -344,26 +385,36 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                 nameEn: createFacilityFields.nameEn,
                 nameJa: createFacilityFields.nameJa,
                 contact: {
-                    address: {
-                        addressLine1En: createFacilityFields.contact.address.addressLine1En,
-                        addressLine1Ja: createFacilityFields.contact.address.addressLine1Ja,
-                        addressLine2En: createFacilityFields.contact.address.addressLine2En,
-                        addressLine2Ja: createFacilityFields.contact.address.addressLine2Ja,
-                        cityEn: createFacilityFields.contact.address.cityEn,
-                        cityJa: createFacilityFields.contact.address.cityJa,
-                        postalCode: createFacilityFields.contact.address.postalCode,
-                        prefectureEn,
-                        prefectureJa
-                    },
                     email: createFacilityFields.contact.email,
                     phone: createFacilityFields.contact.phone,
                     website: createFacilityFields.contact.website,
-                    googleMapsUrl: createFacilityFields.contact.googleMapsUrl
+                    ...(isOnline
+                        ? {}
+                        : {
+                            googleMapsUrl: createFacilityFields.contact.googleMapsUrl,
+                            address: {
+                                addressLine1En: createFacilityFields.contact.address.addressLine1En,
+                                addressLine1Ja: createFacilityFields.contact.address.addressLine1Ja,
+                                addressLine2En: createFacilityFields.contact.address.addressLine2En,
+                                addressLine2Ja: createFacilityFields.contact.address.addressLine2Ja,
+                                cityEn: createFacilityFields.contact.address.cityEn,
+                                cityJa: createFacilityFields.contact.address.cityJa,
+                                postalCode: createFacilityFields.contact.address.postalCode,
+                                prefectureEn,
+                                prefectureJa
+                            }
+                        })
                 },
-                mapLatitude: Number(createFacilityFields.mapLatitude),
-                mapLongitude: Number(createFacilityFields.mapLongitude),
                 healthcareProfessionalIds: createFacilityFields.healthcareProfessionalIds,
-                ...(createFacilityFields.cityId ? { cityId: createFacilityFields.cityId } : {})
+                // Online is opt-in: only send when the moderator checked it.
+                ...(isOnline ? { online: true } : {}),
+                ...(isOnline
+                    ? {}
+                    : {
+                        mapLatitude: coordinateOrZero(createFacilityFields.mapLatitude),
+                        mapLongitude: coordinateOrZero(createFacilityFields.mapLongitude),
+                        ...(createFacilityFields.cityId ? { cityId: createFacilityFields.cityId } : {})
+                    })
             }
         }
 
@@ -483,6 +534,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.mapLongitude = ''
         createFacilityFields.healthcareProfessionalIds = []
         createFacilityFields.cityId = ''
+        createFacilityFields.online = false
     }
 
     async function deleteFacility(
@@ -529,6 +581,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
 
     return {
         getFacilities,
+        searchFacilities,
         loadFacilityList,
         createFacility,
         createFacilityFields,

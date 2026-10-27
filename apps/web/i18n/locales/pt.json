@@ -188,7 +188,12 @@
     "confirmExit": "Sair sem salvar",
     "create": "Criar",
     "exit": "Sair",
-    "unsavedChangesMessage": "Você sairá sem salvar. Os dados não salvos serão perdidos."
+    "unsavedChangesMessage": "Você sairá sem salvar. Os dados não salvos serão perdidos.",
+    "hasEmptyFieldsFacility": "Preencha os campos obrigatórios da unidade.",
+    "facilityCreatedSuccessfully": "Unidade criada",
+    "hasEmptyFieldsHealthcareProfessional": "Preencha os campos obrigatórios do profissional de saúde.",
+    "healthcareProfessionalEnglishNameRequired": "O profissional de saúde precisa de um nome em inglês",
+    "healthcareProfessionalCreatedSuccessfully": "Profissional de saúde criado"
   },
   "modDashboardLeftNav": {
     "facilities": "Instalações",
@@ -223,6 +228,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "Adicionar outro nome",
+    "removeName": "Remover nome",
     "healthcareProfessionalMedicalInfoHeading": "Dados do profissional de saúde",
     "healthcareProfessionalNameHeading": "Nome do profissional de saúde",
     "labelHealthcareProfessionalFirstName": "Nome",
@@ -236,10 +243,11 @@
     "selectSpecialties": "Especialidades",
     "selectDegrees": "Títulos",
     "selectLocales": "Idiomas falados",
-    "facilities": "Unidades do profissional de saúde",
+    "facilities": "Unidades associadas",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "Remover {name}",
     "noFacilitiesWereFound": "Nenhuma unidade encontrada",
+    "noFacilitiesLinked": "Nenhuma unidade associada ainda. Pesquise acima para adicionar.",
     "errorMessageHealthcareProfessionalId": "ID do profissional de saúde não encontrado",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Pesquisar por seguro",
@@ -317,6 +325,8 @@
   },
   "modFacilitySection": {
     "addresses": "Endereços",
+    "onlineLabel": "Estabelecimento online",
+    "onlineHint": "Opcional. Marque só se o estabelecimento não tiver endereço. Então endereço, cidade e mapa não são obrigatórios.",
     "contactInformation": "Contato",
     "facilityHeading": "Informações da unidade",
     "googleMapsInformation": "Informações do Google Maps",
@@ -420,7 +430,9 @@
     "lastName": "Sobrenome",
     "firstName": "Nome",
     "middleName": "Nome do meio",
-    "nameLocale": "Idioma do nome"
+    "nameLocale": "Idioma do nome",
+    "editName": "Editar este nome",
+    "closeEditName": "Parar de editar este nome"
   },
   "specialties": {
     "allergyAndImmunology": "Alergista/Imunologista",
@@ -615,6 +627,8 @@
   "clinicPage": {
     "backToSearch": "Voltar à pesquisa",
     "metaDescription": "{name} em {city}, {prefecture}. Endereço, telefone e idiomas falados pela equipe.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Estabelecimento online sem endereço. Telefone e idiomas falados pela equipe.",
     "locationNav": "Local",
     "relatedSpecialtiesHeading": "Navegar por especialidade",
     "relatedLanguagesHeading": "Navegar por idioma"

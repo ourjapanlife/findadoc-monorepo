@@ -9,8 +9,9 @@ export type ExistingFacilityMatch = {
     prefectureEn: string
     cityEn: string
     googleMapsUrl: string
-    mapLatitude: number
-    mapLongitude: number
+    mapLatitude: number | null
+    mapLongitude: number | null
+    online?: boolean
 }
 
 const facilityByGooglePlaceIdQuery = gql`
@@ -26,6 +27,7 @@ type FacilityByPlaceIdResponse = {
         id: string
         nameEn: string
         nameJa: string
+        online?: boolean | null
         mapLatitude?: number | null
         mapLongitude?: number | null
         contact?: {
@@ -73,8 +75,9 @@ function matchFromFacility(
         prefectureEn: facility.contact?.address?.prefectureEn ?? '',
         cityEn: facility.contact?.address?.cityEn ?? '',
         googleMapsUrl: facility.contact?.googleMapsUrl ?? '',
-        mapLatitude: facility.mapLatitude ?? 0,
-        mapLongitude: facility.mapLongitude ?? 0
+        mapLatitude: facility.mapLatitude ?? null,
+        mapLongitude: facility.mapLongitude ?? null,
+        online: facility.online === true
     }
 }
 

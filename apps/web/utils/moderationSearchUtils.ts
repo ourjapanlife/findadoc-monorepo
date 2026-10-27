@@ -1,5 +1,8 @@
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 
+/** One search menu page. A facility list that asks for professional ids cannot return more. */
+export const DIRECTORY_PICKER_LIMIT = 100
+
 function normalizeInput(value: string): string {
     return value.toLowerCase().trim()
 }

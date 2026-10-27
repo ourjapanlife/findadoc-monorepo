@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { reactive, ref, type Ref, computed } from 'vue'
 import { gql } from 'graphql-request'
 import { fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
+import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { professionalSelection } from '../utils/graphqlSelection'
 import { type Insurance,
     type Degree,
@@ -162,14 +163,19 @@ export const useHealthcareProfessionalsStore = defineStore(
             healthcareProfessionalSectionFields.updatedDate = ''
         }
 
-        async function getHealthcareProfessionals() {
-            const filters = {
+        async function searchHealthcareProfessionals(query: string): Promise<HealthcareProfessional[]> {
+            const trimmed = query.trim()
+            const { filteredSearchResults } = await fetchHealthcareProfessionalsWithCount({
                 offset: 0,
-                limit: itemsPerPage.value
-            }
+                limit: DIRECTORY_PICKER_LIMIT,
+                ...(trimmed ? { query: trimmed } : {})
+            })
+            return filteredSearchResults
+        }
+
+        async function getHealthcareProfessionals() {
             try {
-                const { filteredSearchResults } = await fetchHealthcareProfessionalsWithCount(filters)
-                healthcareProfessionalsData.value = filteredSearchResults
+                healthcareProfessionalsData.value = await searchHealthcareProfessionals('')
             } catch (error) {
                 console.error(`Error fetching healthcare professionals: ${JSON.stringify(error)}`)
                 // eslint-disable-next-line no-alert
@@ -433,6 +439,7 @@ export const useHealthcareProfessionalsStore = defineStore(
 
         return {
             getHealthcareProfessionals,
+            searchHealthcareProfessionals,
             loadHealthcareProfessionalList,
             healthcareProfessionalsData,
             filteredHealthcareProfessionalsData,

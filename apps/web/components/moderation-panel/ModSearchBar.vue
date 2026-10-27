@@ -57,7 +57,7 @@
                     :key="item.id ?? index"
                     class="flex cursor-pointer justify-between"
                     :class="[
-                        selectedItems.includes(item) ? 'bg-primary/10' : '',
+                        isSelected(item) ? 'bg-primary/10' : '',
                         selectedItemIndex === index ? 'bg-accent-bg' : '',
                     ]"
                     :data-result-index="index"
@@ -88,7 +88,7 @@
                         <SVGCheckMark
                             class="h-4 m-3"
                             :class="[
-                                selectedItems.includes(item) ? 'opacity-100' : 'opacity-10',
+                                isSelected(item) ? 'opacity-100' : 'opacity-10',
                             ]"
                         />
                     </div>
@@ -185,7 +185,15 @@ const placeMenu = () => {
 const stopTrackingMenu = () => {
     if (!import.meta.client) return
     window.removeEventListener('resize', placeMenu)
-    window.removeEventListener('scroll', placeMenu, true)
+    window.removeEventListener('scroll', onWindowScroll, true)
+}
+
+const onWindowScroll = (event: Event) => {
+    const target = event.target
+    if (target instanceof Node && resultListElement.value?.contains(target)) {
+        return
+    }
+    placeMenu()
 }
 
 const trackMenu = () => {
@@ -193,7 +201,7 @@ const trackMenu = () => {
     stopTrackingMenu()
     placeMenu()
     window.addEventListener('resize', placeMenu)
-    window.addEventListener('scroll', placeMenu, true)
+    window.addEventListener('scroll', onWindowScroll, true)
 }
 
 const handleListScroll = () => {
@@ -204,18 +212,32 @@ const handleListScroll = () => {
     })
 }
 
+const selectionId = (value: unknown): string | null => {
+    if (typeof value !== 'object' || value === null || !('id' in value)) return null
+    const id = value.id
+    return typeof id === 'string' && id !== '' ? id : null
+}
+
+const sameSelection = (selected: unknown, item: unknown) => {
+    if (selected === item) return true
+    const selectedId = selectionId(selected)
+    const itemId = selectionId(item)
+    return selectedId !== null && selectedId === itemId
+}
+
+const isSelected = (item: unknown) => selectedItems.value.some(selected => sameSelection(selected, item))
+
 const handleListItem = () => {
     if (!isEditing.value || filteredItems.value.length === 0) return
 
     const item = filteredItems.value[selectedItemIndex.value]
+    if (item === undefined) return
+    const alreadySelected = selectedItems.value.some(selected => sameSelection(selected, item))
 
-    if (selectedItems.value.includes(item)) {
-        const itemIndex = selectedItems.value.indexOf(item)
-        selectedItems.value.splice(itemIndex, 1)
-        return
-    }
-
-    selectedItems.value.push(item)
+    // Assign a new array so a computed v-model setter runs; an in-place push never reaches it.
+    selectedItems.value = (alreadySelected
+        ? selectedItems.value.filter(selected => !sameSelection(selected, item))
+        : [...selectedItems.value, item]) as T
 }
 
 const handleListItemClick = (event: MouseEvent) => {
@@ -279,6 +301,7 @@ const handleSearchInputChange = (event: Event) => {
 
     if (inputValue.trim() === '') {
         filteredItems.value = defaultSuggestions
+        emit('searchInputChange', filteredItems as Ref<ArrayType<T>[]>, inputValue)
         return
     }
 

@@ -12,6 +12,8 @@ export type HubLocationSource = {
     nameEn?: string | null
     nameJa?: string | null
     updatedDate?: string | null
+    /** Online clinics are not geography hubs. */
+    online?: boolean | null
     contact?: {
         address?: {
             cityEn?: string | null
@@ -225,6 +227,11 @@ export function buildHubIndex(
 ): { prefectures: HubPrefecture[], byPrefecture: Record<string, HubPrefecture> } {
     const cities = new Map<string, MutableCity>()
     for (const facility of facilities) {
+        // Online clinics use /clinic/japan/online/... and must not create /japan
+        // or /japan/unknown geography hubs.
+        if (facility.online === true) {
+            continue
+        }
         addFacilityToCity(cities, facility, officialCities)
     }
 

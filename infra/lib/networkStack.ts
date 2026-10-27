@@ -1,12 +1,13 @@
 import { CfnOutput, Stack, type StackProps } from 'aws-cdk-lib'
-import { IpAddresses, IpProtocol, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2'
+import { GatewayVpcEndpointAwsService, IpAddresses, IpProtocol, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2'
 import type { Construct } from 'constructs'
 
 // The API's network. Two private dual-stack subnets and no NAT gateway. Outbound
 // traffic leaves over IPv6 through an egress-only internet gateway, which is free.
 // Auth0, Google Places and Sentry all publish IPv6 addresses, so the API Lambda
-// can reach them without a NAT gateway (about $45 a month). Nothing here is
-// reachable from the internet.
+// can reach them without a NAT gateway (about $45 a month). S3 is the exception:
+// a gateway endpoint reaches it over the private network, also free. Nothing here
+// is reachable from the internet.
 export class NetworkStack extends Stack {
     readonly vpc: Vpc
 
@@ -26,6 +27,14 @@ export class NetworkStack extends Stack {
                 subnetType: SubnetType.PRIVATE_WITH_EGRESS,
                 cidrMask: 22,
             }],
+        })
+
+        // Free. The API Lambda signs upload URLs without calling S3, and a later
+        // feature can PutObject and GetObject through this endpoint. No NAT, and
+        // no interface endpoint.
+        this.vpc.addGatewayEndpoint('S3', {
+            service: GatewayVpcEndpointAwsService.S3,
+            subnets: [{ subnetType: SubnetType.PRIVATE_WITH_EGRESS }],
         })
 
         new CfnOutput(this, 'VpcId', { value: this.vpc.vpcId })

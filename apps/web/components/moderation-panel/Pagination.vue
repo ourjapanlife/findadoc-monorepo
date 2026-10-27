@@ -54,6 +54,8 @@
         </span>
 
         <button
+            type="button"
+            data-testid="mod-pagination-next"
             :disabled="!hasNext"
             class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded text-primary
             disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"

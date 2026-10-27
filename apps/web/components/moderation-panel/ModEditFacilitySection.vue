@@ -71,7 +71,21 @@
                 />
             </div>
         </ModAccordion>
+        <label class="mb-3 flex items-start gap-2 text-sm text-primary-text">
+            <input
+                v-model="facilityStore.facilitySectionFields.online"
+                data-testid="mod-facility-section-online"
+                class="mt-1"
+                type="checkbox"
+                :disabled="!isEditing"
+            >
+            <span>
+                <span class="font-medium">{{ t('modFacilitySection.onlineLabel') }}</span>
+                <span class="mt-1 block text-primary-text-muted">{{ t('modFacilitySection.onlineHint') }}</span>
+            </span>
+        </label>
         <ModAccordion
+            v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"
             class="mod-facility-address-section"
             :title="t('modFacilitySection.addresses')"
@@ -222,6 +236,7 @@
             </div>
         </ModAccordion>
         <ModAccordion
+            v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"
             class="google-maps-section"
             :title="t('modFacilitySection.googleMapsInformation')"
@@ -285,6 +300,7 @@
                 :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
                 :fields-to-display-callback="healthcareProfessionalsToDisplayCallback"
                 :default-suggestions="defaultHealthcareProfessionalSuggestions"
+                @search-input-blur="handleHealthcareProfessionalsInputChange.cancel"
                 @search-input-change="handleHealthcareProfessionalsInputChange"
             />
             <p
@@ -346,7 +362,7 @@ import type { CityOption } from '~/utils/cityOptions'
 import { listPrefectureJapanEn, listPrefectureJapanJa, pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
 import { checkPrefectureNameMatch } from '~/utils/facilitiesUtils'
 import { stableStringify } from '~/utils/stableStringify'
-import { matchesHealthcareProfessionalSearch } from '~/utils/moderationSearchUtils'
+import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { provideModerationFormEditing, useModerationFormEditing } from '~/composables/useModerationFormMode'
@@ -425,28 +441,33 @@ const selectedHealthcareProfessionalsModel = computed({
     get: () => selectedHealthcareProfessionals.value,
     set: (newValue: HealthcareProfessional[]) => {
         selectedHealthcareProfessionals.value = newValue
-        if (newValue.length) {
-            const professionalsToAdd = newValue.filter(healthcareProfessional =>
-                !facilityStore.facilitySectionFields.healthcareProfessionalIds.includes(healthcareProfessional.id))
-            facilityStore.facilitySectionFields.healthProfessionalsRelations = professionalsToAdd.map(healthcareProfessional => ({
+        const fields = facilityStore.facilitySectionFields
+        const removals = fields.healthProfessionalsRelations
+            .filter(relation => relation.action === RelationshipAction.Delete)
+        const additions = newValue
+            .filter(healthcareProfessional => !fields.healthcareProfessionalIds.includes(healthcareProfessional.id))
+            .map(healthcareProfessional => ({
                 action: RelationshipAction.Create,
                 otherEntityId: healthcareProfessional.id
             }))
-            selectedHealthcareProfessionals.value = []
-        }
+        fields.healthProfessionalsRelations = [...removals, ...additions]
     }
 })
+
+watch(
+    () => facilityStore.facilitySectionFields.healthcareProfessionalIds,
+    linkedIds => {
+        selectedHealthcareProfessionals.value = selectedHealthcareProfessionals.value
+            .filter(healthcareProfessional => !linkedIds.includes(healthcareProfessional.id))
+    }
+)
 const defaultHealthcareProfessionalSuggestions: Ref<HealthcareProfessional[]> = ref([])
 
-const handleHealthcareProfessionalsInputChange = (filteredItems: Ref<HealthcareProfessional[]>, inputValue: string) => {
-    filteredItems.value = healthcareProfessionalsStore.healthcareProfessionalsData
-        .filter((healthcareProfessional: HealthcareProfessional) => {
-            if (facilityStore.facilitySectionFields.healthcareProfessionalIds.includes(healthcareProfessional.id)) {
-                return false
-            }
-            return matchesHealthcareProfessionalSearch(healthcareProfessional, inputValue)
-        })
-}
+const handleHealthcareProfessionalsInputChange = useDirectoryPickerSearch(
+    query => healthcareProfessionalsStore.searchHealthcareProfessionals(query),
+    rows => rows.filter(healthcareProfessional =>
+        !facilityStore.facilitySectionFields.healthcareProfessionalIds.includes(healthcareProfessional.id))
+)
 
 const healthcareProfessionalsToDisplayCallback = (healthcareProfessional: HealthcareProfessional) =>
     [formatFirstLocalizedFullName(healthcareProfessional.names)]

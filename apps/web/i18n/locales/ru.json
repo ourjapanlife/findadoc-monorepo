@@ -188,7 +188,12 @@
     "confirmExit": "Выйти без сохранения",
     "create": "Создать",
     "exit": "Выйти",
-    "unsavedChangesMessage": "Выход без сохранения. Несохранённые данные будут потеряны."
+    "unsavedChangesMessage": "Выход без сохранения. Несохранённые данные будут потеряны.",
+    "hasEmptyFieldsFacility": "Заполните обязательные поля учреждения.",
+    "facilityCreatedSuccessfully": "Учреждение создано",
+    "hasEmptyFieldsHealthcareProfessional": "Заполните обязательные поля специалиста.",
+    "healthcareProfessionalEnglishNameRequired": "У специалиста должно быть имя на английском",
+    "healthcareProfessionalCreatedSuccessfully": "Специалист создан"
   },
   "modDashboardLeftNav": {
     "facilities": "Услуги",
@@ -223,6 +228,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "Добавить ещё одно имя",
+    "removeName": "Удалить имя",
     "healthcareProfessionalMedicalInfoHeading": "Сведения о медицинском специалисте",
     "healthcareProfessionalNameHeading": "Имя медицинского специалиста",
     "labelHealthcareProfessionalFirstName": "Имя",
@@ -236,10 +243,11 @@
     "selectSpecialties": "Специальности",
     "selectDegrees": "Степени",
     "selectLocales": "Языки общения",
-    "facilities": "Учреждения медицинского специалиста",
+    "facilities": "Связанные учреждения",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "Убрать {name}",
     "noFacilitiesWereFound": "Учреждения не найдены",
+    "noFacilitiesLinked": "Связанных учреждений пока нет. Найдите учреждение выше, чтобы добавить его.",
     "errorMessageHealthcareProfessionalId": "ID специалиста не найден",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Поиск по страховке",
@@ -317,6 +325,8 @@
   },
   "modFacilitySection": {
     "addresses": "Адреса",
+    "onlineLabel": "Онлайн-учреждение",
+    "onlineHint": "Необязательно. Отметьте только если у учреждения нет уличного адреса. Тогда адрес, город и карта не нужны.",
     "contactInformation": "Контакты",
     "facilityHeading": "Сведения об учреждении",
     "googleMapsInformation": "Сведения Google Maps",
@@ -420,7 +430,9 @@
     "lastName": "Фамилия",
     "firstName": "Имя",
     "middleName": "Второе имя",
-    "nameLocale": "Язык имени"
+    "nameLocale": "Язык имени",
+    "editName": "Изменить это имя",
+    "closeEditName": "Закончить изменение имени"
   },
   "specialties": {
     "allergyAndImmunology": "Аллергология и иммунология",
@@ -615,6 +627,8 @@
   "clinicPage": {
     "backToSearch": "К поиску",
     "metaDescription": "{name} в {city}, {prefecture}. Адрес, телефон и языки персонала.",
+    "onlineBreadcrumb": "Онлайн",
+    "onlineMetaDescription": "{name}. Онлайн-учреждение без уличного адреса. Телефон и языки персонала.",
     "locationNav": "Место",
     "relatedSpecialtiesHeading": "Просмотр по специальности",
     "relatedLanguagesHeading": "Просмотр по языку"

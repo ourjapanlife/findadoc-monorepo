@@ -40,6 +40,7 @@
                         :no-match-text="t('modHealthcareProfessionalSection.noFacilitiesWereFound')"
                         :fields-to-display-callback="facilitiesFieldsToDisplayCallback"
                         :default-suggestions="facilitiesStore.facilityData"
+                        @search-input-blur="applyFacilitySearch.cancel"
                         @search-input-change="handleFacilitySearchInputChange"
                     />
                     <ModTokenList :labels="linkedFacilityLabels" />
@@ -69,6 +70,7 @@
                         :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
                         :fields-to-display-callback="healthcareProfessionalsToDisplayCallback"
                         :default-suggestions="healthcareProfessionalsStore.healthcareProfessionalsData"
+                        @search-input-blur="applyHealthcareProfessionalSearch.cancel"
                         @search-input-change="handleHealthcareProfessionalsInputChange"
                     />
                     <ModTokenList :labels="linkedHealthcareProfessionalLabels" />
@@ -108,7 +110,8 @@ import { returnWithSuccessToast } from '~/composables/useModerationActionFeedbac
 import { guardWithErrorToastAndEffect } from '~/composables/useModerationGuardFeedback'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import { ModerationSubmissionActionType, useModerationSubmissionActions } from '~/composables/useModerationSubmissionActions'
-import { mapIdsToEntities, matchesFacilitySearch, matchesHealthcareProfessionalSearch } from '~/utils/moderationSearchUtils'
+import { mapIdsToEntities } from '~/utils/moderationSearchUtils'
+import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
 import { formatFirstLocalizedFullName, hasEnglishLocalizedName } from '~/utils/nameUtils'
 import { leaveToModerationDashboard } from '~/utils/moderationUtils'
@@ -204,8 +207,14 @@ function useMatchedFacility() {
     } as Facility]
 }
 
+const applyFacilitySearch = useDirectoryPickerSearch(
+    query => facilitiesStore.searchFacilities(query)
+)
 const handleFacilitySearchInputChange = (filteredItems: Ref<Facility[]>, inputValue: string) => {
-    filteredItems.value = facilitiesStore.facilityData.filter(facility => matchesFacilitySearch(facility, inputValue))
+    applyFacilitySearch(filteredItems, inputValue)
+    if (inputValue.trim() === '') {
+        return
+    }
 
     if (currentFacilityRelations.value.length) {
         facilitiesStore.resetFacilitySectionFields()
@@ -220,10 +229,14 @@ const handleFacilitySearchInputChange = (filteredItems: Ref<Facility[]>, inputVa
 
 const facilitiesFieldsToDisplayCallback = (item: Facility) => [item.nameEn, item.nameJa]
 
+const applyHealthcareProfessionalSearch = useDirectoryPickerSearch(
+    query => healthcareProfessionalsStore.searchHealthcareProfessionals(query)
+)
 const handleHealthcareProfessionalsInputChange = (filteredItems: Ref<HealthcareProfessional[]>, inputValue: string) => {
-    filteredItems.value = healthcareProfessionalsStore.healthcareProfessionalsData
-        .filter((healthcareProfessional: HealthcareProfessional) =>
-            matchesHealthcareProfessionalSearch(healthcareProfessional, inputValue))
+    applyHealthcareProfessionalSearch(filteredItems, inputValue)
+    if (inputValue.trim() === '') {
+        return
+    }
 
     if (currentExistingHealthcareProfessionals.value.length) {
         healthcareProfessionalsStore.resetHealthcareProfessionalSectionFields()
@@ -267,9 +280,9 @@ function createSubmissionDeepCopy(submissionData: Submission): Submission {
                 contact: submissionData.facility.contact
                     ? {
                         ...submissionData.facility.contact,
-                        address: {
-                            ...submissionData.facility.contact.address
-                        }
+                        address: submissionData.facility.contact.address
+                            ? { ...submissionData.facility.contact.address }
+                            : null
                     }
                     : undefined,
                 healthcareProfessionalIds: [...submissionData.facility.healthcareProfessionalIds]
@@ -311,28 +324,29 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
     facilitySectionFields.email = submissionData?.facility?.contact?.email ?? ''
     facilitySectionFields.website = submissionData?.facility?.contact?.website ?? ''
     facilitySectionFields.postalCode
-        = submissionData?.facility?.contact?.address.postalCode ?? ''
+        = submissionData?.facility?.contact?.address?.postalCode ?? ''
     facilitySectionFields.prefectureEn
-        = submissionData?.facility?.contact?.address.prefectureEn ?? ''
+        = submissionData?.facility?.contact?.address?.prefectureEn ?? ''
     facilitySectionFields.cityEn
-        = submissionData?.facility?.contact?.address.cityEn ?? ''
+        = submissionData?.facility?.contact?.address?.cityEn ?? ''
     facilitySectionFields.addressLine1En
-        = submissionData?.facility?.contact?.address.addressLine1En ?? ''
+        = submissionData?.facility?.contact?.address?.addressLine1En ?? ''
     facilitySectionFields.addressLine2En
-        = submissionData?.facility?.contact?.address.addressLine2En ?? ''
+        = submissionData?.facility?.contact?.address?.addressLine2En ?? ''
     facilitySectionFields.prefectureJa
-        = submissionData?.facility?.contact?.address.prefectureJa ?? ''
+        = submissionData?.facility?.contact?.address?.prefectureJa ?? ''
     facilitySectionFields.cityJa
-        = submissionData?.facility?.contact?.address.cityJa ?? ''
+        = submissionData?.facility?.contact?.address?.cityJa ?? ''
     facilitySectionFields.cityId = ''
     facilitySectionFields.addressLine1Ja
-        = submissionData?.facility?.contact?.address.addressLine1Ja ?? ''
+        = submissionData?.facility?.contact?.address?.addressLine1Ja ?? ''
     facilitySectionFields.addressLine2Ja
-        = submissionData?.facility?.contact?.address.addressLine2Ja ?? ''
+        = submissionData?.facility?.contact?.address?.addressLine2Ja ?? ''
     facilitySectionFields.mapLatitude
         = submissionData?.facility?.mapLatitude?.toString() ?? ''
     facilitySectionFields.mapLongitude
         = submissionData?.facility?.mapLongitude?.toString() ?? ''
+    facilitySectionFields.online = submissionData?.facility?.online === true
 
     facilitySectionFields.googlemapsURL
         = submissionData?.facility?.contact?.googleMapsUrl
@@ -340,9 +354,13 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
           ?? ''
 
     facilitySectionFields.healthcareProfessionalIds = submissionData?.facility?.healthcareProfessionalIds ?? []
+    // A searched person may sit outside the preloaded page. Keep the object already picked.
     currentExistingHealthcareProfessionals.value = mapIdsToEntities(
         facilitySectionFields.healthcareProfessionalIds,
-        healthcareProfessionalsStore.healthcareProfessionalsData
+        [
+            ...currentExistingHealthcareProfessionals.value,
+            ...healthcareProfessionalsStore.healthcareProfessionalsData
+        ]
     )
 
     // Healthcare Professionals fields
@@ -370,9 +388,13 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
                   : [])
 
     healthcareProfessionalSections.facilityIds = [...(hp?.facilityIds ?? [])]
+    // A searched clinic may sit outside the preloaded page. Keep the object already picked.
     currentFacilityRelations.value = mapIdsToEntities(
         healthcareProfessionalSections.facilityIds,
-        facilitiesStore.facilityData
+        [
+            ...currentFacilityRelations.value,
+            ...facilitiesStore.facilityData
+        ]
     )
 
     if (submissionData?.healthcareProfessionals?.[0]?.acceptedInsurance) {
@@ -427,28 +449,36 @@ async function saveSubmissionDraft(
         nameEn: facilitiesStore.facilitySectionFields.nameEn,
         nameJa: facilitiesStore.facilitySectionFields.nameJa,
         contact: {
-            googleMapsUrl: facilitiesStore.facilitySectionFields.googlemapsURL,
             email: facilitiesStore.facilitySectionFields.email,
             phone: facilitiesStore.facilitySectionFields.phone,
             website: facilitiesStore.facilitySectionFields.website,
-            address: {
-                postalCode: facilitiesStore.facilitySectionFields.postalCode,
-                prefectureEn: facilitiesStore.facilitySectionFields.prefectureEn,
-                cityEn: facilitiesStore.facilitySectionFields.cityEn,
-                addressLine1En: facilitiesStore.facilitySectionFields.addressLine1En,
-                addressLine2En: facilitiesStore.facilitySectionFields.addressLine2En,
-                prefectureJa: facilitiesStore.facilitySectionFields.prefectureJa,
-                cityJa: facilitiesStore.facilitySectionFields.cityJa,
-                addressLine1Ja: facilitiesStore.facilitySectionFields.addressLine1Ja,
-                addressLine2Ja: facilitiesStore.facilitySectionFields.addressLine2Ja
-            }
+            ...(facilitiesStore.facilitySectionFields.online === true
+                ? { googleMapsUrl: '' }
+                : {
+                    googleMapsUrl: facilitiesStore.facilitySectionFields.googlemapsURL,
+                    address: {
+                        postalCode: facilitiesStore.facilitySectionFields.postalCode,
+                        prefectureEn: facilitiesStore.facilitySectionFields.prefectureEn,
+                        cityEn: facilitiesStore.facilitySectionFields.cityEn,
+                        addressLine1En: facilitiesStore.facilitySectionFields.addressLine1En,
+                        addressLine2En: facilitiesStore.facilitySectionFields.addressLine2En,
+                        prefectureJa: facilitiesStore.facilitySectionFields.prefectureJa,
+                        cityJa: facilitiesStore.facilitySectionFields.cityJa,
+                        addressLine1Ja: facilitiesStore.facilitySectionFields.addressLine1Ja,
+                        addressLine2Ja: facilitiesStore.facilitySectionFields.addressLine2Ja
+                    }
+                })
         },
         healthcareProfessionalIds: facilitiesStore.facilitySectionFields.healthcareProfessionalIds,
-        mapLatitude: parseFloat(facilitiesStore.facilitySectionFields.mapLatitude) || 0,
-        mapLongitude: parseFloat(facilitiesStore.facilitySectionFields.mapLongitude) || 0,
-        ...(facilitiesStore.facilitySectionFields.cityId
-            ? { cityId: facilitiesStore.facilitySectionFields.cityId }
-            : {})
+        ...(facilitiesStore.facilitySectionFields.online === true
+            ? { online: true, mapLatitude: null, mapLongitude: null }
+            : {
+                mapLatitude: parseFloat(facilitiesStore.facilitySectionFields.mapLatitude),
+                mapLongitude: parseFloat(facilitiesStore.facilitySectionFields.mapLongitude),
+                ...(facilitiesStore.facilitySectionFields.cityId
+                    ? { cityId: facilitiesStore.facilitySectionFields.cityId }
+                    : {})
+            })
     }
 
     const healthcareProfessionalUpdate = [

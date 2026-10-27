@@ -68,6 +68,30 @@ describe('facilityPath', () => {
             nameEn: 'Tokyo Family Clinic'
         }))).to.equal(`/clinic/japan/unknown/tokyo-family-clinic${FACILITY_ID_SEPARATOR}f1`)
     })
+
+    it('uses /clinic/japan/online for an online facility so it stays SEO-visible', () => {
+        expect(facilityPath({
+            id: sampleId,
+            nameEn: 'Multilingual online clinic',
+            online: true
+        })).to.equal(
+            `/clinic/japan/online/multilingual-online-clinic${FACILITY_ID_SEPARATOR}${sampleId}`
+        )
+    })
+
+    it('does not use unknown when online even if an address is still on the row', () => {
+        expect(facilityPath({
+            id: 'f2',
+            nameEn: 'Online Care',
+            online: true,
+            contact: {
+                address: {
+                    cityEn: 'Minato',
+                    prefectureEn: 'Tokyo'
+                }
+            } as Facility['contact']
+        })).to.equal(`/clinic/japan/online/online-care${FACILITY_ID_SEPARATOR}f2`)
+    })
 })
 
 describe('facilityIdFromSlugParam', () => {

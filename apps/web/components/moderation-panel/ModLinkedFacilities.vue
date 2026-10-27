@@ -1,32 +1,44 @@
 <template>
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-3">
         <ModSearchBar
-            v-model="pendingFacilities"
+            v-model="selectedFacilities"
             :data-testid="dataTestId"
             :place-holder-text="placeHolderText"
             :no-match-text="noMatchText"
             :fields-to-display-callback="fieldsToDisplay"
             :default-suggestions="suggestions"
+            @search-input-blur="handleSearchInputChange.cancel"
             @search-input-change="handleSearchInputChange"
         />
         <ul
             v-if="linked.length"
-            class="mod-token-list m-0 flex list-none flex-wrap gap-2 p-0"
+            class="m-0 grid list-none gap-2 p-0"
             data-testid="linked-facilities"
         >
             <li
                 v-for="facility in linked"
                 :key="facility.id"
-                class="chip max-w-full min-w-0 gap-1 overflow-hidden pr-1
-                portrait:h-auto portrait:min-h-11 portrait:overflow-visible portrait:whitespace-normal"
+                class="flex min-w-0 items-center gap-3 rounded-lg border border-primary/40 bg-primary/5 px-3 py-2.5"
             >
-                <ChipTag
-                    bare
-                    :label="facilityLinkLabel(facility)"
+                <SVGCheckMark
+                    class="h-4 w-4 shrink-0 text-primary"
+                    aria-hidden="true"
                 />
+                <div class="flex min-w-0 flex-1 flex-col">
+                    <span class="wrap-break-word font-semibold text-primary-text">
+                        {{ facility.nameEn || facility.nameJa || facility.id }}
+                    </span>
+                    <span
+                        v-if="facility.nameEn && facility.nameJa"
+                        class="wrap-break-word text-sm text-primary-text-muted"
+                    >
+                        {{ facility.nameJa }}
+                    </span>
+                </div>
                 <button
                     type="button"
-                    class="mod-edit-only inline-flex h-5 w-5 items-center justify-center rounded-full text-sm leading-none"
+                    class="mod-edit-only inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full
+                        text-lg leading-none text-primary-text hover:bg-accent-bg"
                     :aria-label="removeLabel(facilityLinkLabel(facility))"
                     data-testid="linked-facility-remove"
                     @click="removeFacility(facility.id)"
@@ -35,15 +47,24 @@
                 </button>
             </li>
         </ul>
+        <p
+            v-else
+            class="text-sm text-primary-text-muted"
+            data-testid="linked-facilities-empty"
+        >
+            {{ emptyText }}
+        </p>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, type Ref } from 'vue'
+import { computed } from 'vue'
 import type { Facility } from '@findadoc/graphql'
+import SVGCheckMark from '~/assets/icons/check-mark.svg'
+import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useLinkedFacilities } from '~/composables/useLinkedFacilities'
-import { addFacilityLink, facilityLinkLabel, removeFacilityLink, type LinkedFacilityName } from '~/utils/linkedFacilities'
-import { matchesFacilitySearch } from '~/utils/moderationSearchUtils'
+import { facilityLinkLabel, linkedFacilityIds, removeFacilityLink, type LinkedFacilityName } from '~/utils/linkedFacilities'
+import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 
 const facilityIds = defineModel<string[]>({ required: true })
 
@@ -51,43 +72,41 @@ const props = defineProps<{
     suggestions: Facility[]
     placeHolderText: string
     noMatchText: string
+    emptyText: string
     dataTestId?: string
     removeLabel: (name: string) => string
     loadFacilities?: (ids: readonly string[]) => Promise<LinkedFacilityName[]>
 }>()
 
-const pendingFacilities = ref<Facility[]>([])
 const { linked, remember } = useLinkedFacilities(
     () => facilityIds.value,
     props.loadFacilities
 )
 
-watch(pendingFacilities, picked => {
-    if (!picked.length) {
-        return
+const selectedFacilities = computed<Facility[]>({
+    get: () => linked.value as Facility[],
+    set: picked => {
+        for (const facility of picked) {
+            remember({
+                id: facility.id,
+                nameEn: facility.nameEn ?? '',
+                nameJa: facility.nameJa ?? ''
+            })
+        }
+        facilityIds.value = linkedFacilityIds(picked.map(facility => facility.id))
     }
-    let next = facilityIds.value ?? []
-    for (const facility of picked) {
-        remember({
-            id: facility.id,
-            nameEn: facility.nameEn ?? '',
-            nameJa: facility.nameJa ?? ''
-        })
-        next = addFacilityLink(next, facility.id)
-    }
-    facilityIds.value = next
-    pendingFacilities.value = []
 })
 
 function removeFacility(facilityId: string) {
     facilityIds.value = removeFacilityLink(facilityIds.value, facilityId)
 }
 
-function handleSearchInputChange(filteredItems: Ref<Facility[]>, inputValue: string) {
-    filteredItems.value = props.suggestions.filter(facility => matchesFacilitySearch(facility, inputValue))
-}
+const facilitiesStore = useFacilitiesStore()
+const handleSearchInputChange = useDirectoryPickerSearch(
+    query => facilitiesStore.searchFacilities(query)
+)
 
 function fieldsToDisplay(facility: Facility) {
-    return [facility.nameEn, facility.nameJa]
+    return [facility.nameEn, facility.nameJa].filter(Boolean)
 }
 </script>

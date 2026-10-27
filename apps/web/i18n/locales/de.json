@@ -243,7 +243,12 @@
     "confirmExit": "Verlassen ohne zu Speichern",
     "create": "Erstellen",
     "exit": "Verlassen",
-    "unsavedChangesMessage": "Die Seite wird verlassen, ohne das Ihr Eintrag gespeichert wird. Alle nicht gespeicherten Daten gehen verloren."
+    "unsavedChangesMessage": "Die Seite wird verlassen, ohne dass Ihr Eintrag gespeichert wird. Alle nicht gespeicherten Daten gehen verloren.",
+    "hasEmptyFieldsFacility": "Füllen Sie die Pflichtfelder der Einrichtung aus.",
+    "facilityCreatedSuccessfully": "Einrichtung erstellt",
+    "hasEmptyFieldsHealthcareProfessional": "Füllen Sie die Pflichtfelder der Gesundheitsfachkraft aus.",
+    "healthcareProfessionalEnglishNameRequired": "Die Gesundheitsfachkraft braucht einen englischen Namen",
+    "healthcareProfessionalCreatedSuccessfully": "Gesundheitsfachkraft erstellt"
   },
   "modDashboardLeftNav": {
     "facilities": "Einrichtungen",
@@ -278,6 +283,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "Weiteren Namen hinzufügen",
+    "removeName": "Namen entfernen",
     "healthcareProfessionalMedicalInfoHeading": "Angaben zur Gesundheitsfachkraft",
     "healthcareProfessionalNameHeading": "Name der Gesundheitsfachkraft",
     "labelHealthcareProfessionalFirstName": "Vorname",
@@ -291,10 +298,11 @@
     "selectSpecialties": "Fachgebiete",
     "selectDegrees": "Abschlüsse",
     "selectLocales": "Gesprochene Sprachen",
-    "facilities": "Einrichtungen der Gesundheitsfachkraft",
+    "facilities": "Zugehörige Einrichtungen",
     "placeholderTextFacilitySearchBar": "Search by name or ID to add a Facility",
     "removeFacility": "{name} entfernen",
     "noFacilitiesWereFound": "Keine Einrichtungen gefunden",
+    "noFacilitiesLinked": "Noch keine Einrichtungen zugeordnet. Oben suchen, um eine hinzuzufügen.",
     "errorMessageHealthcareProfessionalId": "ID der Gesundheitsfachkraft wurde nicht gefunden",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextAcceptedInsurances": "Nach Versicherung suchen",
@@ -365,6 +373,8 @@
   },
   "modFacilitySection": {
     "addresses": "Adressen",
+    "onlineLabel": "Online-Einrichtung",
+    "onlineHint": "Optional. Nur ankreuzen, wenn die Einrichtung keine Straßenadresse hat. Dann sind Adresse, Ort und Karte nicht erforderlich.",
     "contactInformation": "Kontakt",
     "facilityHeading": "Angaben zur Einrichtung",
     "googleMapsInformation": "Google Maps information",
@@ -468,7 +478,9 @@
     "lastName": "Nachname",
     "firstName": "Vorname",
     "middleName": "Zweiter Vorname",
-    "nameLocale": "Sprache des Namens"
+    "nameLocale": "Sprache des Namens",
+    "editName": "Diesen Namen bearbeiten",
+    "closeEditName": "Bearbeitung dieses Namens beenden"
   },
   "noteInputField": {
     "optional": "(freiwillig)"
@@ -615,6 +627,8 @@
   "clinicPage": {
     "backToSearch": "Zurück zur Suche",
     "metaDescription": "{name} in {city}, {prefecture}. Adresse, Telefon und Sprachen des Personals.",
+    "onlineBreadcrumb": "Online",
+    "onlineMetaDescription": "{name}. Online-Einrichtung ohne Straßenadresse. Telefon und Sprachen des Personals.",
     "locationNav": "Ort",
     "relatedSpecialtiesHeading": "Nach Fachgebiet stöbern",
     "relatedLanguagesHeading": "Nach Sprache stöbern"

@@ -224,6 +224,7 @@ export class ApiStack extends Stack {
         }))
 
         // One data point per failed search, from the request log line (apps/server/src/requestErrors.ts).
+        // Every other log line reports 0. Without that, a quiet API sends no data and the alarm stays in ALARM.
         const searchFailures = new MetricFilter(this, 'SearchFailures', {
             logGroup: fn.logGroup,
             filterName: 'findadoc-api-search-failures',
@@ -234,6 +235,7 @@ export class ApiStack extends Stack {
             metricNamespace: 'findadoc',
             metricName: 'SearchFailures',
             metricValue: '1',
+            defaultValue: 0,
         })
 
         alerts.notify(new Alarm(this, 'ApiSearchFailures', {

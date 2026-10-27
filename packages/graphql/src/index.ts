@@ -257,11 +257,14 @@ export type ClinicSiteTheme = {
 /** Contact information for a facility. */
 export type Contact = {
   __typename?: 'Contact';
-  /** Physical mailing address. */
-  address: PhysicalAddress;
+  /**
+   * Physical mailing address.
+   * Null on an online facility (no street address).
+   */
+  address?: Maybe<PhysicalAddress>;
   /** Email address. */
   email?: Maybe<Scalars['String']['output']>;
-  /** Google Maps URL for the facility location. */
+  /** Google Maps URL for the facility location. Empty on an online facility. */
   googleMapsUrl: Scalars['String']['output'];
   /** Phone number. */
   phone: Scalars['String']['output'];
@@ -271,12 +274,15 @@ export type Contact = {
 
 /** Input for providing contact information. */
 export type ContactInput = {
-  /** Physical mailing address. */
-  address: PhysicalAddressInput;
+  /**
+   * Physical mailing address.
+   * Required for a normal facility. Omit for an online facility.
+   */
+  address?: InputMaybe<PhysicalAddressInput>;
   /** Email address. */
   email?: InputMaybe<Scalars['String']['input']>;
-  /** Google Maps URL for the facility location. */
-  googleMapsUrl: Scalars['String']['input'];
+  /** Google Maps URL for the facility location. Omit or empty for an online facility. */
+  googleMapsUrl?: InputMaybe<Scalars['String']['input']>;
   /** Phone number. */
   phone: Scalars['String']['input'];
   /** Website URL. */
@@ -293,14 +299,26 @@ export type CreateFacilityInput = {
   googlePlaceId?: InputMaybe<Scalars['String']['input']>;
   /** IDs of healthcare professionals to associate with this facility. */
   healthcareProfessionalIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** Latitude coordinate for map placement. */
-  mapLatitude: Scalars['Float']['input'];
-  /** Longitude coordinate for map placement. */
-  mapLongitude: Scalars['Float']['input'];
+  /**
+   * Latitude for map placement.
+   * Required for a normal facility (a real pin, not 0). Omit for an online facility; stored as null.
+   */
+  mapLatitude?: InputMaybe<Scalars['Float']['input']>;
+  /**
+   * Longitude for map placement.
+   * Required for a normal facility (a real pin, not 0). Omit for an online facility; stored as null.
+   */
+  mapLongitude?: InputMaybe<Scalars['Float']['input']>;
   /** Name of the facility in English. */
   nameEn: Scalars['String']['input'];
   /** Name of the facility in Japanese. */
   nameJa: Scalars['String']['input'];
+  /**
+   * Optional. Set true only for an online facility with no street address.
+   * Omit or false for a normal facility. Defaults to false.
+   * When true, address, city, and map may be omitted.
+   */
+  online?: InputMaybe<Scalars['Boolean']['input']>;
   /** Payment options for the facility, Type and Brand */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
   /** Where this facility record came from. */
@@ -434,14 +452,25 @@ export type Facility = {
   healthcareProfessionalIds: Array<Scalars['ID']['output']>;
   /** Unique identifier for the facility. */
   id: Scalars['ID']['output'];
-  /** Latitude coordinate for map placement. */
-  mapLatitude: Scalars['Float']['output'];
-  /** Longitude coordinate for map placement. */
-  mapLongitude: Scalars['Float']['output'];
+  /**
+   * Latitude for map placement.
+   * Null on an online facility (no street address / no pin).
+   */
+  mapLatitude?: Maybe<Scalars['Float']['output']>;
+  /**
+   * Longitude for map placement.
+   * Null on an online facility (no street address / no pin).
+   */
+  mapLongitude?: Maybe<Scalars['Float']['output']>;
   /** Name of the facility in English. */
   nameEn: Scalars['String']['output'];
   /** Name of the facility in Japanese. */
   nameJa: Scalars['String']['output'];
+  /**
+   * True only when a moderator selected online (no street address).
+   * Default is false. Address, city, and map are not required when true.
+   */
+  online: Scalars['Boolean']['output'];
   /** The payment methods accepted by this facility. */
   paymentOptions?: Maybe<Array<PaymentOption>>;
   /** Where the facility record came from. Null on rows that have not been classified. */
@@ -535,6 +564,11 @@ export type FacilitySubmission = {
   nameEn?: Maybe<Scalars['String']['output']>;
   /** Submitted facility name in Japanese. */
   nameJa?: Maybe<Scalars['String']['output']>;
+  /**
+   * True when a moderator marked this facility as online (no street address).
+   * Absent or false means a normal facility. Not set by the public form.
+   */
+  online?: Maybe<Scalars['Boolean']['output']>;
 };
 
 /** Location check for a facility. UNVERIFIED_LOCATION means there is no cityId. */
@@ -1433,14 +1467,19 @@ export type UpdateFacilityInput = {
   googlePlaceId?: InputMaybe<Scalars['String']['input']>;
   /** Healthcare professional relationships to add, update, or remove. */
   healthcareProfessionalIds?: InputMaybe<Array<Relationship>>;
-  /** Updated latitude coordinate. */
+  /** Updated latitude coordinate. Cleared when the facility becomes online. */
   mapLatitude?: InputMaybe<Scalars['Float']['input']>;
-  /** Updated longitude coordinate. */
+  /** Updated longitude coordinate. Cleared when the facility becomes online. */
   mapLongitude?: InputMaybe<Scalars['Float']['input']>;
   /** Updated name of the facility in English. */
   nameEn?: InputMaybe<Scalars['String']['input']>;
   /** Updated name of the facility in Japanese. */
   nameJa?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Optional. Set true only for an online facility with no street address.
+   * Omit to leave the stored value unchanged.
+   */
+  online?: InputMaybe<Scalars['Boolean']['input']>;
   /** Payment options for the facility, Type and Brand */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
   /** Where this facility record came from. */
@@ -1895,7 +1934,7 @@ export type ClinicSiteThemeResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = {
-  address?: Resolver<ResolversTypes['PhysicalAddress'], ParentType, ContextType>;
+  address?: Resolver<Maybe<ResolversTypes['PhysicalAddress']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   googleMapsUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1920,10 +1959,11 @@ export type FacilityResolvers<ContextType = any, ParentType extends ResolversPar
   googlePlaceId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   healthcareProfessionalIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  mapLatitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  mapLongitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  mapLatitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  mapLongitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  online?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   paymentOptions?: Resolver<Maybe<Array<ResolversTypes['PaymentOption']>>, ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes['FacilitySource']>, ParentType, ContextType>;
   supportedLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
@@ -1947,6 +1987,7 @@ export type FacilitySubmissionResolvers<ContextType = any, ParentType extends Re
   mapLongitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   nameEn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   nameJa?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  online?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
 };
 
 export type HealthcareProfessionalResolvers<ContextType = any, ParentType extends ResolversParentTypes['HealthcareProfessional'] = ResolversParentTypes['HealthcareProfessional']> = {
