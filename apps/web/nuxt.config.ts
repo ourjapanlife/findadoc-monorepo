@@ -216,11 +216,16 @@ export default defineNuxtConfig({
         '/login': { ssr: false },
         '/my-page': { ssr: false },
         '/my-page/**': { ssr: false },
+        // Booking loads the form from the API for a clinic id/host. No static HTML.
+        '/book': { ssr: false },
+        '/book/**': { ssr: false },
         // prefix_except_default: the same SPA surfaces under /ja-JP/search and so on.
         '/:locale/search': { ssr: false },
         '/:locale/login': { ssr: false },
         '/:locale/my-page': { ssr: false },
-        '/:locale/my-page/**': { ssr: false }
+        '/:locale/my-page/**': { ssr: false },
+        '/:locale/book': { ssr: false },
+        '/:locale/book/**': { ssr: false }
         // `/clinic/:slug` is not `ssr: false`. Nuxt treats that rule as covering
         // `/clinic/{prefecture}/{city}/{slug}` and stubs the directory page, so
         // generate writes an empty shell. Preview landings stay off the prerender

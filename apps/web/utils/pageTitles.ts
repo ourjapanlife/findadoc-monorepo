@@ -57,7 +57,7 @@ const UNTITLED_ROUTE_PREFIXES = ['/my-page', '/u', '/login', '/404'] as const
  * in PAGE_META_TITLE_ROUTES (one key cannot cover hundreds of clinics or
  * doctors) and must not fall through to the brand-only title in `app.vue`.
  */
-const ENTITY_ROUTE_PREFIXES = ['/clinic', '/doctor'] as const
+const ENTITY_ROUTE_PREFIXES = ['/clinic', '/doctor', '/book'] as const
 
 function normalisePagePath(path: string): string {
     return unlocalizedPath(path)

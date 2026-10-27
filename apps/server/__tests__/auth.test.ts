@@ -245,6 +245,7 @@ describe('getEffectiveScopes()', () => {
         const scopes = getEffectiveScopes(devUser)
         expect(scopes.includes(Scope['write:facilities'])).toBe(false)
         expect(scopes.includes(Scope['read:facilities'])).toBe(true)
+        expect(scopes.includes(Scope['create:bookings'])).toBe(true)
     })
 
     it('does not strip write scopes in production for Moderator', () => {
@@ -270,15 +271,17 @@ describe('roleScopes invariant: no accidental changes', () => {
             Scope['read:profile'],
             Scope['write:posts'],
             Scope['read:logs'], Scope['write:logs'],
-            Scope['read:reservations'], Scope['write:reservations']
+            Scope['read:reservations'], Scope['write:reservations'],
+            Scope['create:bookings']
         ],
         [Role.Moderator]: [
             Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
             Scope['read:facilities'], Scope['write:facilities'], Scope['delete:facilities'],
             Scope['read:submissions'], Scope['write:submissions'], Scope['delete:submissions'],
-            Scope['read:profile'],
+            Scope['read:profile'], 
             Scope['write:posts'],
-            Scope['read:reservations'], Scope['write:reservations']
+            Scope['read:reservations'], Scope['write:reservations'],
+            Scope['create:bookings']
         ],
         [Role.Dev]: [
             Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -288,12 +291,14 @@ describe('roleScopes invariant: no accidental changes', () => {
             Scope['read:profile'], 
             Scope['write:posts'],
             Scope['read:logs'], Scope['write:logs'],
-            Scope['read:reservations'], Scope['write:reservations']
+            Scope['read:reservations'], Scope['write:reservations'],
+            Scope['create:bookings']
         ],
         [Role.User]: [
             Scope['read:healthcareprofessionals'],
             Scope['read:facilities'],
             Scope['create:submissions'],
+            Scope['create:bookings'],
             Scope['read:profile'],
             Scope['read:reservations'], Scope['write:reservations']
         ]

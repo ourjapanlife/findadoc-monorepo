@@ -710,5 +710,47 @@
     "dismiss": "閉じる",
     "announceLabel": "通知",
     "viewportLabel": "通知（{hotkey}）"
+  },
+  "bookingPage": {
+    "documentTitle": "予約 · {clinic}",
+    "eyebrow": "予約リクエスト",
+    "heading": "{clinic}の予約",
+    "lead": "クリニックへ連絡先と必要事項を送ります。確定はクリニックからの返信後です。",
+    "optional": "任意",
+    "selectPlaceholder": "選択してください",
+    "submit": "リクエストを送る",
+    "submitting": "送信中…",
+    "saveAutofill": "オートフィル用に保存（localhost）",
+    "autofillSaved": "このブラウザにlocalhost用の下書きを保存しました。",
+    "autofillRestored": "保存したlocalhostの回答を復元しました。",
+    "privacyNote": "この内容はクリニックに届きます。Find a Docは医療アドバイスを行いません。",
+    "successHeading": "送信しました",
+    "successBody": "クリニックから予約について連絡があります。",
+    "reference": "受付番号: {id}",
+    "fields": {
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "fullName": "氏名",
+      "age": "年齢",
+      "reason": "受診理由",
+      "insuranceDocument": "保険証または資格確認書"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "身分証と同じ氏名",
+      "age": "35",
+      "reason": "症状や希望を短く書いてください"
+    },
+    "errors": {
+      "required": "必須項目です",
+      "email": "有効なメールアドレスを入力してください",
+      "phone": "有効な電話番号を入力してください",
+      "number": "数字を入力してください",
+      "fileTooLarge": "ファイルが大きすぎます",
+      "uploadFailed": "アップロードに失敗しました。もう一度お試しください。",
+      "form": "赤字の項目を確認してください",
+      "submitFailed": "送信できませんでした。もう一度お試しください。"
+    }
   }
 }

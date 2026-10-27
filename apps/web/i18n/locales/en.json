@@ -710,5 +710,47 @@
     "dismiss": "Dismiss",
     "announceLabel": "Notification",
     "viewportLabel": "Notifications ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Book · {clinic}",
+    "eyebrow": "Appointment request",
+    "heading": "Book with {clinic}",
+    "lead": "Send your details to the clinic. Nothing is confirmed until they reply.",
+    "optional": "optional",
+    "selectPlaceholder": "Choose one",
+    "submit": "Send request",
+    "submitting": "Sending…",
+    "saveAutofill": "Save for autofill (localhost)",
+    "autofillSaved": "Saved on this browser for localhost autofill.",
+    "autofillRestored": "Restored your saved localhost answers.",
+    "privacyNote": "The clinic receives this request. Find a Doc does not provide medical advice.",
+    "successHeading": "Request sent",
+    "successBody": "The clinic will contact you about the appointment.",
+    "reference": "Reference: {id}",
+    "fields": {
+      "email": "Email",
+      "phone": "Phone number",
+      "fullName": "Full name",
+      "age": "Age",
+      "reason": "Reason for visit",
+      "insuranceDocument": "Insurance card or eligibility certificate"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Name as on your ID",
+      "age": "35",
+      "reason": "Short description of what you need"
+    },
+    "errors": {
+      "required": "This field is required",
+      "email": "Enter a valid email",
+      "phone": "Enter a valid phone number",
+      "number": "Enter a number",
+      "fileTooLarge": "That file is too large",
+      "uploadFailed": "Upload failed. Try again.",
+      "form": "Check the highlighted fields",
+      "submitFailed": "Could not send the request. Try again."
+    }
   }
 }

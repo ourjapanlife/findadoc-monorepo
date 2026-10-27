@@ -710,5 +710,47 @@
     "dismiss": "Schließen",
     "announceLabel": "Meldung",
     "viewportLabel": "Hinweise ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Termin · {clinic}",
+    "eyebrow": "Terminanfrage",
+    "heading": "Termin bei {clinic}",
+    "lead": "Senden Sie Ihre Angaben an die Klinik. Bestätigt ist erst nach ihrer Antwort.",
+    "optional": "freiwillig",
+    "selectPlaceholder": "Auswählen",
+    "submit": "Anfrage senden",
+    "submitting": "Wird gesendet…",
+    "saveAutofill": "Für Autofill speichern (localhost)",
+    "autofillSaved": "Localhost-Entwurf in diesem Browser gespeichert.",
+    "autofillRestored": "Gespeicherte localhost-Antworten wiederhergestellt.",
+    "privacyNote": "Die Klinik erhält diese Anfrage. Find a Doc gibt keine medizinische Beratung.",
+    "successHeading": "Anfrage gesendet",
+    "successBody": "Die Klinik meldet sich wegen des Termins.",
+    "reference": "Referenz: {id}",
+    "fields": {
+      "email": "E-Mail",
+      "phone": "Telefonnummer",
+      "fullName": "Vollständiger Name",
+      "age": "Alter",
+      "reason": "Grund des Besuchs",
+      "insuranceDocument": "Versicherungskarte oder Berechtigungsnachweis"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Name wie im Ausweis",
+      "age": "35",
+      "reason": "Kurz beschreiben, was Sie brauchen"
+    },
+    "errors": {
+      "required": "Pflichtfeld",
+      "email": "Gültige E-Mail eingeben",
+      "phone": "Gültige Telefonnummer eingeben",
+      "number": "Zahl eingeben",
+      "fileTooLarge": "Datei ist zu groß",
+      "uploadFailed": "Upload fehlgeschlagen. Erneut versuchen.",
+      "form": "Markierte Felder prüfen",
+      "submitFailed": "Senden fehlgeschlagen. Erneut versuchen."
+    }
   }
 }

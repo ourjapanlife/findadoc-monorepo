@@ -11,6 +11,8 @@ import * as citySuggestionService from './services/citySuggestionService.js'
 import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
 import * as facilityPlaceService from './services/facilityPlaceService.js'
 import * as clinicSiteService from './services/clinicSiteService.js'
+import * as bookingService from './services/bookingService.js'
+import { envVariables } from '../utils/environmentVariables.js'
 import { Result } from './result.js'
 import { logger } from './logger.js'
 import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
@@ -34,6 +36,8 @@ const resolvers = {
         : Promise<gqlType.ClinicSite | null> => clinicSiteService.getClinicSiteBySlug(args.slug)),
         clinicSites: withScope(Scope['read:facilities'], async ()
         : Promise<gqlType.ClinicSiteSummary[]> => clinicSiteService.listPublicClinicSites()),
+        bookingForm: withScope(Scope['read:facilities'], async (_parent: unknown, args: { clinicSiteId: string })
+        : Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId)),
         facility: withScope(Scope['read:facilities'], async (_parent: unknown, args: { id: string; })
         : Promise<FacilityParent> => {
             const queryResults = await facilityService.getFacilityById(args.id)
@@ -354,6 +358,25 @@ const resolvers = {
             const createReservationResult = await reservationService.createReservation(args.input)
 
             return createReservationResult.data
+        }),
+
+        createBookingUploadUrl: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
+            input: gqlType.CreateBookingUploadUrlInput
+        }): Promise<gqlType.BookingUploadUrl> => {
+            const result = await bookingService.createBookingUploadUrl(
+                args.input,
+                envVariables.apiURL() || 'http://127.0.0.1:4000'
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        submitBooking: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
+            input: gqlType.SubmitBookingInput
+        }): Promise<gqlType.BookingSubmissionResult> => {
+            const result = await bookingService.submitBooking(args.input)
+            convertErrorsToGqlErrors(result)
+            return result.data
         })
     }
 }

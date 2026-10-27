@@ -18,6 +18,7 @@ import resolvers from './resolvers.js'
 import { logger } from './logger.js'
 import { isServerError, requestErrorFields } from './requestErrors.js'
 import { clientIpFrom } from '@findadoc/utils'
+import { storeLocalBookingUpload } from './storage/objectStorage.js'
 
 /**
  * Builds the Fastify app with Apollo on `/`, ready to serve but not listening.
@@ -138,6 +139,53 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
                 loaders: createLoaders()
             })
         })
+    })
+
+    // Local booking uploads when STORAGE_BACKEND is not s3. Production uses S3 presigned URLs.
+    const bookingUploadTypes = [
+        'application/octet-stream',
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'image/webp'
+    ]
+    for (const contentType of bookingUploadTypes) {
+        fastify.addContentTypeParser(contentType, { parseAs: 'buffer' }, (_request, body, done) => {
+            done(null, body)
+        })
+    }
+
+    await fastify.route({
+        url: '/dev-uploads/*',
+        method: ['PUT', 'OPTIONS'],
+        handler: async (request, reply) => {
+            if (envVariables.storageBackend() === 's3') {
+                return reply.code(404).send({ error: 'Not found' })
+            }
+
+            const wildcard = (request.params as { '*': string })['*']
+            const objectKey = decodeURIComponent(wildcard ?? '')
+            if (!objectKey.startsWith('uploads/booking/')) {
+                return reply.code(400).send({ error: 'Invalid key' })
+            }
+
+            const contentType = typeof request.headers['content-type'] === 'string'
+                ? request.headers['content-type']
+                : 'application/octet-stream'
+            const body = Buffer.isBuffer(request.body)
+                ? request.body
+                : Buffer.from(typeof request.body === 'string' ? request.body : '')
+
+            if (body.byteLength === 0) {
+                return reply.code(400).send({ error: 'Empty body' })
+            }
+            if (body.byteLength > 8 * 1024 * 1024) {
+                return reply.code(413).send({ error: 'Too large' })
+            }
+
+            await storeLocalBookingUpload(objectKey, body, contentType)
+            return reply.code(204).send()
+        }
     })
 
     return fastify

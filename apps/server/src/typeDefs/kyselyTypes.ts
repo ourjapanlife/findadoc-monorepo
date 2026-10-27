@@ -212,6 +212,33 @@ export interface ClinicSiteLocalesTable {
     document: ColumnType<Record<string, unknown>, string, string>
 }
 
+/** Patient booking intake. answers is the scalar map; files are booking_uploads rows. */
+export interface BookingSubmissionsTable {
+    id: Generated<string>
+    clinic_site_id: string
+    form_definition_id: string
+    form_version: number
+    locale: string
+    answers: ColumnType<Record<string, string>, Record<string, string>, Record<string, string>>
+    status: string
+    notify_email_sent_at: string | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** One uploaded file for a booking field. object_key is under uploads/booking/. */
+export interface BookingUploadsTable {
+    id: Generated<string>
+    clinic_site_id: string
+    booking_submission_id: string | null
+    field_id: string
+    object_key: string
+    content_type: string
+    file_name: string
+    byte_size: number | null
+    created_date: Generated<string>
+}
+
 /**
  * Database interface - combines all tables
  */
@@ -231,6 +258,8 @@ export interface Database {
     clinic_site_languages: ClinicSiteLanguagesTable
     clinic_site_doctors: ClinicSiteDoctorsTable
     clinic_site_locales: ClinicSiteLocalesTable
+    booking_submissions: BookingSubmissionsTable
+    booking_uploads: BookingUploadsTable
 }
 
 /**

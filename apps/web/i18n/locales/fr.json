@@ -710,5 +710,47 @@
     "dismiss": "Fermer",
     "announceLabel": "Message",
     "viewportLabel": "Messages ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Réserver · {clinic}",
+    "eyebrow": "Demande de rendez-vous",
+    "heading": "Réserver avec {clinic}",
+    "lead": "Envoyez vos informations à la clinique. Rien n’est confirmé avant leur réponse.",
+    "optional": "facultatif",
+    "selectPlaceholder": "Choisir",
+    "submit": "Envoyer la demande",
+    "submitting": "Envoi…",
+    "saveAutofill": "Enregistrer pour remplissage auto (localhost)",
+    "autofillSaved": "Brouillon localhost enregistré sur ce navigateur.",
+    "autofillRestored": "Réponses localhost enregistrées restaurées.",
+    "privacyNote": "La clinique reçoit cette demande. Find a Doc ne donne pas de conseils médicaux.",
+    "successHeading": "Demande envoyée",
+    "successBody": "La clinique vous contactera au sujet du rendez-vous.",
+    "reference": "Référence : {id}",
+    "fields": {
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "fullName": "Nom complet",
+      "age": "Âge",
+      "reason": "Motif de la visite",
+      "insuranceDocument": "Carte d’assurance ou certificat d’éligibilité"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Nom tel que sur la pièce d’identité",
+      "age": "35",
+      "reason": "Courte description de votre besoin"
+    },
+    "errors": {
+      "required": "Ce champ est obligatoire",
+      "email": "Saisissez un e-mail valide",
+      "phone": "Saisissez un numéro valide",
+      "number": "Saisissez un nombre",
+      "fileTooLarge": "Ce fichier est trop volumineux",
+      "uploadFailed": "Échec du téléversement. Réessayez.",
+      "form": "Vérifiez les champs surlignés",
+      "submitFailed": "Impossible d’envoyer. Réessayez."
+    }
   }
 }

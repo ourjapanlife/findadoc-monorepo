@@ -37,6 +37,7 @@ export enum Scope {
     'write:users' = 'write:users',
     'delete:users' = 'delete:users',
     'create:submissions' = 'create:submissions',
+    'create:bookings' = 'create:bookings',
     'read:reservations' = 'read:reservations',
     'write:reservations' = 'write:reservations'
 }
@@ -54,7 +55,8 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['read:profile'], 
         Scope['write:posts'],
         Scope['read:logs'], Scope['write:logs'],
-        Scope['read:reservations'], Scope['write:reservations']
+        Scope['read:reservations'], Scope['write:reservations'],
+        Scope['create:bookings']
     ],
     [Role.Moderator]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -62,7 +64,8 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['read:submissions'], Scope['write:submissions'], Scope['delete:submissions'],
         Scope['read:profile'], 
         Scope['write:posts'],
-        Scope['read:reservations'], Scope['write:reservations']
+        Scope['read:reservations'], Scope['write:reservations'],
+        Scope['create:bookings']
     ],
     [Role.Dev]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -72,12 +75,14 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['read:profile'], 
         Scope['write:posts'],
         Scope['read:logs'], Scope['write:logs'],
-        Scope['read:reservations'], Scope['write:reservations']
+        Scope['read:reservations'], Scope['write:reservations'],
+        Scope['create:bookings']
     ],
     [Role.User]: [
         Scope['read:healthcareprofessionals'], 
         Scope['read:facilities'], 
         Scope['create:submissions'],
+        Scope['create:bookings'],
         Scope['read:profile'],
         Scope['read:reservations'], Scope['write:reservations']
     ]
@@ -110,7 +115,10 @@ export function getEffectiveScopes(user: User | null | undefined): Scope[] {
     if (envVariables.isProduction() &&
         !currentUserRoles.includes(Role.Admin) &&
         !currentUserRoles.includes(Role.Moderator)) {
-        merged = merged.filter(scope => scope.startsWith('read:') || scope === Scope['create:submissions'])
+        merged = merged.filter(scope =>
+            scope.startsWith('read:')
+            || scope === Scope['create:submissions']
+            || scope === Scope['create:bookings'])
     }
 
     return [...new Set(merged)]

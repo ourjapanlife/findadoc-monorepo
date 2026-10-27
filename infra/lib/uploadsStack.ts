@@ -49,7 +49,9 @@ export class UploadsStack extends Stack {
                     'https://*.findadoc.jp',
                     'https://*.amplifyapp.com',
                     'http://localhost:3000',
+                    'http://*.localhost:3000',
                     'http://localhost:4242',
+                    'http://127.0.0.1:3000',
                     'http://127.0.0.1:4242',
                 ],
                 allowedHeaders: ['content-type', 'x-amz-*'],
@@ -76,7 +78,8 @@ export class UploadsStack extends Stack {
             ],
         })
 
-        props.apiFunction.addEnvironment('STORAGE_BACKEND', 'none')
+        // Booking intake uploads insurance images through API-signed URLs.
+        props.apiFunction.addEnvironment('STORAGE_BACKEND', 's3')
         props.apiFunction.addEnvironment('S3_BUCKET', bucketName)
         props.apiFunction.addEnvironment('S3_REGION', FINDADOC_ENV.region)
 

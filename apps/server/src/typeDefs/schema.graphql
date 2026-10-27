@@ -1154,6 +1154,115 @@ type ClinicSiteSummary {
   shareImagePath: String!
 }
 
+"""
+Field type on a clinic booking form.
+A later CRM picks the fields; the web renderer stays generic.
+"""
+enum BookingFormFieldType {
+  EMAIL
+  PHONE
+  NUMBER
+  TEXT
+  TEXTAREA
+  FILE
+  SELECT
+}
+
+"""One choice on a SELECT booking field."""
+type BookingFormFieldOption {
+  value: String!
+  labelKey: String!
+  label: String
+}
+
+"""
+One input on a clinic booking form.
+labelKey is the site i18n key when label is null. A CRM may set label per locale.
+"""
+type BookingFormField {
+  id: ID!
+  type: BookingFormFieldType!
+  required: Boolean!
+  labelKey: String!
+  label: String
+  placeholderKey: String
+  accept: String
+  maxLength: Int
+  maxBytes: Int
+  min: Float
+  max: Float
+  options: [BookingFormFieldOption!]
+}
+
+"""
+The intake form for one hosted clinic.
+id and version are stable so a CRM can replace the definition later without
+changing the submission table. Until then the API serves a code-defined form.
+"""
+type BookingForm {
+  id: ID!
+  version: Int!
+  clinicSiteId: ID!
+  clinicSiteSlug: String!
+  clinicName: String!
+  themePrimary: String
+  notifyEmail: String
+  fields: [BookingFormField!]!
+}
+
+"""A pending upload slot. The browser PUTs the file to uploadUrl, then submits the booking."""
+type BookingUploadUrl {
+  uploadId: ID!
+  objectKey: String!
+  uploadUrl: String!
+  headers: [BookingUploadHeader!]!
+  expiresAt: String!
+}
+
+type BookingUploadHeader {
+  name: String!
+  value: String!
+}
+
+"""Result of a patient booking submission. No medical free-text is returned."""
+type BookingSubmissionResult {
+  id: ID!
+  clinicSiteId: ID!
+  status: BookingSubmissionStatus!
+  createdDate: String!
+}
+
+enum BookingSubmissionStatus {
+  RECEIVED
+  NOTIFIED
+  FAILED_NOTIFY
+}
+
+input CreateBookingUploadUrlInput {
+  """Clinic site id or slug."""
+  clinicSiteId: ID!
+  fieldId: String!
+  contentType: String!
+  fileName: String!
+  byteSize: Int
+}
+
+input BookingAnswerInput {
+  fieldId: String!
+  """Scalar answer as text. FILE fields use uploadId instead."""
+  value: String
+  uploadId: ID
+}
+
+input SubmitBookingInput {
+  """Clinic site id or slug."""
+  clinicSiteId: ID!
+  formDefinitionId: String!
+  formVersion: Int!
+  locale: String!
+  answers: [BookingAnswerInput!]!
+}
+
 type Query {
   """Roles and effective API scopes for the authenticated user (always allowed when a user context exists)."""
   currentUserAccess: CurrentUserAccess!
@@ -1165,6 +1274,12 @@ type Query {
 
   """Hosted clinics that are in preview or published. Drafts are omitted."""
   clinicSites: [ClinicSiteSummary!]!
+
+  """
+  The booking intake form for a hosted clinic.
+  Pass the clinic site id or slug. Drafts and unknown clinics are null.
+  """
+  bookingForm(clinicSiteId: ID!): BookingForm
 
   """Look up a single facility by its unique ID. Returns null if not found."""
   facility(id: ID!): Facility
@@ -1394,4 +1509,16 @@ type Mutation {
 
   """Update an existing reservation."""
   updateReservation(input: UpdateReservationInput!): Reservation!
+
+  """
+  Create a short-lived upload URL for one booking file field.
+  The browser uploads the file, then passes uploadId to submitBooking.
+  """
+  createBookingUploadUrl(input: CreateBookingUploadUrlInput!): BookingUploadUrl!
+
+  """
+  Submit a clinic booking form.
+  Sends a SES notification when email is configured; otherwise records the row only.
+  """
+  submitBooking(input: SubmitBookingInput!): BookingSubmissionResult!
 }

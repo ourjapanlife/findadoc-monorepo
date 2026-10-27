@@ -710,5 +710,47 @@
     "dismiss": "Isara",
     "announceLabel": "Abiso",
     "viewportLabel": "Mga abiso ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Mag-book · {clinic}",
+    "eyebrow": "Kahilingan sa appointment",
+    "heading": "Mag-book sa {clinic}",
+    "lead": "Ipadala ang iyong detalye sa klinika. Hindi pa ito kumpirmado hanggang sumagot sila.",
+    "optional": "opsyonal",
+    "selectPlaceholder": "Pumili",
+    "submit": "Ipadala ang kahilingan",
+    "submitting": "Ipinapadala…",
+    "saveAutofill": "I-save para sa autofill (localhost)",
+    "autofillSaved": "Na-save ang localhost draft sa browser na ito.",
+    "autofillRestored": "Naibalik ang naka-save na localhost sagot.",
+    "privacyNote": "Tatanggapin ng klinika ang kahilingang ito. Hindi nagbibigay ng payong medikal ang Find a Doc.",
+    "successHeading": "Naipadala ang kahilingan",
+    "successBody": "Makikipag-ugnayan ang klinika tungkol sa appointment.",
+    "reference": "Sanggunian: {id}",
+    "fields": {
+      "email": "Email address",
+      "phone": "Numero ng telepono",
+      "fullName": "Buong pangalan",
+      "age": "Edad",
+      "reason": "Dahilan ng pagbisita",
+      "insuranceDocument": "Insurance card o eligibility certificate"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Pangalan gaya sa ID",
+      "age": "35",
+      "reason": "Maikling paliwanag ng kailangan mo"
+    },
+    "errors": {
+      "required": "Kailangan ang field na ito",
+      "email": "Maglagay ng wastong email",
+      "phone": "Maglagay ng wastong numero",
+      "number": "Maglagay ng numero",
+      "fileTooLarge": "Masyadong malaki ang file",
+      "uploadFailed": "Hindi na-upload. Subukan ulit.",
+      "form": "Suriin ang mga naka-highlight na field",
+      "submitFailed": "Hindi maipadala ang kahilingan. Subukan ulit."
+    }
   }
 }

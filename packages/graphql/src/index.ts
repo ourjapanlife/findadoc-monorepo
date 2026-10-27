@@ -47,6 +47,103 @@ export type AuditLog = {
   updatedDate: Scalars['String']['output'];
 };
 
+export type BookingAnswerInput = {
+  fieldId: Scalars['String']['input'];
+  uploadId?: InputMaybe<Scalars['ID']['input']>;
+  /** Scalar answer as text. FILE fields use uploadId instead. */
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
+ * The intake form for one hosted clinic.
+ * id and version are stable so a CRM can replace the definition later without
+ * changing the submission table. Until then the API serves a code-defined form.
+ */
+export type BookingForm = {
+  __typename?: 'BookingForm';
+  clinicName: Scalars['String']['output'];
+  clinicSiteId: Scalars['ID']['output'];
+  clinicSiteSlug: Scalars['String']['output'];
+  fields: Array<BookingFormField>;
+  id: Scalars['ID']['output'];
+  notifyEmail?: Maybe<Scalars['String']['output']>;
+  themePrimary?: Maybe<Scalars['String']['output']>;
+  version: Scalars['Int']['output'];
+};
+
+/**
+ * One input on a clinic booking form.
+ * labelKey is the site i18n key when label is null. A CRM may set label per locale.
+ */
+export type BookingFormField = {
+  __typename?: 'BookingFormField';
+  accept?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  label?: Maybe<Scalars['String']['output']>;
+  labelKey: Scalars['String']['output'];
+  max?: Maybe<Scalars['Float']['output']>;
+  maxBytes?: Maybe<Scalars['Int']['output']>;
+  maxLength?: Maybe<Scalars['Int']['output']>;
+  min?: Maybe<Scalars['Float']['output']>;
+  options?: Maybe<Array<BookingFormFieldOption>>;
+  placeholderKey?: Maybe<Scalars['String']['output']>;
+  required: Scalars['Boolean']['output'];
+  type: BookingFormFieldType;
+};
+
+/** One choice on a SELECT booking field. */
+export type BookingFormFieldOption = {
+  __typename?: 'BookingFormFieldOption';
+  label?: Maybe<Scalars['String']['output']>;
+  labelKey: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
+/**
+ * Field type on a clinic booking form.
+ * A later CRM picks the fields; the web renderer stays generic.
+ */
+export enum BookingFormFieldType {
+  Email = 'EMAIL',
+  File = 'FILE',
+  Number = 'NUMBER',
+  Phone = 'PHONE',
+  Select = 'SELECT',
+  Text = 'TEXT',
+  Textarea = 'TEXTAREA'
+}
+
+/** Result of a patient booking submission. No medical free-text is returned. */
+export type BookingSubmissionResult = {
+  __typename?: 'BookingSubmissionResult';
+  clinicSiteId: Scalars['ID']['output'];
+  createdDate: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  status: BookingSubmissionStatus;
+};
+
+export enum BookingSubmissionStatus {
+  FailedNotify = 'FAILED_NOTIFY',
+  Notified = 'NOTIFIED',
+  Received = 'RECEIVED'
+}
+
+export type BookingUploadHeader = {
+  __typename?: 'BookingUploadHeader';
+  name: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
+/** A pending upload slot. The browser PUTs the file to uploadUrl, then submits the booking. */
+export type BookingUploadUrl = {
+  __typename?: 'BookingUploadUrl';
+  expiresAt: Scalars['String']['output'];
+  headers: Array<BookingUploadHeader>;
+  objectKey: Scalars['String']['output'];
+  uploadId: Scalars['ID']['output'];
+  uploadUrl: Scalars['String']['output'];
+};
+
 /** A search city owned by one prefecture. The same English slug may exist in two prefectures. */
 export type City = {
   __typename?: 'City';
@@ -287,6 +384,15 @@ export type ContactInput = {
   phone: Scalars['String']['input'];
   /** Website URL. */
   website?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateBookingUploadUrlInput = {
+  byteSize?: InputMaybe<Scalars['Int']['input']>;
+  /** Clinic site id or slug. */
+  clinicSiteId: Scalars['ID']['input'];
+  contentType: Scalars['String']['input'];
+  fieldId: Scalars['String']['input'];
+  fileName: Scalars['String']['input'];
 };
 
 /** Input for creating a new facility. */
@@ -849,6 +955,11 @@ export type Mutation = {
    * The facility name and address are not changed.
    */
   confirmFacilityPlaceId: Facility;
+  /**
+   * Create a short-lived upload URL for one booking file field.
+   * The browser uploads the file, then passes uploadId to submitBooking.
+   */
+  createBookingUploadUrl: BookingUploadUrl;
   /** Create a new facility record. */
   createFacility: Facility;
   /** Create a new healthcare professional record. */
@@ -867,6 +978,11 @@ export type Mutation = {
   deleteSubmission: DeleteResult;
   /** Store a city place id. Does not store a Places name, address, or coordinate. */
   recordCityPlaceId: City;
+  /**
+   * Submit a clinic booking form.
+   * Sends a SES notification when email is configured; otherwise records the row only.
+   */
+  submitBooking: BookingSubmissionResult;
   /** Update an existing facility by ID. */
   updateFacility: Facility;
   /** Update an existing healthcare professional by ID. */
@@ -883,6 +999,11 @@ export type Mutation = {
 export type MutationConfirmFacilityPlaceIdArgs = {
   facilityId: Scalars['ID']['input'];
   placeId: Scalars['String']['input'];
+};
+
+
+export type MutationCreateBookingUploadUrlArgs = {
+  input: CreateBookingUploadUrlInput;
 };
 
 
@@ -929,6 +1050,11 @@ export type MutationDeleteSubmissionArgs = {
 export type MutationRecordCityPlaceIdArgs = {
   cityId: Scalars['ID']['input'];
   placeId: Scalars['String']['input'];
+};
+
+
+export type MutationSubmitBookingArgs = {
+  input: SubmitBookingInput;
 };
 
 
@@ -1077,6 +1203,11 @@ export type Query = {
   __typename?: 'Query';
   /** Look up a single audit log entry by its ID. Returns null if not found. */
   auditLog?: Maybe<AuditLog>;
+  /**
+   * The booking intake form for a hosted clinic.
+   * Pass the clinic site id or slug. Drafts and unknown clinics are null.
+   */
+  bookingForm?: Maybe<BookingForm>;
   /** Every current municipality. Pass a prefecture key or Japanese name to filter. */
   cities: Array<City>;
   /** Facilities published under one city. Unresolved locations are excluded. */
@@ -1144,6 +1275,11 @@ export type Query = {
 
 export type QueryAuditLogArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryBookingFormArgs = {
+  clinicSiteId: Scalars['ID']['input'];
 };
 
 
@@ -1457,6 +1593,15 @@ export type SubmissionSearchFilters = {
   updatedDate?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type SubmitBookingInput = {
+  answers: Array<BookingAnswerInput>;
+  /** Clinic site id or slug. */
+  clinicSiteId: Scalars['ID']['input'];
+  formDefinitionId: Scalars['String']['input'];
+  formVersion: Scalars['Int']['input'];
+  locale: Scalars['String']['input'];
+};
+
 /** Input for updating an existing facility. All fields are optional — only provided fields are updated. */
 export type UpdateFacilityInput = {
   /** Id of a city in the vocabulary. Null clears the city and marks the row unresolved. */
@@ -1638,6 +1783,15 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 export type ResolversTypes = {
   ActionType: ActionType;
   AuditLog: ResolverTypeWrapper<AuditLog>;
+  BookingAnswerInput: BookingAnswerInput;
+  BookingForm: ResolverTypeWrapper<BookingForm>;
+  BookingFormField: ResolverTypeWrapper<BookingFormField>;
+  BookingFormFieldOption: ResolverTypeWrapper<BookingFormFieldOption>;
+  BookingFormFieldType: BookingFormFieldType;
+  BookingSubmissionResult: ResolverTypeWrapper<BookingSubmissionResult>;
+  BookingSubmissionStatus: BookingSubmissionStatus;
+  BookingUploadHeader: ResolverTypeWrapper<BookingUploadHeader>;
+  BookingUploadUrl: ResolverTypeWrapper<BookingUploadUrl>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   City: ResolverTypeWrapper<City>;
   CitySuggestion: ResolverTypeWrapper<CitySuggestion>;
@@ -1657,6 +1811,7 @@ export type ResolversTypes = {
   ClinicSiteTheme: ResolverTypeWrapper<ClinicSiteTheme>;
   Contact: ResolverTypeWrapper<Contact>;
   ContactInput: ContactInput;
+  CreateBookingUploadUrlInput: CreateBookingUploadUrlInput;
   CreateFacilityInput: CreateFacilityInput;
   CreateHealthcareProfessionalInput: CreateHealthcareProfessionalInput;
   CreateReservationInput: CreateReservationInput;
@@ -1705,6 +1860,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Submission: ResolverTypeWrapper<Submission>;
   SubmissionSearchFilters: SubmissionSearchFilters;
+  SubmitBookingInput: SubmitBookingInput;
   UpdateFacilityInput: UpdateFacilityInput;
   UpdateHealthcareProfessionalInput: UpdateHealthcareProfessionalInput;
   UpdateReservationInput: UpdateReservationInput;
@@ -1716,6 +1872,13 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   AuditLog: AuditLog;
+  BookingAnswerInput: BookingAnswerInput;
+  BookingForm: BookingForm;
+  BookingFormField: BookingFormField;
+  BookingFormFieldOption: BookingFormFieldOption;
+  BookingSubmissionResult: BookingSubmissionResult;
+  BookingUploadHeader: BookingUploadHeader;
+  BookingUploadUrl: BookingUploadUrl;
   Boolean: Scalars['Boolean']['output'];
   City: City;
   CitySuggestion: CitySuggestion;
@@ -1733,6 +1896,7 @@ export type ResolversParentTypes = {
   ClinicSiteTheme: ClinicSiteTheme;
   Contact: Contact;
   ContactInput: ContactInput;
+  CreateBookingUploadUrlInput: CreateBookingUploadUrlInput;
   CreateFacilityInput: CreateFacilityInput;
   CreateHealthcareProfessionalInput: CreateHealthcareProfessionalInput;
   CreateReservationInput: CreateReservationInput;
@@ -1766,6 +1930,7 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   Submission: Submission;
   SubmissionSearchFilters: SubmissionSearchFilters;
+  SubmitBookingInput: SubmitBookingInput;
   UpdateFacilityInput: UpdateFacilityInput;
   UpdateHealthcareProfessionalInput: UpdateHealthcareProfessionalInput;
   UpdateReservationInput: UpdateReservationInput;
@@ -1783,6 +1948,58 @@ export type AuditLogResolvers<ContextType = any, ParentType extends ResolversPar
   schemaVersion?: Resolver<ResolversTypes['SchemaVersion'], ParentType, ContextType>;
   updatedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type BookingFormResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingForm'] = ResolversParentTypes['BookingForm']> = {
+  clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  clinicSiteId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  clinicSiteSlug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fields?: Resolver<Array<ResolversTypes['BookingFormField']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  notifyEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  themePrimary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type BookingFormFieldResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingFormField'] = ResolversParentTypes['BookingFormField']> = {
+  accept?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  labelKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  max?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  maxBytes?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  maxLength?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  min?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  options?: Resolver<Maybe<Array<ResolversTypes['BookingFormFieldOption']>>, ParentType, ContextType>;
+  placeholderKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  required?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['BookingFormFieldType'], ParentType, ContextType>;
+};
+
+export type BookingFormFieldOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingFormFieldOption'] = ResolversParentTypes['BookingFormFieldOption']> = {
+  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  labelKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type BookingSubmissionResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingSubmissionResult'] = ResolversParentTypes['BookingSubmissionResult']> = {
+  clinicSiteId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['BookingSubmissionStatus'], ParentType, ContextType>;
+};
+
+export type BookingUploadHeaderResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingUploadHeader'] = ResolversParentTypes['BookingUploadHeader']> = {
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type BookingUploadUrlResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingUploadUrl'] = ResolversParentTypes['BookingUploadUrl']> = {
+  expiresAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  headers?: Resolver<Array<ResolversTypes['BookingUploadHeader']>, ParentType, ContextType>;
+  objectKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  uploadId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  uploadUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type CityResolvers<ContextType = any, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = {
@@ -2034,6 +2251,7 @@ export type MapsPlacePreviewResolvers<ContextType = any, ParentType extends Reso
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   confirmFacilityPlaceId?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationConfirmFacilityPlaceIdArgs, 'facilityId' | 'placeId'>>;
+  createBookingUploadUrl?: Resolver<ResolversTypes['BookingUploadUrl'], ParentType, ContextType, RequireFields<MutationCreateBookingUploadUrlArgs, 'input'>>;
   createFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationCreateFacilityArgs, 'input'>>;
   createHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationCreateHealthcareProfessionalArgs, 'input'>>;
   createReservation?: Resolver<ResolversTypes['Reservation'], ParentType, ContextType, RequireFields<MutationCreateReservationArgs, 'input'>>;
@@ -2043,6 +2261,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteHealthcareProfessional?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteHealthcareProfessionalArgs, 'id'>>;
   deleteSubmission?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteSubmissionArgs, 'id'>>;
   recordCityPlaceId?: Resolver<ResolversTypes['City'], ParentType, ContextType, RequireFields<MutationRecordCityPlaceIdArgs, 'cityId' | 'placeId'>>;
+  submitBooking?: Resolver<ResolversTypes['BookingSubmissionResult'], ParentType, ContextType, RequireFields<MutationSubmitBookingArgs, 'input'>>;
   updateFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationUpdateFacilityArgs, 'id' | 'input'>>;
   updateHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationUpdateHealthcareProfessionalArgs, 'id' | 'input'>>;
   updateReservation?: Resolver<ResolversTypes['Reservation'], ParentType, ContextType, RequireFields<MutationUpdateReservationArgs, 'input'>>;
@@ -2076,6 +2295,7 @@ export type PrefectureResolvers<ContextType = any, ParentType extends ResolversP
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   auditLog?: Resolver<Maybe<ResolversTypes['AuditLog']>, ParentType, ContextType, Partial<QueryAuditLogArgs>>;
+  bookingForm?: Resolver<Maybe<ResolversTypes['BookingForm']>, ParentType, ContextType, RequireFields<QueryBookingFormArgs, 'clinicSiteId'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, Partial<QueryCitiesArgs>>;
   cityFacilities?: Resolver<Array<ResolversTypes['Facility']>, ParentType, ContextType, RequireFields<QueryCityFacilitiesArgs, 'citySlug' | 'prefecture'>>;
   clinicSite?: Resolver<Maybe<ResolversTypes['ClinicSite']>, ParentType, ContextType, RequireFields<QueryClinicSiteArgs, 'slug'>>;
@@ -2134,6 +2354,12 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type Resolvers<ContextType = any> = {
   AuditLog?: AuditLogResolvers<ContextType>;
+  BookingForm?: BookingFormResolvers<ContextType>;
+  BookingFormField?: BookingFormFieldResolvers<ContextType>;
+  BookingFormFieldOption?: BookingFormFieldOptionResolvers<ContextType>;
+  BookingSubmissionResult?: BookingSubmissionResultResolvers<ContextType>;
+  BookingUploadHeader?: BookingUploadHeaderResolvers<ContextType>;
+  BookingUploadUrl?: BookingUploadUrlResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   CitySuggestion?: CitySuggestionResolvers<ContextType>;
   ClinicMembership?: ClinicMembershipResolvers<ContextType>;

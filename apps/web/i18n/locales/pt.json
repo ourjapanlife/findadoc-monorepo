@@ -710,5 +710,47 @@
     "dismiss": "Fechar",
     "announceLabel": "Notificação",
     "viewportLabel": "Notificações ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Agendar · {clinic}",
+    "eyebrow": "Pedido de consulta",
+    "heading": "Agendar com {clinic}",
+    "lead": "Envie os seus dados à clínica. Nada fica confirmado até eles responderem.",
+    "optional": "opcional",
+    "selectPlaceholder": "Escolha uma opção",
+    "submit": "Enviar pedido",
+    "submitting": "A enviar…",
+    "saveAutofill": "Guardar para preenchimento (localhost)",
+    "autofillSaved": "Rascunho localhost guardado neste navegador.",
+    "autofillRestored": "Respostas localhost guardadas foram restauradas.",
+    "privacyNote": "A clínica recebe este pedido. A Find a Doc não dá aconselhamento médico.",
+    "successHeading": "Pedido enviado",
+    "successBody": "A clínica contactá-lo-á sobre a consulta.",
+    "reference": "Referência: {id}",
+    "fields": {
+      "email": "E-mail",
+      "phone": "Número de telefone",
+      "fullName": "Nome completo",
+      "age": "Idade",
+      "reason": "Motivo da visita",
+      "insuranceDocument": "Cartão de seguro ou certificado de elegibilidade"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Nome como no documento",
+      "age": "35",
+      "reason": "Descrição breve do que precisa"
+    },
+    "errors": {
+      "required": "Este campo é obrigatório",
+      "email": "Introduza um e-mail válido",
+      "phone": "Introduza um telefone válido",
+      "number": "Introduza um número",
+      "fileTooLarge": "O ficheiro é demasiado grande",
+      "uploadFailed": "O envio falhou. Tente novamente.",
+      "form": "Verifique os campos assinalados",
+      "submitFailed": "Não foi possível enviar. Tente novamente."
+    }
   }
 }

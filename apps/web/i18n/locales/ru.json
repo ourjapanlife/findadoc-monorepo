@@ -710,5 +710,47 @@
     "dismiss": "Закрыть",
     "announceLabel": "Уведомление",
     "viewportLabel": "Уведомления ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Запись · {clinic}",
+    "eyebrow": "Запрос на приём",
+    "heading": "Запись в {clinic}",
+    "lead": "Отправьте данные в клинику. Подтверждение будет после их ответа.",
+    "optional": "необязательно",
+    "selectPlaceholder": "Выберите",
+    "submit": "Отправить запрос",
+    "submitting": "Отправка…",
+    "saveAutofill": "Сохранить для автозаполнения (localhost)",
+    "autofillSaved": "Черновик localhost сохранён в этом браузере.",
+    "autofillRestored": "Сохранённые ответы localhost восстановлены.",
+    "privacyNote": "Клиника получит этот запрос. Find a Doc не даёт медицинских советов.",
+    "successHeading": "Запрос отправлен",
+    "successBody": "Клиника свяжется с вами по поводу записи.",
+    "reference": "Номер: {id}",
+    "fields": {
+      "email": "Эл. почта",
+      "phone": "Номер телефона",
+      "fullName": "Полное имя",
+      "age": "Возраст",
+      "reason": "Причина обращения",
+      "insuranceDocument": "Страховой полис или подтверждение права"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Имя как в документе",
+      "age": "35",
+      "reason": "Кратко опишите, что нужно"
+    },
+    "errors": {
+      "required": "Обязательное поле",
+      "email": "Введите корректный адрес",
+      "phone": "Введите корректный телефон",
+      "number": "Введите число",
+      "fileTooLarge": "Файл слишком большой",
+      "uploadFailed": "Не удалось загрузить. Попробуйте снова.",
+      "form": "Проверьте выделенные поля",
+      "submitFailed": "Не удалось отправить. Попробуйте снова."
+    }
   }
 }

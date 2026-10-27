@@ -710,5 +710,47 @@
     "dismiss": "Đóng",
     "announceLabel": "Thông báo",
     "viewportLabel": "Thông báo ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Đặt lịch · {clinic}",
+    "eyebrow": "Yêu cầu đặt lịch",
+    "heading": "Đặt lịch với {clinic}",
+    "lead": "Gửi thông tin của bạn đến phòng khám. Chưa xác nhận cho đến khi họ trả lời.",
+    "optional": "không bắt buộc",
+    "selectPlaceholder": "Chọn một mục",
+    "submit": "Gửi yêu cầu",
+    "submitting": "Đang gửi…",
+    "saveAutofill": "Lưu để tự điền (localhost)",
+    "autofillSaved": "Đã lưu bản nháp localhost trên trình duyệt này.",
+    "autofillRestored": "Đã khôi phục câu trả lời localhost đã lưu.",
+    "privacyNote": "Phòng khám nhận yêu cầu này. Find a Doc không tư vấn y tế.",
+    "successHeading": "Đã gửi yêu cầu",
+    "successBody": "Phòng khám sẽ liên hệ về lịch hẹn.",
+    "reference": "Mã tham chiếu: {id}",
+    "fields": {
+      "email": "Địa chỉ email",
+      "phone": "Số điện thoại",
+      "fullName": "Họ và tên",
+      "age": "Tuổi",
+      "reason": "Lý do khám",
+      "insuranceDocument": "Thẻ bảo hiểm hoặc giấy xác nhận tư cách"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Tên trên giấy tờ",
+      "age": "35",
+      "reason": "Mô tả ngắn nhu cầu của bạn"
+    },
+    "errors": {
+      "required": "Trường này là bắt buộc",
+      "email": "Nhập email hợp lệ",
+      "phone": "Nhập số điện thoại hợp lệ",
+      "number": "Nhập một số",
+      "fileTooLarge": "Tệp quá lớn",
+      "uploadFailed": "Tải lên thất bại. Thử lại.",
+      "form": "Kiểm tra các trường được tô sáng",
+      "submitFailed": "Không gửi được yêu cầu. Thử lại."
+    }
   }
 }

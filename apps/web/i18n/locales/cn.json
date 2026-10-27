@@ -710,5 +710,47 @@
     "dismiss": "关闭",
     "announceLabel": "通知",
     "viewportLabel": "通知（{hotkey}）"
+  },
+  "bookingPage": {
+    "documentTitle": "预约 · {clinic}",
+    "eyebrow": "预约申请",
+    "heading": "向{clinic}预约",
+    "lead": "把您的资料发给诊所。诊所回复确认后预约才生效。",
+    "optional": "选填",
+    "selectPlaceholder": "请选择",
+    "submit": "发送申请",
+    "submitting": "发送中…",
+    "saveAutofill": "保存以便自动填写（localhost）",
+    "autofillSaved": "已在此浏览器保存 localhost 自动填写内容。",
+    "autofillRestored": "已恢复您保存的 localhost 填写内容。",
+    "privacyNote": "诊所会收到此申请。Find a Doc 不提供医疗建议。",
+    "successHeading": "申请已发送",
+    "successBody": "诊所会就预约与您联系。",
+    "reference": "参考编号：{id}",
+    "fields": {
+      "email": "电子邮箱",
+      "phone": "电话号码",
+      "fullName": "全名",
+      "age": "年龄",
+      "reason": "就诊原因",
+      "insuranceDocument": "保险证或资格确认书"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "与证件一致的姓名",
+      "age": "35",
+      "reason": "简要说明需求"
+    },
+    "errors": {
+      "required": "此项为必填",
+      "email": "请输入有效邮箱",
+      "phone": "请输入有效电话号码",
+      "number": "请输入数字",
+      "fileTooLarge": "文件过大",
+      "uploadFailed": "上传失败，请重试。",
+      "form": "请检查标出的字段",
+      "submitFailed": "无法发送申请，请重试。"
+    }
   }
 }

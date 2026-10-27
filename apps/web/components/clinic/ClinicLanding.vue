@@ -426,7 +426,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ClinicSiteStatus, type ClinicSite } from '@findadoc/graphql'
-import { createError, useAsyncData, useHead } from '#imports'
+import { createError, navigateTo, useAsyncData, useHead } from '#imports'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { clinicLandingShareImage, clinicSiteFetchIsServer, clinicSubdomainUrl } from '~/utils/clinicLanding'
@@ -509,6 +509,8 @@ const sections = computed(() => [
 
 function onBook() {
     track('Clinic landing book')
+    const prefix = String(locale.value) === DEFAULT_LOCALE_CODE ? '' : `/${String(locale.value)}`
+    void navigateTo(`${prefix}/book`)
 }
 
 const shareImage = clinicLandingShareImage(landing.shareImagePath)

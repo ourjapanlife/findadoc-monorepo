@@ -710,5 +710,47 @@
     "dismiss": "Chiudi",
     "announceLabel": "Notifica",
     "viewportLabel": "Notifiche ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Prenota · {clinic}",
+    "eyebrow": "Richiesta di appuntamento",
+    "heading": "Prenota con {clinic}",
+    "lead": "Invia i tuoi dati alla clinica. Nulla è confermato finché non rispondono.",
+    "optional": "facoltativo",
+    "selectPlaceholder": "Scegli",
+    "submit": "Invia richiesta",
+    "submitting": "Invio…",
+    "saveAutofill": "Salva per compilazione automatica (localhost)",
+    "autofillSaved": "Bozza localhost salvata in questo browser.",
+    "autofillRestored": "Risposte localhost salvate ripristinate.",
+    "privacyNote": "La clinica riceve questa richiesta. Find a Doc non fornisce consigli medici.",
+    "successHeading": "Richiesta inviata",
+    "successBody": "La clinica ti contatterà per l’appuntamento.",
+    "reference": "Riferimento: {id}",
+    "fields": {
+      "email": "Indirizzo email",
+      "phone": "Numero di telefono",
+      "fullName": "Nome completo",
+      "age": "Età",
+      "reason": "Motivo della visita",
+      "insuranceDocument": "Tessera assicurativa o certificato di idoneità"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Nome come sul documento",
+      "age": "35",
+      "reason": "Breve descrizione di ciò che ti serve"
+    },
+    "errors": {
+      "required": "Campo obbligatorio",
+      "email": "Inserisci un’email valida",
+      "phone": "Inserisci un numero valido",
+      "number": "Inserisci un numero",
+      "fileTooLarge": "File troppo grande",
+      "uploadFailed": "Caricamento non riuscito. Riprova.",
+      "form": "Controlla i campi evidenziati",
+      "submitFailed": "Impossibile inviare. Riprova."
+    }
   }
 }
