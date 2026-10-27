@@ -8,7 +8,8 @@
                 <div class="page-container flex items-center justify-center">
                     <a
                         :href="siteOrigin"
-                        class="inline-flex items-center gap-3 text-sm text-primary-text-muted transition-colors hover:text-primary"
+                        class="inline-flex items-center gap-3 text-sm text-primary-text-muted
+                            transition-colors hover:text-primary"
                         data-testid="clinic-landing-credit"
                     >
                         <SVGSiteLogo

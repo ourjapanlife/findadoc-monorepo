@@ -5,33 +5,33 @@
     >
         <div class="px-6 landscape:px-12">
             <div class="page-container flex h-16 items-center justify-between gap-4">
-            <!-- Brand -->
-            <NuxtLink
-                to="/"
-                :aria-label="t('common.siteName')"
-                data-testid="site-logo"
-                class="group flex shrink-0 items-center gap-2 rounded-lg"
-                @click="handleHomeClick"
-            >
-                <SVGSiteLogo
-                    role="img"
+                <!-- Brand -->
+                <NuxtLink
+                    to="/"
                     :aria-label="t('common.siteName')"
-                    class="h-9 w-9 shrink-0 fill-primary transition-colors group-hover:fill-primary-hover"
-                />
-                <!--
+                    data-testid="site-logo"
+                    class="group flex shrink-0 items-center gap-2 rounded-lg"
+                    @click="handleHomeClick"
+                >
+                    <SVGSiteLogo
+                        role="img"
+                        :aria-label="t('common.siteName')"
+                        class="h-9 w-9 shrink-0 fill-primary transition-colors group-hover:fill-primary-hover"
+                    />
+                    <!--
                     Nudged up 4.5% of the mark's height. The mark is a circle with a handle
                     running down-right, so centring on its bounding box leaves the wordmark
                     visibly low — the eye reads the circle as the logo. Aligning fully to the
                     circle centre (11.9%) then overshoots, because the handle still carries
                     visual weight. Chosen by rendering 0 / 3 / 4.5 / 6 / 8 / 11.9.
                 -->
-                <span
-                    aria-hidden="true"
-                    class="flex -translate-y-[4.5%] flex-col font-semibold leading-none text-primary
+                    <span
+                        aria-hidden="true"
+                        class="flex -translate-y-[4.5%] flex-col font-semibold leading-none text-primary
                            transition-colors group-hover:text-primary-hover"
-                >
-                    <span class="text-base">{{ t('common.siteNameLine1') }}</span>
-                    <!--
+                    >
+                        <span class="text-base">{{ t('common.siteNameLine1') }}</span>
+                        <!--
                         Nudged right 2.4px to align the ink, not the boxes. The two lines start
                         at the same x, but "F" at 16px carries a +1.49px left side bearing while
                         "J" at 12px carries -0.91px — its hook overhangs the origin — so the J
@@ -39,113 +39,113 @@
                         Both strings are the Latin brand name in every locale, so the glyphs and
                         therefore this offset are stable.
                     -->
-                    <span class="translate-x-[2.4px] text-xs">{{ t('common.siteNameLine2') }}</span>
-                </span>
-            </NuxtLink>
-
-            <!-- Primary navigation (landscape) -->
-            <nav
-                id="desktop-menu-items"
-                :aria-label="t('common.menu')"
-                class="flex items-center gap-1 portrait:hidden"
-            >
-                <NuxtLink
-                    v-for="item in navItems"
-                    :key="item.to"
-                    :to="item.to"
-                    :class="navLinkClass(item.to)"
-                    :aria-current="isActive(item.to) ? 'page' : undefined"
-                    @click="item.to === '/' ? handleHomeClick($event) : undefined"
-                >
-                    {{ item.label }}
+                        <span class="translate-x-[2.4px] text-xs">{{ t('common.siteNameLine2') }}</span>
+                    </span>
                 </NuxtLink>
 
-                <!-- Signed-in menu -->
-                <div
-                    v-if="authStore.isLoggedIn"
-                    v-close-on-outside-click="{
-                        onOutside: closeProfileMenu,
-                        when: () => profileMenuIsOpen,
-                    }"
-                    class="relative ml-1"
+                <!-- Primary navigation (landscape) -->
+                <nav
+                    id="desktop-menu-items"
+                    :aria-label="t('common.menu')"
+                    class="flex items-center gap-1 portrait:hidden"
                 >
-                    <button
-                        type="button"
-                        data-testid="topnav-profile-section"
-                        :aria-expanded="profileMenuIsOpen"
-                        aria-controls="topnav-profile-menu"
-                        class="inline-flex h-10 items-center gap-2 rounded-lg px-3 font-medium text-primary-text
-                               transition-colors hover:bg-accent-bg/60"
-                        @click="toggleProfileMenu"
+                    <NuxtLink
+                        v-for="item in navItems"
+                        :key="item.to"
+                        :to="item.to"
+                        :class="navLinkClass(item.to)"
+                        :aria-current="isActive(item.to) ? 'page' : undefined"
+                        @click="item.to === '/' ? handleHomeClick($event) : undefined"
                     >
-                        <img
-                            v-if="authStore.userProfileImage"
-                            :src="authStore.userProfileImage"
-                            alt=""
-                            class="h-7 w-7 rounded-full object-cover"
-                        >
-                        <SVGUserIcon
-                            v-else
-                            class="h-6 w-6 text-user-icon"
-                            aria-hidden="true"
-                        />
-                        <span class="max-w-40 truncate">{{ profileMenuLabel }}</span>
-                        <SVGAccordionArrow
-                            class="h-4 w-4 fill-primary-text transition-transform"
-                            :class="profileMenuIsOpen ? 'rotate-180' : ''"
-                            aria-hidden="true"
-                        />
-                    </button>
+                        {{ item.label }}
+                    </NuxtLink>
 
+                    <!-- Signed-in menu -->
                     <div
-                        v-if="profileMenuIsOpen"
-                        id="topnav-profile-menu"
-                        role="group"
-                        :aria-label="t('topNav.myPage')"
-                        class="card absolute right-0 mt-2 min-w-56 p-2 shadow-raised"
+                        v-if="authStore.isLoggedIn"
+                        v-close-on-outside-click="{
+                            onOutside: closeProfileMenu,
+                            when: () => profileMenuIsOpen,
+                        }"
+                        class="relative ml-1"
                     >
-                        <NuxtLink
-                            to="/my-page"
-                            data-testid="top-nav-mod-link"
-                            class="flex h-11 items-center gap-2 rounded-lg px-3 text-primary-text
-                                   transition-colors hover:bg-primary/10"
-                            @click="closeProfileMenu"
-                        >
-                            <SVGUserIcon
-                                class="h-5 w-5 text-user-icon"
-                                aria-hidden="true"
-                            />
-                            {{ t('topNav.myPage') }}
-                        </NuxtLink>
                         <button
                             type="button"
-                            class="flex h-11 w-full items-center gap-2 rounded-lg px-3 text-left text-primary-text
-                                   transition-colors hover:bg-primary/10"
-                            @click="logout"
+                            data-testid="topnav-profile-section"
+                            :aria-expanded="profileMenuIsOpen"
+                            aria-controls="topnav-profile-menu"
+                            class="inline-flex h-10 items-center gap-2 rounded-lg px-3 font-medium text-primary-text
+                               transition-colors hover:bg-accent-bg/60"
+                            @click="toggleProfileMenu"
                         >
-                            <SVGSignOutIcon
-                                class="h-5 w-5 fill-current"
+                            <img
+                                v-if="authStore.userProfileImage"
+                                :src="authStore.userProfileImage"
+                                alt=""
+                                class="h-7 w-7 rounded-full object-cover"
+                            >
+                            <SVGUserIcon
+                                v-else
+                                class="h-6 w-6 text-user-icon"
                                 aria-hidden="true"
                             />
-                            {{ t('topNav.logout') }}
+                            <span class="max-w-40 truncate">{{ profileMenuLabel }}</span>
+                            <SVGAccordionArrow
+                                class="h-4 w-4 fill-primary-text transition-transform"
+                                :class="profileMenuIsOpen ? 'rotate-180' : ''"
+                                aria-hidden="true"
+                            />
                         </button>
+
+                        <div
+                            v-if="profileMenuIsOpen"
+                            id="topnav-profile-menu"
+                            role="group"
+                            :aria-label="t('topNav.myPage')"
+                            class="card absolute right-0 mt-2 min-w-56 p-2 shadow-raised"
+                        >
+                            <NuxtLink
+                                to="/my-page"
+                                data-testid="top-nav-mod-link"
+                                class="flex h-11 items-center gap-2 rounded-lg px-3 text-primary-text
+                                   transition-colors hover:bg-primary/10"
+                                @click="closeProfileMenu"
+                            >
+                                <SVGUserIcon
+                                    class="h-5 w-5 text-user-icon"
+                                    aria-hidden="true"
+                                />
+                                {{ t('topNav.myPage') }}
+                            </NuxtLink>
+                            <button
+                                type="button"
+                                class="flex h-11 w-full items-center gap-2 rounded-lg px-3 text-left text-primary-text
+                                   transition-colors hover:bg-primary/10"
+                                @click="logout"
+                            >
+                                <SVGSignOutIcon
+                                    class="h-5 w-5 fill-current"
+                                    aria-hidden="true"
+                                />
+                                {{ t('topNav.logout') }}
+                            </button>
+                        </div>
                     </div>
+
+                    <NuxtLink
+                        v-else-if="!authStore.isLoadingAuth"
+                        :to="loginRoute"
+                        data-testid="topnav-login"
+                        :class="navLinkClass('/login')"
+                    >
+                        {{ t('topNav.login') }}
+                    </NuxtLink>
+                </nav>
+
+                <div class="flex items-center gap-2">
+                    <LocaleSelector class="portrait:hidden" />
+                    <HamburgerMenu class="landscape:hidden" />
                 </div>
-
-                <NuxtLink
-                    v-else-if="!authStore.isLoadingAuth"
-                    :to="loginRoute"
-                    data-testid="topnav-login"
-                    :class="navLinkClass('/login')"
-                >
-                    {{ t('topNav.login') }}
-                </NuxtLink>
-            </nav>
-
-            <div class="flex items-center gap-2">
-                <LocaleSelector class="portrait:hidden" />
-                <HamburgerMenu class="landscape:hidden" />
-            </div>
             </div>
         </div>
     </header>
