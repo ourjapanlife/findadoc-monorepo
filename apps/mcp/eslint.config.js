@@ -7,7 +7,7 @@ import stylistic from '@stylistic/eslint-plugin'
 export default [
     // GLOBAL configuration
     {
-        ignores: ['dist/*', 'src/generated/*'],
+        ignores: ['dist/*', 'coverage/*', 'src/generated/*'],
     },
     // Typescript and JS Linter combined
     {
