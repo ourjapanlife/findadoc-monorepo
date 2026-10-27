@@ -33,6 +33,7 @@ import { useModalStore } from '~/stores/modalStore'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
+import { formErrorKey } from '~/utils/formErrorMessage'
 import { hasEnglishLocalizedName } from '~/utils/nameUtils'
 import { leaveToModerationDashboard } from '~/utils/moderationUtils'
 import {
@@ -80,7 +81,7 @@ const createFacilityOrHealthcareProfessional = async () => {
             !hasEnglishName,
             toast,
             t,
-            'modCreateFacilityOrHPTopbar.healthcareProfessionalEnglishNameRequired'
+            formErrorKey.englishNameRequired
         )) {
             return
         }
@@ -89,7 +90,7 @@ const createFacilityOrHealthcareProfessional = async () => {
             !hasAllRequiredFields,
             toast,
             t,
-            'modCreateFacilityOrHPTopbar.hasEmptyFieldsHealthcareProfessional'
+            formErrorKey.healthcareProfessionalFieldsIncomplete
         )) {
             return
         }
@@ -117,7 +118,7 @@ const createFacilityOrHealthcareProfessional = async () => {
             !validateCreateFacilityFields,
             toast,
             t,
-            'modCreateFacilityOrHPTopbar.hasEmptyFieldsFacility'
+            formErrorKey.facilityFieldsIncomplete
         )) {
             return
         }

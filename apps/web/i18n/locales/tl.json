@@ -250,8 +250,7 @@
     "back": "Bumalik",
     "hasUnsavedChanges": "May hindi naka-save na pagbabago. Umalis pa rin?",
     "deleteConfirmationFacility": "Burahin ang pasilidad na {facility}, ID: {id}?",
-    "deleteConfirmationHealthcareProfessional": "Burahin ang propesyonal na {healthcareProfessional}, ID: {id}?",
-    "healthcareProfessionalEnglishNameRequired": "Kailangan ng propesyonal sa kalusugan ang pangalan sa Ingles"
+    "deleteConfirmationHealthcareProfessional": "Burahin ang propesyonal na {healthcareProfessional}, ID: {id}?"
   },
   "modEditSubmissionTopNav": {
     "updateAndExit": "I-Update at I-Exit",
@@ -283,15 +282,12 @@
     "inputErrorMessagePrefectureMismatch": "Hindi magkatugma ang prepektura sa Hapon at Ingles",
     "inputErrorMessageFacilityCityEn": "Hindi wastong pangalan ng Lungsod sa Ingles",
     "inputErrorMessageFacilityCityJa": "Hindi wastong pangalan ng Lungsod sa Hapon",
-    "inputErrorMessageFacilityEmail": "Hindi wastong Email Address",
     "inputErrorMessageFacilityGoogleMapsUrl": "Hindi wastong Google Maps URL",
     "inputErrorMessageFacilityMapLatitude": "Hindi wastong Latitude",
     "inputErrorMessageFacilityMapLongitude": "Hindi wastong Longitude",
     "inputErrorMessageFacilityNameEn": "Hindi wastong pangalan sa Ingles",
     "inputErrorMessageFacilityNameJa": "Hindi wastong pangalan sa Hapon",
-    "inputErrorMessageFacilityPhoneNumber": "Hindi wastong numero ng Telepono",
     "inputErrorMessageFacilityPostalCode": "Hindi wastong Postal Code",
-    "inputErrorMessageFacilityWebsite": "Hindi wastong Website URL",
     "labelFacilityNameEn": "Pangalang Ingles ng pasilidad",
     "labelFacilityNameJa": "Pangalang Hapones ng pasilidad",
     "labelFacilityPhoneNumber": "Telepono",
@@ -346,10 +342,8 @@
     "fillFromMapsFailed": "Hindi mabasa ang link na ito. Buksan ito sa Maps at kopyahin ang mga detalye."
   },
   "modSubmissionForm": {
-    "errorMessageCompletedForm": "Hindi na-isumite and kumpletong form",
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",
     "healthcareProfessionalId": "Mga ID ng propesyonal sa Pangangalagang Pangkalusugan",
-    "infoMessageAlreadyApproved": "Ang Isinumite ay aprubado na",
     "labelHealthcareProfessionalFirstName": "Pangalan",
     "labelHealthcareProfessionalLastName": "Apelyido",
     "labelHealthcareProfessionalMiddleName": "Pangalawang pangalan",
@@ -368,8 +362,30 @@
     "useExistingFacility": "Gamitin ang klinikang ito"
   },
   "serverErrorMessages": {
-    "errorCodeMessagingNeeded": "Walang mensahe sa user ang error code ng server. Pakidagdagan ng isa.",
-    "genericErrorMessage": "Nagkaroon ng error sa pagsusumite ng iyong form, pakisubukan muli."
+    "genericErrorMessage": "Hindi ito natuloy. Pakisubukan muli.",
+    "englishNameRequired": "Kailangan ng propesyonal sa kalusugan ang pangalan sa Ingles.",
+    "facilityFieldsIncomplete": "Punan ang mga kinakailangang field ng klinika bago magpatuloy.",
+    "healthcareProfessionalFieldsIncomplete": "Punan ang mga kinakailangang field ng propesyonal sa kalusugan bago magpatuloy.",
+    "serverUnavailable": "May nangyaring problema sa aming panig. Subukan muli.",
+    "recordNotFound": "Hindi mahanap ang rekord na iyon.",
+    "requiredFieldEmpty": "May kinakailangang field na walang laman.",
+    "invalidEmail": "Maglagay ng wastong email address.",
+    "invalidPhone": "Maglagay ng wastong numero ng telepono.",
+    "invalidWebsite": "Maglagay ng wastong website.",
+    "invalidInformation": "May impormasyong hindi wasto. Suriin ang form at subukan muli.",
+    "submissionCannotBeApproved": "Hindi maaaprubahan ang submission na ito hanggang kumpleto ang kinakailangang detalye ng klinika at propesyonal.",
+    "submissionAlreadyApproved": "Naaprubahan na ang submission na ito.",
+    "clinicRequired": "Pumili ng klinika para sa propesyonal sa kalusugan na ito.",
+    "japaneseInEnglishField": "May Japanese na character sa isang English na field.",
+    "latinInJapaneseField": "May Latin na character sa isang Japanese na field.",
+    "invalidCharacter": "May field na may character na hindi pinapayagan.",
+    "duplicateLanguage": "Nakalista na ang wikang iyon.",
+    "invalidLanguage": "Pumili ng wika mula sa listahan.",
+    "fieldTooLong": "Masyadong mahaba ang isa sa mga field.",
+    "fieldTooShort": "Masyadong maikli ang isa sa mga field.",
+    "negativeNumber": "Hindi puwedeng negatibo ang numero.",
+    "nothingToSave": "Walang bago na ise-save.",
+    "notAllowed": "Wala kang pahintulot na gawin ito. Mag-sign in muli, o humingi ng access sa isang administrator."
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",

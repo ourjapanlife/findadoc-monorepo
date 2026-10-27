@@ -46,7 +46,7 @@
                     :placeholder="t('modFacilitySection.placeholderTextFacilityPhoneNumber')"
                     :required="true"
                     :input-validation-check="validatePhoneNumber"
-                    :invalid-input-error-message="t('modFacilitySection.inputErrorMessageFacilityPhoneNumber')"
+                    :invalid-input-error-message="t(formErrorKey.invalidPhone)"
                 />
                 <ModInputField
                     v-model="facilityStore.facilitySectionFields.email"
@@ -56,7 +56,7 @@
                     :placeholder="t('modFacilitySection.placeholderTextFacilityEmail')"
                     :required="false"
                     :input-validation-check="validateEmail"
-                    :invalid-input-error-message="t('modFacilitySection.inputErrorMessageFacilityEmail')"
+                    :invalid-input-error-message="t(formErrorKey.invalidEmail)"
                 />
                 <ModInputField
                     v-model="facilityStore.facilitySectionFields.website"
@@ -67,7 +67,7 @@
                     class="mod-span-2"
                     :required="false"
                     :input-validation-check="validateWebsite"
-                    :invalid-input-error-message="t('modFacilitySection.inputErrorMessageFacilityWebsite')"
+                    :invalid-input-error-message="t(formErrorKey.invalidWebsite)"
                 />
             </div>
         </ModAccordion>
@@ -367,6 +367,7 @@ import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { provideModerationFormEditing, useModerationFormEditing } from '~/composables/useModerationFormMode'
 import type { FacilityMapsFillTarget } from '~/utils/mapsAutofill'
+import { formErrorKey } from '~/utils/formErrorMessage'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
 
 const toast = useAppToast()

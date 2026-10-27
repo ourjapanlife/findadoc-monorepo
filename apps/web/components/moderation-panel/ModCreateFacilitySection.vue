@@ -42,7 +42,7 @@
                     :placeholder="t('modFacilitySection.placeholderTextFacilityPhoneNumber')"
                     :required="true"
                     :input-validation-check="validatePhoneNumber"
-                    :invalid-input-error-message="t('modFacilitySection.inputErrorMessageFacilityPhoneNumber')"
+                    :invalid-input-error-message="t(formErrorKey.invalidPhone)"
                 />
                 <ModInputField
                     v-model="facilityStore.createFacilityFields.contact.email"
@@ -52,7 +52,7 @@
                     :placeholder="t('modFacilitySection.placeholderTextFacilityEmail')"
                     :required="false"
                     :input-validation-check="validateEmail"
-                    :invalid-input-error-message="t('modFacilitySection.inputErrorMessageFacilityEmail')"
+                    :invalid-input-error-message="t(formErrorKey.invalidEmail)"
                 />
                 <ModInputField
                     v-model="facilityStore.createFacilityFields.contact.website"
@@ -63,7 +63,7 @@
                     class="mod-span-2"
                     :required="false"
                     :input-validation-check="validateWebsite"
-                    :invalid-input-error-message="t('modFacilitySection.inputErrorMessageFacilityWebsite')"
+                    :invalid-input-error-message="t(formErrorKey.invalidWebsite)"
                 />
             </div>
         </ModAccordion>
@@ -332,6 +332,7 @@ import { checkPrefectureNameMatch } from '~/utils/facilitiesUtils'
 import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
 import type { FacilityMapsFillTarget } from '~/utils/mapsAutofill'
+import { formErrorKey } from '~/utils/formErrorMessage'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
 
 const { t } = useI18n()
