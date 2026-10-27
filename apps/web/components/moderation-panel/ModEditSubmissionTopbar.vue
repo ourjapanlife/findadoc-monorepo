@@ -41,6 +41,7 @@
             </button>
             <button
                 type="button"
+                data-testid="mod-edit-submission-approve-button"
                 :class="[buttonBaseClass, actionButtonClass, buttonPrimaryClass, buttonPaddingClass]"
                 @click="requestApproveConfirmation"
             >

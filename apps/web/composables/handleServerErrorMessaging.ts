@@ -8,33 +8,38 @@ import {
     translationOrUndefined
 } from '~/utils/formErrorMessage'
 
+type Translate = (translatableString: string) => string | undefined
+type HasTranslation = (key: string) => boolean
+
 /**
- * Toasts one translated sentence per distinct problem. A field the form labels
- * becomes the toast title, so two refused fields with the same rule show twice.
+ * One toast for every problem in the response. A missing translation falls back
+ * to the generic sentence, so the screen never shows a raw key.
  */
 export function handleServerErrorMessaging(
     serverErrors: ServerError[],
     toast: AppToast,
-    t: (translatableString: string) => string | undefined
+    t: Translate,
+    te?: HasTranslation
 ) {
     if (serverErrors.length === 0) {
         toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
         return
     }
 
+    const lines: string[] = []
     const shown = new Set<string>()
     for (const error of serverErrors) {
         const key = sentenceKeyForServerCode(error.code)
-        if (translationOrUndefined(t, key) === undefined) {
-            console.error(`No translated sentence for server code ${error.code}`)
-        }
-
+        const sentence = te !== undefined && !te(key)
+            ? translatedFormError(t, GENERIC_FORM_ERROR_KEY)
+            : translatedFormError(t, key)
         const labelKey = fieldLabelKeyForServerField(error.field)
         const title = labelKey === undefined ? undefined : translationOrUndefined(t, labelKey)
-        const toastId = `${title ?? ''}|${key}`
-        if (shown.has(toastId)) continue
-        shown.add(toastId)
-
-        toast.error(translatedFormError(t, key), title === undefined ? undefined : { title })
+        const line = title === undefined ? sentence : `${title}: ${sentence}`
+        if (shown.has(line)) continue
+        shown.add(line)
+        lines.push(line)
     }
+
+    toast.error(lines.join(' '))
 }

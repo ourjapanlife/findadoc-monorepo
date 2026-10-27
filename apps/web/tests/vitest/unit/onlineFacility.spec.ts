@@ -65,11 +65,16 @@ describe('online facility validation', () => {
     })
 
     it('still requires names and phone when online', () => {
-        expect(validateCreateFacility({
+        const missing = validateCreateFacility({
             ...onlineInput,
             nameEn: '',
             contact: { phone: '' }
-        }).valid).toBe(false)
+        })
+        expect(missing.valid).toBe(false)
+        expect(missing.errors).toEqual([
+            'serverErrorMessages.requiredFieldEmpty',
+            'serverErrorMessages.requiredFieldEmpty'
+        ])
     })
 
     it('still requires an address, Maps URL, and map pin when the facility is not online', () => {

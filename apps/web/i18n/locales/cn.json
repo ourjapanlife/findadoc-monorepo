@@ -297,7 +297,7 @@
     "submissionConfirmationAcceptanceButton": "确认提交",
     "submissionConfirmationMessage": "确定提交此表单吗？",
     "errorMessageFacilityId": "更新医疗机构需要 ID",
-    "facilitySuccessfullyRejected": "医疗机构已拒绝",
+    "submissionRejected": "提交已拒绝",
     "rejectSubmissionConfirmationMessage": "确定拒绝此提交吗？",
     "rejectSubmissionConfirmationButton": "确认拒绝",
     "searchExistingFacilities": "搜索已有的医疗机构",
@@ -440,7 +440,10 @@
     "fieldTooShort": "有字段过短。",
     "negativeNumber": "数字不能为负数。",
     "nothingToSave": "没有新的内容可保存。",
-    "notAllowed": "您没有执行此操作的权限。请重新登录，或联系管理员获取权限。"
+    "notAllowed": "您没有执行此操作的权限。请重新登录，或联系管理员获取权限。",
+    "network": "请求没有完成。请检查网络连接后重试。",
+    "prefectureMismatch": "英文和日文的都道府县名称必须一致。",
+    "prefectureRequired": "请填写英文和日文的都道府县。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "使用语言",
@@ -710,5 +713,14 @@
     "dismiss": "关闭",
     "announceLabel": "通知",
     "viewportLabel": "通知（{hotkey}）"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "这条提交未处于可处理状态，无法批准。",
+    "unableToReject": "这条提交未处于可处理状态，无法拒绝。"
+  },
+  "moderationListErrors": {
+    "submissions": "无法加载提交。请重试。",
+    "facilities": "无法加载医疗机构。请重试。",
+    "professionals": "无法加载医疗人员。请重试。"
   }
 }

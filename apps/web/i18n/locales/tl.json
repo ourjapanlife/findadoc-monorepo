@@ -351,7 +351,7 @@
     "placeholderTextHealthcareProfessionalSearchbar": "Hanapin ayon sa pangalan o ID upang magdagdag ng doktor",
     "submissionConfirmationAcceptanceButton": "Oo, Isumite",
     "submissionConfirmationMessage": "Nais mo bang isumite ang form na ito?",
-    "facilitySuccessfullyRejected": "Matagumpay na hindi na-apprubahan ang pasilidad",
+    "submissionRejected": "Tinanggihan ang pagsusumite",
     "rejectSubmissionConfirmationMessage": "Tanggihan ang pagsusumiteng ito?",
     "rejectSubmissionConfirmationButton": "Oo, tanggihan",
     "searchExistingFacilities": "Hanapin ang kasalukuyang pasilidad",
@@ -386,7 +386,10 @@
     "fieldTooShort": "Masyadong maikli ang isa sa mga field.",
     "negativeNumber": "Hindi puwedeng negatibo ang numero.",
     "nothingToSave": "Walang bago na ise-save.",
-    "notAllowed": "Wala kang pahintulot na gawin ito. Mag-sign in muli, o humingi ng access sa isang administrator."
+    "notAllowed": "Wala kang pahintulot na gawin ito. Mag-sign in muli, o humingi ng access sa isang administrator.",
+    "network": "Hindi natapos ang request. Suriin ang koneksyon at subukan muli.",
+    "prefectureMismatch": "Dapat magkatugma ang Ingles at Japanese na pangalan ng prepektura.",
+    "prefectureRequired": "Ilagay ang prepektura sa Ingles at sa Japanese."
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
@@ -710,5 +713,14 @@
     "dismiss": "Isara",
     "announceLabel": "Abiso",
     "viewportLabel": "Mga abiso ({hotkey})"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Hindi maaaprubahan ang pagsusumiteng ito dahil hindi ito bukas.",
+    "unableToReject": "Hindi matatanggihan ang pagsusumiteng ito dahil hindi ito bukas."
+  },
+  "moderationListErrors": {
+    "submissions": "Hindi ma-load ang mga pagsusumite. Subukan muli.",
+    "facilities": "Hindi ma-load ang mga klinika. Subukan muli.",
+    "professionals": "Hindi ma-load ang mga propesyonal sa kalusugan. Subukan muli."
   }
 }

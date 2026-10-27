@@ -109,6 +109,7 @@ import { stableStringify } from '~/utils/stableStringify'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToastAndEffect } from '~/composables/useModerationGuardFeedback'
 import { formErrorKey, GENERIC_FORM_ERROR_KEY, translatedFormError } from '~/utils/formErrorMessage'
+import { ErrorCode } from '~/typedefs/serverResponse'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import { ModerationSubmissionActionType, useModerationSubmissionActions } from '~/composables/useModerationSubmissionActions'
 import { mapIdsToEntities } from '~/utils/moderationSearchUtils'
@@ -123,7 +124,7 @@ import {
 } from '~/utils/moderationFormValidationUtils'
 
 const toast = useAppToast()
-const { t } = useI18n()
+const { t, te } = useI18n()
 const router = useRouter()
 
 const moderationSubmissionStore = useModerationSubmissionsStore()
@@ -505,17 +506,21 @@ async function saveSubmissionDraft(
     }
 
     const result = await moderationSubmissionStore.updateSubmission(submissionInputVariables)
-    if (handleModerationResponseErrors(result, toast, t)) {
+    if (handleModerationResponseErrors(result, toast, t, te)) {
         await resetModalRefs()
         return false
     }
 
-    const submissionResult = result.data
-    if (submissionResult) {
-        const selectedCityId = facilitiesStore.facilitySectionFields.cityId
-        initializeSubmissionFormValues(submissionResult.updateSubmission)
-        facilitiesStore.facilitySectionFields.cityId = selectedCityId
+    const updatedSubmission = result.data?.updateSubmission
+    if (!updatedSubmission) {
+        toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
+        await resetModalRefs()
+        return false
     }
+
+    const selectedCityId = facilitiesStore.facilitySectionFields.cityId
+    initializeSubmissionFormValues(updatedSubmission)
+    facilitiesStore.facilitySectionFields.cityId = selectedCityId
     makeNonDirty()
 
     if (options.showSuccessToast ?? true) {
@@ -599,7 +604,19 @@ async function confirmAndApproveSubmission(e?: Event) {
             toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
             return
         }
-        if (handleModerationResponseErrors(result, toast, t)) {
+        const errorCodes = result.errors?.map(error => error.code) ?? []
+        const alreadyApproved = errorCodes.length > 0
+          && errorCodes.every(code => code === ErrorCode.SUBMISSION_ALREADY_APPROVED)
+        if (alreadyApproved) {
+            returnWithSuccessToast(result, toast, t, 'modSubmissionForm.successMessageApproved')
+            await leaveToModerationDashboard(router, screenStore, modalStore, 'submissions')
+            return
+        }
+        if (handleModerationResponseErrors(result, toast, t, te)) {
+            return
+        }
+        if (!result.data?.updateSubmission) {
+            toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
             return
         }
         returnWithSuccessToast(result, toast, t, 'modSubmissionForm.successMessageApproved')
@@ -622,10 +639,14 @@ const rejectSubmission = async () => {
         toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
         return
     }
-    if (handleModerationResponseErrors(result, toast, t)) {
+    if (handleModerationResponseErrors(result, toast, t, te)) {
         return
     }
-    toast.success(t('modSubmissionForm.facilitySuccessfullyRejected'))
+    if (!result.data?.updateSubmission) {
+        toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
+        return
+    }
+    toast.success(t('modSubmissionForm.submissionRejected'))
     await leaveToModerationDashboard(router, screenStore, modalStore, 'submissions')
 }
 
