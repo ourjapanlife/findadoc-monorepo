@@ -22,7 +22,15 @@ import { type Insurance,
     type UpdateHealthcareProfessionalInput } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import { stableStringify } from '~/utils/stableStringify'
-import { nextListOrder, orderByInput, type ListOrder } from '~/utils/moderationTable'
+import { usePersistentFilters } from '~/composables/usePersistentFilters'
+import {
+    DEFAULT_MODERATION_PAGE_SIZE,
+    loadPageInRange,
+    MODERATION_PAGE_SIZES,
+    nextListOrder,
+    orderByInput,
+    type ListOrder
+} from '~/utils/moderationTable'
 import { useLocaleStore } from '~/stores/localeStore'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { useTranslation } from '~/composables/useTranslation'
@@ -73,11 +81,21 @@ export const useHealthcareProfessionalsStore = defineStore(
         // Used for store the total number of healthcare professionals found by the current search query.
         const totalHealthcareProfessionalsCount: Ref<number> = ref(0)
         // Used for store the starting index (offset) for the current page of results.
-        const currentOffset: Ref<number> = ref(0)
-        const itemsPerPage: Ref<number> = ref(25)
-        const listSearchQuery: Ref<string> = ref('')
+        const currentOffset = usePersistentFilters('professionals', 'offset', 0)
+        const itemsPerPage = usePersistentFilters(
+            'professionals',
+            'pageSize',
+            DEFAULT_MODERATION_PAGE_SIZE,
+            MODERATION_PAGE_SIZES
+        )
+        const listSearchQuery = usePersistentFilters('professionals', 'search', '')
         const listOrder: Ref<ListOrder | null> = ref(null)
-        const licenseReviewFilter: Ref<LicenseReviewStatus | null> = ref(null)
+        const licenseReviewFilter = usePersistentFilters(
+            'professionals',
+            'licenseReview',
+            null as LicenseReviewStatus | null,
+            [LicenseReviewStatus.NeedsReview]
+        )
         const healthcareProfessionalList: Ref<HealthcareProfessional[]> = ref([])
         const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
         let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
@@ -184,22 +202,34 @@ export const useHealthcareProfessionalsStore = defineStore(
             }
         }
 
+        function applyProfessionalPage(offset: number, rows: HealthcareProfessional[], totalCount: number) {
+            currentOffset.value = offset
+            healthcareProfessionalList.value = rows
+            totalHealthcareProfessionalsCount.value = totalCount
+        }
+
         async function loadHealthcareProfessionalList() {
             const request = ++professionalListRequest
             const query = listSearchQuery.value.trim()
             const orderBy = orderByInput(listOrder.value)
-            const filters = {
-                offset: currentOffset.value,
-                limit: itemsPerPage.value,
-                ...(query ? { query } : {}),
-                ...(orderBy === null ? {} : { orderBy }),
-                ...(licenseReviewFilter.value ? { licenseReview: licenseReviewFilter.value } : {})
-            }
             try {
-                const { filteredSearchResults, totalCount } = await fetchHealthcareProfessionalsWithCount(filters)
+                const page = await loadPageInRange(
+                    currentOffset.value,
+                    itemsPerPage.value,
+                    async offset => {
+                        const filters = {
+                            offset,
+                            limit: itemsPerPage.value,
+                            ...(query ? { query } : {}),
+                            ...(orderBy === null ? {} : { orderBy }),
+                            ...(licenseReviewFilter.value ? { licenseReview: licenseReviewFilter.value } : {})
+                        }
+                        const { filteredSearchResults, totalCount } = await fetchHealthcareProfessionalsWithCount(filters)
+                        return { rows: filteredSearchResults, totalCount }
+                    }
+                )
                 if (request !== professionalListRequest) return
-                healthcareProfessionalList.value = filteredSearchResults
-                totalHealthcareProfessionalsCount.value = totalCount
+                applyProfessionalPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
                 if (request !== professionalListRequest) return
                 console.error(`Error fetching healthcare professionals: ${JSON.stringify(error)}`)

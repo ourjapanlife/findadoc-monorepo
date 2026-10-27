@@ -42,6 +42,49 @@ export type PaginationItem = number | 'ellipsis'
 
 export const PAGINATION_COMPACT_BELOW = 640
 
+export const MODERATION_PAGE_SIZES = [10, 25, 50] as const
+
+export const DEFAULT_MODERATION_PAGE_SIZE = 25
+
+/** The stored page, aligned to the page size, or the first page when that page is gone. */
+export function pageOffsetInRange(offset: number, pageSize: number, totalCount: number): number {
+    if (!Number.isFinite(pageSize) || pageSize < 1) {
+        return 0
+    }
+    if (!Number.isFinite(totalCount) || totalCount <= 0) {
+        return 0
+    }
+    const safeOffset = Number.isFinite(offset) && offset > 0 ? Math.floor(offset) : 0
+    const aligned = Math.floor(safeOffset / pageSize) * pageSize
+    const lastPage = Math.floor((totalCount - 1) / pageSize) * pageSize
+    return Math.min(aligned, lastPage)
+}
+
+/**
+ * Loads the requested page. When that page is past the end, loads the last page that still has rows.
+ */
+export async function loadPageInRange<T>(
+    offset: number,
+    pageSize: number,
+    load: (offset: number) => Promise<{ rows: T[], totalCount: number }>
+): Promise<{ rows: T[], totalCount: number, offset: number }> {
+    let pageOffset = Number.isFinite(offset) && offset > 0 ? Math.floor(offset) : 0
+    let page = await load(pageOffset)
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+        const clamped = pageOffsetInRange(pageOffset, pageSize, page.totalCount)
+        if (clamped === pageOffset) {
+            return { rows: page.rows, totalCount: page.totalCount, offset: pageOffset }
+        }
+        pageOffset = clamped
+        page = await load(pageOffset)
+    }
+    return {
+        rows: page.rows,
+        totalCount: page.totalCount,
+        offset: pageOffsetInRange(pageOffset, pageSize, page.totalCount)
+    }
+}
+
 const COLUMN_ORDER_PREFIX = 'moderation-table-columns:'
 
 type ColumnStorage = Pick<Storage, 'getItem' | 'setItem'>

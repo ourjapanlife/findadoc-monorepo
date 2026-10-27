@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest'
 import { OrderDirection } from '@findadoc/graphql'
 import {
     columnOrder,
+    loadPageInRange,
     nextListOrder,
     orderByInput,
     orderedPage,
+    pageOffsetInRange,
     pageSelectionState,
     paginationIsCompact,
     paginationItems,
@@ -100,5 +102,40 @@ describe('moderation table', () => {
             { id: '2', label: 'B', succeeded: false },
             { id: '3', label: 'C', succeeded: false }
         ])
+    })
+
+    it('keeps a stored page that still has rows', () => {
+        expect(pageOffsetInRange(25, 25, 60)).toBe(25)
+    })
+
+    it('moves a stored page that is past the end back onto the last page', () => {
+        expect(pageOffsetInRange(50, 25, 30)).toBe(25)
+        expect(pageOffsetInRange(50, 25, 0)).toBe(0)
+    })
+
+    it('normalizes a negative stored offset before the first request', async () => {
+        const requested: number[] = []
+        const page = await loadPageInRange(-10, 25, async offset => {
+            requested.push(offset)
+            return {
+                rows: ['first'],
+                totalCount: 30
+            }
+        })
+        expect(requested).toEqual([0])
+        expect(page).toEqual({ rows: ['first'], totalCount: 30, offset: 0 })
+    })
+
+    it('loads the last page when the stored page is gone', async () => {
+        const requested: number[] = []
+        const page = await loadPageInRange(50, 25, async offset => {
+            requested.push(offset)
+            return {
+                rows: offset === 25 ? ['last'] : [],
+                totalCount: 30
+            }
+        })
+        expect(requested).toEqual([50, 25])
+        expect(page).toEqual({ rows: ['last'], totalCount: 30, offset: 25 })
     })
 })
