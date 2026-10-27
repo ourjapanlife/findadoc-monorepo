@@ -4,8 +4,11 @@
             <slot />
         </main>
         <footer class="shrink-0 border-t border-accent-bg">
-            <div class="px-6 py-6">
-                <div class="page-container flex items-center justify-center">
+            <div class="px-6 py-6 landscape:px-12">
+                <div
+                    class="page-container flex flex-col items-center gap-4
+                        landscape:flex-row landscape:justify-between"
+                >
                     <a
                         :href="siteOrigin"
                         class="inline-flex items-center gap-3 text-sm text-primary-text-muted
@@ -18,6 +21,7 @@
                         />
                         <span>{{ t('footer.poweredBy', { name: t('common.siteName') }) }}</span>
                     </a>
+                    <ThemeManager />
                 </div>
             </div>
         </footer>
