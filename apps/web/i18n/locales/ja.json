@@ -235,6 +235,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "名前をもう1つ追加",
+    "removeName": "名前を削除",
     "healthcareProfessionalMedicalInfoHeading": "医療従事者の詳細",
     "healthcareProfessionalNameHeading": "医療従事者の氏名",
     "labelHealthcareProfessionalFirstName": "名",

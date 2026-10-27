@@ -235,6 +235,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "再添加一个名字",
+    "removeName": "删除名字",
     "healthcareProfessionalMedicalInfoHeading": "医疗人员详情",
     "healthcareProfessionalNameHeading": "医疗人员姓名",
     "labelHealthcareProfessionalFirstName": "名",

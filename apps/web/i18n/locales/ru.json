@@ -228,6 +228,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
+    "addAnotherName": "Добавить ещё одно имя",
+    "removeName": "Удалить имя",
     "healthcareProfessionalMedicalInfoHeading": "Сведения о медицинском специалисте",
     "healthcareProfessionalNameHeading": "Имя медицинского специалиста",
     "labelHealthcareProfessionalFirstName": "Имя",

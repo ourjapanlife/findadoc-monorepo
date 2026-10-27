@@ -359,6 +359,8 @@
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add New Name",
+    "addAnotherName": "Add another name",
+    "removeName": "Remove name",
     "delete": "Permanently delete",
     "errorMessageHealthcareProfessionalId": "Healthcare Professional ID was not found",
     "exit": "Exit",
