@@ -135,6 +135,7 @@
     "notAllowed": "You do not have permission to do that. Sign in again, or ask an administrator for access."
   },
   "footer": {
+    "poweredBy": "Powered by {name}",
     "terms": "Terms",
     "npo": "NPO",
     "privacy": "Privacy",

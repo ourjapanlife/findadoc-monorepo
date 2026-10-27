@@ -254,7 +254,7 @@ onMounted(() => {
     setTimeout(() => { isMapReady.value = true }, 10)
 
     // The SDK calls this global on an auth failure — a bad key, or a referrer the key does not
-    // allow, which is what every Netlify deploy preview hits.
+    // allow, which is what every Amplify deploy preview hits.
 
     previousAuthFailureHandler = window.gm_authFailure
     // eslint-disable-next-line camelcase -- as above

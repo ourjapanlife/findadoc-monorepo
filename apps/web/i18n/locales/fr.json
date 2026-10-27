@@ -72,6 +72,7 @@
     "sectionNavLabel": "Sur cette page"
   },
   "footer": {
+    "poweredBy": "Propulsé par {name}",
     "terms": "Conditions",
     "npo": "Association",
     "privacy": "Confidentialité",

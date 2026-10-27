@@ -1,31 +1,34 @@
 import { expect } from 'chai'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
-import { readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { DEFAULT_LOCALE_CODE, LOCALE_CODES } from '@/utils/localePath'
 import {
+    CLINIC_HOST_BOOTSTRAP,
     CLINIC_LANDING_LOCALE_PREFIXES,
     CLINIC_LANDING_MODE,
     CLINIC_PREVIEW_SHELL_SLUGS,
     clinicHostLandingTarget,
+    clinicHostPagePath,
     clinicLandingAccess,
     clinicLandingHostSlug,
     clinicLandingMode,
     clinicLandingPath,
-    clinicLandingPreviewCookie,
     clinicLandingRedirectTarget,
     clinicLandingShareImage,
+    clinicLocalePrefix,
+    clinicSubdomainHreflang,
+    clinicSubdomainUrl,
+    isClinicHostPage,
     isClinicLandingPath,
+    markClinicHostReady,
     type HostedClinicRef
 } from '@/utils/clinicLanding'
 import { clinicPreviewShellPaths, writeClinicPreviewShells } from '@/utils/nuxt/clinicPreviewShell'
 import { indexableMarketingPaths } from '@/utils/sitemap'
 import { SITE_ORIGIN } from '@/utils/site'
 import { clinicThemeVars } from '@/utils/clinicTheme'
-
-const rootDir = join(dirname(fileURLToPath(import.meta.url)), '../../..')
+import { clinicSiteSeeds } from '../../../../server/scripts/seed/clinicSiteContent'
 
 describe('clinic landings', () => {
     const slug = 'multilingual-online-clinic'
@@ -63,10 +66,61 @@ describe('clinic landings', () => {
         expect(clinicHostLandingTarget(`${slug}.localhost`, '/submit', 'off')).to.equal(undefined)
     })
 
+    it('hides the prerendered homepage on a clinic host until the clinic is ready', () => {
+        expect(CLINIC_HOST_BOOTSTRAP).to.match(/^\(function \(\)/)
+        expect(CLINIC_HOST_BOOTSTRAP).to.include('data-clinic-host')
+        expect(CLINIC_HOST_BOOTSTRAP).to.include('visibility:hidden')
+        expect(CLINIC_HOST_BOOTSTRAP).to.include('www')
+        expect(CLINIC_HOST_BOOTSTRAP).to.include('findadoc.jp')
+
+        const root = document.documentElement
+        root.removeAttribute('data-clinic-host')
+        root.removeAttribute('data-clinic-ready')
+        markClinicHostReady()
+        expect(root.hasAttribute('data-clinic-ready')).to.equal(false)
+
+        root.setAttribute('data-clinic-host', slug)
+        markClinicHostReady()
+        expect(root.getAttribute('data-clinic-ready')).to.equal('')
+        root.removeAttribute('data-clinic-host')
+        root.removeAttribute('data-clinic-ready')
+    })
+
     it('keeps locale prefixes aligned with the site catalog', () => {
         expect([...CLINIC_LANDING_LOCALE_PREFIXES].sort()).to.deep.equal(
             LOCALE_CODES.filter(code => code !== DEFAULT_LOCALE_CODE).sort()
         )
+        expect(clinicLocalePrefix(DEFAULT_LOCALE_CODE)).to.equal('')
+        expect(clinicLocalePrefix(undefined)).to.equal('')
+        expect(clinicLocalePrefix('ja-JP')).to.equal('/ja-JP')
+        expect(clinicLocalePrefix('xx-XX')).to.equal('')
+        expect(clinicHostPagePath('/')).to.equal('/')
+        expect(clinicHostPagePath('/ja-JP/')).to.equal('/ja-JP')
+        expect(clinicHostPagePath('/ja-JP/submit')).to.equal('/ja-JP')
+        expect(isClinicHostPage('/')).to.equal(true)
+        expect(isClinicHostPage('/zh-CN')).to.equal(true)
+        expect(isClinicHostPage('/zh-CN/')).to.equal(true)
+        expect(isClinicHostPage('/submit')).to.equal(false)
+        expect(isClinicHostPage(clean)).to.equal(false)
+    })
+
+    it('builds the clinic hostname from the request host', () => {
+        expect(clinicSubdomainUrl(slug)).to.equal(`https://${slug}.findadoc.jp/`)
+        expect(clinicSubdomainUrl(slug, { requestHost: 'www.findadoc.jp' })).to.equal(`https://${slug}.findadoc.jp/`)
+        expect(clinicSubdomainUrl(slug, { localeCode: 'ja-JP', requestHost: 'WWW.FINDADOC.JP' }))
+            .to.equal(`https://${slug}.findadoc.jp/ja-JP`)
+        expect(clinicSubdomainUrl(slug, { localeCode: DEFAULT_LOCALE_CODE, query: '?preview=1' }))
+            .to.equal(`https://${slug}.findadoc.jp/?preview=1`)
+        expect(clinicSubdomainUrl(slug, { requestHost: 'localhost:3001' })).to.equal(`http://${slug}.localhost:3001/`)
+        expect(clinicSubdomainUrl(slug, { requestHost: '127.0.0.1' })).to.equal(`http://${slug}.localhost:3000/`)
+        expect(clinicSubdomainUrl(slug, { requestHost: `${slug}.localhost:3000`, localeCode: 'ja-JP' }))
+            .to.equal(`http://${slug}.localhost:3000/ja-JP`)
+
+        const hreflang = clinicSubdomainHreflang(slug, 'www.findadoc.jp')
+        expect(hreflang.map(link => link.hreflang)).to.deep.equal([...LOCALE_CODES, 'x-default'])
+        expect(hreflang.find(link => link.hreflang === 'x-default')?.href).to.equal(`https://${slug}.findadoc.jp/`)
+        expect(hreflang.find(link => link.hreflang === 'ja-JP')?.href).to.equal(`https://${slug}.findadoc.jp/ja-JP`)
+        expect(new Set(hreflang.map(link => link.key)).size).to.equal(hreflang.length)
     })
 
     it('sends the breadcrumb, the clean path, and the shareable id to the subdomain', () => {
@@ -99,7 +153,8 @@ describe('clinic landings', () => {
         expect(CLINIC_LANDING_MODE).to.equal('preview')
         expect(clinicLandingMode(undefined)).to.equal('off')
         expect(clinicLandingMode('off')).to.equal('off')
-        expect(clinicLandingMode('true')).to.equal('preview')
+        expect(clinicLandingMode('true')).to.equal('off')
+        expect(clinicLandingMode('preview')).to.equal('preview')
         expect(clinicLandingMode('public')).to.equal('public')
         expect(clinicLandingAccess('off', '1', '1')).to.equal('deny')
         expect(clinicLandingAccess('preview', null, null)).to.equal('deny')
@@ -107,7 +162,6 @@ describe('clinic landings', () => {
         expect(clinicLandingAccess('preview', null, '1')).to.equal('allow')
         expect(clinicLandingAccess('preview', '0', '1')).to.equal('revoke')
         expect(clinicLandingAccess('public', null, null)).to.equal('allow')
-        expect(clinicLandingPreviewCookie('a=1; online_clinic_preview=1')).to.equal('1')
     })
 
     it('maps a clinic primary color onto the theme tokens', () => {
@@ -122,9 +176,7 @@ describe('clinic landings', () => {
             `${SITE_ORIGIN}/clinic-landings/multilingual-online-clinic/hero.jpg`
         )
         expect(indexableMarketingPaths()).to.not.include(clean)
-        const seedSource = readFileSync(join(rootDir, '../server/scripts/seed/clinicSiteContent.ts'), 'utf8')
-        const seededSlugs = [...seedSource.matchAll(/^ +slug: '([^']+)',$/gm)].map(match => match[1])
-        expect([...CLINIC_PREVIEW_SHELL_SLUGS]).to.deep.equal(seededSlugs)
+        expect([...CLINIC_PREVIEW_SHELL_SLUGS]).to.deep.equal(clinicSiteSeeds.map(site => site.slug))
     })
 })
 

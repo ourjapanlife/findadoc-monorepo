@@ -135,6 +135,7 @@
     "notAllowed": "이 작업을 할 권한이 없습니다. 다시 로그인하거나 관리자에게 권한을 요청하세요."
   },
   "footer": {
+    "poweredBy": "{name} 제공",
     "terms": "이용약관",
     "npo": "NPO",
     "privacy": "개인정보 처리방침",

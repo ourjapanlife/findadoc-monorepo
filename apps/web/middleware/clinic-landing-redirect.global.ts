@@ -1,4 +1,5 @@
-import { clinicLandingMode, clinicLandingRedirectTarget } from '~/utils/clinicLanding'
+import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
+import { clinicLandingRedirectTarget } from '~/utils/clinicLanding'
 import { graphqlEndpoint } from '~/utils/graphqlEndpoint'
 import { hostedClinicIndex } from '~/utils/hostedClinicIndex'
 
@@ -8,16 +9,15 @@ import { hostedClinicIndex } from '~/utils/hostedClinicIndex'
  * `navigateTo` from middleware stops the directory page from answering first.
  */
 export default defineNuxtRouteMiddleware(async to => {
-    const config = useRuntimeConfig()
-    const mode = clinicLandingMode(config.public.onlineClinic)
+    const mode = useClinicLandingMode()
     if (mode === 'off' || !to.path.includes('/clinic/')) {
         return
     }
 
-    const requestUrl = useRequestURL()
+    const config = useRuntimeConfig()
     const sites = await hostedClinicIndex(graphqlEndpoint(config.public.NUXT_USE_LOCAL_API))
-    const target = clinicLandingRedirectTarget(to.fullPath, mode, sites, requestUrl.host)
-    if (!target || target === to.fullPath) {
+    const target = clinicLandingRedirectTarget(to.fullPath, mode, sites, useRequestHost().host)
+    if (target === undefined) {
         return
     }
     return navigateTo(target, { redirectCode: 301, external: true })

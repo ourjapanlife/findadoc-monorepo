@@ -2,12 +2,16 @@ import { ClinicSiteStatus, type ClinicSite, type ClinicSiteLocale, type ClinicSi
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
 
-type SiteRow = {
+/** The columns a redirect or sitemap needs. The full page adds the hero and theme. */
+type SiteSummaryRow = {
     id: string
     facility_id: string | null
     slug: string
     status: string
     share_image_path: string
+}
+
+type SiteRow = SiteSummaryRow & {
     hero_path: string
     theme: unknown
 }
@@ -40,6 +44,15 @@ const STATUS_BY_ROW: Record<string, ClinicSiteStatus> = {
     draft: ClinicSiteStatus.Draft,
     preview: ClinicSiteStatus.Preview,
     published: ClinicSiteStatus.Published
+}
+
+/** Same shape as `clinic_sites_slug_check`. Anything else cannot be a row, so it is not queried. */
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+/** A status that is visible on the public queries. Drafts are not. */
+function publicStatus(status: string): ClinicSiteStatus | undefined {
+    const mapped = clinicSiteStatusFromRow(status)
+    return mapped === undefined || mapped === ClinicSiteStatus.Draft ? undefined : mapped
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -197,8 +210,8 @@ export function assembleClinicSite(input: {
     doctors: readonly DoctorRow[]
     locales: readonly LocaleRow[]
 }): ClinicSite | undefined {
-    const status = clinicSiteStatusFromRow(input.site.status)
-    if (status === undefined || status === ClinicSiteStatus.Draft) {
+    const status = publicStatus(input.site.status)
+    if (status === undefined) {
         return undefined
     }
 
@@ -236,9 +249,9 @@ export function assembleClinicSite(input: {
     }
 }
 
-export function summarizeClinicSite(site: Omit<SiteRow, 'theme'>): ClinicSiteSummary | undefined {
-    const status = clinicSiteStatusFromRow(site.status)
-    if (status === undefined || status === ClinicSiteStatus.Draft) {
+export function summarizeClinicSite(site: SiteSummaryRow): ClinicSiteSummary | undefined {
+    const status = publicStatus(site.status)
+    if (status === undefined) {
         return undefined
     }
 
@@ -252,13 +265,17 @@ export function summarizeClinicSite(site: Omit<SiteRow, 'theme'>): ClinicSiteSum
 }
 
 export async function getClinicSiteBySlug(slug: string): Promise<ClinicSite | null> {
+    if (!SLUG_PATTERN.test(slug)) {
+        return null
+    }
+
     const site = await db.selectFrom('clinic_sites')
         .select(['id', 'facility_id', 'slug', 'status', 'share_image_path', 'hero_path', 'theme'])
         .where('slug', '=', slug)
         .where('status', '!=', 'draft')
         .executeTakeFirst()
 
-    if (!site) {
+    if (site === undefined) {
         return null
     }
 
@@ -280,7 +297,7 @@ export async function getClinicSiteBySlug(slug: string): Promise<ClinicSite | nu
     ])
 
     const assembled = assembleClinicSite({ site, languages, doctors, locales })
-    if (!assembled) {
+    if (assembled === undefined) {
         logger.warn(`Clinic site ${site.id} is not a public page`)
         return null
     }
@@ -290,7 +307,7 @@ export async function getClinicSiteBySlug(slug: string): Promise<ClinicSite | nu
 
 export async function listPublicClinicSites(): Promise<ClinicSiteSummary[]> {
     const rows = await db.selectFrom('clinic_sites')
-        .select(['id', 'facility_id', 'slug', 'status', 'share_image_path', 'hero_path'])
+        .select(['id', 'facility_id', 'slug', 'status', 'share_image_path'])
         .where('status', '!=', 'draft')
         .orderBy('slug')
         .execute()

@@ -51,12 +51,9 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { createError, navigateTo, useAsyncData, useHead, useRequestURL, useRoute, useRuntimeConfig } from '#imports'
+import { createError, navigateTo, useAsyncData, useHead, useRoute } from '#imports'
 import { fetchClinicById } from '~/utils/clinicFacility'
 import { canonicalPathMatches, facilityDocumentTitle, facilityIdFromSlugParam, facilityPath } from '~/utils/clinicPath'
-import { clinicLandingMode, clinicLandingRedirectTarget } from '~/utils/clinicLanding'
-import { hostedClinicIndex } from '~/utils/hostedClinicIndex'
-import { graphqlEndpoint } from '~/utils/graphqlEndpoint'
 import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
 import { facilityCrumbs, facilityFacetLinks, facilityHubPaths } from '~/utils/directoryLinks'
 import { loadFacetLinkCatalog } from '~/utils/hubDirectory'
@@ -74,8 +71,6 @@ import { useUmami } from '~/composables/useUmamiTracking'
 import { clinicViewedProps } from '~/utils/analyticsEvents'
 
 const route = useRoute()
-const config = useRuntimeConfig()
-const requestUrl = useRequestURL()
 const { t, locale } = useI18n()
 const { track } = useUmami()
 
@@ -103,20 +98,6 @@ if (!data.value) {
 }
 
 const canonicalPath = facilityPath(data.value)
-const clinicMode = clinicLandingMode(config.public.onlineClinic)
-const hostedClinicUrl = clinicMode === 'off'
-    ? undefined
-    : clinicLandingRedirectTarget(
-        route.fullPath,
-        clinicMode,
-        await hostedClinicIndex(graphqlEndpoint(config.public.NUXT_USE_LOCAL_API)),
-        import.meta.server ? requestUrl.host : window.location.host
-    )
-const breadcrumbPath = hostedClinicUrl ?? canonicalPath
-
-if (hostedClinicUrl) {
-    await navigateTo(hostedClinicUrl, { redirectCode: 301, external: true })
-}
 
 if (!canonicalPathMatches(route.path, canonicalPath)) {
     await navigateTo(localizedPath(canonicalPath, localeCodeFromPath(route.path)), {
@@ -226,7 +207,7 @@ useHead({
             jsonLdScript('ld-medical-clinic', medicalClinicJsonLd({
                 name: displayName.value,
                 alternateName: alternateName.value,
-                pagePath: hostedClinicUrl ?? localizedPath(canonicalPath, locale.value),
+                pagePath: localizedPath(canonicalPath, locale.value),
                 telephone: facilityPhone(record),
                 email: facilityEmail(record),
                 websiteUrl: facilityWebsiteUrl(record),
@@ -237,7 +218,7 @@ useHead({
                 longitude: record.mapLongitude,
                 availableLanguage: availableLanguage.value
             })),
-            jsonLdScript('ld-breadcrumb', breadcrumbListJsonLd(crumbs.value, breadcrumbPath, locale.value))
+            jsonLdScript('ld-breadcrumb', breadcrumbListJsonLd(crumbs.value, canonicalPath, locale.value))
         ]
     })
 })

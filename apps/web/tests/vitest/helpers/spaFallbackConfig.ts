@@ -13,7 +13,7 @@ function publicPath(filename: string): string {
     return join(process.cwd(), 'public', filename)
 }
 
-/** Netlify publish-dir redirects (ignored by `nuxi start` / `serve`). */
+/** Amplify publish-dir redirects (ignored by `nuxi start` / `serve`). */
 export function readRedirects(): string {
     return readFileSync(publicPath('_redirects'), 'utf8')
 }

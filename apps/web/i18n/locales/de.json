@@ -72,6 +72,7 @@
     "sectionNavLabel": "Auf dieser Seite"
   },
   "footer": {
+    "poweredBy": "Bereitgestellt von {name}",
     "terms": "Nutzungsbedingungen",
     "npo": "Gemeinnützigkeit",
     "privacy": "Datenschutz",

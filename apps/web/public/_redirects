@@ -1,12 +1,10 @@
 # SPA fallbacks for client-routed pages that `nuxi generate` does not prerender.
-# This file is copied into the publish directory. Nitro's netlify-static preset
-# writes `/* /404.html 404` into `_redirects`, which is processed before
-# netlify.toml — so a toml `/* → /index.html 200` catch-all never wins.
-# Specific 200 rewrites here run first; keep the 404 catch-all last.
+# This file is copied into the Amplify publish directory. Specific 200 rewrites
+# run first; keep the 404 catch-all last.
 # CI `nuxi start` uses `serve`, which ignores this file — keep public/serve.json
 # in sync for the same fallbacks (see #1785). The per-locale directory splats
 # below are the exception: `serve` applies a matching rewrite instead of the
-# clean URL, so `/zh-CN/about` would become the SPA shell. Netlify serves an
+# clean URL, so `/zh-CN/about` would become the SPA shell. Amplify serves an
 # existing file first, so marketing HTML still wins here.
 # Add new dynamic prefixes here rather than a blanket 200 rewrite.
 #

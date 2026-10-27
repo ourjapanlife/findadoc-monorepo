@@ -12,7 +12,7 @@ import { cleanUmamiEnv, proxyUmami, UMAMI_COLLECT_PATH, UMAMI_SCRIPT_PATH } from
 /**
  * Same-origin proxy for the Umami tracker while a Nitro server is actually
  * running (`nuxi dev`, and `nuxi start` when that server bundle handles
- * requests). The production site is `nuxi generate` on Netlify, which does not
+ * requests). The production site is `nuxi generate` on Amplify, which does not
  * deploy server routes, so the same two paths are also proxied from
  * `public/_redirects`.
  */

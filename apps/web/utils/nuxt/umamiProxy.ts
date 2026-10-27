@@ -66,7 +66,7 @@ const SCRIPT_RULE = /^\/stats\.js\s+\S+\s+200\s*$/
 const COLLECT_RULE = /^\/api\/send\s+\S+\s+200\s*$/
 
 /**
- * Point the committed proxy rules at the configured script. Netlify has no
+ * Point the committed proxy rules at the configured script. Amplify has no
  * runtime for `nuxi generate`, so the upstream has to be written into
  * `_redirects` at build time. Returns the original text when nothing changes.
  */
@@ -144,7 +144,7 @@ export type UmamiProxyResult = {
 
 /**
  * Used by the Nitro server (dev, and `nuxi start` when the server bundle is
- * what is running). Production Netlify is static and uses the `_redirects`
+ * what is running). Production Amplify is static and uses the `_redirects`
  * proxy instead; this handler is not part of that publish.
  */
 export async function proxyUmami(

@@ -46,9 +46,8 @@ export class UploadsStack extends Stack {
                 allowedMethods: [HttpMethods.PUT, HttpMethods.GET, HttpMethods.HEAD],
                 allowedOrigins: [
                     'https://findadoc.jp',
-                    'https://www.findadoc.jp',
+                    'https://*.findadoc.jp',
                     'https://*.amplifyapp.com',
-                    'https://*.netlify.app',
                     'http://localhost:3000',
                     'http://localhost:4242',
                     'http://127.0.0.1:4242',

@@ -278,7 +278,7 @@ Two structural constraints worth flagging:
 
 ### Crawler surface (brief — already ticketed)
 
-`/robots.txt`, `/sitemap.xml`, `/llms.txt` all **404**. No canonical, no hreflang, no JSON-LD. `titleTemplate: 'Health Services in Japan'` (`nuxt.config.ts:36`) has no `%s`, so it **replaces** the title on every page — no page carries the brand name. `twitter:card` is `summary`. `i18n.strategy: 'no_prefix'` collapses 10 locales onto one URL. `pages/_headers` is in the wrong directory (Netlify reads `_headers` from the publish root only) and is inert. These are consistent with the existing issues; no action proposed here.
+`/robots.txt`, `/sitemap.xml`, `/llms.txt` all **404**. No canonical, no hreflang, no JSON-LD. `titleTemplate: 'Health Services in Japan'` (`nuxt.config.ts:36`) has no `%s`, so it **replaces** the title on every page — no page carries the brand name. `twitter:card` is `summary`. `i18n.strategy: 'no_prefix'` collapses 10 locales onto one URL. `pages/_headers` is in the wrong directory (Amplify reads `_headers` from the publish root only) and is inert. These are consistent with the existing issues; no action proposed here.
 
 ---
 

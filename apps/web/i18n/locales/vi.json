@@ -72,6 +72,7 @@
     "sectionNavLabel": "Trên trang này"
   },
   "footer": {
+    "poweredBy": "Được cung cấp bởi {name}",
     "terms": "Điều khoản",
     "npo": "Tổ chức",
     "privacy": "Chính Sách Bảo Mật",

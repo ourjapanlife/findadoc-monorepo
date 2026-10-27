@@ -126,13 +126,13 @@ A `titleTemplate` without `%s` replaces the title outright. Live HTML confirms `
 
 ### 5.2 Deep links return hard 404s
 
-`/nonexistent-page-xyz` and `/u/someone` both return **404**, not the SPA shell. The `netlify.toml` catch-all (`/* → /index.html`, status 200) is therefore not in effect — most likely because `nuxi generate` emits a `404.html` that Netlify prefers.
+`/nonexistent-page-xyz` and `/u/someone` both return **404**, not the SPA shell. Amplify serves `404.html` for unknown paths unless `_redirects` lists a 200 rewrite first.
 
 For a client-routed SPA this means **any non-prerendered dynamic route is unreachable by direct entry**. This is a shareability and correctness bug independent of SEO, and it would silently break every entity URL introduced in Phase 2 if not fixed first. Worth confirming against a valid `/u/<username>` before filing — `member_directory/members.json` has no username field, so a real one may need pulling from Auth0.
 
 ### 5.3 `pages/_headers` is in the wrong directory
 
-Netlify reads `_headers` from the publish root only. The file at `pages/_headers` is treated as a Nuxt page directory entry and has no effect. Its contents duplicate the `Access-Control-Allow-Origin` rule already set in `netlify.toml`, so nothing is currently broken — but the file should move to `public/` or be deleted, and it is the natural home for future caching and security headers.
+Amplify reads `_headers` from the publish root only. A file at `pages/_headers` is treated as a Nuxt page directory entry and has no effect. Put headers in `public/` if they are needed.
 
 ### 5.4 Ten locales collapsed onto one URL
 
@@ -177,7 +177,7 @@ This looks larger than it is. **All six plugins are already `.client.ts`** — i
 | P2-2 | Wrap browser-only components in `<ClientOnly>` | S | `MapContainer.vue` (`vue3-google-map`), `BottomSheet.vue` (`hammerjs`) |
 | P2-3 | Audit the 16 files referencing `window`/`document`/`localStorage` for server-side execution paths | M | Guard with `import.meta.client` where needed |
 | P2-4 | Set `ssr: true`; keep authenticated trees client-only via `definePageMeta({ ssr: false })` | M | Applies to `my-page*`, `moderation*`, `login` |
-| P2-5 | Configure `routeRules` — ISR/prerender for public directory routes, SPA for authenticated ones | M | Requires a Netlify deployment-model decision; see §9.1 |
+| P2-5 | Configure `routeRules` — ISR/prerender for public directory routes, SPA for authenticated ones | M | Requires an Amplify deployment-model decision; see §9.1 |
 | P2-6 | Add `@nuxtjs/sitemap`, generating from the API | M | `/sitemap.xml` returns 200 and lists all public routes |
 | P2-7 | Confirm hydration parity and that E2E suites still pass | M | `yarn test` green |
 
@@ -249,7 +249,7 @@ Analytics already in place: `nuxt-gtag` (`G-T0RE9B3PRG`, production only) and Um
 
 ## 8. Risks and Open Questions
 
-1. **Deployment model.** Phase 2 P2-5 requires deciding whether findadoc-web keeps a pure-static Netlify deploy (prerender-only, rebuild on data change) or gains a server runtime (ISR/SSR). This has a direct bearing on the online-booking plan — see §9.1.
+1. **Deployment model.** Phase 2 P2-5 requires deciding whether findadoc-web keeps a pure-static Amplify deploy (prerender-only, rebuild on data change) or gains a server runtime (ISR/SSR). This has a direct bearing on the online-booking plan — see §9.1.
 2. **Rebuild cadence for prerendered pages.** If the site stays fully static, ~1,100 pages must be regenerated when moderators approve new facilities. Needs either a build webhook from `findadoc-server` or a scheduled rebuild, and the staleness window must be acceptable.
 3. **Build time at ~1,100 pages × 10 locales.** Prerendering the full matrix could reach 11,000 pages. ISR or on-demand rendering is likely required before Phase 4.
 4. **Thin-content risk.** Only 17 of 400 professionals have `additionalInfoForPatients`. Entity pages will be largely structured facts. This is normal and acceptable for a directory, but the facet gating in Phase 3 is what keeps it from becoming a quality problem.

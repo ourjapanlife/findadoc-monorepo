@@ -252,7 +252,7 @@ Note: fixing `stores/searchResultsStore.ts:19` (module-scope `useToast()`) here 
 
 Blockers, all enumerated in §5.3: `BottomSheet.vue:148` (`window.addEventListener` at setup top level), `searchResultsStore.ts:19` (module-scope `useToast`, cleared by S4), `MapContainer.vue` → `<ClientOnly>`, `ThemeManager` localStorage → cookie, `onboardingStore` (deleted by W4). All six plugins are already `.client.ts`, so nothing auth-related runs server-side.
 
-Keep authenticated trees client-only via `definePageMeta({ ssr: false })`. Requires a Netlify deployment-model decision (static prerender vs. server runtime).
+Keep authenticated trees client-only via `definePageMeta({ ssr: false })`. Requires an Amplify deployment-model decision (static prerender vs. server runtime).
 
 **Acceptance:** `curl /` returns a real `<h1>` and body text; e2e green; no hydration warnings.
 
@@ -332,7 +332,7 @@ Dark mode currently ignores the OS setting entirely and defaults to light (`Them
 
 ## Open questions
 
-1. **Netlify deployment model** — static prerender or server runtime? Gates P1 and has knock-on effects for booking.
+1. **Amplify deployment model** — static prerender or server runtime? Gates P1 and has knock-on effects for booking.
 2. **Rebuild cadence** if fully static — moderator approvals would need a build webhook.
 3. **S1 timeline** — server-side location filtering is the long pole for S2.
 4. **Homepage copy** — reuse `about.*` verbatim, or write new? Affects W3 effort and whether 10 locales need re-translation.

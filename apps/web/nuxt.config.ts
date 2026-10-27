@@ -7,7 +7,7 @@ import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
-import { CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
+import { CLINIC_HOST_BOOTSTRAP, CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
 import { writeClinicPreviewShells } from './utils/nuxt/clinicPreviewShell'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
 import {
@@ -122,6 +122,7 @@ export default defineNuxtConfig({
             link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
             script: [
                 { innerHTML: COLOR_SCHEME_BOOTSTRAP, tagPosition: 'head' },
+                { innerHTML: CLINIC_HOST_BOOTSTRAP, tagPosition: 'head' },
                 ...umamiScript()
             ]
         }
@@ -190,7 +191,7 @@ export default defineNuxtConfig({
         transpile: ['@findadoc/graphql', '@findadoc/utils']
     },
 
-    // Public directory pages are prerendered (keeps the static Netlify generate model).
+    // Public directory pages are prerendered (keeps the static Amplify generate model).
     // Authenticated surfaces stay SPA. ISR would need a server runtime — see #1787.
     // Non-prerendered app routes (e.g. /u/*) are SPA-rewritten in public/_redirects — see #1785.
     routeRules: {
@@ -235,7 +236,7 @@ export default defineNuxtConfig({
         prerender: {
             // Explicit route list only. Crawling localized homepages would queue
             // every clinic and hub. Directory HTML is limited to English and
-            // Japanese in entityDirectoryGenerate. Netlify's build limit is 18 minutes.
+            // Japanese in entityDirectoryGenerate. The generate step stays under Amplify's time limit.
             crawlLinks: false,
             // Clinic, doctor, hub, and facet HTML is filled from the generate-time
             // directory cache, not live facility(id)/healthcareProfessional(id) calls.
@@ -246,12 +247,11 @@ export default defineNuxtConfig({
                 '/404'
             ],
             /*
-             * `about.html`, not `about/index.html`. Netlify Pretty URLs 301 `/about` →
-             * `/about/` when the file is a subfolder index, while sitemap locs and
-             * `canonicalUrl()` are slashless. That loop is GSC "Page with redirect" +
-             * "Alternate page with proper canonical". Nitro's netlify-static preset
-             * already wants false; an explicit `prerender` block here would otherwise
-             * fall back to Nitro's default true. See tests/vitest/unit/seo.spec.ts.
+             * `about.html`, not `about/index.html`. A subfolder index 301s `/about` →
+             * `/about/` while sitemap locs and `canonicalUrl()` are slashless. That
+             * loop is GSC "Page with redirect" + "Alternate page with proper
+             * canonical". An explicit `prerender` block would otherwise fall back
+             * to Nitro's default true. See tests/vitest/unit/seo.spec.ts.
              */
             autoSubfolderIndex: false
         }
