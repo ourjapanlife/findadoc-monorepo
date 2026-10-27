@@ -6,6 +6,9 @@
             "cache": false,
             "passThroughEnv": ["GOOGLE_MAPS_API_KEY", "NUXT_*"]
         },
+        "test": {
+            "outputs": ["coverage/**"]
+        },
         "test:unit:coverage": {
             "outputs": ["coverage/**"]
         }

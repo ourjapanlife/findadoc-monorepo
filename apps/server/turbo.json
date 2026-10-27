@@ -5,6 +5,9 @@
         "build": {
             "outputs": ["dist/**"]
         },
+        "test": {
+            "outputs": ["coverage/**"]
+        },
         "db:seed": {
             "cache": false,
             "dependsOn": ["^build"],

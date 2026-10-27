@@ -161,17 +161,20 @@ CI fails if the committed types do not match the schema.
 pnpm lint                # every package
 pnpm lint:fix
 pnpm typecheck           # includes the locale key check
-pnpm test                # web, MCP, and utils unit tests
-pnpm test:server         # API tests; needs the local database
+pnpm test                # web, MCP, and utils unit tests (with coverage)
+pnpm test:server         # API tests with coverage; needs the local database
 pnpm test:e2e            # Playwright, from the website
 ```
 
 Website lint also checks Tailwind classes against `apps/web/assets/css/tailwind.css` with `eslint-plugin-better-tailwindcss`. It fails on a class that has a canonical Tailwind v4 name (`h-5 w-5` is `size-5`), a deprecated or unknown class, conflicting or repeated classes, stray spaces, and classes out of Tailwind's order (component classes such as `btn` first). `pnpm lint:fix` rewrites most of them. A hook class that is not Tailwind goes in the rule's `ignore` list in `apps/web/eslint.config.js`.
 
+Unit tests write a coverage report and fail when the package drops below its Vitest thresholds. The API and MCP bars are higher than the website; `@findadoc/utils` is gated too.
+
 Run one package's task with `--filter`:
 
 ```bash
 pnpm --filter @findadoc/web test:unit
+pnpm --filter @findadoc/utils test:coverage
 ```
 
 ## Documentation Site (`apps/docs`)
