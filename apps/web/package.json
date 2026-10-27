@@ -14,7 +14,7 @@
         "build": "nuxi generate",
         "prepare:ci": "nuxi prepare",
         "test": "pnpm test:unit",
-        "test:unit": "nuxi prepare && vitest run -c vitest.unit.config.ts",
+        "test:unit": "nuxi prepare && vitest run -c vitest.unit.config.ts --coverage",
         "test:unit:coverage": "nuxi prepare && vitest run -c vitest.unit.config.ts --coverage",
         "test:e2e:headless": "playwright test",
         "dev:e2e": "node -e \"console.log('\\n>> Starting Nuxt dev server on port 4242 for e2e tests...\\n')\" && cross-env NUXT_IS_TESTING_MODE=true NUXT_USE_LOCAL_API=true NUXT_PUBLIC_LOAD_STORES=true nuxi dev --port 4242",

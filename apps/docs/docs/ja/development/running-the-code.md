@@ -161,15 +161,18 @@ pnpm --filter @findadoc/graphql build
 pnpm lint                # すべてのパッケージ
 pnpm lint:fix
 pnpm typecheck           # ロケールキーのチェックを含む
-pnpm test                # web、MCP、utilsのユニットテスト
-pnpm test:server         # APIのテスト（ローカルデータベースが必要）
+pnpm test                # web、MCP、utilsのユニットテスト（カバレッジ付き）
+pnpm test:server         # APIのテスト（カバレッジ付き、ローカルデータベースが必要）
 pnpm test:e2e            # ウェブサイトのPlaywright
 ```
+
+ユニットテストはカバレッジ報告を出し、パッケージの Vitest しきい値を下回ると失敗します。API と MCP のしきい値はウェブサイトより高く、`@findadoc/utils` も対象です。
 
 1つのパッケージのタスクだけを実行するには `--filter` を使います：
 
 ```bash
 pnpm --filter @findadoc/web test:unit
+pnpm --filter @findadoc/utils test:coverage
 ```
 
 ## ドキュメントサイト（`apps/docs`）
