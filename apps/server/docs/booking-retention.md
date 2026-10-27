@@ -39,3 +39,10 @@ still exists.
 Booking submissions appear as a read-only table on my-page (same list pattern
 as directory submissions). Answers and metadata are visible; files stay behind
 the download mutation. There is no edit path for patient answers.
+
+## Auth (temporary)
+
+Booking GraphQL and `/book` currently require a real Auth0 session
+(`withAuthenticatedScope`). That is not the final patient-auth model. Track
+the correct public vs staff split in the follow-up on PR #153
+(“guard booking auth correctly”).
