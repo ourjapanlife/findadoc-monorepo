@@ -10,5 +10,5 @@ export function skipsUnreachedStep(input: {
     maxReached: number
 }): boolean {
     return input.to > input.maxReached + 1
-        || (input.to > input.maxReached && input.from !== input.maxReached)
+      || (input.to > input.maxReached && input.from !== input.maxReached)
 }
