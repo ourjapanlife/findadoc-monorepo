@@ -64,3 +64,45 @@ describe('graphQLClientRequestWithRetry: per-attempt deadline', () => {
         await expect(result).resolves.toMatchObject({ hasErrors: false })
     })
 })
+
+describe('graphQLClientRequestWithRetry: mutations and empty failures', () => {
+    it('does not retry a mutation, and reports NETWORK when the failure has no GraphQL errors', async () => {
+        let calls = 0
+        const fails = () => {
+            calls += 1
+            return Promise.reject(new Error('timed out'))
+        }
+
+        const result = await graphQLClientRequestWithRetry(
+            fails,
+            'mutation Mutation { updateSubmission { id } }',
+            {},
+            { skipAuth: true }
+        )
+
+        expect(calls).toBe(1)
+        expect(result).toEqual({
+            data: {},
+            hasErrors: true,
+            errors: [{ message: 'timed out', code: 'NETWORK', field: undefined }]
+        })
+    })
+
+    it('keeps a GraphQL error from a mutation instead of calling it a network failure', async () => {
+        const fails = () => Promise.reject({
+            response: {
+                errors: [{ message: 'nope', extensions: { code: 'SERVER_ERROR' } }]
+            }
+        })
+
+        const result = await graphQLClientRequestWithRetry(
+            fails,
+            'mutation Mutation { updateSubmission { id } }',
+            {},
+            { skipAuth: true }
+        )
+
+        expect(result.errors).toEqual([{ message: 'nope', code: 'SERVER_ERROR', field: undefined }])
+        expect(result.hasErrors).toBe(true)
+    })
+})

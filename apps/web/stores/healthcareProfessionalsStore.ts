@@ -34,6 +34,8 @@ import {
 import { useLocaleStore } from '~/stores/localeStore'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { useTranslation } from '~/composables/useTranslation'
+import { toastModerationLoadError } from '~/utils/moderationListToast'
+import { hasServerErrors } from '~/utils/moderationUtils'
 
 function healthcareProfessionalUpdatePatch(
     current: HealthcareProfessional,
@@ -196,8 +198,7 @@ export const useHealthcareProfessionalsStore = defineStore(
                 healthcareProfessionalsData.value = await searchHealthcareProfessionals('')
             } catch (error) {
                 console.error(`Error fetching healthcare professionals: ${JSON.stringify(error)}`)
-                // eslint-disable-next-line no-alert
-                alert('Error loading submissions. Please try again later.')
+                toastModerationLoadError('moderationListErrors.professionals')
                 healthcareProfessionalsData.value = []
             }
         }
@@ -233,8 +234,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             } catch (error) {
                 if (request !== professionalListRequest) return
                 console.error(`Error fetching healthcare professionals: ${JSON.stringify(error)}`)
-                // eslint-disable-next-line no-alert
-                alert('Error loading submissions. Please try again later.')
+                toastModerationLoadError('moderationListErrors.professionals')
                 healthcareProfessionalList.value = []
                 totalHealthcareProfessionalsCount.value = 0
             }
@@ -325,7 +325,7 @@ export const useHealthcareProfessionalsStore = defineStore(
 
             const responseData = serverResponse.data?.updateHealthcareProfessional
 
-            if (!serverResponse.errors?.length && responseData) {
+            if (!hasServerErrors(serverResponse) && responseData) {
                 const index = healthcareProfessionalsData.value.findIndex(hp => hp.id === responseData.id)
                 if (index !== -1) healthcareProfessionalsData.value[index] = responseData
                 const selectedNow = selectedHealthcareProfessionalData.value
@@ -338,7 +338,7 @@ export const useHealthcareProfessionalsStore = defineStore(
                 }
                 await loadHealthcareProfessionalList()
             }
-            if (!serverResponse.errors?.length && selectedHealthcareProfessionalId.value === updatedProfessionalId) {
+            if (!hasServerErrors(serverResponse) && selectedHealthcareProfessionalId.value === updatedProfessionalId) {
                 unsavedChangesResetTick.value++
             }
 
@@ -406,7 +406,7 @@ export const useHealthcareProfessionalsStore = defineStore(
                 data: deleteResult as DeleteResult
             }
 
-            if (!serverResponse.errors?.length && deleteResult?.isSuccessful) {
+            if (!hasServerErrors(serverResponse) && deleteResult?.isSuccessful) {
                 await Promise.all([getHealthcareProfessionals(), loadHealthcareProfessionalList()])
                 if (selectedHealthcareProfessionalId.value === inputArgs.id) {
                     selectedHealthcareProfessionalId.value = ''

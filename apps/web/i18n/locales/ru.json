@@ -339,7 +339,7 @@
     "submissionConfirmationAcceptanceButton": "Да, отправить",
     "submissionConfirmationMessage": "Отправить эту форму?",
     "errorMessageFacilityId": "Для обновления учреждения нужен ID",
-    "facilitySuccessfullyRejected": "Учреждение отклонено",
+    "submissionRejected": "Заявка отклонена",
     "rejectSubmissionConfirmationMessage": "Отклонить эту заявку?",
     "rejectSubmissionConfirmationButton": "Да, отклонить",
     "searchExistingFacilities": "Найти существующее учреждение",
@@ -493,7 +493,10 @@
     "fieldTooShort": "Одно из полей слишком короткое.",
     "negativeNumber": "Число не может быть отрицательным.",
     "nothingToSave": "Нет новых данных для сохранения.",
-    "notAllowed": "У вас нет прав на это действие. Войдите снова или попросите доступ у администратора."
+    "notAllowed": "У вас нет прав на это действие. Войдите снова или попросите доступ у администратора.",
+    "network": "Запрос не завершился. Проверьте соединение и попробуйте снова.",
+    "prefectureMismatch": "Английское и японское названия префектуры должны совпадать.",
+    "prefectureRequired": "Укажите префектуру на английском и на японском."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Языки общения",
@@ -1079,5 +1082,14 @@
     "accept": "Принять",
     "decline": "Отклонить",
     "settings": "Настройки cookie"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Эту заявку нельзя одобрить, потому что она не открыта.",
+    "unableToReject": "Эту заявку нельзя отклонить, потому что она не открыта."
+  },
+  "moderationListErrors": {
+    "submissions": "Не удалось загрузить заявки. Попробуйте снова.",
+    "facilities": "Не удалось загрузить клиники. Попробуйте снова.",
+    "professionals": "Не удалось загрузить медицинских специалистов. Попробуйте снова."
   }
 }

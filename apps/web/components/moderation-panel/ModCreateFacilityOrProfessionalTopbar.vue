@@ -30,7 +30,7 @@ import { useI18n } from '#imports'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useModalStore } from '~/stores/modalStore'
-import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
+import { handleModerationResponseErrors, toastUnexpectedModerationError } from '~/composables/useModerationResponseHandling'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
 import { formErrorKey } from '~/utils/formErrorMessage'
@@ -51,7 +51,7 @@ const modalStore = useModalStore()
 
 const toast = useAppToast()
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const buttonBaseClass = 'inline-flex min-h-11 w-full min-w-0 max-w-full flex-1 basis-[calc(50%-0.25rem)]'
   + ' items-center justify-center rounded-full border-2'
   + ' break-words text-center text-sm font-bold leading-tight'
@@ -71,6 +71,14 @@ const validateHealthcareProfessionalFields = () => {
 }
 
 const createFacilityOrHealthcareProfessional = async () => {
+    try {
+        await createFacilityOrHealthcareProfessionalUnchecked()
+    } catch (error) {
+        toastUnexpectedModerationError(error, toast, t)
+    }
+}
+
+const createFacilityOrHealthcareProfessionalUnchecked = async () => {
     if (moderationScreenStore.createHealthcareProfessionalScreenIsActive()) {
         const healthcareProfessionalCreationSectionFields = healthcareProfessionalsStore.createHealthcareProfessionalSectionFields
         const hasEnglishName = hasEnglishLocalizedName(healthcareProfessionalCreationSectionFields.names)
@@ -97,7 +105,7 @@ const createFacilityOrHealthcareProfessional = async () => {
 
         const response = await healthcareProfessionalsStore.createHealthcareProfessional()
 
-        if (handleModerationResponseErrors(response, toast, t)) {
+        if (handleModerationResponseErrors(response, toast, t, te)) {
             return response
         }
 
@@ -124,7 +132,7 @@ const createFacilityOrHealthcareProfessional = async () => {
         }
         const response = await facilitiesStore.createFacility()
 
-        if (handleModerationResponseErrors(response, toast, t)) {
+        if (handleModerationResponseErrors(response, toast, t, te)) {
             return response
         }
 

@@ -458,7 +458,7 @@
     "placeholderTextHealthcareProfessionalSearchbar": "Tìm kiếm theo tên hoặc ID để thêm bác sĩ.",
     "submissionConfirmationAcceptanceButton": "Vâng, gửi đi",
     "submissionConfirmationMessage": "Bạn có chắc chắn muốn gửi mẫu đơn này không?",
-    "facilitySuccessfullyRejected": "Đã từ chối cơ sở",
+    "submissionRejected": "Đã từ chối nội dung gửi",
     "rejectSubmissionConfirmationMessage": "Từ chối nội dung gửi này?",
     "rejectSubmissionConfirmationButton": "Có, từ chối",
     "searchExistingFacilities": "Tìm cơ sở đã có",
@@ -493,7 +493,10 @@
     "fieldTooShort": "Một mục quá ngắn.",
     "negativeNumber": "Số không được là số âm.",
     "nothingToSave": "Không có nội dung mới để lưu.",
-    "notAllowed": "Bạn không có quyền làm việc này. Hãy đăng nhập lại hoặc xin quyền truy cập từ quản trị viên."
+    "notAllowed": "Bạn không có quyền làm việc này. Hãy đăng nhập lại hoặc xin quyền truy cập từ quản trị viên.",
+    "network": "Yêu cầu chưa hoàn tất. Hãy kiểm tra kết nối và thử lại.",
+    "prefectureMismatch": "Tên tỉnh bằng tiếng Anh và tiếng Nhật phải khớp nhau.",
+    "prefectureRequired": "Hãy thêm tỉnh bằng tiếng Anh và tiếng Nhật."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Ngôn ngữ sử dụng",
@@ -1079,5 +1082,14 @@
     "accept": "Chấp nhận",
     "decline": "Từ chối",
     "settings": "Cài đặt cookie"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Không thể duyệt nội dung này vì nó không ở trạng thái mở.",
+    "unableToReject": "Không thể từ chối nội dung này vì nó không ở trạng thái mở."
+  },
+  "moderationListErrors": {
+    "submissions": "Không tải được danh sách gửi. Hãy thử lại.",
+    "facilities": "Không tải được danh sách cơ sở. Hãy thử lại.",
+    "professionals": "Không tải được danh sách nhân viên y tế. Hãy thử lại."
   }
 }

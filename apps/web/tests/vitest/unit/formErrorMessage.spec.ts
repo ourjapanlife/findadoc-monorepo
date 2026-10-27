@@ -76,7 +76,7 @@ describe('serverErrorsFromGraphQL', () => {
 })
 
 describe('handleServerErrorMessaging', () => {
-    it('toasts each distinct sentence and never the key', () => {
+    it('toasts every distinct sentence in one message and never the key', () => {
         const toast = { error: vi.fn() }
         const t = catalog({
             [formErrorKey.invalidEmail]: 'Enter a valid email address.',
@@ -91,9 +91,10 @@ describe('handleServerErrorMessaging', () => {
 
         handleServerErrorMessaging(errors, toast as never, t)
 
-        expect(toast.error).toHaveBeenCalledTimes(2)
-        expect(toast.error).toHaveBeenCalledWith('Enter a valid email address.', undefined)
-        expect(toast.error).toHaveBeenCalledWith('This submission has already been approved.', undefined)
+        expect(toast.error).toHaveBeenCalledTimes(1)
+        expect(toast.error).toHaveBeenCalledWith(
+            'Enter a valid email address. This submission has already been approved.'
+        )
     })
 
     it('names each refused field that the form labels', () => {
@@ -114,9 +115,28 @@ describe('handleServerErrorMessaging', () => {
             t
         )
 
-        expect(toast.error).toHaveBeenCalledTimes(2)
-        expect(toast.error).toHaveBeenCalledWith('A required field is empty.', { title: 'English Name Facility' })
-        expect(toast.error).toHaveBeenCalledWith('A required field is empty.', { title: 'Japanese Name Facility' })
+        expect(toast.error).toHaveBeenCalledTimes(1)
+        expect(toast.error).toHaveBeenCalledWith(
+            'English Name Facility: A required field is empty. Japanese Name Facility: A required field is empty.'
+        )
+    })
+
+    it('uses the generic sentence when te says the code has no translation', () => {
+        const toast = { error: vi.fn() }
+        const t = catalog({
+            [formErrorKey.invalidEmail]: 'Enter a valid email address.',
+            [GENERIC_FORM_ERROR_KEY]: generic
+        })
+
+        handleServerErrorMessaging(
+            [{ message: 'bad email', field: undefined, code: ErrorCode.INVALID_EMAIL }],
+            toast as never,
+            t,
+            () => false
+        )
+
+        expect(toast.error).toHaveBeenCalledTimes(1)
+        expect(toast.error).toHaveBeenCalledWith(generic)
     })
 
     it('falls back when a code has no sentence', () => {
@@ -130,6 +150,6 @@ describe('handleServerErrorMessaging', () => {
         )
 
         expect(toast.error).toHaveBeenCalledTimes(1)
-        expect(toast.error).toHaveBeenCalledWith(generic, undefined)
+        expect(toast.error).toHaveBeenCalledWith(generic)
     })
 })

@@ -132,7 +132,10 @@
     "fieldTooShort": "One of the fields is too short.",
     "negativeNumber": "A number cannot be negative.",
     "nothingToSave": "There is nothing new to save.",
-    "notAllowed": "You do not have permission to do that. Sign in again, or ask an administrator for access."
+    "notAllowed": "You do not have permission to do that. Sign in again, or ask an administrator for access.",
+    "network": "The request did not finish. Check your connection and try again.",
+    "prefectureMismatch": "The English and Japanese prefecture names have to match.",
+    "prefectureRequired": "Add a prefecture in English and in Japanese."
   },
   "footer": {
     "poweredBy": "Powered by {name}",
@@ -568,7 +571,7 @@
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",
-    "facilitySuccessfullyRejected": "Facility rejected successfully",
+    "submissionRejected": "Submission rejected",
     "healthcareProfessionalId": "Healthcare Professional IDs",
     "labelHealthcareProfessionalFirstName": "First Name",
     "labelHealthcareProfessionalLastName": "Last Name",
@@ -1079,5 +1082,14 @@
     "accept": "Accept",
     "decline": "Decline",
     "settings": "Cookie settings"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "This submission cannot be approved because it is not open.",
+    "unableToReject": "This submission cannot be rejected because it is not open."
+  },
+  "moderationListErrors": {
+    "submissions": "Submissions could not be loaded. Try again.",
+    "facilities": "Clinics could not be loaded. Try again.",
+    "professionals": "Healthcare professionals could not be loaded. Try again."
   }
 }

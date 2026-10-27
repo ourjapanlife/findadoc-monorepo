@@ -132,7 +132,10 @@
     "fieldTooShort": "너무 짧은 항목이 있습니다.",
     "negativeNumber": "숫자는 음수일 수 없습니다.",
     "nothingToSave": "새로 저장할 내용이 없습니다.",
-    "notAllowed": "이 작업을 할 권한이 없습니다. 다시 로그인하거나 관리자에게 권한을 요청하세요."
+    "notAllowed": "이 작업을 할 권한이 없습니다. 다시 로그인하거나 관리자에게 권한을 요청하세요.",
+    "network": "요청이 끝나지 않았습니다. 연결을 확인한 뒤 다시 시도해 주세요.",
+    "prefectureMismatch": "영문 광역지자체 이름과 일본어 이름이 일치해야 합니다.",
+    "prefectureRequired": "영문과 일본어로 광역지자체를 입력해 주세요."
   },
   "footer": {
     "poweredBy": "{name} 제공",
@@ -568,7 +571,7 @@
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "의료기관을 업데이트하려면 의료기관 ID가 필요합니다",
-    "facilitySuccessfullyRejected": "의료기관이 거절되었습니다",
+    "submissionRejected": "제출이 거절되었습니다",
     "healthcareProfessionalId": "의료인 ID",
     "labelHealthcareProfessionalFirstName": "이름",
     "labelHealthcareProfessionalLastName": "성",
@@ -1079,5 +1082,14 @@
     "accept": "동의",
     "decline": "거부",
     "settings": "쿠키 설정"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "이 제출은 열려 있지 않아 승인할 수 없습니다.",
+    "unableToReject": "이 제출은 열려 있지 않아 거절할 수 없습니다."
+  },
+  "moderationListErrors": {
+    "submissions": "제출 목록을 불러오지 못했습니다. 다시 시도해 주세요.",
+    "facilities": "의료기관을 불러오지 못했습니다. 다시 시도해 주세요.",
+    "professionals": "의료인을 불러오지 못했습니다. 다시 시도해 주세요."
   }
 }

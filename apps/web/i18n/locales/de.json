@@ -394,7 +394,7 @@
     "submissionConfirmationAcceptanceButton": "Ja, senden",
     "submissionConfirmationMessage": "Dieses Formular wirklich senden?",
     "errorMessageFacilityId": "Zum Aktualisieren der Einrichtung ist die ID erforderlich",
-    "facilitySuccessfullyRejected": "Einrichtung abgelehnt",
+    "submissionRejected": "Einreichung abgelehnt",
     "rejectSubmissionConfirmationMessage": "Diese Einreichung wirklich ablehnen?",
     "rejectSubmissionConfirmationButton": "Ja, ablehnen",
     "searchExistingFacilities": "Vorhandene Einrichtung suchen",
@@ -541,7 +541,10 @@
     "fieldTooShort": "Eines der Felder ist zu kurz.",
     "negativeNumber": "Eine Zahl darf nicht negativ sein.",
     "nothingToSave": "Es gibt nichts Neues zu speichern.",
-    "notAllowed": "Sie haben keine Berechtigung dafür. Melden Sie sich erneut an oder bitten Sie die Administration um Zugriff."
+    "notAllowed": "Sie haben keine Berechtigung dafür. Melden Sie sich erneut an oder bitten Sie die Administration um Zugriff.",
+    "network": "Die Anfrage wurde nicht abgeschlossen. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "prefectureMismatch": "Der englische und der japanische Präfekturname müssen übereinstimmen.",
+    "prefectureRequired": "Geben Sie die Präfektur auf Englisch und auf Japanisch an."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Gesprochene Sprachen",
@@ -1079,5 +1082,14 @@
     "accept": "Akzeptieren",
     "decline": "Ablehnen",
     "settings": "Cookie-Einstellungen"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Diese Einreichung kann nicht freigegeben werden, weil sie nicht offen ist.",
+    "unableToReject": "Diese Einreichung kann nicht abgelehnt werden, weil sie nicht offen ist."
+  },
+  "moderationListErrors": {
+    "submissions": "Die Einreichungen konnten nicht geladen werden. Versuchen Sie es erneut.",
+    "facilities": "Die Kliniken konnten nicht geladen werden. Versuchen Sie es erneut.",
+    "professionals": "Die Gesundheitsfachkräfte konnten nicht geladen werden. Versuchen Sie es erneut."
   }
 }
