@@ -169,7 +169,9 @@ aws cloudwatch set-alarm-state --alarm-name findadoc-database-cpu-high --state-v
 
 There is no reserved concurrency. A new account can have a total Lambda concurrency of 10, and reserving any of it can fail the deploy. `findadoc-api-throttles` reports when the account limit is reached.
 
-Every deploy of `FindadocApi` first runs `findadoc-db-migrate` (`apps/server/src/lambdaMigrate.ts`), a CDK trigger in the VPC. It applies pending migrations as the master user. If a migration fails, the deploy fails and the API function does not change.
+Every deploy of `FindadocApi` first runs `findadoc-db-migrate` (`apps/server/src/lambdaMigrate.ts`), a CDK trigger in the VPC. It applies pending migrations as the master user. If a migration fails, the deploy fails and the API function does not change. A site build does not migrate.
+
+`20261027143000_showcase_clinic_site.sql` is one of those files. It inserts the multilingual online clinic page and sets `clinic_sites.facility_id` to `c32c316a-a368-499b-abaf-c5c973cb67e5` when that facilities row already exists. On RDS it also grants `findadoc_api` a row policy on the clinic-site tables, which were created after the first policy migration.
 
 ### One-time setup before the first deploy
 
