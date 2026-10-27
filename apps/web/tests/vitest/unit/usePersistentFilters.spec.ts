@@ -1,5 +1,5 @@
 import { effectScope, nextTick, ref } from 'vue'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
     PERSISTENT_FILTER_STORAGE_PREFIX,
     persistentFilterStorageKey
@@ -116,15 +116,17 @@ describe('usePersistentFilters', () => {
     it('keeps the in-memory value when storage rejects the write', () => {
         const scope = effectScope()
         const search = scope.run(() => usePersistentFilters('facilities', 'search', ''))!
-        const setItem = localStorage.setItem.bind(localStorage)
-        localStorage.setItem = () => {
+        const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
             throw new Error('blocked')
-        }
+        })
         try {
-            search.value = 'minato'
+            expect(() => {
+                search.value = 'minato'
+            }).not.toThrow()
+            expect(setItem).toHaveBeenCalled()
             expect(search.value).toBe('minato')
         } finally {
-            localStorage.setItem = setItem
+            setItem.mockRestore()
             scope.stop()
         }
     })

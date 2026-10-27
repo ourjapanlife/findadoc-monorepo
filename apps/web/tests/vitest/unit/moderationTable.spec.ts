@@ -113,6 +113,19 @@ describe('moderation table', () => {
         expect(pageOffsetInRange(50, 25, 0)).toBe(0)
     })
 
+    it('normalizes a negative stored offset before the first request', async () => {
+        const requested: number[] = []
+        const page = await loadPageInRange(-10, 25, async offset => {
+            requested.push(offset)
+            return {
+                rows: ['first'],
+                totalCount: 30
+            }
+        })
+        expect(requested).toEqual([0])
+        expect(page).toEqual({ rows: ['first'], totalCount: 30, offset: 0 })
+    })
+
     it('loads the last page when the stored page is gone', async () => {
         const requested: number[] = []
         const page = await loadPageInRange(50, 25, async offset => {

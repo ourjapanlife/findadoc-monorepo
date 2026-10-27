@@ -68,7 +68,7 @@ export async function loadPageInRange<T>(
     pageSize: number,
     load: (offset: number) => Promise<{ rows: T[], totalCount: number }>
 ): Promise<{ rows: T[], totalCount: number, offset: number }> {
-    let pageOffset = offset
+    let pageOffset = Number.isFinite(offset) && offset > 0 ? Math.floor(offset) : 0
     let page = await load(pageOffset)
     for (let attempt = 0; attempt < 2; attempt += 1) {
         const clamped = pageOffsetInRange(pageOffset, pageSize, page.totalCount)
