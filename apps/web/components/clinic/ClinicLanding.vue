@@ -2,7 +2,7 @@
     <div
         id="top"
         data-testid="clinic-landing"
-        class="bg-primary-bg"
+        class="relative bg-primary-bg"
         :class="{ 'clinic-theme': themeStyle !== undefined }"
         :style="themeStyle"
     >
@@ -24,7 +24,7 @@
                     class="page-container flex flex-col gap-10 landscape:flex-row
                         landscape:items-center landscape:gap-14"
                 >
-                    <div class="flex flex-col gap-5 landscape:flex-1">
+                    <div class="flex flex-col gap-5 landscape:min-w-0 landscape:flex-[1.15]">
                         <p class="chip chip-primary h-auto w-fit gap-2 py-1.5">
                             {{ copy.heroBadge }}
                         </p>
@@ -91,9 +91,9 @@
 
         <nav
             :aria-label="copy.sectionNavLabel"
-            class="page-container px-6 pb-2 landscape:hidden landscape:px-12"
+            class="px-6 pb-2 landscape:hidden landscape:px-12"
         >
-            <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+            <ul class="page-container m-0 flex list-none flex-wrap gap-2 p-0">
                 <li
                     v-for="section in sections"
                     :key="section.id"

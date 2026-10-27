@@ -10,8 +10,11 @@
         <select
             :id="selectId"
             v-model="selectedLocale"
-            class="h-10 appearance-none rounded-lg border border-border-strong bg-secondary-bg pl-3 pr-8
-                   text-sm font-medium text-primary-text transition-colors hover:border-primary"
+            class="h-10 appearance-none rounded-lg border bg-secondary-bg pl-3 pr-8
+                   text-sm font-medium transition-colors"
+            :class="onPrimary
+                ? 'border-transparent text-primary hover:bg-primary-bg'
+                : 'border-border-strong text-primary-text hover:border-primary'"
         >
             <option
                 v-for="localeOption in localeStore.mvpLocaleDisplayOptions"
@@ -23,7 +26,8 @@
             </option>
         </select>
         <svg
-            class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 stroke-primary-text-muted"
+            class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2"
+            :class="onPrimary ? 'stroke-primary' : 'stroke-primary-text-muted'"
             viewBox="0 0 24 24"
             fill="none"
             stroke-width="2"
@@ -46,6 +50,10 @@ import type { Locale as GqlLocale } from '@findadoc/graphql'
 import { useLocaleStore } from '~/stores/localeStore'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { siteLanguage } from '~/utils/analyticsEvents'
+
+defineProps<{
+    onPrimary?: boolean
+}>()
 
 const { t, locale, setLocale } = useI18n()
 const localeStore = useLocaleStore()
