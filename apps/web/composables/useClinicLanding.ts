@@ -5,6 +5,8 @@ import {
     CLINIC_LANDING_PREVIEW_MAX_AGE,
     clinicLandingAccess,
     clinicLandingMode,
+    clinicLandingPreviewFlag,
+    markClinicHostReady,
     type ClinicLandingMode
 } from '~/utils/clinicLanding'
 
@@ -13,8 +15,15 @@ export function useClinicLandingMode(): ClinicLandingMode {
     return clinicLandingMode(useRuntimeConfig().public.onlineClinic)
 }
 
-/** `host:port` the request arrived on. `useRequestURL` reads `window.location` in the browser. */
+/**
+ * `host:port` the request arrived on. `useRequestURL` follows the generated
+ * site URL during hydration of `index.html`. The clinic host is the address
+ * bar, so the browser reads `window.location` itself.
+ */
 export function useRequestHost(): { host: string, hostname: string } {
+    if (import.meta.client) {
+        return { host: window.location.host, hostname: window.location.hostname }
+    }
     const url = useRequestURL()
     return { host: url.host, hostname: url.hostname }
 }
@@ -28,7 +37,12 @@ export function clinicLandingGate(
     to: RouteLocationNormalized,
     mode: ClinicLandingMode
 ): ReturnType<typeof abortNavigation> | undefined {
-    const preview = Array.isArray(to.query.preview) ? to.query.preview[0] : to.query.preview
+    // Amplify serves the homepage payload at `/`. That route has no `preview`
+    // query, so the address bar is the source of truth in the browser.
+    const preview = clinicLandingPreviewFlag(
+        to.query.preview,
+        import.meta.client ? window.location.search : undefined
+    )
     const cookie = useCookie<string | null>(CLINIC_LANDING_PREVIEW_COOKIE, {
         path: '/',
         sameSite: 'lax',
@@ -50,6 +64,12 @@ export function clinicLandingGate(
             break
         case 'deny':
             break
+    }
+
+    // The hide-until-ready style stays on until Vue marks the host. A 404
+    // during hydration never reaches `app.vue` `onMounted`, so unhide here.
+    if (import.meta.client) {
+        markClinicHostReady()
     }
 
     return abortNavigation(createError({ statusCode: 404, statusMessage: 'Page not found' }))

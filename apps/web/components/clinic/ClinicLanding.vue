@@ -429,7 +429,7 @@ import { ClinicSiteStatus } from '@findadoc/graphql'
 import { createError, useAsyncData, useHead } from '#imports'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import { useUmami } from '~/composables/useUmamiTracking'
-import { clinicLandingShareImage, clinicSubdomainUrl } from '~/utils/clinicLanding'
+import { clinicLandingShareImage, clinicSiteFetchIsServer, clinicSubdomainUrl } from '~/utils/clinicLanding'
 import { fetchClinicSite } from '~/utils/clinicSiteQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
 import { DEFAULT_LOCALE_CODE } from '~/utils/localePath'
@@ -447,12 +447,17 @@ const props = defineProps<{
 
 const { locale } = useI18n()
 const { track } = useUmami()
-const { host } = useRequestHost()
+const { host, hostname } = useRequestHost()
 const mode = useClinicLandingMode()
 
 const { data: site } = await useAsyncData(
     `clinic-site-${props.slug}`,
-    () => fetchClinicSite(props.slug)
+    () => fetchClinicSite(props.slug),
+    {
+        // The clinic host serves the homepage payload. A server read of that
+        // payload is empty, so a 404 here would fire before any GraphQL call.
+        server: clinicSiteFetchIsServer(mode, hostname)
+    }
 )
 
 const landing = site.value

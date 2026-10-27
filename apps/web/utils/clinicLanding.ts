@@ -329,14 +329,55 @@ export function clinicLandingRedirectTarget(
 
 export type ClinicLandingAccess = 'allow' | 'deny' | 'grant' | 'revoke'
 
+export type ClinicLandingPreviewFlag = '0' | '1'
+
+/**
+ * `?preview=1` from the route or the address bar. Payload JSON can turn that
+ * into a number, and a leftover cookie codec can wrap it in quotes.
+ */
+export function clinicLandingPreviewFlag(
+    queryValue: unknown,
+    search?: string | null
+): ClinicLandingPreviewFlag | undefined {
+    const fromQuery = asPreviewFlag(Array.isArray(queryValue) ? queryValue[0] : queryValue)
+    if (fromQuery !== undefined) {
+        return fromQuery
+    }
+    if (search === undefined || search === null || search === '') {
+        return undefined
+    }
+    const query = search.startsWith('?') ? search.slice(1) : search
+    return asPreviewFlag(new URLSearchParams(query).get('preview'))
+}
+
+function asPreviewFlag(value: unknown): ClinicLandingPreviewFlag | undefined {
+    if (value === '1' || value === 1 || value === true) {
+        return '1'
+    }
+    if (value === '0' || value === 0 || value === false) {
+        return '0'
+    }
+    if (typeof value !== 'string') {
+        return undefined
+    }
+    const trimmed = value.trim().replace(/^"+|"+$/g, '')
+    if (trimmed === '1') {
+        return '1'
+    }
+    if (trimmed === '0') {
+        return '0'
+    }
+    return undefined
+}
+
 /**
  * Preview needs the cookie. `?preview=1` sets it, `?preview=0` clears it.
  * Public does not look at the cookie. Off is a 404.
  */
 export function clinicLandingAccess(
     mode: ClinicLandingMode,
-    previewQuery: string | null | undefined,
-    cookieValue: string | null | undefined
+    previewQuery: unknown,
+    cookieValue: unknown
 ): ClinicLandingAccess {
     if (mode === 'off') {
         return 'deny'
@@ -344,14 +385,26 @@ export function clinicLandingAccess(
     if (mode === 'public') {
         return 'allow'
     }
-    if (previewQuery === '0') {
+    const preview = clinicLandingPreviewFlag(previewQuery)
+    if (preview === '0') {
         return 'revoke'
     }
-    if (previewQuery === '1') {
+    if (preview === '1') {
         return 'grant'
     }
-    if (cookieValue === '1') {
+    if (asPreviewFlag(cookieValue) === '1') {
         return 'allow'
     }
     return 'deny'
+}
+
+/**
+ * A clinic hostname serves the homepage HTML. That payload has no clinic row,
+ * so the browser must fetch. A public `/clinic/{slug}` page can use generate.
+ */
+export function clinicSiteFetchIsServer(
+    mode: ClinicLandingMode,
+    hostname: string | null | undefined
+): boolean {
+    return mode === 'public' && clinicLandingHostSlug(hostname) === undefined
 }
