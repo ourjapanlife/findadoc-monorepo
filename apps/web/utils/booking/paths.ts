@@ -15,11 +15,16 @@ export function bookingClinicPath(clinicIdOrSlug: string, localeCode?: string | 
 /** Absolute booking URL on the clinic subdomain. */
 export function clinicBookUrl(
     slug: string,
-    options: { localeCode?: string | null, requestHost?: string | null } = {}
+    options: {
+        localeCode?: string | null
+        requestHost?: string | null
+        preview?: '0' | '1'
+    } = {}
 ): string {
     const origin = clinicSubdomainUrl(slug, {
         localeCode: options.localeCode,
         requestHost: options.requestHost
     }).replace(/\/$/, '')
-    return `${origin}/book`
+    const preview = options.preview === '1' ? '?preview=1' : ''
+    return `${origin}/book${preview}`
 }

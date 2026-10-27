@@ -100,12 +100,6 @@ const deleteAvailabilityMutation = gql`
   }
 `
 
-const availableStartsQuery = gql`
-  query AvailableBookingStarts($clinicSiteId: ID!, $from: String!, $to: String!) {
-    availableBookingStarts(clinicSiteId: $clinicSiteId, from: $from, to: $to)
-  }
-`
-
 export async function fetchBookingSubmissions(filters: BookingSubmissionSearchFilters): Promise<{
     rows: BookingSubmissionListItem[]
     totalCount: number
@@ -217,24 +211,4 @@ export async function deleteClinicAvailabilityWindow(id: string): Promise<Delete
         return null
     }
     return response.data.deleteClinicAvailabilityWindow
-}
-
-export async function fetchAvailableBookingStarts(
-    clinicSiteId: string,
-    from: string,
-    to: string
-): Promise<string[]> {
-    initializeGqlClient()
-    const response = await graphQLClientRequestWithRetry<{
-        availableBookingStarts: string[]
-    }>(
-        gqlClient.request.bind(gqlClient),
-        availableStartsQuery,
-        { clinicSiteId, from, to },
-        { retryAmount: 1, abortAfterMs: 8000 }
-    )
-    if (response.hasErrors) {
-        return []
-    }
-    return response.data.availableBookingStarts ?? []
 }

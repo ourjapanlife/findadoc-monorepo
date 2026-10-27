@@ -8,11 +8,15 @@
     { "source": "/login/:path*", "destination": "/200.html" },
     { "source": "/my-page", "destination": "/200.html" },
     { "source": "/my-page/:path*", "destination": "/200.html" },
+    { "source": "/book", "destination": "/200.html" },
+    { "source": "/book/:path*", "destination": "/200.html" },
     { "source": "/:locale/search", "destination": "/200.html" },
     { "source": "/:locale/u/:username", "destination": "/200.html" },
     { "source": "/:locale/login", "destination": "/200.html" },
     { "source": "/:locale/login/:path*", "destination": "/200.html" },
     { "source": "/:locale/my-page", "destination": "/200.html" },
-    { "source": "/:locale/my-page/:path*", "destination": "/200.html" }
+    { "source": "/:locale/my-page/:path*", "destination": "/200.html" },
+    { "source": "/:locale/book", "destination": "/200.html" },
+    { "source": "/:locale/book/:path*", "destination": "/200.html" }
   ]
 }

@@ -51,9 +51,7 @@ const envVariables = {
     s3Region: () => process.env.S3_REGION ?? process.env.AWS_REGION ?? 'ap-northeast-1',
     sesFromAddress: () => process.env.SES_FROM_ADDRESS,
     sesConfigurationSet: () => process.env.SES_CONFIGURATION_SET,
-    sesRegion: () => process.env.SES_REGION ?? process.env.AWS_REGION ?? 'ap-northeast-1',
-    /** Where booking notifications go until a clinic CRM sets its own address. */
-    bookingNotifyEmail: () => process.env.BOOKING_NOTIFY_EMAIL
+    sesRegion: () => process.env.SES_REGION ?? process.env.AWS_REGION ?? 'ap-northeast-1'
 }
 
 console.log('🔌 Loaded env variables 🔌')

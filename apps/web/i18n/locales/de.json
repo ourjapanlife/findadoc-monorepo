@@ -722,8 +722,6 @@
     "selectPlaceholder": "Auswählen",
     "submit": "Anfrage senden",
     "submitting": "Wird gesendet…",
-    "saveAutofill": "Für Autofill speichern (localhost)",
-    "autofillSaved": "Localhost-Entwurf in diesem Browser gespeichert.",
     "autofillRestored": "Gespeicherte localhost-Antworten wiederhergestellt.",
     "privacyNote": "Die Klinik erhält diese Anfrage. Find a Doc gibt keine medizinische Beratung.",
     "successHeading": "Anfrage gesendet",
@@ -758,7 +756,16 @@
     "slotHelp": "Optional. Starts alle 15 Minuten innerhalb der Klinikverfügbarkeit.",
     "slotLoading": "Freie Zeiten werden geladen…",
     "slotEmpty": "Keine freien Zeiten in den nächsten zwei Wochen. Sie können trotzdem anfragen.",
-    "authRequired": "Melden Sie sich an, um dieses Buchungsformular zu öffnen…"
+    "authRequired": "Melden Sie sich an, um dieses Buchungsformular zu öffnen…",
+    "stepsNav": "Buchungsschritte",
+    "stepOf": "Schritt {current} von {total}",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "steps": {
+      "contact": "Kontakt",
+      "visit": "Besuch",
+      "documents": "Unterlagen"
+    }
   },
   "bookingDashboard": {
     "readOnly": "Buchungsanfrage (nur Lesen)",

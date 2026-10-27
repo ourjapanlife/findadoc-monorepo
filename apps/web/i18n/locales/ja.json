@@ -722,8 +722,6 @@
     "selectPlaceholder": "選択してください",
     "submit": "リクエストを送る",
     "submitting": "送信中…",
-    "saveAutofill": "オートフィル用に保存（localhost）",
-    "autofillSaved": "このブラウザにlocalhost用の下書きを保存しました。",
     "autofillRestored": "保存したlocalhostの回答を復元しました。",
     "privacyNote": "この内容はクリニックに届きます。Find a Docは医療アドバイスを行いません。",
     "successHeading": "送信しました",
@@ -758,7 +756,16 @@
     "slotHelp": "任意。クリニックの空き枠内で15分刻みの開始時刻です。",
     "slotLoading": "空き時間を読み込み中…",
     "slotEmpty": "今後2週間に空きがありません。枠なしでも申し込めます。",
-    "authRequired": "予約フォームを開くにはサインインしてください…"
+    "authRequired": "予約フォームを開くにはサインインしてください…",
+    "stepsNav": "予約の手順",
+    "stepOf": "{total}ステップ中 {current}",
+    "next": "次へ",
+    "previous": "戻る",
+    "steps": {
+      "contact": "連絡先",
+      "visit": "受診内容",
+      "documents": "書類"
+    }
   },
   "bookingDashboard": {
     "readOnly": "予約申し込み（閲覧のみ）",

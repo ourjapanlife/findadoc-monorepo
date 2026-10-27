@@ -1202,6 +1202,8 @@ type BookingFormField {
   min: Float
   max: Float
   sensitivity: BookingFieldSensitivity!
+  """Groups fields into one step of the intake form. The site renders steps in first-seen order."""
+  stepKey: String!
   options: [BookingFormFieldOption!]
 }
 
@@ -1217,7 +1219,6 @@ type BookingForm {
   clinicSiteSlug: String!
   clinicName: String!
   themePrimary: String
-  notifyEmail: String
   fields: [BookingFormField!]!
 }
 
@@ -1371,13 +1372,13 @@ type Query {
   """
   The booking intake form for a hosted clinic.
   Pass the clinic site id or slug. Drafts and unknown clinics are null.
-  Requires an authenticated session with create:bookings (not anonymous).
+  Open to a signed-out visitor. create:bookings is on the anonymous user role.
   """
   bookingForm(clinicSiteId: ID!): BookingForm
 
   """
   Open 15-minute appointment starts inside staff 30-minute availability.
-  Requires an authenticated session with create:bookings. Times are ISO 8601 UTC.
+  Only starts that fit a painted calendar window are returned. Times are ISO 8601 UTC.
   """
   availableBookingStarts(clinicSiteId: ID!, from: String!, to: String!): [String!]!
 

@@ -9,6 +9,7 @@ import {
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
 import { assembleBookingForm, fieldById, storedSensitivity } from '../booking/formDefinitions.js'
+import { BOOKING_UPLOAD_MAX_BYTES } from '../booking/limits.js'
 import { retainUntilFromNow } from '../booking/retention.js'
 import {
     appointmentEndFromStart,
@@ -21,15 +22,19 @@ import { sendTransactionalEmail } from '../email/sesClient.js'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
 import { ErrorCode, Result } from '../result.js'
-import { createBookingUploadTarget, newUploadId } from '../storage/objectStorage.js'
+import {
+    bookingObjectByteSize,
+    bookingUploadExceedsLimit,
+    createBookingUploadTarget,
+    newUploadId
+} from '../storage/objectStorage.js'
 import { clinicThemeFromRow } from './clinicSiteService.js'
-import { envVariables } from '../../utils/environmentVariables.js'
 import { asJsonb } from '../../utils/dbUtils.js'
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
+const MAX_UPLOAD_BYTES = BOOKING_UPLOAD_MAX_BYTES
 const SITE_LOCALES = new Set([
     'en-US', 'ja-JP', 'zh-CN', 'vi-VN', 'ko-KR', 'tl-PH',
     'pt-BR', 'fr-FR', 'ru-RU', 'de-DE', 'it-IT'
@@ -84,8 +89,7 @@ function bookingFormForClinic(clinic: PublicClinicRow): BookingForm | null {
         clinicSiteId: clinic.id,
         clinicSiteSlug: clinic.slug,
         clinicName: clinic.name ?? clinic.slug,
-        themePrimary: theme.primary,
-        notifyEmailFallback: envVariables.bookingNotifyEmail() ?? null
+        themePrimary: theme.primary
     })
 }
 
@@ -140,10 +144,11 @@ export async function createBookingUploadUrl(
     }
 
     const maxBytes = field.maxBytes ?? MAX_UPLOAD_BYTES
-    if (input.byteSize !== null && input.byteSize !== undefined) {
-        if (input.byteSize < 0 || input.byteSize > maxBytes) {
-            return validationError('byteSize')
-        }
+    if (input.byteSize === null || input.byteSize === undefined
+        || !Number.isInteger(input.byteSize)
+        || input.byteSize <= 0
+        || input.byteSize > maxBytes) {
+        return validationError('byteSize')
     }
 
     const fileName = input.fileName.trim()
@@ -157,6 +162,7 @@ export async function createBookingUploadUrl(
         uploadId,
         contentType,
         fileName,
+        byteSize: input.byteSize,
         apiBaseUrl
     })
 
@@ -170,7 +176,7 @@ export async function createBookingUploadUrl(
             object_key: signed.objectKey,
             content_type: contentType,
             file_name: fileName,
-            byte_size: input.byteSize ?? null,
+            byte_size: input.byteSize,
             sensitivity,
             retain_until: retainUntilFromNow(sensitivity).toISOString(),
             purged_at: null
@@ -274,7 +280,7 @@ async function assertUploadsBelongToClinic(
     }
 
     const uploads = await db.selectFrom('booking_uploads')
-        .select(['id', 'clinic_site_id', 'field_id', 'booking_submission_id'])
+        .select(['id', 'clinic_site_id', 'field_id', 'booking_submission_id', 'object_key'])
         .where('id', 'in', [...uploadIds])
         .execute()
 
@@ -289,47 +295,69 @@ async function assertUploadsBelongToClinic(
         if (field === undefined || field.type !== BookingFormFieldType.File) {
             return validationError('answers')
         }
+        const byteSize = await bookingObjectByteSize(upload.object_key)
+        if (byteSize === null || bookingUploadExceedsLimit(byteSize, field.maxBytes)) {
+            return validationError('answers')
+        }
     }
     return { data: true, hasErrors: false }
 }
 
-async function notifyClinicOfBooking(input: {
-    form: BookingForm
+function requesterEmail(storedAnswers: Record<string, string>): string | undefined {
+    const email = storedAnswers.email?.trim()
+    if (email === undefined || email === '' || !EMAIL_PATTERN.test(email)) {
+        return undefined
+    }
+    return email
+}
+
+/** Professionals linked from the clinic page, when that row has an email. */
+async function doctorNotifyAddresses(clinicSiteId: string): Promise<string[]> {
+    const rows = await db.selectFrom('clinic_site_doctors')
+        .innerJoin('hps', 'hps.id', 'clinic_site_doctors.hp_id')
+        .select('hps.email')
+        .where('clinic_site_doctors.clinic_site_id', '=', clinicSiteId)
+        .where('hps.email', 'is not', null)
+        .execute()
+
+    const addresses = new Set<string>()
+    for (const row of rows) {
+        const email = row.email?.trim()
+        if (email !== undefined && email !== '' && EMAIL_PATTERN.test(email)) {
+            addresses.add(email)
+        }
+    }
+    return [...addresses]
+}
+
+/**
+ * Confirmation goes to the person who submitted. A linked doctor is notified
+ * separately when that professional has an email. Addresses stay on the server.
+ */
+async function notifyBookingParties(input: {
     clinic: PublicClinicRow
     bookingId: string
-    locale: string
     storedAnswers: Record<string, string>
 }): Promise<BookingSubmissionStatus> {
-    const notifyTo = input.form.notifyEmail?.trim() || envVariables.bookingNotifyEmail()?.trim()
-    if (!notifyTo) {
+    const requester = requesterEmail(input.storedAnswers)
+    if (requester === undefined) {
         return BookingSubmissionStatus.Received
     }
 
+    const clinicName = input.clinic.name ?? input.clinic.slug
     try {
         await sendTransactionalEmail({
-            to: notifyTo,
-            subject: `New booking · ${input.clinic.name ?? input.clinic.slug}`,
+            to: requester,
+            bookingId: input.bookingId,
+            subject: `We received your request · ${clinicName}`,
             textBody: [
-                `Clinic: ${input.clinic.name ?? input.clinic.slug} (${input.clinic.slug})`,
-                `Booking id: ${input.bookingId}`,
-                `Locale: ${input.locale}`,
-                `Form: ${input.form.id} v${input.form.version}`,
-                '',
-                'Answers:',
-                ...Object.entries(input.storedAnswers).map(([key, value]) => `- ${key}: ${value}`)
+                'Your appointment request was received.',
+                `Clinic: ${clinicName}`,
+                `Reference: ${input.bookingId}`
             ].join('\n')
         })
-        await db.updateTable('booking_submissions')
-            .set({
-                status: 'notified',
-                notify_email_sent_at: sql`now()`,
-                updated_date: sql`now()`
-            })
-            .where('id', '=', input.bookingId)
-            .execute()
-        return BookingSubmissionStatus.Notified
     } catch (error) {
-        logger.error(`Booking notify failed for ${input.bookingId}: ${String(error)}`)
+        logger.error(`Booking confirmation failed for ${input.bookingId}: ${String(error)}`)
         await db.updateTable('booking_submissions')
             .set({
                 status: 'failed_notify',
@@ -339,6 +367,37 @@ async function notifyClinicOfBooking(input: {
             .execute()
         return BookingSubmissionStatus.FailedNotify
     }
+
+    const doctors = (await doctorNotifyAddresses(input.clinic.id))
+        .filter(address => address.toLowerCase() !== requester.toLowerCase())
+    for (const doctor of doctors) {
+        try {
+            await sendTransactionalEmail({
+                to: doctor,
+                bookingId: input.bookingId,
+                subject: `New appointment request · ${clinicName}`,
+                textBody: [
+                    'A patient requested an appointment. Open the booking in Find a Doc for the full intake.',
+                    `Clinic: ${clinicName}`,
+                    `Booking id: ${input.bookingId}`,
+                    `Name: ${input.storedAnswers.fullName ?? ''}`,
+                    `Email: ${requester}`
+                ].join('\n')
+            })
+        } catch (error) {
+            logger.error(`Doctor booking notice failed for ${input.bookingId}: ${String(error)}`)
+        }
+    }
+
+    await db.updateTable('booking_submissions')
+        .set({
+            status: 'notified',
+            notify_email_sent_at: sql`now()`,
+            updated_date: sql`now()`
+        })
+        .where('id', '=', input.bookingId)
+        .execute()
+    return BookingSubmissionStatus.Notified
 }
 
 export async function submitBooking(input: SubmitBookingInput): Promise<Result<BookingSubmissionResult>> {
@@ -388,45 +447,60 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         }
     }
 
-    const inserted = await db.insertInto('booking_submissions')
-        .values({
-            clinic_site_id: clinic.id,
-            form_definition_id: form.id,
-            form_version: form.version,
-            locale: input.locale,
-            answers: asJsonb(storedAnswers),
-            status: 'received',
-            notify_email_sent_at: null
+    let inserted: { id: string, created_date: string }
+    try {
+        inserted = await db.transaction().execute(async transaction => {
+            const row = await transaction.insertInto('booking_submissions')
+                .values({
+                    clinic_site_id: clinic.id,
+                    form_definition_id: form.id,
+                    form_version: form.version,
+                    locale: input.locale,
+                    answers: asJsonb(storedAnswers),
+                    status: 'received',
+                    notify_email_sent_at: null
+                })
+                .returning(['id', 'created_date', 'status'])
+                .executeTakeFirstOrThrow()
+
+            if (uploadIds.length > 0) {
+                const linked = await transaction.updateTable('booking_uploads')
+                    .set({ booking_submission_id: row.id })
+                    .where('id', 'in', uploadIds)
+                    .where('booking_submission_id', 'is', null)
+                    .where('clinic_site_id', '=', clinic.id)
+                    .executeTakeFirst()
+                if (Number(linked.numUpdatedRows) !== uploadIds.length) {
+                    throw new Error('BOOKING_UPLOAD_LINK')
+                }
+            }
+
+            if (startsAt !== null && endsAt !== null) {
+                const appointment = await transaction.insertInto('booking_appointments')
+                    .values({
+                        clinic_site_id: clinic.id,
+                        booking_submission_id: row.id,
+                        starts_at: startsAt.toISOString(),
+                        ends_at: endsAt.toISOString(),
+                        status: 'held'
+                    })
+                    .returning(['id'])
+                    .executeTakeFirstOrThrow()
+                appointmentId = appointment.id
+            }
+
+            return { id: row.id, created_date: row.created_date }
         })
-        .returning(['id', 'created_date', 'status'])
-        .executeTakeFirstOrThrow()
-
-    if (uploadIds.length > 0) {
-        await db.updateTable('booking_uploads')
-            .set({ booking_submission_id: inserted.id })
-            .where('id', 'in', uploadIds)
-            .execute()
+    } catch (error) {
+        if (error instanceof Error && error.message === 'BOOKING_UPLOAD_LINK') {
+            return validationError('answers')
+        }
+        throw error
     }
 
-    if (startsAt !== null && endsAt !== null) {
-        const appointment = await db.insertInto('booking_appointments')
-            .values({
-                clinic_site_id: clinic.id,
-                booking_submission_id: inserted.id,
-                starts_at: startsAt.toISOString(),
-                ends_at: endsAt.toISOString(),
-                status: 'held'
-            })
-            .returning(['id'])
-            .executeTakeFirstOrThrow()
-        appointmentId = appointment.id
-    }
-
-    const status = await notifyClinicOfBooking({
-        form,
+    const status = await notifyBookingParties({
         clinic,
         bookingId: inserted.id,
-        locale: input.locale,
         storedAnswers
     })
 

@@ -722,8 +722,6 @@
     "selectPlaceholder": "请选择",
     "submit": "发送申请",
     "submitting": "发送中…",
-    "saveAutofill": "保存以便自动填写（localhost）",
-    "autofillSaved": "已在此浏览器保存 localhost 自动填写内容。",
     "autofillRestored": "已恢复您保存的 localhost 填写内容。",
     "privacyNote": "诊所会收到此申请。Find a Doc 不提供医疗建议。",
     "successHeading": "申请已发送",
@@ -758,7 +756,16 @@
     "slotHelp": "可选。在诊所可预约时段内每 15 分钟一个起点。",
     "slotLoading": "正在加载可预约时间…",
     "slotEmpty": "未来两周没有可预约时间。仍可发送申请。",
-    "authRequired": "请登录以打开此预约表单…"
+    "authRequired": "请登录以打开此预约表单…",
+    "stepsNav": "预约步骤",
+    "stepOf": "第 {current} 步，共 {total} 步",
+    "next": "下一步",
+    "previous": "返回",
+    "steps": {
+      "contact": "联系方式",
+      "visit": "就诊内容",
+      "documents": "材料"
+    }
   },
   "bookingDashboard": {
     "readOnly": "预约申请（只读）",

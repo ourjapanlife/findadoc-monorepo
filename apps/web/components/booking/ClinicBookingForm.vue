@@ -46,150 +46,160 @@
             data-testid="clinic-booking-form"
             @submit.prevent="onSubmit"
         >
-            <BookingSlotPicker
-                v-model="selectedStart"
-                :clinic-site-id="form.clinicSiteId"
-            />
-
-            <div
-                v-for="field in form.fields"
-                :key="field.id"
-                class="flex flex-col gap-1.5"
+            <Stepper
+                v-model="stepIndex"
+                :steps="formSteps"
+                :validate-leaving="validateLeaving"
+                :nav-label="t('bookingPage.stepsNav')"
+                :next-label="t('bookingPage.next')"
+                :previous-label="t('bookingPage.previous')"
+                :progress-label="t('bookingPage.stepOf', {
+                    current: stepIndex + 1,
+                    total: formSteps.length,
+                })"
             >
-                <label
-                    :for="`booking-${field.id}`"
-                    class="field-label"
-                >
-                    {{ fieldLabel(field) }}
-                    <span
-                        v-if="!field.required"
-                        class="ml-1 font-normal text-primary-text-muted"
-                    >({{ t('bookingPage.optional') }})</span>
-                </label>
+                <div class="flex flex-col gap-4">
+                    <BookingSlotPicker
+                        v-if="showSlot"
+                        v-model="selectedStart"
+                        :clinic-site-id="form.clinicSiteId"
+                    />
 
-                <input
-                    v-if="isTextLike(field.type)"
-                    :id="`booking-${field.id}`"
-                    v-model="values[field.id]"
-                    class="field"
-                    :type="inputType(field.type)"
-                    :required="field.required"
-                    :maxlength="field.maxLength ?? undefined"
-                    :min="field.min ?? undefined"
-                    :max="field.max ?? undefined"
-                    :placeholder="fieldPlaceholder(field)"
-                    :autocomplete="autocompleteFor(field)"
-                    :data-testid="`clinic-booking-field-${field.id}`"
-                    @blur="touch(field.id)"
-                >
-
-                <textarea
-                    v-else-if="field.type === BookingFormFieldType.Textarea"
-                    :id="`booking-${field.id}`"
-                    v-model="values[field.id]"
-                    class="field min-h-28"
-                    :required="field.required"
-                    :maxlength="field.maxLength ?? undefined"
-                    :placeholder="fieldPlaceholder(field)"
-                    :data-testid="`clinic-booking-field-${field.id}`"
-                    @blur="touch(field.id)"
-                />
-
-                <div
-                    v-else-if="field.type === BookingFormFieldType.File"
-                    class="flex flex-col gap-2"
-                >
-                    <input
-                        :id="`booking-${field.id}`"
-                        type="file"
-                        class="field"
-                        :accept="field.accept ?? undefined"
-                        :required="field.required && !uploadIds[field.id]"
-                        :data-testid="`clinic-booking-field-${field.id}`"
-                        @change="onFileChange(field, $event)"
+                    <div
+                        v-for="field in visibleFields"
+                        :key="field.id"
+                        class="flex flex-col"
                     >
+                        <label
+                            :for="`booking-${field.id}`"
+                            class="field-label"
+                        >
+                            {{ fieldLabel(field) }}
+                            <span
+                                v-if="!field.required"
+                                class="ml-1 font-normal text-primary-text-muted"
+                            >({{ t('bookingPage.optional') }})</span>
+                        </label>
+
+                        <input
+                            v-if="isTextLike(field.type)"
+                            :id="`booking-${field.id}`"
+                            v-model="values[field.id]"
+                            class="field"
+                            :type="inputType(field.type)"
+                            :required="field.required"
+                            :maxlength="field.maxLength ?? undefined"
+                            :min="field.min ?? undefined"
+                            :max="field.max ?? undefined"
+                            :placeholder="fieldPlaceholder(field)"
+                            :autocomplete="autocompleteFor(field)"
+                            :data-testid="`clinic-booking-field-${field.id}`"
+                            @blur="touch(field.id)"
+                        >
+
+                        <textarea
+                            v-else-if="field.type === BookingFormFieldType.Textarea"
+                            :id="`booking-${field.id}`"
+                            v-model="values[field.id]"
+                            class="field min-h-28"
+                            :required="field.required"
+                            :maxlength="field.maxLength ?? undefined"
+                            :placeholder="fieldPlaceholder(field)"
+                            :data-testid="`clinic-booking-field-${field.id}`"
+                            @blur="touch(field.id)"
+                        />
+
+                        <div
+                            v-else-if="field.type === BookingFormFieldType.File"
+                            class="flex flex-col gap-2"
+                        >
+                            <input
+                                :id="`booking-${field.id}`"
+                                type="file"
+                                class="field"
+                                :accept="field.accept ?? undefined"
+                                :required="field.required && !uploadIds[field.id]"
+                                :data-testid="`clinic-booking-field-${field.id}`"
+                                @change="onFileChange(field, $event)"
+                            >
+                            <p
+                                v-if="fileNames[field.id]"
+                                class="text-sm text-primary-text-muted"
+                            >
+                                {{ fileNames[field.id] }}
+                            </p>
+                        </div>
+
+                        <select
+                            v-else-if="field.type === BookingFormFieldType.Select"
+                            :id="`booking-${field.id}`"
+                            v-model="values[field.id]"
+                            class="field"
+                            :required="field.required"
+                            :data-testid="`clinic-booking-field-${field.id}`"
+                            @blur="touch(field.id)"
+                        >
+                            <option value="">
+                                {{ t('bookingPage.selectPlaceholder') }}
+                            </option>
+                            <option
+                                v-for="option in field.options ?? []"
+                                :key="option.value"
+                                :value="option.value"
+                            >
+                                {{ option.label || t(option.labelKey) }}
+                            </option>
+                        </select>
+
+                        <p
+                            v-if="visibleError(field.id)"
+                            class="field-error"
+                            role="alert"
+                        >
+                            {{ visibleError(field.id) }}
+                        </p>
+                    </div>
+
                     <p
-                        v-if="fileNames[field.id]"
+                        v-if="formError"
+                        class="field-error"
+                        role="alert"
+                        data-testid="clinic-booking-form-error"
+                    >
+                        {{ formError }}
+                    </p>
+                    <p
+                        v-if="autofillMessage"
+                        class="text-sm text-primary-text-muted"
+                        data-testid="clinic-booking-autofill-message"
+                    >
+                        {{ autofillMessage }}
+                    </p>
+                    <p
+                        v-if="isLastStep"
                         class="text-sm text-primary-text-muted"
                     >
-                        {{ fileNames[field.id] }}
+                        {{ t('bookingPage.privacyNote') }}
                     </p>
                 </div>
 
-                <select
-                    v-else-if="field.type === BookingFormFieldType.Select"
-                    :id="`booking-${field.id}`"
-                    v-model="values[field.id]"
-                    class="field"
-                    :required="field.required"
-                    :data-testid="`clinic-booking-field-${field.id}`"
-                    @blur="touch(field.id)"
-                >
-                    <option value="">
-                        {{ t('bookingPage.selectPlaceholder') }}
-                    </option>
-                    <option
-                        v-for="option in field.options ?? []"
-                        :key="option.value"
-                        :value="option.value"
+                <template #action>
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        data-testid="clinic-booking-submit"
+                        :disabled="submitting"
                     >
-                        {{ option.label || t(option.labelKey) }}
-                    </option>
-                </select>
-
-                <p
-                    v-if="visibleError(field.id)"
-                    class="field-error"
-                    role="alert"
-                >
-                    {{ visibleError(field.id) }}
-                </p>
-            </div>
-
-            <p
-                v-if="formError"
-                class="field-error"
-                role="alert"
-                data-testid="clinic-booking-form-error"
-            >
-                {{ formError }}
-            </p>
-
-            <div class="flex flex-col gap-3 landscape:flex-row landscape:items-center">
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                    data-testid="clinic-booking-submit"
-                    :disabled="submitting"
-                >
-                    {{ submitting ? t('bookingPage.submitting') : t('bookingPage.submit') }}
-                </button>
-                <button
-                    v-if="autofillEnabled"
-                    type="button"
-                    class="btn btn-secondary"
-                    data-testid="clinic-booking-save-autofill"
-                    @click="saveAutofill"
-                >
-                    {{ t('bookingPage.saveAutofill') }}
-                </button>
-            </div>
-            <p
-                v-if="autofillMessage"
-                class="text-sm text-primary-text-muted"
-                data-testid="clinic-booking-autofill-message"
-            >
-                {{ autofillMessage }}
-            </p>
-            <p class="text-sm text-primary-text-muted">
-                {{ t('bookingPage.privacyNote') }}
-            </p>
+                        {{ submitting ? t('bookingPage.submitting') : t('bookingPage.submit') }}
+                    </button>
+                </template>
+            </Stepper>
         </form>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
     BookingFormFieldType,
@@ -210,6 +220,7 @@ import {
 } from '~/utils/booking/formQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
 import { useRequestHost } from '~/composables/useClinicLanding'
+import Stepper from '~/components/common/Stepper.vue'
 
 const props = defineProps<{
     form: BookingForm
@@ -230,6 +241,31 @@ const submitted = ref(false)
 const submissionId = ref('')
 const autofillMessage = ref('')
 const selectedStart = ref<string | null>(null)
+const stepIndex = ref(0)
+
+const formSteps = computed(() => {
+    const keys: string[] = []
+    for (const field of props.form.fields) {
+        if (!keys.includes(field.stepKey)) {
+            keys.push(field.stepKey)
+        }
+    }
+    return keys.map(key => ({
+        key,
+        label: te(`bookingPage.steps.${key}`) ? t(`bookingPage.steps.${key}`) : key
+    }))
+})
+
+const currentStepKey = computed(() => formSteps.value[stepIndex.value]?.key ?? '')
+const visibleFields = computed(() =>
+    props.form.fields.filter(field => field.stepKey === currentStepKey.value))
+const isLastStep = computed(() => stepIndex.value >= formSteps.value.length - 1)
+const showSlot = computed(() => {
+    if (formSteps.value.some(step => step.key === 'visit')) {
+        return currentStepKey.value === 'visit'
+    }
+    return isLastStep.value
+})
 
 const themeStyle = clinicThemeVars(props.form.themePrimary)
 const autofillEnabled = computed(() => isBookingAutofillHost(hostname))
@@ -256,24 +292,100 @@ watch(isDirty, () => {
     // registry handles leave/beforeunload; keep for template consumers if needed
 })
 
+const AUTOFILL_DEBOUNCE_MS = 400
+let autofillTimer: ReturnType<typeof setTimeout> | undefined
+let autofillReady = false
+
+function scalarDraft(): Record<string, string> {
+    const scalar: Record<string, string> = {}
+    for (const field of props.form.fields) {
+        if (field.type === BookingFormFieldType.File) {
+            continue
+        }
+        scalar[field.id] = values[field.id] ?? ''
+    }
+    return scalar
+}
+
+function persistAutofill(): void {
+    if (!autofillEnabled.value || submitted.value) {
+        return
+    }
+    const scalar = scalarDraft()
+    const hasText = Object.values(scalar).some(value => value.trim() !== '')
+      || selectedStart.value !== null
+    if (!hasText) {
+        clearBookingAutofill(props.form.id, hostname)
+        return
+    }
+    writeBookingAutofill(
+        props.form.id,
+        props.form.version,
+        scalar,
+        hostname,
+        selectedStart.value
+    )
+}
+
+function scheduleAutofill(): void {
+    if (!autofillReady || !autofillEnabled.value || submitted.value) {
+        return
+    }
+    if (autofillTimer !== undefined) {
+        clearTimeout(autofillTimer)
+    }
+    autofillTimer = setTimeout(() => {
+        autofillTimer = undefined
+        persistAutofill()
+    }, AUTOFILL_DEBOUNCE_MS)
+}
+
+function flushAutofill(): void {
+    if (!autofillReady) {
+        return
+    }
+    if (autofillTimer !== undefined) {
+        clearTimeout(autofillTimer)
+        autofillTimer = undefined
+    }
+    persistAutofill()
+}
+
+watch(values, scheduleAutofill, { deep: true })
+watch(selectedStart, scheduleAutofill)
+
 onMounted(() => {
     if (!autofillEnabled.value) {
         return
     }
     const draft = readBookingAutofill(props.form.id, hostname)
-    if (draft === null || draft.formVersion !== props.form.version) {
-        return
-    }
-    for (const field of props.form.fields) {
-        if (field.type === BookingFormFieldType.File) {
-            continue
+    if (draft !== null && draft.formVersion === props.form.version) {
+        let restored = false
+        for (const field of props.form.fields) {
+            if (field.type === BookingFormFieldType.File) {
+                continue
+            }
+            const saved = draft.values[field.id]
+            if (typeof saved === 'string' && saved !== '') {
+                values[field.id] = saved
+                restored = true
+            }
         }
-        const saved = draft.values[field.id]
-        if (typeof saved === 'string') {
-            values[field.id] = saved
+        if (draft.startsAt !== null) {
+            selectedStart.value = draft.startsAt
+            restored = true
+        }
+        if (restored) {
+            autofillMessage.value = t('bookingPage.autofillRestored')
         }
     }
-    autofillMessage.value = t('bookingPage.autofillRestored')
+    autofillReady = true
+    window.addEventListener('pagehide', flushAutofill)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('pagehide', flushAutofill)
+    flushAutofill()
 })
 
 function fieldLabel(field: BookingFormField): string {
@@ -374,6 +486,21 @@ function validateField(fieldId: string): boolean {
     return true
 }
 
+function validateLeaving(stepKey: string): boolean {
+    let valid = true
+    for (const field of props.form.fields) {
+        if (field.stepKey !== stepKey) {
+            continue
+        }
+        touched[field.id] = true
+        if (!validateField(field.id)) {
+            valid = false
+        }
+    }
+    formError.value = valid ? '' : t('bookingPage.errors.form')
+    return valid
+}
+
 function visibleError(fieldId: string): string | undefined {
     if (!touched[fieldId]) {
         return undefined
@@ -403,21 +530,6 @@ function onFileChange(field: BookingFormField, event: Event) {
     pendingFiles[field.id] = file
     fileNames[field.id] = file.name
     validateField(field.id)
-}
-
-function saveAutofill() {
-    if (!autofillEnabled.value) {
-        return
-    }
-    const scalar: Record<string, string> = {}
-    for (const field of props.form.fields) {
-        if (field.type === BookingFormFieldType.File) {
-            continue
-        }
-        scalar[field.id] = values[field.id] ?? ''
-    }
-    writeBookingAutofill(props.form.id, props.form.version, scalar, hostname)
-    autofillMessage.value = t('bookingPage.autofillSaved')
 }
 
 async function uploadPendingFiles(): Promise<boolean> {
@@ -461,7 +573,12 @@ async function onSubmit() {
         }
     }
     if (!valid) {
-        formError.value = t('bookingPage.errors.fix')
+        const firstInvalid = props.form.fields.find(field => fieldErrors[field.id])
+        const step = formSteps.value.findIndex(item => item.key === firstInvalid?.stepKey)
+        if (step >= 0) {
+            stepIndex.value = step
+        }
+        formError.value = t('bookingPage.errors.form')
         return
     }
 

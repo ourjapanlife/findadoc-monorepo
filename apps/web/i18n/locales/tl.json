@@ -722,8 +722,6 @@
     "selectPlaceholder": "Pumili",
     "submit": "Ipadala ang kahilingan",
     "submitting": "Ipinapadala…",
-    "saveAutofill": "I-save para sa autofill (localhost)",
-    "autofillSaved": "Na-save ang localhost draft sa browser na ito.",
     "autofillRestored": "Naibalik ang naka-save na localhost sagot.",
     "privacyNote": "Tatanggapin ng klinika ang kahilingang ito. Hindi nagbibigay ng payong medikal ang Find a Doc.",
     "successHeading": "Naipadala ang kahilingan",
@@ -758,7 +756,16 @@
     "slotHelp": "Opsyonal. Nagsisimula tuwing 15 minuto sa loob ng availability ng clinic.",
     "slotLoading": "Naglo-load ng bukas na oras…",
     "slotEmpty": "Walang bukas na oras sa susunod na dalawang linggo. Maaari pa ring magpadala ng request.",
-    "authRequired": "Mag-sign in upang buksan ang form ng booking na ito…"
+    "authRequired": "Mag-sign in upang buksan ang form ng booking na ito…",
+    "stepsNav": "Mga hakbang sa pag-book",
+    "stepOf": "Hakbang {current} ng {total}",
+    "next": "Susunod",
+    "previous": "Bumalik",
+    "steps": {
+      "contact": "Impormasyon sa pakikipag-ugnayan",
+      "visit": "Pagbisita",
+      "documents": "Mga dokumento"
+    }
   },
   "bookingDashboard": {
     "readOnly": "Booking submission (basahin lang)",

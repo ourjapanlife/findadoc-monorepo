@@ -1,37 +1,27 @@
 <template>
-    <div
-        v-if="!ready || (form === null && !shouldRedirect)"
-        class="mx-auto flex w-full max-w-xl flex-col items-center gap-3 px-6 py-16"
-        data-testid="clinic-booking-auth-gate"
-    >
-        <p class="text-primary-text-muted">
-            {{ t('bookingPage.authRequired') }}
-        </p>
-    </div>
     <ClinicBookingForm
-        v-else-if="form !== null && !shouldRedirect"
+        v-if="form !== null && !shouldRedirect"
         :form="form"
     />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { createError, definePageMeta, navigateTo, useHead, useRoute } from '#imports'
 import { useI18n } from 'vue-i18n'
 import type { BookingForm } from '@findadoc/graphql'
 import ClinicBookingForm from '~/components/booking/ClinicBookingForm.vue'
-import { useBookingAuthGate } from '~/composables/useBookingAuthGate'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import { fetchBookingForm } from '~/utils/booking/formQuery'
 import { clinicBookUrl } from '~/utils/booking/paths'
-import { clinicLandingHostSlug } from '~/utils/clinicLanding'
+import { clinicLandingHostSlug, clinicLandingPreviewFlag } from '~/utils/clinicLanding'
 import { formatPageTitle } from '~/utils/site'
 
 /**
  * Main-site alias: `/book/{clinic-id-or-slug}`.
  * On production and when a clinic host can be opened, this redirects to the
  * subdomain `/book`. Local apex keeps the form so `/book/{id}` still works.
- * Auth-gated for now — booking GraphQL rejects anonymous callers.
+ * The form is public. Open times come from the clinic calendar.
  */
 definePageMeta({
     layout: 'clinic-landing',
@@ -42,7 +32,6 @@ const route = useRoute()
 const { t, locale } = useI18n()
 const mode = useClinicLandingMode()
 const { host, hostname } = useRequestHost()
-const { ready } = useBookingAuthGate()
 const form = ref<BookingForm | null>(null)
 
 if (mode === 'off') {
@@ -64,8 +53,8 @@ const shouldRedirect = computed(() => {
 })
 
 async function loadForm(): Promise<void> {
-    if (!ready.value || clinicId === '') {
-        return
+    if (clinicId === '') {
+        throw createError({ statusCode: 404, statusMessage: 'Page not found' })
     }
     const loaded = await fetchBookingForm(clinicId)
     if (loaded === null) {
@@ -75,17 +64,14 @@ async function loadForm(): Promise<void> {
     if (shouldRedirect.value) {
         const target = clinicBookUrl(loaded.clinicSiteSlug, {
             localeCode: String(locale.value),
-            requestHost: host
+            requestHost: host,
+            preview: clinicLandingPreviewFlag(route.query.preview)
         })
         await navigateTo(target, { redirectCode: 302, external: true })
     }
 }
 
-watch(ready, value => {
-    if (value) {
-        void loadForm()
-    }
-}, { immediate: true })
+await loadForm()
 
 useHead(() => ({
     title: formatPageTitle(t('bookingPage.documentTitle', {

@@ -45,12 +45,12 @@ const resolvers = {
         : Promise<gqlType.ClinicSite | null> => clinicSiteService.getClinicSiteBySlug(args.slug)),
         clinicSites: withScope(Scope['read:facilities'], async ()
         : Promise<gqlType.ClinicSiteSummary[]> => clinicSiteService.listPublicClinicSites()),
-        // Booking intake + staff dashboards require a real Auth0 session for now.
-        bookingForm: withAuthenticatedScope(Scope['create:bookings'], async (
+        // Intake and open slots are public. Staff list and the calendar require a signed-in session.
+        bookingForm: withScope(Scope['create:bookings'], async (
             _parent: unknown,
             args: { clinicSiteId: string }
         ): Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId)),
-        availableBookingStarts: withAuthenticatedScope(Scope['create:bookings'], async (
+        availableBookingStarts: withScope(Scope['create:bookings'], async (
             _parent: unknown,
             args: { clinicSiteId: string, from: string, to: string }
         ): Promise<string[]> => bookingService.getAvailableBookingStarts(args.clinicSiteId, args.from, args.to)),
@@ -395,7 +395,7 @@ const resolvers = {
             return createReservationResult.data
         }),
 
-        createBookingUploadUrl: withAuthenticatedScope(Scope['create:bookings'], async (_parent: unknown, args: {
+        createBookingUploadUrl: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
             input: gqlType.CreateBookingUploadUrlInput
         }): Promise<gqlType.BookingUploadUrl> => {
             const result = await bookingService.createBookingUploadUrl(
@@ -406,7 +406,7 @@ const resolvers = {
             return result.data
         }),
 
-        submitBooking: withAuthenticatedScope(Scope['create:bookings'], async (_parent: unknown, args: {
+        submitBooking: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
             input: gqlType.SubmitBookingInput
         }): Promise<gqlType.BookingSubmissionResult> => {
             const result = await bookingService.submitBooking(args.input)

@@ -722,8 +722,6 @@
     "selectPlaceholder": "Choose one",
     "submit": "Send request",
     "submitting": "Sending…",
-    "saveAutofill": "Save for autofill (localhost)",
-    "autofillSaved": "Saved on this browser for localhost autofill.",
     "autofillRestored": "Restored your saved localhost answers.",
     "privacyNote": "The clinic receives this request. Find a Doc does not provide medical advice.",
     "successHeading": "Request sent",
@@ -758,7 +756,16 @@
     "slotHelp": "Optional. Starts every 15 minutes inside clinic availability.",
     "slotLoading": "Loading open times…",
     "slotEmpty": "No open times in the next two weeks. You can still send a request without a slot.",
-    "authRequired": "Sign in to open this booking form…"
+    "authRequired": "Sign in to open this booking form…",
+    "stepsNav": "Booking steps",
+    "stepOf": "Step {current} of {total}",
+    "next": "Next",
+    "previous": "Back",
+    "steps": {
+      "contact": "Contact",
+      "visit": "Visit",
+      "documents": "Documents"
+    }
   },
   "bookingDashboard": {
     "readOnly": "Read-only booking submission",

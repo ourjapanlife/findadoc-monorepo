@@ -722,8 +722,6 @@
     "selectPlaceholder": "Escolha uma opção",
     "submit": "Enviar pedido",
     "submitting": "A enviar…",
-    "saveAutofill": "Guardar para preenchimento (localhost)",
-    "autofillSaved": "Rascunho localhost guardado neste navegador.",
     "autofillRestored": "Respostas localhost guardadas foram restauradas.",
     "privacyNote": "A clínica recebe este pedido. A Find a Doc não dá aconselhamento médico.",
     "successHeading": "Pedido enviado",
@@ -758,7 +756,16 @@
     "slotHelp": "Opcional. Inícios a cada 15 minutos dentro da disponibilidade da clínica.",
     "slotLoading": "Carregando horários…",
     "slotEmpty": "Sem horários nas próximas duas semanas. Você ainda pode enviar o pedido.",
-    "authRequired": "Entre para abrir este formulário de reserva…"
+    "authRequired": "Entre para abrir este formulário de reserva…",
+    "stepsNav": "Etapas do pedido",
+    "stepOf": "Etapa {current} de {total}",
+    "next": "Avançar",
+    "previous": "Voltar",
+    "steps": {
+      "contact": "Contato",
+      "visit": "Consulta",
+      "documents": "Documentos"
+    }
   },
   "bookingDashboard": {
     "readOnly": "Pedido de reserva (somente leitura)",

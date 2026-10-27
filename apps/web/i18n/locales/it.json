@@ -722,8 +722,6 @@
     "selectPlaceholder": "Scegli",
     "submit": "Invia richiesta",
     "submitting": "Invio…",
-    "saveAutofill": "Salva per compilazione automatica (localhost)",
-    "autofillSaved": "Bozza localhost salvata in questo browser.",
     "autofillRestored": "Risposte localhost salvate ripristinate.",
     "privacyNote": "La clinica riceve questa richiesta. Find a Doc non fornisce consigli medici.",
     "successHeading": "Richiesta inviata",
@@ -758,7 +756,16 @@
     "slotHelp": "Facoltativo. Inizi ogni 15 minuti entro la disponibilità della clinica.",
     "slotLoading": "Caricamento orari…",
     "slotEmpty": "Nessun orario nelle prossime due settimane. Puoi comunque inviare la richiesta.",
-    "authRequired": "Accedi per aprire questo modulo di prenotazione…"
+    "authRequired": "Accedi per aprire questo modulo di prenotazione…",
+    "stepsNav": "Passaggi della richiesta",
+    "stepOf": "Passo {current} di {total}",
+    "next": "Avanti",
+    "previous": "Indietro",
+    "steps": {
+      "contact": "Contatti",
+      "visit": "Visita",
+      "documents": "Documenti"
+    }
   },
   "bookingDashboard": {
     "readOnly": "Richiesta di prenotazione (sola lettura)",

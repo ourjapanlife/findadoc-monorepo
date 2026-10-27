@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto'
-import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { mkdir, readFile, stat, unlink, writeFile } from 'node:fs/promises'
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
+import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { BOOKING_UPLOAD_MAX_BYTES } from '../booking/limits.js'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { envVariables } from '../../utils/environmentVariables.js'
 import { logger } from '../logger.js'
@@ -40,6 +41,31 @@ export function bookingObjectKey(clinicSiteId: string, uploadId: string, fileNam
     return `uploads/booking/${clinicSiteId}/${uploadId}/${sanitizeFileName(fileName)}`
 }
 
+/** Rejects empty segments, `.`, `..`, and anything outside uploads/booking/. */
+export function isSafeBookingObjectKey(objectKey: string): boolean {
+    if (objectKey.includes('\\') || objectKey.includes('\0')) {
+        return false
+    }
+    const parts = objectKey.split('/')
+    if (parts.some(part => part === '' || part === '.' || part === '..')) {
+        return false
+    }
+    return parts[0] === 'uploads' && parts[1] === 'booking' && parts.length >= 3
+}
+
+function localBookingFilePath(objectKey: string): string {
+    if (!isSafeBookingObjectKey(objectKey)) {
+        throw new Error('Invalid booking upload key')
+    }
+    const root = resolve(LOCAL_UPLOAD_ROOT)
+    const absolute = resolve(root, objectKey)
+    const fromRoot = relative(root, absolute)
+    if (fromRoot.startsWith('..') || isAbsolute(fromRoot)) {
+        throw new Error('Invalid booking upload key')
+    }
+    return absolute
+}
+
 /**
  * A short-lived PUT URL for one booking file.
  * S3 when STORAGE_BACKEND=s3. Otherwise a local API path the Fastify route serves.
@@ -49,6 +75,7 @@ export async function createBookingUploadTarget(input: {
     uploadId: string
     contentType: string
     fileName: string
+    byteSize: number
     apiBaseUrl: string
 }): Promise<SignedUpload> {
     const objectKey = bookingObjectKey(input.clinicSiteId, input.uploadId, input.fileName)
@@ -63,7 +90,8 @@ export async function createBookingUploadTarget(input: {
         const command = new PutObjectCommand({
             Bucket: bucket,
             Key: objectKey,
-            ContentType: input.contentType
+            ContentType: input.contentType,
+            ContentLength: input.byteSize
         })
         const uploadUrl = await getSignedUrl(s3Client(), command, { expiresIn: PRESIGN_TTL_SECONDS })
         return {
@@ -88,11 +116,7 @@ export async function storeLocalBookingUpload(objectKey: string, body: Buffer, c
     if (usesS3()) {
         throw new Error('Local booking upload store is disabled when STORAGE_BACKEND=s3')
     }
-    if (!objectKey.startsWith('uploads/booking/')) {
-        throw new Error('Invalid booking upload key')
-    }
-
-    const absolute = join(LOCAL_UPLOAD_ROOT, objectKey)
+    const absolute = localBookingFilePath(objectKey)
     await mkdir(dirname(absolute), { recursive: true })
     await writeFile(absolute, body)
     logger.info('Stored local booking upload', {
@@ -127,9 +151,42 @@ export async function createBookingDownloadUrl(input: {
     }
 }
 
+/** Byte size of a stored object, or null when the object is missing. */
+export async function bookingObjectByteSize(objectKey: string): Promise<number | null> {
+    if (!isSafeBookingObjectKey(objectKey)) {
+        return null
+    }
+    if (usesS3()) {
+        const bucket = envVariables.s3Bucket()
+        if (bucket === undefined || bucket === '') {
+            throw new Error('S3_BUCKET is required when STORAGE_BACKEND=s3')
+        }
+        try {
+            const head = await s3Client().send(new HeadObjectCommand({ Bucket: bucket, Key: objectKey }))
+            return head.ContentLength ?? null
+        } catch {
+            return null
+        }
+    }
+    try {
+        const info = await stat(localBookingFilePath(objectKey))
+        return info.size
+    } catch {
+        return null
+    }
+}
+
+export function bookingUploadExceedsLimit(byteSize: number, maxBytes: number | null | undefined): boolean {
+    const limit = maxBytes ?? BOOKING_UPLOAD_MAX_BYTES
+    return byteSize > limit
+}
+
 export async function deleteBookingObject(objectKey: string): Promise<void> {
-    if (!objectKey.startsWith('uploads/booking/')) {
+    if (!isSafeBookingObjectKey(objectKey) && !objectKey.startsWith('purged/')) {
         throw new Error('Invalid booking upload key')
+    }
+    if (objectKey.startsWith('purged/')) {
+        return
     }
     if (usesS3()) {
         const bucket = envVariables.s3Bucket()
@@ -140,7 +197,7 @@ export async function deleteBookingObject(objectKey: string): Promise<void> {
         return
     }
     try {
-        await unlink(join(LOCAL_UPLOAD_ROOT, objectKey))
+        await unlink(localBookingFilePath(objectKey))
     } catch (error) {
         logger.warn(`Local booking object missing during purge: ${objectKey} (${String(error)})`)
     }
@@ -150,7 +207,7 @@ export async function readLocalBookingUpload(objectKey: string): Promise<Buffer>
     if (usesS3()) {
         throw new Error('Local read is disabled when STORAGE_BACKEND=s3')
     }
-    return readFile(join(LOCAL_UPLOAD_ROOT, objectKey))
+    return readFile(localBookingFilePath(objectKey))
 }
 
 export function localUploadRoot(): string {

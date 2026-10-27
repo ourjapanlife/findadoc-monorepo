@@ -218,9 +218,8 @@ export function withScope<TParent, TArgs, TContext extends UserContext, TResult>
 
 /**
  * Like withScope, but also rejects the anonymous stub user.
- * Temporary for booking intake and staff booking dashboards.
- * Follow-up: split public patient intake from staff scopes correctly
- * (see PR #153 follow-up comment “guard booking auth correctly”).
+ * Staff booking list, download, and the availability calendar use this.
+ * Patient intake stays on withScope so a signed-out visitor can book.
  */
 export function withAuthenticatedScope<TParent, TArgs, TContext extends UserContext, TResult>(
     requiredScopes: Scope | Scope[],

@@ -9,10 +9,10 @@ const BOOKING_FORM_FIELDS = `
   clinicSiteSlug
   clinicName
   themePrimary
-  notifyEmail
   fields {
     id
     type
+    stepKey
     required
     labelKey
     label
@@ -47,6 +47,12 @@ const createUploadMutation = gql`
   }
 `
 
+const availableStartsQuery = gql`
+  query AvailableBookingStarts($clinicSiteId: ID!, $from: String!, $to: String!) {
+    availableBookingStarts(clinicSiteId: $clinicSiteId, from: $from, to: $to)
+  }
+`
+
 const submitBookingMutation = gql`
   mutation SubmitBooking($input: SubmitBookingInput!) {
     submitBooking(input: $input) {
@@ -68,7 +74,7 @@ export async function fetchBookingForm(clinicSiteId: string): Promise<BookingFor
         gqlClient.request.bind(gqlClient),
         bookingFormQuery,
         { clinicSiteId },
-        { retryAmount: 1, abortAfterMs: 8000 }
+        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
         return null
@@ -88,7 +94,7 @@ export async function requestBookingUploadUrl(input: {
         gqlClient.request.bind(gqlClient),
         createUploadMutation,
         { input },
-        { retryAmount: 1, abortAfterMs: 8000 }
+        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
         return null
@@ -109,12 +115,33 @@ export async function submitBookingForm(input: {
         gqlClient.request.bind(gqlClient),
         submitBookingMutation,
         { input },
-        { retryAmount: 0, abortAfterMs: 15000 }
+        { skipAuth: true, retryAmount: 0, abortAfterMs: 15000 }
     )
     if (response.hasErrors) {
         return null
     }
     return response.data.submitBooking
+}
+
+/** 15-minute starts that fit a painted calendar window. Empty when the clinic has none. */
+export async function fetchAvailableBookingStarts(
+    clinicSiteId: string,
+    from: string,
+    to: string
+): Promise<string[]> {
+    initializeGqlClient()
+    const response = await graphQLClientRequestWithRetry<{
+        availableBookingStarts: string[]
+    }>(
+        gqlClient.request.bind(gqlClient),
+        availableStartsQuery,
+        { clinicSiteId, from, to },
+        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
+    )
+    if (response.hasErrors) {
+        return []
+    }
+    return response.data.availableBookingStarts ?? []
 }
 
 export async function putBookingFile(

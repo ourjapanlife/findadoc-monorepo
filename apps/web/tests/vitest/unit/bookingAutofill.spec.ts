@@ -28,6 +28,16 @@ describe('booking localhost autofill', () => {
         expect(draft?.formId).to.equal('form-1')
         expect(draft?.formVersion).to.equal(1)
         expect(draft?.values).to.deep.equal({ email: 'a@b.com', phone: '090' })
+        expect(draft?.startsAt).to.equal(null)
+
+        expect(writeBookingAutofill(
+            'form-1',
+            1,
+            { email: 'a@b.com' },
+            'clinic.localhost',
+            '2026-10-28T11:30:00.000Z'
+        )).to.equal(true)
+        expect(readBookingAutofill('form-1', 'clinic.localhost')?.startsAt).to.equal('2026-10-28T11:30:00.000Z')
 
         clearBookingAutofill('form-1', 'clinic.localhost')
         expect(readBookingAutofill('form-1', 'clinic.localhost')).to.equal(null)

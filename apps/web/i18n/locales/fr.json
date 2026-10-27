@@ -722,8 +722,6 @@
     "selectPlaceholder": "Choisir",
     "submit": "Envoyer la demande",
     "submitting": "Envoi…",
-    "saveAutofill": "Enregistrer pour remplissage auto (localhost)",
-    "autofillSaved": "Brouillon localhost enregistré sur ce navigateur.",
     "autofillRestored": "Réponses localhost enregistrées restaurées.",
     "privacyNote": "La clinique reçoit cette demande. Find a Doc ne donne pas de conseils médicaux.",
     "successHeading": "Demande envoyée",
@@ -758,7 +756,16 @@
     "slotHelp": "Facultatif. Départs toutes les 15 minutes dans les disponibilités de la clinique.",
     "slotLoading": "Chargement des créneaux…",
     "slotEmpty": "Aucun créneau dans les deux prochaines semaines. Vous pouvez quand même envoyer une demande.",
-    "authRequired": "Connectez-vous pour ouvrir ce formulaire de réservation…"
+    "authRequired": "Connectez-vous pour ouvrir ce formulaire de réservation…",
+    "stepsNav": "Étapes de la demande",
+    "stepOf": "Étape {current} sur {total}",
+    "next": "Suivant",
+    "previous": "Retour",
+    "steps": {
+      "contact": "Coordonnées",
+      "visit": "Consultation",
+      "documents": "Justificatifs"
+    }
   },
   "bookingDashboard": {
     "readOnly": "Demande de réservation (lecture seule)",

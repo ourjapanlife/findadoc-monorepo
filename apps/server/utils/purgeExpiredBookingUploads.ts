@@ -9,11 +9,18 @@ import { deleteBookingObject } from '../src/storage/objectStorage.js'
  * Dry-run unless `--write` is passed. Does not delete answer rows.
  */
 
+const UNCLAIMED_UPLOAD_MAX_AGE_MS = 24 * 60 * 60 * 1000
+
 type ExpiredUpload = {
     id: string
     object_key: string
     sensitivity: string
     retain_until: string | null
+}
+
+type UnclaimedUpload = {
+    id: string
+    object_key: string
 }
 
 async function listExpiredUploads(nowIso: string): Promise<ExpiredUpload[]> {
@@ -26,10 +33,20 @@ async function listExpiredUploads(nowIso: string): Promise<ExpiredUpload[]> {
         .execute()
 }
 
+async function listUnclaimedUploads(cutoffIso: string): Promise<UnclaimedUpload[]> {
+    return db.selectFrom('booking_uploads')
+        .select(['id', 'object_key'])
+        .where('booking_submission_id', 'is', null)
+        .where('purged_at', 'is', null)
+        .where('created_date', '<=', cutoffIso)
+        .orderBy('created_date')
+        .execute()
+}
+
 export async function purgeExpiredBookingUploads(options: {
     write: boolean
     now?: Date
-}): Promise<{ scanned: number, purged: number }> {
+}): Promise<{ scanned: number, purged: number, unclaimed: number, unclaimedDeleted: number }> {
     const nowIso = (options.now ?? new Date()).toISOString()
     const expired = await listExpiredUploads(nowIso)
     let purged = 0
@@ -54,7 +71,32 @@ export async function purgeExpiredBookingUploads(options: {
         purged += 1
     }
 
-    return { scanned: expired.length, purged }
+    const cutoff = new Date((options.now ?? new Date()).getTime() - UNCLAIMED_UPLOAD_MAX_AGE_MS).toISOString()
+    const unclaimed = await listUnclaimedUploads(cutoff)
+    let unclaimedDeleted = 0
+    for (const upload of unclaimed) {
+        logger.info(
+            `Unclaimed booking upload ${upload.id}`
+            + (options.write ? ' — deleting' : ' — dry-run')
+        )
+        if (!options.write) {
+            continue
+        }
+        await deleteBookingObject(upload.object_key)
+        await db.deleteFrom('booking_uploads')
+            .where('id', '=', upload.id)
+            .where('booking_submission_id', 'is', null)
+            .where('purged_at', 'is', null)
+            .execute()
+        unclaimedDeleted += 1
+    }
+
+    return {
+        scanned: expired.length,
+        purged,
+        unclaimed: unclaimed.length,
+        unclaimedDeleted
+    }
 }
 
 async function main(): Promise<void> {
@@ -62,7 +104,7 @@ async function main(): Promise<void> {
     const result = await purgeExpiredBookingUploads({ write })
     // eslint-disable-next-line no-console
     console.log(JSON.stringify({ write, ...result }, null, 2))
-    if (!write && result.scanned > 0) {
+    if (!write && (result.scanned > 0 || result.unclaimed > 0)) {
         // eslint-disable-next-line no-console
         console.log('Dry-run only. Re-run with --write to delete objects and mark rows purged.')
     }

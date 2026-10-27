@@ -7,6 +7,7 @@ export type BookingAutofillDraft = {
     formId: string
     formVersion: number
     values: Record<string, string>
+    startsAt: string | null
     savedAt: string
 }
 
@@ -52,6 +53,7 @@ export function readBookingAutofill(formId: string, hostname: string): BookingAu
             formId,
             formVersion: draft.formVersion,
             values,
+            startsAt: typeof draft.startsAt === 'string' && draft.startsAt !== '' ? draft.startsAt : null,
             savedAt: typeof draft.savedAt === 'string' ? draft.savedAt : new Date().toISOString()
         }
     } catch {
@@ -63,7 +65,8 @@ export function writeBookingAutofill(
     formId: string,
     formVersion: number,
     values: Record<string, string>,
-    hostname: string
+    hostname: string,
+    startsAt: string | null = null
 ): boolean {
     if (!isBookingAutofillHost(hostname) || typeof localStorage === 'undefined') {
         return false
@@ -72,6 +75,7 @@ export function writeBookingAutofill(
         formId,
         formVersion,
         values,
+        startsAt,
         savedAt: new Date().toISOString()
     }
     localStorage.setItem(storageKey(formId), JSON.stringify(draft))

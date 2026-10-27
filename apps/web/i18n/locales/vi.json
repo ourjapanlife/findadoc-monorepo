@@ -722,8 +722,6 @@
     "selectPlaceholder": "Chọn một mục",
     "submit": "Gửi yêu cầu",
     "submitting": "Đang gửi…",
-    "saveAutofill": "Lưu để tự điền (localhost)",
-    "autofillSaved": "Đã lưu bản nháp localhost trên trình duyệt này.",
     "autofillRestored": "Đã khôi phục câu trả lời localhost đã lưu.",
     "privacyNote": "Phòng khám nhận yêu cầu này. Find a Doc không tư vấn y tế.",
     "successHeading": "Đã gửi yêu cầu",
@@ -758,7 +756,16 @@
     "slotHelp": "Tùy chọn. Bắt đầu mỗi 15 phút trong khung trống của phòng khám.",
     "slotLoading": "Đang tải giờ trống…",
     "slotEmpty": "Không có giờ trống trong hai tuần tới. Bạn vẫn có thể gửi yêu cầu.",
-    "authRequired": "Đăng nhập để mở biểu mẫu đặt lịch này…"
+    "authRequired": "Đăng nhập để mở biểu mẫu đặt lịch này…",
+    "stepsNav": "Các bước đặt lịch",
+    "stepOf": "Bước {current} / {total}",
+    "next": "Tiếp",
+    "previous": "Quay lại",
+    "steps": {
+      "contact": "Liên hệ",
+      "visit": "Lý do khám",
+      "documents": "Giấy tờ"
+    }
   },
   "bookingDashboard": {
     "readOnly": "Yêu cầu đặt lịch (chỉ xem)",

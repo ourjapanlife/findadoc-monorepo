@@ -6,6 +6,7 @@ export type OutboundEmail = {
     to: string
     subject: string
     textBody: string
+    bookingId?: string
 }
 
 function sesConfigured(): boolean {
@@ -20,9 +21,9 @@ function sesConfigured(): boolean {
 export async function sendTransactionalEmail(message: OutboundEmail): Promise<'sent' | 'logged'> {
     if (!sesConfigured()) {
         logger.info('Booking email logged (SES not configured)', {
-            to: message.to,
+            bookingId: message.bookingId,
             subject: message.subject,
-            bodyPreview: message.textBody.slice(0, 200)
+            bodyLength: message.textBody.length
         })
         return 'logged'
     }

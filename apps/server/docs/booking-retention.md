@@ -30,6 +30,8 @@ non-fetchable marker):
 pnpm --filter @findadoc/server exec node --loader ts-node/esm utils/purgeExpiredBookingUploads.ts --write
 ```
 
+Uploads that were never attached to a submission and are older than one day are included in the same dry-run. `--write` deletes those objects and rows.
+
 Staff never receive identity file bytes inline in GraphQL list payloads.
 They use `bookingUploadDownloadUrl` for a short-lived GET while the object
 still exists.
@@ -40,9 +42,10 @@ Booking submissions appear as a read-only table on my-page (same list pattern
 as directory submissions). Answers and metadata are visible; files stay behind
 the download mutation. There is no edit path for patient answers.
 
-## Auth (temporary)
+## Auth
 
-Booking GraphQL and `/book` currently require a real Auth0 session
-(`withAuthenticatedScope`). That is not the final patient-auth model. Track
-the correct public vs staff split in the follow-up on PR #153
-(“guard booking auth correctly”).
+The booking form, open slots, upload, and submit are public. A signed-out
+visitor is the anonymous user role, which includes `create:bookings`.
+
+The my-page booking list, file download, and availability calendar require a
+signed-in session with `read:bookings` or `write:clinic_availability`.

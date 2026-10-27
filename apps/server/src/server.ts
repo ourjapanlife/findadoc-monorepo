@@ -18,7 +18,8 @@ import resolvers from './resolvers.js'
 import { logger } from './logger.js'
 import { isServerError, requestErrorFields } from './requestErrors.js'
 import { clientIpFrom } from '@findadoc/utils'
-import { storeLocalBookingUpload } from './storage/objectStorage.js'
+import { BOOKING_UPLOAD_MAX_BYTES } from './booking/limits.js'
+import { isSafeBookingObjectKey, storeLocalBookingUpload } from './storage/objectStorage.js'
 
 /**
  * Builds the Fastify app with Apollo on `/`, ready to serve but not listening.
@@ -42,7 +43,7 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
             }))
         },
         allowedHeaders: ['content-type', 'authorization'],
-        // methods: ['GET', 'POST', 'OPTIONS'],
+        methods: ['GET', 'HEAD', 'POST', 'PUT', 'OPTIONS'],
         credentials: true
     })
 
@@ -150,7 +151,10 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
         'image/webp'
     ]
     for (const contentType of bookingUploadTypes) {
-        fastify.addContentTypeParser(contentType, { parseAs: 'buffer' }, (_request, body, done) => {
+        fastify.addContentTypeParser(contentType, {
+            parseAs: 'buffer',
+            bodyLimit: BOOKING_UPLOAD_MAX_BYTES
+        }, (_request, body, done) => {
             done(null, body)
         })
     }
@@ -159,13 +163,18 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
         url: '/dev-uploads/*',
         method: ['PUT', 'OPTIONS'],
         handler: async (request, reply) => {
-            if (envVariables.storageBackend() === 's3') {
+            if (envVariables.storageBackend() === 's3' || !envVariables.isLocal()) {
                 return reply.code(404).send({ error: 'Not found' })
             }
 
             const wildcard = (request.params as { '*': string })['*']
-            const objectKey = decodeURIComponent(wildcard ?? '')
-            if (!objectKey.startsWith('uploads/booking/')) {
+            let objectKey: string
+            try {
+                objectKey = decodeURIComponent(wildcard ?? '')
+            } catch {
+                return reply.code(400).send({ error: 'Invalid key' })
+            }
+            if (!isSafeBookingObjectKey(objectKey)) {
                 return reply.code(400).send({ error: 'Invalid key' })
             }
 
@@ -179,7 +188,7 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
             if (body.byteLength === 0) {
                 return reply.code(400).send({ error: 'Empty body' })
             }
-            if (body.byteLength > 8 * 1024 * 1024) {
+            if (body.byteLength > BOOKING_UPLOAD_MAX_BYTES) {
                 return reply.code(413).send({ error: 'Too large' })
             }
 

@@ -429,7 +429,13 @@ import { ClinicSiteStatus, type ClinicSite } from '@findadoc/graphql'
 import { createError, navigateTo, useAsyncData, useHead } from '#imports'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import { useUmami } from '~/composables/useUmamiTracking'
-import { clinicLandingShareImage, clinicSiteFetchIsServer, clinicSubdomainUrl } from '~/utils/clinicLanding'
+import {
+    clinicLandingHostSlug,
+    clinicLandingShareImage,
+    clinicSiteFetchIsServer,
+    clinicSubdomainUrl
+} from '~/utils/clinicLanding'
+import { bookingClinicPath, clinicBookPath } from '~/utils/booking/paths'
 import { fetchClinicSite } from '~/utils/clinicSiteQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
 import { DEFAULT_LOCALE_CODE } from '~/utils/localePath'
@@ -509,8 +515,12 @@ const sections = computed(() => [
 
 function onBook() {
     track('Clinic landing book')
-    const prefix = String(locale.value) === DEFAULT_LOCALE_CODE ? '' : `/${String(locale.value)}`
-    void navigateTo(`${prefix}/book`)
+    const localeCode = String(locale.value)
+    if (clinicLandingHostSlug(hostname) === props.slug) {
+        void navigateTo(clinicBookPath(localeCode))
+        return
+    }
+    void navigateTo(bookingClinicPath(props.slug, localeCode))
 }
 
 const shareImage = clinicLandingShareImage(landing.shareImagePath)

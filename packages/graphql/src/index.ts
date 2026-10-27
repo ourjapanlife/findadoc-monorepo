@@ -82,7 +82,6 @@ export type BookingForm = {
   clinicSiteSlug: Scalars['String']['output'];
   fields: Array<BookingFormField>;
   id: Scalars['ID']['output'];
-  notifyEmail?: Maybe<Scalars['String']['output']>;
   themePrimary?: Maybe<Scalars['String']['output']>;
   version: Scalars['Int']['output'];
 };
@@ -105,6 +104,8 @@ export type BookingFormField = {
   placeholderKey?: Maybe<Scalars['String']['output']>;
   required: Scalars['Boolean']['output'];
   sensitivity: BookingFieldSensitivity;
+  /** Groups fields into one step of the intake form. The site renders steps in first-seen order. */
+  stepKey: Scalars['String']['output'];
   type: BookingFormFieldType;
 };
 
@@ -1323,12 +1324,13 @@ export type Query = {
   auditLog?: Maybe<AuditLog>;
   /**
    * Open 15-minute appointment starts inside staff 30-minute availability.
-   * Public for the patient booking form. Times are ISO 8601 UTC.
+   * Only starts that fit a painted calendar window are returned. Times are ISO 8601 UTC.
    */
   availableBookingStarts: Array<Scalars['String']['output']>;
   /**
    * The booking intake form for a hosted clinic.
    * Pass the clinic site id or slug. Drafts and unknown clinics are null.
+   * Open to a signed-out visitor. create:bookings is on the anonymous user role.
    */
   bookingForm?: Maybe<BookingForm>;
   /** Staff read-only detail for one booking submission. */
@@ -2139,7 +2141,6 @@ export type BookingFormResolvers<ContextType = any, ParentType extends Resolvers
   clinicSiteSlug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fields?: Resolver<Array<ResolversTypes['BookingFormField']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  notifyEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   themePrimary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
@@ -2157,6 +2158,7 @@ export type BookingFormFieldResolvers<ContextType = any, ParentType extends Reso
   placeholderKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   required?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   sensitivity?: Resolver<ResolversTypes['BookingFieldSensitivity'], ParentType, ContextType>;
+  stepKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['BookingFormFieldType'], ParentType, ContextType>;
 };
 

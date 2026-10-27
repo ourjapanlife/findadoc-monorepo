@@ -235,7 +235,7 @@ Every `*.findadoc.jp` name without its own Route 53 record resolves to the Ampli
 - MAIL FROM is `mail.findadoc.jp`. The stack writes that name's MX and SPF records. `https://mail.findadoc.jp` still opens the site, because the Amplify wildcard still owns the A and AAAA records. The new MX and TXT are only for SES.
 - The configuration set `findadoc` requires TLS, publishes reputation metrics, and adds bounces and complaints to the account suppression list. Feedback is not forwarded to `noreply@`, which is not a mailbox we read.
 - The API role may `ses:SendEmail` and `ses:SendRawEmail` for this identity and this configuration set only. There is no access key.
-- `SES_FROM_ADDRESS`, `SES_CONFIGURATION_SET`, and `SES_REGION` are set on `findadoc-api`. Clinic booking sends a notify email when `BOOKING_NOTIFY_EMAIL` (or the form’s notify address) is set; otherwise the API logs the message.
+- `SES_FROM_ADDRESS`, `SES_CONFIGURATION_SET`, and `SES_REGION` are set on `findadoc-api`. A booking sends a confirmation to the email on the request, and a short notice to a doctor linked on that clinic when the professional has an email. Without `SES_FROM_ADDRESS` the API logs the message metadata and does not send.
 
 A new SES account can send only to verified addresses until AWS enables production access. CloudFormation cannot request that. In the SES console for `ap-northeast-1`, open the account dashboard and request production access.
 

@@ -4,6 +4,7 @@ import {
     type BookingForm,
     type BookingFormField
 } from '@findadoc/graphql'
+import { BOOKING_UPLOAD_MAX_BYTES } from './limits.js'
 import { BOOKING_FIELD_SENSITIVITY, type BookingFieldSensitivity as StoredSensitivity } from './retention.js'
 
 /**
@@ -18,7 +19,6 @@ export const SHOWCASE_BOOKING_CLINIC_SITE_ID = 'a303a8ac-31c9-45d8-96d1-cf6630aa
 type FormSource = {
     id: string
     version: number
-    notifyEmail?: string | null
     fields: BookingFormField[]
 }
 
@@ -44,6 +44,7 @@ function field(
 const showcaseFields: BookingFormField[] = [
     field({
         id: 'email',
+        stepKey: 'contact',
         type: BookingFormFieldType.Email,
         required: true,
         labelKey: 'bookingPage.fields.email',
@@ -52,6 +53,7 @@ const showcaseFields: BookingFormField[] = [
     }),
     field({
         id: 'phone',
+        stepKey: 'contact',
         type: BookingFormFieldType.Phone,
         required: true,
         labelKey: 'bookingPage.fields.phone',
@@ -60,6 +62,7 @@ const showcaseFields: BookingFormField[] = [
     }),
     field({
         id: 'fullName',
+        stepKey: 'contact',
         type: BookingFormFieldType.Text,
         required: true,
         labelKey: 'bookingPage.fields.fullName',
@@ -68,6 +71,7 @@ const showcaseFields: BookingFormField[] = [
     }),
     field({
         id: 'age',
+        stepKey: 'contact',
         type: BookingFormFieldType.Number,
         required: true,
         labelKey: 'bookingPage.fields.age',
@@ -77,6 +81,7 @@ const showcaseFields: BookingFormField[] = [
     }),
     field({
         id: 'reason',
+        stepKey: 'visit',
         type: BookingFormFieldType.Textarea,
         required: true,
         labelKey: 'bookingPage.fields.reason',
@@ -86,11 +91,12 @@ const showcaseFields: BookingFormField[] = [
     }),
     field({
         id: 'insuranceDocument',
+        stepKey: 'documents',
         type: BookingFormFieldType.File,
         required: true,
         labelKey: 'bookingPage.fields.insuranceDocument',
         accept: 'image/jpeg,image/png,image/webp,application/pdf',
-        maxBytes: 8 * 1024 * 1024,
+        maxBytes: BOOKING_UPLOAD_MAX_BYTES,
         sensitivity: BookingFieldSensitivity.IdentityDocument
     })
 ]
@@ -99,7 +105,6 @@ const FORMS_BY_CLINIC_SITE_ID: Record<string, FormSource> = {
     [SHOWCASE_BOOKING_CLINIC_SITE_ID]: {
         id: 'showcase-intake-v1',
         version: 1,
-        notifyEmail: null,
         fields: showcaseFields
     }
 }
@@ -113,7 +118,6 @@ export function assembleBookingForm(input: {
     clinicSiteSlug: string
     clinicName: string
     themePrimary: string | null
-    notifyEmailFallback: string | null
 }): BookingForm | null {
     const source = formSourceForClinicSite(input.clinicSiteId)
     if (source === undefined) {
@@ -127,7 +131,6 @@ export function assembleBookingForm(input: {
         clinicSiteSlug: input.clinicSiteSlug,
         clinicName: input.clinicName,
         themePrimary: input.themePrimary,
-        notifyEmail: source.notifyEmail ?? input.notifyEmailFallback,
         fields: source.fields
     }
 }
