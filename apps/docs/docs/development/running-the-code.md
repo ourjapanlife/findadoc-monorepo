@@ -66,6 +66,31 @@ The moderation dashboard needs the local API:
 2. Go to `http://localhost:3000/login`
 3. Enter the username and password. Ask a core maintainer on Slack for credentials
 
+### Clinic landings
+
+A clinic that owns a page is a `clinic_sites` row, seeded from `apps/server/scripts/seed/clinicSiteContent.ts`. The first one is `/clinic/multilingual-online-clinic`. Its directory facility is `c32c316a-a368-499b-abaf-c5c973cb67e5`. The seed leaves that facility unresolved, because the page has no municipality. Accounts will attach through `clinic_memberships`. `pnpm dev` is Turbo and talks to the local API. Open `/clinic/multilingual-online-clinic?preview=1` to store a cookie for 30 days. Without that cookie the URL is a 404, `noindex`, and left out of the sitemap. `?preview=0` clears the cookie. There is no environment variable. Run the API against a seeded database so the page can load.
+
+The link to put on a poster is `https://multilingual-online-clinic.findadoc.jp/`. The clinic breadcrumb, `/clinic/multilingual-online-clinic`, and the directory address that ends in `--{id}` redirect there. The preview image is that clinic’s icon. The footer is the Find a Doc logo and “Powered by Find a Doc, Japan”. The header uses the clinic’s stored brand color. The booking buttons do not go anywhere yet. The appointment flow will replace them. An admin of that hospital still edits the facility itself.
+
+The same page answers two hosts. This starts the seeded API and the site:
+
+```bash
+pnpm dev:seeded
+```
+
+- Domain path: `http://127.0.0.1:3000/clinic/multilingual-online-clinic?preview=1`
+- Clinic hostname: `http://multilingual-online-clinic.localhost:3000/?preview=1`
+
+Browsers resolve `*.localhost` to this machine, so no hosts-file entry is required. The hostname itself is the clinic: `http://multilingual-online-clinic.localhost:3000/` stays on `/`. Other pages on that host, including `/submit` and `/clinic/multilingual-online-clinic`, redirect to `/`. Images and scripts stay put. The preview cookie belongs to the host that set it, so each host needs its own `?preview=1`. `?preview=0` clears it on that host. The canonical URL is the subdomain.
+
+`www`, `api`, `mcp`, `docs`, and `admin` are not clinic hosts.
+
+The canonical URL is `https://{slug}.findadoc.jp/`. The www path and the shareable id are other doors, and both redirect to that host.
+
+### Amplify and Route 53
+
+The DNS zone stays in Route 53. Do not change the nameservers. Amplify already serves `*.findadoc.jp` for the production branch, so a clinic hostname is that wildcard. A pull request preview is a separate Amplify host. It is not `{slug}.findadoc.jp`. On that host, open `/clinic/multilingual-online-clinic?preview=1`. The build copies the app shell to that path, the query stores the cookie for 30 days, and the page reads the clinic from `https://api.findadoc.jp`. The showcase row has to be in that database. `*` does not include `findadoc.jp` itself. Records that already exist for `www`, `api`, `mcp`, and `docs` are more specific than `*` and stay as they are. The clinic slug does not change.
+
 ### Storybook
 
 ```bash

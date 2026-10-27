@@ -3,9 +3,12 @@ import i18nLocales from './i18n'
 import tailwindcss from '@tailwindcss/vite'
 import { VIEWPORT_BREAKPOINTS, VIEWPORT_FALLBACK_BREAKPOINT } from './utils/viewport'
 import { withLocaleVariants } from './utils/localePath'
+import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
+import { CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
+import { writeClinicPreviewShells } from './utils/nuxt/clinicPreviewShell'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
 import {
     applyEntityDirectoryToNitro,
@@ -64,19 +67,23 @@ export default defineNuxtConfig({
                 },
                 {
                     name: 'twitter:title',
-                    content: SITE_TITLE
+                    content: SITE_TITLE,
+                    key: 'twitter:title'
                 },
                 {
                     name: 'twitter:description',
-                    content: SITE_DESCRIPTION
+                    content: SITE_DESCRIPTION,
+                    key: 'twitter:description'
                 },
                 {
                     name: 'twitter:image',
-                    content: SITE_SOCIAL_IMAGE
+                    content: SITE_SOCIAL_IMAGE,
+                    key: 'twitter:image'
                 },
                 {
                     name: 'twitter:image:alt',
-                    content: `${SITE_TITLE} mascots`
+                    content: `${SITE_TITLE} mascots`,
+                    key: 'twitter:image:alt'
                 },
                 {
                     property: 'og:type',
@@ -88,23 +95,28 @@ export default defineNuxtConfig({
                 },
                 {
                     property: 'og:title',
-                    content: SITE_TITLE
+                    content: SITE_TITLE,
+                    key: 'og:title'
                 },
                 {
                     property: 'og:description',
-                    content: SITE_DESCRIPTION
+                    content: SITE_DESCRIPTION,
+                    key: 'og:description'
                 },
                 {
                     property: 'og:image',
-                    content: SITE_SOCIAL_IMAGE
+                    content: SITE_SOCIAL_IMAGE,
+                    key: 'og:image'
                 },
                 {
                     property: 'og:image:secure_url',
-                    content: SITE_SOCIAL_IMAGE
+                    content: SITE_SOCIAL_IMAGE,
+                    key: 'og:image:secure_url'
                 },
                 {
                     property: 'og:image:alt',
-                    content: `${SITE_TITLE} mascots`
+                    content: `${SITE_TITLE} mascots`,
+                    key: 'og:image:alt'
                 }
             ],
             link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
@@ -165,6 +177,8 @@ export default defineNuxtConfig({
 
             NUXT_USE_LOCAL_API: process.env.NUXT_USE_LOCAL_API,
 
+            onlineClinic: CLINIC_LANDING_MODE,
+
             sentry: {
                 dsn: process.env.NUXT_PUBLIC_SENTRY_DSN,
                 environment: process.env.NUXT_PUBLIC_SENTRY_ENVIRONMENT,
@@ -206,6 +220,11 @@ export default defineNuxtConfig({
         '/:locale/login': { ssr: false },
         '/:locale/my-page': { ssr: false },
         '/:locale/my-page/**': { ssr: false }
+        // `/clinic/:slug` is not `ssr: false`. Nuxt treats that rule as covering
+        // `/clinic/{prefecture}/{city}/{slug}` and stubs the directory page, so
+        // generate writes an empty shell. Preview landings stay off the prerender
+        // list. Generate copies the app shell to `{slug}.html`. Amplify's
+        // catch-all serves that file. There is no `/clinic/*` rewrite.
     },
     sourcemap: {
         client: true
@@ -238,10 +257,17 @@ export default defineNuxtConfig({
         }
     },
 
-    vite: { plugins: [
-        tailwindcss(),
-        ...entityDirectoryVitePlugins()
-    ] },
+    vite: {
+        server: {
+            // `{slug}.localhost` is the local clinic hostname. Browsers resolve it
+            // to loopback. `.findadoc.jp` is the same host once DNS points here.
+            allowedHosts: ['.localhost', '.findadoc.jp']
+        },
+        plugins: [
+            tailwindcss(),
+            ...entityDirectoryVitePlugins()
+        ]
+    },
     telemetry: false,
 
     hooks: {
@@ -250,11 +276,18 @@ export default defineNuxtConfig({
         },
         async 'nitro:config'(nitroConfig) {
             await applyEntityDirectoryToNitro(nitroConfig)
+            await applyPublishedClinicSites(nitroConfig)
         },
         'nitro:init'(nitro) {
             // Generate is static, so the proxy destinations have to be baked into
             // the publish dir. Dev never has the env vars in the browser tag.
-            nitro.hooks.hook('close', () => writeUmamiProxyRedirects(nitro.options.output.publicDir))
+            nitro.hooks.hook('close', async () => {
+                const publicDir = nitro.options.output.publicDir
+                await writeUmamiProxyRedirects(publicDir)
+                for (const slug of CLINIC_PREVIEW_SHELL_SLUGS) {
+                    await writeClinicPreviewShells(publicDir, slug)
+                }
+            })
         }
     },
     eslint: {
@@ -295,7 +328,7 @@ export default defineNuxtConfig({
         excludeAppSources: true,
         exclude: [...SITEMAP_EXCLUDE],
         urls: publicSitemapUrls(),
-        sources: ['/api/__sitemap__/directory'],
+        sources: ['/api/__sitemap__/directory', '/api/__sitemap__/clinic-sites'],
         // Google's per-file cap. Locale × entity stays under this, so /sitemap.xml
         // remains the single file robots.txt names.
         defaultSitemapsChunkSize: 50000,

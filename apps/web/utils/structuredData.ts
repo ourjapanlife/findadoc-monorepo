@@ -273,7 +273,9 @@ export function displayedLanguageCodes(
 }
 
 export function medicalClinicJsonLd(input: MedicalClinicInput): JsonLdNode {
-    const pageUrl = canonicalUrl(input.pagePath)
+    const pageUrl = input.pagePath.startsWith('http://') || input.pagePath.startsWith('https://')
+        ? input.pagePath
+        : canonicalUrl(input.pagePath)
     const languages = input.availableLanguage ?? []
 
     return {
@@ -335,13 +337,19 @@ export function physicianJsonLd(input: PhysicianInput): JsonLdNode {
     }
 }
 
+function crumbItemUrl(path: string, localeCode: string): string {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path
+    }
+    return canonicalUrl(localizedPath(path, localeCode))
+}
+
 export function breadcrumbListJsonLd(
     items: readonly BreadcrumbInput[],
     currentPath: string,
     localeCode: string = DEFAULT_LOCALE_CODE
 ): JsonLdNode {
     const crumbs = items.filter(item => item.label.trim().length > 0)
-    const pathOf = (path: string) => localizedPath(path, localeCode)
 
     return {
         '@context': 'https://schema.org',
@@ -350,7 +358,7 @@ export function breadcrumbListJsonLd(
             '@type': 'ListItem',
             position: index + 1,
             name: item.label.trim(),
-            item: canonicalUrl(pathOf(item.to ?? currentPath))
+            item: crumbItemUrl(item.to ?? currentPath, localeCode)
         }))
     }
 }

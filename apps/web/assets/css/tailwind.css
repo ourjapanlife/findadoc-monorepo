@@ -193,6 +193,34 @@
     }
   }
 
+  /*
+   * A hosted clinic stores one brand hex. The page sets --clinic-primary* on .clinic-theme,
+   * and the header, buttons, and links follow the same primary tokens as the rest of the site.
+   * The credit footer stays outside this wrapper, so the Find a Doc logo keeps its own color.
+   */
+  .clinic-theme {
+    --theme-color-primary: var(--clinic-primary);
+    --theme-color-primary-hover: var(--clinic-primary-hover);
+    --color-primary: rgb(var(--clinic-primary));
+    --color-primary-hover: rgb(var(--clinic-primary-hover));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not(.theme-light) .clinic-theme {
+      --theme-color-primary: var(--clinic-primary-dark);
+      --theme-color-primary-hover: var(--clinic-primary-hover-dark);
+      --color-primary: rgb(var(--clinic-primary-dark));
+      --color-primary-hover: rgb(var(--clinic-primary-hover-dark));
+    }
+  }
+
+  :root.theme-dark .clinic-theme {
+    --theme-color-primary: var(--clinic-primary-dark);
+    --theme-color-primary-hover: var(--clinic-primary-hover-dark);
+    --color-primary: rgb(var(--clinic-primary-dark));
+    --color-primary-hover: rgb(var(--clinic-primary-hover-dark));
+  }
+
   :root.theme-dark {
     color-scheme: dark;
     --theme-shadow-color: 0 0 0;

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { PAGE_META_TITLE_ROUTES } from '../../utils/pageTitles'
+import { indexableMarketingPaths } from '../../utils/sitemap'
 import { facilityIdFromSlugParam } from '../../utils/clinicPath'
 import { isFacetSecondSegment } from '../../utils/facetPath'
 import { hubSitemapUrls } from '../../utils/hubIndex'
@@ -15,7 +15,7 @@ import {
 } from '../../utils/site'
 import { jsonLdBlocks } from './jsonLd'
 
-const publicPaths = Object.values(PAGE_META_TITLE_ROUTES)
+const publicPaths = indexableMarketingPaths()
 
 function facilitiesFromClinicSitemapPaths(clinicPaths: readonly string[]) {
     return clinicPaths.flatMap(path => {

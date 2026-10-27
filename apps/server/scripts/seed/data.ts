@@ -12,6 +12,7 @@ import {
 import { CLINICAL_LICENSES } from '@findadoc/utils'
 import { licenseColumnsForDegrees } from '../../src/licenses/professionalLicense.js'
 import { prefectureTranslations } from '../../utils/japanesePrefectures.js'
+import { showcaseClinicFacility } from './clinicSiteContent.js'
 import { validateSeed, type SeedFile } from './schema.js'
 
 const SEED_COUNT = 30
@@ -261,6 +262,8 @@ function buildSeed(): SeedFile {
             firestore_id: null
         })
     }
+
+    facilities.push(showcaseClinicFacility)
 
     return { facilities, hps, hps_facilities: hpsFacilities, submissions }
 }

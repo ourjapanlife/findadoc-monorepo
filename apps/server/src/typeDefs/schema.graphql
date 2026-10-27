@@ -985,9 +985,186 @@ type MapsPlacePreview {
   category: String
 }
 
+"""
+Whether a hosted clinic page is a draft, a showcase, or published.
+Drafts are hidden from the public queries.
+"""
+enum ClinicSiteStatus {
+  DRAFT
+  PREVIEW
+  PUBLISHED
+}
+
+"""
+Role of an account on a hosted clinic. Owner manages the clinic. Staff uses the future CRM.
+"""
+enum ClinicMembershipRole {
+  OWNER
+  STAFF
+}
+
+"""
+An account linked to a hosted clinic. Not returned by the public page query.
+A future CRM authorizes appointments and patients with this row.
+"""
+type ClinicMembership {
+  id: ID!
+  clinicSiteId: ID!
+  userId: ID!
+  role: ClinicMembershipRole!
+  createdDate: String!
+}
+
+"""A language the clinic consults in. This is not a site UI locale."""
+type ClinicSiteLanguage {
+  code: String!
+  native: String!
+  bcp47: String!
+}
+
+"""
+A doctor shown on the hosted page.
+hpId is the directory professional once that record exists.
+"""
+type ClinicSiteDoctor {
+  id: ID!
+  nameJa: String!
+  nameEn: String!
+  imagePath: String!
+  objectPosition: String!
+  hpId: ID
+}
+
+type ClinicSiteDoctorCopy {
+  role: String!
+  tag: String!
+  paragraphs: [String!]!
+  alt: String!
+}
+
+type ClinicSiteCase {
+  title: String!
+  detail: String!
+}
+
+type ClinicSiteNotice {
+  title: String!
+  detail: String!
+  feesLink: Boolean
+}
+
+type ClinicSitePlan {
+  amount: String!
+  note: String!
+}
+
+type ClinicSiteStep {
+  title: String!
+  detail: String!
+}
+
+"""The hosted page in one site locale."""
+type ClinicSiteLocale {
+  locale: String!
+  name: String!
+  description: String!
+  book: String!
+  seeFees: String!
+  sectionNavLabel: String!
+  heroBadge: String!
+  heroTitleBefore: String!
+  heroTitleHighlight: String!
+  heroLead: String!
+  heroNote: String!
+  heroAlt: String!
+  badgeTitle: String!
+  badgeDetail: String!
+  highlights: [String!]!
+  aboutEyebrow: String!
+  aboutTitle: String!
+  about: [String!]!
+  navDoctors: String!
+  navCases: String!
+  navFees: String!
+  navFlow: String!
+  doctorsEyebrow: String!
+  doctorsTitle: String!
+  doctorCopy: [ClinicSiteDoctorCopy!]!
+  casesEyebrow: String!
+  casesTitle: String!
+  casesLead: String!
+  cases: [ClinicSiteCase!]!
+  noticeEyebrow: String!
+  noticeTitle: String!
+  noticeLead: String!
+  notices: [ClinicSiteNotice!]!
+  feesLink: String!
+  feesEyebrow: String!
+  feesTitle: String!
+  feesLead: String!
+  rangeLabel: String!
+  plans: [ClinicSitePlan!]!
+  includedLabel: String!
+  fees: [String!]!
+  referralNote: String!
+  flowEyebrow: String!
+  flowTitle: String!
+  steps: [ClinicSiteStep!]!
+  bookEyebrow: String!
+  bookTitle: String!
+  bookLead: String!
+  bookNote: String!
+  ctaTitle: String!
+  ctaLead: String!
+  ctaButton: String!
+  emergency: String!
+}
+
+"""
+Brand color for a hosted clinic. A later picker writes `primary`.
+The page turns it into the theme primary. Null keeps the Find a Doc primary.
+"""
+type ClinicSiteTheme {
+  primary: String
+}
+
+"""
+A clinic-owned page. id is the id accounts and a future CRM attach to.
+facilityId is the directory listing, null until that facility exists.
+"""
+type ClinicSite {
+  id: ID!
+  slug: String!
+  facilityId: ID
+  status: ClinicSiteStatus!
+  shareImagePath: String!
+  heroPath: String!
+  theme: ClinicSiteTheme!
+  languages: [ClinicSiteLanguage!]!
+  doctors: [ClinicSiteDoctor!]!
+  locales: [ClinicSiteLocale!]!
+}
+
+"""Enough of a hosted clinic to redirect its directory address to the clean link."""
+type ClinicSiteSummary {
+  id: ID!
+  slug: String!
+  facilityId: ID
+  status: ClinicSiteStatus!
+  shareImagePath: String!
+}
+
 type Query {
   """Roles and effective API scopes for the authenticated user (always allowed when a user context exists)."""
   currentUserAccess: CurrentUserAccess!
+
+  """
+  A hosted clinic page. Drafts are null. The clean link is /clinic/{slug}.
+  """
+  clinicSite(slug: String!): ClinicSite
+
+  """Hosted clinics that are in preview or published. Drafts are omitted."""
+  clinicSites: [ClinicSiteSummary!]!
 
   """Look up a single facility by its unique ID. Returns null if not found."""
   facility(id: ID!): Facility

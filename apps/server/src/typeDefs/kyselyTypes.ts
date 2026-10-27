@@ -150,15 +150,66 @@ export interface AuditLogsTable {
     updated_date: Generated<string>
 }
 
-/**
- * User Table
- */
+/** A login account. */
 export interface UserTable {
     id: Generated<string>
-    created_date: Generated<string>
-    updated_date: string | null
     display_name: string | null
     profile_pic_url: string | null
+    created_date: Generated<string>
+    updated_date: string | null
+}
+
+/**
+ * A clinic-owned page. id is what an account and a future CRM attach to.
+ * facility_id is the directory listing for this page.
+ */
+export interface ClinicSitesTable {
+    id: Generated<string>
+    facility_id: string | null
+    slug: string
+    status: string
+    share_image_path: string
+    hero_path: string
+    theme: ColumnType<Record<string, unknown>, string, string>
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** An account on a hosted clinic. owner manages it. staff is the future CRM seat. */
+export interface ClinicMembershipsTable {
+    id: Generated<string>
+    clinic_site_id: string
+    user_id: string
+    role: string
+    created_date: Generated<string>
+}
+
+export interface ClinicSiteLanguagesTable {
+    clinic_site_id: string
+    sort_order: number
+    code: string
+    native_name: string
+    bcp47: string
+}
+
+/** A doctor on the hosted page. hp_id is the directory professional once one exists. */
+export interface ClinicSiteDoctorsTable {
+    id: Generated<string>
+    clinic_site_id: string
+    sort_order: number
+    name_ja: string
+    name_en: string
+    image_path: string
+    object_position: string
+    hp_id: string | null
+}
+
+export interface ClinicSiteLocalesTable {
+    clinic_site_id: string
+    locale: string
+    name: string
+    description: string
+    document: ColumnType<Record<string, unknown>, string, string>
 }
 
 /**
@@ -175,6 +226,11 @@ export interface Database {
     submissions: SubmissionsTable
     audit_logs: AuditLogsTable
     user: UserTable
+    clinic_sites: ClinicSitesTable
+    clinic_memberships: ClinicMembershipsTable
+    clinic_site_languages: ClinicSiteLanguagesTable
+    clinic_site_doctors: ClinicSiteDoctorsTable
+    clinic_site_locales: ClinicSiteLocalesTable
 }
 
 /**

@@ -1,5 +1,11 @@
 <template>
-    <NuxtLayout>
+    <NuxtLayout
+        v-if="hostedClinicSlug"
+        name="clinic-landing"
+    >
+        <ClinicHostLanding />
+    </NuxtLayout>
+    <NuxtLayout v-else>
         <NuxtPage />
     </NuxtLayout>
     <!--
@@ -22,18 +28,49 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { initializeGqlClient } from './utils/graphql.js'
+import ClinicHostLanding from '~/pages/clinic/[slug].vue'
+import {
+    clinicLandingHostSlug,
+    clinicLandingMode,
+    clinicLandingPath,
+    clinicSubdomainHreflang,
+    clinicSubdomainUrl,
+    isClinicHostPage,
+    isClinicLandingPath
+} from '~/utils/clinicLanding'
 import { isEntityRoute, pageDescriptionKeyForPath, pageMetaI18nKey, pageTitleKeyForPath } from '~/utils/pageTitles'
 import { canonicalUrl, hreflangLinkTags, indexableLocaleCodes, isNoindexRoute, openGraphLocale } from '~/utils/seo'
 import { jsonLdScript, organizationJsonLd } from '~/utils/structuredData'
 import { formatPageTitle } from '~/utils/site'
-import { useHead, useRoute } from '#imports'
+import { useHead, useRequestURL, useRoute, useRuntimeConfig } from '#imports'
 
 initializeGqlClient()
 
 const route = useRoute()
+const config = useRuntimeConfig()
+const requestUrl = useRequestURL()
 const { t, locale } = useI18n()
 
-const canonical = computed(() => canonicalUrl(route.path))
+const hostedClinicSlug = computed(() => {
+    const host = import.meta.server ? requestUrl.hostname : window.location.hostname
+    if (clinicLandingMode(config.public.onlineClinic) === 'off') {
+        return undefined
+    }
+    if (!isClinicHostPage(route.path)) {
+        return undefined
+    }
+    return clinicLandingHostSlug(host)
+})
+
+const canonical = computed(() => {
+    const slug = hostedClinicSlug.value
+    if (slug) {
+        const prefix = String(locale.value) === 'en-US' ? '' : `/${locale.value}`
+        const host = import.meta.server ? requestUrl.host : window.location.host
+        return clinicSubdomainUrl(slug, prefix, host)
+    }
+    return canonicalUrl(route.path)
+})
 
 // Titles live in PAGE_META_TITLE_ROUTES, not in each page, so a missing public
 // route is a type/test failure instead of a forgotten useHead. Canonical, og:url,
@@ -46,7 +83,9 @@ useHead(() => {
     // Unhead's meta and link inputs are discriminated unions. A shared
     // `{ name?: string, property?: string }` element is not assignable to any
     // member, so each tag keeps its own literal shape.
-    const noindex = isNoindexRoute(route.path, route.query)
+    const noindex = hostedClinicSlug.value
+        ? isNoindexRoute(clinicLandingPath(hostedClinicSlug.value), route.query, config.public.onlineClinic)
+        : isNoindexRoute(route.path, route.query, config.public.onlineClinic)
     const meta: Array<
       | { property: 'og:url' | 'og:locale' | 'og:locale:alternate' | 'og:description', content: string, key: string }
       | { name: 'robots' | 'description' | 'twitter:description', content: string, key: string }
@@ -73,7 +112,9 @@ useHead(() => {
     // Entity routes set their own title from the record. Omitting `title` lets that
     // win. A public route with no catalog key still sends '' so the brand fallback applies.
     let title: string | undefined
-    if (!isEntityRoute(route.path)) {
+    // Landings set their own title and share image. An empty catalog title here
+    // would replace both with the brand-only fallback.
+    if (!hostedClinicSlug.value && !isEntityRoute(route.path) && !isClinicLandingPath(route.path)) {
         const key = pageTitleKeyForPath(route.path)
         title = key ? t(pageMetaI18nKey(key)) : ''
         const descriptionKey = pageDescriptionKeyForPath(route.path)
@@ -96,7 +137,14 @@ useHead(() => {
             // noindex directory URLs are not in the hreflang cluster. A one-way
             // alternate from /zh-CN/clinic/… to /clinic/… would point at a page
             // that does not link back.
-            ...(noindex ? [] : hreflangLinkTags(route.path))
+            ...(noindex
+                ? []
+                : hostedClinicSlug.value
+                    ? clinicSubdomainHreflang(
+                        hostedClinicSlug.value,
+                        import.meta.server ? requestUrl.host : window.location.host
+                    )
+                    : hreflangLinkTags(route.path))
         ],
         meta,
         script: [jsonLdScript('ld-organization', organizationJsonLd())]
