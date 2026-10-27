@@ -425,7 +425,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { ClinicSiteStatus } from '@findadoc/graphql'
+import { ClinicSiteStatus, type ClinicSite } from '@findadoc/graphql'
 import { createError, useAsyncData, useHead } from '#imports'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import { useUmami } from '~/composables/useUmamiTracking'
@@ -450,18 +450,24 @@ const { track } = useUmami()
 const { host, hostname } = useRequestHost()
 const mode = useClinicLandingMode()
 
-const { data: site } = await useAsyncData(
-    `clinic-site-${props.slug}`,
-    () => fetchClinicSite(props.slug),
-    {
-        // The clinic host serves the homepage payload. A server read of that
-        // payload is empty, so a 404 here would fire before any GraphQL call.
-        server: clinicSiteFetchIsServer(mode, hostname)
+/**
+ * The clinic host serves the homepage payload. `useAsyncData` can settle
+ * empty during that hydration while the GraphQL request is still in flight,
+ * and a 404 here leaves only the layout footer. Fetch the row ourselves.
+ */
+async function loadLanding(): Promise<ClinicSite | null> {
+    if (clinicSiteFetchIsServer(mode, hostname)) {
+        const { data } = await useAsyncData(
+            `clinic-site-${props.slug}`,
+            () => fetchClinicSite(props.slug)
+        )
+        return data.value ?? null
     }
-)
+    return fetchClinicSite(props.slug)
+}
 
-const landing = site.value
-if (landing === null || landing === undefined) {
+const landing = await loadLanding()
+if (landing === null) {
     throw createError({ statusCode: 404, statusMessage: 'Page not found' })
 }
 
