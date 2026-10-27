@@ -1,11 +1,14 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:recommended"],
+    "dependencyDashboard": true,
     "labels": ["dependencies"],
+    "timezone": "Asia/Tokyo",
     "schedule": ["after 10am every monday"],
-    "stabilityDays": 14,
+    "minimumReleaseAge": "14 days",
     "prConcurrentLimit": 3,
     "rangeStrategy": "bump",
+    "semanticCommits": "enabled",
     "packageRules": [
         {
             "matchPackageNames": ["/^eslint/", "/^@typescript-eslint/"],
@@ -13,7 +16,11 @@
         },
         {
             "matchUpdateTypes": ["minor", "patch"],
+            "matchPackageNames": ["!/^eslint/", "!/^@typescript-eslint/"],
             "groupName": "Minor and patch updates"
         }
-    ]
+    ],
+    "vulnerabilityAlerts": {
+        "labels": ["dependencies", "security"]
+    }
 }

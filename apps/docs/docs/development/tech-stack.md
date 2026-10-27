@@ -11,6 +11,9 @@
 | [ESLint](https://eslint.org/) | Linting |
 | [Husky](https://typicode.github.io/husky/) | Git hooks |
 | [GitHub Actions](https://docs.github.com/en/actions) | Lint, typecheck, tests, and docs deploy |
+| [Renovate](https://docs.renovatebot.com/) | Dependency updates for the pnpm workspace |
+
+One `renovate.json` at the repository root covers the workspace. Renovate opens pull requests here, not on the retired single-app repos.
 
 ### Requirements
 

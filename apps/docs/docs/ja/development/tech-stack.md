@@ -11,6 +11,9 @@
 | [ESLint](https://eslint.org/) | リンティング |
 | [Husky](https://typicode.github.io/husky/) | Gitフック |
 | [GitHub Actions](https://docs.github.com/en/actions) | リンティング、型チェック、テスト、ドキュメントのデプロイ |
+| [Renovate](https://docs.renovatebot.com/) | pnpmワークスペースの依存関係の更新 |
+
+リポジトリルートの `renovate.json` 1つがワークスペース全体を対象にします。Renovateはこのリポジトリにプルリクエストを開きます。廃止した単体アプリのリポジトリには開きません。
 
 ### 要件
 
