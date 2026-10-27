@@ -1,2 +1,2 @@
 #!/bin/sh
-pnpm exec turbo lint
+pnpm exec turbo lint typecheck

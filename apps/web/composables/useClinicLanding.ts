@@ -35,8 +35,8 @@ export function clinicLandingGate(
         maxAge: CLINIC_LANDING_PREVIEW_MAX_AGE,
         // The default codec writes the JSON `"1"` and reads a bare `1` back as a number.
         // Store the bare value so `online_clinic_preview=1` means the same everywhere.
-        encode: value => String(value),
-        decode: value => value
+        encode: value => value ?? '',
+        decode: value => value ?? null
     })
 
     switch (clinicLandingAccess(mode, preview, cookie.value)) {
