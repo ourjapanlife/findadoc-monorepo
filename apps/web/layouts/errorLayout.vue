@@ -67,6 +67,7 @@ import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { notFoundArea } from '~/utils/analyticsEvents'
+import { markClinicHostReady } from '~/utils/clinicLanding'
 
 const { t } = useI18n()
 const { track } = useUmami()
@@ -75,6 +76,7 @@ const { track } = useUmami()
 const illustration = '/illustrations/characters-sachi-questioning.svg'
 
 onMounted(() => {
+    markClinicHostReady()
     track('Not found', { area: notFoundArea(window.location.pathname) })
 })
 </script>

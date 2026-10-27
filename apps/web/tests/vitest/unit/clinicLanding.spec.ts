@@ -14,9 +14,11 @@ import {
     clinicLandingHostSlug,
     clinicLandingMode,
     clinicLandingPath,
+    clinicLandingPreviewFlag,
     clinicLandingRedirectTarget,
     clinicLandingShareImage,
     clinicLocalePrefix,
+    clinicSiteFetchIsServer,
     clinicSubdomainHreflang,
     clinicSubdomainUrl,
     isClinicHostPage,
@@ -159,9 +161,22 @@ describe('clinic landings', () => {
         expect(clinicLandingAccess('off', '1', '1')).to.equal('deny')
         expect(clinicLandingAccess('preview', null, null)).to.equal('deny')
         expect(clinicLandingAccess('preview', '1', null)).to.equal('grant')
+        expect(clinicLandingAccess('preview', 1, null)).to.equal('grant')
+        expect(clinicLandingAccess('preview', true, null)).to.equal('grant')
+        expect(clinicLandingAccess('preview', '"1"', null)).to.equal('grant')
         expect(clinicLandingAccess('preview', null, '1')).to.equal('allow')
+        expect(clinicLandingAccess('preview', null, 1)).to.equal('allow')
+        expect(clinicLandingAccess('preview', null, '"1"')).to.equal('allow')
         expect(clinicLandingAccess('preview', '0', '1')).to.equal('revoke')
+        expect(clinicLandingAccess('preview', 0, '1')).to.equal('revoke')
         expect(clinicLandingAccess('public', null, null)).to.equal('allow')
+        expect(clinicLandingPreviewFlag(undefined, '?preview=1')).to.equal('1')
+        expect(clinicLandingPreviewFlag(undefined, '?preview=0')).to.equal('0')
+        expect(clinicLandingPreviewFlag('1', '?preview=0')).to.equal('1')
+        expect(clinicSiteFetchIsServer('preview', `${slug}.findadoc.jp`)).to.equal(false)
+        expect(clinicSiteFetchIsServer('public', `${slug}.findadoc.jp`)).to.equal(false)
+        expect(clinicSiteFetchIsServer('public', 'www.findadoc.jp')).to.equal(true)
+        expect(clinicSiteFetchIsServer('preview', 'www.findadoc.jp')).to.equal(false)
     })
 
     it('maps a clinic primary color onto the theme tokens', () => {

@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onErrorCaptured, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { initializeGqlClient } from './utils/graphql.js'
 import ClinicLanding from '~/components/clinic/ClinicLanding.vue'
@@ -63,6 +63,9 @@ const hostedClinicSlug = computed(() => {
 
 if (import.meta.client) {
     onMounted(markClinicHostReady)
+    onErrorCaptured(() => {
+        markClinicHostReady()
+    })
 }
 
 const canonical = computed(() => {
