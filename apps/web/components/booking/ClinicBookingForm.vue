@@ -333,7 +333,7 @@ function validateField(fieldId: string): boolean {
             fieldErrors[field.id] = t('bookingPage.errors.required')
             return false
         }
-        delete fieldErrors[field.id]
+        fieldErrors[field.id] = ''
         return true
     }
 
@@ -343,7 +343,7 @@ function validateField(fieldId: string): boolean {
             fieldErrors[field.id] = t('bookingPage.errors.required')
             return false
         }
-        delete fieldErrors[field.id]
+        fieldErrors[field.id] = ''
         return true
     }
 
@@ -363,7 +363,7 @@ function validateField(fieldId: string): boolean {
         }
     }
 
-    delete fieldErrors[field.id]
+    fieldErrors[field.id] = ''
     return true
 }
 
@@ -371,24 +371,25 @@ function visibleError(fieldId: string): string | undefined {
     if (!touched[fieldId]) {
         return undefined
     }
-    return fieldErrors[fieldId]
+    const message = fieldErrors[fieldId]
+    return message === undefined || message === '' ? undefined : message
 }
 
 function onFileChange(field: BookingFormField, event: Event) {
     const input = event.target as HTMLInputElement
     const file = input.files?.[0]
     touched[field.id] = true
-    delete uploadIds[field.id]
+    uploadIds[field.id] = ''
     if (file === undefined) {
-        delete pendingFiles[field.id]
-        delete fileNames[field.id]
+        pendingFiles[field.id] = undefined
+        fileNames[field.id] = ''
         validateField(field.id)
         return
     }
     if (field.maxBytes !== null && field.maxBytes !== undefined && file.size > field.maxBytes) {
         fieldErrors[field.id] = t('bookingPage.errors.fileTooLarge')
-        delete pendingFiles[field.id]
-        delete fileNames[field.id]
+        pendingFiles[field.id] = undefined
+        fileNames[field.id] = ''
         input.value = ''
         return
     }
@@ -438,7 +439,7 @@ async function uploadPendingFiles(): Promise<boolean> {
             return false
         }
         uploadIds[field.id] = signed.uploadId
-        delete pendingFiles[field.id]
+        pendingFiles[field.id] = undefined
     }
     return true
 }

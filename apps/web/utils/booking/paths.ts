@@ -3,7 +3,7 @@ import { clinicLocalePrefix, clinicSubdomainUrl } from '~/utils/clinicLanding'
 /** Canonical booking path on a clinic hostname. */
 export function clinicBookPath(localeCode?: string | null): string {
     const prefix = clinicLocalePrefix(localeCode)
-    return `${prefix}/book` || '/book'
+    return prefix === '' ? '/book' : `${prefix}/book`
 }
 
 /** Main-site alias that names the clinic by id or slug. */
