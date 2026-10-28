@@ -145,6 +145,21 @@ describe('prerender HTML layout', () => {
         expect(canonicalUrl('/about/')).to.equal(`${SITE_ORIGIN}/about`)
         expect(canonicalUrl('/tokyo/')).to.equal(`${SITE_ORIGIN}/tokyo`)
     })
+
+    it('SSR-renders 404.html from error.vue instead of an empty SPA shell', () => {
+        const nuxtConfig = readFileSync(join(rootDir, 'nuxt.config.ts'), 'utf8')
+        const page404 = readFileSync(join(rootDir, 'pages', '404.vue'), 'utf8')
+
+        // Nuxt's default 404.html is an empty shell. prerenderErrorPages writes
+        // error.vue into that file so Amplify's catch-all serves real HTML.
+        expect(nuxtConfig).to.match(/prerenderErrorPages:\s*true\b/)
+        // A prerendered `/404` page would overwrite that file (autoSubfolderIndex:
+        // false) with the page route, so it stays off the generate list.
+        expect(nitroPrerenderBlock(nuxtConfig)).to.not.match(/['"]\/404['"]/)
+        // Direct /404 visits must not nest error-layout inside the default chrome.
+        expect(page404).to.match(/layout:\s*false\b/)
+        expect(page404).to.match(/name=["']error-layout["']/)
+    })
 })
 
 /** `nitro.prerender { … }` with comment lines removed, so this cannot pass on comment text. */

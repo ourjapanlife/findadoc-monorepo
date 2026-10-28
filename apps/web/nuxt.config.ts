@@ -230,6 +230,16 @@ export default defineNuxtConfig({
     sourcemap: {
         client: true
     },
+
+    /*
+     * Amplify `_redirects` serves `/404.html` for unknown paths. Without this,
+     * Nuxt writes that file as an empty SPA shell, so the not-found page only
+     * appears after JS boots (and /404 nested the error layout inside the
+     * default chrome). error.vue is SSR'd into 404.html at generate time.
+     */
+    experimental: {
+        prerenderErrorPages: true
+    },
     compatibilityDate: '2025-01-17',
 
     nitro: {
@@ -243,8 +253,7 @@ export default defineNuxtConfig({
             concurrency: 8,
             routes: [
                 ...withLocaleVariants(['/', '/about', '/terms', '/privacypolicy', '/submit', '/npo', '/contact']),
-                '/sitemap.xml',
-                '/404'
+                '/sitemap.xml'
             ],
             /*
              * `about.html`, not `about/index.html`. A subfolder index 301s `/about` →
