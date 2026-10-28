@@ -230,7 +230,6 @@ export default defineNuxtConfig({
     sourcemap: {
         client: true
     },
-    compatibilityDate: '2025-01-17',
 
     /*
      * Amplify `_redirects` serves `/404.html` for unknown paths. Without this,
@@ -241,6 +240,7 @@ export default defineNuxtConfig({
     experimental: {
         prerenderErrorPages: true
     },
+    compatibilityDate: '2025-01-17',
 
     nitro: {
         prerender: {
