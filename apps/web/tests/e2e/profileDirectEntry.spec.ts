@@ -15,5 +15,16 @@ test.describe('Direct entry to dynamic routes', () => {
 
         expect(response?.status()).toBe(404)
         await expect(page.getByRole('heading', { name: enUS.errorPage.title })).toBeVisible()
+        // One chrome only — pages/404 used to nest error-layout inside default.
+        await expect(page.getByTestId('top-nav')).toHaveCount(1)
+        await expect(page.getByTestId('footer')).toHaveCount(1)
+    })
+
+    test('the /404 route shows the not-found page once', async ({ page }) => {
+        await page.goto('/404')
+
+        await expect(page.getByRole('heading', { name: enUS.errorPage.title })).toBeVisible()
+        await expect(page.getByTestId('top-nav')).toHaveCount(1)
+        await expect(page.getByTestId('footer')).toHaveCount(1)
     })
 })
