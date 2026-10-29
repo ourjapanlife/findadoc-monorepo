@@ -262,9 +262,11 @@ import {
 } from '~/utils/booking/localhostAutofill'
 import {
     bookingClinicKey,
+    isBookingRefusal,
     putBookingFile,
     requestBookingUploadUrl,
-    submitBookingForm
+    submitBookingForm,
+    type BookingRefusal
 } from '~/utils/booking/formQuery'
 import {
     clearBookingDraftMemory,
@@ -667,7 +669,8 @@ function onFileChange(field: BookingFormField, event: Event) {
     validateField(field.id)
 }
 
-async function uploadPendingFiles(): Promise<boolean> {
+/** Undefined when every chosen file is uploaded. */
+async function uploadPendingFiles(): Promise<BookingRefusal | undefined> {
     for (const field of props.form.fields) {
         if (field.type !== BookingFormFieldType.File) {
             continue
@@ -684,19 +687,29 @@ async function uploadPendingFiles(): Promise<boolean> {
             fileName: file.name,
             byteSize: file.size
         })
-        if (signed === null) {
+        if (isBookingRefusal(signed)) {
             fieldErrors[field.id] = t('bookingPage.errors.uploadFailed')
-            return false
+            return signed
         }
         const ok = await putBookingFile(signed.uploadUrl, file, signed.headers)
         if (!ok) {
             fieldErrors[field.id] = t('bookingPage.errors.uploadFailed')
-            return false
+            return 'failed'
         }
         uploadIds[field.id] = signed.uploadId
         pendingFiles[field.id] = undefined
     }
-    return true
+    return undefined
+}
+
+function refusalMessage(refusal: BookingRefusal, otherwise: string): string {
+    if (refusal === 'rateLimited') {
+        return t('bookingPage.errors.tooManyRequests')
+    }
+    if (refusal === 'openRequestLimit') {
+        return t('bookingPage.errors.openRequestLimit')
+    }
+    return otherwise
 }
 
 async function onSubmit() {
@@ -731,9 +744,9 @@ async function onSubmit() {
 
     submitting.value = true
     try {
-        const uploaded = await uploadPendingFiles()
-        if (!uploaded) {
-            formError.value = t('bookingPage.errors.form')
+        const uploadRefusal = await uploadPendingFiles()
+        if (uploadRefusal !== undefined) {
+            formError.value = refusalMessage(uploadRefusal, t('bookingPage.errors.form'))
             return
         }
 
@@ -761,8 +774,8 @@ async function onSubmit() {
             service: props.query.service
         })
 
-        if (result === null) {
-            formError.value = t('bookingPage.errors.submitFailed')
+        if (isBookingRefusal(result)) {
+            formError.value = refusalMessage(result, t('bookingPage.errors.submitFailed'))
             return
         }
 

@@ -802,7 +802,9 @@
       "form": "Vérifiez les champs surlignés",
       "submitFailed": "Impossible d’envoyer. Réessayez.",
       "slot": "Choisissez un horaire disponible",
-      "duration": "Choisissez une durée proposée par la clinique"
+      "duration": "Choisissez une durée proposée par la clinique",
+      "tooManyRequests": "Trop de demandes depuis cette connexion. Patientez quelques minutes, puis réessayez.",
+      "openRequestLimit": "Cette adresse e-mail a déjà des demandes en attente auprès de cette clinique. Attendez la réponse de la clinique, ou annulez-en une avec le lien reçu par e-mail."
     },
     "slotLabel": "Horaire souhaité",
     "slotHelp": "Choisissez un début qui correspond à la durée dans les créneaux ouverts.",
@@ -951,7 +953,8 @@
     "yesCancel": "Oui, annuler",
     "keep": "Le garder",
     "cancelled": "Ce rendez-vous est annulé.",
-    "cancelFailed": "Impossible d'annuler. Il a peut-être déjà commencé ou changé ; le dernier statut est affiché."
+    "cancelFailed": "Impossible d'annuler. Il a peut-être déjà commencé ou changé ; le dernier statut est affiché.",
+    "tooManyRequests": "Trop de demandes depuis cette connexion. Patientez quelques minutes, puis réessayez."
   },
   "consent": {
     "title": "Cookies sur ce site",

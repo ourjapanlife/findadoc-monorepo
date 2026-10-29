@@ -6,6 +6,28 @@ import type {
     PatientBookingView
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
+import { ErrorCode, type ServerResponse } from '~/typedefs/serverResponse'
+
+/**
+ * Why a public booking call failed. `rateLimited` and `openRequestLimit` have their own
+ * sentence on the form (#160). Anything else is `failed`.
+ */
+export type BookingRefusal = 'failed' | 'rateLimited' | 'openRequestLimit'
+
+export function bookingRefusal(response: Pick<ServerResponse<unknown>, 'errors'>): BookingRefusal {
+    const codes = (response.errors ?? []).map(error => error.code)
+    if (codes.includes(ErrorCode.TOO_MANY_REQUESTS)) {
+        return 'rateLimited'
+    }
+    if (codes.includes(ErrorCode.OPEN_REQUEST_LIMIT)) {
+        return 'openRequestLimit'
+    }
+    return 'failed'
+}
+
+export function isBookingRefusal(value: unknown): value is BookingRefusal {
+    return value === 'failed' || value === 'rateLimited' || value === 'openRequestLimit'
+}
 
 const BOOKING_FORM_FIELDS = `
   id
@@ -102,7 +124,7 @@ export async function requestBookingUploadUrl(input: {
     contentType: string
     fileName: string
     byteSize: number
-}): Promise<BookingUploadUrl | null> {
+}): Promise<BookingUploadUrl | BookingRefusal> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ createBookingUploadUrl: BookingUploadUrl }>(
         gqlClient.request.bind(gqlClient),
@@ -111,7 +133,7 @@ export async function requestBookingUploadUrl(input: {
         { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
-        return null
+        return bookingRefusal(response)
     }
     return response.data.createBookingUploadUrl
 }
@@ -126,7 +148,7 @@ export async function submitBookingForm(input: {
     durationMinutes: number
     practitionerId?: string | null
     service?: string | null
-}): Promise<BookingSubmissionResult | null> {
+}): Promise<BookingSubmissionResult | BookingRefusal> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ submitBooking: BookingSubmissionResult }>(
         gqlClient.request.bind(gqlClient),
@@ -135,7 +157,7 @@ export async function submitBookingForm(input: {
         { skipAuth: true, retryAmount: 0, abortAfterMs: 15000 }
     )
     if (response.hasErrors) {
-        return null
+        return bookingRefusal(response)
     }
     return response.data.submitBooking
 }
@@ -202,8 +224,8 @@ const cancelBookingByTokenMutation = gql`
   }
 `
 
-/** The patient's own booking from the private link. Null when the token is unknown or the request failed. */
-export async function fetchPatientBooking(token: string): Promise<PatientBookingView | null> {
+/** The patient's own booking from the private link. Null when the token is unknown. */
+export async function fetchPatientBooking(token: string): Promise<PatientBookingView | null | BookingRefusal> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ patientBooking: PatientBookingView | null }>(
         gqlClient.request.bind(gqlClient),
@@ -212,12 +234,12 @@ export async function fetchPatientBooking(token: string): Promise<PatientBooking
         { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
-        return null
+        return bookingRefusal(response)
     }
     return response.data.patientBooking ?? null
 }
 
-export async function cancelPatientBooking(token: string, reason: string): Promise<PatientBookingView | null> {
+export async function cancelPatientBooking(token: string, reason: string): Promise<PatientBookingView | BookingRefusal> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ cancelBookingByToken: PatientBookingView }>(
         gqlClient.request.bind(gqlClient),
@@ -226,7 +248,7 @@ export async function cancelPatientBooking(token: string, reason: string): Promi
         { skipAuth: true, retryAmount: 0, abortAfterMs: 15000 }
     )
     if (response.hasErrors) {
-        return null
+        return bookingRefusal(response)
     }
     return response.data.cancelBookingByToken
 }

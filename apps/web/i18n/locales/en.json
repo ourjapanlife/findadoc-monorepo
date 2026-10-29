@@ -802,7 +802,9 @@
       "form": "Check the highlighted fields",
       "submitFailed": "Could not send the request. Try again.",
       "slot": "Choose an available time",
-      "duration": "Choose a visit length the clinic offers"
+      "duration": "Choose a visit length the clinic offers",
+      "tooManyRequests": "Too many requests from this connection. Wait a few minutes and try again.",
+      "openRequestLimit": "This email already has requests waiting at this clinic. Wait for the clinic to answer, or cancel one from the link in your email."
     },
     "slotLabel": "Preferred time",
     "slotHelp": "Choose a start that fits the visit length inside clinic availability.",
@@ -951,7 +953,8 @@
     "yesCancel": "Yes, cancel",
     "keep": "Keep it",
     "cancelled": "This appointment is cancelled.",
-    "cancelFailed": "Could not cancel. It may have already started or changed. The latest status is shown."
+    "cancelFailed": "Could not cancel. It may have already started or changed. The latest status is shown.",
+    "tooManyRequests": "Too many requests from this connection. Wait a few minutes and try again."
   },
   "consent": {
     "title": "Cookies on this site",

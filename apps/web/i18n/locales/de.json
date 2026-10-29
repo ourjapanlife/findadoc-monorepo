@@ -802,7 +802,9 @@
       "form": "Markierte Felder prüfen",
       "submitFailed": "Senden fehlgeschlagen. Erneut versuchen.",
       "slot": "Wählen Sie eine freie Zeit",
-      "duration": "Wählen Sie eine von der Klinik angebotene Dauer"
+      "duration": "Wählen Sie eine von der Klinik angebotene Dauer",
+      "tooManyRequests": "Zu viele Anfragen von dieser Verbindung. Warten Sie einige Minuten und versuchen Sie es erneut.",
+      "openRequestLimit": "Für diese E-Mail-Adresse warten bereits Anfragen bei dieser Klinik auf Antwort. Warten Sie auf die Antwort der Klinik oder stornieren Sie eine Anfrage über den Link in Ihrer E-Mail."
     },
     "slotLabel": "Wunschzeit",
     "slotHelp": "Wählen Sie einen Start, der zur Termindauer in den freien Zeiten passt.",
@@ -951,7 +953,8 @@
     "yesCancel": "Ja, stornieren",
     "keep": "Behalten",
     "cancelled": "Dieser Termin ist storniert.",
-    "cancelFailed": "Stornierung nicht möglich. Der Termin hat vielleicht schon begonnen oder sich geändert; der aktuelle Stand wird angezeigt."
+    "cancelFailed": "Stornierung nicht möglich. Der Termin hat vielleicht schon begonnen oder sich geändert; der aktuelle Stand wird angezeigt.",
+    "tooManyRequests": "Zu viele Anfragen von dieser Verbindung. Warten Sie einige Minuten und versuchen Sie es erneut."
   },
   "consent": {
     "title": "Cookies auf dieser Website",

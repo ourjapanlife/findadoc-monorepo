@@ -41,6 +41,8 @@ import { asJsonb } from '../../utils/dbUtils.js'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_UPLOAD_BYTES = BOOKING_UPLOAD_MAX_BYTES
+/** Upcoming `requested` appointments one email may hold at one clinic (#160). */
+export const MAX_OPEN_REQUESTS_PER_EMAIL = 3
 const SITE_LOCALES = new Set([
     'en-US', 'ja-JP', 'zh-CN', 'vi-VN', 'ko-KR', 'tl-PH',
     'pt-BR', 'fr-FR', 'ru-RU', 'de-DE', 'it-IT'
@@ -462,6 +464,14 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                 throw new Error('BOOKING_SLOT_TAKEN')
             }
 
+            const email = requesterEmail(storedAnswers)
+            if (email !== undefined) {
+                const openRequests = await countOpenRequestsForEmail(target, email, transaction)
+                if (openRequests >= MAX_OPEN_REQUESTS_PER_EMAIL) {
+                    throw new Error('BOOKING_OPEN_REQUEST_LIMIT')
+                }
+            }
+
             const row = await transaction.insertInto('booking_submissions')
                 .values({
                     facility_id: target.facilityId,
@@ -518,6 +528,13 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         if (error instanceof Error && error.message === 'BOOKING_SLOT_TAKEN') {
             return validationError('startsAt')
         }
+        if (error instanceof Error && error.message === 'BOOKING_OPEN_REQUEST_LIMIT') {
+            return {
+                data: undefined as never,
+                hasErrors: true,
+                errors: [{ field: 'email', errorCode: ErrorCode.OPEN_REQUEST_LIMIT, httpStatus: 429 }]
+            }
+        }
         throw error
     }
 
@@ -545,6 +562,31 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
 }
 
 type AvailabilityExecutor = Pick<typeof db, 'selectFrom'>
+
+/** Requests from this email that the clinic has not answered and that have not ended. Case-insensitive. */
+async function countOpenRequestsForEmail(
+    target: BookingTarget,
+    email: string,
+    executor: AvailabilityExecutor
+): Promise<number> {
+    let query = executor.selectFrom('booking_appointments as appointment')
+        .innerJoin('booking_submissions as booking', 'booking.id', 'appointment.booking_submission_id')
+        .select(eb => eb.fn.countAll<string>().as('count'))
+        .where('appointment.status', '=', APPOINTMENT_STATUS.REQUESTED)
+        .where('appointment.ends_at', '>', new Date().toISOString())
+        .where(sql<string>`lower(booking.answers->>'email')`, '=', email.toLowerCase())
+
+    if (target.facilityId !== null) {
+        query = query.where('appointment.facility_id', '=', target.facilityId)
+    } else if (target.clinicSiteId !== null) {
+        query = query.where('appointment.clinic_site_id', '=', target.clinicSiteId)
+    } else {
+        return 0
+    }
+
+    const row = await query.executeTakeFirstOrThrow()
+    return Number(row.count)
+}
 
 async function listAvailableStartsForTarget(
     target: BookingTarget,
