@@ -2,7 +2,7 @@ import { CfnOutput, Duration, Stack, type StackProps } from 'aws-cdk-lib'
 import { Alarm, ComparisonOperator, Metric, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch'
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import type { Function } from 'aws-cdk-lib/aws-lambda'
-import { PublicHostedZone } from 'aws-cdk-lib/aws-route53'
+import { PublicHostedZone, TxtRecord } from 'aws-cdk-lib/aws-route53'
 import {
     ConfigurationSet,
     ConfigurationSetTlsPolicy,
@@ -60,6 +60,16 @@ export class EmailStack extends Stack {
             // Bounces are tracked by the suppression list and the alarms below.
             // noreply@ is not a mailbox we read.
             feedbackForwarding: false,
+        })
+
+        // Monitor only. Google Workspace also sends as @findadoc.jp, and the apex has
+        // no Google SPF or DKIM yet, so a stricter policy would reject that mail.
+        // Aggregate reports go to dev-admin@, which Google receives.
+        new TxtRecord(this, 'Dmarc', {
+            zone,
+            recordName: `_dmarc.${props.domainName}`,
+            values: [`v=DMARC1; p=none; rua=mailto:dev-admin@${props.domainName}`],
+            ttl: Duration.hours(1),
         })
 
         const role = props.apiFunction.role

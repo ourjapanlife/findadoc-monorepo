@@ -233,6 +233,7 @@ Every `*.findadoc.jp` name without its own Route 53 record resolves to the Ampli
 
 - Easy DKIM. The stack writes the three DKIM CNAME records into the existing hosted zone.
 - MAIL FROM is `mail.findadoc.jp`. The stack writes that name's MX and SPF records. `https://mail.findadoc.jp` still opens the site, because the Amplify wildcard still owns the A and AAAA records. The new MX and TXT are only for SES.
+- DMARC is `_dmarc.findadoc.jp`, `p=none`, with aggregate reports to `dev-admin@findadoc.jp`. It only monitors. Google Workspace also sends as `@findadoc.jp`, and the apex has no Google SPF or DKIM yet, so `quarantine` or `reject` would block that mail. Add those first, then tighten the policy.
 - The configuration set `findadoc` requires TLS, publishes reputation metrics, and adds bounces and complaints to the account suppression list. Feedback is not forwarded to `noreply@`, which is not a mailbox we read.
 - The API role may `ses:SendEmail` and `ses:SendRawEmail` for this identity and this configuration set only. There is no access key.
 - `SES_FROM_ADDRESS`, `SES_CONFIGURATION_SET`, and `SES_REGION` are set on `findadoc-api`. Nothing in the API sends yet.
