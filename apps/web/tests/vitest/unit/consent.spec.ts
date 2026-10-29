@@ -48,6 +48,8 @@ describe('Google consent mode', () => {
     it('opens the banner on its own for European time zones', () => {
         expect(isConsentRegionTimeZone('Europe/Paris')).to.equal(true)
         expect(isConsentRegionTimeZone('Atlantic/Reykjavik')).to.equal(true)
+        expect(isConsentRegionTimeZone('Asia/Nicosia')).to.equal(true)
+        expect(isConsentRegionTimeZone('Africa/Ceuta')).to.equal(true)
         expect(isConsentRegionTimeZone('Asia/Tokyo')).to.equal(false)
         expect(isConsentRegionTimeZone('America/New_York')).to.equal(false)
         expect(isConsentRegionTimeZone(undefined)).to.equal(false)

@@ -716,7 +716,7 @@
   },
   "consent": {
     "title": "このサイトのCookie",
-    "body": "どの広告から Find a Doc, Japan に来ていただいたかを測定するために、Google の Cookie を使用しています。広告のパーソナライズには使用しません。選択はページ下部の「Cookie設定」からいつでも変更できます。",
+    "body": "広告の効果と Find a Doc, Japan の利用状況を測定するために、Google の Cookie を使用しています。広告のパーソナライズには使用しません。選択はページ下部の「Cookie設定」からいつでも変更できます。",
     "privacyLink": "プライバシーポリシー",
     "accept": "同意する",
     "decline": "拒否する",

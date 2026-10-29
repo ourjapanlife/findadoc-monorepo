@@ -65,7 +65,11 @@ const EUROPEAN_ATLANTIC_ZONES = new Set([
     'Atlantic/Madeira',
     'Atlantic/Azores',
     'Atlantic/Faroe',
-    'Arctic/Longyearbyen'
+    'Arctic/Longyearbyen',
+    // Cyprus and Spain's Ceuta sit outside Europe/ in the tz database.
+    'Asia/Nicosia',
+    'Asia/Famagusta',
+    'Africa/Ceuta'
 ])
 
 /**

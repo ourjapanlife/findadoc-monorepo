@@ -21,7 +21,15 @@
                         />
                         <span>{{ t('footer.poweredBy', { name: t('common.siteName') }) }}</span>
                     </a>
-                    <ThemeManager />
+                    <div class="flex items-center gap-4">
+                        <a
+                            :href="`#${CONSENT_SETTINGS_HASH}`"
+                            class="text-sm text-primary-text-muted transition-colors hover:text-primary"
+                            data-testid="clinic-landing-cookie-settings"
+                            @click.prevent="openSettings"
+                        >{{ t('consent.settings') }}</a>
+                        <ThemeManager />
+                    </div>
                 </div>
             </div>
         </footer>
@@ -31,8 +39,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import SVGSiteLogo from '~/assets/icons/site-logo.svg'
+import { useConsent } from '~/composables/useConsent'
+import { CONSENT_SETTINGS_HASH } from '~/utils/consent'
 import { SITE_ORIGIN } from '~/utils/site'
 
 const { t } = useI18n()
+const { openSettings } = useConsent()
 const siteOrigin = SITE_ORIGIN
 </script>

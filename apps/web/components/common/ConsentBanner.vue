@@ -1,8 +1,8 @@
 <template>
     <section
         v-if="isOpen"
-        class="fixed inset-x-0 bottom-0 z-50 border-t border-accent-bg bg-secondary-bg p-4 shadow-lg
-        pb-[max(1rem,env(safe-area-inset-bottom))]"
+        class="fixed inset-x-0 bottom-0 z-50 max-h-dvh overflow-y-auto border-t border-accent-bg bg-secondary-bg
+        p-4 shadow-lg pb-[max(1rem,env(safe-area-inset-bottom))]"
         :aria-label="t('consent.title')"
         data-testid="consent-banner"
     >
@@ -15,6 +15,7 @@
                     {{ t('consent.body') }}
                     <NuxtLink
                         :to="privacyPath"
+                        :external="onClinicHost"
                         class="text-primary underline"
                     >{{ t('consent.privacyLink') }}</NuxtLink>
                 </p>
@@ -47,11 +48,20 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useConsent } from '~/composables/useConsent'
+import { useRequestHost } from '~/composables/useClinicLanding'
+import { clinicLandingHostSlug } from '~/utils/clinicLanding'
 import { localizedPath } from '~/utils/localePath'
+import { SITE_ORIGIN } from '~/utils/site'
 
 const { t, locale } = useI18n()
 const { isOpen, openedOnRequest, openIfUndecided, openFromHash, choose } = useConsent()
-const privacyPath = computed(() => `${localizedPath('/privacypolicy', String(locale.value))}#cookies`)
+const { hostname } = useRequestHost()
+// A clinic subdomain sends /privacypolicy back to the clinic page, so link to the main site there.
+const onClinicHost = clinicLandingHostSlug(hostname) !== undefined
+const privacyPath = computed(() => {
+    const path = `${localizedPath('/privacypolicy', String(locale.value))}#cookies`
+    return onClinicHost ? `${SITE_ORIGIN}${path}` : path
+})
 const firstAction = ref<HTMLButtonElement | null>(null)
 
 // Opened from Cookie settings: move focus in, so the change is obvious and keyboard users land on it.
