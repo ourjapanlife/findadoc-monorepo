@@ -112,7 +112,7 @@ type GraphQLErrorLike = {
     extensions?: { readonly [key: string]: unknown }
 }
 
-type NestedError = { code: ErrorCode, field: string | undefined }
+type NestedError = { code: ErrorCode, field: string | undefined, count?: number }
 
 /**
  * Validation failures arrive as one GraphQL error whose code is BAD_USER_INPUT.
@@ -124,7 +124,12 @@ export function serverErrorsFromGraphQL(errors: readonly GraphQLErrorLike[] | un
     return errors.flatMap(errorResponse => {
         const nested = nestedErrors(errorResponse.extensions?.errors)
         if (nested.length > 0) {
-            return nested.map(({ code, field }) => ({ message: errorResponse.message, code, field }))
+            return nested.map(({ code, field, count }) => ({
+                message: errorResponse.message,
+                code,
+                field,
+                ...(count === undefined ? {} : { count })
+            }))
         }
 
         const wrapper = errorResponse.extensions?.code
@@ -141,11 +146,12 @@ function nestedErrors(value: unknown): NestedError[] {
 
     return value.flatMap((item: unknown) => {
         if (!item || typeof item !== 'object') return []
-        const { errorCode, field } = item as { errorCode?: unknown, field?: unknown }
+        const { errorCode, field, count } = item as { errorCode?: unknown, field?: unknown, count?: unknown }
         if (typeof errorCode !== 'string' || errorCode.length === 0) return []
         return [{
             code: errorCode as ErrorCode,
-            field: typeof field === 'string' && field.length > 0 ? field : undefined
+            field: typeof field === 'string' && field.length > 0 ? field : undefined,
+            ...(typeof count === 'number' ? { count } : {})
         }]
     })
 }

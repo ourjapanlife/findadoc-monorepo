@@ -456,6 +456,7 @@
     "facilityUpdatedSuccessfully": "Établissement mis à jour",
     "deleteButtonText": "SUPPRIMER DÉFINITIVEMENT",
     "facilityDeletedSuccessfully": "Établissement supprimé",
+    "facilityHasBookings": "Cette clinique ne peut pas être supprimée tant qu’elle a des réservations ({count}). Les dossiers de réservation sont conservés pour les patients.",
     "healthcareProfessionalDeletedSuccessfully": "Professionnel de santé supprimé",
     "healthcareProfessionalUpdatedSuccessfully": "Professionnel de santé mis à jour",
     "back": "Retour",

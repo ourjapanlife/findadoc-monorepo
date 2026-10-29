@@ -61,6 +61,7 @@ import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
 import { formErrorKey, GENERIC_FORM_ERROR_KEY, translatedFormError } from '~/utils/formErrorMessage'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
+import { ErrorCode } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
 import { hasEnglishLocalizedName } from '~/utils/nameUtils'
 import { hasServerErrors, leaveToModerationDashboard, getModerationDashboardViewForScreen } from '~/utils/moderationUtils'
@@ -348,6 +349,13 @@ const deleteFacilityOrHealthcareProfessional = async () => {
             id: selectedId.value
         }
         const response = await facilitiesStore.deleteFacility(deleteFacilityArgs)
+
+        // Booking records are kept for patients, so a clinic with bookings stays (#169).
+        const hasBookings = response.errors?.find(error => error.code === ErrorCode.FACILITY_HAS_BOOKINGS)
+        if (hasBookings !== undefined) {
+            toast.error(t('modEditFacilityOrHPTopbar.facilityHasBookings', { count: hasBookings.count ?? 0 }))
+            return response
+        }
 
         if (handleModerationResponseErrors(response, toast, t)) {
             return response

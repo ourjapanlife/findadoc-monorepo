@@ -462,6 +462,7 @@
     "facilityUpdatedSuccessfully": "医療機関を更新しました",
     "deleteButtonText": "完全に削除",
     "facilityDeletedSuccessfully": "医療機関を削除しました",
+    "facilityHasBookings": "予約（{count}件）があるため、このクリニックは削除できません。予約の記録は患者のために保管されます。",
     "healthcareProfessionalDeletedSuccessfully": "医療従事者を削除しました",
     "healthcareProfessionalUpdatedSuccessfully": "医療従事者を更新しました",
     "back": "戻る",

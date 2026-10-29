@@ -298,6 +298,7 @@
     "deleteButtonText": "XÓA VĨNH VIỄN",
     "update": "Cập nhật",
     "facilityDeletedSuccessfully": "Đã xóa cơ sở",
+    "facilityHasBookings": "Không thể xóa phòng khám này khi vẫn còn lịch hẹn ({count}). Hồ sơ đặt lịch được lưu giữ cho bệnh nhân.",
     "facilityUpdatedSuccessfully": "Đã cập nhật cơ sở",
     "healthcareProfessionalDeletedSuccessfully": "Đã xóa nhân viên y tế",
     "healthcareProfessionalUpdatedSuccessfully": "Đã cập nhật nhân viên y tế",

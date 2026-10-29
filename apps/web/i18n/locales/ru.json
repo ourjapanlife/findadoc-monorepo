@@ -462,6 +462,7 @@
     "facilityUpdatedSuccessfully": "Учреждение обновлено",
     "deleteButtonText": "УДАЛИТЬ НАВСЕГДА",
     "facilityDeletedSuccessfully": "Учреждение удалено",
+    "facilityHasBookings": "Эту клинику нельзя удалить, пока у неё есть записи ({count}). Записи сохраняются для пациентов.",
     "healthcareProfessionalDeletedSuccessfully": "Специалист удалён",
     "healthcareProfessionalUpdatedSuccessfully": "Специалист обновлён",
     "back": "Назад",

@@ -299,6 +299,7 @@
     "facilityUpdatedSuccessfully": "Na-update ang pasilidad",
     "deleteButtonText": "BURAHIN NANG TULUYAN",
     "facilityDeletedSuccessfully": "Nabura ang pasilidad",
+    "facilityHasBookings": "Hindi mabubura ang klinikang ito habang may mga booking ito ({count}). Itinatago ang mga record ng booking para sa mga pasyente.",
     "healthcareProfessionalDeletedSuccessfully": "Nabura ang propesyonal sa kalusugan",
     "healthcareProfessionalUpdatedSuccessfully": "Na-update ang propesyonal sa kalusugan",
     "back": "Bumalik",
