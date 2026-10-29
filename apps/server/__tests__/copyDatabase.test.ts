@@ -3,9 +3,11 @@ import pg from 'pg'
 import { compareDatabases, copyDatabase } from '../scripts/db/copyDatabase.js'
 import { migrate } from '../scripts/db/migrations.js'
 
-// The local test database is the source. The target is a scratch database built from the
-// same migrations, as RDS is before the real copy.
+// The source is a frozen copy of the local test database. The other test files keep writing to
+// that database while this one runs, so comparing against it directly races them. The target
+// is a scratch database built from the same migrations, as RDS is before the real copy.
 const local = { host: '127.0.0.1', port: 54322, user: 'postgres', password: 'postgres' }
+const sourceName = 'findadoc_copy_test_source'
 const targetName = 'findadoc_copy_test'
 
 const connect = async (database: string) => {
@@ -21,20 +23,31 @@ let target: pg.Client
 
 beforeAll(async () => {
     admin = await connect('postgres')
-    await admin.query(`DROP DATABASE IF EXISTS ${targetName}`)
-    await admin.query(`CREATE DATABASE ${targetName}`)
+    for (const name of [sourceName, targetName]) {
+        await admin.query(`DROP DATABASE IF EXISTS ${name}`)
+        await admin.query(`CREATE DATABASE ${name}`)
+    }
+
+    source = await connect(sourceName)
+    await migrate(source, { importSupabaseHistory: false, log: () => undefined })
+    const live = await connect('postgres')
+    try {
+        await copyDatabase(live, source, { log: () => undefined })
+    } finally {
+        await live.end()
+    }
 
     target = await connect(targetName)
     await migrate(target, { importSupabaseHistory: false, log: () => undefined })
     // Like Supabase's production database: the same generated column, built by a different expression.
     await target.query('ALTER TABLE facilities DROP COLUMN search_text')
     await target.query('ALTER TABLE facilities ADD COLUMN search_text text GENERATED ALWAYS AS (lower(name_en)) STORED')
-    source = await connect('postgres')
-}, 60_000)
+}, 120_000)
 
 afterAll(async () => {
     await source?.end()
     await target?.end()
+    await admin.query(`DROP DATABASE IF EXISTS ${sourceName}`)
     await admin.query(`DROP DATABASE IF EXISTS ${targetName}`)
     await admin.end()
 })
