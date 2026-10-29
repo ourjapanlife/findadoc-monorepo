@@ -807,9 +807,7 @@
       "openRequestLimit": "Für diese E-Mail-Adresse warten bereits Anfragen bei dieser Klinik auf Antwort. Warten Sie auf die Antwort der Klinik oder stornieren Sie eine Anfrage über den Link in Ihrer E-Mail."
     },
     "slotLabel": "Wunschzeit",
-    "slotHelp": "Wählen Sie einen Start, der zur Termindauer in den freien Zeiten passt.",
     "slotLoading": "Freie Zeiten werden geladen…",
-    "slotEmpty": "An diesem Tag keine freien Zeiten. Anderes Datum oder andere Dauer versuchen.",
     "authRequired": "Melden Sie sich an, um dieses Buchungsformular zu öffnen…",
     "stepsNav": "Buchungsschritte",
     "stepOf": "Schritt {current} von {total}",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "Sie werden von der Person behandelt, die zur gewählten Zeit frei ist.",
     "anyDoctorLanguageHelp": "Jemand, der {languages} spricht und zur gewählten Zeit frei ist.",
     "doctorLanguages": "Gesprochene Sprachen",
-    "doctorsHidden": "Ausgeblendet, weil sie nicht alle gewählten Sprachen sprechen: {n}"
+    "doctorsHidden": "Ausgeblendet, weil sie nicht alle gewählten Sprachen sprechen: {n}",
+    "slotWeekHelp": "Hervorgehobene Tage haben freie Termine. Die Zahl zeigt, wie viele.",
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "japanTimeNote": "Alle Zeiten sind japanische Zeit (JST).",
+    "slotEmptyWeek": "Diese Woche gibt es keine freien Termine.",
+    "slotEmptyAhead": "In den nächsten Wochen gibt es keine freien Termine. Versuchen Sie eine andere Dauer, einen anderen Arzt oder eine andere Sprache.",
+    "nextAvailable": "Nächster freier Termin: {date}",
+    "openTimesCount": "freie Termine: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Buchung",

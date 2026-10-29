@@ -807,9 +807,7 @@
       "openRequestLimit": "Cette adresse e-mail a déjà des demandes en attente auprès de cette clinique. Attendez la réponse de la clinique, ou annulez-en une avec le lien reçu par e-mail."
     },
     "slotLabel": "Horaire souhaité",
-    "slotHelp": "Choisissez un début qui correspond à la durée dans les créneaux ouverts.",
     "slotLoading": "Chargement des créneaux…",
-    "slotEmpty": "Aucun créneau ce jour-là. Essayez une autre date ou durée.",
     "authRequired": "Connectez-vous pour ouvrir ce formulaire de réservation…",
     "stepsNav": "Étapes de la demande",
     "stepOf": "Étape {current} sur {total}",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "Vous serez reçu par le médecin libre à l'heure choisie.",
     "anyDoctorLanguageHelp": "Un médecin qui parle {languages} et qui est libre à l'heure choisie.",
     "doctorLanguages": "Langues parlées",
-    "doctorsHidden": "Masqués, car ils ne parlent pas toutes les langues choisies : {n}"
+    "doctorsHidden": "Masqués, car ils ne parlent pas toutes les langues choisies : {n}",
+    "slotWeekHelp": "Les jours en couleur ont des créneaux libres. Le chiffre indique combien.",
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "japanTimeNote": "Toutes les heures sont à l'heure du Japon (JST).",
+    "slotEmptyWeek": "Aucun créneau libre cette semaine.",
+    "slotEmptyAhead": "Aucun créneau libre dans les semaines à venir. Essayez une autre durée, un autre médecin ou une autre langue.",
+    "nextAvailable": "Prochain créneau : {date}",
+    "openTimesCount": "créneaux libres : {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Réservation",

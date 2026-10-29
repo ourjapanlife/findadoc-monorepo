@@ -807,9 +807,7 @@
       "openRequestLimit": "Questo indirizzo email ha già richieste in attesa presso questa clinica. Attendi la risposta della clinica, oppure annullane una dal link nella tua email."
     },
     "slotLabel": "Orario preferito",
-    "slotHelp": "Scegli un inizio che corrisponda alla durata negli orari aperti.",
     "slotLoading": "Caricamento orari…",
-    "slotEmpty": "Nessun orario libero in questo giorno. Prova un’altra data o durata.",
     "authRequired": "Accedi per aprire questo modulo di prenotazione…",
     "stepsNav": "Passaggi della richiesta",
     "stepOf": "Passo {current} di {total}",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "Ti visiterà il medico libero all'ora che scegli.",
     "anyDoctorLanguageHelp": "Un medico che parla {languages} ed è libero all'ora che scegli.",
     "doctorLanguages": "Lingue parlate",
-    "doctorsHidden": "Nascosti perché non parlano tutte le lingue scelte: {n}"
+    "doctorsHidden": "Nascosti perché non parlano tutte le lingue scelte: {n}",
+    "slotWeekHelp": "I giorni evidenziati hanno orari liberi. Il numero indica quanti.",
+    "previousWeek": "Settimana precedente",
+    "nextWeek": "Settimana successiva",
+    "japanTimeNote": "Tutti gli orari sono in ora giapponese (JST).",
+    "slotEmptyWeek": "Nessun orario libero questa settimana.",
+    "slotEmptyAhead": "Nessun orario libero nelle prossime settimane. Prova un'altra durata, un altro medico o un'altra lingua.",
+    "nextAvailable": "Prossimo disponibile: {date}",
+    "openTimesCount": "orari liberi: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Prenotazione",

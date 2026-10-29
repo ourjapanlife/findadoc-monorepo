@@ -807,9 +807,7 @@
       "openRequestLimit": "May mga kahilingan na ang email na ito na naghihintay sa klinikang ito. Hintayin ang sagot ng klinika, o kanselahin ang isa gamit ang link sa iyong email."
     },
     "slotLabel": "Gustong oras",
-    "slotHelp": "Pumili ng simula na kasya sa haba sa loob ng available na oras.",
     "slotLoading": "Naglo-load ng bukas na oras…",
-    "slotEmpty": "Walang oras sa araw na ito. Subukan ang ibang petsa o haba.",
     "authRequired": "Mag-sign in upang buksan ang form ng booking na ito…",
     "stepsNav": "Mga hakbang sa pag-book",
     "stepOf": "Hakbang {current} ng {total}",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "Titingnan ka ng sinumang bakante sa oras na pipiliin mo.",
     "anyDoctorLanguageHelp": "Isang doktor na nagsasalita ng {languages} at bakante sa oras na pipiliin mo.",
     "doctorLanguages": "Mga wikang sinasalita",
-    "doctorsHidden": "Nakatago dahil hindi nila sinasalita ang lahat ng wikang pinili mo: {n}"
+    "doctorsHidden": "Nakatago dahil hindi nila sinasalita ang lahat ng wikang pinili mo: {n}",
+    "slotWeekHelp": "May bakanteng oras ang mga naka-highlight na araw. Ang numero ay kung ilan.",
+    "previousWeek": "Nakaraang linggo",
+    "nextWeek": "Susunod na linggo",
+    "japanTimeNote": "Lahat ng oras ay oras ng Japan (JST).",
+    "slotEmptyWeek": "Walang bakanteng oras sa linggong ito.",
+    "slotEmptyAhead": "Walang bakanteng oras sa mga darating na linggo. Subukan ang ibang haba ng pagbisita, doktor, o wika.",
+    "nextAvailable": "Susunod na bakante: {date}",
+    "openTimesCount": "bakanteng oras: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Pagpapareserba",

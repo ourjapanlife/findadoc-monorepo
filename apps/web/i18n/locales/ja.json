@@ -807,9 +807,7 @@
       "openRequestLimit": "このメールアドレスには、このクリニックで返答待ちのリクエストがすでにあります。クリニックの返答を待つか、メールのリンクからいずれかをキャンセルしてください。"
     },
     "slotLabel": "希望日時",
-    "slotHelp": "クリニックの空き枠の中から、診察時間に合う開始時刻を選んでください。",
     "slotLoading": "空き時間を読み込み中…",
-    "slotEmpty": "この日に空きがありません。別の日か時間の長さを試してください。",
     "authRequired": "予約フォームを開くにはサインインしてください…",
     "stepsNav": "予約の手順",
     "stepOf": "{total}ステップ中 {current}",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "選んだ時間に空いている医師が診察します。",
     "anyDoctorLanguageHelp": "{languages}を話せて、選んだ時間に空いている医師が診察します。",
     "doctorLanguages": "対応言語",
-    "doctorsHidden": "選んだ言語をすべて話せないため非表示の医師：{n}人"
+    "doctorsHidden": "選んだ言語をすべて話せないため非表示の医師：{n}人",
+    "slotWeekHelp": "色の付いた日に空きがあります。数字は空き枠の数です。",
+    "previousWeek": "前の週",
+    "nextWeek": "次の週",
+    "japanTimeNote": "時刻はすべて日本時間です。",
+    "slotEmptyWeek": "この週に空きはありません。",
+    "slotEmptyAhead": "今後数週間に空きがありません。診察時間の長さ、医師、言語を変えてみてください。",
+    "nextAvailable": "次の空き：{date}",
+    "openTimesCount": "空き：{n}件"
   },
   "bookingDashboard": {
     "detailHeading": "予約",

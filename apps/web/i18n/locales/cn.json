@@ -807,9 +807,7 @@
       "openRequestLimit": "此电子邮箱在这家诊所已有等待回复的申请。请等待诊所回复，或通过邮件中的链接取消其中一个。"
     },
     "slotLabel": "希望时间",
-    "slotHelp": "请在诊所可预约时段内选择符合就诊时长的开始时间。",
     "slotLoading": "正在加载可预约时间…",
-    "slotEmpty": "当天没有可预约时间。请换一天或换一个时长。",
     "authRequired": "请登录以打开此预约表单…",
     "stepsNav": "预约步骤",
     "stepOf": "第 {current} 步，共 {total} 步",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "由您所选时间有空的医生为您看诊。",
     "anyDoctorLanguageHelp": "由会说{languages}、且在您所选时间有空的医生看诊。",
     "doctorLanguages": "使用语言",
-    "doctorsHidden": "因不会说您所选的全部语言而隐藏的医生：{n}位"
+    "doctorsHidden": "因不会说您所选的全部语言而隐藏的医生：{n}位",
+    "slotWeekHelp": "有颜色的日期有空位，数字表示空位数量。",
+    "previousWeek": "上一周",
+    "nextWeek": "下一周",
+    "japanTimeNote": "所有时间均为日本时间（JST）。",
+    "slotEmptyWeek": "本周没有空位。",
+    "slotEmptyAhead": "接下来几周都没有空位。请尝试其他就诊时长、医生或语言。",
+    "nextAvailable": "最近空位：{date}",
+    "openTimesCount": "空位：{n}个"
   },
   "bookingDashboard": {
     "detailHeading": "预约",

@@ -807,9 +807,7 @@
       "openRequestLimit": "This email already has requests waiting at this clinic. Wait for the clinic to answer, or cancel one from the link in your email."
     },
     "slotLabel": "Preferred time",
-    "slotHelp": "Choose a start that fits the visit length inside clinic availability.",
     "slotLoading": "Loading open times…",
-    "slotEmpty": "No open times on this day. Try another date or length.",
     "authRequired": "Sign in to open this booking form…",
     "stepsNav": "Booking steps",
     "stepOf": "Step {current} of {total}",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "The clinic sees you with whoever is free at the time you choose.",
     "anyDoctorLanguageHelp": "A doctor who speaks {languages} and is free at the time you choose.",
     "doctorLanguages": "Languages spoken",
-    "doctorsHidden": "Hidden because they don't speak every language you chose: {n}"
+    "doctorsHidden": "Hidden because they don't speak every language you chose: {n}",
+    "slotWeekHelp": "Highlighted days have open times. The number is how many.",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "japanTimeNote": "All times are Japan time (JST).",
+    "slotEmptyWeek": "No open times this week.",
+    "slotEmptyAhead": "No open times in the coming weeks. Try another visit length, doctor, or language.",
+    "nextAvailable": "Next available: {date}",
+    "openTimesCount": "open times: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Booking",

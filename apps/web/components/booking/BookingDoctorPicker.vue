@@ -59,8 +59,7 @@
                 <button
                     type="button"
                     role="radio"
-                    class="doctor-option"
-                    :class="practitionerId === null ? 'doctor-option-selected' : ''"
+                    :class="optionClass(practitionerId === null)"
                     :aria-checked="practitionerId === null"
                     data-testid="booking-doctor-any"
                     @click="emit('update:practitionerId', null)"
@@ -77,8 +76,7 @@
                     :key="practitioner.id"
                     type="button"
                     role="radio"
-                    class="doctor-option"
-                    :class="practitionerId === practitioner.id ? 'doctor-option-selected' : ''"
+                    :class="optionClass(practitionerId === practitioner.id)"
                     :aria-checked="practitionerId === practitioner.id"
                     :data-testid="`booking-doctor-${practitioner.id}`"
                     @click="emit('update:practitionerId', practitioner.id)"
@@ -162,6 +160,13 @@ function specialtyLabels(practitioner: BookingPractitioner): string[] {
         .filter((label): label is string => typeof label === 'string' && label !== '')
 }
 
+function optionClass(selected: boolean): string {
+    const base = 'flex w-full flex-col items-start gap-1 rounded-xl border px-4 py-3 text-left transition-colors'
+    return selected
+        ? `${base} border-primary bg-primary/5 ring-1 ring-inset ring-primary`
+        : `${base} border-accent-bg bg-secondary-bg hover:border-primary`
+}
+
 function toggleLanguage(language: Locale): void {
     emit('update:spokenLanguages', props.spokenLanguages.includes(language)
         ? props.spokenLanguages.filter(item => item !== language)
@@ -175,29 +180,3 @@ watch(matchingPractitioners, matching => {
     }
 })
 </script>
-
-<style scoped>
-.doctor-option {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--color-accent-bg);
-    border-radius: 0.75rem;
-    background-color: var(--color-secondary-bg);
-    text-align: left;
-    transition: border-color 150ms, background-color 150ms;
-}
-
-.doctor-option:hover {
-    border-color: var(--color-primary);
-}
-
-.doctor-option-selected {
-    border-color: var(--color-primary);
-    background-color: rgb(var(--theme-color-primary) / 0.06);
-    box-shadow: inset 0 0 0 1px var(--color-primary);
-}
-</style>

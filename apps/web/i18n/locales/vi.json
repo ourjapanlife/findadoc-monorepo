@@ -807,9 +807,7 @@
       "openRequestLimit": "Email này đã có yêu cầu đang chờ tại phòng khám này. Hãy đợi phòng khám trả lời, hoặc hủy một yêu cầu bằng liên kết trong email của bạn."
     },
     "slotLabel": "Giờ mong muốn",
-    "slotHelp": "Chọn giờ bắt đầu khớp thời lượng trong khung giờ trống.",
     "slotLoading": "Đang tải giờ trống…",
-    "slotEmpty": "Không còn giờ trống ngày này. Thử ngày hoặc thời lượng khác.",
     "authRequired": "Đăng nhập để mở biểu mẫu đặt lịch này…",
     "stepsNav": "Các bước đặt lịch",
     "stepOf": "Bước {current} / {total}",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "Bác sĩ nào rảnh vào giờ bạn chọn sẽ khám cho bạn.",
     "anyDoctorLanguageHelp": "Một bác sĩ nói được {languages} và rảnh vào giờ bạn chọn.",
     "doctorLanguages": "Ngôn ngữ sử dụng",
-    "doctorsHidden": "Bác sĩ bị ẩn vì không nói được mọi ngôn ngữ bạn chọn: {n}"
+    "doctorsHidden": "Bác sĩ bị ẩn vì không nói được mọi ngôn ngữ bạn chọn: {n}",
+    "slotWeekHelp": "Những ngày được tô màu còn giờ trống. Con số là số giờ trống.",
+    "previousWeek": "Tuần trước",
+    "nextWeek": "Tuần sau",
+    "japanTimeNote": "Mọi giờ đều theo giờ Nhật Bản (JST).",
+    "slotEmptyWeek": "Tuần này không còn giờ trống.",
+    "slotEmptyAhead": "Không còn giờ trống trong các tuần tới. Hãy thử thời lượng khám, bác sĩ hoặc ngôn ngữ khác.",
+    "nextAvailable": "Giờ trống gần nhất: {date}",
+    "openTimesCount": "giờ trống: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Đặt lịch",

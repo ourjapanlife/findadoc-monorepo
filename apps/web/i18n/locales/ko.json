@@ -807,9 +807,7 @@
       "openRequestLimit": "이 이메일로 이 병원에 답변을 기다리는 요청이 이미 있습니다. 병원의 답변을 기다리거나, 이메일의 링크에서 요청 하나를 취소하세요."
     },
     "slotLabel": "희망 시간",
-    "slotHelp": "클리닉 예약 가능 시간 안에서 진료 시간에 맞는 시작 시각을 고르세요.",
     "slotLoading": "가능 시간 불러오는 중…",
-    "slotEmpty": "이날은 가능한 시간이 없습니다. 다른 날짜나 시간을 선택하세요.",
     "authRequired": "이 예약 양식을 열려면 로그인하세요…",
     "stepsNav": "예약 단계",
     "stepOf": "{total}단계 중 {current}",
@@ -833,7 +831,15 @@
     "anyDoctorHelp": "고른 시간에 비어 있는 의사가 진료합니다.",
     "anyDoctorLanguageHelp": "{languages}을(를) 하고 고른 시간에 비어 있는 의사가 진료합니다.",
     "doctorLanguages": "가능 언어",
-    "doctorsHidden": "고른 언어를 모두 하지 않아 숨긴 의사: {n}명"
+    "doctorsHidden": "고른 언어를 모두 하지 않아 숨긴 의사: {n}명",
+    "slotWeekHelp": "색이 칠해진 날에 빈 시간이 있습니다. 숫자는 빈 시간의 개수입니다.",
+    "previousWeek": "이전 주",
+    "nextWeek": "다음 주",
+    "japanTimeNote": "모든 시간은 일본 시간(JST)입니다.",
+    "slotEmptyWeek": "이번 주에는 빈 시간이 없습니다.",
+    "slotEmptyAhead": "앞으로 몇 주 동안 빈 시간이 없습니다. 진료 시간, 의사, 언어를 바꿔 보세요.",
+    "nextAvailable": "가장 빠른 빈 시간: {date}",
+    "openTimesCount": "빈 시간: {n}개"
   },
   "bookingDashboard": {
     "detailHeading": "예약",
