@@ -37,7 +37,12 @@ async function submit(
     facilityId: string,
     startsAt: string,
     email = 'patient@example.com',
-    choice: { practitionerId?: string, spokenLanguages?: Locale[] } = {}
+    choice: {
+        practitionerId?: string
+        spokenLanguages?: Locale[]
+        confirmedInJapan?: boolean
+        healthDataConsent?: boolean
+    } = {}
 ) {
     return bookingService.submitBooking({
         clinicSiteId: facilityId,
@@ -47,6 +52,8 @@ async function submit(
         answers: answers.map(answer => (answer.fieldId === 'email' ? { ...answer, value: email } : answer)),
         startsAt,
         durationMinutes: 60,
+        confirmedInJapan: true,
+        healthDataConsent: true,
         ...choice
     })
 }
@@ -153,10 +160,24 @@ describe('booking flow', () => {
         }
         expect(await openStarts(facilityId)).toEqual([iso(0)])
 
+        // Both Book page boxes are required, and a refused request holds nothing.
+        const notInJapan = await submit(facilityId, iso(0), undefined, { confirmedInJapan: false })
+        expect(notInJapan.errors?.[0]?.field).toBe('confirmedInJapan')
+        const noConsent = await submit(facilityId, iso(0), undefined, { healthDataConsent: false })
+        expect(noConsent.errors?.[0]?.field).toBe('healthDataConsent')
+        expect(await openStarts(facilityId)).toEqual([iso(0)])
+
+        const before = Date.now()
         const submitted = await submit(facilityId, iso(0))
         expect(submitted.hasErrors).toBe(false)
         createdSubmissionIds.push(submitted.data.id)
         expect(await openStarts(facilityId)).toEqual([])
+
+        const consent = await db.selectFrom('booking_submissions')
+            .select('health_data_consented_at')
+            .where('id', '=', submitted.data.id)
+            .executeTakeFirstOrThrow()
+        expect(new Date(consent.health_data_consented_at!).getTime()).toBeGreaterThanOrEqual(before - 1000)
 
         // A second patient cannot take the held slot.
         expect((await submit(facilityId, iso(0))).hasErrors).toBe(true)

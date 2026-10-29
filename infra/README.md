@@ -167,7 +167,7 @@ aws cloudwatch set-alarm-state --alarm-name findadoc-database-cpu-high --state-v
 
 ## API
 
-`FindadocApi` runs `apps/server/src/lambda.ts`, bundled with esbuild, as `findadoc-api`. The function is arm64 with Node 24 and 1 GB. It sits in the private subnets and reaches Auth0, Google Places and Sentry over IPv6. It connects to RDS as `findadoc_api` with an IAM token. CloudFront serves it at `api-staging.findadoc.jp`, with caching off. A CloudFront Function adds the viewer IP, and the origin adds `x-findadoc-edge`, so rate limits and Places quotas count people, not CloudFront edges. `api.findadoc.jp` moves at the cutover (#13).
+`FindadocApi` runs `apps/server/src/lambda.ts`, bundled with esbuild, as `findadoc-api`. The function is arm64 with Node 24 and 1 GB. It sits in the private subnets and reaches Auth0, Google Places and Sentry over IPv6. It connects to RDS as `findadoc_api` with an IAM token. CloudFront serves it at `api-staging.findadoc.jp`, with caching off. The managed `AllViewerExceptHostHeader` origin request policy forwards every viewer header but Host, plus CloudFront's viewer location headers. A CloudFront Function adds the viewer IP and copies `CloudFront-Viewer-Country` to `x-findadoc-viewer-country`, and the origin adds `x-findadoc-edge`. Rate limits and Places quotas count people, not CloudFront edges, and booking is refused outside Japan (`apps/server/docs/booking-access.md`). `api.findadoc.jp` moves at the cutover (#13).
 
 There is no reserved concurrency. A new account can have a total Lambda concurrency of 10, and reserving any of it can fail the deploy. `findadoc-api-throttles` reports when the account limit is reached.
 

@@ -103,8 +103,8 @@
         "heading": "2. Welche Daten wir erheben",
         "p1": "Suche im Verzeichnis: Sie können ohne Konto suchen. Wir erhalten Ihre Suchbegriffe, Filter und Sprache. Ihre Sprache, Ihr Design und Ihre letzten Filter werden in Ihrem eigenen Browser gespeichert.",
         "p2": "Vorschlag einer Praxis oder eines Arztes: Wir erhalten Ihre Eingaben, etwa einen Google-Maps-Link, Namen, gesprochene Sprachen und Notizen. Bitte geben Sie keine Angaben zu Ihrer eigenen Gesundheit an.",
-        "p3": "Terminanfrage: Wenn eine Praxis Terminanfragen über Find a Doc, Japan annimmt, erheben wir, was ihr Formular abfragt. Dazu können Ihr Name, Ihre E-Mail-Adresse, Telefonnummer, Ihr Alter, der Besuchsgrund, die gewählte Zeit sowie Dateien wie ein Foto von Ihnen und von Ihrer Krankenversicherungskarte oder Berechtigungsbescheinigung gehören.",
-        "p4": "Der Besuchsgrund ist eine Gesundheitsangabe, die das APPI als besonders schutzbedürftige personenbezogene Information einstuft. Wir erheben sie nur, wenn Sie das Formular selbst absenden. Mit dem Absenden willigen Sie ein, dass wir sie erheben und an die gewählte Praxis weitergeben.",
+        "p3": "Terminanfrage: Wenn eine Praxis Terminanfragen über Find a Doc, Japan annimmt, erheben wir, was ihr Formular abfragt. Dazu können Ihr Name, Ihre E-Mail-Adresse, Telefonnummer, Ihr Alter, der Besuchsgrund, die gewählte Zeit sowie Dateien wie ein Foto von Ihnen und von Ihrer Krankenversicherungskarte oder Berechtigungsbescheinigung gehören. Terminanfragen bieten wir nur Personen an, die sich beim Absenden in Japan befinden.",
+        "p4": "Der Besuchsgrund ist eine Gesundheitsangabe, die das APPI als besonders schutzbedürftige personenbezogene Information einstuft. Wir erheben sie nur, wenn Sie das Formular selbst absenden, nachdem Sie per Häkchen eingewilligt haben, dass wir sie erheben und an die gewählte Praxis weitergeben. Wir speichern, wann Sie diese Einwilligung erteilt haben.",
         "p5": "Konten und technische Daten: Moderatoren und Praxispersonal melden sich über Auth0 an, wodurch wir Name, E-Mail-Adresse und eine Kontokennung erhalten. Unsere Server protokollieren IP-Adressen und Anfragedetails, um den Dienst zu betreiben und Missbrauch zu verhindern."
       },
       "use": {
@@ -147,7 +147,7 @@
       },
       "gdpr": {
         "heading": "11. Besucher aus dem EWR, dem Vereinigten Königreich und der Schweiz",
-        "p1": "Wenn Sie Find a Doc, Japan aus dem Europäischen Wirtschaftsraum, dem Vereinigten Königreich oder der Schweiz nutzen, gilt zusätzlich die DSGVO (bzw. die UK-DSGVO oder das Schweizer Datenschutzgesetz). Cookies, Werbemessung und die Gesundheitsangaben einer Terminanfrage verarbeiten wir auf Grundlage Ihrer Einwilligung; die Weitergabe Ihrer Anfrage an die Praxis zur Durchführung vorvertraglicher Maßnahmen auf Ihre Anfrage; Betrieb, Absicherung und Fehlerbehebung des Dienstes auf Grundlage unserer berechtigten Interessen.",
+        "p1": "Wenn Sie Find a Doc, Japan aus dem Europäischen Wirtschaftsraum, dem Vereinigten Königreich oder der Schweiz nutzen, gilt zusätzlich die DSGVO (bzw. die UK-DSGVO oder das Schweizer Datenschutzgesetz). Terminanfragen bieten wir nur Personen in Japan an. Aus diesen Ländern nehmen wir daher keine Terminanfragen und keine darin enthaltenen Gesundheitsangaben entgegen. Cookies und Werbemessung verarbeiten wir auf Grundlage Ihrer Einwilligung, Betrieb, Absicherung und Fehlerbehebung des Dienstes auf Grundlage unserer berechtigten Interessen.",
         "p2": "Sie haben außerdem das Recht, Ihre Daten in einem übertragbaren Format zu erhalten, einer Verarbeitung aufgrund berechtigter Interessen zu widersprechen, Ihre Einwilligung jederzeit mit Wirkung für die Zukunft zu widerrufen und sich bei Ihrer Datenschutzaufsichtsbehörde zu beschweren. Die Cookie-Einwilligung widerrufen Sie unter Cookie-Einstellungen; andere Anliegen senden Sie an contact{'@'}findadoc.jp.",
         "p3": "Die Europäische Kommission hat festgestellt, dass Japan ein angemessenes Datenschutzniveau bietet; Daten dürfen daher aus dem EWR nach Japan übermittelt werden. Übermittlungen an Anbieter in den USA stützen sich auf das EU-US-Datenschutzrahmenwerk oder auf die Standardvertragsklauseln der Europäischen Kommission."
       },
@@ -805,7 +805,9 @@
       "slot": "Wählen Sie eine freie Zeit",
       "duration": "Wählen Sie eine von der Klinik angebotene Dauer",
       "tooManyRequests": "Zu viele Anfragen von dieser Verbindung. Warten Sie einige Minuten und versuchen Sie es erneut.",
-      "openRequestLimit": "Für diese E-Mail-Adresse warten bereits Anfragen bei dieser Klinik auf Antwort. Warten Sie auf die Antwort der Klinik oder stornieren Sie eine Anfrage über den Link in Ihrer E-Mail."
+      "openRequestLimit": "Für diese E-Mail-Adresse warten bereits Anfragen bei dieser Klinik auf Antwort. Warten Sie auf die Antwort der Klinik oder stornieren Sie eine Anfrage über den Link in Ihrer E-Mail.",
+      "confirmations": "Setzen Sie vor dem Absenden beide Häkchen",
+      "regionUnavailable": "Terminanfragen sind derzeit nur für Personen in Japan möglich."
     },
     "slotLabel": "Wunschzeit",
     "slotLoading": "Freie Zeiten werden geladen…",
@@ -866,6 +868,18 @@
       },
       "noMyNumber": "Laden Sie kein Foto Ihrer My-Number-Karte hoch, weder Vorder- noch Rückseite, und senden Sie nicht die 12-stellige Nummer.",
       "bringCard": "Die Praxis prüft Ihre Versicherung mit der Karte selbst."
+    },
+    "confirmationsLegend": "Vor dem Absenden",
+    "confirmInJapan": "Ich befinde mich derzeit in Japan.",
+    "healthDataConsent": "Ich willige ein, dass Find a Doc, Japan den Grund meines Besuchs, eine Gesundheitsangabe, an {clinic} übermittelt.",
+    "privacyPolicyLink": "Datenschutzerklärung",
+    "regionNotice": {
+      "heading": "Terminanfragen sind derzeit nur für Personen in Japan möglich",
+      "body": "Von Ihrem aktuellen Standort aus können Sie keine Terminanfrage senden. Wenden Sie sich für einen Termin direkt an {clinic}.",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "website": "Webseite",
+      "clinicLink": "Zurück zu {clinic}"
     }
   },
   "bookingDashboard": {

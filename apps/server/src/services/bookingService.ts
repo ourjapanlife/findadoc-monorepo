@@ -416,6 +416,15 @@ function parseServiceKey(value: string | null | undefined): string | null {
 }
 
 export async function submitBooking(input: SubmitBookingInput): Promise<Result<BookingSubmissionResult>> {
+    // Both boxes on the Book page (#173). The consent time is stored with the request.
+    if (input.confirmedInJapan !== true) {
+        return validationError('confirmedInJapan')
+    }
+    if (input.healthDataConsent !== true) {
+        return validationError('healthDataConsent')
+    }
+    const healthDataConsentedAt = new Date().toISOString()
+
     const target = await resolvePublicBookingTarget(input.clinicSiteId)
     if (target === undefined) {
         return validationError('clinicSiteId')
@@ -520,7 +529,8 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                     answers: asJsonb(storedAnswers),
                     status: 'received',
                     notify_email_sent_at: null,
-                    cancel_token_hash: patientToken.hash
+                    cancel_token_hash: patientToken.hash,
+                    health_data_consented_at: healthDataConsentedAt
                 })
                 .returning(['id', 'created_date', 'status'])
                 .executeTakeFirstOrThrow()

@@ -11,12 +11,16 @@ import { ErrorCode, type ServerResponse } from '~/typedefs/serverResponse'
 
 /**
  * Why a public booking call failed. `rateLimited` and `openRequestLimit` have their own
- * sentence on the form (#160). Anything else is `failed`.
+ * sentence on the form (#160), and `regionUnavailable` means the visitor is not in Japan (#173).
+ * Anything else is `failed`.
  */
-export type BookingRefusal = 'failed' | 'rateLimited' | 'openRequestLimit'
+export type BookingRefusal = 'failed' | 'rateLimited' | 'openRequestLimit' | 'regionUnavailable'
 
 export function bookingRefusal(response: Pick<ServerResponse<unknown>, 'errors'>): BookingRefusal {
     const codes = (response.errors ?? []).map(error => error.code)
+    if (codes.includes(ErrorCode.BOOKING_REGION_UNAVAILABLE)) {
+        return 'regionUnavailable'
+    }
     if (codes.includes(ErrorCode.TOO_MANY_REQUESTS)) {
         return 'rateLimited'
     }
@@ -27,7 +31,20 @@ export function bookingRefusal(response: Pick<ServerResponse<unknown>, 'errors'>
 }
 
 export function isBookingRefusal(value: unknown): value is BookingRefusal {
-    return value === 'failed' || value === 'rateLimited' || value === 'openRequestLimit'
+    return value === 'failed'
+      || value === 'rateLimited'
+      || value === 'openRequestLimit'
+      || value === 'regionUnavailable'
+}
+
+/** Both Book page boxes: "I am currently in Japan" and the health-data consent (#173). */
+export type BookingConfirmations = {
+    confirmedInJapan: boolean
+    healthDataConsent: boolean
+}
+
+export function bookingConfirmationsComplete(confirmations: BookingConfirmations): boolean {
+    return confirmations.confirmedInJapan && confirmations.healthDataConsent
 }
 
 const BOOKING_FORM_FIELDS = `
@@ -71,6 +88,12 @@ const bookingFormQuery = gql`
     bookingForm(clinicSiteId: $clinicSiteId, formId: $formId) {
       ${BOOKING_FORM_FIELDS}
     }
+  }
+`
+
+const bookingAvailableQuery = gql`
+  query BookingAvailable {
+    bookingAvailable
   }
 `
 
@@ -141,6 +164,25 @@ export async function fetchBookingForm(clinicId: string, formId?: string): Promi
     return response.data.bookingForm ?? null
 }
 
+/**
+ * Whether the API takes booking requests from this visitor. Booking is offered only to
+ * people in Japan, and the server decides (#173). A failed call shows the form: submit
+ * still refuses a visitor outside Japan.
+ */
+export async function fetchBookingAvailable(): Promise<boolean> {
+    initializeGqlClient()
+    const response = await graphQLClientRequestWithRetry<{ bookingAvailable: boolean }>(
+        gqlClient.request.bind(gqlClient),
+        bookingAvailableQuery,
+        {},
+        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
+    )
+    if (response.hasErrors) {
+        return true
+    }
+    return response.data.bookingAvailable !== false
+}
+
 export async function requestBookingUploadUrl(input: {
     clinicSiteId: string
     formDefinitionId: string
@@ -173,7 +215,7 @@ export async function submitBookingForm(input: {
     practitionerId?: string | null
     spokenLanguages?: Locale[]
     service?: string | null
-}): Promise<BookingSubmissionResult | BookingRefusal> {
+} & BookingConfirmations): Promise<BookingSubmissionResult | BookingRefusal> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ submitBooking: BookingSubmissionResult }>(
         gqlClient.request.bind(gqlClient),

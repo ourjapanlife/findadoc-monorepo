@@ -1,9 +1,29 @@
 <template>
     <ClinicBookingForm
-        v-if="form !== null"
+        v-if="form !== null && bookingAvailable"
         :form="form"
         :query="bookingQuery"
     />
+    <div
+        v-else-if="form !== null"
+        class="mx-auto flex w-full max-w-xl flex-col gap-8 px-6 py-10 landscape:px-12"
+    >
+        <div class="flex items-start justify-between gap-4">
+            <header class="flex min-w-0 flex-col gap-3">
+                <p class="eyebrow">
+                    {{ t('bookingPage.eyebrow') }}
+                </p>
+                <h1
+                    class="page-title-sm"
+                    data-testid="clinic-booking-heading"
+                >
+                    {{ t('bookingPage.heading', { clinic: form.clinicName }) }}
+                </h1>
+            </header>
+            <LocaleSelector class="shrink-0" />
+        </div>
+        <BookingRegionNotice :form="form" />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -12,7 +32,8 @@ import { createError, definePageMeta, navigateTo, useHead, useRoute } from '#imp
 import { useI18n } from 'vue-i18n'
 import type { BookingForm } from '@findadoc/graphql'
 import ClinicBookingForm from '~/components/booking/ClinicBookingForm.vue'
-import { fetchBookingForm } from '~/utils/booking/formQuery'
+import BookingRegionNotice from '~/components/booking/BookingRegionNotice.vue'
+import { fetchBookingAvailable, fetchBookingForm } from '~/utils/booking/formQuery'
 import { bookingClinicPath, bookingQueryFromRoute } from '~/utils/booking/paths'
 import { formatPageTitle } from '~/utils/site'
 
@@ -22,6 +43,8 @@ import { formatPageTitle } from '~/utils/site'
  * The patient's manage link (`/book/manage`) is not gated, so cancelling always works.
  * Also accepts a clinic site id or slug, then replaces the path with the facility id.
  * A hosted clinic page or subdomain is not required.
+ * Booking is offered only to people in Japan (#173). The API says whether this visitor
+ * may book, and a visitor elsewhere sees a notice with the clinic's own contact details.
  */
 definePageMeta({
     ssr: false,
@@ -31,6 +54,7 @@ definePageMeta({
 const route = useRoute()
 const { t, locale } = useI18n()
 const form = ref<BookingForm | null>(null)
+const bookingAvailable = ref(true)
 const clinicId = String(route.params.clinicId ?? '')
 const bookingQuery = bookingQueryFromRoute(route.query as Record<string, unknown>)
 
@@ -38,11 +62,15 @@ async function loadForm(): Promise<void> {
     if (clinicId === '') {
         throw createError({ statusCode: 404, statusMessage: 'Page not found' })
     }
-    const loaded = await fetchBookingForm(clinicId, bookingQuery.form)
+    const [loaded, available] = await Promise.all([
+        fetchBookingForm(clinicId, bookingQuery.form),
+        fetchBookingAvailable()
+    ])
     if (loaded === null) {
         throw createError({ statusCode: 404, statusMessage: 'Page not found' })
     }
     form.value = loaded
+    bookingAvailable.value = available
     const canonicalId = loaded.facilityId ?? loaded.clinicSiteId
     if (canonicalId !== null && canonicalId !== undefined && canonicalId !== clinicId) {
         await navigateTo(

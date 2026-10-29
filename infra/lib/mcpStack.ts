@@ -80,7 +80,6 @@ export class McpStack extends Stack {
             hostedZoneId: props.hostedZoneId,
             zoneName: props.zoneName,
             ids: {
-                originRequest: 'McpOriginRequest',
                 viewerIp: 'ViewerIp',
                 distribution: 'McpDistribution',
             },

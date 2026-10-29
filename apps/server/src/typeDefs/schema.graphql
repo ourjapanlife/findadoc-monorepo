@@ -1608,6 +1608,13 @@ input SubmitBookingInput {
   spokenLanguages: [Locale!]
   """Optional service or appointment-type key from the Book URL."""
   service: String
+  """The patient ticked "I am currently in Japan". Must be true."""
+  confirmedInJapan: Boolean!
+  """
+  The patient consented to the reason for the visit being sent to the clinic.
+  Must be true. The consent time is stored with the request.
+  """
+  healthDataConsent: Boolean!
 }
 
 type Query {
@@ -1628,6 +1635,13 @@ type Query {
   Open to a signed-out visitor. create:bookings is on the anonymous user role.
   """
   bookingForm(clinicSiteId: ID!, formId: String): BookingForm
+
+  """
+  Whether this visitor may send a booking request. Booking is offered only to people
+  in Japan (CloudFront's viewer country). Always true in local development and tests.
+  submitBooking and createBookingUploadUrl refuse with BOOKING_REGION_UNAVAILABLE otherwise.
+  """
+  bookingAvailable: Boolean!
 
   """
   Open appointment starts that fit the requested duration inside staff availability.

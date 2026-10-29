@@ -222,7 +222,6 @@ export class ApiStack extends Stack {
             hostedZoneId: props.hostedZoneId,
             zoneName: props.zoneName,
             ids: {
-                originRequest: 'ApiOriginRequest',
                 viewerIp: 'ViewerIp',
                 distribution: 'ApiDistribution',
             },

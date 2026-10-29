@@ -4,7 +4,7 @@ import fastifyJwt from '@fastify/jwt'
 import buildGetJwks from 'get-jwks'
 
 import { logger } from './logger.js'
-import { clientIpFrom } from '@findadoc/utils'
+import { clientIpFrom, viewerCountryFrom } from '@findadoc/utils'
 import { envVariables } from '../utils/environmentVariables.js'
 // import { envVariables } from '../utils/environmentVariables.js'
 
@@ -137,6 +137,8 @@ export function getEffectiveScopes(user: User | null | undefined): Scope[] {
 export interface UserContext {
     user: User
     clientIp?: string
+    /** Two-letter country from CloudFront, such as `JP`. Undefined off the edge. See booking/region.ts. */
+    viewerCountry?: string
 }
 
 /**
@@ -285,7 +287,8 @@ export async function buildUserContext(req: FastifyRequest): Promise<UserContext
             // They are JWT recommended prefixes with https://findadoc.jp/roles to avoid conflicts with standard JWT claims
             roles: userFromRequest['https://findadoc.jp/roles'] as Role[] || userFromRequest?.roles as Role[] || []
         } satisfies User,
-        clientIp: clientIpFrom(req, envVariables.edgeSharedSecret())
+        clientIp: clientIpFrom(req, envVariables.edgeSharedSecret()),
+        viewerCountry: viewerCountryFrom(req, envVariables.edgeSharedSecret())
     } satisfies UserContext
 }
 
