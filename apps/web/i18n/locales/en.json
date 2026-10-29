@@ -161,24 +161,70 @@
   },
   "privacyPage": {
     "heading": "Privacy Policy",
-    "subheading": "This Privacy Policy is meant to help you understand what information we collect, why we collect it, and how you canupdate, manage, export, and delete your information.",
-    "date": "Effective Date: December 3, 2023",
-    "paragraph1": "Thank you for using our service to search for doctors in the language of your choice. This Privacy Policy is designed to help you understand how we collect, use, and safeguard your personal information.",
-    "paragraph2": "1. Information We Collect",
-    "paragraph3": "a. User-Provided Information: We may collect information that you provide when using our service, such as your preferred language, search queries, and any feedback you choose to share.",
-    "paragraph4": "2. How We Use Your Information",
-    "paragraph5": "a. Personalization: We use the information collected to personalize your experience, such as providing search results in your preferred language and tailoring recommendations. b. Improvement of Service: Your feedback and usage patterns help us improve our service, fix issues, and enhance overall performance. c. Communication: We may use your contact information to communicate with you about important updates, changes to our service, or to respond to your inquiries.",
-    "paragraph6": "3. Information Sharing",
-    "paragraph7": "a. With Your Consent: We may share your information with third parties if you provide explicit consent. b. Legal Requirements: We may disclose your information if required by law or in response to a valid legal request.",
-    "paragraph8": "4. Data Security",
-    "paragraph9": "a. Encryption: We employ industry-standard encryption and security measures to protect your information from unauthorized access or disclosure. b. Data Access Control: Access to your personal information is restricted to authorized personnel only.",
-    "paragraph10": "5. Third-Party Links",
-    "paragraph11": "Our service may contain links to third-party websites. We are not responsible for the privacy practices or content of these third-party sites. We encourage you to review their privacy policies.",
-    "paragraph12": "6. Children's Privacy",
-    "paragraph13": "Our service is not directed at individuals under the age of 13. We do not knowingly collect personal information from children. If you believe that we have inadvertently collected information from a child, please contact us immediately.",
-    "paragraph14": "7. Changes to the Privacy Policy",
-    "paragraph15": "We reserve the right to update this Privacy Policy to reflect changes in our practices and services. We will notify you of any significant changes by posting the updated policy on our website.",
-    "paragraph16": "By using our service, you agree to the terms outlined in this Privacy Policy."
+    "subheading": "What we collect, why we collect it, who we share it with, and how to reach us about your information.",
+    "date": "Effective date: October 29, 2026",
+    "sections": {
+      "whoWeAre": {
+        "heading": "1. Who we are",
+        "p1": "Find a Doc, Japan (NPO法人Find a Doc, Japan, a specified non-profit corporation in Tokyo, corporate number 9011005010215) runs findadoc.jp and the clinic pages on its subdomains. We handle personal information under Japan's Act on the Protection of Personal Information (APPI)."
+      },
+      "collect": {
+        "heading": "2. Information we collect",
+        "p1": "Searching the directory: you can search without an account. We receive your search terms, filters, and language. Your language, theme, and recent filters are saved in your own browser.",
+        "p2": "Suggesting a clinic or doctor: we receive what you enter, such as a Google Maps link, names, languages spoken, and notes. Please do not include your own health information.",
+        "p3": "Booking an appointment: when a clinic takes booking requests through Find a Doc, Japan, we collect what its form asks for. This can include your name, email address, phone number, age, the reason for your visit, the time you choose, and files such as a photo of you and of your health insurance card or eligibility certificate.",
+        "p4": "The reason for your visit is health information, which the APPI treats as special care-required personal information. We collect it only when you submit the form yourself. By submitting, you consent to us collecting it and passing it to the clinic you chose.",
+        "p5": "Accounts and technical information: moderators and clinic staff sign in through Auth0, which gives us their name, email address, and an account identifier. Our servers record IP addresses and request details to keep the service running and to prevent abuse."
+      },
+      "use": {
+        "heading": "3. How we use it",
+        "p1": "We use this information to run the directory and keep it accurate, to pass your booking request to the clinic you chose, to email you about your request, to let clinic staff manage their bookings, to fix errors and prevent abuse, and, only if you accept cookies, to measure our advertising (section 6). We do not sell personal information, and we do not use it to personalise ads."
+      },
+      "share": {
+        "heading": "4. Who we share it with",
+        "p1": "The clinic you book with receives your request, your answers, and your files, and handles them under its own obligations as a medical provider.",
+        "p2": "Service providers run parts of the service for us and may use the information only to do so: Amazon Web Services (hosting, database, file storage, and email, in Tokyo), Auth0 by Okta (sign-in), Sentry (error reports, without names or email addresses), Umami (visit counts without cookies), Google Maps (the map on search results), and Google Ads and Google Analytics (only after you accept cookies).",
+        "p3": "Google, Auth0, and Sentry may process information outside Japan, mainly in the United States. We choose providers that protect personal information to a standard equivalent to the APPI. Contact us for details about a provider and the country involved.",
+        "p4": "We disclose personal information to others only with your consent, or when the law requires it."
+      },
+      "retention": {
+        "heading": "5. How long we keep it",
+        "p1": "Photos of insurance cards and other identity documents uploaded with a booking are deleted 30 days after upload. Other booking files are deleted after one year, and files from a booking that was never sent are deleted after 24 hours.",
+        "p2": "Booking answers and appointment records are kept while the clinic needs them and as long as needed to resolve disputes or meet legal obligations. Account information is kept while the account is active. You can ask us to delete your information sooner (section 8)."
+      },
+      "cookies": {
+        "heading": "6. Cookies and advertising measurement",
+        "p1": "We use Google Ads, and Google Analytics when it is enabled, provided by Google LLC, to measure how visitors reach and use our service. When you visit, your browser sends Google the page address, your IP address, browser details, and an identifier stored in a cookie. Google uses this to measure our ads. We do not use it to personalise ads for you. Google's privacy policy is at policies.google.com/privacy.",
+        "p2": "We ask before loading any of these tools. Google Ads and Google Analytics send nothing to Google until you accept. You can accept or decline at any time with Cookie settings at the bottom of every page. If you decline, or later change your choice to decline, the tools are not loaded and their cookies are deleted.",
+        "p3": "We also use cookies to remember your language and your cookie choice. Umami counts visits without cookies."
+      },
+      "security": {
+        "heading": "7. Security",
+        "p1": "Information is encrypted in transit, and access is limited to the people who need it: our moderators, and the staff of the clinic you booked with. Clinic staff can see only their own clinic's bookings."
+      },
+      "rights": {
+        "heading": "8. Your rights",
+        "p1": "Under the APPI you can ask us to disclose the personal information we hold about you, to correct it, to stop using it, to delete it, or to stop sharing it with others. Email contact{'@'}findadoc.jp. We may first need to confirm who you are. You can also cancel a booking yourself with the private link in your confirmation email."
+      },
+      "children": {
+        "heading": "9. Children",
+        "p1": "A parent or guardian should make bookings for a child. If you believe a child has given us personal information without a parent or guardian, contact us and we will delete it."
+      },
+      "changes": {
+        "heading": "10. Changes to this policy",
+        "p1": "We post changes on this page and update the effective date. For significant changes, we also show a notice on the site."
+      },
+      "gdpr": {
+        "heading": "11. Visitors in the EEA, the UK, and Switzerland",
+        "p1": "If you use Find a Doc, Japan from the European Economic Area, the United Kingdom, or Switzerland, the GDPR (or the UK GDPR or Swiss data protection law) also applies. We rely on your consent for cookies and advertising measurement and for the health information in a booking request; on taking steps you ask for before an appointment, to pass your booking to the clinic; and on our legitimate interests to run, secure, and fix the service.",
+        "p2": "You also have the right to receive your information in a portable format, to object to processing based on legitimate interests, to withdraw consent at any time without affecting earlier processing, and to complain to your local data protection authority. Withdraw cookie consent with Cookie settings, and send other requests to contact{'@'}findadoc.jp.",
+        "p3": "The European Commission has decided that Japan protects personal information adequately, so information can be transferred from the EEA to Japan. Transfers to providers in the United States rely on the EU-U.S. Data Privacy Framework or the European Commission's standard contractual clauses."
+      },
+      "contact": {
+        "heading": "12. Contact",
+        "p1": "NPO法人Find a Doc, Japan · contact{'@'}findadoc.jp"
+      }
+    }
   },
   "submitPage": {
     "firstName": "First name",
@@ -903,5 +949,13 @@
     "keep": "Keep it",
     "cancelled": "This appointment is cancelled.",
     "cancelFailed": "Could not cancel. It may have already started or changed. The latest status is shown."
+  },
+  "consent": {
+    "title": "Cookies on this site",
+    "body": "We use Google cookies to measure our ads and how people use Find a Doc, Japan. They are never used to personalise ads. You can change your choice any time from Cookie settings at the bottom of the page.",
+    "privacyLink": "Privacy policy",
+    "accept": "Accept",
+    "decline": "Decline",
+    "settings": "Cookie settings"
   }
 }

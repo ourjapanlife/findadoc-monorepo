@@ -3,13 +3,25 @@ import { defineConfig, devices } from '@playwright/test'
 // Load .env so AUTH0_* etc. are available for shouldRunModerationTests() when running locally
 import 'dotenv/config'
 
-import { shouldRunModerationTests } from './tests/e2e/fixtures'
+import { consentDeniedCookie, shouldRunModerationTests } from './tests/e2e/fixtures'
 
 const moderationSpecGlob = '**/moderation*.spec.ts'
 const moderationSetupGlob = '**/moderation-auth.setup.ts'
 
 /** CI always runs moderation (expects secrets); locally only when Auth0 env is complete. */
 const runModerationSuite = Boolean(process.env.CI) || shouldRunModerationTests()
+
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:4242'
+
+/**
+ * Every spec except consent.spec.ts starts with a stored cookie choice, so the
+ * banner (shown to undecided visitors on builds with a Google tag) never covers
+ * what a test clicks. consent.spec.ts clears this and starts undecided.
+ */
+const consentDecided = {
+    cookies: [consentDeniedCookie(new URL(baseURL).hostname)],
+    origins: []
+}
 
 function buildProjects(ciBrowsers: boolean) {
     const browserDefs = ciBrowsers
@@ -23,7 +35,7 @@ function buildProjects(ciBrowsers: boolean) {
     if (!runModerationSuite) {
         return browserDefs.map(({ name, device }) => ({
             name,
-            use: { ...device },
+            use: { ...device, storageState: consentDecided },
             testIgnore: [moderationSetupGlob, moderationSpecGlob]
         }))
     }
@@ -36,7 +48,7 @@ function buildProjects(ciBrowsers: boolean) {
         },
         ...browserDefs.map(({ name, device }) => ({
             name,
-            use: { ...device },
+            use: { ...device, storageState: consentDecided },
             testIgnore: [moderationSpecGlob, moderationSetupGlob]
         })),
         {
@@ -71,7 +83,7 @@ export default defineConfig({
             ['html', { outputFolder: 'playwright-report' }]]
         : 'html',
     use: {
-        baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:4242',
+        baseURL,
         trace: 'on-first-retry',
         actionTimeout: 10000,
         navigationTimeout: 30000

@@ -91,25 +91,71 @@
     "logoutToast": "Sessão encerrada"
   },
   "privacyPage": {
-    "heading": "Política de privacidade",
-    "subheading": "Esta política de privacidade tem como propósito facilitar a compreensão de quais informações nós coletamos, por que coletamos, assim como você pode atualizar, editar, exportar e remover suas informações.",
-    "date": "Data da efetivação: 3 de Dezembro, 2023",
-    "paragraph1": "Obrigado por usar nosso serviço de busca por profissionais de saúde no idioma de sua escolha. Esta política de privacidade tem como propósito auxiliá-lo na compreensão de como coletamos, usamos e preservamos suas informações pessoais.",
-    "paragraph2": "1. Informações que coletamos",
-    "paragraph3": "a. Informações providenciadas pelo usuário: Nós coletamos informações geradas durante a utilização dos nossos serviços como idioma de sua escolha, buscas e qualquer sugestão que você venha a compartilhar.",
-    "paragraph4": "2. Como nós usamos sua informação",
-    "paragraph5": "a. Personalização: Nós usamos informações coletadas para personalizar sua experiência na utilização dos nossos serviços, como prover resultados de busca no seu idioma de escolha e recomendações moldadas ao seu perfil. B. Melhoria do Serviço: Suas sugestões e padrões durante a utilização dos nossos serviços, nos auxiliam no aperfeiçoamento dos nossos serviços, correção de erros e melhoria no desempenho geral. C. Comunicação: Nós podemos usar suas informações de contato para comunicar atualizações importantes, mudança dos nossos serviços ou responder suas perguntas.",
-    "paragraph6": "3. Compartilhamento de informação",
-    "paragraph7": "a. Com o seu consenso: Nós podemos compartilhar suas informações com terceiros com a sua permissão. B. Requerimentos legais: Nós poderemos revelar suas informações perante a uma requisição judicial ou um pedido de ordem legal.",
-    "paragraph8": "4. Segurança do dados",
-    "paragraph9": "a. Criptografia: Nós utilizamos criptografia e medidas de segurança seguindo os padrões seguidos na área de tecnologia para proteger seus dados contra acessos não permitidos. B. Controle de acesso aos dados: O acesso à suas informações pessoais é restrito a pessoas autorizadas.",
-    "paragraph10": "5. Links de acesso a terceiros",
-    "paragraph11": "Nossos serviços podem conter links de acesso a sites externos. Não nos responsabilizamos pelas práticas de privacidade ou conteúdo desses sites externos. Recomendamos que você verifique as políticas de privacidade dos mesmos.",
-    "paragraph12": "6. Privacidade de dados de crianças",
-    "paragraph13": "Nosso serviço não é direcionado a pessoas com menos de 13 anos de idade. Nós não coletamos informações de crianças intencionalmente. Se você acredita que coletamos, não intencionalmente, informações sobre uma criança em específico, por favor, entre em contato conosco imediatamente.",
-    "paragraph14": "7. Mudanças na política de privacidade.",
-    "paragraph15": "Nos reservamos o direito de atualizar ou alterar esta política de privacidade para refletir qualquer mudança que venha a acontecer nos nossos serviços ou nas nossas atividades. Iremos notificar qualquer mudança significativa publicando as políticas em nosso website.",
-    "paragraph16": "Ao utilizar os nossos serviços, você concorda com os termos explicitados nesta política de privacidade."
+    "heading": "Política de Privacidade",
+    "subheading": "O que coletamos, por que coletamos, com quem compartilhamos e como falar conosco sobre suas informações.",
+    "date": "Data de vigência: 29 de outubro de 2026",
+    "sections": {
+      "whoWeAre": {
+        "heading": "1. Quem somos",
+        "p1": "A Find a Doc, Japan (NPO法人Find a Doc, Japan, uma corporação sem fins lucrativos especificada em Tóquio, número corporativo 9011005010215) administra o findadoc.jp e as páginas de clínicas em seus subdomínios. Tratamos informações pessoais de acordo com a Lei de Proteção de Informações Pessoais do Japão (APPI)."
+      },
+      "collect": {
+        "heading": "2. Informações que coletamos",
+        "p1": "Busca no diretório: você pode buscar sem conta. Recebemos seus termos de busca, filtros e idioma. Seu idioma, tema e filtros recentes ficam salvos no seu próprio navegador.",
+        "p2": "Sugestão de clínica ou médico: recebemos o que você informa, como um link do Google Maps, nomes, idiomas falados e observações. Não inclua informações sobre a sua própria saúde.",
+        "p3": "Agendamento de consulta: quando uma clínica recebe pedidos de agendamento pelo Find a Doc, Japan, coletamos o que o formulário dela pede. Isso pode incluir seu nome, e-mail, telefone, idade, o motivo da consulta, o horário escolhido e arquivos como uma foto sua e do seu cartão do seguro de saúde ou certificado de elegibilidade.",
+        "p4": "O motivo da consulta é uma informação de saúde, que a APPI trata como informação pessoal que exige cuidado especial. Só a coletamos quando você mesmo envia o formulário. Ao enviar, você consente que a coletemos e a repassemos à clínica escolhida.",
+        "p5": "Contas e informações técnicas: moderadores e equipe das clínicas entram pelo Auth0, que nos fornece nome, e-mail e um identificador de conta. Nossos servidores registram endereços IP e detalhes das requisições para manter o serviço funcionando e evitar abusos."
+      },
+      "use": {
+        "heading": "3. Como usamos",
+        "p1": "Usamos essas informações para operar o diretório e mantê-lo correto, enviar seu pedido de agendamento à clínica escolhida, enviar e-mails sobre seu pedido, permitir que a equipe da clínica gerencie os agendamentos, corrigir erros e evitar abusos e, somente se você aceitar cookies, medir nossa publicidade (seção 6). Não vendemos informações pessoais e não as usamos para personalizar anúncios."
+      },
+      "share": {
+        "heading": "4. Com quem compartilhamos",
+        "p1": "A clínica com quem você agenda recebe seu pedido, suas respostas e seus arquivos, e os trata conforme suas próprias obrigações como prestadora de serviços de saúde.",
+        "p2": "Prestadores de serviço operam partes do serviço para nós e só podem usar as informações para isso: Amazon Web Services (hospedagem, banco de dados, armazenamento de arquivos e e-mail, em Tóquio), Auth0 by Okta (login), Sentry (relatórios de erro, sem nomes ou e-mails), Umami (contagem de visitas sem cookies), Google Maps (o mapa nos resultados de busca) e Google Ads e Google Analytics (somente depois que você aceitar cookies).",
+        "p3": "Google, Auth0 e Sentry podem tratar informações fora do Japão, principalmente nos Estados Unidos. Escolhemos prestadores que protegem informações pessoais em padrão equivalente à APPI. Fale conosco para saber detalhes sobre um prestador e o país envolvido.",
+        "p4": "Só divulgamos informações pessoais a terceiros com seu consentimento ou quando a lei exige."
+      },
+      "retention": {
+        "heading": "5. Por quanto tempo guardamos",
+        "p1": "Fotos de cartões de seguro e outros documentos de identidade enviados com um agendamento são excluídas 30 dias após o envio. Outros arquivos de agendamento são excluídos após um ano, e arquivos de um agendamento que nunca foi enviado são excluídos após 24 horas.",
+        "p2": "Respostas e registros de agendamento são guardados enquanto a clínica precisar deles e pelo tempo necessário para resolver disputas ou cumprir obrigações legais. Informações de conta são guardadas enquanto a conta estiver ativa. Você pode pedir que excluamos suas informações antes (seção 8)."
+      },
+      "cookies": {
+        "heading": "6. Cookies e medição de publicidade",
+        "p1": "Usamos o Google Ads, e o Google Analytics quando ativado, fornecidos pela Google LLC, para medir como os visitantes chegam ao nosso serviço e o utilizam. Quando você visita, seu navegador envia ao Google o endereço da página, seu endereço IP, dados do navegador e um identificador guardado em um cookie. O Google usa isso para medir nossos anúncios. Não usamos isso para personalizar anúncios para você. A política de privacidade do Google está em policies.google.com/privacy.",
+        "p2": "Pedimos sua permissão antes de carregar qualquer uma dessas ferramentas. O Google Ads e o Google Analytics não enviam nada ao Google até você aceitar. Você pode aceitar ou recusar a qualquer momento em Configurações de cookies, no fim de cada página. Se você recusar, ou depois mudar sua escolha para recusar, as ferramentas não são carregadas e os cookies delas são excluídos.",
+        "p3": "Também usamos cookies para lembrar seu idioma e sua escolha sobre cookies. O Umami conta visitas sem cookies."
+      },
+      "security": {
+        "heading": "7. Segurança",
+        "p1": "As informações são criptografadas em trânsito, e o acesso é limitado a quem precisa: nossos moderadores e a equipe da clínica com quem você agendou. A equipe de uma clínica vê apenas os agendamentos da própria clínica."
+      },
+      "rights": {
+        "heading": "8. Seus direitos",
+        "p1": "Pela APPI, você pode pedir que divulguemos as informações pessoais que temos sobre você, que as corrijamos, deixemos de usá-las, as excluamos ou deixemos de compartilhá-las com outros. Escreva para contact{'@'}findadoc.jp. Talvez precisemos confirmar sua identidade antes. Você também pode cancelar um agendamento pelo link privado no seu e-mail de confirmação."
+      },
+      "children": {
+        "heading": "9. Crianças",
+        "p1": "Agendamentos para uma criança devem ser feitos por um dos pais ou responsável. Se você acredita que uma criança nos forneceu informações pessoais sem um dos pais ou responsável, fale conosco e as excluiremos."
+      },
+      "changes": {
+        "heading": "10. Alterações nesta política",
+        "p1": "Publicamos as alterações nesta página e atualizamos a data de vigência. Em alterações significativas, também mostramos um aviso no site."
+      },
+      "gdpr": {
+        "heading": "11. Visitantes do EEE, do Reino Unido e da Suíça",
+        "p1": "Se você usa o Find a Doc, Japan a partir do Espaço Econômico Europeu, do Reino Unido ou da Suíça, o GDPR (ou o UK GDPR ou a lei suíça de proteção de dados) também se aplica. Baseamo-nos no seu consentimento para cookies e medição de publicidade e para as informações de saúde de um pedido de agendamento; na execução de diligências que você solicita antes de uma consulta, para enviar seu agendamento à clínica; e em nossos interesses legítimos para operar, proteger e corrigir o serviço.",
+        "p2": "Você também tem o direito de receber suas informações em formato portátil, de se opor ao tratamento baseado em interesses legítimos, de retirar o consentimento a qualquer momento sem afetar o tratamento anterior e de reclamar à autoridade de proteção de dados do seu país. Retire o consentimento de cookies em Configurações de cookies e envie outros pedidos para contact{'@'}findadoc.jp.",
+        "p3": "A Comissão Europeia decidiu que o Japão protege adequadamente as informações pessoais, por isso as informações podem ser transferidas do EEE para o Japão. As transferências para prestadores nos Estados Unidos baseiam-se no Quadro de Privacidade de Dados UE-EUA ou nas cláusulas contratuais-tipo da Comissão Europeia."
+      },
+      "contact": {
+        "heading": "12. Contato",
+        "p1": "NPO法人Find a Doc, Japan · contact{'@'}findadoc.jp"
+      }
+    }
   },
   "submitPage": {
     "firstName": "Nome",
@@ -903,5 +949,13 @@
     "keep": "Manter",
     "cancelled": "Esta consulta foi cancelada.",
     "cancelFailed": "Não foi possível cancelar. Ela pode já ter começado ou mudado; o status mais recente está sendo exibido."
+  },
+  "consent": {
+    "title": "Cookies neste site",
+    "body": "Usamos cookies do Google para medir nossos anúncios e como as pessoas usam o Find a Doc, Japan. Eles nunca são usados para personalizar anúncios. Você pode mudar sua escolha a qualquer momento em Configurações de cookies, no fim da página.",
+    "privacyLink": "Política de privacidade",
+    "accept": "Aceitar",
+    "decline": "Recusar",
+    "settings": "Configurações de cookies"
   }
 }

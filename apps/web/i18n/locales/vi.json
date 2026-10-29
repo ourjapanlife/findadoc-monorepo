@@ -91,25 +91,71 @@
     "logoutToast": "Đã đăng xuất"
   },
   "privacyPage": {
-    "heading": "Chính Sách Bảo Mật",
-    "subheading": "Chính Sách Bảo Mật này được xây dựng nhằm giúp bạn hiểu rõ thông tin mà chúng tôi thu thập, lý do thu thập, và cách bạn có thể cập nhật, quản lý, xuất khẩu và xóa thông tin của mình.",
-    "date": "Ngày có hiệu lực: 3 tháng 12, 2023",
-    "paragraph1": "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi để tìm kiếm bác sĩ bằng ngôn ngữ bạn lựa chọn. Chính sách bảo mật này được thiết kế để giúp bạn hiểu rõ cách chúng tôi thu thập, sử dụng và bảo vệ thông tin cá nhân của bạn.",
-    "paragraph2": "1.Thông Tin Chúng Tôi Thu Thập",
-    "paragraph3": "a. Thông Tin Do Người Dùng Cung Cấp: Chúng tôi có thể thu thập thông tin mà bạn cung cấp khi sử dụng dịch vụ của chúng tôi, chẳng hạn như ngôn ngữ ưu tiên, các truy vấn tìm kiếm và bất kỳ phản hồi nào bạn chọn chia sẻ.",
-    "paragraph4": "2. Cách Chúng Tôi Sử Dụng Thông Tin Của Bạn",
-    "paragraph5": "a. a. Cá Nhân Hóa: Chúng tôi sử dụng thông tin thu thập được để cá nhân hóa trải nghiệm của bạn, chẳng hạn như cung cấp kết quả tìm kiếm bằng ngôn ngữ bạn ưu tiên và tùy chỉnh các đề xuất.b. Cải Thiện Dịch Vụ: Phản hồi và thói quen sử dụng của bạn giúp chúng tôi cải thiện dịch vụ, sửa chữa các vấn đề và nâng cao hiệu suất tổng thể. c. Giao Tiếp: Chúng tôi có thể sử dụng thông tin liên lạc của bạn để thông báo về các cập nhật quan trọng, thay đổi dịch vụ của chúng tôi hoặc để trả lời các yêu cầu của bạn.",
-    "paragraph6": "3.Chia Sẻ Thông Tin",
-    "paragraph7": "a. Với Sự Đồng Ý Của Bạn: Chúng tôi có thể chia sẻ thông tin của bạn với các bên thứ ba nếu bạn cung cấp sự đồng ý rõ ràng. b. Yêu Cầu Pháp Lý: Chúng tôi có thể tiết lộ thông tin của bạn nếu yêu cầu theo luật pháp hoặc để đáp ứng một yêu cầu hợp pháp hợp lệ.",
-    "paragraph8": "4.Bảo Mật Dữ Liệu",
-    "paragraph9": "a. Mã Hóa: Chúng tôi sử dụng mã hóa và các biện pháp bảo mật theo tiêu chuẩn ngành để bảo vệ thông tin của bạn khỏi việc truy cập hoặc tiết lộ trái phép. b. Kiểm Soát Truy Cập Dữ Liệu: Quyền truy cập vào thông tin cá nhân của bạn chỉ được cấp cho những nhân viên được ủy quyền và có trách nhiệm xử lý thông tin đó.",
-    "paragraph10": "5. Liên Kết Bên Thứ Ba",
-    "paragraph11": "Dịch vụ của chúng tôi có thể chứa các liên kết đến các trang web của bên thứ ba. Chúng tôi không chịu trách nhiệm về các thực tiễn bảo mật hoặc nội dung của các trang web này. Chúng tôi khuyến khích bạn xem xét các chính sách bảo mật của họ.",
-    "paragraph12": "6.Quyền riêng tư của trẻ em",
-    "paragraph13": "Dịch vụ của chúng tôi không dành cho những người dưới 13 tuổi. Chúng tôi không cố ý thu thập thông tin cá nhân từ trẻ em. Nếu bạn cho rằng chúng tôi đã vô tình thu thập thông tin từ một trẻ em, vui lòng liên hệ với chúng tôi ngay lập tức.",
-    "paragraph14": "7.Các thay đổi đối với Chính sách Bảo mật",
-    "paragraph15": "Chúng tôi có quyền cập nhật Chính sách Bảo mật này để phản ánh những thay đổi trong thực tiễn và dịch vụ của mình. Chúng tôi sẽ thông báo cho bạn về bất kỳ thay đổi quan trọng nào bằng cách đăng chính sách đã cập nhật trên trang web của chúng tôi.",
-    "paragraph16": "Bằng cách sử dụng dịch vụ của chúng tôi, bạn đồng ý với các điều khoản được nêu trong Chính sách Bảo mật này."
+    "heading": "Chính sách quyền riêng tư",
+    "subheading": "Chúng tôi thu thập gì, vì sao, chia sẻ với ai, và cách liên hệ với chúng tôi về thông tin của bạn.",
+    "date": "Ngày hiệu lực: 29 tháng 10 năm 2026",
+    "sections": {
+      "whoWeAre": {
+        "heading": "1. Chúng tôi là ai",
+        "p1": "Find a Doc, Japan (NPO法人Find a Doc, Japan, một pháp nhân phi lợi nhuận đặc định tại Tokyo, mã số pháp nhân 9011005010215) vận hành findadoc.jp và các trang phòng khám trên tên miền phụ của nó. Chúng tôi xử lý thông tin cá nhân theo Luật Bảo vệ Thông tin Cá nhân của Nhật Bản (APPI)."
+      },
+      "collect": {
+        "heading": "2. Thông tin chúng tôi thu thập",
+        "p1": "Tìm kiếm danh bạ: bạn có thể tìm kiếm mà không cần tài khoản. Chúng tôi nhận từ khóa, bộ lọc và ngôn ngữ của bạn. Ngôn ngữ, giao diện và các bộ lọc gần đây được lưu trong chính trình duyệt của bạn.",
+        "p2": "Đề xuất phòng khám hoặc bác sĩ: chúng tôi nhận những gì bạn nhập, như liên kết Google Maps, tên, ngôn ngữ sử dụng và ghi chú. Vui lòng không đưa thông tin sức khỏe của chính bạn.",
+        "p3": "Đặt lịch hẹn: khi một phòng khám nhận yêu cầu đặt lịch qua Find a Doc, Japan, chúng tôi thu thập những gì mẫu của họ yêu cầu. Thông tin này có thể gồm họ tên, email, số điện thoại, tuổi, lý do khám, thời gian bạn chọn, và các tệp như ảnh của bạn và ảnh thẻ bảo hiểm y tế hoặc giấy xác nhận tư cách.",
+        "p4": "Lý do khám là thông tin sức khỏe, được APPI coi là thông tin cá nhân cần lưu ý đặc biệt. Chúng tôi chỉ thu thập khi bạn tự gửi mẫu. Khi gửi, bạn đồng ý để chúng tôi thu thập và chuyển thông tin này cho phòng khám bạn đã chọn.",
+        "p5": "Tài khoản và thông tin kỹ thuật: người kiểm duyệt và nhân viên phòng khám đăng nhập qua Auth0, cho chúng tôi biết tên, email và mã định danh tài khoản. Máy chủ ghi lại địa chỉ IP và chi tiết yêu cầu để duy trì dịch vụ và ngăn lạm dụng."
+      },
+      "use": {
+        "heading": "3. Cách chúng tôi sử dụng",
+        "p1": "Chúng tôi dùng thông tin này để vận hành danh bạ và giữ cho nó chính xác, chuyển yêu cầu đặt lịch tới phòng khám bạn chọn, gửi email cho bạn về yêu cầu, giúp nhân viên phòng khám quản lý lịch hẹn, sửa lỗi và ngăn lạm dụng, và chỉ khi bạn chấp nhận cookie, để đo lường quảng cáo (mục 6). Chúng tôi không bán thông tin cá nhân và không dùng nó để cá nhân hóa quảng cáo."
+      },
+      "share": {
+        "heading": "4. Chúng tôi chia sẻ với ai",
+        "p1": "Phòng khám bạn đặt lịch nhận yêu cầu, câu trả lời và tệp của bạn, và xử lý theo nghĩa vụ riêng của họ với tư cách cơ sở y tế.",
+        "p2": "Các nhà cung cấp dịch vụ vận hành một phần dịch vụ cho chúng tôi và chỉ được dùng thông tin cho mục đích đó: Amazon Web Services (lưu trữ, cơ sở dữ liệu, lưu tệp và email, tại Tokyo), Auth0 by Okta (đăng nhập), Sentry (báo lỗi, không kèm tên hay email), Umami (đếm lượt truy cập không dùng cookie), Google Maps (bản đồ trong kết quả tìm kiếm), cùng Google Ads và Google Analytics (chỉ sau khi bạn chấp nhận cookie).",
+        "p3": "Google, Auth0 và Sentry có thể xử lý thông tin bên ngoài Nhật Bản, chủ yếu tại Hoa Kỳ. Chúng tôi chọn nhà cung cấp bảo vệ thông tin cá nhân ở mức tương đương APPI. Hãy liên hệ để biết chi tiết về nhà cung cấp và quốc gia liên quan.",
+        "p4": "Chúng tôi chỉ tiết lộ thông tin cá nhân cho người khác khi có sự đồng ý của bạn hoặc khi pháp luật yêu cầu."
+      },
+      "retention": {
+        "heading": "5. Thời gian lưu giữ",
+        "p1": "Ảnh thẻ bảo hiểm và các giấy tờ tùy thân khác tải lên khi đặt lịch sẽ bị xóa 30 ngày sau khi tải lên. Các tệp đặt lịch khác bị xóa sau một năm, và tệp của lượt đặt lịch chưa được gửi bị xóa sau 24 giờ.",
+        "p2": "Câu trả lời và hồ sơ lịch hẹn được lưu khi phòng khám còn cần và trong thời gian cần để giải quyết tranh chấp hoặc thực hiện nghĩa vụ pháp lý. Thông tin tài khoản được lưu khi tài khoản còn hoạt động. Bạn có thể yêu cầu chúng tôi xóa sớm hơn (mục 8)."
+      },
+      "cookies": {
+        "heading": "6. Cookie và đo lường quảng cáo",
+        "p1": "Chúng tôi sử dụng Google Ads, và Google Analytics khi được bật, do Google LLC cung cấp, để đo lường cách khách truy cập tìm đến và sử dụng dịch vụ. Khi bạn truy cập, trình duyệt gửi cho Google địa chỉ trang, địa chỉ IP, thông tin trình duyệt và một mã định danh lưu trong cookie. Google dùng thông tin này để đo lường quảng cáo của chúng tôi. Chúng tôi không dùng nó để cá nhân hóa quảng cáo cho bạn. Chính sách quyền riêng tư của Google có tại policies.google.com/privacy.",
+        "p2": "Chúng tôi hỏi trước khi tải bất kỳ công cụ nào trong số này. Google Ads và Google Analytics không gửi gì tới Google cho đến khi bạn chấp nhận. Bạn có thể chấp nhận hoặc từ chối bất cứ lúc nào tại Cài đặt cookie ở cuối mỗi trang. Nếu bạn từ chối, hoặc sau đó đổi sang từ chối, các công cụ sẽ không được tải và cookie của chúng sẽ bị xóa.",
+        "p3": "Chúng tôi cũng dùng cookie để ghi nhớ ngôn ngữ và lựa chọn cookie của bạn. Umami đếm lượt truy cập mà không dùng cookie."
+      },
+      "security": {
+        "heading": "7. Bảo mật",
+        "p1": "Thông tin được mã hóa khi truyền, và quyền truy cập chỉ giới hạn cho những người cần: người kiểm duyệt của chúng tôi và nhân viên phòng khám bạn đặt lịch. Nhân viên phòng khám chỉ xem được lịch hẹn của phòng khám mình."
+      },
+      "rights": {
+        "heading": "8. Quyền của bạn",
+        "p1": "Theo APPI, bạn có thể yêu cầu chúng tôi công bố thông tin cá nhân của bạn mà chúng tôi lưu giữ, sửa, ngừng sử dụng, xóa, hoặc ngừng chia sẻ cho người khác. Gửi email tới contact{'@'}findadoc.jp. Chúng tôi có thể cần xác minh danh tính của bạn trước. Bạn cũng có thể tự hủy lịch hẹn bằng liên kết riêng trong email xác nhận."
+      },
+      "children": {
+        "heading": "9. Trẻ em",
+        "p1": "Cha mẹ hoặc người giám hộ nên đặt lịch cho trẻ em. Nếu bạn cho rằng một trẻ em đã cung cấp thông tin cá nhân cho chúng tôi mà không có cha mẹ hoặc người giám hộ, hãy liên hệ để chúng tôi xóa."
+      },
+      "changes": {
+        "heading": "10. Thay đổi chính sách",
+        "p1": "Chúng tôi đăng các thay đổi trên trang này và cập nhật ngày hiệu lực. Với thay đổi quan trọng, chúng tôi cũng hiển thị thông báo trên trang web."
+      },
+      "gdpr": {
+        "heading": "11. Khách truy cập từ EEA, Vương quốc Anh và Thụy Sĩ",
+        "p1": "Nếu bạn dùng Find a Doc, Japan từ Khu vực Kinh tế Châu Âu, Vương quốc Anh hoặc Thụy Sĩ, GDPR (hoặc UK GDPR hay luật bảo vệ dữ liệu của Thụy Sĩ) cũng được áp dụng. Chúng tôi dựa trên sự đồng ý của bạn đối với cookie, đo lường quảng cáo và thông tin sức khỏe trong yêu cầu đặt lịch; dựa trên việc thực hiện các bước bạn yêu cầu trước buổi khám để chuyển yêu cầu đặt lịch cho phòng khám; và dựa trên lợi ích chính đáng của chúng tôi để vận hành, bảo mật và sửa lỗi dịch vụ.",
+        "p2": "Bạn còn có quyền nhận thông tin của mình ở định dạng có thể chuyển giao, phản đối việc xử lý dựa trên lợi ích chính đáng, rút lại sự đồng ý bất cứ lúc nào mà không ảnh hưởng đến việc xử lý trước đó, và khiếu nại với cơ quan bảo vệ dữ liệu nơi bạn sống. Rút lại đồng ý cookie tại Cài đặt cookie, và gửi các yêu cầu khác tới contact{'@'}findadoc.jp.",
+        "p3": "Ủy ban Châu Âu đã quyết định rằng Nhật Bản bảo vệ thông tin cá nhân ở mức đầy đủ, nên thông tin có thể được chuyển từ EEA sang Nhật Bản. Việc chuyển tới nhà cung cấp tại Hoa Kỳ dựa trên Khung Bảo mật Dữ liệu EU-Hoa Kỳ hoặc các điều khoản hợp đồng tiêu chuẩn của Ủy ban Châu Âu."
+      },
+      "contact": {
+        "heading": "12. Liên hệ",
+        "p1": "NPO法人Find a Doc, Japan · contact{'@'}findadoc.jp"
+      }
+    }
   },
   "submitPage": {
     "firstName": "Tên",
@@ -903,5 +949,13 @@
     "keep": "Giữ lại",
     "cancelled": "Lịch hẹn này đã bị hủy.",
     "cancelFailed": "Không thể hủy. Lịch hẹn có thể đã bắt đầu hoặc đã thay đổi; đang hiển thị trạng thái mới nhất."
+  },
+  "consent": {
+    "title": "Cookie trên trang này",
+    "body": "Chúng tôi dùng cookie của Google để đo lường quảng cáo và cách mọi người sử dụng Find a Doc, Japan. Cookie này không bao giờ được dùng để cá nhân hóa quảng cáo. Bạn có thể đổi lựa chọn bất cứ lúc nào tại Cài đặt cookie ở cuối trang.",
+    "privacyLink": "Chính sách quyền riêng tư",
+    "accept": "Chấp nhận",
+    "decline": "Từ chối",
+    "settings": "Cài đặt cookie"
   }
 }

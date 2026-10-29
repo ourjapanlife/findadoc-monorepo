@@ -23,47 +23,20 @@
             </header>
 
             <div class="prose-legal">
-                <p>
-                    {{ t('privacyPage.paragraph1') }}
-                </p>
-
-                <h2>{{ t('privacyPage.paragraph2') }}</h2>
-                <p>
-                    {{ t('privacyPage.paragraph3') }}
-                </p>
-
-                <h2>{{ t('privacyPage.paragraph4') }}</h2>
-                <p>
-                    {{ t('privacyPage.paragraph5') }}
-                </p>
-
-                <h2>{{ t('privacyPage.paragraph6') }}</h2>
-                <p>
-                    {{ t('privacyPage.paragraph7') }}
-                </p>
-
-                <h2>{{ t('privacyPage.paragraph8') }}</h2>
-                <p>
-                    {{ t('privacyPage.paragraph9') }}
-                </p>
-
-                <h2>{{ t('privacyPage.paragraph10') }}</h2>
-                <p>
-                    {{ t('privacyPage.paragraph11') }}
-                </p>
-
-                <h2>{{ t('privacyPage.paragraph12') }}</h2>
-                <p>
-                    {{ t('privacyPage.paragraph13') }}
-                </p>
-
-                <h2>{{ t('privacyPage.paragraph14') }}</h2>
-                <p>
-                    {{ t('privacyPage.paragraph15') }}
-                </p>
-                <p>
-                    {{ t('privacyPage.paragraph16') }}
-                </p>
+                <template
+                    v-for="section in PRIVACY_SECTIONS"
+                    :key="section.id"
+                >
+                    <h2 :id="section.anchor">
+                        {{ t(`privacyPage.sections.${section.id}.heading`) }}
+                    </h2>
+                    <p
+                        v-for="n in section.paragraphs"
+                        :key="n"
+                    >
+                        {{ t(`privacyPage.sections.${section.id}.p${n}`) }}
+                    </p>
+                </template>
             </div>
         </div>
     </section>
@@ -71,6 +44,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { PRIVACY_SECTIONS } from '~/utils/privacyPolicy'
 
 const { t } = useI18n()
 </script>

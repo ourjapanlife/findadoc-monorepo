@@ -7,6 +7,7 @@ import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
+import { consentBootstrapScript } from './utils/consent'
 import { CLINIC_HOST_BOOTSTRAP, CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
 import { writeClinicPreviewShells } from './utils/nuxt/clinicPreviewShell'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
@@ -15,6 +16,12 @@ import {
     applyEntityDirectoryToNuxt,
     entityDirectoryVitePlugins
 } from './utils/nuxt/entityDirectoryGenerate'
+
+// Google tag ids for production builds: Ads always, Analytics only with ENABLE_GOOGLE_ANALYTICS.
+// They load only after the visitor accepts (utils/consent.ts). Dev builds have none.
+const GOOGLE_TAG_IDS = process.env.NODE_ENV === 'production'
+    ? ['AW-18541704359', ...(process.env.ENABLE_GOOGLE_ANALYTICS === 'true' ? ['G-T0RE9B3PRG'] : [])]
+    : []
 
 export default defineNuxtConfig({
 
@@ -26,7 +33,6 @@ export default defineNuxtConfig({
         'nuxt-svgo',
         '@nuxt/eslint',
         '@nuxt/test-utils/module',
-        'nuxt-gtag',
         '@nuxtjs/storybook'
     ],
 
@@ -123,6 +129,8 @@ export default defineNuxtConfig({
             script: [
                 { innerHTML: COLOR_SCHEME_BOOTSTRAP, tagPosition: 'head' },
                 { innerHTML: CLINIC_HOST_BOOTSTRAP, tagPosition: 'head' },
+                // Every Google consent signal starts denied. It loads nothing.
+                { innerHTML: consentBootstrapScript(), tagPosition: 'head' },
                 ...umamiScript()
             ]
         }
@@ -171,6 +179,9 @@ export default defineNuxtConfig({
         },
         public: {
             isTestingMode: process.env.NUXT_IS_TESTING_MODE,
+
+            // Loaded only after consent (plugins/google-tag.client.ts, composables/useConsent.ts).
+            googleTagIds: GOOGLE_TAG_IDS,
 
             GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
 
@@ -308,12 +319,6 @@ export default defineNuxtConfig({
         config: {
             stylistic: true
         }
-    },
-
-    // Google analytics configuration
-    gtag: {
-        enabled: process.env.NODE_ENV === 'production' && process.env.ENABLE_GOOGLE_ANALYTICS === 'true',
-        id: 'G-T0RE9B3PRG'
     },
 
     i18n: {
