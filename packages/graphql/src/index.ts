@@ -107,7 +107,8 @@ export type BookingClinic = {
 
 /**
  * How carefully an answer or upload must be retained.
- * IDENTITY_DOCUMENT covers insurance cards and My Number / eligibility photos.
+ * IDENTITY_DOCUMENT covers insurance cards, eligibility certificates, マイナポータル insurance screenshots,
+ * and the patient's photo. A My Number card or its number is never collected.
  */
 export enum BookingFieldSensitivity {
   IdentityDocument = 'IDENTITY_DOCUMENT',

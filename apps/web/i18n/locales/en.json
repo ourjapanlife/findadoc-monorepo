@@ -782,8 +782,9 @@
       "fullName": "Full name",
       "age": "Age",
       "reason": "Reason for visit",
-      "insuranceDocument": "Insurance card or eligibility certificate",
-      "selfie": "Photo of you"
+      "insuranceDocument": "Proof of insurance",
+      "selfie": "Photo of you",
+      "insuranceType": "What do you use for health insurance?"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "No open times this week.",
     "slotEmptyAhead": "No open times in the coming weeks. Try another visit length, doctor, or language.",
     "nextAvailable": "Next available: {date}",
-    "openTimesCount": "open times: {n}"
+    "openTimesCount": "open times: {n}",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "Health insurance card (保険証)",
+        "eligibilityCertificate": "Eligibility certificate (資格確認書)",
+        "mynaInsurance": "My Number insurance card (マイナ保険証)"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "Photo of your health insurance card",
+      "eligibilityCertificate": "Photo of your eligibility certificate",
+      "mynaInsurance": "Screenshot of your insurance information from マイナポータル"
+    },
+    "insuranceGuide": {
+      "card": "Take a photo of the front of your card. Your name, the insurer, and the symbol and number must be readable.",
+      "certificate": "Take a photo of the page that shows your name and insurance details.",
+      "myna": {
+        "heading": "Send your insurance information from マイナポータル",
+        "step1": "Open the マイナポータル app or website and sign in with your My Number card.",
+        "step2": "Open your health insurance information (健康保険証).",
+        "step3": "Take a screenshot of the page that shows your insurer and insurance details.",
+        "step4": "Upload that screenshot below.",
+        "portalLink": "Open マイナポータル"
+      },
+      "noMyNumber": "Don't upload a photo of your My Number card, front or back, and don't send its 12-digit number.",
+      "bringCard": "The clinic confirms your insurance with the card itself."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Booking",

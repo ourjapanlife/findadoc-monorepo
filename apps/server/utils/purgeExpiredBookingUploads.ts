@@ -6,7 +6,7 @@ import { deleteBookingObject } from '../src/storage/objectStorage.js'
 
 /**
  * Delete booking upload objects whose retain_until has passed.
- * Identity documents (insurance / My Number photos) default to 30 days.
+ * Identity documents (insurance proofs and the patient's photo) default to 30 days.
  * Dry-run unless `--write` is passed. Does not delete answer rows.
  *
  * Reports counts only. An object key holds the patient's file name, and an S3

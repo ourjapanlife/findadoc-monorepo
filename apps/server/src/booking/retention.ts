@@ -1,8 +1,9 @@
 /**
  * Retention for booking uploads.
  *
- * Identity documents (insurance card, My Number / eligibility certificate
- * photos) are high-risk under APPI. They are kept only until retain_until, then
+ * Identity documents (insurance card, eligibility certificate, マイナポータル
+ * screenshot, the patient's photo) are high-risk under APPI. A My Number card or
+ * its number is never collected. They are kept only until retain_until, then
  * a purge run deletes the object. Standard attachments use a longer default.
  *
  * Medical free-text answers are not auto-purged here; that needs a separate

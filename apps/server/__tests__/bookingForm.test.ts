@@ -27,6 +27,19 @@ describe('booking forms', () => {
         expect(files.find(field => field.id === 'selfie')?.accept).toBe('image/jpeg,image/png,image/webp')
     })
 
+    it('asks which proof of insurance the patient has, before the upload', () => {
+        const form = formSourceById(SHOWCASE_BOOKING_FORM_ID)
+        const ids = form?.fields.map(field => field.id) ?? []
+        const insuranceType = form?.fields.find(field => field.id === 'insuranceType')
+
+        expect(ids.indexOf('insuranceType')).toBe(ids.indexOf('insuranceDocument') - 1)
+        expect(insuranceType?.type).toBe(BookingFormFieldType.Select)
+        expect(insuranceType?.required).toBe(true)
+        expect(insuranceType?.options?.map(option => option.value))
+            .toEqual(['insuranceCard', 'eligibilityCertificate', 'mynaInsurance'])
+        expect(form?.version).toBe(2)
+    })
+
     it('names every form type for the clinic picker', () => {
         expect(listFormSources().map(source => source.id)).toEqual([DEFAULT_BOOKING_FORM_ID, SHOWCASE_BOOKING_FORM_ID])
         expect(listFormSources().every(source => source.labelKey.startsWith('bookingForms.'))).toBe(true)

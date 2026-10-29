@@ -782,8 +782,9 @@
       "fullName": "성명",
       "age": "나이",
       "reason": "방문 사유",
-      "insuranceDocument": "보험증 또는 자격확인서",
-      "selfie": "본인 사진"
+      "insuranceDocument": "보험 증빙",
+      "selfie": "본인 사진",
+      "insuranceType": "건강보험 확인에 무엇을 사용하나요?"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "이번 주에는 빈 시간이 없습니다.",
     "slotEmptyAhead": "앞으로 몇 주 동안 빈 시간이 없습니다. 진료 시간, 의사, 언어를 바꿔 보세요.",
     "nextAvailable": "가장 빠른 빈 시간: {date}",
-    "openTimesCount": "빈 시간: {n}개"
+    "openTimesCount": "빈 시간: {n}개",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "건강보험증 (保険証)",
+        "eligibilityCertificate": "자격확인서 (資格確認書)",
+        "mynaInsurance": "보험증으로 등록한 마이넘버 카드 (マイナ保険証)"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "건강보험증 사진",
+      "eligibilityCertificate": "자격확인서 사진",
+      "mynaInsurance": "マイナポータル의 보험 정보 스크린샷"
+    },
+    "insuranceGuide": {
+      "card": "보험증 앞면을 찍어 주세요. 이름, 보험자, 기호·번호가 읽혀야 합니다.",
+      "certificate": "이름과 보험 정보가 나온 면을 찍어 주세요.",
+      "myna": {
+        "heading": "マイナポータル에서 보험 정보를 보내 주세요",
+        "step1": "マイナポータル 앱이나 웹사이트를 열고 마이넘버 카드로 로그인합니다.",
+        "step2": "건강보험 정보(健康保険証)를 엽니다.",
+        "step3": "보험자와 보험 정보가 나온 화면을 스크린샷으로 찍습니다.",
+        "step4": "그 스크린샷을 아래에 올립니다.",
+        "portalLink": "マイナポータル 열기"
+      },
+      "noMyNumber": "마이넘버 카드 사진(앞면·뒷면 모두)은 올리지 말고, 12자리 마이넘버도 보내지 마세요.",
+      "bringCard": "보험 확인은 클리닉이 카드로 직접 합니다."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "예약",

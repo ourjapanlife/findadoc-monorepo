@@ -1,8 +1,19 @@
 # Booking upload retention
 
-Insurance cards, eligibility certificates (資格確認書), and My Number–style
-identity photos are high-risk under APPI. They are stored as booking uploads
-with `sensitivity = identity_document` and a `retain_until` timestamp.
+Insurance cards, eligibility certificates (資格確認書), マイナポータル
+screenshots of insurance details, and the patient's photo are high-risk under
+APPI. They are stored as booking uploads with `sensitivity = identity_document`
+and a `retain_until` timestamp.
+
+## My Number
+
+Find a Doc never asks for a My Number card or its 12-digit number. The form
+asks which proof of insurance the patient has (`insuranceType`). A patient
+whose My Number card is their insurance card (マイナ保険証) is shown how to
+send a マイナポータル screenshot of the insurance details instead, and told not
+to upload the card, front or back. The clinic confirms insurance with the card
+itself (オンライン資格確認). Find a Doc does not connect to オンライン資格確認 or
+the マイナポータル API.
 
 ## Defaults
 

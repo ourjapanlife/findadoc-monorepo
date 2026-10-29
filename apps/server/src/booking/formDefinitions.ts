@@ -47,6 +47,9 @@ function field(
     }
 }
 
+/** Proof of insurance a patient may send. `mynaInsurance` is a My Number card registered as insurance. */
+export const INSURANCE_TYPES = ['insuranceCard', 'eligibilityCertificate', 'mynaInsurance'] as const
+
 const contactAndVisitFields: BookingFormField[] = [
     field({
         id: 'email',
@@ -100,6 +103,20 @@ const showcaseFields: BookingFormField[] = [
         max: 120
     }),
     contactAndVisitFields[3]!,
+    // Which proof of insurance the patient has. The Book page shows a guide for each;
+    // a My Number insurance card is shown as a マイナポータル screenshot, never the card.
+    field({
+        id: 'insuranceType',
+        stepKey: 'documents',
+        type: BookingFormFieldType.Select,
+        required: true,
+        labelKey: 'bookingPage.fields.insuranceType',
+        options: INSURANCE_TYPES.map(value => ({
+            value,
+            labelKey: `bookingPage.options.insuranceType.${value}`,
+            label: null
+        }))
+    }),
     field({
         id: 'insuranceDocument',
         stepKey: 'documents',
@@ -131,7 +148,8 @@ const FORMS_BY_ID: Record<string, FormSource> = {
     },
     [SHOWCASE_BOOKING_FORM_ID]: {
         id: SHOWCASE_BOOKING_FORM_ID,
-        version: 1,
+        // 2 asks which proof of insurance the patient has.
+        version: 2,
         labelKey: 'bookingForms.onlineConsultIntake',
         fields: showcaseFields
     }

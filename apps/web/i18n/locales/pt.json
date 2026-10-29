@@ -782,8 +782,9 @@
       "fullName": "Nome completo",
       "age": "Idade",
       "reason": "Motivo da visita",
-      "insuranceDocument": "Cartão de seguro ou certificado de elegibilidade",
-      "selfie": "Foto do rosto"
+      "insuranceDocument": "Comprovante do seguro",
+      "selfie": "Foto do rosto",
+      "insuranceType": "O que você usa como comprovante do seguro de saúde?"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "Não há horários livres nesta semana.",
     "slotEmptyAhead": "Não há horários livres nas próximas semanas. Tente outra duração, outro médico ou outro idioma.",
     "nextAvailable": "Próximo horário livre: {date}",
-    "openTimesCount": "horários livres: {n}"
+    "openTimesCount": "horários livres: {n}",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "Cartão do seguro de saúde (保険証)",
+        "eligibilityCertificate": "Certificado de elegibilidade (資格確認書)",
+        "mynaInsurance": "Cartão My Number registrado como seguro (マイナ保険証)"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "Foto do cartão do seguro de saúde",
+      "eligibilityCertificate": "Foto do certificado de elegibilidade",
+      "mynaInsurance": "Captura de tela das informações do seguro na マイナポータル"
+    },
+    "insuranceGuide": {
+      "card": "Fotografe a frente do cartão. O nome, a seguradora e o símbolo e número precisam estar legíveis.",
+      "certificate": "Fotografe a página com seu nome e os dados do seguro.",
+      "myna": {
+        "heading": "Envie as informações do seu seguro pela マイナポータル",
+        "step1": "Abra o app ou o site da マイナポータル e entre com o cartão My Number.",
+        "step2": "Abra as informações do seu seguro de saúde (健康保険証).",
+        "step3": "Faça uma captura da tela que mostra a seguradora e os dados do seguro.",
+        "step4": "Envie essa captura abaixo.",
+        "portalLink": "Abrir a マイナポータル"
+      },
+      "noMyNumber": "Não envie foto do cartão My Number, nem da frente nem do verso, e não envie o número de 12 dígitos.",
+      "bringCard": "A clínica confirma o seguro com o próprio cartão."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Reserva",

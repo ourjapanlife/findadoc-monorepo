@@ -782,8 +782,9 @@
       "fullName": "Nome completo",
       "age": "Età",
       "reason": "Motivo della visita",
-      "insuranceDocument": "Tessera assicurativa o certificato di idoneità",
-      "selfie": "Foto del viso"
+      "insuranceDocument": "Prova dell'assicurazione",
+      "selfie": "Foto del viso",
+      "insuranceType": "Cosa usi come prova dell'assicurazione sanitaria?"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "Nessun orario libero questa settimana.",
     "slotEmptyAhead": "Nessun orario libero nelle prossime settimane. Prova un'altra durata, un altro medico o un'altra lingua.",
     "nextAvailable": "Prossimo disponibile: {date}",
-    "openTimesCount": "orari liberi: {n}"
+    "openTimesCount": "orari liberi: {n}",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "Tessera dell'assicurazione sanitaria (保険証)",
+        "eligibilityCertificate": "Certificato di idoneità (資格確認書)",
+        "mynaInsurance": "Carta My Number registrata come tessera sanitaria (マイナ保険証)"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "Foto della tessera sanitaria",
+      "eligibilityCertificate": "Foto del certificato di idoneità",
+      "mynaInsurance": "Screenshot dei dati assicurativi da マイナポータル"
+    },
+    "insuranceGuide": {
+      "card": "Fotografa il fronte della tessera. Nome, ente assicurativo, simbolo e numero devono essere leggibili.",
+      "certificate": "Fotografa la pagina con il tuo nome e i dati assicurativi.",
+      "myna": {
+        "heading": "Invia i dati della tua assicurazione da マイナポータル",
+        "step1": "Apri l'app o il sito マイナポータル e accedi con la carta My Number.",
+        "step2": "Apri i dati della tua assicurazione sanitaria (健康保険証).",
+        "step3": "Fai uno screenshot della pagina con l'ente assicurativo e i dati assicurativi.",
+        "step4": "Carica lo screenshot qui sotto.",
+        "portalLink": "Apri マイナポータル"
+      },
+      "noMyNumber": "Non caricare foto della carta My Number, né fronte né retro, e non inviare il numero di 12 cifre.",
+      "bringCard": "La clinica verifica l'assicurazione con la carta stessa."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Prenotazione",
