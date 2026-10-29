@@ -70,7 +70,7 @@ pnpm dev
 
 独自ページを持つクリニックは `clinic_sites` の1行で、種データは `apps/server/scripts/seed/clinicSiteContent.ts` です。最初のページは `/clinic/multilingual-online-clinic` です。ディレクトリの施設idは `c32c316a-a368-499b-abaf-c5c973cb67e5` です。このページに市区町村がないので、種データの施設は未確定のままです。アカウントは `clinic_memberships` で紐づけます。`pnpm dev` は Turbo で、ローカルAPIへ接続します。`/clinic/multilingual-online-clinic?preview=1` を開くと、30日間有効なCookieが保存されます。CookieがないURLは404で、`noindex` になり、サイトマップにも入りません。`?preview=0` でCookieを消します。環境変数はありません。ページを読むために、種データを入れたAPIを起動します。
 
-ポスターに載せるリンクは `https://multilingual-online-clinic.findadoc.jp/` です。クリニックのパンくず、`/clinic/multilingual-online-clinic`、`--{id}` で終わるディレクトリのURLはそこへ転送されます。共有時の画像はそのクリニックのアイコンです。フッターは Find a Doc のロゴと「Powered by Find a Doc, Japan」だけです。ヘッダーには、そのクリニックが保存したブランドカラーを使います。予約ボタンはまだどこにも飛びません。予約の流れはあとからこのボタンを置き換えます。病院の管理者は、これまでどおり施設そのものを編集します。
+ポスターに載せるリンクは `https://multilingual-online-clinic.findadoc.jp/` です。クリニックのパンくず、`/clinic/multilingual-online-clinic`、`--{id}` で終わるディレクトリのURLはそこへ転送されます。クリニックホストの予約（`https://multilingual-online-clinic.findadoc.jp/book`）は Find a Doc 本体の `/book/c32c316a-a368-499b-abaf-c5c973cb67e5` へ送ります。この施設idが再利用するパラメータです。ディレクトリのクリニックページも同じパスです。予約ページは Find a Doc のヘッダーとフッターを使います。フォームにはサイトと同じ言語の切り替えがあり、言語を変えても入力は残ります。クリニックは 15・30・45・60 分の診察を出し、患者はスタッフが塗った30分の空き枠の中から、選んだ長さに合う開始時刻を必須で選びます。予約フォームは公開です。マイページの「予約申し込み」と「空き枠」はサインインしたスタッフだけです。「予約申し込み」は閲覧のみの一覧、「空き枠」は FullCalendar の編集画面です。本人確認・保険のアップロードは期限後に `pnpm --filter @findadoc/server purge:booking-uploads`（削除は `purge:booking-uploads:write`）で消します。localhost では、入力した回答がこのブラウザに自動で残ります。未保存のまま離れると、モデレーションと同じ確認が出ます。共有時の画像はそのクリニックのアイコンです。ランディングのヘッダーには、そのクリニックが保存したブランドカラーを使います。病院の管理者は、これまでどおり施設そのものを編集します。
 
 同じページは2つのホストで開きます。種データを入れたAPIとサイトは、次のコマンドで起動します。
 
@@ -81,7 +81,7 @@ pnpm dev:seeded
 - ドメインのパス: `http://127.0.0.1:3000/clinic/multilingual-online-clinic?preview=1`
 - クリニックのホスト名: `http://multilingual-online-clinic.localhost:3000/?preview=1`
 
-ブラウザは `*.localhost` をこのマシンに解決するので、hosts ファイルは要りません。ホスト名そのものがクリニックです。`http://multilingual-online-clinic.localhost:3000/` は `/` のままです。そのホストの他のページ、`/submit` と `/clinic/multilingual-online-clinic` も含めて、`/` へ転送されます。画像とスクリプトはそのままです。プレビューのCookieは、それを保存したホストにだけ付きます。それぞれのホストで `?preview=1` が必要です。`?preview=0` はそのホストのCookieを消します。正規URLはサブドメインです。
+ブラウザは `*.localhost` をこのマシンに解決するので、hosts ファイルは要りません。ホスト名そのものがクリニックです。`http://multilingual-online-clinic.localhost:3000/` は `/` のまま、`/book` が予約フォームです。そのホストの他のページ、`/submit` と `/clinic/multilingual-online-clinic` も含めて、`/` へ転送されます。画像とスクリプトはそのままです。プレビューのCookieは、それを保存したホストにだけ付きます。それぞれのホストで `?preview=1` が必要です。`?preview=0` はそのホストのCookieを消します。正規URLはサブドメインです。
 
 `www`、`api`、`mcp`、`docs`、`admin` はクリニックのホストではありません。
 

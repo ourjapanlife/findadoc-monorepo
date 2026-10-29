@@ -16,7 +16,7 @@
     "whatHeading": "Per che cosa possiamo aiutare",
     "whatBody": "Segnalate una clinica o un medico da inserire, una correzione a una pagina già pubblicata, o un problema nell'uso del sito. Rispondiamo anche a partner, giornalisti ed enti pubblici sull'organizzazione. Non diamo consigli medici, diagnosi né appuntamenti. Per le cure, trovate una clinica nell'elenco e contattatela direttamente.",
     "npoHeading": "L'organizzazione",
-    "npoBody": "Il nome registrato è NPO法人Find a Doc, Japan, numero 9011005010215, certificata a Tokyo il 28 agosto 2023. I documenti depositati, bilancio compreso, sono nella pagina di trasparenza. La sede registrata è un ufficio virtuale: l'indirizzo non è pubblicato qui e si ottiene su richiesta.",
+    "npoBody": "Il nome registrato è NPO法人Find a Doc Japan, numero 9011005010215, certificata a Tokyo il 28 agosto 2023. I documenti depositati, bilancio compreso, sono nella pagina di trasparenza. La sede registrata è un ufficio virtuale: l'indirizzo non è pubblicato qui e si ottiene su richiesta.",
     "addressNote": "Lavoriamo da remoto in tutto il Giappone."
   },
   "npoPage": {
@@ -104,7 +104,7 @@
     "privacy": "Privacy",
     "contribute": "Contribuisci",
     "contact": "Contatti",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Esplora",
     "communityHeading": "Comunità",
     "legalHeading": "Note legali"
@@ -112,7 +112,7 @@
   "hamburgerMenu": {
     "logout": "Esci",
     "languageDropdownTitle": "Lingua:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Accedi",
     "logoutToast": "Disconnessione riuscita"
   },
@@ -138,7 +138,7 @@
     "paragraph16": "Utilizzando il nostro servizio, accetti i termini descritti in questa Informativa sulla privacy.",
     "cookiesHeading": "8. Cookie e misurazione pubblicitaria",
     "cookiesBody": "Usiamo Google Ads e, quando attivo, Google Analytics, forniti da Google LLC, per misurare come i visitatori raggiungono e usano il nostro servizio. Durante la visita il tuo browser invia a Google l'indirizzo della pagina, il tuo indirizzo IP, dati sul browser e un identificativo salvato in un cookie. Google li usa per misurare i nostri annunci. Non li usiamo per personalizzare gli annunci per te. L'informativa sulla privacy di Google è su policies.google.com/privacy.",
-    "cookiesChoice": "Ai visitatori dello Spazio economico europeo, del Regno Unito e della Svizzera viene chiesto il consenso prima di impostare questi cookie. Chiunque può accettare o rifiutare in qualsiasi momento da Impostazioni dei cookie in fondo a ogni pagina. Se rifiuti, non viene impostato alcun cookie pubblicitario o di analisi, anche se Google può comunque ricevere un segnale senza cookie per stimare i risultati degli annunci."
+    "cookiesChoice": "Chiediamo il consenso prima di caricare questi strumenti. Nulla viene inviato a Google finché non accetti. Puoi accettare o rifiutare in qualsiasi momento da Impostazioni dei cookie in fondo a ogni pagina. Se rifiuti, o in seguito cambi la scelta in rifiuto, gli strumenti non vengono caricati e i relativi cookie vengono eliminati."
   },
   "submitPage": {
     "firstName": "Nome",
@@ -241,7 +241,9 @@
     "rejected": "Rifiutato",
     "submissions": "Inoltrato",
     "collapse": "Comprimi la barra laterale",
-    "expand": "Espandi la barra laterale"
+    "expand": "Espandi la barra laterale",
+    "bookings": "Prenotazioni",
+    "availability": "Disponibilità"
   },
   "accessPanel": {
     "loading": "Caricamento autorizzazioni…",
@@ -651,7 +653,8 @@
     "onlineMetaDescription": "{name}. Struttura online senza indirizzo. Telefono e lingue parlate dal personale.",
     "locationNav": "Luogo",
     "relatedSpecialtiesHeading": "Sfoglia per specialità",
-    "relatedLanguagesHeading": "Sfoglia per lingua"
+    "relatedLanguagesHeading": "Sfoglia per lingua",
+    "book": "Prenota"
   },
   "doctorPage": {
     "backToSearch": "Torna alla ricerca",
@@ -713,6 +716,196 @@
     "dismiss": "Chiudi",
     "announceLabel": "Notifica",
     "viewportLabel": "Notifiche ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Prenota · {clinic}",
+    "eyebrow": "Richiesta di appuntamento",
+    "heading": "Prenota con {clinic}",
+    "lead": "Invia i tuoi dati alla clinica. Nulla è confermato finché non rispondono.",
+    "optional": "facoltativo",
+    "selectPlaceholder": "Scegli",
+    "submit": "Invia richiesta",
+    "submitting": "Invio…",
+    "chooseFile": "Scegli un file",
+    "choosePhoto": "Scegli una foto",
+    "browse": "Sfoglia",
+    "privacyNote": "La clinica riceve questa richiesta. Find a Doc, Japan non fornisce consigli medici.",
+    "successHeading": "Richiesta inviata",
+    "successBody": "La clinica ti contatterà per l’appuntamento.",
+    "reference": "Riferimento: {id}",
+    "fields": {
+      "email": "Indirizzo email",
+      "phone": "Numero di telefono",
+      "fullName": "Nome completo",
+      "age": "Età",
+      "reason": "Motivo della visita",
+      "insuranceDocument": "Tessera assicurativa o certificato di idoneità",
+      "selfie": "Foto del viso"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Nome come sul documento",
+      "age": "35",
+      "reason": "Breve descrizione di ciò che ti serve"
+    },
+    "errors": {
+      "required": "Campo obbligatorio",
+      "email": "Inserisci un’email valida",
+      "phone": "Inserisci un numero valido",
+      "number": "Inserisci un numero",
+      "fileTooLarge": "File troppo grande",
+      "uploadFailed": "Caricamento non riuscito. Riprova.",
+      "form": "Controlla i campi evidenziati",
+      "submitFailed": "Impossibile inviare. Riprova.",
+      "slot": "Scegli un orario disponibile",
+      "duration": "Scegli una durata offerta dalla clinica"
+    },
+    "slotLabel": "Orario preferito",
+    "slotHelp": "Scegli un inizio che corrisponda alla durata negli orari aperti.",
+    "slotLoading": "Caricamento orari…",
+    "slotEmpty": "Nessun orario libero in questo giorno. Prova un’altra data o durata.",
+    "authRequired": "Accedi per aprire questo modulo di prenotazione…",
+    "stepsNav": "Passaggi della richiesta",
+    "stepOf": "Passo {current} di {total}",
+    "next": "Avanti",
+    "previous": "Indietro",
+    "steps": {
+      "contact": "Contatti",
+      "visit": "Visita",
+      "documents": "Documenti"
+    },
+    "dateLabel": "Data",
+    "durationLabel": "Durata della visita",
+    "durationHelp": "La clinica sceglie le durate disponibili.",
+    "durationMinutes": "{n} minuti",
+    "manageLinkHelp": "Salva questo link privato. Mostra la tua richiesta e ti permette di annullarla. Lo stesso link è nell'e-mail di conferma.",
+    "manageLink": "Vedi o annulla questa richiesta"
+  },
+  "bookingDashboard": {
+    "detailHeading": "Prenotazione",
+    "back": "Torna alle prenotazioni",
+    "loadError": "Impossibile caricare questa prenotazione.",
+    "empty": "Nessuna richiesta di prenotazione",
+    "answersHeading": "Risposte",
+    "uploadsHeading": "Caricamenti",
+    "uploadsRetentionNote": "Le foto di identità e assicurazione restano solo fino alla data di conservazione, poi vengono eliminate.",
+    "download": "Scarica",
+    "purged": "Eliminato",
+    "retainUntil": "Conservare fino al {date}",
+    "noAppointment": "Nessuno slot scelto",
+    "identityBadge": "Documento",
+    "identityYes": "Sì",
+    "identityNo": "Nessuno",
+    "columns": {
+      "clinic": "Clinica",
+      "status": "Stato",
+      "appointment": "Appuntamento",
+      "identity": "Caricamento identità",
+      "created": "Creato",
+      "locale": "Lingua"
+    },
+    "status": {
+      "received": "Ricevuto",
+      "notified": "Notificato",
+      "failedNotify": "Notifica non riuscita"
+    },
+    "sensitivity": {
+      "standard": "Generale",
+      "identityDocument": "Identità / assicurazione",
+      "medical": "Medico"
+    },
+    "requestEyebrow": "Richiesta di appuntamento",
+    "emailStatus": "E-mail di conferma",
+    "downloadFailed": "Impossibile aprire il file.",
+    "actionFailed": "Impossibile aggiornare l'appuntamento. Potrebbe essere cambiato; viene mostrato lo stato più recente.",
+    "reasonLabel": "Nota per il paziente (facoltativa, inviata in caso di rifiuto o annullamento)",
+    "reasonShown": "Nota: {reason}",
+    "cancelledByPatient": "Annullato dal paziente",
+    "cancelledByClinic": "Annullato dalla clinica",
+    "appointmentStatus": {
+      "requested": "Richiesto",
+      "confirmed": "Confermato",
+      "declined": "Rifiutato",
+      "cancelled": "Annullato",
+      "completed": "Completato"
+    },
+    "actions": {
+      "confirm": "Conferma",
+      "decline": "Rifiuta",
+      "cancel": "Annulla appuntamento",
+      "complete": "Segna come completato"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Sito della clinica",
+    "help": "Trascina per dipingere disponibilità da 30 minuti. Un clic rimuove un blocco. I pazienti prenotano 15, 30, 45 o 60 minuti in quelle finestre.",
+    "loading": "Caricamento calendario…",
+    "windowTitle": "Disponibile",
+    "createFailed": "Impossibile salvare la disponibilità.",
+    "deleteConfirm": "Rimuovere questa disponibilità?",
+    "deleteFailed": "Impossibile rimuovere la disponibilità.",
+    "legend": "Legenda del calendario",
+    "patient": "Paziente",
+    "loadFailed": "Impossibile caricare il calendario.",
+    "appointmentHelp": "Fai clic su un appuntamento per aprire la richiesta."
+  },
+  "bookingForms": {
+    "standardIntake": "Richiesta di visita standard",
+    "onlineConsultIntake": "Consulto online con tessera assicurativa e foto"
+  },
+  "clinicDashboard": {
+    "heading": "Pannello della clinica",
+    "loading": "Caricamento…",
+    "loadError": "Impossibile caricare il pannello. Riprova.",
+    "signInHeading": "Accedi al pannello della tua clinica",
+    "signInBody": "Usa l'indirizzo e-mail a cui è arrivato l'invito della clinica.",
+    "signIn": "Accedi",
+    "noClinics": "Questo account non è ancora collegato a una clinica.",
+    "noClinicsHelp": "Chiedi a Find a Doc, Japan di invitare l'indirizzo e-mail con cui accedi. L'invito verrà collegato al prossimo accesso.",
+    "noAccessHeading": "Non hai accesso a questa clinica",
+    "statusFilter": "Mostra",
+    "allStatuses": "Tutte le richieste",
+    "saved": "Salvato",
+    "saveFailed": "Impossibile salvare. Riprova.",
+    "tabs": {
+      "requests": "Richieste",
+      "calendar": "Calendario",
+      "settings": "Impostazioni"
+    },
+    "roles": {
+      "owner": "Titolare",
+      "staff": "Personale"
+    },
+    "settings": {
+      "heading": "Impostazioni di prenotazione",
+      "forms": "Moduli di accettazione",
+      "formsHelp": "I pazienti vedono il modulo predefinito, a meno che il link di prenotazione indichi un altro modulo che offri.",
+      "defaultForm": "Predefinito",
+      "save": "Salva impostazioni"
+    },
+    "members": {
+      "heading": "Squadra",
+      "help": "Le persone invitate qui possono vedere le richieste della clinica e modificarne il calendario dopo aver effettuato l'accesso con quell'e-mail.",
+      "active": "Accesso effettuato",
+      "pending": "Invitato",
+      "remove": "Rimuovi",
+      "removeConfirm": "Rimuovere {email} da questa clinica?",
+      "role": "Ruolo",
+      "invite": "Invita",
+      "invited": "{email} invitato"
+    }
+  },
+  "patientBooking": {
+    "heading": "La tua richiesta di appuntamento",
+    "notFound": "Non abbiamo trovato questa prenotazione. Riapri il link dell'e-mail di conferma.",
+    "reasonLabel": "Motivo (facoltativo, condiviso con la clinica)",
+    "cancel": "Annulla questo appuntamento",
+    "confirmCancel": "Annullare questo appuntamento? La clinica verrà avvisata e l'orario sarà offerto ad altri pazienti.",
+    "yesCancel": "Sì, annulla",
+    "keep": "Mantieni",
+    "cancelled": "Questo appuntamento è annullato.",
+    "cancelFailed": "Impossibile annullare. Potrebbe essere già iniziato o cambiato; viene mostrato lo stato più recente."
   },
   "consent": {
     "title": "Cookie su questo sito",

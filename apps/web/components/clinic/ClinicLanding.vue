@@ -426,10 +426,16 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ClinicSiteStatus, type ClinicSite } from '@findadoc/graphql'
-import { createError, useAsyncData, useHead } from '#imports'
+import { createError, navigateTo, useAsyncData, useHead } from '#imports'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import { useUmami } from '~/composables/useUmamiTracking'
-import { clinicLandingShareImage, clinicSiteFetchIsServer, clinicSubdomainUrl } from '~/utils/clinicLanding'
+import {
+    clinicLandingHostSlug,
+    clinicLandingShareImage,
+    clinicSiteFetchIsServer,
+    clinicSubdomainUrl
+} from '~/utils/clinicLanding'
+import { bookingClinicPath, findadocBookUrl } from '~/utils/booking/paths'
 import { fetchClinicSite } from '~/utils/clinicSiteQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
 import { DEFAULT_LOCALE_CODE } from '~/utils/localePath'
@@ -498,6 +504,7 @@ const content = {
 }
 
 const themeStyle = clinicThemeVars(landing.theme.primary)
+const bookingClinicId = landing.facilityId ?? landing.id
 
 const sections = computed(() => [
     { id: 'doctors', label: copy.value.navDoctors },
@@ -509,6 +516,16 @@ const sections = computed(() => [
 
 function onBook() {
     track('Clinic landing book')
+    const localeCode = String(locale.value)
+    const clinicId = bookingClinicId
+    if (clinicLandingHostSlug(hostname) === props.slug) {
+        void navigateTo(findadocBookUrl(clinicId, {
+            localeCode,
+            requestHost: host
+        }), { external: true })
+        return
+    }
+    void navigateTo(bookingClinicPath(clinicId, localeCode))
 }
 
 const shareImage = clinicLandingShareImage(landing.shareImagePath)

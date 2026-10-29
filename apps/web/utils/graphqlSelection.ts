@@ -80,6 +80,7 @@ const citySelection = selection<City>({
 
 /** Every Facility field. Read queries use this so a schema change cannot leave a query behind. */
 export const facilitySelection = selection<Facility>({
+    bookingEnabled: true,
     city: block('city', citySelection),
     cityId: true,
     contact: block('contact', contactSelection),

@@ -16,7 +16,7 @@
     "whatHeading": "Ce pour quoi nous pouvons aider",
     "whatBody": "Signalez une clinique ou un médecin à ajouter, une correction sur une page déjà en ligne, ou un problème d'utilisation du site. Nous répondons aussi aux partenaires, aux journalistes et aux administrations au sujet de l'organisation. Nous ne donnons pas de conseil médical, de diagnostic, ni de rendez-vous. Pour des soins, trouvez une clinique dans l'annuaire et contactez-la directement.",
     "npoHeading": "L'organisation",
-    "npoBody": "Le nom enregistré est NPO法人Find a Doc, Japan, numéro 9011005010215, certifiée à Tokyo le 28 août 2023. Les documents déposés, dont le bilan, sont sur la page d'informations légales. Le siège enregistré est un bureau virtuel : l'adresse n'est pas publiée ici et s'obtient sur demande.",
+    "npoBody": "Le nom enregistré est NPO法人Find a Doc Japan, numéro 9011005010215, certifiée à Tokyo le 28 août 2023. Les documents déposés, dont le bilan, sont sur la page d'informations légales. Le siège enregistré est un bureau virtuel : l'adresse n'est pas publiée ici et s'obtient sur demande.",
     "addressNote": "Nous travaillons à distance, partout au Japon."
   },
   "npoPage": {
@@ -78,14 +78,14 @@
     "privacy": "Confidentialité",
     "contribute": "Contribuer",
     "contact": "Contact",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Explorer",
     "communityHeading": "Communauté",
     "legalHeading": "Mentions légales"
   },
   "hamburgerMenu": {
     "languageDropdownTitle": "Langue :",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "logout": "Déconnexion",
     "login": "Connexion",
     "logoutToast": "Déconnexion réussie"
@@ -112,7 +112,7 @@
     "paragraph16": "En utilisant notre service, vous acceptez les termes énoncés dans cette politique de confidentialité.",
     "cookiesHeading": "8. Cookies et mesure publicitaire",
     "cookiesBody": "Nous utilisons Google Ads, ainsi que Google Analytics lorsqu'il est activé, fournis par Google LLC, pour mesurer comment les visiteurs arrivent sur notre service et l'utilisent. Lors de votre visite, votre navigateur envoie à Google l'adresse de la page, votre adresse IP, des informations sur le navigateur et un identifiant stocké dans un cookie. Google s'en sert pour mesurer nos publicités. Nous ne nous en servons pas pour personnaliser les publicités qui vous sont montrées. La politique de confidentialité de Google se trouve sur policies.google.com/privacy.",
-    "cookiesChoice": "Les visiteurs de l'Espace économique européen, du Royaume-Uni et de la Suisse sont consultés avant le dépôt de ces cookies. Chacun peut accepter ou refuser à tout moment via Paramètres des cookies en bas de chaque page. Si vous refusez, aucun cookie publicitaire ou d'analyse n'est déposé, mais Google peut encore recevoir un signal sans cookie pour estimer les résultats des publicités."
+    "cookiesChoice": "Nous demandons votre accord avant de charger ces outils. Rien n'est envoyé à Google tant que vous n'avez pas accepté. Vous pouvez accepter ou refuser à tout moment via Paramètres des cookies en bas de chaque page. Si vous refusez, ou si vous changez plus tard d'avis pour refuser, les outils ne sont pas chargés et leurs cookies sont supprimés."
   },
   "submitPage": {
     "firstName": "Prénom",
@@ -208,7 +208,9 @@
     "rejected": "Rejeté",
     "submissions": "Soumissions",
     "collapse": "Réduire la barre latérale",
-    "expand": "Ouvrir la barre latérale"
+    "expand": "Ouvrir la barre latérale",
+    "bookings": "Réservations",
+    "availability": "Disponibilités"
   },
   "accessPanel": {
     "loading": "Chargement des autorisations…",
@@ -651,7 +653,8 @@
     "onlineMetaDescription": "{name}. Établissement en ligne sans adresse postale. Téléphone et langues parlées par le personnel.",
     "locationNav": "Lieu",
     "relatedSpecialtiesHeading": "Parcourir par spécialité",
-    "relatedLanguagesHeading": "Parcourir par langue"
+    "relatedLanguagesHeading": "Parcourir par langue",
+    "book": "Réserver"
   },
   "doctorPage": {
     "backToSearch": "Retour à la recherche",
@@ -713,6 +716,196 @@
     "dismiss": "Fermer",
     "announceLabel": "Message",
     "viewportLabel": "Messages ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Réserver · {clinic}",
+    "eyebrow": "Demande de rendez-vous",
+    "heading": "Réserver avec {clinic}",
+    "lead": "Envoyez vos informations à la clinique. Rien n’est confirmé avant leur réponse.",
+    "optional": "facultatif",
+    "selectPlaceholder": "Choisir",
+    "submit": "Envoyer la demande",
+    "submitting": "Envoi…",
+    "chooseFile": "Choisir un fichier",
+    "choosePhoto": "Choisir une photo",
+    "browse": "Parcourir",
+    "privacyNote": "La clinique reçoit cette demande. Find a Doc, Japan ne donne pas de conseils médicaux.",
+    "successHeading": "Demande envoyée",
+    "successBody": "La clinique vous contactera au sujet du rendez-vous.",
+    "reference": "Référence : {id}",
+    "fields": {
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "fullName": "Nom complet",
+      "age": "Âge",
+      "reason": "Motif de la visite",
+      "insuranceDocument": "Carte d’assurance ou certificat d’éligibilité",
+      "selfie": "Photo de vous"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Nom tel que sur la pièce d’identité",
+      "age": "35",
+      "reason": "Courte description de votre besoin"
+    },
+    "errors": {
+      "required": "Ce champ est obligatoire",
+      "email": "Saisissez un e-mail valide",
+      "phone": "Saisissez un numéro valide",
+      "number": "Saisissez un nombre",
+      "fileTooLarge": "Ce fichier est trop volumineux",
+      "uploadFailed": "Échec du téléversement. Réessayez.",
+      "form": "Vérifiez les champs surlignés",
+      "submitFailed": "Impossible d’envoyer. Réessayez.",
+      "slot": "Choisissez un horaire disponible",
+      "duration": "Choisissez une durée proposée par la clinique"
+    },
+    "slotLabel": "Horaire souhaité",
+    "slotHelp": "Choisissez un début qui correspond à la durée dans les créneaux ouverts.",
+    "slotLoading": "Chargement des créneaux…",
+    "slotEmpty": "Aucun créneau ce jour-là. Essayez une autre date ou durée.",
+    "authRequired": "Connectez-vous pour ouvrir ce formulaire de réservation…",
+    "stepsNav": "Étapes de la demande",
+    "stepOf": "Étape {current} sur {total}",
+    "next": "Suivant",
+    "previous": "Retour",
+    "steps": {
+      "contact": "Coordonnées",
+      "visit": "Consultation",
+      "documents": "Justificatifs"
+    },
+    "dateLabel": "Date",
+    "durationLabel": "Durée de la visite",
+    "durationHelp": "La clinique choisit les durées disponibles.",
+    "durationMinutes": "{n} minutes",
+    "manageLinkHelp": "Conservez ce lien privé. Il affiche votre demande et permet de l'annuler. Le même lien figure dans votre e-mail de confirmation.",
+    "manageLink": "Voir ou annuler cette demande"
+  },
+  "bookingDashboard": {
+    "detailHeading": "Réservation",
+    "back": "Retour aux réservations",
+    "loadError": "Impossible de charger cette réservation.",
+    "empty": "Aucune demande de réservation pour le moment",
+    "answersHeading": "Réponses",
+    "uploadsHeading": "Fichiers",
+    "uploadsRetentionNote": "Les photos d’identité et d’assurance ne sont conservées que jusqu’à leur date limite, puis purgées.",
+    "download": "Télécharger",
+    "purged": "Purgé",
+    "retainUntil": "Conserver jusqu’au {date}",
+    "noAppointment": "Aucun créneau choisi",
+    "identityBadge": "Pièce d’identité",
+    "identityYes": "Oui",
+    "identityNo": "Non",
+    "columns": {
+      "clinic": "Clinique",
+      "status": "Statut",
+      "appointment": "Rendez-vous",
+      "identity": "Fichier d’identité",
+      "created": "Créé",
+      "locale": "Langue"
+    },
+    "status": {
+      "received": "Reçu",
+      "notified": "Notifié",
+      "failedNotify": "Échec de notification"
+    },
+    "sensitivity": {
+      "standard": "Général",
+      "identityDocument": "Identité / assurance",
+      "medical": "Médical"
+    },
+    "requestEyebrow": "Demande de rendez-vous",
+    "emailStatus": "E-mail de confirmation",
+    "downloadFailed": "Impossible d'ouvrir ce fichier.",
+    "actionFailed": "Impossible de mettre à jour ce rendez-vous. Il a peut-être changé ; le dernier statut est affiché.",
+    "reasonLabel": "Note pour le patient (facultative, envoyée avec un refus ou une annulation)",
+    "reasonShown": "Note : {reason}",
+    "cancelledByPatient": "Annulé par le patient",
+    "cancelledByClinic": "Annulé par la clinique",
+    "appointmentStatus": {
+      "requested": "Demandé",
+      "confirmed": "Confirmé",
+      "declined": "Refusé",
+      "cancelled": "Annulé",
+      "completed": "Terminé"
+    },
+    "actions": {
+      "confirm": "Confirmer",
+      "decline": "Refuser",
+      "cancel": "Annuler le rendez-vous",
+      "complete": "Marquer comme terminé"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Site de clinique",
+    "help": "Glissez pour peindre des disponibilités de 30 minutes. Un clic retire un bloc. Les patients réservent 15, 30, 45 ou 60 minutes dans ces plages.",
+    "loading": "Chargement du calendrier…",
+    "windowTitle": "Disponible",
+    "createFailed": "Impossible d’enregistrer cette disponibilité.",
+    "deleteConfirm": "Retirer cette disponibilité ?",
+    "deleteFailed": "Impossible de retirer cette disponibilité.",
+    "legend": "Légende du calendrier",
+    "patient": "Patient·e",
+    "loadFailed": "Impossible de charger ce calendrier.",
+    "appointmentHelp": "Cliquez sur un rendez-vous pour ouvrir la demande."
+  },
+  "bookingForms": {
+    "standardIntake": "Demande de consultation standard",
+    "onlineConsultIntake": "Téléconsultation avec carte d'assurance et photo"
+  },
+  "clinicDashboard": {
+    "heading": "Tableau de bord de la clinique",
+    "loading": "Chargement…",
+    "loadError": "Impossible de charger le tableau de bord. Réessayez.",
+    "signInHeading": "Connectez-vous au tableau de bord de votre clinique",
+    "signInBody": "Utilisez l'adresse e-mail qui a reçu l'invitation de votre clinique.",
+    "signIn": "Se connecter",
+    "noClinics": "Ce compte n'est encore lié à aucune clinique.",
+    "noClinicsHelp": "Demandez à Find a Doc, Japan d'inviter l'adresse e-mail avec laquelle vous vous connectez. L'invitation sera liée à votre prochaine connexion.",
+    "noAccessHeading": "Vous n'avez pas accès à cette clinique",
+    "statusFilter": "Afficher",
+    "allStatuses": "Toutes les demandes",
+    "saved": "Enregistré",
+    "saveFailed": "Impossible d'enregistrer. Réessayez.",
+    "tabs": {
+      "requests": "Demandes",
+      "calendar": "Calendrier",
+      "settings": "Paramètres"
+    },
+    "roles": {
+      "owner": "Responsable",
+      "staff": "Personnel"
+    },
+    "settings": {
+      "heading": "Paramètres de réservation",
+      "forms": "Formulaires d'admission",
+      "formsHelp": "Les patients voient le formulaire par défaut, sauf si le lien de réservation indique un autre formulaire que vous proposez.",
+      "defaultForm": "Par défaut",
+      "save": "Enregistrer les paramètres"
+    },
+    "members": {
+      "heading": "Équipe",
+      "help": "Les personnes invitées ici peuvent voir les demandes de cette clinique et modifier son calendrier après s'être connectées avec cet e-mail.",
+      "active": "Connecté",
+      "pending": "Invité",
+      "remove": "Retirer",
+      "removeConfirm": "Retirer {email} de cette clinique ?",
+      "role": "Rôle",
+      "invite": "Inviter",
+      "invited": "{email} invité"
+    }
+  },
+  "patientBooking": {
+    "heading": "Votre demande de rendez-vous",
+    "notFound": "Nous n'avons pas trouvé cette réservation. Rouvrez le lien de votre e-mail de confirmation.",
+    "reasonLabel": "Motif (facultatif, partagé avec la clinique)",
+    "cancel": "Annuler ce rendez-vous",
+    "confirmCancel": "Annuler ce rendez-vous ? La clinique sera prévenue et le créneau sera proposé à d'autres patients.",
+    "yesCancel": "Oui, annuler",
+    "keep": "Le garder",
+    "cancelled": "Ce rendez-vous est annulé.",
+    "cancelFailed": "Impossible d'annuler. Il a peut-être déjà commencé ou changé ; le dernier statut est affiché."
   },
   "consent": {
     "title": "Cookies sur ce site",

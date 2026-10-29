@@ -16,12 +16,12 @@
     "whatHeading": "ご相談いただけること",
     "whatBody": "掲載すべきクリニックや医師、すでに公開されているページの訂正、サイトの不具合をお知らせください。団体そのものについての取材、連携、公的機関からの問い合わせにもお答えします。医療上の助言、診断、予約の代行はしません。受診はディレクトリでクリニックを見つけ、そのクリニックに直接連絡してください。",
     "npoHeading": "団体について",
-    "npoBody": "登録名称は NPO法人Find a Doc, Japan、登録番号は 9011005010215 です。2023年8月28日に東京都の認証を受けました。貸借対照表を含む提出書類は情報公開のページに掲載しています。登記上の事務所はバーチャルオフィスのため、番地はここには載せず、請求があればお渡しします。",
+    "npoBody": "登録名称は NPO法人Find a Doc Japan、登録番号は 9011005010215 です。2023年8月28日に東京都の認証を受けました。貸借対照表を含む提出書類は情報公開のページに掲載しています。登記上の事務所はバーチャルオフィスのため、番地はここには載せず、請求があればお渡しします。",
     "addressNote": "日本各地から遠隔で活動しています。"
   },
   "npoPage": {
     "heading": "情報公開",
-    "intro": "NPO法人Find a Doc, Japanは、日本で登記された特定非営利活動法人です。以下の書類は、特定非営利活動法人に義務づけられた公告として掲載しています。",
+    "intro": "NPO法人Find a Doc Japanは、日本で登記された特定非営利活動法人です。以下の書類は、特定非営利活動法人に義務づけられた公告として掲載しています。",
     "entityLabel": "法人名",
     "numberLabel": "法人番号",
     "documentsHeading": "提出書類",
@@ -78,7 +78,7 @@
     "privacy": "プライバシーポリシー",
     "contribute": "活動に参加する",
     "contact": "お問い合わせ",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "サイト内",
     "communityHeading": "コミュニティ",
     "legalHeading": "法的情報"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "ログアウト",
     "languageDropdownTitle": "対応言語:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "ログイン",
     "logoutToast": "ログアウトしました"
   },
@@ -112,7 +112,7 @@
     "paragraph16": "本サービスを利用することで、このプライバシーポリシーに記載された条件に同意したものとみなします。",
     "cookiesHeading": "8. Cookieと広告の効果測定",
     "cookiesBody": "当サービスでは、利用者がどのように当サービスにたどり着き利用しているかを測定するため、Google LLC が提供する Google 広告（有効な場合は Google アナリティクスも）を使用しています。ページを訪れると、お使いのブラウザからページのアドレス、IPアドレス、ブラウザ情報、Cookie に保存された識別子が Google に送信されます。Google はこれを当方の広告の効果測定に使用します。当方がこれを広告のパーソナライズに使用することはありません。Google のプライバシーポリシーは policies.google.com/privacy をご覧ください。",
-    "cookiesChoice": "欧州経済領域、英国、スイスからの訪問者には、これらの Cookie を設定する前に同意を確認します。どなたでも、各ページ下部の「Cookie設定」からいつでも同意または拒否を選べます。拒否した場合、広告や分析の Cookie は設定されませんが、広告の効果を推定するため、Cookie を使わない信号が Google に送られることがあります。"
+    "cookiesChoice": "これらのツールを読み込む前に同意を確認します。同意するまで Google には何も送信されません。各ページ下部の「Cookie設定」から、いつでも同意または拒否を選べます。拒否した場合、または後から拒否に変更した場合、これらのツールは読み込まれず、その Cookie は削除されます。"
   },
   "submitPage": {
     "firstName": "名",
@@ -215,7 +215,9 @@
     "rejected": "却下",
     "submissions": "投稿",
     "collapse": "サイドバーを折りたたむ",
-    "expand": "サイドバーを開く"
+    "expand": "サイドバーを開く",
+    "bookings": "予約申し込み",
+    "availability": "空き枠"
   },
   "accessPanel": {
     "loading": "権限を読み込み中…",
@@ -657,7 +659,8 @@
     "onlineMetaDescription": "{name}。番地のないオンラインの医療機関。電話番号とスタッフが話す言語。",
     "locationNav": "所在地",
     "relatedSpecialtiesHeading": "専門分野から探す",
-    "relatedLanguagesHeading": "言語から探す"
+    "relatedLanguagesHeading": "言語から探す",
+    "book": "予約する"
   },
   "doctorPage": {
     "backToSearch": "検索に戻る",
@@ -713,6 +716,196 @@
     "dismiss": "閉じる",
     "announceLabel": "通知",
     "viewportLabel": "通知（{hotkey}）"
+  },
+  "bookingPage": {
+    "documentTitle": "予約 · {clinic}",
+    "eyebrow": "予約リクエスト",
+    "heading": "{clinic}の予約",
+    "lead": "クリニックへ連絡先と必要事項を送ります。確定はクリニックからの返信後です。",
+    "optional": "任意",
+    "selectPlaceholder": "選択してください",
+    "submit": "リクエストを送る",
+    "submitting": "送信中…",
+    "chooseFile": "ファイルを選ぶ",
+    "choosePhoto": "写真を選ぶ",
+    "browse": "参照",
+    "privacyNote": "この内容はクリニックに届きます。Find a Doc, Japanは医療アドバイスを行いません。",
+    "successHeading": "送信しました",
+    "successBody": "クリニックから予約について連絡があります。",
+    "reference": "受付番号: {id}",
+    "fields": {
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "fullName": "氏名",
+      "age": "年齢",
+      "reason": "受診理由",
+      "insuranceDocument": "保険証または資格確認書",
+      "selfie": "顔写真"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "身分証と同じ氏名",
+      "age": "35",
+      "reason": "症状や希望を短く書いてください"
+    },
+    "errors": {
+      "required": "必須項目です",
+      "email": "有効なメールアドレスを入力してください",
+      "phone": "有効な電話番号を入力してください",
+      "number": "数字を入力してください",
+      "fileTooLarge": "ファイルが大きすぎます",
+      "uploadFailed": "アップロードに失敗しました。もう一度お試しください。",
+      "form": "赤字の項目を確認してください",
+      "submitFailed": "送信できませんでした。もう一度お試しください。",
+      "slot": "空きのある時刻を選んでください",
+      "duration": "クリニックが提供する診察時間を選んでください"
+    },
+    "slotLabel": "希望日時",
+    "slotHelp": "クリニックの空き枠の中から、診察時間に合う開始時刻を選んでください。",
+    "slotLoading": "空き時間を読み込み中…",
+    "slotEmpty": "この日に空きがありません。別の日か時間の長さを試してください。",
+    "authRequired": "予約フォームを開くにはサインインしてください…",
+    "stepsNav": "予約の手順",
+    "stepOf": "{total}ステップ中 {current}",
+    "next": "次へ",
+    "previous": "戻る",
+    "steps": {
+      "contact": "連絡先",
+      "visit": "受診内容",
+      "documents": "書類"
+    },
+    "dateLabel": "日付",
+    "durationLabel": "診察時間",
+    "durationHelp": "選べる時間の長さはクリニックが決めています。",
+    "durationMinutes": "{n}分",
+    "manageLinkHelp": "この非公開リンクを保存してください。リクエストの確認とキャンセルができます。確認メールにも同じリンクがあります。",
+    "manageLink": "このリクエストを確認・キャンセル"
+  },
+  "bookingDashboard": {
+    "detailHeading": "予約",
+    "back": "予約一覧へ戻る",
+    "loadError": "この予約を読み込めませんでした。",
+    "empty": "予約申し込みはまだありません",
+    "answersHeading": "回答",
+    "uploadsHeading": "アップロード",
+    "uploadsRetentionNote": "保険証・マイナンバー等の本人確認画像は保持期限までだけ保管し、その後削除します。",
+    "download": "ダウンロード",
+    "purged": "削除済み",
+    "retainUntil": "保持期限 {date}",
+    "noAppointment": "枠未選択",
+    "identityBadge": "本人確認",
+    "identityYes": "あり",
+    "identityNo": "なし",
+    "columns": {
+      "clinic": "クリニック",
+      "status": "状態",
+      "appointment": "予約枠",
+      "identity": "本人確認画像",
+      "created": "作成日",
+      "locale": "言語"
+    },
+    "status": {
+      "received": "受信",
+      "notified": "通知済み",
+      "failedNotify": "通知失敗"
+    },
+    "sensitivity": {
+      "standard": "通常",
+      "identityDocument": "本人確認 / 保険",
+      "medical": "医療"
+    },
+    "requestEyebrow": "予約リクエスト",
+    "emailStatus": "確認メール",
+    "downloadFailed": "ファイルを開けませんでした。",
+    "actionFailed": "予約を更新できませんでした。状態が変わった可能性があります。最新の状態を表示しています。",
+    "reasonLabel": "患者さんへのメモ（任意。お断り・キャンセル時に送信されます）",
+    "reasonShown": "メモ：{reason}",
+    "cancelledByPatient": "患者さんがキャンセル",
+    "cancelledByClinic": "クリニックがキャンセル",
+    "appointmentStatus": {
+      "requested": "リクエスト中",
+      "confirmed": "確定",
+      "declined": "お断り",
+      "cancelled": "キャンセル",
+      "completed": "完了"
+    },
+    "actions": {
+      "confirm": "確定する",
+      "decline": "お断りする",
+      "cancel": "予約をキャンセル",
+      "complete": "完了にする"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "クリニックサイト",
+    "help": "ドラッグして30分単位の空き枠を塗ります。枠をクリックすると削除します。患者は15・30・45・60分の診察をその中から予約します。",
+    "loading": "カレンダーを読み込み中…",
+    "windowTitle": "受付可",
+    "createFailed": "空き枠を保存できませんでした。",
+    "deleteConfirm": "この空き枠を削除しますか？",
+    "deleteFailed": "空き枠を削除できませんでした。",
+    "legend": "カレンダーの凡例",
+    "patient": "患者さん",
+    "loadFailed": "カレンダーを読み込めませんでした。",
+    "appointmentHelp": "予約をクリックするとリクエストを開きます。"
+  },
+  "bookingForms": {
+    "standardIntake": "通常の受診リクエスト",
+    "onlineConsultIntake": "オンライン診療（保険証と写真あり）"
+  },
+  "clinicDashboard": {
+    "heading": "クリニック管理画面",
+    "loading": "読み込み中…",
+    "loadError": "管理画面を読み込めませんでした。もう一度お試しください。",
+    "signInHeading": "クリニック管理画面にログイン",
+    "signInBody": "クリニックの招待が届いたメールアドレスでログインしてください。",
+    "signIn": "ログイン",
+    "noClinics": "このアカウントはまだクリニックに紐づいていません。",
+    "noClinicsHelp": "ログインに使うメールアドレスを Find a Doc, Japan から招待してもらってください。次回ログイン時に招待が紐づきます。",
+    "noAccessHeading": "このクリニックへのアクセス権がありません",
+    "statusFilter": "表示",
+    "allStatuses": "すべてのリクエスト",
+    "saved": "保存しました",
+    "saveFailed": "保存できませんでした。もう一度お試しください。",
+    "tabs": {
+      "requests": "リクエスト",
+      "calendar": "カレンダー",
+      "settings": "設定"
+    },
+    "roles": {
+      "owner": "オーナー",
+      "staff": "スタッフ"
+    },
+    "settings": {
+      "heading": "予約の設定",
+      "forms": "問診フォーム",
+      "formsHelp": "予約リンクで別のフォームを指定しない限り、患者さんには既定のフォームが表示されます。",
+      "defaultForm": "既定",
+      "save": "設定を保存"
+    },
+    "members": {
+      "heading": "チーム",
+      "help": "ここで招待した人は、そのメールアドレスでログインすると、このクリニックのリクエストの閲覧とカレンダーの編集ができます。",
+      "active": "ログイン済み",
+      "pending": "招待中",
+      "remove": "削除",
+      "removeConfirm": "{email} をこのクリニックから削除しますか？",
+      "role": "役割",
+      "invite": "招待する",
+      "invited": "{email} を招待しました"
+    }
+  },
+  "patientBooking": {
+    "heading": "あなたの予約リクエスト",
+    "notFound": "この予約が見つかりませんでした。確認メールのリンクをもう一度開いてください。",
+    "reasonLabel": "理由（任意。クリニックに共有されます）",
+    "cancel": "この予約をキャンセル",
+    "confirmCancel": "この予約をキャンセルしますか？クリニックに通知され、この時間は他の患者さんに公開されます。",
+    "yesCancel": "はい、キャンセルします",
+    "keep": "キャンセルしない",
+    "cancelled": "この予約はキャンセルされました。",
+    "cancelFailed": "キャンセルできませんでした。すでに開始しているか、状態が変わった可能性があります。最新の状態を表示しています。"
   },
   "consent": {
     "title": "このサイトのCookie",

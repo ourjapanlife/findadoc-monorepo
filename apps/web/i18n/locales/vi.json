@@ -16,7 +16,7 @@
     "whatHeading": "Việc chúng tôi có thể giúp",
     "whatBody": "Hãy cho chúng tôi biết phòng khám hoặc bác sĩ cần được liệt kê, chỗ cần sửa trên trang đã đăng, hoặc sự cố khi dùng trang web. Chúng tôi cũng trả lời câu hỏi của đối tác, nhà báo và cơ quan công về chính tổ chức. Chúng tôi không đưa ra lời khuyên y khoa, chẩn đoán hay đặt lịch hộ. Để được khám, hãy tìm phòng khám trong danh bạ và liên hệ trực tiếp phòng khám đó.",
     "npoHeading": "Tổ chức",
-    "npoBody": "Tên đăng ký là NPO法人Find a Doc, Japan, số đăng ký 9011005010215, được Tokyo chứng nhận ngày 28 tháng 8 năm 2023. Hồ sơ đã nộp, kể cả bảng cân đối kế toán, được công bố trên trang công bố NPO. Văn phòng đăng ký là văn phòng ảo, nên địa chỉ đường phố không in ở đây mà cung cấp khi được yêu cầu.",
+    "npoBody": "Tên đăng ký là NPO法人Find a Doc Japan, số đăng ký 9011005010215, được Tokyo chứng nhận ngày 28 tháng 8 năm 2023. Hồ sơ đã nộp, kể cả bảng cân đối kế toán, được công bố trên trang công bố NPO. Văn phòng đăng ký là văn phòng ảo, nên địa chỉ đường phố không in ở đây mà cung cấp khi được yêu cầu.",
     "addressNote": "Chúng tôi làm việc từ xa trên khắp Nhật Bản."
   },
   "npoPage": {
@@ -78,7 +78,7 @@
     "privacy": "Chính Sách Bảo Mật",
     "contribute": "Đóng góp",
     "contact": "Liên hệ",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Khám phá",
     "communityHeading": "Cộng đồng",
     "legalHeading": "Pháp lý"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "Đăng xuất",
     "languageDropdownTitle": "Ngôn Ngữ:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Đăng nhập",
     "logoutToast": "Đã đăng xuất"
   },
@@ -112,7 +112,7 @@
     "paragraph16": "Bằng cách sử dụng dịch vụ của chúng tôi, bạn đồng ý với các điều khoản được nêu trong Chính sách Bảo mật này.",
     "cookiesHeading": "8. Cookie và đo lường quảng cáo",
     "cookiesBody": "Chúng tôi sử dụng Google Ads, và Google Analytics khi được bật, do Google LLC cung cấp, để đo lường cách khách truy cập tìm đến và sử dụng dịch vụ. Khi bạn truy cập, trình duyệt gửi cho Google địa chỉ trang, địa chỉ IP, thông tin trình duyệt và một mã định danh lưu trong cookie. Google dùng thông tin này để đo lường quảng cáo của chúng tôi. Chúng tôi không dùng nó để cá nhân hóa quảng cáo cho bạn. Chính sách quyền riêng tư của Google có tại policies.google.com/privacy.",
-    "cookiesChoice": "Khách truy cập từ Khu vực Kinh tế Châu Âu, Vương quốc Anh và Thụy Sĩ sẽ được hỏi trước khi đặt các cookie này. Bất kỳ ai cũng có thể chấp nhận hoặc từ chối bất cứ lúc nào tại Cài đặt cookie ở cuối mỗi trang. Nếu bạn từ chối, sẽ không có cookie quảng cáo hay phân tích nào được đặt, tuy Google vẫn có thể nhận một tín hiệu không dùng cookie để ước tính hiệu quả quảng cáo."
+    "cookiesChoice": "Chúng tôi hỏi trước khi tải bất kỳ công cụ nào trong số này. Không có gì được gửi tới Google cho đến khi bạn chấp nhận. Bạn có thể chấp nhận hoặc từ chối bất cứ lúc nào tại Cài đặt cookie ở cuối mỗi trang. Nếu bạn từ chối, hoặc sau đó đổi sang từ chối, các công cụ sẽ không được tải và cookie của chúng sẽ bị xóa."
   },
   "submitPage": {
     "firstName": "Tên",
@@ -215,7 +215,9 @@
     "rejected": "Bị từ chối",
     "submissions": "Các bài gửi",
     "collapse": "Thu gọn thanh bên",
-    "expand": "Mở rộng thanh bên"
+    "expand": "Mở rộng thanh bên",
+    "bookings": "Đặt lịch",
+    "availability": "Khung giờ trống"
   },
   "accessPanel": {
     "loading": "Đang tải quyền truy cập…",
@@ -651,7 +653,8 @@
     "onlineMetaDescription": "{name}. Cơ sở trực tuyến không có địa chỉ đường phố. Điện thoại và ngôn ngữ của nhân viên.",
     "locationNav": "Địa điểm",
     "relatedSpecialtiesHeading": "Duyệt theo chuyên khoa",
-    "relatedLanguagesHeading": "Duyệt theo ngôn ngữ"
+    "relatedLanguagesHeading": "Duyệt theo ngôn ngữ",
+    "book": "Đặt lịch"
   },
   "doctorPage": {
     "backToSearch": "Về tìm kiếm",
@@ -713,6 +716,196 @@
     "dismiss": "Đóng",
     "announceLabel": "Thông báo",
     "viewportLabel": "Thông báo ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Đặt lịch · {clinic}",
+    "eyebrow": "Yêu cầu đặt lịch",
+    "heading": "Đặt lịch với {clinic}",
+    "lead": "Gửi thông tin của bạn đến phòng khám. Chưa xác nhận cho đến khi họ trả lời.",
+    "optional": "không bắt buộc",
+    "selectPlaceholder": "Chọn một mục",
+    "submit": "Gửi yêu cầu",
+    "submitting": "Đang gửi…",
+    "chooseFile": "Chọn tệp",
+    "choosePhoto": "Chọn ảnh",
+    "browse": "Duyệt",
+    "privacyNote": "Phòng khám nhận yêu cầu này. Find a Doc, Japan không tư vấn y tế.",
+    "successHeading": "Đã gửi yêu cầu",
+    "successBody": "Phòng khám sẽ liên hệ về lịch hẹn.",
+    "reference": "Mã tham chiếu: {id}",
+    "fields": {
+      "email": "Địa chỉ email",
+      "phone": "Số điện thoại",
+      "fullName": "Họ và tên",
+      "age": "Tuổi",
+      "reason": "Lý do khám",
+      "insuranceDocument": "Thẻ bảo hiểm hoặc giấy xác nhận tư cách",
+      "selfie": "Ảnh của bạn"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Tên trên giấy tờ",
+      "age": "35",
+      "reason": "Mô tả ngắn nhu cầu của bạn"
+    },
+    "errors": {
+      "required": "Trường này là bắt buộc",
+      "email": "Nhập email hợp lệ",
+      "phone": "Nhập số điện thoại hợp lệ",
+      "number": "Nhập một số",
+      "fileTooLarge": "Tệp quá lớn",
+      "uploadFailed": "Tải lên thất bại. Thử lại.",
+      "form": "Kiểm tra các trường được tô sáng",
+      "submitFailed": "Không gửi được yêu cầu. Thử lại.",
+      "slot": "Chọn một giờ còn trống",
+      "duration": "Chọn thời lượng phòng khám cung cấp"
+    },
+    "slotLabel": "Giờ mong muốn",
+    "slotHelp": "Chọn giờ bắt đầu khớp thời lượng trong khung giờ trống.",
+    "slotLoading": "Đang tải giờ trống…",
+    "slotEmpty": "Không còn giờ trống ngày này. Thử ngày hoặc thời lượng khác.",
+    "authRequired": "Đăng nhập để mở biểu mẫu đặt lịch này…",
+    "stepsNav": "Các bước đặt lịch",
+    "stepOf": "Bước {current} / {total}",
+    "next": "Tiếp",
+    "previous": "Quay lại",
+    "steps": {
+      "contact": "Liên hệ",
+      "visit": "Lý do khám",
+      "documents": "Giấy tờ"
+    },
+    "dateLabel": "Ngày",
+    "durationLabel": "Thời lượng khám",
+    "durationHelp": "Phòng khám chọn các thời lượng có sẵn.",
+    "durationMinutes": "{n} phút",
+    "manageLinkHelp": "Hãy lưu liên kết riêng này. Bạn có thể xem hoặc hủy yêu cầu. Liên kết này cũng có trong email xác nhận.",
+    "manageLink": "Xem hoặc hủy yêu cầu này"
+  },
+  "bookingDashboard": {
+    "detailHeading": "Đặt lịch",
+    "back": "Quay lại danh sách đặt lịch",
+    "loadError": "Không tải được yêu cầu này.",
+    "empty": "Chưa có yêu cầu đặt lịch",
+    "answersHeading": "Câu trả lời",
+    "uploadsHeading": "Tệp tải lên",
+    "uploadsRetentionNote": "Ảnh giấy tờ và bảo hiểm chỉ giữ đến hạn retention rồi bị xóa.",
+    "download": "Tải xuống",
+    "purged": "Đã xóa",
+    "retainUntil": "Giữ đến {date}",
+    "noAppointment": "Chưa chọn khung giờ",
+    "identityBadge": "Giấy tờ",
+    "identityYes": "Có",
+    "identityNo": "Không",
+    "columns": {
+      "clinic": "Phòng khám",
+      "status": "Trạng thái",
+      "appointment": "Cuộc hẹn",
+      "identity": "Tải giấy tờ",
+      "created": "Tạo lúc",
+      "locale": "Ngôn ngữ"
+    },
+    "status": {
+      "received": "Đã nhận",
+      "notified": "Đã thông báo",
+      "failedNotify": "Thông báo thất bại"
+    },
+    "sensitivity": {
+      "standard": "Thường",
+      "identityDocument": "Giấy tờ / bảo hiểm",
+      "medical": "Y tế"
+    },
+    "requestEyebrow": "Yêu cầu đặt lịch",
+    "emailStatus": "Email xác nhận",
+    "downloadFailed": "Không thể mở tệp đó.",
+    "actionFailed": "Không thể cập nhật lịch hẹn này. Trạng thái có thể đã thay đổi; đang hiển thị trạng thái mới nhất.",
+    "reasonLabel": "Ghi chú cho bệnh nhân (không bắt buộc, gửi kèm khi từ chối hoặc hủy)",
+    "reasonShown": "Ghi chú: {reason}",
+    "cancelledByPatient": "Bệnh nhân đã hủy",
+    "cancelledByClinic": "Phòng khám đã hủy",
+    "appointmentStatus": {
+      "requested": "Đang chờ",
+      "confirmed": "Đã xác nhận",
+      "declined": "Đã từ chối",
+      "cancelled": "Đã hủy",
+      "completed": "Đã hoàn thành"
+    },
+    "actions": {
+      "confirm": "Xác nhận",
+      "decline": "Từ chối",
+      "cancel": "Hủy lịch hẹn",
+      "complete": "Đánh dấu hoàn thành"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Trang phòng khám",
+    "help": "Kéo để tô khung trống 30 phút. Bấm để xóa. Bệnh nhân đặt 15, 30, 45 hoặc 60 phút trong các khung đó.",
+    "loading": "Đang tải lịch…",
+    "windowTitle": "Trống",
+    "createFailed": "Không lưu được khung trống.",
+    "deleteConfirm": "Xóa khung trống này?",
+    "deleteFailed": "Không xóa được khung trống.",
+    "legend": "Chú thích lịch",
+    "patient": "Bệnh nhân",
+    "loadFailed": "Không thể tải lịch này.",
+    "appointmentHelp": "Nhấp vào lịch hẹn để mở yêu cầu."
+  },
+  "bookingForms": {
+    "standardIntake": "Yêu cầu khám thông thường",
+    "onlineConsultIntake": "Khám trực tuyến kèm thẻ bảo hiểm và ảnh"
+  },
+  "clinicDashboard": {
+    "heading": "Bảng điều khiển phòng khám",
+    "loading": "Đang tải…",
+    "loadError": "Không thể tải bảng điều khiển. Vui lòng thử lại.",
+    "signInHeading": "Đăng nhập vào bảng điều khiển phòng khám",
+    "signInBody": "Hãy dùng địa chỉ email đã nhận lời mời của phòng khám.",
+    "signIn": "Đăng nhập",
+    "noClinics": "Tài khoản này chưa được liên kết với phòng khám nào.",
+    "noClinicsHelp": "Hãy nhờ Find a Doc, Japan mời địa chỉ email bạn dùng để đăng nhập. Lời mời sẽ được liên kết ở lần đăng nhập tiếp theo.",
+    "noAccessHeading": "Bạn không có quyền truy cập phòng khám này",
+    "statusFilter": "Hiển thị",
+    "allStatuses": "Tất cả yêu cầu",
+    "saved": "Đã lưu",
+    "saveFailed": "Không thể lưu. Vui lòng thử lại.",
+    "tabs": {
+      "requests": "Yêu cầu",
+      "calendar": "Lịch",
+      "settings": "Cài đặt"
+    },
+    "roles": {
+      "owner": "Chủ sở hữu",
+      "staff": "Nhân viên"
+    },
+    "settings": {
+      "heading": "Cài đặt đặt lịch",
+      "forms": "Mẫu thông tin khám",
+      "formsHelp": "Bệnh nhân sẽ thấy mẫu mặc định trừ khi liên kết đặt lịch chỉ định một mẫu khác mà bạn cung cấp.",
+      "defaultForm": "Mặc định",
+      "save": "Lưu cài đặt"
+    },
+    "members": {
+      "heading": "Nhóm",
+      "help": "Người được mời ở đây có thể xem yêu cầu của phòng khám và chỉnh sửa lịch sau khi đăng nhập bằng email đó.",
+      "active": "Đã đăng nhập",
+      "pending": "Đã mời",
+      "remove": "Xóa",
+      "removeConfirm": "Xóa {email} khỏi phòng khám này?",
+      "role": "Vai trò",
+      "invite": "Mời",
+      "invited": "Đã mời {email}"
+    }
+  },
+  "patientBooking": {
+    "heading": "Yêu cầu đặt lịch của bạn",
+    "notFound": "Không tìm thấy lịch hẹn này. Hãy mở lại liên kết trong email xác nhận.",
+    "reasonLabel": "Lý do (không bắt buộc, sẽ chia sẻ với phòng khám)",
+    "cancel": "Hủy lịch hẹn này",
+    "confirmCancel": "Hủy lịch hẹn này? Phòng khám sẽ được thông báo và khung giờ này sẽ dành cho bệnh nhân khác.",
+    "yesCancel": "Có, hủy",
+    "keep": "Giữ lại",
+    "cancelled": "Lịch hẹn này đã bị hủy.",
+    "cancelFailed": "Không thể hủy. Lịch hẹn có thể đã bắt đầu hoặc đã thay đổi; đang hiển thị trạng thái mới nhất."
   },
   "consent": {
     "title": "Cookie trên trang này",

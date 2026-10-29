@@ -16,7 +16,7 @@
     "whatHeading": "What we can help with",
     "whatBody": "Tell us about a clinic or doctor that should be listed, a correction to a page that is already up, or a problem using the site. We also answer questions from partners, journalists, and public offices about the organisation itself. We do not provide medical advice, diagnoses, or appointments. For care, use the directory to find a clinic and contact that clinic directly.",
     "npoHeading": "The organisation",
-    "npoBody": "The registered name is NPO法人Find a Doc, Japan, registration number 9011005010215, certified in Tokyo on 28 August 2023. Filed documents, including the balance sheet, are published on the NPO disclosures page. The registered office is a virtual office, so the street address is available on request rather than printed here.",
+    "npoBody": "The registered name is NPO法人Find a Doc Japan, registration number 9011005010215, certified in Tokyo on 28 August 2023. Filed documents, including the balance sheet, are published on the NPO disclosures page. The registered office is a virtual office, so the street address is available on request rather than printed here.",
     "addressNote": "We work remotely across Japan."
   },
   "npoPage": {
@@ -141,7 +141,7 @@
     "privacy": "Privacy",
     "contribute": "Contribute",
     "contact": "Contact",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Explore",
     "communityHeading": "Community",
     "legalHeading": "Legal"
@@ -149,7 +149,7 @@
   "hamburgerMenu": {
     "logout": "Log out",
     "languageDropdownTitle": "Language:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Login",
     "logoutToast": "Successfully logged out"
   },
@@ -181,7 +181,7 @@
     "paragraph16": "By using our service, you agree to the terms outlined in this Privacy Policy.",
     "cookiesHeading": "8. Cookies and Advertising Measurement",
     "cookiesBody": "We use Google Ads, and Google Analytics when it is enabled, provided by Google LLC, to measure how visitors reach and use our service. When you visit, your browser sends Google the page address, your IP address, browser details, and an identifier stored in a cookie. Google uses this to measure our ads. We do not use it to personalise ads for you. Google's privacy policy is at policies.google.com/privacy.",
-    "cookiesChoice": "Visitors from the European Economic Area, the United Kingdom, and Switzerland are asked before these cookies are set. Anyone can accept or decline at any time with Cookie settings at the bottom of every page. If you decline, no advertising or analytics cookies are set, though Google may still receive a signal without cookies to estimate ad results."
+    "cookiesChoice": "We ask before loading any of these tools. Nothing is sent to Google until you accept. You can accept or decline at any time with Cookie settings at the bottom of every page. If you decline, or later change your choice to decline, the tools are not loaded and their cookies are deleted."
   },
   "submitPage": {
     "firstName": "First name",
@@ -332,7 +332,9 @@
     "rejected": "Rejected",
     "submissions": "Submissions",
     "collapse": "Collapse sidebar",
-    "expand": "Expand sidebar"
+    "expand": "Expand sidebar",
+    "bookings": "Bookings",
+    "availability": "Availability"
   },
   "accessPanel": {
     "loading": "Loading permissions…",
@@ -661,7 +663,8 @@
     "onlineBreadcrumb": "Online",
     "onlineMetaDescription": "{name}. Online clinic with no street address. Phone and the languages spoken by staff.",
     "relatedSpecialtiesHeading": "Browse by specialty",
-    "relatedLanguagesHeading": "Browse by language"
+    "relatedLanguagesHeading": "Browse by language",
+    "book": "Book"
   },
   "doctorPage": {
     "backToSearch": "Back to search",
@@ -713,6 +716,196 @@
     "dismiss": "Dismiss",
     "announceLabel": "Notification",
     "viewportLabel": "Notifications ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Book · {clinic}",
+    "eyebrow": "Appointment request",
+    "heading": "Book with {clinic}",
+    "lead": "Send your details to the clinic. Nothing is confirmed until they reply.",
+    "optional": "optional",
+    "selectPlaceholder": "Choose one",
+    "submit": "Send request",
+    "submitting": "Sending…",
+    "chooseFile": "Choose a file",
+    "choosePhoto": "Choose a photo",
+    "browse": "Browse",
+    "privacyNote": "The clinic receives this request. Find a Doc, Japan does not provide medical advice.",
+    "successHeading": "Request sent",
+    "successBody": "The clinic will contact you about the appointment.",
+    "reference": "Reference: {id}",
+    "fields": {
+      "email": "Email",
+      "phone": "Phone number",
+      "fullName": "Full name",
+      "age": "Age",
+      "reason": "Reason for visit",
+      "insuranceDocument": "Insurance card or eligibility certificate",
+      "selfie": "Photo of you"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Name as on your ID",
+      "age": "35",
+      "reason": "Short description of what you need"
+    },
+    "errors": {
+      "required": "This field is required",
+      "email": "Enter a valid email",
+      "phone": "Enter a valid phone number",
+      "number": "Enter a number",
+      "fileTooLarge": "That file is too large",
+      "uploadFailed": "Upload failed. Try again.",
+      "form": "Check the highlighted fields",
+      "submitFailed": "Could not send the request. Try again.",
+      "slot": "Choose an available time",
+      "duration": "Choose a visit length the clinic offers"
+    },
+    "slotLabel": "Preferred time",
+    "slotHelp": "Choose a start that fits the visit length inside clinic availability.",
+    "slotLoading": "Loading open times…",
+    "slotEmpty": "No open times on this day. Try another date or length.",
+    "authRequired": "Sign in to open this booking form…",
+    "stepsNav": "Booking steps",
+    "stepOf": "Step {current} of {total}",
+    "next": "Next",
+    "previous": "Back",
+    "steps": {
+      "contact": "Contact",
+      "visit": "Visit",
+      "documents": "Documents"
+    },
+    "dateLabel": "Date",
+    "durationLabel": "Visit length",
+    "durationHelp": "The clinic chooses which lengths are available.",
+    "durationMinutes": "{n} minutes",
+    "manageLinkHelp": "Save this private link. It shows your request and lets you cancel it. The same link is in your confirmation email.",
+    "manageLink": "View or cancel this request"
+  },
+  "bookingDashboard": {
+    "detailHeading": "Booking",
+    "back": "Back to bookings",
+    "loadError": "Could not load this booking.",
+    "empty": "No booking submissions yet",
+    "answersHeading": "Answers",
+    "uploadsHeading": "Uploads",
+    "uploadsRetentionNote": "Identity and insurance photos are kept only until their retain-until date, then purged.",
+    "download": "Download",
+    "purged": "Purged",
+    "retainUntil": "Retain until {date}",
+    "noAppointment": "No slot chosen",
+    "identityBadge": "ID file",
+    "identityYes": "Yes",
+    "identityNo": "No",
+    "columns": {
+      "clinic": "Clinic",
+      "status": "Status",
+      "appointment": "Appointment",
+      "identity": "Identity upload",
+      "created": "Created",
+      "locale": "Locale"
+    },
+    "status": {
+      "received": "Received",
+      "notified": "Notified",
+      "failedNotify": "Notify failed"
+    },
+    "sensitivity": {
+      "standard": "Standard",
+      "identityDocument": "Identity / insurance",
+      "medical": "Medical"
+    },
+    "requestEyebrow": "Appointment request",
+    "emailStatus": "Confirmation email",
+    "downloadFailed": "Could not open that file.",
+    "actionFailed": "Could not update this appointment. It may have changed; the latest status is shown.",
+    "reasonLabel": "Note for the patient (optional, sent with a decline or cancel)",
+    "reasonShown": "Note: {reason}",
+    "cancelledByPatient": "Cancelled by the patient",
+    "cancelledByClinic": "Cancelled by the clinic",
+    "appointmentStatus": {
+      "requested": "Requested",
+      "confirmed": "Confirmed",
+      "declined": "Declined",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "actions": {
+      "confirm": "Confirm",
+      "decline": "Decline",
+      "cancel": "Cancel appointment",
+      "complete": "Mark completed"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Clinic site",
+    "help": "Drag to paint 30-minute availability. Click a block to remove it. Patients book a 15, 30, 45, or 60 minute visit inside those windows.",
+    "loading": "Loading calendar…",
+    "windowTitle": "Available",
+    "createFailed": "Could not save that availability window.",
+    "deleteConfirm": "Remove this availability window?",
+    "deleteFailed": "Could not remove that window.",
+    "legend": "Calendar key",
+    "patient": "Patient",
+    "loadFailed": "Could not load this calendar.",
+    "appointmentHelp": "Click an appointment to open the request."
+  },
+  "bookingForms": {
+    "standardIntake": "Standard visit request",
+    "onlineConsultIntake": "Online consultation with insurance card and photo"
+  },
+  "clinicDashboard": {
+    "heading": "Clinic dashboard",
+    "loading": "Loading…",
+    "loadError": "Could not load the dashboard. Try again.",
+    "signInHeading": "Sign in to your clinic dashboard",
+    "signInBody": "Use the email address your clinic invitation was sent to.",
+    "signIn": "Sign in",
+    "noClinics": "This account is not linked to a clinic yet.",
+    "noClinicsHelp": "Ask Find a Doc, Japan to invite the email address you sign in with. The invitation links on your next sign-in.",
+    "noAccessHeading": "You do not have access to this clinic",
+    "statusFilter": "Show",
+    "allStatuses": "All requests",
+    "saved": "Saved",
+    "saveFailed": "Could not save. Try again.",
+    "tabs": {
+      "requests": "Requests",
+      "calendar": "Calendar",
+      "settings": "Settings"
+    },
+    "roles": {
+      "owner": "Owner",
+      "staff": "Staff"
+    },
+    "settings": {
+      "heading": "Booking settings",
+      "forms": "Intake forms",
+      "formsHelp": "Patients see the default form unless the Book link names another form you offer.",
+      "defaultForm": "Default",
+      "save": "Save settings"
+    },
+    "members": {
+      "heading": "Team",
+      "help": "People invited here can see this clinic's requests and edit its calendar after they sign in with that email.",
+      "active": "Signed in",
+      "pending": "Invited",
+      "remove": "Remove",
+      "removeConfirm": "Remove {email} from this clinic?",
+      "role": "Role",
+      "invite": "Invite",
+      "invited": "Invited {email}"
+    }
+  },
+  "patientBooking": {
+    "heading": "Your appointment request",
+    "notFound": "We could not find this booking. Open the link from your confirmation email again.",
+    "reasonLabel": "Reason (optional, shared with the clinic)",
+    "cancel": "Cancel this appointment",
+    "confirmCancel": "Cancel this appointment? The clinic will be told, and the time will be offered to other patients.",
+    "yesCancel": "Yes, cancel",
+    "keep": "Keep it",
+    "cancelled": "This appointment is cancelled.",
+    "cancelFailed": "Could not cancel. It may have already started or changed. The latest status is shown."
   },
   "consent": {
     "title": "Cookies on this site",

@@ -1,5 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { authorize, buildUserContext, getEffectiveScopes, Role, Scope } from '../src/auth'
+import {
+    ANONYMOUS_USER_SUB,
+    authorize,
+    buildUserContext,
+    getEffectiveScopes,
+    isAuthenticatedUser,
+    Role,
+    Scope
+} from '../src/auth'
 import { envVariables } from '../utils/environmentVariables'
 import { FastifyRequest } from 'fastify'
 
@@ -245,6 +253,31 @@ describe('getEffectiveScopes()', () => {
         const scopes = getEffectiveScopes(devUser)
         expect(scopes.includes(Scope['write:facilities'])).toBe(false)
         expect(scopes.includes(Scope['read:facilities'])).toBe(true)
+        expect(scopes.includes(Scope['create:bookings'])).toBe(true)
+    })
+
+    it('strips read:bookings in production for non-admin non-moderator', () => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
+        const devUser = {
+            sub: 'dev1',
+            name: 'Dev',
+            email: 'd@d.com',
+            roles: [Role.Dev],
+            scope: 'read:bookings'
+        }
+        expect(getEffectiveScopes(devUser).includes(Scope['read:bookings'])).toBe(false)
+    })
+
+    it('keeps read:bookings in production for Moderator', () => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
+        const mod = {
+            sub: 'm1',
+            name: 'Mod',
+            email: 'm@m.com',
+            roles: [Role.Moderator],
+            scope: ''
+        }
+        expect(getEffectiveScopes(mod).includes(Scope['read:bookings'])).toBe(true)
     })
 
     it('does not strip write scopes in production for Moderator', () => {
@@ -270,15 +303,19 @@ describe('roleScopes invariant: no accidental changes', () => {
             Scope['read:profile'],
             Scope['write:posts'],
             Scope['read:logs'], Scope['write:logs'],
-            Scope['read:reservations'], Scope['write:reservations']
+            Scope['read:reservations'], Scope['write:reservations'],
+            Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
+            Scope['write:clinic_memberships']
         ],
         [Role.Moderator]: [
             Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
             Scope['read:facilities'], Scope['write:facilities'], Scope['delete:facilities'],
             Scope['read:submissions'], Scope['write:submissions'], Scope['delete:submissions'],
-            Scope['read:profile'],
+            Scope['read:profile'], 
             Scope['write:posts'],
-            Scope['read:reservations'], Scope['write:reservations']
+            Scope['read:reservations'], Scope['write:reservations'],
+            Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
+            Scope['write:clinic_memberships']
         ],
         [Role.Dev]: [
             Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -288,12 +325,15 @@ describe('roleScopes invariant: no accidental changes', () => {
             Scope['read:profile'], 
             Scope['write:posts'],
             Scope['read:logs'], Scope['write:logs'],
-            Scope['read:reservations'], Scope['write:reservations']
+            Scope['read:reservations'], Scope['write:reservations'],
+            Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
+            Scope['write:clinic_memberships']
         ],
         [Role.User]: [
             Scope['read:healthcareprofessionals'],
             Scope['read:facilities'],
             Scope['create:submissions'],
+            Scope['create:bookings'],
             Scope['read:profile'],
             Scope['read:reservations'], Scope['write:reservations']
         ]
@@ -320,6 +360,40 @@ describe('roleScopes invariant: no accidental changes', () => {
             })
         })
     }
+})
+
+describe('isAuthenticatedUser()', () => {
+    it('rejects the anonymous stub stamped on JWT-less requests', () => {
+        expect(isAuthenticatedUser({
+            sub: ANONYMOUS_USER_SUB,
+            name: 'Anonymous',
+            email: '',
+            roles: [Role.User],
+            scope: ''
+        })).toBe(false)
+    })
+
+    it('accepts a real Auth0 subject', () => {
+        expect(isAuthenticatedUser({
+            sub: 'auth0|abc',
+            name: 'Someone',
+            email: 's@example.com',
+            roles: [Role.User],
+            scope: ''
+        })).toBe(true)
+    })
+
+    it('rejects missing users', () => {
+        expect(isAuthenticatedUser(null)).toBe(false)
+        expect(isAuthenticatedUser(undefined)).toBe(false)
+        expect(isAuthenticatedUser({
+            sub: '',
+            name: '',
+            email: '',
+            roles: [],
+            scope: ''
+        })).toBe(false)
+    })
 })
 
 describe('buildUserContext()', () => {

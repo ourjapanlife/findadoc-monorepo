@@ -46,7 +46,8 @@ describe('umamiScript', () => {
             defer: true,
             'data-website-id': 'site-1',
             'data-host-url': '/',
-            'data-domains': 'www.findadoc.jp,findadoc.jp'
+            'data-domains': 'www.findadoc.jp,findadoc.jp',
+            'data-exclude-hash': 'true'
         }])
     })
 

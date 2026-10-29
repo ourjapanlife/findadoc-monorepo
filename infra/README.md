@@ -208,7 +208,7 @@ Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-o
 
   Deleting this stack does not change that account setting. The bucket block stays either way.
 - The API role may `s3:PutObject` and `s3:GetObject` on `uploads/*` only. A browser uploads or downloads with a presigned URL signed by that role. There is no access key.
-- `STORAGE_BACKEND=none`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api`. Nothing writes an object until a feature changes the backend to `s3`. Local development leaves the variables unset and does not need AWS.
+- `STORAGE_BACKEND=s3`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api` so clinic booking can store insurance uploads under `uploads/booking/*`. Local development leaves the variables unset and uses the API’s `/dev-uploads/*` path instead.
 - An incomplete multipart upload is aborted after 7 days.
 - CORS allows `PUT` and `GET` from the site, clinic hostnames, Amplify previews, and localhost. The signature is what authorizes the call.
 
@@ -236,7 +236,7 @@ Every `*.findadoc.jp` name without its own Route 53 record resolves to the Ampli
 - DMARC is `_dmarc.findadoc.jp`, `p=none`, with aggregate reports to `dev-admin@findadoc.jp`. It only monitors. Google Workspace also sends as `@findadoc.jp`, and the apex has no Google SPF or DKIM yet, so `quarantine` or `reject` would block that mail. Add those first, then tighten the policy.
 - The configuration set `findadoc` requires TLS, publishes reputation metrics, and adds bounces and complaints to the account suppression list. Feedback is not forwarded to `noreply@`, which is not a mailbox we read.
 - The API role may `ses:SendEmail` and `ses:SendRawEmail` for this identity and this configuration set only. There is no access key.
-- `SES_FROM_ADDRESS`, `SES_CONFIGURATION_SET`, and `SES_REGION` are set on `findadoc-api`. Nothing in the API sends yet.
+- `SES_FROM_ADDRESS`, `SES_CONFIGURATION_SET`, and `SES_REGION` are set on `findadoc-api`. A booking sends a confirmation to the email on the request, and a short notice to a doctor linked on that clinic when the professional has an email. Without `SES_FROM_ADDRESS` the API logs the message metadata and does not send.
 
 A new SES account can send only to verified addresses until AWS enables production access. CloudFormation cannot request that. In the SES console for `ap-northeast-1`, open the account dashboard and request production access.
 

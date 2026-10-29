@@ -16,7 +16,7 @@
     "whatHeading": "我们可以协助的事",
     "whatBody": "请告诉我们应当收录的诊所或医生、已发布页面的更正，或使用网站时遇到的问题。我们也回答合作方、记者和公共机构关于本组织的问题。我们不提供医疗建议、诊断或代为预约。就医时请在名录中找到诊所，并直接联系该诊所。",
     "npoHeading": "组织",
-    "npoBody": "注册名称为 NPO法人Find a Doc, Japan，登记号码 9011005010215，于 2023年8月28日 获得东京都认证。包括资产负债表在内的申报文件公布在信息公开页面。注册办事处是虚拟办公室，因此街道地址不印在这里，需要时来信索取。",
+    "npoBody": "注册名称为 NPO法人Find a Doc Japan，登记号码 9011005010215，于 2023年8月28日 获得东京都认证。包括资产负债表在内的申报文件公布在信息公开页面。注册办事处是虚拟办公室，因此街道地址不印在这里，需要时来信索取。",
     "addressNote": "我们在日本各地远程工作。"
   },
   "npoPage": {
@@ -78,7 +78,7 @@
     "privacy": "隐私政策",
     "contribute": "参与贡献",
     "contact": "联系我们",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "探索",
     "communityHeading": "社区",
     "legalHeading": "法律信息"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "退出登录",
     "languageDropdownTitle": "语言:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "登录",
     "logoutToast": "已退出登录"
   },
@@ -112,7 +112,7 @@
     "paragraph16": "使用我们的服务即表示您同意本隐私政策中列出的条款。",
     "cookiesHeading": "8. Cookie 与广告效果衡量",
     "cookiesBody": "我们使用由 Google LLC 提供的 Google Ads（以及启用时的 Google Analytics），来衡量访问者如何找到并使用我们的服务。您访问时，浏览器会向 Google 发送页面地址、IP 地址、浏览器信息以及 Cookie 中存储的标识符。Google 用这些信息衡量我们的广告效果。我们不会用它为您个性化广告。Google 的隐私政策见 policies.google.com/privacy。",
-    "cookiesChoice": "来自欧洲经济区、英国和瑞士的访问者在设置这些 Cookie 前会先被询问。任何人都可以随时通过每个页面底部的“Cookie 设置”接受或拒绝。若您拒绝，将不会设置广告或分析 Cookie，但 Google 仍可能收到不含 Cookie 的信号以估算广告效果。"
+    "cookiesChoice": "在加载这些工具之前，我们会先征求您的同意。在您接受之前，不会向 Google 发送任何信息。您可以随时通过每个页面底部的“Cookie 设置”接受或拒绝。如果您拒绝，或之后改为拒绝，这些工具将不会加载，其 Cookie 也会被删除。"
   },
   "submitPage": {
     "firstName": "名",
@@ -215,7 +215,9 @@
     "rejected": "已驳回",
     "submissions": "提交",
     "collapse": "收起侧边栏",
-    "expand": "展开侧边栏"
+    "expand": "展开侧边栏",
+    "bookings": "预约申请",
+    "availability": "可预约时段"
   },
   "accessPanel": {
     "loading": "正在加载权限…",
@@ -651,7 +653,8 @@
     "onlineMetaDescription": "{name}。无街道地址的在线医疗机构。电话以及工作人员使用的语言。",
     "locationNav": "位置",
     "relatedSpecialtiesHeading": "按专科浏览",
-    "relatedLanguagesHeading": "按语言浏览"
+    "relatedLanguagesHeading": "按语言浏览",
+    "book": "预约"
   },
   "doctorPage": {
     "backToSearch": "返回搜索",
@@ -713,6 +716,196 @@
     "dismiss": "关闭",
     "announceLabel": "通知",
     "viewportLabel": "通知（{hotkey}）"
+  },
+  "bookingPage": {
+    "documentTitle": "预约 · {clinic}",
+    "eyebrow": "预约申请",
+    "heading": "向{clinic}预约",
+    "lead": "把您的资料发给诊所。诊所回复确认后预约才生效。",
+    "optional": "选填",
+    "selectPlaceholder": "请选择",
+    "submit": "发送申请",
+    "submitting": "发送中…",
+    "chooseFile": "选择文件",
+    "choosePhoto": "选择照片",
+    "browse": "浏览",
+    "privacyNote": "诊所会收到此申请。Find a Doc, Japan 不提供医疗建议。",
+    "successHeading": "申请已发送",
+    "successBody": "诊所会就预约与您联系。",
+    "reference": "参考编号：{id}",
+    "fields": {
+      "email": "电子邮箱",
+      "phone": "电话号码",
+      "fullName": "全名",
+      "age": "年龄",
+      "reason": "就诊原因",
+      "insuranceDocument": "保险证或资格确认书",
+      "selfie": "本人照片"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "与证件一致的姓名",
+      "age": "35",
+      "reason": "简要说明需求"
+    },
+    "errors": {
+      "required": "此项为必填",
+      "email": "请输入有效邮箱",
+      "phone": "请输入有效电话号码",
+      "number": "请输入数字",
+      "fileTooLarge": "文件过大",
+      "uploadFailed": "上传失败，请重试。",
+      "form": "请检查标出的字段",
+      "submitFailed": "无法发送申请，请重试。",
+      "slot": "请选择可预约时间",
+      "duration": "请选择诊所提供的就诊时长"
+    },
+    "slotLabel": "希望时间",
+    "slotHelp": "请在诊所可预约时段内选择符合就诊时长的开始时间。",
+    "slotLoading": "正在加载可预约时间…",
+    "slotEmpty": "当天没有可预约时间。请换一天或换一个时长。",
+    "authRequired": "请登录以打开此预约表单…",
+    "stepsNav": "预约步骤",
+    "stepOf": "第 {current} 步，共 {total} 步",
+    "next": "下一步",
+    "previous": "返回",
+    "steps": {
+      "contact": "联系方式",
+      "visit": "就诊内容",
+      "documents": "材料"
+    },
+    "dateLabel": "日期",
+    "durationLabel": "就诊时长",
+    "durationHelp": "可选时长由诊所设定。",
+    "durationMinutes": "{n} 分钟",
+    "manageLinkHelp": "请保存此私人链接，可查看或取消您的申请。确认邮件中也有相同的链接。",
+    "manageLink": "查看或取消此申请"
+  },
+  "bookingDashboard": {
+    "detailHeading": "预约",
+    "back": "返回预约列表",
+    "loadError": "无法加载此预约。",
+    "empty": "暂无预约申请",
+    "answersHeading": "回答",
+    "uploadsHeading": "上传文件",
+    "uploadsRetentionNote": "身份与保险照片仅保留至保留期限，到期后清除。",
+    "download": "下载",
+    "purged": "已清除",
+    "retainUntil": "保留至 {date}",
+    "noAppointment": "未选择时段",
+    "identityBadge": "身份文件",
+    "identityYes": "有",
+    "identityNo": "无",
+    "columns": {
+      "clinic": "诊所",
+      "status": "状态",
+      "appointment": "预约时段",
+      "identity": "身份上传",
+      "created": "创建时间",
+      "locale": "语言"
+    },
+    "status": {
+      "received": "已接收",
+      "notified": "已通知",
+      "failedNotify": "通知失败"
+    },
+    "sensitivity": {
+      "standard": "标准",
+      "identityDocument": "身份 / 保险",
+      "medical": "医疗"
+    },
+    "requestEyebrow": "预约申请",
+    "emailStatus": "确认邮件",
+    "downloadFailed": "无法打开该文件。",
+    "actionFailed": "无法更新此预约。状态可能已变化，已显示最新状态。",
+    "reasonLabel": "给患者的备注（可选，拒绝或取消时发送）",
+    "reasonShown": "备注：{reason}",
+    "cancelledByPatient": "患者已取消",
+    "cancelledByClinic": "诊所已取消",
+    "appointmentStatus": {
+      "requested": "待确认",
+      "confirmed": "已确认",
+      "declined": "已拒绝",
+      "cancelled": "已取消",
+      "completed": "已完成"
+    },
+    "actions": {
+      "confirm": "确认",
+      "decline": "拒绝",
+      "cancel": "取消预约",
+      "complete": "标记为已完成"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "诊所站点",
+    "help": "拖动以涂出 30 分钟的可预约时段。点击时段可删除。患者可在其中预约 15、30、45 或 60 分钟。",
+    "loading": "正在加载日历…",
+    "windowTitle": "可预约",
+    "createFailed": "无法保存该可预约时段。",
+    "deleteConfirm": "删除此可预约时段？",
+    "deleteFailed": "无法删除该时段。",
+    "legend": "日历图例",
+    "patient": "患者",
+    "loadFailed": "无法加载此日历。",
+    "appointmentHelp": "点击预约可打开申请。"
+  },
+  "bookingForms": {
+    "standardIntake": "普通就诊申请",
+    "onlineConsultIntake": "在线问诊（含保险卡和照片）"
+  },
+  "clinicDashboard": {
+    "heading": "诊所管理面板",
+    "loading": "加载中…",
+    "loadError": "无法加载管理面板，请重试。",
+    "signInHeading": "登录诊所管理面板",
+    "signInBody": "请使用收到诊所邀请的邮箱登录。",
+    "signIn": "登录",
+    "noClinics": "此账户尚未关联诊所。",
+    "noClinicsHelp": "请联系 Find a Doc, Japan 邀请您登录所用的邮箱。下次登录时邀请即会生效。",
+    "noAccessHeading": "您无权访问此诊所",
+    "statusFilter": "显示",
+    "allStatuses": "全部申请",
+    "saved": "已保存",
+    "saveFailed": "无法保存，请重试。",
+    "tabs": {
+      "requests": "申请",
+      "calendar": "日历",
+      "settings": "设置"
+    },
+    "roles": {
+      "owner": "所有者",
+      "staff": "员工"
+    },
+    "settings": {
+      "heading": "预约设置",
+      "forms": "问诊表",
+      "formsHelp": "除非预约链接指定了您提供的其他表单，否则患者看到的是默认表单。",
+      "defaultForm": "默认",
+      "save": "保存设置"
+    },
+    "members": {
+      "heading": "团队",
+      "help": "受邀者使用该邮箱登录后，可以查看此诊所的申请并编辑其日历。",
+      "active": "已登录",
+      "pending": "已邀请",
+      "remove": "移除",
+      "removeConfirm": "要将 {email} 从此诊所移除吗？",
+      "role": "角色",
+      "invite": "邀请",
+      "invited": "已邀请 {email}"
+    }
+  },
+  "patientBooking": {
+    "heading": "您的预约申请",
+    "notFound": "找不到此预约。请重新打开确认邮件中的链接。",
+    "reasonLabel": "原因（可选，将告知诊所）",
+    "cancel": "取消此预约",
+    "confirmCancel": "要取消此预约吗？诊所会收到通知，该时间将开放给其他患者。",
+    "yesCancel": "是，取消",
+    "keep": "保留",
+    "cancelled": "此预约已取消。",
+    "cancelFailed": "无法取消。预约可能已开始或已变化，已显示最新状态。"
   },
   "consent": {
     "title": "本网站的 Cookie",

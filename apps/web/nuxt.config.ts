@@ -17,8 +17,11 @@ import {
     entityDirectoryVitePlugins
 } from './utils/nuxt/entityDirectoryGenerate'
 
-// The Google tag (Ads, and Analytics when ENABLE_GOOGLE_ANALYTICS is set) and its consent defaults.
-const GOOGLE_TAG_ENABLED = process.env.NODE_ENV === 'production'
+// Google tag ids for production builds: Ads always, Analytics only with ENABLE_GOOGLE_ANALYTICS.
+// They load only after the visitor accepts (utils/consent.ts). Dev builds have none.
+const GOOGLE_TAG_IDS = process.env.NODE_ENV === 'production'
+    ? ['AW-18541704359', ...(process.env.ENABLE_GOOGLE_ANALYTICS === 'true' ? ['G-T0RE9B3PRG'] : [])]
+    : []
 
 export default defineNuxtConfig({
 
@@ -30,7 +33,6 @@ export default defineNuxtConfig({
         'nuxt-svgo',
         '@nuxt/eslint',
         '@nuxt/test-utils/module',
-        'nuxt-gtag',
         '@nuxtjs/storybook'
     ],
 
@@ -127,8 +129,8 @@ export default defineNuxtConfig({
             script: [
                 { innerHTML: COLOR_SCHEME_BOOTSTRAP, tagPosition: 'head' },
                 { innerHTML: CLINIC_HOST_BOOTSTRAP, tagPosition: 'head' },
-                // Consent defaults must reach dataLayer before the Google tag's config.
-                ...(GOOGLE_TAG_ENABLED ? [{ innerHTML: consentBootstrapScript(), tagPosition: 'head' as const }] : []),
+                // Every Google consent signal starts denied. It loads nothing.
+                { innerHTML: consentBootstrapScript(), tagPosition: 'head' },
                 ...umamiScript()
             ]
         }
@@ -178,6 +180,9 @@ export default defineNuxtConfig({
         public: {
             isTestingMode: process.env.NUXT_IS_TESTING_MODE,
 
+            // Loaded only after consent (plugins/google-tag.client.ts, composables/useConsent.ts).
+            googleTagIds: GOOGLE_TAG_IDS,
+
             GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
 
             NUXT_PUBLIC_LOAD_STORES: process.env.NUXT_PUBLIC_LOAD_STORES,
@@ -222,11 +227,16 @@ export default defineNuxtConfig({
         '/login': { ssr: false },
         '/my-page': { ssr: false },
         '/my-page/**': { ssr: false },
+        // Booking loads the form from the API for a clinic id/host. No static HTML.
+        '/book': { ssr: false },
+        '/book/**': { ssr: false },
         // prefix_except_default: the same SPA surfaces under /ja-JP/search and so on.
         '/:locale/search': { ssr: false },
         '/:locale/login': { ssr: false },
         '/:locale/my-page': { ssr: false },
-        '/:locale/my-page/**': { ssr: false }
+        '/:locale/my-page/**': { ssr: false },
+        '/:locale/book': { ssr: false },
+        '/:locale/book/**': { ssr: false }
         // `/clinic/:slug` is not `ssr: false`. Nuxt treats that rule as covering
         // `/clinic/{prefecture}/{city}/{slug}` and stubs the directory page, so
         // generate writes an empty shell. Preview landings stay off the prerender
@@ -309,16 +319,6 @@ export default defineNuxtConfig({
         config: {
             stylistic: true
         }
-    },
-
-    // Google tag. One gtag.js for every tag ID.
-    // Google Ads loads on every production build. Analytics stays opt-in with ENABLE_GOOGLE_ANALYTICS.
-    gtag: {
-        enabled: GOOGLE_TAG_ENABLED,
-        tags: [
-            'AW-18541704359',
-            ...(process.env.ENABLE_GOOGLE_ANALYTICS === 'true' ? ['G-T0RE9B3PRG'] : [])
-        ]
     },
 
     i18n: {

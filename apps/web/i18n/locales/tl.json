@@ -16,7 +16,7 @@
     "whatHeading": "Mga bagay na matutulungan namin",
     "whatBody": "Sabihin sa amin ang klinik o doktor na dapat mailista, ang pagwawasto sa pahinang naka-publish na, o ang problemang nae-encounter sa paggamit ng site. Sinasagot din namin ang mga tanong ng kasosyo, mamamahayag, at tanggapan ng gobyerno tungkol sa samahan. Hindi kami nagbibigay ng medikal na payo, diagnosis, o appointment. Para magpagamot, hanapin ang klinik sa direktoryo at direktang kontakin ang klinik na iyon.",
     "npoHeading": "Ang samahan",
-    "npoBody": "Ang rehistradong pangalan ay NPO法人Find a Doc, Japan, numerong 9011005010215, sertipikado sa Tokyo noong 28 Agosto 2023. Ang mga isinumiteng dokumento, kasama ang balance sheet, ay nasa pahina ng pagsisiwalat ng NPO. Virtual office ang rehistradong opisina, kaya ang street address ay ibinibigay kapag hiniling, hindi inilalathala rito.",
+    "npoBody": "Ang rehistradong pangalan ay NPO法人Find a Doc Japan, numerong 9011005010215, sertipikado sa Tokyo noong 28 Agosto 2023. Ang mga isinumiteng dokumento, kasama ang balance sheet, ay nasa pahina ng pagsisiwalat ng NPO. Virtual office ang rehistradong opisina, kaya ang street address ay ibinibigay kapag hiniling, hindi inilalathala rito.",
     "addressNote": "Nagtatrabaho kami nang malayo sa iba't ibang lugar ng Japan."
   },
   "npoPage": {
@@ -78,7 +78,7 @@
     "privacy": "Pribasiya",
     "contribute": "Mag-ambag",
     "contact": "Makipag-ugnayan",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Tuklasin",
     "communityHeading": "Komunidad",
     "legalHeading": "Impormasyong legal"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "Mag-logout",
     "languageDropdownTitle": "Lengwahe:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Mag-login",
     "logoutToast": "Naka-logout na"
   },
@@ -112,7 +112,7 @@
     "paragraph16": "Sa paggamit ng aming serbisyo, ikaw ay sumasang-ayon sa mga tuntunin na nakasaad sa Patakaran sa Pribasiya na ito.",
     "cookiesHeading": "8. Mga Cookie at Pagsukat ng Advertising",
     "cookiesBody": "Gumagamit kami ng Google Ads, at ng Google Analytics kapag naka-on ito, na ibinibigay ng Google LLC, para sukatin kung paano dumarating at gumagamit ang mga bisita sa aming serbisyo. Kapag bumisita ka, ipinapadala ng iyong browser sa Google ang address ng pahina, ang iyong IP address, mga detalye ng browser, at isang identifier na nakatago sa cookie. Ginagamit ito ng Google para sukatin ang aming mga ad. Hindi namin ito ginagamit para i-personalize ang mga ad para sa iyo. Nasa policies.google.com/privacy ang patakaran sa privacy ng Google.",
-    "cookiesChoice": "Tinatanong muna ang mga bisita mula sa European Economic Area, United Kingdom, at Switzerland bago itakda ang mga cookie na ito. Sinuman ay maaaring tumanggap o tumanggi anumang oras sa Mga setting ng cookie sa ibaba ng bawat pahina. Kung tatanggi ka, walang itatakdang cookie para sa advertising o analytics, bagaman maaari pa ring makatanggap ang Google ng signal na walang cookie para tantyahin ang resulta ng mga ad."
+    "cookiesChoice": "Nagtatanong muna kami bago i-load ang alinman sa mga tool na ito. Walang ipinapadala sa Google hangga't hindi ka pumapayag. Maaari kang tumanggap o tumanggi anumang oras sa Mga setting ng cookie sa ibaba ng bawat pahina. Kung tatanggi ka, o babaguhin mo kalaunan sa pagtanggi, hindi ilo-load ang mga tool at buburahin ang kanilang mga cookie."
   },
   "submitPage": {
     "firstName": "Pangalan",
@@ -215,7 +215,9 @@
     "rejected": "Hindi na-aprubahan",
     "submissions": "Mga Isinumite",
     "collapse": "Tiklupin ang gilid na menu",
-    "expand": "Palawakin ang gilid na menu"
+    "expand": "Palawakin ang gilid na menu",
+    "bookings": "Mga booking",
+    "availability": "Mga oras na bukas"
   },
   "accessPanel": {
     "loading": "Nilo-load ang mga pahintulot…",
@@ -651,7 +653,8 @@
     "onlineMetaDescription": "{name}. Online na pasilidad na walang street address. Telepono at mga wika ng kawani.",
     "locationNav": "Lokasyon",
     "relatedSpecialtiesHeading": "Mag-browse ayon sa specialty",
-    "relatedLanguagesHeading": "Mag-browse ayon sa wika"
+    "relatedLanguagesHeading": "Mag-browse ayon sa wika",
+    "book": "Mag-book"
   },
   "doctorPage": {
     "backToSearch": "Bumalik sa paghahanap",
@@ -713,6 +716,196 @@
     "dismiss": "Isara",
     "announceLabel": "Abiso",
     "viewportLabel": "Mga abiso ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Mag-book · {clinic}",
+    "eyebrow": "Kahilingan sa appointment",
+    "heading": "Mag-book sa {clinic}",
+    "lead": "Ipadala ang iyong detalye sa klinika. Hindi pa ito kumpirmado hanggang sumagot sila.",
+    "optional": "opsyonal",
+    "selectPlaceholder": "Pumili",
+    "submit": "Ipadala ang kahilingan",
+    "submitting": "Ipinapadala…",
+    "chooseFile": "Pumili ng file",
+    "choosePhoto": "Pumili ng larawan",
+    "browse": "Hanapin",
+    "privacyNote": "Tatanggapin ng klinika ang kahilingang ito. Hindi nagbibigay ng payong medikal ang Find a Doc, Japan.",
+    "successHeading": "Naipadala ang kahilingan",
+    "successBody": "Makikipag-ugnayan ang klinika tungkol sa appointment.",
+    "reference": "Sanggunian: {id}",
+    "fields": {
+      "email": "Email address",
+      "phone": "Numero ng telepono",
+      "fullName": "Buong pangalan",
+      "age": "Edad",
+      "reason": "Dahilan ng pagbisita",
+      "insuranceDocument": "Insurance card o eligibility certificate",
+      "selfie": "Larawan ng mukha"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Pangalan gaya sa ID",
+      "age": "35",
+      "reason": "Maikling paliwanag ng kailangan mo"
+    },
+    "errors": {
+      "required": "Kailangan ang field na ito",
+      "email": "Maglagay ng wastong email",
+      "phone": "Maglagay ng wastong numero",
+      "number": "Maglagay ng numero",
+      "fileTooLarge": "Masyadong malaki ang file",
+      "uploadFailed": "Hindi na-upload. Subukan ulit.",
+      "form": "Suriin ang mga naka-highlight na field",
+      "submitFailed": "Hindi maipadala ang kahilingan. Subukan ulit.",
+      "slot": "Pumili ng available na oras",
+      "duration": "Pumili ng haba na inaalok ng klinika"
+    },
+    "slotLabel": "Gustong oras",
+    "slotHelp": "Pumili ng simula na kasya sa haba sa loob ng available na oras.",
+    "slotLoading": "Naglo-load ng bukas na oras…",
+    "slotEmpty": "Walang oras sa araw na ito. Subukan ang ibang petsa o haba.",
+    "authRequired": "Mag-sign in upang buksan ang form ng booking na ito…",
+    "stepsNav": "Mga hakbang sa pag-book",
+    "stepOf": "Hakbang {current} ng {total}",
+    "next": "Susunod",
+    "previous": "Bumalik",
+    "steps": {
+      "contact": "Impormasyon sa pakikipag-ugnayan",
+      "visit": "Pagbisita",
+      "documents": "Mga dokumento"
+    },
+    "dateLabel": "Petsa",
+    "durationLabel": "Haba ng konsultasyon",
+    "durationHelp": "Ang klinika ang pumipili kung anong haba ang available.",
+    "durationMinutes": "{n} minuto",
+    "manageLinkHelp": "I-save ang pribadong link na ito. Makikita mo rito ang iyong kahilingan at makakansela mo ito. Nasa email ng kumpirmasyon din ang link na ito.",
+    "manageLink": "Tingnan o kanselahin ang kahilingang ito"
+  },
+  "bookingDashboard": {
+    "detailHeading": "Pagpapareserba",
+    "back": "Bumalik sa mga booking",
+    "loadError": "Hindi ma-load ang booking na ito.",
+    "empty": "Wala pang booking submissions",
+    "answersHeading": "Mga sagot",
+    "uploadsHeading": "Mga upload",
+    "uploadsRetentionNote": "Ang mga larawan ng ID at insurance ay itinatago hanggang sa retain-until date, tapos buburahin.",
+    "download": "I-download",
+    "purged": "Nabura na",
+    "retainUntil": "Itago hanggang {date}",
+    "noAppointment": "Walang napiling oras",
+    "identityBadge": "File ng ID",
+    "identityYes": "Oo",
+    "identityNo": "Hindi",
+    "columns": {
+      "clinic": "Klinika",
+      "status": "Katayuan",
+      "appointment": "Takdang oras",
+      "identity": "Upload ng ID",
+      "created": "Ginawa",
+      "locale": "Wika"
+    },
+    "status": {
+      "received": "Natanggap",
+      "notified": "Na-notify",
+      "failedNotify": "Hindi na-notify"
+    },
+    "sensitivity": {
+      "standard": "Karaniwan",
+      "identityDocument": "Pagkakakilanlan / insurance",
+      "medical": "Pangmedikal"
+    },
+    "requestEyebrow": "Kahilingan sa appointment",
+    "emailStatus": "Email ng kumpirmasyon",
+    "downloadFailed": "Hindi mabuksan ang file na iyon.",
+    "actionFailed": "Hindi ma-update ang appointment na ito. Maaaring nagbago ito; ipinapakita ang pinakabagong katayuan.",
+    "reasonLabel": "Paalala para sa pasyente (opsyonal, ipinapadala kapag tinanggihan o kinansela)",
+    "reasonShown": "Paalala: {reason}",
+    "cancelledByPatient": "Kinansela ng pasyente",
+    "cancelledByClinic": "Kinansela ng klinika",
+    "appointmentStatus": {
+      "requested": "Hiniling",
+      "confirmed": "Kumpirmado",
+      "declined": "Tinanggihan",
+      "cancelled": "Kinansela",
+      "completed": "Tapos na"
+    },
+    "actions": {
+      "confirm": "Kumpirmahin",
+      "decline": "Tanggihan",
+      "cancel": "Kanselahin ang appointment",
+      "complete": "Markahang tapos na"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Site ng klinika",
+    "help": "I-drag para magpinta ng 30-minutong availability. I-click para tanggalin. Ang pasyente ay nagbu-book ng 15, 30, 45, o 60 minuto.",
+    "loading": "Naglo-load ang calendar…",
+    "windowTitle": "Bukas",
+    "createFailed": "Hindi ma-save ang availability window.",
+    "deleteConfirm": "Tanggalin ang availability window na ito?",
+    "deleteFailed": "Hindi matanggal ang window.",
+    "legend": "Gabay sa kalendaryo",
+    "patient": "Pasyente",
+    "loadFailed": "Hindi ma-load ang kalendaryong ito.",
+    "appointmentHelp": "I-click ang appointment para buksan ang kahilingan."
+  },
+  "bookingForms": {
+    "standardIntake": "Karaniwang kahilingan sa pagpapatingin",
+    "onlineConsultIntake": "Online na konsultasyon na may insurance card at larawan"
+  },
+  "clinicDashboard": {
+    "heading": "Dashboard ng klinika",
+    "loading": "Naglo-load…",
+    "loadError": "Hindi ma-load ang dashboard. Subukang muli.",
+    "signInHeading": "Mag-sign in sa dashboard ng iyong klinika",
+    "signInBody": "Gamitin ang email address kung saan ipinadala ang imbitasyon ng iyong klinika.",
+    "signIn": "Mag-sign in",
+    "noClinics": "Hindi pa naka-link ang account na ito sa isang klinika.",
+    "noClinicsHelp": "Hilingin sa Find a Doc, Japan na imbitahan ang email address na ginagamit mo sa pag-sign in. Mali-link ang imbitasyon sa susunod mong pag-sign in.",
+    "noAccessHeading": "Wala kang access sa klinikang ito",
+    "statusFilter": "Ipakita",
+    "allStatuses": "Lahat ng kahilingan",
+    "saved": "Na-save",
+    "saveFailed": "Hindi ma-save. Subukang muli.",
+    "tabs": {
+      "requests": "Mga kahilingan",
+      "calendar": "Kalendaryo",
+      "settings": "Mga setting"
+    },
+    "roles": {
+      "owner": "May-ari",
+      "staff": "Kawani"
+    },
+    "settings": {
+      "heading": "Mga setting ng booking",
+      "forms": "Mga intake form",
+      "formsHelp": "Makikita ng pasyente ang default na form maliban kung ibang form na inaalok mo ang nakasaad sa Book link.",
+      "defaultForm": "Default na form",
+      "save": "I-save ang mga setting"
+    },
+    "members": {
+      "heading": "Koponan",
+      "help": "Ang mga inimbitahan dito ay makakakita ng mga kahilingan ng klinika at makakapag-edit ng kalendaryo nito pagkatapos mag-sign in gamit ang email na iyon.",
+      "active": "Naka-sign in",
+      "pending": "Inimbitahan",
+      "remove": "Alisin",
+      "removeConfirm": "Alisin si {email} sa klinikang ito?",
+      "role": "Tungkulin",
+      "invite": "Imbitahan",
+      "invited": "Inimbitahan si {email}"
+    }
+  },
+  "patientBooking": {
+    "heading": "Ang iyong kahilingan sa appointment",
+    "notFound": "Hindi namin mahanap ang booking na ito. Buksan muli ang link mula sa iyong email ng kumpirmasyon.",
+    "reasonLabel": "Dahilan (opsyonal, ibabahagi sa klinika)",
+    "cancel": "Kanselahin ang appointment na ito",
+    "confirmCancel": "Kanselahin ang appointment na ito? Aabisuhan ang klinika, at iaalok ang oras sa ibang pasyente.",
+    "yesCancel": "Oo, kanselahin",
+    "keep": "Panatilihin",
+    "cancelled": "Kinansela na ang appointment na ito.",
+    "cancelFailed": "Hindi makansela. Maaaring nagsimula na o nagbago ito; ipinapakita ang pinakabagong katayuan."
   },
   "consent": {
     "title": "Mga cookie sa site na ito",

@@ -80,7 +80,7 @@ export function facilityFromRow(row: Selectable<FacilitiesTable>): FacilityParen
 export function facilityWithProfessionalIds(
     row: Selectable<FacilitiesTable>,
     healthcareProfessionalIds: string[]
-): gqlTypes.Facility {
+): FacilityParent & Pick<gqlTypes.Facility, 'healthcareProfessionalIds'> {
     return { ...facilityFromRow(row), healthcareProfessionalIds }
 }
 

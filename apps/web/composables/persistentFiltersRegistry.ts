@@ -4,7 +4,8 @@ export const PERSISTENT_FILTER_STORAGE_PREFIX = 'moderation-filters:'
 export const persistentFilterKeys = {
     submissions: ['tab', 'pageSize', 'offset'],
     facilities: ['search', 'pageSize', 'offset'],
-    professionals: ['search', 'licenseReview', 'pageSize', 'offset']
+    professionals: ['search', 'licenseReview', 'pageSize', 'offset'],
+    bookings: ['pageSize', 'offset']
 } as const
 
 export type FilterScope = keyof typeof persistentFilterKeys

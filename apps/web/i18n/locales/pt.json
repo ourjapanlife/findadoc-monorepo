@@ -16,7 +16,7 @@
     "whatHeading": "Com o que podemos ajudar",
     "whatBody": "Conte sobre uma clínica ou um médico que deveria constar, uma correção numa página já publicada, ou um problema ao usar o site. Também respondemos a parceiros, jornalistas e órgãos públicos sobre a própria organização. Não damos conselho médico, diagnóstico nem marcamos consultas. Para se cuidar, encontre uma clínica no diretório e fale diretamente com ela.",
     "npoHeading": "A organização",
-    "npoBody": "O nome registrado é NPO法人Find a Doc, Japan, número 9011005010215, certificada em Tóquio em 28 de agosto de 2023. Os documentos protocolados, inclusive o balanço, estão na página de transparência da ONG. O escritório registrado é virtual, então o endereço não é publicado aqui e fica disponível mediante pedido.",
+    "npoBody": "O nome registrado é NPO法人Find a Doc Japan, número 9011005010215, certificada em Tóquio em 28 de agosto de 2023. Os documentos protocolados, inclusive o balanço, estão na página de transparência da ONG. O escritório registrado é virtual, então o endereço não é publicado aqui e fica disponível mediante pedido.",
     "addressNote": "Trabalhamos à distância, em todo o Japão."
   },
   "npoPage": {
@@ -78,14 +78,14 @@
     "privacy": "Privacidade",
     "contribute": "Contribuir",
     "contact": "Contacto",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Explorar",
     "communityHeading": "Comunidade",
     "legalHeading": "Informações legais"
   },
   "hamburgerMenu": {
     "languageDropdownTitle": "Idioma:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "logout": "Sair",
     "login": "Entrar",
     "logoutToast": "Sessão encerrada"
@@ -112,7 +112,7 @@
     "paragraph16": "Ao utilizar os nossos serviços, você concorda com os termos explicitados nesta política de privacidade.",
     "cookiesHeading": "8. Cookies e medição de publicidade",
     "cookiesBody": "Usamos o Google Ads, e o Google Analytics quando ativado, fornecidos pela Google LLC, para medir como os visitantes chegam ao nosso serviço e o utilizam. Quando você visita, seu navegador envia ao Google o endereço da página, seu endereço IP, dados do navegador e um identificador guardado em um cookie. O Google usa isso para medir nossos anúncios. Não usamos isso para personalizar anúncios para você. A política de privacidade do Google está em policies.google.com/privacy.",
-    "cookiesChoice": "Visitantes do Espaço Econômico Europeu, do Reino Unido e da Suíça são consultados antes de esses cookies serem definidos. Qualquer pessoa pode aceitar ou recusar a qualquer momento em Configurações de cookies, no fim de cada página. Se você recusar, nenhum cookie de publicidade ou análise é definido, embora o Google ainda possa receber um sinal sem cookies para estimar os resultados dos anúncios."
+    "cookiesChoice": "Pedimos sua permissão antes de carregar qualquer uma dessas ferramentas. Nada é enviado ao Google até você aceitar. Você pode aceitar ou recusar a qualquer momento em Configurações de cookies, no fim de cada página. Se você recusar, ou depois mudar sua escolha para recusar, as ferramentas não são carregadas e os cookies delas são excluídos."
   },
   "submitPage": {
     "firstName": "Nome",
@@ -208,7 +208,9 @@
     "rejected": "Rejeitado",
     "submissions": "Envios",
     "collapse": "Recolher a barra lateral",
-    "expand": "Expandir a barra lateral"
+    "expand": "Expandir a barra lateral",
+    "bookings": "Reservas",
+    "availability": "Disponibilidade"
   },
   "accessPanel": {
     "loading": "Carregando permissões…",
@@ -651,7 +653,8 @@
     "onlineMetaDescription": "{name}. Estabelecimento online sem endereço. Telefone e idiomas falados pela equipe.",
     "locationNav": "Local",
     "relatedSpecialtiesHeading": "Navegar por especialidade",
-    "relatedLanguagesHeading": "Navegar por idioma"
+    "relatedLanguagesHeading": "Navegar por idioma",
+    "book": "Agendar"
   },
   "doctorPage": {
     "backToSearch": "Voltar à pesquisa",
@@ -713,6 +716,196 @@
     "dismiss": "Fechar",
     "announceLabel": "Notificação",
     "viewportLabel": "Notificações ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Agendar · {clinic}",
+    "eyebrow": "Pedido de consulta",
+    "heading": "Agendar com {clinic}",
+    "lead": "Envie os seus dados à clínica. Nada fica confirmado até eles responderem.",
+    "optional": "opcional",
+    "selectPlaceholder": "Escolha uma opção",
+    "submit": "Enviar pedido",
+    "submitting": "A enviar…",
+    "chooseFile": "Escolher arquivo",
+    "choosePhoto": "Escolher uma foto",
+    "browse": "Procurar",
+    "privacyNote": "A clínica recebe este pedido. A Find a Doc, Japan não dá aconselhamento médico.",
+    "successHeading": "Pedido enviado",
+    "successBody": "A clínica contactá-lo-á sobre a consulta.",
+    "reference": "Referência: {id}",
+    "fields": {
+      "email": "E-mail",
+      "phone": "Número de telefone",
+      "fullName": "Nome completo",
+      "age": "Idade",
+      "reason": "Motivo da visita",
+      "insuranceDocument": "Cartão de seguro ou certificado de elegibilidade",
+      "selfie": "Foto do rosto"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Nome como no documento",
+      "age": "35",
+      "reason": "Descrição breve do que precisa"
+    },
+    "errors": {
+      "required": "Este campo é obrigatório",
+      "email": "Introduza um e-mail válido",
+      "phone": "Introduza um telefone válido",
+      "number": "Introduza um número",
+      "fileTooLarge": "O ficheiro é demasiado grande",
+      "uploadFailed": "O envio falhou. Tente novamente.",
+      "form": "Verifique os campos assinalados",
+      "submitFailed": "Não foi possível enviar. Tente novamente.",
+      "slot": "Escolha um horário disponível",
+      "duration": "Escolha uma duração oferecida pela clínica"
+    },
+    "slotLabel": "Horário preferido",
+    "slotHelp": "Escolha um início que caiba na duração dentro dos horários abertos.",
+    "slotLoading": "Carregando horários…",
+    "slotEmpty": "Sem horários neste dia. Tente outra data ou duração.",
+    "authRequired": "Entre para abrir este formulário de reserva…",
+    "stepsNav": "Etapas do pedido",
+    "stepOf": "Etapa {current} de {total}",
+    "next": "Avançar",
+    "previous": "Voltar",
+    "steps": {
+      "contact": "Contato",
+      "visit": "Consulta",
+      "documents": "Documentos"
+    },
+    "dateLabel": "Data",
+    "durationLabel": "Duração da consulta",
+    "durationHelp": "A clínica define quais durações estão disponíveis.",
+    "durationMinutes": "{n} minutos",
+    "manageLinkHelp": "Guarde este link privado. Ele mostra seu pedido e permite cancelá-lo. O mesmo link está no e-mail de confirmação.",
+    "manageLink": "Ver ou cancelar este pedido"
+  },
+  "bookingDashboard": {
+    "detailHeading": "Reserva",
+    "back": "Voltar às reservas",
+    "loadError": "Não foi possível carregar esta reserva.",
+    "empty": "Ainda não há pedidos de reserva",
+    "answersHeading": "Respostas",
+    "uploadsHeading": "Envios",
+    "uploadsRetentionNote": "Fotos de identidade e seguro são guardadas só até a data de retenção e depois apagadas.",
+    "download": "Baixar",
+    "purged": "Apagado",
+    "retainUntil": "Reter até {date}",
+    "noAppointment": "Nenhum horário escolhido",
+    "identityBadge": "Documento",
+    "identityYes": "Sim",
+    "identityNo": "Não",
+    "columns": {
+      "clinic": "Clínica",
+      "status": "Situação",
+      "appointment": "Consulta",
+      "identity": "Upload de identidade",
+      "created": "Criado",
+      "locale": "Idioma"
+    },
+    "status": {
+      "received": "Recebido",
+      "notified": "Notificado",
+      "failedNotify": "Falha na notificação"
+    },
+    "sensitivity": {
+      "standard": "Padrão",
+      "identityDocument": "Identidade / seguro",
+      "medical": "Médico"
+    },
+    "requestEyebrow": "Pedido de consulta",
+    "emailStatus": "E-mail de confirmação",
+    "downloadFailed": "Não foi possível abrir esse arquivo.",
+    "actionFailed": "Não foi possível atualizar esta consulta. Ela pode ter mudado; o status mais recente está sendo exibido.",
+    "reasonLabel": "Observação para o paciente (opcional, enviada ao recusar ou cancelar)",
+    "reasonShown": "Observação: {reason}",
+    "cancelledByPatient": "Cancelada pelo paciente",
+    "cancelledByClinic": "Cancelada pela clínica",
+    "appointmentStatus": {
+      "requested": "Solicitada",
+      "confirmed": "Confirmada",
+      "declined": "Recusada",
+      "cancelled": "Cancelada",
+      "completed": "Concluída"
+    },
+    "actions": {
+      "confirm": "Confirmar",
+      "decline": "Recusar",
+      "cancel": "Cancelar consulta",
+      "complete": "Marcar como concluída"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Site da clínica",
+    "help": "Arraste para pintar disponibilidade de 30 minutos. Clique para remover. Pacientes agendam 15, 30, 45 ou 60 minutos nessas janelas.",
+    "loading": "Carregando calendário…",
+    "windowTitle": "Disponível",
+    "createFailed": "Não foi possível salvar a disponibilidade.",
+    "deleteConfirm": "Remover esta disponibilidade?",
+    "deleteFailed": "Não foi possível remover a disponibilidade.",
+    "legend": "Legenda do calendário",
+    "patient": "Paciente",
+    "loadFailed": "Não foi possível carregar este calendário.",
+    "appointmentHelp": "Clique em uma consulta para abrir o pedido."
+  },
+  "bookingForms": {
+    "standardIntake": "Pedido de consulta padrão",
+    "onlineConsultIntake": "Consulta on-line com cartão do seguro e foto"
+  },
+  "clinicDashboard": {
+    "heading": "Painel da clínica",
+    "loading": "Carregando…",
+    "loadError": "Não foi possível carregar o painel. Tente novamente.",
+    "signInHeading": "Entre no painel da sua clínica",
+    "signInBody": "Use o endereço de e-mail que recebeu o convite da clínica.",
+    "signIn": "Entrar",
+    "noClinics": "Esta conta ainda não está vinculada a uma clínica.",
+    "noClinicsHelp": "Peça ao Find a Doc, Japan para convidar o e-mail que você usa para entrar. O convite é vinculado no próximo acesso.",
+    "noAccessHeading": "Você não tem acesso a esta clínica",
+    "statusFilter": "Mostrar",
+    "allStatuses": "Todos os pedidos",
+    "saved": "Salvo",
+    "saveFailed": "Não foi possível salvar. Tente novamente.",
+    "tabs": {
+      "requests": "Pedidos",
+      "calendar": "Calendário",
+      "settings": "Configurações"
+    },
+    "roles": {
+      "owner": "Proprietário",
+      "staff": "Equipe"
+    },
+    "settings": {
+      "heading": "Configurações de agendamento",
+      "forms": "Formulários de triagem",
+      "formsHelp": "Os pacientes veem o formulário padrão, a menos que o link de agendamento indique outro formulário que você oferece.",
+      "defaultForm": "Padrão",
+      "save": "Salvar configurações"
+    },
+    "members": {
+      "heading": "Equipe da clínica",
+      "help": "As pessoas convidadas aqui podem ver os pedidos desta clínica e editar o calendário depois de entrar com esse e-mail.",
+      "active": "Conectado",
+      "pending": "Convidado",
+      "remove": "Remover",
+      "removeConfirm": "Remover {email} desta clínica?",
+      "role": "Função",
+      "invite": "Convidar",
+      "invited": "{email} convidado"
+    }
+  },
+  "patientBooking": {
+    "heading": "Seu pedido de consulta",
+    "notFound": "Não encontramos este agendamento. Abra novamente o link do e-mail de confirmação.",
+    "reasonLabel": "Motivo (opcional, compartilhado com a clínica)",
+    "cancel": "Cancelar esta consulta",
+    "confirmCancel": "Cancelar esta consulta? A clínica será avisada e o horário ficará disponível para outros pacientes.",
+    "yesCancel": "Sim, cancelar",
+    "keep": "Manter",
+    "cancelled": "Esta consulta foi cancelada.",
+    "cancelFailed": "Não foi possível cancelar. Ela pode já ter começado ou mudado; o status mais recente está sendo exibido."
   },
   "consent": {
     "title": "Cookies neste site",

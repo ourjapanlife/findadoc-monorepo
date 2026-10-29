@@ -1,6 +1,6 @@
 # Find a Doc, Japan
 
-> A free directory of clinics and healthcare professionals in Japan, filtered by the languages the staff speak and by medical specialty. Published by the registered non-profit NPO法人Find a Doc, Japan.
+> A free directory of clinics and healthcare professionals in Japan, filtered by the languages the staff speak and by medical specialty. Published by the registered non-profit NPO法人Find a Doc Japan.
 
 The site lists clinics and doctors so a person in Japan can find care in a language they speak. It does not give medical advice, diagnoses, or appointments. To get care, open a clinic or doctor page and contact that clinic directly.
 

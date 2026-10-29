@@ -37,6 +37,10 @@ export enum Scope {
     'write:users' = 'write:users',
     'delete:users' = 'delete:users',
     'create:submissions' = 'create:submissions',
+    'create:bookings' = 'create:bookings',
+    'read:bookings' = 'read:bookings',
+    'write:clinic_availability' = 'write:clinic_availability',
+    'write:clinic_memberships' = 'write:clinic_memberships',
     'read:reservations' = 'read:reservations',
     'write:reservations' = 'write:reservations'
 }
@@ -54,7 +58,9 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['read:profile'], 
         Scope['write:posts'],
         Scope['read:logs'], Scope['write:logs'],
-        Scope['read:reservations'], Scope['write:reservations']
+        Scope['read:reservations'], Scope['write:reservations'],
+        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
+        Scope['write:clinic_memberships']
     ],
     [Role.Moderator]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -62,7 +68,9 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['read:submissions'], Scope['write:submissions'], Scope['delete:submissions'],
         Scope['read:profile'], 
         Scope['write:posts'],
-        Scope['read:reservations'], Scope['write:reservations']
+        Scope['read:reservations'], Scope['write:reservations'],
+        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
+        Scope['write:clinic_memberships']
     ],
     [Role.Dev]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -72,12 +80,15 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['read:profile'], 
         Scope['write:posts'],
         Scope['read:logs'], Scope['write:logs'],
-        Scope['read:reservations'], Scope['write:reservations']
+        Scope['read:reservations'], Scope['write:reservations'],
+        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
+        Scope['write:clinic_memberships']
     ],
     [Role.User]: [
         Scope['read:healthcareprofessionals'], 
         Scope['read:facilities'], 
         Scope['create:submissions'],
+        Scope['create:bookings'],
         Scope['read:profile'],
         Scope['read:reservations'], Scope['write:reservations']
     ]
@@ -87,6 +98,8 @@ export interface User {
     sub: string
     name: string
     email: string
+    /** True only when the token carries Auth0's email_verified claim (see EMAIL_VERIFIED_CLAIM). */
+    emailVerified?: boolean
     roles: Role[]
     scope: string
     [key: string]: unknown // Allow additional properties
@@ -110,7 +123,12 @@ export function getEffectiveScopes(user: User | null | undefined): Scope[] {
     if (envVariables.isProduction() &&
         !currentUserRoles.includes(Role.Admin) &&
         !currentUserRoles.includes(Role.Moderator)) {
-        merged = merged.filter(scope => scope.startsWith('read:') || scope === Scope['create:submissions'])
+        // read:bookings opens every clinic's patient answers and identity files.
+        // Only admins and moderators keep it in production.
+        merged = merged.filter(scope =>
+            (scope.startsWith('read:') && scope !== Scope['read:bookings'])
+            || scope === Scope['create:submissions']
+            || scope === Scope['create:bookings'])
     }
 
     return [...new Set(merged)]
@@ -159,6 +177,9 @@ export function authorize(user: User, requiredScopes: Scope[]): boolean {
     }
 }
 
+/** JWT-less requests are stamped with this sub (see initializeAuth). */
+export const ANONYMOUS_USER_SUB = 'Anonymous User'
+
 type Resolver<TParent, TArgs, TContext, TResult> =
     (parent: TParent, args: TArgs, context: TContext, info: GraphQLResolveInfo) => TResult
 
@@ -177,6 +198,17 @@ function guardResolver<TParent, TArgs, TContext extends UserContext, TResult>(
     }
 }
 
+/** True when the request carried a real Auth0 token (not the anonymous stub). */
+export function isAuthenticatedUser(user: User | null | undefined): boolean {
+    if (user === null || user === undefined) {
+        return false
+    }
+    if (typeof user.sub !== 'string' || user.sub.trim() === '') {
+        return false
+    }
+    return user.sub !== ANONYMOUS_USER_SUB
+}
+
 /**
  * Wraps a resolver so it runs only for a user who has every listed scope.
  * Anyone else gets UNAUTHORIZED with HTTP 403. Sentry skips that code (see server.ts).
@@ -193,6 +225,35 @@ export function withScope<TParent, TArgs, TContext extends UserContext, TResult>
 }
 
 /**
+ * Any signed-in user, with no scope required. Clinic owners and staff are plain
+ * users. The booking services check their facility membership (booking/access.ts).
+ */
+export function withAuthenticatedUser<TParent, TArgs, TContext extends UserContext, TResult>(
+    resolver: Resolver<TParent, TArgs, TContext, TResult>
+): Resolver<TParent, TArgs, TContext, TResult> {
+    return guardResolver(user => envVariables.isTestingEnvironment() || isAuthenticatedUser(user), resolver)
+}
+
+/**
+ * Like withScope, but also rejects the anonymous stub user.
+ * Staff booking list, download, and the availability calendar use this.
+ * Patient intake stays on withScope so a signed-out visitor can book.
+ */
+export function withAuthenticatedScope<TParent, TArgs, TContext extends UserContext, TResult>(
+    requiredScopes: Scope | Scope[],
+    resolver: Resolver<TParent, TArgs, TContext, TResult>
+): Resolver<TParent, TArgs, TContext, TResult> {
+    const scopes = Array.isArray(requiredScopes) ? requiredScopes : [requiredScopes]
+
+    return guardResolver(user => {
+        if (envVariables.isTestingEnvironment()) {
+            return authorize(user, scopes)
+        }
+        return isAuthenticatedUser(user) && authorize(user, scopes)
+    }, resolver)
+}
+
+/**
  * Like withScope, but one of the listed scopes is enough.
  * @param acceptedScopes - Any one of these lets the resolver run.
  * @param resolver - The resolver to run once the user is authorized.
@@ -204,6 +265,10 @@ export function withAnyScope<TParent, TArgs, TContext extends UserContext, TResu
     return guardResolver(user => acceptedScopes.some(scope => authorize(user, [scope])), resolver)
 }
 
+/** Namespaced email claims. Clinic invites are claimed only when the email is verified. */
+export const EMAIL_CLAIM = 'https://findadoc.jp/email'
+export const EMAIL_VERIFIED_CLAIM = 'https://findadoc.jp/email_verified'
+
 // This function builds the user context from the FastifyRequest object so it can be used in the graphQL resolvers.
 export async function buildUserContext(req: FastifyRequest): Promise<UserContext> {
     const userFromRequest = req?.user as User
@@ -212,7 +277,9 @@ export async function buildUserContext(req: FastifyRequest): Promise<UserContext
         user: {
             sub: userFromRequest?.sub,
             name: userFromRequest?.name,
-            email: userFromRequest?.email,
+            // Access tokens carry email only through the namespaced claims an Auth0 Action adds.
+            email: (userFromRequest?.[EMAIL_CLAIM] as string | undefined) ?? userFromRequest?.email,
+            emailVerified: userFromRequest?.[EMAIL_VERIFIED_CLAIM] === true,
             scope: userFromRequest?.scope || '',
             // These are custom roles defined in the Auth0 dashboard
             // They are JWT recommended prefixes with https://findadoc.jp/roles to avoid conflicts with standard JWT claims
@@ -272,7 +339,7 @@ export async function initializeAuth(fastify: FastifyInstance) {
             
         // If no token, continue without authentication (as anonymous user)
         request.user = {
-            sub: 'Anonymous User',
+            sub: ANONYMOUS_USER_SUB,
             name: 'Anonymous',
             email: '',
             roles: [Role.User],

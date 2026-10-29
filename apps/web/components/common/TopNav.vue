@@ -18,28 +18,12 @@
                         :aria-label="t('common.siteName')"
                         class="h-9 w-9 shrink-0 fill-primary transition-colors group-hover:fill-primary-hover"
                     />
-                    <!--
-                    Nudged up 4.5% of the mark's height. The mark is a circle with a handle
-                    running down-right, so centring on its bounding box leaves the wordmark
-                    visibly low — the eye reads the circle as the logo. Aligning fully to the
-                    circle centre (11.9%) then overshoots, because the handle still carries
-                    visual weight. Chosen by rendering 0 / 3 / 4.5 / 6 / 8 / 11.9.
-                -->
                     <span
                         aria-hidden="true"
-                        class="flex -translate-y-[4.5%] flex-col font-semibold leading-none text-primary
+                        class="text-base font-semibold leading-none text-primary
                            transition-colors group-hover:text-primary-hover"
                     >
-                        <span class="text-base">{{ t('common.siteNameLine1') }}</span>
-                        <!--
-                        Nudged right 2.4px to align the ink, not the boxes. The two lines start
-                        at the same x, but "F" at 16px carries a +1.49px left side bearing while
-                        "J" at 12px carries -0.91px — its hook overhangs the origin — so the J
-                        printed 2.4px to the left of the F and the wordmark read as ragged.
-                        Both strings are the Latin brand name in every locale, so the glyphs and
-                        therefore this offset are stable.
-                    -->
-                        <span class="translate-x-[2.4px] text-xs">{{ t('common.siteNameLine2') }}</span>
+                        {{ t('common.siteName') }}
                     </span>
                 </NuxtLink>
 

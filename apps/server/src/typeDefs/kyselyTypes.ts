@@ -176,10 +176,16 @@ export interface ClinicSitesTable {
 }
 
 /** An account on a hosted clinic. owner manages it. staff is the future CRM seat. */
+/** Booking account link. Invited by email; the first matching verified sign-in claims auth0_sub. */
 export interface ClinicMembershipsTable {
     id: Generated<string>
-    clinic_site_id: string
-    user_id: string
+    clinic_site_id: string | null
+    facility_id: string | null
+    user_id: string | null
+    invited_email: string | null
+    auth0_sub: string | null
+    invited_by: string | null
+    claimed_at: string | null
     role: string
     created_date: Generated<string>
 }
@@ -212,6 +218,83 @@ export interface ClinicSiteLocalesTable {
     document: ColumnType<Record<string, unknown>, string, string>
 }
 
+/** Clinic-chosen booking config. The intake form is Find a Doc owned. */
+export interface BookingSettingsTable {
+    facility_id: string
+    clinic_site_id: string | null
+    /** Intake forms the clinic offers. The first is the default. */
+    form_definition_ids: string[]
+    allowed_durations: number[]
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** Patient booking intake. answers is the scalar map; files are booking_uploads rows. */
+export interface BookingSubmissionsTable {
+    id: Generated<string>
+    facility_id: string | null
+    clinic_site_id: string | null
+    practitioner_id: string | null
+    service_key: string | null
+    form_definition_id: string
+    form_version: number
+    locale: string
+    answers: ColumnType<Record<string, string>, Record<string, string>, Record<string, string>>
+    status: string
+    notify_email_sent_at: string | null
+    cancel_token_hash: string | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** One uploaded file for a booking field. object_key is under uploads/booking/. */
+export interface BookingUploadsTable {
+    id: Generated<string>
+    facility_id: string | null
+    clinic_site_id: string | null
+    booking_submission_id: string | null
+    field_id: string
+    object_key: string
+    content_type: string
+    file_name: string
+    byte_size: number | null
+    sensitivity: string
+    retain_until: string | null
+    purged_at: string | null
+    created_date: Generated<string>
+}
+
+/** Staff-painted availability. 30-minute aligned. */
+export interface ClinicAvailabilityWindowsTable {
+    id: Generated<string>
+    facility_id: string | null
+    clinic_site_id: string | null
+    starts_at: string
+    ends_at: string
+    created_by: string | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** Patient appointment inside availability. 15-minute start alignment. Requested and confirmed rows hold time. */
+export interface BookingAppointmentsTable {
+    id: Generated<string>
+    facility_id: string | null
+    clinic_site_id: string | null
+    booking_submission_id: string | null
+    starts_at: string
+    ends_at: string
+    duration_minutes: number
+    /** requested, confirmed, declined, cancelled, completed. */
+    status: string
+    status_changed_at: string | null
+    status_changed_by: string | null
+    cancelled_by: string | null
+    status_reason: string | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
 /**
  * Database interface - combines all tables
  */
@@ -231,6 +314,11 @@ export interface Database {
     clinic_site_languages: ClinicSiteLanguagesTable
     clinic_site_doctors: ClinicSiteDoctorsTable
     clinic_site_locales: ClinicSiteLocalesTable
+    booking_settings: BookingSettingsTable
+    booking_submissions: BookingSubmissionsTable
+    booking_uploads: BookingUploadsTable
+    clinic_availability_windows: ClinicAvailabilityWindowsTable
+    booking_appointments: BookingAppointmentsTable
 }
 
 /**

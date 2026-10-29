@@ -5,6 +5,9 @@
             class="h-full min-h-0 flex flex-col"
         >
             <MyPageSettingsContent v-if="isSettingsView" />
+            <ClinicAvailabilityCalendar
+                v-else-if="isAvailabilityView"
+            />
             <ModListContainer v-else />
         </div>
         <div
@@ -53,6 +56,12 @@
                 <ModCreateHealthcareProfessionalSection />
             </form>
         </div>
+        <div
+            v-if="moderationScreenStore.viewBookingScreenIsActive()"
+            class="h-full overflow-y-auto"
+        >
+            <BookingSubmissionDetail :booking-id="selectedIdFromModSubmissionList" />
+        </div>
     </div>
 </template>
 
@@ -64,6 +73,7 @@ import { SelectedModerationListView, useModerationSubmissionsStore } from '~/sto
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { isModerationSettingsView } from '~/utils/moderationView'
+import { useBookingSubmissionsStore } from '~/stores/bookingSubmissionsStore'
 
 const route = useRoute()
 
@@ -71,6 +81,7 @@ const moderationScreenStore = useModerationScreenStore()
 const moderationSubmissionsStore = useModerationSubmissionsStore()
 const facilitiesStore = useFacilitiesStore()
 const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
+const bookingSubmissionsStore = useBookingSubmissionsStore()
 
 const routePathForModerationScreen = computed(() => route.path as string)
 const selectedIdFromModSubmissionList = computed(() => route.params.id as string)
@@ -79,6 +90,7 @@ const selectedViewQuery = computed(() => {
     return typeof view === 'string' ? view : ''
 })
 const isSettingsView = computed(() => isModerationSettingsView(selectedViewQuery.value))
+const isAvailabilityView = computed(() => selectedViewQuery.value === 'availability')
 
 function syncSelectedModerationViewFromQuery() {
     if (isSettingsView.value) {
@@ -93,6 +105,12 @@ function syncSelectedModerationViewFromQuery() {
             moderationSubmissionsStore
                 .setSelectedModerationListViewChosen(SelectedModerationListView.HealthcareProfessionals)
             return
+        case 'bookings':
+            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Bookings)
+            return
+        case 'availability':
+            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Availability)
+            return
         case 'submissions':
         default:
             moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Submissions)
@@ -105,7 +123,7 @@ const setActiveScreenBasedOnRoute = async () => {
     const pathSnippet = routePathForModerationScreen.value.split('/')[2] ?? ''
 
     // for routes that require a selected ID, check before entering the switch
-    const editRoutes = ['edit-submission', 'edit-facility', 'edit-healthcare-professional']
+    const editRoutes = ['edit-submission', 'edit-facility', 'edit-healthcare-professional', 'booking']
     if (editRoutes.includes(pathSnippet) && !selectedIdFromModSubmissionList.value) {
         moderationScreenStore.setActiveScreen(ModerationScreen.Dashboard)
         moderationSubmissionsStore.selectedSubmissionId = ''
@@ -135,6 +153,9 @@ const setActiveScreenBasedOnRoute = async () => {
         case 'create-facility':
             moderationScreenStore.setActiveScreen(ModerationScreen.CreateFacility)
             break
+        case 'booking':
+            moderationScreenStore.setActiveScreen(ModerationScreen.ViewBooking)
+            break
         default:
             moderationScreenStore.setActiveScreen(ModerationScreen.Dashboard)
             syncSelectedModerationViewFromQuery()
@@ -147,6 +168,9 @@ const setActiveScreenBasedOnRoute = async () => {
             healthcareProfessionalsStore.resetHealthcareProfessionalSectionFields()
             // Reset facilitySectionFields
             facilitiesStore.resetFacilitySectionFields()
+            if (selectedViewQuery.value === 'bookings') {
+                void bookingSubmissionsStore.loadList()
+            }
     }
 }
 

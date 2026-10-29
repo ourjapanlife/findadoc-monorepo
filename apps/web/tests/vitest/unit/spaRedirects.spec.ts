@@ -32,7 +32,7 @@ describe('SPA fallbacks', () => {
 
     it('rewrites other non-prerendered app routes to the SPA shell', () => {
         const redirects = readRedirects()
-        for (const path of ['/login', '/my-page']) {
+        for (const path of ['/login', '/my-page', '/book', '/clinic-dashboard']) {
             const exact = new RegExp(`^${path}\\s+/200\\.html\\s+200`, 'm')
             const nested = new RegExp(`^${path}/\\*\\s+/200\\.html\\s+200`, 'm')
             expect(redirectRuleIndex(redirects, exact), `${path} exact rewrite`).to.be.greaterThan(-1)
@@ -81,6 +81,9 @@ describe('SPA fallbacks', () => {
         expect(rewrites.some(rule => rule.source === '/:locale/search' && rule.destination === '/200.html')).to.equal(true)
         expect(rewrites.some(rule => rule.source === '/:locale/my-page/:path*' && rule.destination === '/200.html'))
             .to.equal(true)
+        expect(rewrites.some(rule => rule.source === '/book' && rule.destination === '/200.html')).to.equal(true)
+        expect(rewrites.some(rule => rule.source === '/:locale/book/:path*' && rule.destination === '/200.html'))
+            .to.equal(true)
     })
 
     it('gives /search a fallback in both files', () => {
@@ -124,10 +127,11 @@ describe('SPA fallbacks', () => {
      * must hit the 404 catch-all. Japanese uses the same rule (no /ja-JP/* splat).
      */
     it('does not give /clinic or /doctor an SPA rewrite', () => {
-        expect(readRedirects()).to.not.match(/^\/clinic/m)
+        // The /clinic segment only. /clinic-dashboard is a separate, signed-in app route.
+        expect(readRedirects()).to.not.match(/^\/clinic(?:\/|\s)/m)
         expect(readRedirects()).to.not.match(/^\/doctor/m)
         const rewrites = readServeJson().rewrites ?? []
-        expect(rewrites.some(rule => rule.source.startsWith('/clinic'))).to.equal(false)
+        expect(rewrites.some(rule => rule.source === '/clinic' || rule.source.startsWith('/clinic/'))).to.equal(false)
         expect(rewrites.some(rule => rule.source.startsWith('/doctor'))).to.equal(false)
     })
 

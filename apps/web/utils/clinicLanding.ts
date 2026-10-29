@@ -16,7 +16,8 @@ import { SITE_ORIGIN } from './site.ts'
  * from the sitemap. The id address still redirects to the subdomain.
  * `public` is the later value that prerenders and indexes a published clinic.
  *
- * Booking buttons do not go anywhere yet. The appointment flow replaces them later.
+ * Book on a clinic hostname bounces to Find a Doc `/book/{facilityId}`.
+ * The directory facility id is the reusable param. A hosted page is optional.
  */
 
 export const CLINIC_LANDING_PREVIEW_COOKIE = 'online_clinic_preview'
@@ -232,9 +233,31 @@ export function isClinicHostPage(pathname: string): boolean {
     return unlocalizedPath(pathname) === '/'
 }
 
+/** `/book` or `/{locale}/book` on a clinic hostname. */
+export function isClinicHostBookPage(pathname: string): boolean {
+    return unlocalizedPath(pathname) === '/book'
+}
+
+/** `/dashboard` or `/{locale}/dashboard` on a clinic hostname. It redirects to the Find a Doc dashboard. */
+export function isClinicHostDashboardPage(pathname: string): boolean {
+    return unlocalizedPath(pathname) === '/dashboard'
+}
+
+/** Landing, booking, or the dashboard bounce on a clinic hostname. Everything else redirects home. */
+export function isClinicHostSurface(pathname: string): boolean {
+    return isClinicHostPage(pathname) || isClinicHostBookPage(pathname) || isClinicHostDashboardPage(pathname)
+}
+
+/** `/book` under the locale prefix for this path. */
+export function clinicHostBookPath(pathname: string): string {
+    const prefix = clinicLocalePrefix(localeCodeFromPath(pathname))
+    return prefix ? `${prefix}/book` : '/book'
+}
+
 /**
- * A clinic hostname is the clinic. `/` stays `/`. `/submit` and `/clinic/{slug}`
- * on that host go back to `/` (or `/{locale}`). Files the page loads stay put.
+ * A clinic hostname is the clinic. `/` and `/book` stay. `/submit` and
+ * `/clinic/{slug}` on that host go back to `/` (or `/{locale}`). A stray
+ * `/book/{id}` on the clinic host collapses to `/book`. Files stay put.
  * Off mode does not redirect.
  */
 export function clinicHostLandingTarget(
@@ -246,8 +269,14 @@ export function clinicHostLandingTarget(
         return undefined
     }
 
-    if (isStaticHostPath(trimTrailingSlash(pathname)) || isClinicHostPage(pathname)) {
+    const trimmed = trimTrailingSlash(pathname)
+    if (isStaticHostPath(trimmed) || isClinicHostSurface(trimmed)) {
         return undefined
+    }
+
+    const unlocalized = unlocalizedPath(trimmed)
+    if (unlocalized.startsWith('/book/')) {
+        return clinicHostBookPath(trimmed)
     }
 
     return clinicHostPagePath(pathname)

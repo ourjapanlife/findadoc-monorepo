@@ -8,11 +8,21 @@
     { "source": "/login/:path*", "destination": "/200.html" },
     { "source": "/my-page", "destination": "/200.html" },
     { "source": "/my-page/:path*", "destination": "/200.html" },
+    { "source": "/book", "destination": "/200.html" },
+    { "source": "/book/:path*", "destination": "/200.html" },
+    { "source": "/dashboard", "destination": "/200.html" },
+    { "source": "/clinic-dashboard", "destination": "/200.html" },
+    { "source": "/clinic-dashboard/:path*", "destination": "/200.html" },
     { "source": "/:locale/search", "destination": "/200.html" },
     { "source": "/:locale/u/:username", "destination": "/200.html" },
     { "source": "/:locale/login", "destination": "/200.html" },
     { "source": "/:locale/login/:path*", "destination": "/200.html" },
     { "source": "/:locale/my-page", "destination": "/200.html" },
-    { "source": "/:locale/my-page/:path*", "destination": "/200.html" }
+    { "source": "/:locale/my-page/:path*", "destination": "/200.html" },
+    { "source": "/:locale/book", "destination": "/200.html" },
+    { "source": "/:locale/book/:path*", "destination": "/200.html" },
+    { "source": "/:locale/dashboard", "destination": "/200.html" },
+    { "source": "/:locale/clinic-dashboard", "destination": "/200.html" },
+    { "source": "/:locale/clinic-dashboard/:path*", "destination": "/200.html" }
   ]
 }

@@ -1,6 +1,7 @@
 import type { Pinia } from 'pinia'
 import type { Router } from 'vue-router'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
+import { isLocaleOnlyNavigation } from '~/utils/localePath'
 
 export default defineNuxtPlugin({
     name: 'unsaved-changes',
@@ -30,8 +31,9 @@ export default defineNuxtPlugin({
             const router = nuxtApp.$router as Router
             const i18n = nuxtApp.$i18n as { t?: (key: string) => string } | undefined
 
-            router.beforeEach(() => {
+            router.beforeEach((to, from) => {
                 if (!isGloballyDirty.value) return true
+                if (isLocaleOnlyNavigation(from.fullPath, to.fullPath)) return true
 
                 return new Promise<boolean>(resolve => {
                     const message = i18n?.t?.('modEditFacilityOrHPTopbar.hasUnsavedChanges')

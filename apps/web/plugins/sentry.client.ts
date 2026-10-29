@@ -1,6 +1,11 @@
 import * as Sentry from '@sentry/vue'
 import { defineNuxtPlugin, useRuntimeConfig, useRouter } from '#app'
 
+function withoutUrlFragment(url: string): string {
+    const hashAt = url.indexOf('#')
+    return hashAt === -1 ? url : url.slice(0, hashAt)
+}
+
 export default defineNuxtPlugin(nuxtApp => {
     const sentryConfig = useRuntimeConfig().public.sentry as {
         dsn?: string
@@ -30,7 +35,31 @@ export default defineNuxtPlugin(nuxtApp => {
             Sentry.browserTracingIntegration({ router: useRouter() })
         ],
         tracesSampleRate,
-        sendDefaultPii: false
+        sendDefaultPii: false,
+        // /book/manage carries the patient's cancel token in the hash.
+        beforeSend: event => {
+            if (event.request?.url !== undefined) {
+                event.request.url = withoutUrlFragment(event.request.url)
+            }
+            return event
+        },
+        beforeSendTransaction: event => {
+            if (event.request?.url !== undefined) {
+                event.request.url = withoutUrlFragment(event.request.url)
+            }
+            return event
+        },
+        beforeBreadcrumb: breadcrumb => {
+            const data = breadcrumb.data
+            if (data !== undefined) {
+                for (const key of ['from', 'to', 'url']) {
+                    if (typeof data[key] === 'string') {
+                        data[key] = withoutUrlFragment(data[key])
+                    }
+                }
+            }
+            return breadcrumb
+        }
     })
     // eslint-disable-next-line no-console
     console.log('🛰️ Sentry initialized')
