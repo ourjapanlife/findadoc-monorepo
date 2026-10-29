@@ -874,6 +874,12 @@
     "confirmInJapan": "Kasalukuyan akong nasa Japan.",
     "healthDataConsent": "Pumapayag akong ipadala ng Find a Doc, Japan sa {clinic} ang dahilan ng aking pagpapatingin, na impormasyong pangkalusugan.",
     "privacyPolicyLink": "Patakaran sa privacy",
+    "availabilityError": {
+      "heading": "Hindi namin ma-check kung puwedeng mag-book",
+      "body": "May nangyaring mali habang nagche-check. Subukan ulit mamaya.",
+      "retry": "Subukan ulit",
+      "checking": "Nagche-check…"
+    },
     "regionNotice": {
       "heading": "Sa ngayon, para lang sa mga nasa Japan ang booking",
       "body": "Hindi ka makakapagpadala ng kahilingan sa booking mula sa kinaroroonan mo ngayon. Para magpa-appointment, direktang makipag-ugnayan sa {clinic}.",

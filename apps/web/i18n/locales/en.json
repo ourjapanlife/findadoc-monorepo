@@ -874,6 +874,12 @@
     "confirmInJapan": "I am currently in Japan.",
     "healthDataConsent": "I consent to Find a Doc, Japan sending the reason for my visit, which is health information, to {clinic}.",
     "privacyPolicyLink": "Privacy policy",
+    "availabilityError": {
+      "heading": "We couldn't check whether booking is available",
+      "body": "Something went wrong while checking. Try again in a moment.",
+      "retry": "Try again",
+      "checking": "Checking…"
+    },
     "regionNotice": {
       "heading": "Booking is currently available only to people in Japan",
       "body": "You can't send a booking request from where you are now. To book a visit, contact {clinic} directly.",

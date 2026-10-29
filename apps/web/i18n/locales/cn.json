@@ -874,6 +874,12 @@
     "confirmInJapan": "我目前在日本。",
     "healthDataConsent": "我同意 Find a Doc, Japan 将我的就诊原因（属于健康信息）发送给{clinic}。",
     "privacyPolicyLink": "隐私政策",
+    "availabilityError": {
+      "heading": "无法确认是否可以预约",
+      "body": "检查时出现问题。请稍后再试。",
+      "retry": "重试",
+      "checking": "正在检查…"
+    },
     "regionNotice": {
       "heading": "预约目前仅向身在日本的用户开放",
       "body": "您无法从当前所在地发送预约请求。如需就诊，请直接联系{clinic}。",

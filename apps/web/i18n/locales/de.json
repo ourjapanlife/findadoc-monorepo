@@ -874,6 +874,12 @@
     "confirmInJapan": "Ich befinde mich derzeit in Japan.",
     "healthDataConsent": "Ich willige ein, dass Find a Doc, Japan den Grund meines Besuchs, eine Gesundheitsangabe, an {clinic} übermittelt.",
     "privacyPolicyLink": "Datenschutzerklärung",
+    "availabilityError": {
+      "heading": "Wir konnten nicht prüfen, ob eine Terminanfrage möglich ist",
+      "body": "Bei der Prüfung ist ein Fehler aufgetreten. Bitte versuchen Sie es gleich noch einmal.",
+      "retry": "Erneut versuchen",
+      "checking": "Wird geprüft…"
+    },
     "regionNotice": {
       "heading": "Terminanfragen sind derzeit nur für Personen in Japan möglich",
       "body": "Von Ihrem aktuellen Standort aus können Sie keine Terminanfrage senden. Wenden Sie sich für einen Termin direkt an {clinic}.",

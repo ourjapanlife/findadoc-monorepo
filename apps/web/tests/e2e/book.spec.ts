@@ -45,13 +45,24 @@ const facility = {
     }
 }
 
-async function mockBookingApi(page: Page, bookingAvailable: boolean): Promise<void> {
+/**
+ * `bookingAvailable` is one answer per call, in order; the last one repeats. `'error'`
+ * answers that call with a server error.
+ */
+async function mockBookingApi(page: Page, ...answers: Array<boolean | 'error'>): Promise<void> {
+    let availabilityCalls = 0
     await page.route(isApiRequest, async (route: Route) => {
         const query = (route.request().postDataJSON() as { query?: string } | null)?.query ?? ''
         const reply = (data: unknown) => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ data }) })
 
         if (query.includes('BookingAvailable')) {
-            await reply({ bookingAvailable })
+            const answer = answers[Math.min(availabilityCalls, answers.length - 1)]
+            availabilityCalls += 1
+            if (answer === 'error') {
+                await route.fulfill({ status: 500, contentType: 'application/json', body: '{"errors":[{"message":"boom"}]}' })
+                return
+            }
+            await reply({ bookingAvailable: answer })
             return
         }
         if (query.includes('query BookingForm')) {
@@ -92,4 +103,37 @@ test('a visitor in Japan gets the form', async ({ page }) => {
 
     await expect(page.getByTestId('clinic-booking-form')).toBeVisible()
     await expect(page.getByTestId('clinic-booking-region-notice')).toHaveCount(0)
+})
+
+// A failed check is not a yes and not a region refusal (#188).
+test('a failed availability check shows a retry, not the form or the region notice', async ({ page }) => {
+    await mockBookingApi(page, 'error')
+    await page.goto(`/book/${FACILITY_ID}?preview=1`)
+
+    await expect(page.getByTestId('clinic-booking-availability-error')).toBeVisible()
+    await expect(page.getByTestId('clinic-booking-form')).toHaveCount(0)
+    await expect(page.getByTestId('clinic-booking-region-notice')).toHaveCount(0)
+
+    await page.getByTestId('clinic-booking-availability-retry').click()
+    await expect(page.getByTestId('clinic-booking-availability-error')).toBeVisible()
+    await expect(page.getByTestId('clinic-booking-form')).toHaveCount(0)
+})
+
+test('a retry that gets a yes shows the form', async ({ page }) => {
+    await mockBookingApi(page, 'error', 'error', true)
+    await page.goto(`/book/${FACILITY_ID}?preview=1`)
+
+    await page.getByTestId('clinic-booking-availability-retry').click()
+    await expect(page.getByTestId('clinic-booking-form')).toBeVisible()
+    await expect(page.getByTestId('clinic-booking-availability-error')).toHaveCount(0)
+})
+
+test('a retry that gets a no shows the region notice', async ({ page }) => {
+    await mockBookingApi(page, 'error', 'error', false)
+    await page.goto(`/book/${FACILITY_ID}?preview=1`)
+
+    await page.getByTestId('clinic-booking-availability-retry').click()
+    await expect(page.getByTestId('clinic-booking-region-notice')).toBeVisible()
+    await expect(page.getByTestId('clinic-booking-region-contact').getByRole('link', { name: '03-1234-5678' })).toBeVisible()
+    await expect(page.getByTestId('clinic-booking-form')).toHaveCount(0)
 })

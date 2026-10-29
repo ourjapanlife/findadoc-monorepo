@@ -1,6 +1,6 @@
 <template>
     <ClinicBookingForm
-        v-if="form !== null && bookingAvailable"
+        v-if="form !== null && bookingAvailable === true"
         :form="form"
         :query="bookingQuery"
     />
@@ -22,7 +22,32 @@
             </header>
             <LocaleSelector class="shrink-0" />
         </div>
-        <BookingRegionNotice :form="form" />
+        <BookingRegionNotice
+            v-if="bookingAvailable === false"
+            :form="form"
+        />
+        <div
+            v-else
+            data-testid="clinic-booking-availability-error"
+            class="card flex flex-col gap-4 p-6"
+            role="alert"
+        >
+            <h2 class="text-lg font-semibold">
+                {{ t('bookingPage.availabilityError.heading') }}
+            </h2>
+            <p class="text-primary-text-muted">
+                {{ t('bookingPage.availabilityError.body') }}
+            </p>
+            <button
+                type="button"
+                class="btn btn-primary self-start"
+                data-testid="clinic-booking-availability-retry"
+                :disabled="checkingAvailability"
+                @click="retryAvailability"
+            >
+                {{ t(checkingAvailability ? 'bookingPage.availabilityError.checking' : 'bookingPage.availabilityError.retry') }}
+            </button>
+        </div>
     </div>
 </template>
 
@@ -45,6 +70,8 @@ import { formatPageTitle } from '~/utils/site'
  * A hosted clinic page or subdomain is not required.
  * Booking is offered only to people in Japan (#173). The API says whether this visitor
  * may book, and a visitor elsewhere sees a notice with the clinic's own contact details.
+ * When that call fails there is no answer yet (#188): the page shows neither the form nor
+ * the region notice, only a retry.
  */
 definePageMeta({
     ssr: false,
@@ -54,7 +81,8 @@ definePageMeta({
 const route = useRoute()
 const { t, locale } = useI18n()
 const form = ref<BookingForm | null>(null)
-const bookingAvailable = ref(true)
+const bookingAvailable = ref<boolean | null>(null)
+const checkingAvailability = ref(false)
 const clinicId = String(route.params.clinicId ?? '')
 const bookingQuery = bookingQueryFromRoute(route.query as Record<string, unknown>)
 
@@ -77,6 +105,15 @@ async function loadForm(): Promise<void> {
             bookingClinicPath(canonicalId, String(locale.value), bookingQuery),
             { redirectCode: 302, replace: true }
         )
+    }
+}
+
+async function retryAvailability(): Promise<void> {
+    checkingAvailability.value = true
+    try {
+        bookingAvailable.value = await fetchBookingAvailable()
+    } finally {
+        checkingAvailability.value = false
     }
 }
 

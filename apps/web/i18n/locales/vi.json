@@ -874,6 +874,12 @@
     "confirmInJapan": "Tôi hiện đang ở Nhật Bản.",
     "healthDataConsent": "Tôi đồng ý để Find a Doc, Japan gửi lý do khám của tôi, là thông tin sức khỏe, đến {clinic}.",
     "privacyPolicyLink": "Chính sách quyền riêng tư",
+    "availabilityError": {
+      "heading": "Không thể kiểm tra xem có đặt lịch được hay không",
+      "body": "Đã xảy ra sự cố khi kiểm tra. Vui lòng thử lại sau giây lát.",
+      "retry": "Thử lại",
+      "checking": "Đang kiểm tra…"
+    },
     "regionNotice": {
       "heading": "Hiện chỉ những người đang ở Nhật Bản mới có thể đặt lịch",
       "body": "Bạn không thể gửi yêu cầu đặt lịch từ nơi bạn đang ở. Để đặt lịch khám, hãy liên hệ trực tiếp với {clinic}.",
