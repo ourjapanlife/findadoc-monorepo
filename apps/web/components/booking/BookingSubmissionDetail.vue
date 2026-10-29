@@ -172,7 +172,10 @@
                         landscape:flex-row landscape:items-center landscape:justify-between"
                     >
                         <div>
-                            <p class="font-medium">
+                            <p
+                                v-if="upload.fileName !== ''"
+                                class="font-medium"
+                            >
                                 {{ upload.fileName }}
                             </p>
                             <p class="text-sm text-primary-text-muted">

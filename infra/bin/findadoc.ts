@@ -149,4 +149,5 @@ new DataCopyStack(app, 'FindadocDataCopy', {
 new UploadsStack(app, 'FindadocUploads', {
     env: FINDADOC_ENV,
     apiFunction: api.apiFunction,
+    purgeFunction: api.purgeFunction,
 })
