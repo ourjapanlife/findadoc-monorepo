@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="relative z-10 md:flex-1 md:min-h-0 md:overflow-auto">
+        <div class="relative z-10 overflow-x-auto md:flex-1 md:min-h-0 md:overflow-auto">
             <table class="w-full text-sm border-collapse">
                 <thead class="sticky top-0 z-10 bg-secondary-bg">
                     <tr class="border-b border-accent-bg text-left">

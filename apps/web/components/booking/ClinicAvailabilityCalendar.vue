@@ -96,7 +96,7 @@
             {{ t('bookingPage.japanTimeNote') }}
         </p>
         <ClientOnly>
-            <div class="clinic-calendar card min-h-[50dvh] md:min-h-0 flex-1 overflow-auto p-3 shadow-card">
+            <div class="clinic-calendar card h-[50dvh] flex-none md:h-auto md:min-h-0 md:flex-1 overflow-auto p-3 shadow-card">
                 <FullCalendar
                     v-if="calendarReady"
                     :options="calendarOptions"
