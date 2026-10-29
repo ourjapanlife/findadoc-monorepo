@@ -165,11 +165,26 @@ export async function fetchBookingForm(clinicId: string, formId?: string): Promi
 }
 
 /**
- * Whether the API takes booking requests from this visitor. Booking is offered only to
- * people in Japan, and the server decides (#173). A failed call shows the form: submit
- * still refuses a visitor outside Japan.
+ * The API's answer to `bookingAvailable`, or null when there is no answer (#188). A failed
+ * or timed-out call is not a yes and not a region refusal: the Book page shows neither the
+ * form nor the region notice until a retry gets an answer.
  */
-export async function fetchBookingAvailable(): Promise<boolean> {
+export function bookingAvailability(
+    response: Pick<ServerResponse<{ bookingAvailable?: boolean | null }>, 'data' | 'hasErrors'>
+): boolean | null {
+    if (response.hasErrors) {
+        return null
+    }
+    const available = response.data.bookingAvailable
+    return typeof available === 'boolean' ? available : null
+}
+
+/**
+ * Whether the API takes booking requests from this visitor. Booking is offered only to
+ * people in Japan, and the server decides (#173). Null means the call failed and nothing
+ * was decided (#188). Submit and uploads still check the region on the server.
+ */
+export async function fetchBookingAvailable(): Promise<boolean | null> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ bookingAvailable: boolean }>(
         gqlClient.request.bind(gqlClient),
@@ -177,10 +192,7 @@ export async function fetchBookingAvailable(): Promise<boolean> {
         {},
         { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
     )
-    if (response.hasErrors) {
-        return true
-    }
-    return response.data.bookingAvailable !== false
+    return bookingAvailability(response)
 }
 
 export async function requestBookingUploadUrl(input: {

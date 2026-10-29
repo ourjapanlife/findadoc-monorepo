@@ -874,6 +874,12 @@
     "confirmInJapan": "現在、日本国内にいます。",
     "healthDataConsent": "受診理由（健康に関する情報）を Find a Doc, Japan が{clinic}へ送ることに同意します。",
     "privacyPolicyLink": "プライバシーポリシー",
+    "availabilityError": {
+      "heading": "予約できるかどうかを確認できませんでした",
+      "body": "確認中に問題が発生しました。しばらくしてからもう一度お試しください。",
+      "retry": "もう一度試す",
+      "checking": "確認中…"
+    },
     "regionNotice": {
       "heading": "予約は現在、日本国内にいる方のみご利用いただけます",
       "body": "現在の場所からは予約リクエストを送信できません。受診を希望される場合は、{clinic}へ直接ご連絡ください。",

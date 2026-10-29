@@ -874,6 +874,12 @@
     "confirmInJapan": "Estou no Japão neste momento.",
     "healthDataConsent": "Consinto que o Find a Doc, Japan envie o motivo da minha consulta, que é uma informação de saúde, para {clinic}.",
     "privacyPolicyLink": "Política de privacidade",
+    "availabilityError": {
+      "heading": "Não foi possível verificar se o agendamento está disponível",
+      "body": "Ocorreu um problema durante a verificação. Tente novamente em instantes.",
+      "retry": "Tentar novamente",
+      "checking": "Verificando…"
+    },
     "regionNotice": {
       "heading": "No momento, o agendamento está disponível apenas para quem está no Japão",
       "body": "Não é possível enviar um pedido de agendamento de onde você está agora. Para marcar uma consulta, entre em contato diretamente com {clinic}.",

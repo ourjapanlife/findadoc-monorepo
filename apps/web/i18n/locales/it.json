@@ -874,6 +874,12 @@
     "confirmInJapan": "Mi trovo attualmente in Giappone.",
     "healthDataConsent": "Acconsento a che Find a Doc, Japan invii il motivo della mia visita, che è un'informazione sulla salute, a {clinic}.",
     "privacyPolicyLink": "Informativa sulla privacy",
+    "availabilityError": {
+      "heading": "Non è stato possibile verificare se la prenotazione è disponibile",
+      "body": "Si è verificato un problema durante la verifica. Riprova tra poco.",
+      "retry": "Riprova",
+      "checking": "Verifica in corso…"
+    },
     "regionNotice": {
       "heading": "Al momento la prenotazione è disponibile solo per chi si trova in Giappone",
       "body": "Non puoi inviare una richiesta di prenotazione dal luogo in cui ti trovi ora. Per prenotare una visita, contatta direttamente {clinic}.",

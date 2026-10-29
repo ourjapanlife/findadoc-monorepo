@@ -874,6 +874,12 @@
     "confirmInJapan": "현재 일본에 있습니다.",
     "healthDataConsent": "Find a Doc, Japan이 건강 정보인 저의 진료 사유를 {clinic}에 보내는 데 동의합니다.",
     "privacyPolicyLink": "개인정보 처리방침",
+    "availabilityError": {
+      "heading": "예약 가능 여부를 확인하지 못했습니다",
+      "body": "확인하는 중에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+      "retry": "다시 시도",
+      "checking": "확인 중…"
+    },
     "regionNotice": {
       "heading": "예약은 현재 일본에 있는 분만 이용할 수 있습니다",
       "body": "지금 계신 곳에서는 예약 요청을 보낼 수 없습니다. 진료를 원하시면 {clinic}에 직접 연락하세요.",
