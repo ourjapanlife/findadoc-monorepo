@@ -77,7 +77,7 @@
                 <ClinicTeamPanel
                     v-else-if="tab === 'team' && clinic.canManage"
                     :facility-id="facilityId"
-                    :is-moderator="clinic.role === null"
+                    :is-admin="clinic.role === null"
                 />
             </template>
         </div>
@@ -95,7 +95,7 @@ import { formatPageTitle } from '~/utils/site'
 
 /**
  * `/clinic-dashboard/{facilityId}`: one clinic's booking requests, calendar,
- * and (for owners and moderators) settings and the team. A clinic subdomain's
+ * and (for owners and admins) settings and the team. A clinic subdomain's
  * `/dashboard` redirects here so sign-in stays on one origin.
  */
 definePageMeta({

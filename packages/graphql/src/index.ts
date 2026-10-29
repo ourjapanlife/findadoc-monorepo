@@ -101,7 +101,9 @@ export type BookingClinic = {
   clinicName: Scalars['String']['output'];
   clinicSiteSlug?: Maybe<Scalars['String']['output']>;
   facilityId: Scalars['ID']['output'];
-  /** Null for moderators, who reach every clinic without a membership. */
+  /** Appointments still REQUESTED, waiting for the clinic to confirm or decline. */
+  requestedCount: Scalars['Int']['output'];
+  /** Null for admins, who reach every clinic without a membership. */
   role?: Maybe<ClinicMemberRole>;
 };
 
@@ -848,7 +850,7 @@ export type DeleteResult = {
 export type Facility = {
   __typename?: 'Facility';
   /**
-   * True once a moderator or the clinic owner has saved booking settings for this facility.
+   * True once an admin or the clinic owner has saved booking settings for this facility.
    * The clinic page shows Book, and patients may book, only then.
    */
   bookingEnabled: Scalars['Boolean']['output'];
@@ -1305,11 +1307,11 @@ export type Mutation = {
   deleteHealthcareProfessional: DeleteResult;
   /** Delete a submission by ID. */
   deleteSubmission: DeleteResult;
-  /** Invite an email to one clinic. Moderators invite anyone; an owner invites staff. */
+  /** Invite an email to one clinic. Admins invite anyone; an owner invites staff. */
   inviteClinicMember: ClinicMember;
   /** Store a city place id. Does not store a Places name, address, or coordinate. */
   recordCityPlaceId: City;
-  /** Remove a clinic member. Moderators remove anyone; an owner removes staff. */
+  /** Remove a clinic member. Admins remove anyone; an owner removes staff. */
   removeClinicMember: DeleteResult;
   /** Replace the clinic's usual week. Members and moderators. */
   setClinicWeeklyHours: Array<ClinicWeeklyHours>;
@@ -1320,7 +1322,7 @@ export type Mutation = {
   submitBooking: BookingSubmissionResult;
   /** Staff confirm, decline, cancel, or complete an appointment. Declined and cancelled free the slot. */
   updateBookingAppointmentStatus: BookingAppointment;
-  /** Change visit lengths and offered forms. Owners and moderators. */
+  /** Change visit lengths and offered forms. Owners and admins. */
   updateBookingSettings: BookingSettings;
   /** Update an existing facility by ID. */
   updateFacility: Facility;
@@ -1623,6 +1625,8 @@ export type Query = {
   bookingAvailable: Scalars['Boolean']['output'];
   /** One clinic for the dashboard header. Null when the user may not open it. */
   bookingClinic?: Maybe<BookingClinic>;
+  /** Every clinic set up for booking, for the admin clinic picker. Admins only. */
+  bookingClinics: Array<BookingClinic>;
   /**
    * The booking intake form for a directory facility or hosted clinic.
    * Pass a facility id, clinic site id, or slug. Unknown clinics are null.
@@ -1631,13 +1635,13 @@ export type Query = {
   bookingForm?: Maybe<BookingForm>;
   /** Intake form types a clinic may offer. */
   bookingFormTypes: Array<BookingFormType>;
-  /** Booking options for one clinic. Members and moderators. */
+  /** Booking options for one clinic. Members and admins. */
   bookingSettings?: Maybe<BookingSettings>;
   /** Staff read-only detail for one booking submission. */
   bookingSubmission?: Maybe<BookingSubmissionDetail>;
   /**
    * Staff list of booking submissions, limited to the clinics the user belongs to.
-   * Moderators see every clinic.
+   * Admins see every clinic.
    */
   bookingSubmissions: Array<BookingSubmissionListItem>;
   bookingSubmissionsTotalCount: Scalars['Int']['output'];
@@ -1651,15 +1655,15 @@ export type Query = {
   clinicAvailabilityClosures: Array<ClinicAvailabilityClosure>;
   /** Staff availability windows for the calendar editor. */
   clinicAvailabilityWindows: Array<ClinicAvailabilityWindow>;
-  /** Invited and signed-in members of one clinic. Owners and moderators only. */
+  /** Invited and signed-in members of one clinic. Owners and admins only. */
   clinicMembers: Array<ClinicMember>;
-  /** Doctors at one clinic, for the schedule picker. Members and moderators. */
+  /** Doctors at one clinic, for the schedule picker. Members and admins. */
   clinicPractitioners: Array<BookingPractitioner>;
   /** A hosted clinic page. Drafts are null. The clean link is /clinic/{slug}. */
   clinicSite?: Maybe<ClinicSite>;
   /** Hosted clinics that are in preview or published. Drafts are omitted. */
   clinicSites: Array<ClinicSiteSummary>;
-  /** Every schedule's usual week in Japan time. Members and moderators. */
+  /** Every schedule's usual week in Japan time. Members and admins. */
   clinicWeeklyHours: Array<ClinicWeeklyHours>;
   /** Roles and effective API scopes for the authenticated user (always allowed when a user context exists). */
   currentUserAccess: CurrentUserAccess;
@@ -2596,6 +2600,7 @@ export type BookingClinicResolvers<ContextType = any, ParentType extends Resolve
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  requestedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['ClinicMemberRole']>, ParentType, ContextType>;
 };
 
@@ -3098,6 +3103,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   availableBookingStarts?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryAvailableBookingStartsArgs, 'clinicSiteId' | 'from' | 'to'>>;
   bookingAvailable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   bookingClinic?: Resolver<Maybe<ResolversTypes['BookingClinic']>, ParentType, ContextType, RequireFields<QueryBookingClinicArgs, 'facilityId'>>;
+  bookingClinics?: Resolver<Array<ResolversTypes['BookingClinic']>, ParentType, ContextType>;
   bookingForm?: Resolver<Maybe<ResolversTypes['BookingForm']>, ParentType, ContextType, RequireFields<QueryBookingFormArgs, 'clinicSiteId'>>;
   bookingFormTypes?: Resolver<Array<ResolversTypes['BookingFormType']>, ParentType, ContextType>;
   bookingSettings?: Resolver<Maybe<ResolversTypes['BookingSettings']>, ParentType, ContextType, RequireFields<QueryBookingSettingsArgs, 'facilityId'>>;

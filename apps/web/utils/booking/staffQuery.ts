@@ -94,6 +94,7 @@ const CLINIC_FIELDS = `
   clinicSiteSlug
   role
   canManage
+  requestedCount
 `
 
 const MEMBER_FIELDS = `
@@ -268,6 +269,14 @@ const updateStatusMutation = gql`
 const myClinicsQuery = gql`
   query MyBookingClinics {
     myBookingClinics {
+      ${CLINIC_FIELDS}
+    }
+  }
+`
+
+const allClinicsQuery = gql`
+  query BookingClinics {
+    bookingClinics {
       ${CLINIC_FIELDS}
     }
   }
@@ -481,6 +490,12 @@ export async function updateAppointmentStatus(
 export async function fetchMyBookingClinics(): Promise<BookingClinic[] | null> {
     const data = await request<{ myBookingClinics: BookingClinic[] }>(myClinicsQuery, {}, READ)
     return data === null ? null : data.myBookingClinics ?? []
+}
+
+/** Every clinic set up for booking. Moderators only. Null when the request failed. */
+export async function fetchAllBookingClinics(): Promise<BookingClinic[] | null> {
+    const data = await request<{ bookingClinics: BookingClinic[] }>(allClinicsQuery, {}, READ)
+    return data === null ? null : data.bookingClinics ?? []
 }
 
 export async function fetchBookingClinic(facilityId: string): Promise<BookingClinic | null> {

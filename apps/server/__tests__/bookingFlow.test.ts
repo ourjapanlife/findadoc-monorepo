@@ -13,7 +13,7 @@ import * as appointmentService from '../src/services/appointmentService.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
 import * as staffBookingService from '../src/services/staffBookingService.js'
 
-const moderator: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
 const outsider: BookingAccess = {
     readAll: false,
     writeAll: false,
@@ -119,7 +119,7 @@ describe('booking flow', () => {
             facilityId,
             allowedDurations: [15, 30, 45, 60],
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
-        }, moderator)
+        }, admin)
         expect(saved.hasErrors).toBe(false)
         expect(saved.data.defaultDuration).toBe(30)
         expect(await bookingService.getBookingForm(facilityId)).not.toBeNull()
@@ -132,7 +132,7 @@ describe('booking flow', () => {
             allowedDurations: [15, 30, 45, 60],
             defaultDuration: 45,
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
-        }, moderator)
+        }, admin)
         expect(saved.hasErrors).toBe(false)
         expect(saved.data.defaultDuration).toBe(45)
         expect((await bookingService.getBookingForm(facilityId))?.defaultDuration).toBe(45)
@@ -142,7 +142,7 @@ describe('booking flow', () => {
             allowedDurations: [15, 30],
             defaultDuration: 45,
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
-        }, moderator)
+        }, admin)
         expect(rejected.hasErrors).toBe(true)
     })
 
@@ -154,7 +154,7 @@ describe('booking flow', () => {
             const window = await availabilityService.createClinicAvailabilityWindow(
                 { clinicSiteId: facilityId, startsAt: iso(start), endsAt: iso(end) },
                 'test|staff',
-                moderator
+                admin
             )
             expect(window.hasErrors).toBe(false)
         }
@@ -182,14 +182,14 @@ describe('booking flow', () => {
         // A second patient cannot take the held slot.
         expect((await submit(facilityId, iso(0))).hasErrors).toBe(true)
 
-        const listed = await staffBookingService.searchBookingSubmissions({ facilityId }, moderator)
+        const listed = await staffBookingService.searchBookingSubmissions({ facilityId }, admin)
         const row = listed.find(item => item.id === submitted.data.id)
         expect(row?.appointmentStatus).toBe(BookingAppointmentStatus.Requested)
         expect(row?.patientName).toBe('Test Patient')
 
         const confirmed = await appointmentService.updateAppointmentStatus(
             { appointmentId: submitted.data.appointmentId!, status: BookingAppointmentStatus.Confirmed },
-            moderator,
+            admin,
             'test|staff'
         )
         expect(confirmed.data.status).toBe(BookingAppointmentStatus.Confirmed)
@@ -197,7 +197,7 @@ describe('booking flow', () => {
         // Confirming twice is a stale transition.
         const again = await appointmentService.updateAppointmentStatus(
             { appointmentId: submitted.data.appointmentId!, status: BookingAppointmentStatus.Confirmed },
-            moderator,
+            admin,
             'test|staff'
         )
         expect(again.hasErrors).toBe(true)
@@ -220,7 +220,7 @@ describe('booking flow', () => {
         expect(cancelled.data.canCancel).toBe(false)
         expect(await openStarts(facilityId)).toEqual([iso(0)])
 
-        const detail = await staffBookingService.getBookingSubmissionDetail(submitted.data.id, moderator)
+        const detail = await staffBookingService.getBookingSubmissionDetail(submitted.data.id, admin)
         expect(detail?.statusReason).toBe('Feeling better')
     })
 
@@ -249,7 +249,7 @@ describe('booking flow', () => {
         const window = await availabilityService.createClinicAvailabilityWindow(
             { clinicSiteId: facilityId, startsAt: iso(240), endsAt: iso(540) },
             'test|staff',
-            moderator
+            admin
         )
         expect(window.hasErrors).toBe(false)
 
@@ -271,7 +271,7 @@ describe('booking flow', () => {
         // An answered request no longer counts.
         const declined = await appointmentService.updateAppointmentStatus(
             { appointmentId: held[0]!, status: BookingAppointmentStatus.Declined },
-            moderator,
+            admin,
             'test|staff'
         )
         expect(declined.hasErrors).toBe(false)
@@ -294,7 +294,7 @@ describe('booking flow', () => {
                 { weekday: jstWeekday, startMinute: 600, endMinute: 630 },
                 { weekday: jstWeekday, startMinute: 630, endMinute: 660 }
             ]
-        }, 'test|staff', moderator)
+        }, 'test|staff', admin)
         // Touching blocks are stored as one.
         expect(hours.data.map(block => [block.startMinute, block.endMinute])).toEqual([[600, 660]])
         expect(await nextStarts()).toEqual([next(0)])
@@ -302,25 +302,25 @@ describe('booking flow', () => {
         expect((await availabilityService.setClinicWeeklyHours({
             facilityId,
             hours: [{ weekday: jstWeekday, startMinute: 605, endMinute: 660 }]
-        }, 'test|outsider', moderator)).hasErrors).toBe(true)
+        }, 'test|outsider', admin)).hasErrors).toBe(true)
         expect((await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|outsider', outsider))
             .hasErrors).toBe(true)
 
         const closure = await availabilityService.createClinicAvailabilityClosure(
             { clinicId: facilityId, startsAt: next(30), endsAt: next(60), reason: 'Staff training' },
             'test|staff',
-            moderator
+            admin
         )
         expect(closure.hasErrors).toBe(false)
         expect(await nextStarts()).toEqual([])
         expect(await availabilityService.listClinicAvailabilityClosures(facilityId, next(-60), next(120), outsider))
             .toEqual([])
 
-        const reopened = await availabilityService.deleteClinicAvailabilityClosure(closure.data.id, moderator)
+        const reopened = await availabilityService.deleteClinicAvailabilityClosure(closure.data.id, admin)
         expect(reopened.data.isSuccessful).toBe(true)
         expect(await nextStarts()).toEqual([next(0)])
 
-        await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|staff', moderator)
+        await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|staff', admin)
     })
 
     it('purges the patient\'s files when the clinic declines the visit', async () => {
@@ -329,7 +329,7 @@ describe('booking flow', () => {
         const window = await availabilityService.createClinicAvailabilityWindow(
             { clinicSiteId: facilityId, startsAt: at(0), endsAt: at(60) },
             'test|staff',
-            moderator
+            admin
         )
         expect(window.hasErrors).toBe(false)
         const submitted = await submit(facilityId, at(0), 'files@example.com')
@@ -355,7 +355,7 @@ describe('booking flow', () => {
 
         const declined = await appointmentService.updateAppointmentStatus(
             { appointmentId: submitted.data.appointmentId!, status: BookingAppointmentStatus.Declined },
-            moderator,
+            admin,
             'test|staff'
         )
         expect(declined.hasErrors).toBe(false)
@@ -367,7 +367,7 @@ describe('booking flow', () => {
         expect(row.purged_at).not.toBeNull()
         expect(row.object_key).toBe(`purged/${upload.id}`)
         expect(row.file_name).toBe('')
-        expect((await staffBookingService.createStaffBookingDownloadUrl(upload.id, 'http://127.0.0.1:4000', moderator))
+        expect((await staffBookingService.createStaffBookingDownloadUrl(upload.id, 'http://127.0.0.1:4000', admin))
             .hasErrors).toBe(true)
         await db.deleteFrom('booking_uploads').where('id', '=', upload.id).execute()
     })
@@ -384,7 +384,7 @@ describe('booking flow', () => {
                 facilityId,
                 practitionerId,
                 hours: [{ weekday: jstWeekday, startMinute: 600, endMinute: 660 }]
-            }, 'test|staff', moderator)
+            }, 'test|staff', admin)
             expect(hours.data[0]?.practitionerId).toBe(practitionerId)
         }
 
@@ -405,7 +405,7 @@ describe('booking flow', () => {
         const first = await submit(facilityId, later(0), 'first@example.com', { spokenLanguages: [Locale.EnUs] })
         expect(first.hasErrors).toBe(false)
         createdSubmissionIds.push(first.data.id)
-        const firstDetail = await staffBookingService.getBookingSubmissionDetail(first.data.id, moderator)
+        const firstDetail = await staffBookingService.getBookingSubmissionDetail(first.data.id, admin)
         expect(firstDetail?.practitionerId).toBe(english)
         expect(firstDetail?.practitionerNames[0]?.lastName).toBe('English')
         expect(firstDetail?.spokenLanguages).toEqual([Locale.EnUs])
@@ -419,7 +419,7 @@ describe('booking flow', () => {
         expect(second.hasErrors).toBe(false)
         createdSubmissionIds.push(second.data.id)
         const appointments = await appointmentService.listClinicAppointments(
-            facilityId, later(-60), later(120), moderator
+            facilityId, later(-60), later(120), admin
         )
         expect(appointments.map(appointment => appointment.practitionerId).sort()).toEqual([english, japanese].sort())
 
@@ -431,17 +431,17 @@ describe('booking flow', () => {
         // A clinic-wide closure closes every doctor.
         await appointmentService.updateAppointmentStatus(
             { appointmentId: second.data.appointmentId!, status: BookingAppointmentStatus.Cancelled },
-            moderator,
+            admin,
             'test|staff'
         )
         expect(await starts(japanese)).toEqual([later(0)])
         const closure = await availabilityService.createClinicAvailabilityClosure(
             { clinicId: facilityId, startsAt: later(0), endsAt: later(60) },
             'test|staff',
-            moderator
+            admin
         )
         expect(await starts(japanese)).toEqual([])
-        await availabilityService.deleteClinicAvailabilityClosure(closure.data.id, moderator)
+        await availabilityService.deleteClinicAvailabilityClosure(closure.data.id, admin)
     })
 
     it('lets an owner invite staff but not another owner', async () => {

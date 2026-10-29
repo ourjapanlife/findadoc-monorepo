@@ -9,10 +9,14 @@ page (`clinic_sites`) is optional branding.
 
 | Who | How | Can |
 |---|---|---|
-| Moderator, admin | `read:bookings`, `write:clinic_availability`, `write:clinic_memberships` scopes | Every clinic. Invite owners and staff. |
+| Admin | `read:bookings`, `write:clinic_availability`, `write:clinic_memberships` scopes | Every clinic while booking is in preview. Invite owners and staff. |
 | Clinic owner | `clinic_memberships.role = 'owner'` for the facility | That clinic's requests, calendar, settings, and staff. |
 | Clinic staff | `clinic_memberships.role = 'staff'` | That clinic's requests and calendar. |
 | Patient | Private token from the confirmation email | Their own booking: view and cancel. |
+
+Moderators manage the directory and have no booking access. `getEffectiveScopes` in
+`src/auth.ts` removes the three every-clinic scopes from anyone who is not an admin,
+even when Auth0 puts them on the token. Do not give them back to moderators.
 
 Owners and staff are plain users with no extra Auth0 role. Their resolvers use
 `withAuthenticatedUser`, and every service checks the facility through
@@ -20,7 +24,7 @@ Owners and staff are plain users with no extra Auth0 role. Their resolvers use
 
 ### Invites
 
-A moderator (or an owner, for staff) invites an email for a facility. The
+An admin (or an owner, for staff) invites an email for a facility. The
 first sign-in whose **verified** email matches claims the row and stores the
 Auth0 `sub`. The API reads the email from namespaced access-token claims, so
 an Auth0 post-login Action must add them:

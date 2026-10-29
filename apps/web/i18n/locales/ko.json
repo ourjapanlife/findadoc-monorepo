@@ -386,7 +386,8 @@
     "roles": "역할:",
     "sections": {
       "settings": "설정",
-      "moderation": "모더레이션"
+      "moderation": "모더레이션",
+      "clinic": "클리닉"
     },
     "none": "—"
   },
@@ -402,7 +403,11 @@
     "placeholderText": "이름 또는 ID로 검색",
     "healthcareProfessionals": "의료인",
     "facilities": "의료기관",
-    "licenseReview": "면허 확인이 필요함"
+    "licenseReview": "면허 확인이 필요함",
+    "openClinicDashboard": "클리닉 대시보드 열기",
+    "chooseClinic": "클리닉 선택",
+    "noBookingClinics": "아직 예약을 받는 클리닉이 없습니다",
+    "clinicsLoadError": "클리닉을 불러올 수 없습니다"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "삭제",
@@ -1038,7 +1043,8 @@
       "invalid": "같은 날 두 시간대가 겹칩니다. 하나를 바꿔 주세요.",
       "save": "주간 진료 시간 저장",
       "doctorHelp": "이 의사만의 일주일입니다. 저장하면 이 의사는 클리닉 시간이나 다른 의사와 따로 예약을 받습니다. 클리닉 전체 휴진은 그대로 적용됩니다."
-    }
+    },
+    "requestedCount": "대기 중인 예약 요청: {count}"
   },
   "patientBooking": {
     "heading": "내 예약 요청",

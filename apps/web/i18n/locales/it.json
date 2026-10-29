@@ -296,7 +296,8 @@
     "none": "—",
     "sections": {
       "settings": "Impostazioni",
-      "moderation": "Moderazione"
+      "moderation": "Moderazione",
+      "clinic": "Clinica"
     }
   },
   "modPanelSubmissionLeftNavbar": {
@@ -311,7 +312,11 @@
     "healthcareProfessionals": "Professionisti sanitari",
     "facilities": "Strutture",
     "addHealthcareProfessional": "Aggiungi un professionista sanitario",
-    "licenseReview": "Licenza da verificare"
+    "licenseReview": "Licenza da verificare",
+    "openClinicDashboard": "Apri la dashboard di una clinica",
+    "chooseClinic": "Scegli una clinica",
+    "noBookingClinics": "Nessuna clinica accetta ancora prenotazioni",
+    "clinicsLoadError": "Impossibile caricare le cliniche"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Elimina",
@@ -1038,7 +1043,8 @@
       "invalid": "Due fasce nello stesso giorno si sovrappongono. Modificane una.",
       "save": "Salva orario settimanale",
       "doctorHelp": "La settimana propria di questo medico. Una volta salvata, il medico viene prenotato separatamente dall'orario della clinica e dagli altri medici. Le chiusure dell'intera clinica valgono comunque."
-    }
+    },
+    "requestedCount": "Richieste in attesa: {count}"
   },
   "patientBooking": {
     "heading": "La tua richiesta di appuntamento",

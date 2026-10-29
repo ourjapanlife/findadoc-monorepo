@@ -31,7 +31,11 @@ export const useAuthStore = defineStore('authStore', () => {
     const isLoadingAuth = computed(() => auth0?.isLoading.value ?? true)
 
     const isLoggedIn = computed(() => {
-        if (isTestingMode) return useCookie('authToken').value !== null
+        if (isTestingMode) {
+            // A missing cookie reads as undefined. Without this check every e2e visitor counts as signed in.
+            const authToken = useCookie('authToken').value
+            return authToken !== null && authToken !== undefined
+        }
         return auth0?.isAuthenticated.value ?? false
     })
 

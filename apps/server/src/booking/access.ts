@@ -6,7 +6,8 @@ import { logger } from '../logger.js'
 /**
  * Who may see and change a clinic's bookings.
  *
- * Moderators and admins hold the global scopes and reach every clinic.
+ * Admins hold the global scopes and reach every clinic while booking is in preview.
+ * Moderators manage the directory and get no booking access (src/auth.ts).
  * Everyone else needs a claimed clinic_memberships row for the facility.
  * Staff read bookings and edit the calendar. Owners also manage members and
  * booking settings.
@@ -116,12 +117,12 @@ export function isFacilityOwner(access: BookingAccess, facilityId: string | null
     return typeof facilityId === 'string' && access.memberships.get(facilityId) === MEMBERSHIP_ROLE.OWNER
 }
 
-/** Settings and members: moderators, or the clinic owner. */
+/** Settings and members: admins, or the clinic owner. */
 export function canManageFacility(access: BookingAccess, facilityId: string | null | undefined): boolean {
     return access.manageMembersAll || isFacilityOwner(access, facilityId)
 }
 
-/** Facility ids this user may read, or 'all' for moderators. */
+/** Facility ids this user may read, or 'all' for admins. */
 export function readableFacilityIds(access: BookingAccess): string[] | 'all' {
     return access.readAll ? 'all' : [...access.memberships.keys()]
 }

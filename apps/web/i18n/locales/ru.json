@@ -263,7 +263,8 @@
     "none": "—",
     "sections": {
       "settings": "Настройки",
-      "moderation": "Модерация"
+      "moderation": "Модерация",
+      "clinic": "Клиника"
     }
   },
   "modEditSubmissionTopNav": {
@@ -368,7 +369,11 @@
     "healthcareProfessionals": "Медицинские специалисты",
     "facilities": "Учреждения",
     "addHealthcareProfessional": "Добавить медицинского специалиста",
-    "licenseReview": "Нужно проверить лицензию"
+    "licenseReview": "Нужно проверить лицензию",
+    "openClinicDashboard": "Открыть панель клиники",
+    "chooseClinic": "Выберите клинику",
+    "noBookingClinics": "Пока ни одна клиника не принимает записи",
+    "clinicsLoadError": "Не удалось загрузить клиники"
   },
   "modFacilitySection": {
     "addresses": "Адреса",
@@ -1038,7 +1043,8 @@
       "invalid": "Два блока в один день пересекаются. Измените один из них.",
       "save": "Сохранить график",
       "doctorHelp": "Собственная неделя этого врача. После сохранения к нему записываются отдельно от графика клиники и других врачей. Закрытия всей клиники по-прежнему действуют."
-    }
+    },
+    "requestedCount": "Ожидающие запросы: {count}"
   },
   "patientBooking": {
     "heading": "Ваш запрос на приём",

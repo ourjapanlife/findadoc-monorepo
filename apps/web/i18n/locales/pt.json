@@ -263,7 +263,8 @@
     "none": "—",
     "sections": {
       "settings": "Configurações",
-      "moderation": "Moderação"
+      "moderation": "Moderação",
+      "clinic": "Clínica"
     }
   },
   "modEditSubmissionTopNav": {
@@ -368,7 +369,11 @@
     "healthcareProfessionals": "Profissionais de saúde",
     "facilities": "Unidades",
     "addHealthcareProfessional": "Adicionar profissional de saúde",
-    "licenseReview": "Licença a revisar"
+    "licenseReview": "Licença a revisar",
+    "openClinicDashboard": "Abrir o painel de uma clínica",
+    "chooseClinic": "Escolha uma clínica",
+    "noBookingClinics": "Nenhuma clínica aceita agendamentos ainda",
+    "clinicsLoadError": "Não foi possível carregar as clínicas"
   },
   "modFacilitySection": {
     "addresses": "Endereços",
@@ -1038,7 +1043,8 @@
       "invalid": "Dois blocos no mesmo dia se sobrepõem. Altere um deles.",
       "save": "Salvar horário semanal",
       "doctorHelp": "A semana própria deste médico. Depois de salva, o médico é agendado separadamente do horário da clínica e dos outros médicos. Os fechamentos da clínica toda continuam valendo."
-    }
+    },
+    "requestedCount": "Pedidos pendentes: {count}"
   },
   "patientBooking": {
     "heading": "Seu pedido de consulta",

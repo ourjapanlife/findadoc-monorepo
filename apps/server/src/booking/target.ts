@@ -180,7 +180,7 @@ export async function resolveBookingTarget(clinicIdOrSlug: string): Promise<Book
 
 /**
  * resolveBookingTarget for the patient surface. A facility books only after a
- * moderator or owner saves its booking settings, so a directory clinic that
+ * admin or owner saves its booking settings, so a directory clinic that
  * never opted in reads as missing.
  */
 export async function resolvePublicBookingTarget(clinicIdOrSlug: string): Promise<BookingTarget | undefined> {

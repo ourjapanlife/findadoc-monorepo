@@ -263,7 +263,8 @@
     "none": "—",
     "sections": {
       "settings": "Paramètres",
-      "moderation": "Modération"
+      "moderation": "Modération",
+      "clinic": "Clinique"
     }
   },
   "modEditSubmissionTopNav": {
@@ -362,7 +363,11 @@
     "healthcareProfessionals": "Professionnels de santé",
     "facilities": "Établissements",
     "addHealthcareProfessional": "Ajouter un professionnel de santé",
-    "licenseReview": "Licence à vérifier"
+    "licenseReview": "Licence à vérifier",
+    "openClinicDashboard": "Ouvrir le tableau de bord d’une clinique",
+    "chooseClinic": "Choisir une clinique",
+    "noBookingClinics": "Aucune clinique n’accepte encore de réservations",
+    "clinicsLoadError": "Impossible de charger les cliniques"
   },
   "modFacilitySection": {
     "addresses": "Adresses",
@@ -1038,7 +1043,8 @@
       "invalid": "Deux plages du même jour se chevauchent. Modifiez l'une d'elles.",
       "save": "Enregistrer les horaires",
       "doctorHelp": "La semaine propre à ce médecin. Une fois enregistrée, ce médecin est réservé séparément des horaires de la clinique et des autres médecins. Les fermetures de toute la clinique s'appliquent toujours."
-    }
+    },
+    "requestedCount": "Demandes en attente : {count}"
   },
   "patientBooking": {
     "heading": "Votre demande de rendez-vous",
