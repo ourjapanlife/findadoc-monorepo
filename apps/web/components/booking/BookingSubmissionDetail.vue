@@ -128,6 +128,22 @@
                     </dt>
                     <dd>{{ detail.locale }}</dd>
                 </div>
+                <div v-if="doctor !== ''">
+                    <dt class="text-sm text-primary-text-muted">
+                        {{ t('bookingDashboard.doctor') }}
+                    </dt>
+                    <dd data-testid="booking-detail-doctor">
+                        {{ doctor }}
+                    </dd>
+                </div>
+                <div v-if="detail.spokenLanguages.length > 0">
+                    <dt class="text-sm text-primary-text-muted">
+                        {{ t('bookingDashboard.languagesRequested') }}
+                    </dt>
+                    <dd data-testid="booking-detail-languages">
+                        {{ detail.spokenLanguages.map(language => languageName(language, locale)).join(', ') }}
+                    </dd>
+                </div>
             </dl>
 
             <section class="flex flex-col gap-3">
@@ -222,6 +238,8 @@ import {
     type BookingSubmissionDetail as Detail
 } from '@findadoc/graphql'
 import { formatToReadableDate } from '~/utils/dateUtils'
+import { languageName } from '~/utils/languageName'
+import { practitionerName } from '~/utils/booking/practitioners'
 import {
     actionTakesReason,
     appointmentStatusLabelKey,
@@ -244,7 +262,7 @@ const emit = defineEmits<{
     changed: []
 }>()
 
-const { t, te } = useI18n()
+const { t, te, locale } = useI18n()
 const detail = ref<Detail | null>(null)
 const loadError = ref(false)
 const downloadError = ref(false)
@@ -253,6 +271,7 @@ const updating = ref(false)
 const actionError = ref('')
 
 const actions = computed(() => staffActionsFor(detail.value?.appointmentStatus))
+const doctor = computed(() => practitionerName(detail.value?.practitionerNames, locale.value))
 const patientName = computed(() =>
     detail.value?.answers.find(answer => answer.fieldId === 'fullName')?.value ?? '')
 

@@ -1,11 +1,12 @@
 import { afterAll, describe, expect, it } from 'vitest'
-import { BookingAppointmentStatus, ClinicMemberRole } from '@findadoc/graphql'
+import { BookingAppointmentStatus, ClinicMemberRole, Locale } from '@findadoc/graphql'
 import { sharedFacilityIds } from './testSetup.test.js'
 import { db } from '../src/kyselyClient.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
 import { DEFAULT_BOOKING_FORM_ID } from '../src/booking/formDefinitions.js'
 import { hashPatientToken } from '../src/booking/links.js'
 import { ErrorCode } from '../src/result.js'
+import { asJsonb } from '../utils/dbUtils.js'
 import * as availabilityService from '../src/services/availabilityService.js'
 import * as bookingService from '../src/services/bookingService.js'
 import * as appointmentService from '../src/services/appointmentService.js'
@@ -32,7 +33,12 @@ const answers = [
     { fieldId: 'reason', value: 'Checkup' }
 ]
 
-async function submit(facilityId: string, startsAt: string, email = 'patient@example.com') {
+async function submit(
+    facilityId: string,
+    startsAt: string,
+    email = 'patient@example.com',
+    choice: { practitionerId?: string, spokenLanguages?: Locale[] } = {}
+) {
     return bookingService.submitBooking({
         clinicSiteId: facilityId,
         formDefinitionId: DEFAULT_BOOKING_FORM_ID,
@@ -40,7 +46,8 @@ async function submit(facilityId: string, startsAt: string, email = 'patient@exa
         locale: 'en-US',
         answers: answers.map(answer => (answer.fieldId === 'email' ? { ...answer, value: email } : answer)),
         startsAt,
-        durationMinutes: 60
+        durationMinutes: 60,
+        ...choice
     })
 }
 
@@ -50,6 +57,7 @@ async function openStarts(facilityId: string) {
 
 describe('booking flow', () => {
     const createdSubmissionIds: string[] = []
+    const createdPractitionerIds: string[] = []
 
     afterAll(async () => {
         const facilityId = sharedFacilityIds[0]!
@@ -62,7 +70,36 @@ describe('booking flow', () => {
         await db.deleteFrom('clinic_availability_closures').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('clinic_memberships').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
+        if (createdPractitionerIds.length > 0) {
+            await db.deleteFrom('hps_facilities').where('hps_id', 'in', createdPractitionerIds).execute()
+            await db.deleteFrom('hps').where('id', 'in', createdPractitionerIds).execute()
+        }
     })
+
+    async function addDoctor(facilityId: string, lastName: string, spokenLanguages: Locale[]): Promise<string> {
+        const now = new Date().toISOString()
+        const row = await db.insertInto('hps')
+            .values({
+                names: asJsonb([{ firstName: 'Test', lastName, locale: Locale.EnUs }]),
+                degrees: asJsonb([]),
+                primary_license: null,
+                additional_credentials: asJsonb([]),
+                license_review: null,
+                license_recommendation: null,
+                specialties: asJsonb([]),
+                spoken_languages: asJsonb(spokenLanguages),
+                accepted_insurance: asJsonb([]),
+                additional_info_for_patients: null,
+                email: null,
+                created_date: now,
+                updated_date: now
+            })
+            .returning('id')
+            .executeTakeFirstOrThrow()
+        await db.insertInto('hps_facilities').values({ hps_id: row.id, facilities_id: facilityId }).execute()
+        createdPractitionerIds.push(row.id)
+        return row.id
+    }
 
     it('does not book a facility until its booking settings are saved', async () => {
         const facilityId = sharedFacilityIds[0]!
@@ -241,6 +278,74 @@ describe('booking flow', () => {
         expect(await nextStarts()).toEqual([next(0)])
 
         await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|staff', moderator)
+    })
+
+    it('books two doctors at the same time, and picks one who speaks the language', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        // Two days on, 10:00-11:00 JST: no clinic hours there.
+        const later = (minutes: number) => iso(2 * 24 * 60 + minutes)
+        const jstWeekday = new Date(new Date(later(0)).getTime() + 9 * 60 * 60 * 1000).getUTCDay() || 7
+        const english = await addDoctor(facilityId, 'English', [Locale.EnUs])
+        const japanese = await addDoctor(facilityId, 'Japanese', [Locale.JaJp])
+        for (const practitionerId of [english, japanese]) {
+            const hours = await availabilityService.setClinicWeeklyHours({
+                facilityId,
+                practitionerId,
+                hours: [{ weekday: jstWeekday, startMinute: 600, endMinute: 660 }]
+            }, 'test|staff', moderator)
+            expect(hours.data[0]?.practitionerId).toBe(practitionerId)
+        }
+
+        const form = await bookingService.getBookingForm(facilityId)
+        expect(form?.practitioners.filter(doctor => doctor.hasOwnSchedule).map(doctor => doctor.id).sort())
+            .toEqual([english, japanese].sort())
+        expect(form?.languages).toEqual(expect.arrayContaining([Locale.EnUs, Locale.JaJp]))
+
+        const starts = (practitionerId?: string, spokenLanguages?: Locale[]) =>
+            bookingService.getAvailableBookingStarts(facilityId, later(-60), later(120), 60, practitionerId, spokenLanguages)
+        expect(await starts()).toEqual([later(0)])
+        expect(await starts(english)).toEqual([later(0)])
+        expect(await starts(undefined, [Locale.EnUs])).toEqual([later(0)])
+
+        // The English speaker takes the first English request.
+        const first = await submit(facilityId, later(0), 'first@example.com', { spokenLanguages: [Locale.EnUs] })
+        expect(first.hasErrors).toBe(false)
+        createdSubmissionIds.push(first.data.id)
+        const firstDetail = await staffBookingService.getBookingSubmissionDetail(first.data.id, moderator)
+        expect(firstDetail?.practitionerId).toBe(english)
+        expect(firstDetail?.practitionerNames[0]?.lastName).toBe('English')
+        expect(firstDetail?.spokenLanguages).toEqual([Locale.EnUs])
+
+        // That doctor is now busy; the other doctor's 10:00 is still open.
+        expect(await starts(english)).toEqual([])
+        expect(await starts(undefined, [Locale.EnUs])).toEqual([])
+        expect(await starts(japanese)).toEqual([later(0)])
+
+        const second = await submit(facilityId, later(0), 'second@example.com')
+        expect(second.hasErrors).toBe(false)
+        createdSubmissionIds.push(second.data.id)
+        const appointments = await appointmentService.listClinicAppointments(facilityId, later(-60), later(120), moderator)
+        expect(appointments.map(appointment => appointment.practitionerId).sort()).toEqual([english, japanese].sort())
+
+        expect((await submit(facilityId, later(0), 'third@example.com')).hasErrors).toBe(true)
+        expect((await submit(facilityId, later(0), 'fourth@example.com', {
+            practitionerId: '00000000-0000-4000-8000-000000000000'
+        })).errors?.[0]?.field).toBe('practitionerId')
+
+        // A clinic-wide closure closes every doctor.
+        await appointmentService.updateAppointmentStatus(
+            { appointmentId: second.data.appointmentId!, status: BookingAppointmentStatus.Cancelled },
+            moderator,
+            'test|staff'
+        )
+        expect(await starts(japanese)).toEqual([later(0)])
+        const closure = await availabilityService.createClinicAvailabilityClosure(
+            { clinicId: facilityId, startsAt: later(0), endsAt: later(60) },
+            'test|staff',
+            moderator
+        )
+        expect(await starts(japanese)).toEqual([])
+        await availabilityService.deleteClinicAvailabilityClosure(closure.data.id, moderator)
     })
 
     it('lets an owner invite staff but not another owner', async () => {

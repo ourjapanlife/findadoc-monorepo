@@ -31,6 +31,7 @@ const membershipFields = new Set([
     'bookingUploadDownloadUrl',
     'createClinicAvailabilityWindow',
     'deleteClinicAvailabilityWindow',
+    'clinicPractitioners',
     'clinicWeeklyHours',
     'clinicAvailabilityClosures',
     'setClinicWeeklyHours',

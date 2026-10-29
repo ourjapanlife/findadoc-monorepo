@@ -825,7 +825,15 @@
     "durationHelp": "A clínica define quais durações estão disponíveis.",
     "durationMinutes": "{n} minutos",
     "manageLinkHelp": "Guarde este link privado. Ele mostra seu pedido e permite cancelá-lo. O mesmo link está no e-mail de confirmação.",
-    "manageLink": "Ver ou cancelar este pedido"
+    "manageLink": "Ver ou cancelar este pedido",
+    "languageLabel": "Idiomas de que você precisa",
+    "languageHelp": "Escolha os que importam para você. Só aparecem médicos que falam todos eles.",
+    "doctorLabel": "Médico",
+    "anyDoctor": "Qualquer médico disponível",
+    "anyDoctorHelp": "Você será atendido por quem estiver livre no horário escolhido.",
+    "anyDoctorLanguageHelp": "Um médico que fala {languages} e está livre no horário escolhido.",
+    "doctorLanguages": "Idiomas falados",
+    "doctorsHidden": "Ocultos por não falarem todos os idiomas escolhidos: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Reserva",
@@ -880,7 +888,9 @@
       "decline": "Recusar",
       "cancel": "Cancelar consulta",
       "complete": "Marcar como concluída"
-    }
+    },
+    "doctor": "Médico",
+    "languagesRequested": "Idiomas pedidos"
   },
   "bookingAvailability": {
     "clinicLabel": "Site da clínica",
@@ -904,7 +914,10 @@
     "closeDayRow": "Fechar dia",
     "closeFailed": "Não foi possível fechar esse horário.",
     "closed": "Horário fechado.",
-    "reopened": "Horário reaberto."
+    "reopened": "Horário reaberto.",
+    "scheduleLabel": "Agenda",
+    "scheduleClinic": "Clínica inteira",
+    "scheduleUsesClinic": "usa o horário da clínica"
   },
   "bookingForms": {
     "standardIntake": "Pedido de consulta padrão",
@@ -963,7 +976,8 @@
       "removeBlock": "Remover",
       "copyToWeekdays": "Copiar para terça a sexta",
       "invalid": "Dois blocos no mesmo dia se sobrepõem. Altere um deles.",
-      "save": "Salvar horário semanal"
+      "save": "Salvar horário semanal",
+      "doctorHelp": "A semana própria deste médico. Depois de salva, o médico é agendado separadamente do horário da clínica e dos outros médicos. Os fechamentos da clínica toda continuam valendo."
     }
   },
   "patientBooking": {

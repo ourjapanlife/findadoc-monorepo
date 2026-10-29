@@ -4,6 +4,7 @@ import type {
     BookingAppointmentStatus,
     BookingClinic,
     BookingFormType,
+    BookingPractitioner,
     BookingSettings,
     BookingSubmissionDetail,
     BookingSubmissionListItem,
@@ -58,6 +59,8 @@ const BOOKING_DETAIL_FIELDS = `
   cancelledBy
   statusReason
   practitionerId
+  practitionerNames { firstName middleName lastName locale }
+  spokenLanguages
   service
   answers { fieldId value }
   uploads {
@@ -81,6 +84,7 @@ const APPOINTMENT_FIELDS = `
   durationMinutes
   status
   patientName
+  practitionerId
 `
 
 const CLINIC_FIELDS = `
@@ -110,6 +114,7 @@ const WINDOW_FIELDS = `
   id
   clinicSiteId
   facilityId
+  practitionerId
   startsAt
   endsAt
   createdDate
@@ -118,6 +123,7 @@ const WINDOW_FIELDS = `
 const WEEKLY_HOURS_FIELDS = `
   id
   facilityId
+  practitionerId
   weekday
   startMinute
   endMinute
@@ -126,6 +132,7 @@ const WEEKLY_HOURS_FIELDS = `
 const CLOSURE_FIELDS = `
   id
   facilityId
+  practitionerId
   startsAt
   endsAt
   reason
@@ -180,6 +187,22 @@ const calendarQuery = gql`
     }
     clinicAvailabilityClosures(clinicId: $clinicId, from: $from, to: $to) {
       ${CLOSURE_FIELDS}
+    }
+  }
+`
+
+export const BOOKING_PRACTITIONER_FIELDS = `
+  id
+  names { firstName middleName lastName locale }
+  spokenLanguages
+  specialties
+  hasOwnSchedule
+`
+
+const practitionersQuery = gql`
+  query ClinicPractitioners($clinicId: ID!) {
+    clinicPractitioners(clinicId: $clinicId) {
+      ${BOOKING_PRACTITIONER_FIELDS}
     }
   }
 `
@@ -377,6 +400,12 @@ export async function fetchClinicCalendar(clinicId: string, from: string, to: st
         weeklyHours: data.clinicWeeklyHours ?? [],
         closures: data.clinicAvailabilityClosures ?? []
     }
+}
+
+/** Doctors at one clinic, for the schedule picker. Empty when the request failed. */
+export async function fetchClinicPractitioners(clinicId: string): Promise<BookingPractitioner[]> {
+    const data = await request<{ clinicPractitioners: BookingPractitioner[] }>(practitionersQuery, { clinicId }, READ)
+    return data?.clinicPractitioners ?? []
 }
 
 export async function fetchClinicWeeklyHours(clinicId: string): Promise<ClinicWeeklyHours[] | null> {

@@ -72,6 +72,7 @@ function appointmentFromRow(row: {
     duration_minutes: number
     status: string
     patient_name: string | null
+    practitioner_id: string | null
 }): BookingAppointment {
     return {
         id: row.id,
@@ -81,7 +82,8 @@ function appointmentFromRow(row: {
         endsAt: new Date(row.ends_at).toISOString(),
         durationMinutes: row.duration_minutes,
         status: appointmentStatusFromRow(row.status) ?? BookingAppointmentStatus.Requested,
-        patientName: row.patient_name
+        patientName: row.patient_name,
+        practitionerId: row.practitioner_id
     }
 }
 
@@ -97,6 +99,7 @@ function appointmentQuery() {
             'appointment.ends_at',
             'appointment.duration_minutes',
             'appointment.status',
+            'appointment.practitioner_id',
             'booking.answers',
             'booking.locale',
             sql<string | null>`booking.answers->>'fullName'`.as('patient_name')

@@ -56,12 +56,21 @@ const resolvers = {
         ): Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId, args.formId)),
         availableBookingStarts: withScope(Scope['create:bookings'], async (
             _parent: unknown,
-            args: { clinicSiteId: string, from: string, to: string, durationMinutes?: number | null }
+            args: {
+                clinicSiteId: string
+                from: string
+                to: string
+                durationMinutes?: number | null
+                practitionerId?: string | null
+                spokenLanguages?: gqlType.Locale[] | null
+            }
         ): Promise<string[]> => bookingService.getAvailableBookingStarts(
             args.clinicSiteId,
             args.from,
             args.to,
-            args.durationMinutes
+            args.durationMinutes,
+            args.practitionerId,
+            args.spokenLanguages
         )),
         bookingFormTypes: withScope(Scope['create:bookings'], async ()
         : Promise<gqlType.BookingFormType[]> => clinicAccessService.listBookingFormTypes()),
@@ -134,6 +143,14 @@ const resolvers = {
             args.clinicSiteId,
             args.from,
             args.to,
+            await bookingAccessFor(context.user)
+        )),
+        clinicPractitioners: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { clinicId: string },
+            context: UserContext
+        ): Promise<gqlType.BookingPractitioner[]> => availabilityService.listClinicPractitioners(
+            args.clinicId,
             await bookingAccessFor(context.user)
         )),
         clinicWeeklyHours: withAuthenticatedUser(async (

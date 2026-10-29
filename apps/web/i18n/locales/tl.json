@@ -825,7 +825,15 @@
     "durationHelp": "Ang klinika ang pumipili kung anong haba ang available.",
     "durationMinutes": "{n} minuto",
     "manageLinkHelp": "I-save ang pribadong link na ito. Makikita mo rito ang iyong kahilingan at makakansela mo ito. Nasa email ng kumpirmasyon din ang link na ito.",
-    "manageLink": "Tingnan o kanselahin ang kahilingang ito"
+    "manageLink": "Tingnan o kanselahin ang kahilingang ito",
+    "languageLabel": "Mga wikang kailangan mo",
+    "languageHelp": "Piliin ang mahalaga sa iyo. Ang mga doktor lang na nagsasalita ng lahat ng ito ang ipinapakita.",
+    "doctorLabel": "Doktor",
+    "anyDoctor": "Kahit sinong bakanteng doktor",
+    "anyDoctorHelp": "Titingnan ka ng sinumang bakante sa oras na pipiliin mo.",
+    "anyDoctorLanguageHelp": "Isang doktor na nagsasalita ng {languages} at bakante sa oras na pipiliin mo.",
+    "doctorLanguages": "Mga wikang sinasalita",
+    "doctorsHidden": "Nakatago dahil hindi nila sinasalita ang lahat ng wikang pinili mo: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Pagpapareserba",
@@ -880,7 +888,9 @@
       "decline": "Tanggihan",
       "cancel": "Kanselahin ang appointment",
       "complete": "Markahang tapos na"
-    }
+    },
+    "doctor": "Doktor",
+    "languagesRequested": "Mga hiniling na wika"
   },
   "bookingAvailability": {
     "clinicLabel": "Site ng klinika",
@@ -904,7 +914,10 @@
     "closeDayRow": "Isara ang araw",
     "closeFailed": "Hindi maisara ang oras na iyon.",
     "closed": "Naisara na ang oras.",
-    "reopened": "Nabuksan ulit ang oras."
+    "reopened": "Nabuksan ulit ang oras.",
+    "scheduleLabel": "Iskedyul",
+    "scheduleClinic": "Buong klinika",
+    "scheduleUsesClinic": "gumagamit ng oras ng klinika"
   },
   "bookingForms": {
     "standardIntake": "Karaniwang kahilingan sa pagpapatingin",
@@ -963,7 +976,8 @@
       "removeBlock": "Alisin",
       "copyToWeekdays": "Kopyahin sa Martes–Biyernes",
       "invalid": "Nagsasapawan ang dalawang block sa iisang araw. Baguhin ang isa sa mga ito.",
-      "save": "I-save ang lingguhang oras"
+      "save": "I-save ang lingguhang oras",
+      "doctorHelp": "Sariling linggo ng doktor na ito. Kapag na-save, hiwalay nang bino-book ang doktor sa oras ng klinika at sa ibang doktor. Nalalapat pa rin ang pagsasara ng buong klinika."
     }
   },
   "patientBooking": {

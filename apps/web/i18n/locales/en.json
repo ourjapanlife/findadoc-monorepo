@@ -825,7 +825,15 @@
     "durationHelp": "The clinic chooses which lengths are available.",
     "durationMinutes": "{n} minutes",
     "manageLinkHelp": "Save this private link. It shows your request and lets you cancel it. The same link is in your confirmation email.",
-    "manageLink": "View or cancel this request"
+    "manageLink": "View or cancel this request",
+    "languageLabel": "Languages you need",
+    "languageHelp": "Choose any that matter to you. Only doctors who speak all of them are shown.",
+    "doctorLabel": "Doctor",
+    "anyDoctor": "Any available doctor",
+    "anyDoctorHelp": "The clinic sees you with whoever is free at the time you choose.",
+    "anyDoctorLanguageHelp": "A doctor who speaks {languages} and is free at the time you choose.",
+    "doctorLanguages": "Languages spoken",
+    "doctorsHidden": "Hidden because they don't speak every language you chose: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Booking",
@@ -880,7 +888,9 @@
       "decline": "Decline",
       "cancel": "Cancel appointment",
       "complete": "Mark completed"
-    }
+    },
+    "doctor": "Doctor",
+    "languagesRequested": "Languages requested"
   },
   "bookingAvailability": {
     "clinicLabel": "Clinic site",
@@ -904,7 +914,10 @@
     "closeDayRow": "Close day",
     "closeFailed": "Could not close that time.",
     "closed": "Time closed.",
-    "reopened": "Time reopened."
+    "reopened": "Time reopened.",
+    "scheduleLabel": "Schedule",
+    "scheduleClinic": "Whole clinic",
+    "scheduleUsesClinic": "uses clinic hours"
   },
   "bookingForms": {
     "standardIntake": "Standard visit request",
@@ -963,7 +976,8 @@
       "removeBlock": "Remove",
       "copyToWeekdays": "Copy to Tuesday–Friday",
       "invalid": "Two blocks on the same day overlap. Change one of them.",
-      "save": "Save weekly hours"
+      "save": "Save weekly hours",
+      "doctorHelp": "This doctor's own week. Once it is saved, the doctor is booked separately from clinic hours and from other doctors. Clinic-wide closures still apply."
     }
   },
   "patientBooking": {

@@ -216,11 +216,14 @@ export async function getBookingSubmissionDetail(
             join.onRef('locale.clinic_site_id', '=', 'site.id').on('locale.locale', '=', 'en-US'))
         .leftJoin('facilities as facility', 'facility.id', 'booking.facility_id')
         .leftJoin('booking_appointments as appointment', 'appointment.booking_submission_id', 'booking.id')
+        .leftJoin('hps as practitioner', 'practitioner.id', 'booking.practitioner_id')
         .select([
             'booking.id',
             'booking.clinic_site_id',
             'booking.facility_id',
             'booking.practitioner_id',
+            'practitioner.names as practitioner_names',
+            'booking.spoken_languages',
             'booking.service_key',
             'booking.locale',
             'booking.status',
@@ -283,6 +286,8 @@ export async function getBookingSubmissionDetail(
         cancelledBy: cancelledByFromRow(row.cancelled_by),
         statusReason: row.status_reason,
         practitionerId: row.practitioner_id,
+        practitionerNames: row.practitioner_names ?? [],
+        spokenLanguages: (row.spoken_languages ?? []) as BookingSubmissionDetail['spokenLanguages'],
         service: row.service_key,
         createdDate: row.created_date,
         updatedDate: row.updated_date,

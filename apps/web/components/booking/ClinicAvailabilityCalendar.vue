@@ -23,6 +23,10 @@
                     </option>
                 </select>
             </label>
+            <BookingScheduleSelect
+                v-model="lane"
+                :practitioners="practitioners"
+            />
             <p class="flex items-start gap-2 rounded-lg bg-primary/5 px-3 py-2 text-sm text-primary-text">
                 <svg
                     class="mt-0.5 h-4 w-4 shrink-0 text-primary"
@@ -115,6 +119,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import {
     BookingAppointmentStatus,
     type BookingAppointment,
+    type BookingPractitioner,
     type ClinicAvailabilityClosure,
     type ClinicAvailabilityWindow,
     type ClinicSiteSummary,
@@ -123,14 +128,17 @@ import {
 import allLocales from '@fullcalendar/core/locales-all'
 import { gql } from 'graphql-request'
 import FullCalendar from '@fullcalendar/vue3'
+import BookingScheduleSelect from '~/components/booking/BookingScheduleSelect.vue'
 import { useAppToast } from '~/composables/useAppToast'
 import {
     createClinicAvailabilityClosure,
     createClinicAvailabilityWindow,
     deleteClinicAvailabilityClosure,
     deleteClinicAvailabilityWindow,
-    fetchClinicCalendar
+    fetchClinicCalendar,
+    fetchClinicPractitioners
 } from '~/utils/booking/staffQuery'
+import { practitionerName } from '~/utils/booking/practitioners'
 import { expandWeeklyHours, jstMidnight, subtractRanges } from '~/utils/booking/japanTime'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
@@ -139,6 +147,9 @@ import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~
  * Weekly hours (from Settings) and painted extra windows are open time. Staff close
  * one weekly block by clicking it, or drag in Close mode to close a range or a whole
  * day. Appointments sit on top, coloured by status.
+ * The schedule picker edits the clinic's own time or one doctor's. The clinic view
+ * shows every appointment; a doctor view shows that doctor's. A clinic-wide closure
+ * shows on every schedule, because it closes every doctor.
  * With facilityId (the clinic dashboard) the calendar is fixed to that clinic.
  * Without it (moderation) a picker lists the hosted clinics.
  */
@@ -160,6 +171,23 @@ const windows = ref<ClinicAvailabilityWindow[]>([])
 const appointments = ref<BookingAppointment[]>([])
 const weeklyHours = ref<ClinicWeeklyHours[]>([])
 const closures = ref<ClinicAvailabilityClosure[]>([])
+const practitioners = ref<BookingPractitioner[]>([])
+// null is the clinic's own schedule.
+const lane = ref<string | null>(null)
+
+const onLane = (row: { practitionerId?: string | null }) => (row.practitionerId ?? null) === lane.value
+const laneWindows = computed(() => windows.value.filter(onLane))
+const laneWeeklyHours = computed(() => weeklyHours.value.filter(onLane))
+const laneClosures = computed(() => closures.value.filter(closure =>
+    onLane(closure) || (closure.practitionerId ?? null) === null))
+const laneAppointments = computed(() => lane.value === null
+    ? appointments.value
+    : appointments.value.filter(onLane))
+
+function doctorName(practitionerId: string | null | undefined): string {
+    const practitioner = practitioners.value.find(item => item.id === practitionerId)
+    return practitioner === undefined ? '' : practitionerName(practitioner.names, locale.value)
+}
 type CalendarMode = 'open' | 'close'
 const mode = ref<CalendarMode>('open')
 const modeOptions = computed(() => [
@@ -262,8 +290,8 @@ function isClosed(status: BookingAppointmentStatus): boolean {
 }
 
 // Each weekly block in the visible range, minus the parts a closure covers.
-const weeklySegments = computed(() => expandWeeklyHours(weeklyHours.value, rangeFrom.value, rangeTo.value)
-    .flatMap(occurrence => subtractRanges(occurrence, closures.value)))
+const weeklySegments = computed(() => expandWeeklyHours(laneWeeklyHours.value, rangeFrom.value, rangeTo.value)
+    .flatMap(occurrence => subtractRanges(occurrence, laneClosures.value)))
 
 const events = computed((): EventInput[] => [
     ...weeklySegments.value.map(segment => ({
@@ -276,7 +304,7 @@ const events = computed((): EventInput[] => [
         textColor: WEEKLY_COLORS.text,
         classNames: ['clinic-calendar-weekly']
     })),
-    ...closures.value.map(closure => ({
+    ...laneClosures.value.map(closure => ({
         id: `closure:${closure.id}`,
         title: closure.reason || t('bookingAvailability.closedTitle'),
         start: closure.startsAt,
@@ -286,7 +314,7 @@ const events = computed((): EventInput[] => [
         textColor: CLOSURE_COLORS.text,
         classNames: ['clinic-calendar-closure']
     })),
-    ...windows.value.map(window => ({
+    ...laneWindows.value.map(window => ({
         id: `window:${window.id}`,
         title: t('bookingAvailability.windowTitle'),
         start: window.startsAt,
@@ -297,11 +325,15 @@ const events = computed((): EventInput[] => [
         textColor: WINDOW_COLORS.text,
         classNames: ['clinic-calendar-window']
     })),
-    ...appointments.value.map(appointment => ({
+    ...laneAppointments.value.map(appointment => ({
         id: `appointment:${appointment.id}`,
         title: [
             appointment.patientName ?? t('bookingAvailability.patient'),
-            t(appointmentStatusLabelKey(appointment.status))
+            t(appointmentStatusLabelKey(appointment.status)),
+            // In the clinic view, say whose schedule the visit is on.
+            ...(lane.value === null && doctorName(appointment.practitionerId) !== ''
+                ? [doctorName(appointment.practitionerId)]
+                : [])
         ].join(' · '),
         start: appointment.startsAt,
         end: appointment.endsAt,
@@ -388,8 +420,13 @@ async function reloadCalendar(): Promise<void> {
     closures.value = loaded.closures
 }
 
-async function addWindow(clinicSiteId: string, startsAt: string, endsAt: string): Promise<void> {
-    const created = await createClinicAvailabilityWindow({ clinicSiteId, startsAt, endsAt })
+async function addWindow(
+    clinicSiteId: string,
+    practitionerId: string | null,
+    startsAt: string,
+    endsAt: string
+): Promise<void> {
+    const created = await createClinicAvailabilityWindow({ clinicSiteId, practitionerId, startsAt, endsAt })
     if (created === null) {
         toast.error(t('bookingAvailability.createFailed'))
         return
@@ -397,8 +434,20 @@ async function addWindow(clinicSiteId: string, startsAt: string, endsAt: string)
     await reloadCalendar()
 }
 
-async function addClosure(closureClinicId: string, startsAt: string, endsAt: string, reason?: string | null): Promise<void> {
-    const created = await createClinicAvailabilityClosure({ clinicId: closureClinicId, startsAt, endsAt, reason })
+async function addClosure(
+    closureClinicId: string,
+    practitionerId: string | null,
+    startsAt: string,
+    endsAt: string,
+    reason?: string | null
+): Promise<void> {
+    const created = await createClinicAvailabilityClosure({
+        clinicId: closureClinicId,
+        practitionerId,
+        startsAt,
+        endsAt,
+        reason
+    })
     if (created === null) {
         toast.error(t('bookingAvailability.closeFailed'))
         return
@@ -433,7 +482,13 @@ async function removeClosure(closure: ClinicAvailabilityClosure, offerUndo: bool
             label: undo,
             altText: undo,
             onClick: () => {
-                void addClosure(removedFromClinicId, closure.startsAt, closure.endsAt, closure.reason)
+                void addClosure(
+                    removedFromClinicId,
+                    closure.practitionerId ?? null,
+                    closure.startsAt,
+                    closure.endsAt,
+                    closure.reason
+                )
             }
         }
     })
@@ -461,10 +516,10 @@ async function onSelect(selection: DateSelectArg): Promise<void> {
         const range = selection.allDay
             ? allDayRange(selection)
             : { startsAt: selection.start.toISOString(), endsAt: selection.end.toISOString() }
-        await addClosure(clinicId.value, range.startsAt, range.endsAt)
+        await addClosure(clinicId.value, lane.value, range.startsAt, range.endsAt)
         return
     }
-    await addWindow(clinicId.value, selection.start.toISOString(), selection.end.toISOString())
+    await addWindow(clinicId.value, lane.value, selection.start.toISOString(), selection.end.toISOString())
 }
 
 async function onEventClick(info: EventClickArg): Promise<void> {
@@ -480,7 +535,7 @@ async function onEventClick(info: EventClickArg): Promise<void> {
         // Clicking a weekly block closes that one occurrence.
         const [startsAt, endsAt] = id.split('|')
         if (startsAt !== undefined && endsAt !== undefined) {
-            await addClosure(clinicId.value, startsAt, endsAt)
+            await addClosure(clinicId.value, lane.value, startsAt, endsAt)
         }
         return
     }
@@ -510,7 +565,7 @@ async function onEventClick(info: EventClickArg): Promise<void> {
             label: undo,
             altText: undo,
             onClick: () => {
-                void addWindow(removedFromClinicId, removed.startsAt, removed.endsAt)
+                void addWindow(removedFromClinicId, removed.practitionerId ?? null, removed.startsAt, removed.endsAt)
             }
         }
     })
@@ -522,8 +577,16 @@ function onDatesSet(info: { start: Date, end: Date }): void {
     void reloadCalendar()
 }
 
+async function loadPractitioners(): Promise<void> {
+    practitioners.value = clinicId.value === '' ? [] : await fetchClinicPractitioners(clinicId.value)
+    if (lane.value !== null && !practitioners.value.some(practitioner => practitioner.id === lane.value)) {
+        lane.value = null
+    }
+}
+
 watch(clinicId, () => {
     void reloadCalendar()
+    void loadPractitioners()
 })
 
 onMounted(async () => {
@@ -531,7 +594,7 @@ onMounted(async () => {
         await loadClinicOptions()
     }
     calendarReady.value = true
-    await reloadCalendar()
+    await Promise.all([reloadCalendar(), loadPractitioners()])
 })
 
 defineExpose({ reloadCalendar })

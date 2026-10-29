@@ -825,7 +825,15 @@
     "durationHelp": "Phòng khám chọn các thời lượng có sẵn.",
     "durationMinutes": "{n} phút",
     "manageLinkHelp": "Hãy lưu liên kết riêng này. Bạn có thể xem hoặc hủy yêu cầu. Liên kết này cũng có trong email xác nhận.",
-    "manageLink": "Xem hoặc hủy yêu cầu này"
+    "manageLink": "Xem hoặc hủy yêu cầu này",
+    "languageLabel": "Ngôn ngữ bạn cần",
+    "languageHelp": "Chọn các ngôn ngữ quan trọng với bạn. Chỉ hiển thị bác sĩ nói được tất cả các ngôn ngữ đó.",
+    "doctorLabel": "Bác sĩ",
+    "anyDoctor": "Bất kỳ bác sĩ nào còn trống",
+    "anyDoctorHelp": "Bác sĩ nào rảnh vào giờ bạn chọn sẽ khám cho bạn.",
+    "anyDoctorLanguageHelp": "Một bác sĩ nói được {languages} và rảnh vào giờ bạn chọn.",
+    "doctorLanguages": "Ngôn ngữ sử dụng",
+    "doctorsHidden": "Bác sĩ bị ẩn vì không nói được mọi ngôn ngữ bạn chọn: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Đặt lịch",
@@ -880,7 +888,9 @@
       "decline": "Từ chối",
       "cancel": "Hủy lịch hẹn",
       "complete": "Đánh dấu hoàn thành"
-    }
+    },
+    "doctor": "Bác sĩ",
+    "languagesRequested": "Ngôn ngữ yêu cầu"
   },
   "bookingAvailability": {
     "clinicLabel": "Trang phòng khám",
@@ -904,7 +914,10 @@
     "closeDayRow": "Đóng cả ngày",
     "closeFailed": "Không thể đóng khoảng thời gian đó.",
     "closed": "Đã đóng khoảng thời gian.",
-    "reopened": "Đã mở lại khoảng thời gian."
+    "reopened": "Đã mở lại khoảng thời gian.",
+    "scheduleLabel": "Lịch làm việc",
+    "scheduleClinic": "Toàn phòng khám",
+    "scheduleUsesClinic": "dùng giờ của phòng khám"
   },
   "bookingForms": {
     "standardIntake": "Yêu cầu khám thông thường",
@@ -963,7 +976,8 @@
       "removeBlock": "Xóa",
       "copyToWeekdays": "Sao chép sang thứ Ba–thứ Sáu",
       "invalid": "Hai khung giờ trong cùng một ngày bị trùng nhau. Hãy sửa một trong hai.",
-      "save": "Lưu giờ hằng tuần"
+      "save": "Lưu giờ hằng tuần",
+      "doctorHelp": "Lịch tuần riêng của bác sĩ này. Sau khi lưu, bác sĩ được đặt lịch riêng, tách khỏi giờ của phòng khám và các bác sĩ khác. Các ngày đóng cửa của cả phòng khám vẫn áp dụng."
     }
   },
   "patientBooking": {

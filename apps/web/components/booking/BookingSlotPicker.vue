@@ -86,6 +86,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { Locale } from '@findadoc/graphql'
 import { dayRangeUtc, resolveDuration } from '~/utils/booking/durations'
 import { fetchAvailableBookingStarts } from '~/utils/booking/formQuery'
 
@@ -95,6 +96,8 @@ const props = defineProps<{
     durationMinutes: number
     modelValue: string | null
     initialDay?: string | null
+    practitionerId?: string | null
+    spokenLanguages?: readonly Locale[]
 }>()
 
 const emit = defineEmits<{
@@ -151,7 +154,8 @@ async function loadStarts(): Promise<void> {
         props.clinicId,
         range.from,
         range.to,
-        props.durationMinutes
+        props.durationMinutes,
+        { practitionerId: props.practitionerId, spokenLanguages: props.spokenLanguages }
     )
     if (props.modelValue !== null && !starts.value.includes(props.modelValue)) {
         emit('update:modelValue', null)
@@ -159,7 +163,13 @@ async function loadStarts(): Promise<void> {
     loading.value = false
 }
 
-watch([selectedDay, () => props.durationMinutes, () => props.clinicId], () => {
+watch([
+    selectedDay,
+    () => props.durationMinutes,
+    () => props.clinicId,
+    () => props.practitionerId,
+    () => props.spokenLanguages
+], () => {
     void loadStarts()
 })
 

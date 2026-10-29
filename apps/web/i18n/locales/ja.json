@@ -825,7 +825,15 @@
     "durationHelp": "選べる時間の長さはクリニックが決めています。",
     "durationMinutes": "{n}分",
     "manageLinkHelp": "この非公開リンクを保存してください。リクエストの確認とキャンセルができます。確認メールにも同じリンクがあります。",
-    "manageLink": "このリクエストを確認・キャンセル"
+    "manageLink": "このリクエストを確認・キャンセル",
+    "languageLabel": "希望する言語",
+    "languageHelp": "必要な言語を選んでください。選んだ言語をすべて話せる医師だけが表示されます。",
+    "doctorLabel": "医師",
+    "anyDoctor": "空いている医師なら誰でも",
+    "anyDoctorHelp": "選んだ時間に空いている医師が診察します。",
+    "anyDoctorLanguageHelp": "{languages}を話せて、選んだ時間に空いている医師が診察します。",
+    "doctorLanguages": "対応言語",
+    "doctorsHidden": "選んだ言語をすべて話せないため非表示の医師：{n}人"
   },
   "bookingDashboard": {
     "detailHeading": "予約",
@@ -880,7 +888,9 @@
       "decline": "お断りする",
       "cancel": "予約をキャンセル",
       "complete": "完了にする"
-    }
+    },
+    "doctor": "医師",
+    "languagesRequested": "希望言語"
   },
   "bookingAvailability": {
     "clinicLabel": "クリニックサイト",
@@ -904,7 +914,10 @@
     "closeDayRow": "終日休診",
     "closeFailed": "その時間を休診にできませんでした。",
     "closed": "休診にしました。",
-    "reopened": "受付を再開しました。"
+    "reopened": "受付を再開しました。",
+    "scheduleLabel": "スケジュール",
+    "scheduleClinic": "クリニック全体",
+    "scheduleUsesClinic": "クリニックの時間を使用"
   },
   "bookingForms": {
     "standardIntake": "通常の受診リクエスト",
@@ -963,7 +976,8 @@
       "removeBlock": "削除",
       "copyToWeekdays": "火曜〜金曜にコピー",
       "invalid": "同じ日の時間帯が重なっています。どちらかを変更してください。",
-      "save": "週の診療時間を保存"
+      "save": "週の診療時間を保存",
+      "doctorHelp": "この医師専用の1週間です。保存すると、この医師はクリニックの時間や他の医師とは別に予約を受けます。クリニック全体の休診は引き続き適用されます。"
     }
   },
   "patientBooking": {

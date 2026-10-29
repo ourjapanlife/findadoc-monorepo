@@ -1,4 +1,5 @@
 import type {
+    BookingPractitioner,
     ClinicAvailabilityClosure,
     ClinicAvailabilityWindow,
     ClinicWeeklyHours,
@@ -9,6 +10,7 @@ import type {
 } from '@findadoc/graphql'
 import { randomUUID } from 'node:crypto'
 import { canWriteFacility, type BookingAccess } from '../booking/access.js'
+import { listFacilityPractitioners } from '../booking/practitioners.js'
 import { resolveBookingTarget } from '../booking/target.js'
 import {
     assertAvailabilityRange,
@@ -53,7 +55,7 @@ export async function listClinicAvailabilityWindows(
     }
 
     let query = db.selectFrom('clinic_availability_windows')
-        .select(['id', 'clinic_site_id', 'facility_id', 'starts_at', 'ends_at', 'created_date'])
+        .select(['id', 'clinic_site_id', 'facility_id', 'practitioner_id', 'starts_at', 'ends_at', 'created_date'])
         .where('starts_at', '<', to.toISOString())
         .where('ends_at', '>', from.toISOString())
         .orderBy('starts_at')
@@ -72,6 +74,7 @@ export async function listClinicAvailabilityWindows(
         id: row.id,
         clinicSiteId: row.clinic_site_id,
         facilityId: row.facility_id,
+        practitionerId: row.practitioner_id,
         startsAt: new Date(row.starts_at).toISOString(),
         endsAt: new Date(row.ends_at).toISOString(),
         createdDate: row.created_date
@@ -86,6 +89,10 @@ export async function createClinicAvailabilityWindow(
     const target = await resolveBookingTarget(input.clinicSiteId)
     if (target === undefined || !canWriteFacility(access, target.facilityId)) {
         return validationError('clinicSiteId')
+    }
+    const practitionerId = await practitionerAt(target.facilityId, input.practitionerId)
+    if (practitionerId === undefined) {
+        return validationError('practitionerId')
     }
 
     const rawStart = new Date(input.startsAt)
@@ -108,11 +115,12 @@ export async function createClinicAvailabilityWindow(
             id,
             facility_id: target.facilityId,
             clinic_site_id: target.clinicSiteId,
+            practitioner_id: practitionerId,
             starts_at: startsAt.toISOString(),
             ends_at: endsAt.toISOString(),
             created_by: createdBy ?? null
         })
-        .returning(['id', 'clinic_site_id', 'facility_id', 'starts_at', 'ends_at', 'created_date'])
+        .returning(['id', 'clinic_site_id', 'facility_id', 'practitioner_id', 'starts_at', 'ends_at', 'created_date'])
         .executeTakeFirstOrThrow()
 
     return {
@@ -120,6 +128,7 @@ export async function createClinicAvailabilityWindow(
             id: row.id,
             clinicSiteId: row.clinic_site_id,
             facilityId: row.facility_id,
+            practitionerId: row.practitioner_id,
             startsAt: new Date(row.starts_at).toISOString(),
             endsAt: new Date(row.ends_at).toISOString(),
             createdDate: row.created_date
@@ -155,6 +164,35 @@ export async function deleteClinicAvailabilityWindow(
 export const MAX_WEEKLY_HOUR_BLOCKS = 50
 const MAX_CLOSURE_REASON_LENGTH = 200
 
+/**
+ * The doctor a schedule row names: null for clinic time, the id when that doctor
+ * practises at the facility, and undefined otherwise.
+ */
+async function practitionerAt(
+    facilityId: string | null,
+    practitionerIdInput: string | null | undefined
+): Promise<string | null | undefined> {
+    const practitionerId = practitionerIdInput?.trim() || null
+    if (practitionerId === null) {
+        return null
+    }
+    if (facilityId === null) {
+        return undefined
+    }
+    const row = await db.selectFrom('hps_facilities')
+        .select('hps_id')
+        .where('hps_id', '=', practitionerId)
+        .where('facilities_id', '=', facilityId)
+        .executeTakeFirst()
+    return row === undefined ? undefined : practitionerId
+}
+
+/** Doctors at one clinic for the staff schedule picker. */
+export async function listClinicPractitioners(clinicId: string, access: BookingAccess): Promise<BookingPractitioner[]> {
+    const facilityId = await writableFacilityId(clinicId, access)
+    return facilityId === undefined ? [] : listFacilityPractitioners(facilityId)
+}
+
 /** The facility a staff call may change, or undefined when the user may not. */
 async function writableFacilityId(clinicId: string, access: BookingAccess): Promise<string | undefined> {
     const target = await resolveBookingTarget(clinicId)
@@ -167,6 +205,7 @@ async function writableFacilityId(clinicId: string, access: BookingAccess): Prom
 function weeklyHoursFromRow(row: {
     id: string
     facility_id: string
+    practitioner_id: string | null
     weekday: number
     start_minute: number
     end_minute: number
@@ -174,6 +213,7 @@ function weeklyHoursFromRow(row: {
     return {
         id: row.id,
         facilityId: row.facility_id,
+        practitionerId: row.practitioner_id,
         weekday: row.weekday,
         startMinute: row.start_minute,
         endMinute: row.end_minute
@@ -183,6 +223,7 @@ function weeklyHoursFromRow(row: {
 function closureFromRow(row: {
     id: string
     facility_id: string
+    practitioner_id: string | null
     starts_at: string
     ends_at: string
     reason: string | null
@@ -191,6 +232,7 @@ function closureFromRow(row: {
     return {
         id: row.id,
         facilityId: row.facility_id,
+        practitionerId: row.practitioner_id,
         startsAt: new Date(row.starts_at).toISOString(),
         endsAt: new Date(row.ends_at).toISOString(),
         reason: row.reason,
@@ -198,8 +240,8 @@ function closureFromRow(row: {
     }
 }
 
-const WEEKLY_HOURS_COLUMNS = ['id', 'facility_id', 'weekday', 'start_minute', 'end_minute'] as const
-const CLOSURE_COLUMNS = ['id', 'facility_id', 'starts_at', 'ends_at', 'reason', 'created_date'] as const
+const WEEKLY_HOURS_COLUMNS = ['id', 'facility_id', 'practitioner_id', 'weekday', 'start_minute', 'end_minute'] as const
+const CLOSURE_COLUMNS = ['id', 'facility_id', 'practitioner_id', 'starts_at', 'ends_at', 'reason', 'created_date'] as const
 
 export async function listClinicWeeklyHours(clinicId: string, access: BookingAccess): Promise<ClinicWeeklyHours[]> {
     const facilityId = await writableFacilityId(clinicId, access)
@@ -209,13 +251,14 @@ export async function listClinicWeeklyHours(clinicId: string, access: BookingAcc
     const rows = await db.selectFrom('clinic_weekly_hours')
         .select(WEEKLY_HOURS_COLUMNS)
         .where('facility_id', '=', facilityId)
+        .orderBy('practitioner_id')
         .orderBy('weekday')
         .orderBy('start_minute')
         .execute()
     return rows.map(weeklyHoursFromRow)
 }
 
-/** Replaces the clinic's whole week. Blocks that overlap or touch on one day are joined. */
+/** Replaces one schedule's whole week. Blocks that overlap or touch on one day are joined. */
 export async function setClinicWeeklyHours(
     input: SetClinicWeeklyHoursInput,
     createdBy: string | undefined,
@@ -225,6 +268,10 @@ export async function setClinicWeeklyHours(
     if (facilityId === undefined) {
         return validationError('facilityId')
     }
+    const practitionerId = await practitionerAt(facilityId, input.practitionerId)
+    if (practitionerId === undefined) {
+        return validationError('practitionerId')
+    }
     if (input.hours.length > MAX_WEEKLY_HOUR_BLOCKS || !input.hours.every(isWeeklyHours)) {
         return validationError('hours')
     }
@@ -233,6 +280,7 @@ export async function setClinicWeeklyHours(
     const rows = await db.transaction().execute(async transaction => {
         await transaction.deleteFrom('clinic_weekly_hours')
             .where('facility_id', '=', facilityId)
+            .where('practitioner_id', practitionerId === null ? 'is' : '=', practitionerId)
             .execute()
         if (hours.length === 0) {
             return []
@@ -240,6 +288,7 @@ export async function setClinicWeeklyHours(
         return transaction.insertInto('clinic_weekly_hours')
             .values(hours.map(block => ({
                 facility_id: facilityId,
+                practitioner_id: practitionerId,
                 weekday: block.weekday,
                 start_minute: block.startMinute,
                 end_minute: block.endMinute,
@@ -284,6 +333,10 @@ export async function createClinicAvailabilityClosure(
     if (facilityId === undefined) {
         return validationError('clinicId')
     }
+    const practitionerId = await practitionerAt(facilityId, input.practitionerId)
+    if (practitionerId === undefined) {
+        return validationError('practitionerId')
+    }
     const rawStart = new Date(input.startsAt)
     const rawEnd = new Date(input.endsAt)
     if (Number.isNaN(rawStart.getTime()) || Number.isNaN(rawEnd.getTime())) {
@@ -302,6 +355,7 @@ export async function createClinicAvailabilityClosure(
     const row = await db.insertInto('clinic_availability_closures')
         .values({
             facility_id: facilityId,
+            practitioner_id: practitionerId,
             starts_at: startsAt.toISOString(),
             ends_at: endsAt.toISOString(),
             reason,

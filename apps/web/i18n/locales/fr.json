@@ -825,7 +825,15 @@
     "durationHelp": "La clinique choisit les durées disponibles.",
     "durationMinutes": "{n} minutes",
     "manageLinkHelp": "Conservez ce lien privé. Il affiche votre demande et permet de l'annuler. Le même lien figure dans votre e-mail de confirmation.",
-    "manageLink": "Voir ou annuler cette demande"
+    "manageLink": "Voir ou annuler cette demande",
+    "languageLabel": "Langues dont vous avez besoin",
+    "languageHelp": "Choisissez celles qui comptent pour vous. Seuls les médecins qui les parlent toutes sont affichés.",
+    "doctorLabel": "Médecin",
+    "anyDoctor": "N'importe quel médecin disponible",
+    "anyDoctorHelp": "Vous serez reçu par le médecin libre à l'heure choisie.",
+    "anyDoctorLanguageHelp": "Un médecin qui parle {languages} et qui est libre à l'heure choisie.",
+    "doctorLanguages": "Langues parlées",
+    "doctorsHidden": "Masqués, car ils ne parlent pas toutes les langues choisies : {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Réservation",
@@ -880,7 +888,9 @@
       "decline": "Refuser",
       "cancel": "Annuler le rendez-vous",
       "complete": "Marquer comme terminé"
-    }
+    },
+    "doctor": "Médecin",
+    "languagesRequested": "Langues demandées"
   },
   "bookingAvailability": {
     "clinicLabel": "Site de clinique",
@@ -904,7 +914,10 @@
     "closeDayRow": "Fermer la journée",
     "closeFailed": "Impossible de fermer cette plage.",
     "closed": "Plage fermée.",
-    "reopened": "Plage rouverte."
+    "reopened": "Plage rouverte.",
+    "scheduleLabel": "Planning",
+    "scheduleClinic": "Toute la clinique",
+    "scheduleUsesClinic": "suit les horaires de la clinique"
   },
   "bookingForms": {
     "standardIntake": "Demande de consultation standard",
@@ -963,7 +976,8 @@
       "removeBlock": "Retirer",
       "copyToWeekdays": "Copier du mardi au vendredi",
       "invalid": "Deux plages du même jour se chevauchent. Modifiez l'une d'elles.",
-      "save": "Enregistrer les horaires"
+      "save": "Enregistrer les horaires",
+      "doctorHelp": "La semaine propre à ce médecin. Une fois enregistrée, ce médecin est réservé séparément des horaires de la clinique et des autres médecins. Les fermetures de toute la clinique s'appliquent toujours."
     }
   },
   "patientBooking": {

@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { Locale, type BookingPractitioner } from '@findadoc/graphql'
+import { clinicLanguages, parseRequestedLanguages, scheduleLanes } from '../src/booking/practitioners.js'
 import {
     availableStarts,
     appointmentEndFromStart,
@@ -159,6 +161,53 @@ describe('weekly hours', () => {
             '2026-11-05T00:15:00.000Z',
             '2026-11-05T00:30:00.000Z'
         ])
+    })
+})
+
+describe('schedule lanes', () => {
+    const doctor = (id: string, spokenLanguages: Locale[], hasOwnSchedule: boolean): BookingPractitioner => ({
+        id, names: [], spokenLanguages, specialties: [], hasOwnSchedule
+    })
+    const practitioners = [
+        doctor('a', [Locale.EnUs, Locale.JaJp], true),
+        doctor('b', [Locale.JaJp], true),
+        doctor('c', [Locale.KoKr], false)
+    ]
+
+    it('searches every doctor schedule, then clinic time, when no one is chosen', () => {
+        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [] }))
+            .toEqual([{ practitionerId: 'a' }, { practitionerId: 'b' }, { practitionerId: null }])
+    })
+
+    it('keeps only doctors who speak every requested language', () => {
+        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.EnUs] }))
+            .toEqual([{ practitionerId: 'a' }])
+    })
+
+    it('keeps clinic time when the clinic or a doctor on clinic time covers the language', () => {
+        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.KoKr] }))
+            .toEqual([{ practitionerId: null }])
+        expect(scheduleLanes({
+            practitioners, facilityLanguages: [Locale.ViVn], practitionerId: null, languages: [Locale.ViVn]
+        })).toEqual([{ practitionerId: null }])
+        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.ViVn] }))
+            .toEqual([])
+    })
+
+    it('books a chosen doctor on their own schedule, or on clinic time when they have none', () => {
+        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'b', languages: [] }))
+            .toEqual([{ practitionerId: 'b' }])
+        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'c', languages: [] }))
+            .toEqual([{ practitionerId: null }])
+        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'z', languages: [] }))
+            .toBeUndefined()
+    })
+
+    it('accepts known languages only and lists the clinic languages once', () => {
+        expect(parseRequestedLanguages(['en_US', 'en_US'])).toEqual([Locale.EnUs])
+        expect(parseRequestedLanguages(['xx_XX'])).toBeUndefined()
+        expect(parseRequestedLanguages(['und'])).toBeUndefined()
+        expect(clinicLanguages(practitioners, [Locale.JaJp, 'und'])).toEqual([Locale.JaJp, Locale.EnUs, Locale.KoKr])
     })
 })
 

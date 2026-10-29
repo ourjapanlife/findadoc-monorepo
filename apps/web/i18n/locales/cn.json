@@ -825,7 +825,15 @@
     "durationHelp": "可选时长由诊所设定。",
     "durationMinutes": "{n} 分钟",
     "manageLinkHelp": "请保存此私人链接，可查看或取消您的申请。确认邮件中也有相同的链接。",
-    "manageLink": "查看或取消此申请"
+    "manageLink": "查看或取消此申请",
+    "languageLabel": "您需要的语言",
+    "languageHelp": "请选择对您重要的语言。只会显示能说全部所选语言的医生。",
+    "doctorLabel": "医生",
+    "anyDoctor": "任何有空的医生",
+    "anyDoctorHelp": "由您所选时间有空的医生为您看诊。",
+    "anyDoctorLanguageHelp": "由会说{languages}、且在您所选时间有空的医生看诊。",
+    "doctorLanguages": "使用语言",
+    "doctorsHidden": "因不会说您所选的全部语言而隐藏的医生：{n}位"
   },
   "bookingDashboard": {
     "detailHeading": "预约",
@@ -880,7 +888,9 @@
       "decline": "拒绝",
       "cancel": "取消预约",
       "complete": "标记为已完成"
-    }
+    },
+    "doctor": "医生",
+    "languagesRequested": "所需语言"
   },
   "bookingAvailability": {
     "clinicLabel": "诊所站点",
@@ -904,7 +914,10 @@
     "closeDayRow": "全天休诊",
     "closeFailed": "无法关闭该时间。",
     "closed": "已关闭该时间。",
-    "reopened": "已重新开放该时间。"
+    "reopened": "已重新开放该时间。",
+    "scheduleLabel": "日程",
+    "scheduleClinic": "整个诊所",
+    "scheduleUsesClinic": "使用诊所时间"
   },
   "bookingForms": {
     "standardIntake": "普通就诊申请",
@@ -963,7 +976,8 @@
       "removeBlock": "删除",
       "copyToWeekdays": "复制到周二至周五",
       "invalid": "同一天的两个时段重叠了。请修改其中一个。",
-      "save": "保存每周营业时间"
+      "save": "保存每周营业时间",
+      "doctorHelp": "这是该医生自己的一周时间。保存后，该医生将与诊所时间和其他医生分开预约。诊所的全体休诊仍然适用。"
     }
   },
   "patientBooking": {

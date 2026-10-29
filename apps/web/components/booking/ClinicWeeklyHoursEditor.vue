@@ -13,6 +13,18 @@
             </p>
         </div>
 
+        <BookingScheduleSelect
+            :model-value="lane"
+            :practitioners="practitioners"
+            @update:model-value="selectLane"
+        />
+        <p
+            v-if="lane !== null"
+            class="-mt-2 text-sm text-primary-text-muted"
+        >
+            {{ t('clinicDashboard.weeklyHours.doctorHelp') }}
+        </p>
+
         <p
             v-if="loadError"
             class="field-error"
@@ -143,14 +155,17 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { BookingPractitioner, ClinicWeeklyHours } from '@findadoc/graphql'
+import BookingScheduleSelect from '~/components/booking/BookingScheduleSelect.vue'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
 import { addDaysToKey, dateFromKey, minutesLabel } from '~/utils/booking/japanTime'
-import { fetchClinicWeeklyHours, setClinicWeeklyHours } from '~/utils/booking/staffQuery'
+import { fetchClinicPractitioners, fetchClinicWeeklyHours, setClinicWeeklyHours } from '~/utils/booking/staffQuery'
 
 /**
- * The clinic's usual week in Japan time (#162). Open starts are these hours plus
- * painted windows on the calendar, minus closures and held appointments.
+ * The usual week in Japan time (#162), for the clinic or one doctor. Open starts
+ * are these hours plus painted windows on the calendar, minus closures and held
+ * appointments. A doctor with a week of their own is booked separately.
  */
 const props = defineProps<{
     facilityId: string
@@ -168,6 +183,10 @@ const DEFAULT_BLOCK = { startMinute: 9 * 60, endMinute: 17 * 60 }
 const MONDAY_KEY = '2024-01-01'
 
 const blocks = ref<EditableBlock[]>([])
+const savedRows = ref<ClinicWeeklyHours[]>([])
+const practitioners = ref<BookingPractitioner[]>([])
+// null is the clinic's own week.
+const lane = ref<string | null>(null)
 const loadError = ref(false)
 const saving = ref(false)
 let nextKey = 0
@@ -239,10 +258,26 @@ function copyToWeekdays(): void {
     ]
 }
 
+function showLane(): void {
+    blocks.value = savedRows.value
+        .filter(row => (row.practitionerId ?? null) === lane.value)
+        .map(item => newBlock(item.weekday, item.startMinute, item.endMinute))
+}
+
+function selectLane(value: string | null): void {
+    lane.value = value
+    showLane()
+}
+
 async function load(): Promise<void> {
-    const loaded = await fetchClinicWeeklyHours(props.facilityId)
+    const [loaded, doctors] = await Promise.all([
+        fetchClinicWeeklyHours(props.facilityId),
+        fetchClinicPractitioners(props.facilityId)
+    ])
     loadError.value = loaded === null
-    blocks.value = (loaded ?? []).map(item => newBlock(item.weekday, item.startMinute, item.endMinute))
+    savedRows.value = loaded ?? []
+    practitioners.value = doctors
+    showLane()
 }
 
 async function save(): Promise<void> {
@@ -250,8 +285,10 @@ async function save(): Promise<void> {
         return
     }
     saving.value = true
+    const savedLane = lane.value
     const saved = await setClinicWeeklyHours({
         facilityId: props.facilityId,
+        practitionerId: savedLane,
         hours: blocks.value.map(item => ({
             weekday: item.weekday,
             startMinute: item.startMinute,
@@ -263,7 +300,17 @@ async function save(): Promise<void> {
         toast.error(t('clinicDashboard.saveFailed'))
         return
     }
-    blocks.value = saved.map(item => newBlock(item.weekday, item.startMinute, item.endMinute))
+    savedRows.value = [
+        ...savedRows.value.filter(row => (row.practitionerId ?? null) !== savedLane),
+        ...saved
+    ]
+    // A doctor's first saved week gives them their own schedule.
+    practitioners.value = practitioners.value.map(practitioner => practitioner.id === savedLane
+        ? { ...practitioner, hasOwnSchedule: saved.length > 0 || practitioner.hasOwnSchedule }
+        : practitioner)
+    if (lane.value === savedLane) {
+        showLane()
+    }
     toast.success(t('clinicDashboard.saved'))
 }
 

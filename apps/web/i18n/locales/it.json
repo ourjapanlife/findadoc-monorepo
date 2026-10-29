@@ -825,7 +825,15 @@
     "durationHelp": "La clinica sceglie le durate disponibili.",
     "durationMinutes": "{n} minuti",
     "manageLinkHelp": "Salva questo link privato. Mostra la tua richiesta e ti permette di annullarla. Lo stesso link è nell'e-mail di conferma.",
-    "manageLink": "Vedi o annulla questa richiesta"
+    "manageLink": "Vedi o annulla questa richiesta",
+    "languageLabel": "Lingue di cui hai bisogno",
+    "languageHelp": "Scegli quelle che ti interessano. Vengono mostrati solo i medici che le parlano tutte.",
+    "doctorLabel": "Medico",
+    "anyDoctor": "Qualsiasi medico disponibile",
+    "anyDoctorHelp": "Ti visiterà il medico libero all'ora che scegli.",
+    "anyDoctorLanguageHelp": "Un medico che parla {languages} ed è libero all'ora che scegli.",
+    "doctorLanguages": "Lingue parlate",
+    "doctorsHidden": "Nascosti perché non parlano tutte le lingue scelte: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Prenotazione",
@@ -880,7 +888,9 @@
       "decline": "Rifiuta",
       "cancel": "Annulla appuntamento",
       "complete": "Segna come completato"
-    }
+    },
+    "doctor": "Medico",
+    "languagesRequested": "Lingue richieste"
   },
   "bookingAvailability": {
     "clinicLabel": "Sito della clinica",
@@ -904,7 +914,10 @@
     "closeDayRow": "Chiudi giornata",
     "closeFailed": "Impossibile chiudere questo orario.",
     "closed": "Orario chiuso.",
-    "reopened": "Orario riaperto."
+    "reopened": "Orario riaperto.",
+    "scheduleLabel": "Agenda",
+    "scheduleClinic": "Tutta la clinica",
+    "scheduleUsesClinic": "usa l'orario della clinica"
   },
   "bookingForms": {
     "standardIntake": "Richiesta di visita standard",
@@ -963,7 +976,8 @@
       "removeBlock": "Rimuovi",
       "copyToWeekdays": "Copia da martedì a venerdì",
       "invalid": "Due fasce nello stesso giorno si sovrappongono. Modificane una.",
-      "save": "Salva orario settimanale"
+      "save": "Salva orario settimanale",
+      "doctorHelp": "La settimana propria di questo medico. Una volta salvata, il medico viene prenotato separatamente dall'orario della clinica e dagli altri medici. Le chiusure dell'intera clinica valgono comunque."
     }
   },
   "patientBooking": {

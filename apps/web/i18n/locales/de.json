@@ -825,7 +825,15 @@
     "durationHelp": "Die Klinik legt fest, welche Längen verfügbar sind.",
     "durationMinutes": "{n} Minuten",
     "manageLinkHelp": "Speichern Sie diesen privaten Link. Damit sehen Sie Ihre Anfrage und können sie stornieren. Derselbe Link steht in Ihrer Bestätigungs-E-Mail.",
-    "manageLink": "Anfrage ansehen oder stornieren"
+    "manageLink": "Anfrage ansehen oder stornieren",
+    "languageLabel": "Sprachen, die Sie brauchen",
+    "languageHelp": "Wählen Sie, was Ihnen wichtig ist. Es werden nur Ärzte gezeigt, die alle gewählten Sprachen sprechen.",
+    "doctorLabel": "Arzt oder Ärztin",
+    "anyDoctor": "Beliebige verfügbare Ärztin oder beliebiger Arzt",
+    "anyDoctorHelp": "Sie werden von der Person behandelt, die zur gewählten Zeit frei ist.",
+    "anyDoctorLanguageHelp": "Jemand, der {languages} spricht und zur gewählten Zeit frei ist.",
+    "doctorLanguages": "Gesprochene Sprachen",
+    "doctorsHidden": "Ausgeblendet, weil sie nicht alle gewählten Sprachen sprechen: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Buchung",
@@ -880,7 +888,9 @@
       "decline": "Ablehnen",
       "cancel": "Termin stornieren",
       "complete": "Als abgeschlossen markieren"
-    }
+    },
+    "doctor": "Arzt oder Ärztin",
+    "languagesRequested": "Gewünschte Sprachen"
   },
   "bookingAvailability": {
     "clinicLabel": "Klinikseite",
@@ -904,7 +914,10 @@
     "closeDayRow": "Tag schließen",
     "closeFailed": "Diese Zeit konnte nicht geschlossen werden.",
     "closed": "Zeit geschlossen.",
-    "reopened": "Zeit wieder geöffnet."
+    "reopened": "Zeit wieder geöffnet.",
+    "scheduleLabel": "Zeitplan",
+    "scheduleClinic": "Ganze Praxis",
+    "scheduleUsesClinic": "nutzt die Praxiszeiten"
   },
   "bookingForms": {
     "standardIntake": "Normale Terminanfrage",
@@ -963,7 +976,8 @@
       "removeBlock": "Entfernen",
       "copyToWeekdays": "Auf Dienstag–Freitag kopieren",
       "invalid": "Zwei Blöcke am selben Tag überschneiden sich. Ändern Sie einen davon.",
-      "save": "Wochenzeiten speichern"
+      "save": "Wochenzeiten speichern",
+      "doctorHelp": "Die eigene Woche dieser Ärztin bzw. dieses Arztes. Nach dem Speichern wird sie bzw. er getrennt von den Praxiszeiten und anderen Ärzten gebucht. Schließungen der ganzen Praxis gelten weiterhin."
     }
   },
   "patientBooking": {

@@ -3,6 +3,7 @@ import type {
     BookingForm,
     BookingSubmissionResult,
     BookingUploadUrl,
+    Locale,
     PatientBookingView
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
@@ -54,6 +55,14 @@ const BOOKING_FORM_FIELDS = `
     sensitivity
     options { value labelKey label }
   }
+  practitioners {
+    id
+    names { firstName middleName lastName locale }
+    spokenLanguages
+    specialties
+    hasOwnSchedule
+  }
+  languages
 `
 
 const bookingFormQuery = gql`
@@ -77,8 +86,22 @@ const createUploadMutation = gql`
 `
 
 const availableStartsQuery = gql`
-  query AvailableBookingStarts($clinicSiteId: ID!, $from: String!, $to: String!, $durationMinutes: Int) {
-    availableBookingStarts(clinicSiteId: $clinicSiteId, from: $from, to: $to, durationMinutes: $durationMinutes)
+  query AvailableBookingStarts(
+    $clinicSiteId: ID!
+    $from: String!
+    $to: String!
+    $durationMinutes: Int
+    $practitionerId: ID
+    $spokenLanguages: [Locale!]
+  ) {
+    availableBookingStarts(
+      clinicSiteId: $clinicSiteId
+      from: $from
+      to: $to
+      durationMinutes: $durationMinutes
+      practitionerId: $practitionerId
+      spokenLanguages: $spokenLanguages
+    )
   }
 `
 
@@ -147,6 +170,7 @@ export async function submitBookingForm(input: {
     startsAt: string
     durationMinutes: number
     practitionerId?: string | null
+    spokenLanguages?: Locale[]
     service?: string | null
 }): Promise<BookingSubmissionResult | BookingRefusal> {
     initializeGqlClient()
@@ -162,11 +186,13 @@ export async function submitBookingForm(input: {
     return response.data.submitBooking
 }
 
+/** Open starts. A doctor narrows them to that doctor; languages narrow "any doctor" to those who speak them. */
 export async function fetchAvailableBookingStarts(
     clinicId: string,
     from: string,
     to: string,
-    durationMinutes: number
+    durationMinutes: number,
+    choice: { practitionerId?: string | null, spokenLanguages?: readonly Locale[] } = {}
 ): Promise<string[]> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{
@@ -174,7 +200,14 @@ export async function fetchAvailableBookingStarts(
     }>(
         gqlClient.request.bind(gqlClient),
         availableStartsQuery,
-        { clinicSiteId: clinicId, from, to, durationMinutes },
+        {
+            clinicSiteId: clinicId,
+            from,
+            to,
+            durationMinutes,
+            practitionerId: choice.practitionerId ?? null,
+            spokenLanguages: choice.spokenLanguages ?? []
+        },
         { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {

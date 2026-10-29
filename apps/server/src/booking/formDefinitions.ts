@@ -180,6 +180,9 @@ export function isOfferedFormId(offeredFormIds: readonly string[], formId: strin
     return parseFormDefinitionIds(offeredFormIds).includes(formId)
 }
 
+/** A form without the clinic's doctors and languages, which come from the database. */
+export type AssembledBookingForm = Omit<BookingForm, 'practitioners' | 'languages'>
+
 export function assembleBookingForm(input: {
     formDefinitionId?: string | null
     facilityId?: string | null
@@ -188,7 +191,7 @@ export function assembleBookingForm(input: {
     clinicName: string
     themePrimary?: string | null
     allowedDurations?: readonly number[]
-}): BookingForm {
+}): AssembledBookingForm {
     const source = resolveFormSource(input.formDefinitionId ?? DEFAULT_BOOKING_FORM_ID)
 
     return {
@@ -204,7 +207,7 @@ export function assembleBookingForm(input: {
     }
 }
 
-export function fieldById(form: BookingForm, fieldId: string): BookingFormField | undefined {
+export function fieldById(form: Pick<BookingForm, 'fields'>, fieldId: string): BookingFormField | undefined {
     return form.fields.find(item => item.id === fieldId)
 }
 

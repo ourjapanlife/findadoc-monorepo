@@ -825,7 +825,15 @@
     "durationHelp": "가능한 시간은 클리닉이 정합니다.",
     "durationMinutes": "{n}분",
     "manageLinkHelp": "이 비공개 링크를 저장하세요. 요청을 확인하고 취소할 수 있습니다. 확인 이메일에도 같은 링크가 있습니다.",
-    "manageLink": "이 요청 확인 또는 취소"
+    "manageLink": "이 요청 확인 또는 취소",
+    "languageLabel": "필요한 언어",
+    "languageHelp": "필요한 언어를 고르세요. 고른 언어를 모두 하는 의사만 보입니다.",
+    "doctorLabel": "의사",
+    "anyDoctor": "가능한 의사 누구나",
+    "anyDoctorHelp": "고른 시간에 비어 있는 의사가 진료합니다.",
+    "anyDoctorLanguageHelp": "{languages}을(를) 하고 고른 시간에 비어 있는 의사가 진료합니다.",
+    "doctorLanguages": "가능 언어",
+    "doctorsHidden": "고른 언어를 모두 하지 않아 숨긴 의사: {n}명"
   },
   "bookingDashboard": {
     "detailHeading": "예약",
@@ -880,7 +888,9 @@
       "decline": "거절",
       "cancel": "예약 취소",
       "complete": "완료로 표시"
-    }
+    },
+    "doctor": "의사",
+    "languagesRequested": "요청 언어"
   },
   "bookingAvailability": {
     "clinicLabel": "클리닉 사이트",
@@ -904,7 +914,10 @@
     "closeDayRow": "종일 휴진",
     "closeFailed": "그 시간을 닫지 못했습니다.",
     "closed": "휴진으로 설정했습니다.",
-    "reopened": "다시 열었습니다."
+    "reopened": "다시 열었습니다.",
+    "scheduleLabel": "일정",
+    "scheduleClinic": "클리닉 전체",
+    "scheduleUsesClinic": "클리닉 시간 사용"
   },
   "bookingForms": {
     "standardIntake": "일반 진료 요청",
@@ -963,7 +976,8 @@
       "removeBlock": "삭제",
       "copyToWeekdays": "화요일~금요일에 복사",
       "invalid": "같은 날 두 시간대가 겹칩니다. 하나를 바꿔 주세요.",
-      "save": "주간 진료 시간 저장"
+      "save": "주간 진료 시간 저장",
+      "doctorHelp": "이 의사만의 일주일입니다. 저장하면 이 의사는 클리닉 시간이나 다른 의사와 따로 예약을 받습니다. 클리닉 전체 휴진은 그대로 적용됩니다."
     }
   },
   "patientBooking": {
