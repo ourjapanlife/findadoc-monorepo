@@ -523,7 +523,10 @@ async function onSelect(selection: DateSelectArg): Promise<void> {
 }
 
 async function onEventClick(info: EventClickArg): Promise<void> {
-    const [kind, id] = info.event.id.split(':')
+    // Split on the first colon only: a weekly id carries ISO timestamps, which have colons of their own.
+    const separator = info.event.id.indexOf(':')
+    const kind = separator === -1 ? info.event.id : info.event.id.slice(0, separator)
+    const id = separator === -1 ? undefined : info.event.id.slice(separator + 1)
     if (kind === 'appointment') {
         const bookingSubmissionId = info.event.extendedProps.bookingSubmissionId as string | null
         if (bookingSubmissionId) {

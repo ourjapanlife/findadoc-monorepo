@@ -363,19 +363,20 @@ function pickDay(): void {
     selectedDay.value = keep !== undefined && openDays.includes(keep) ? keep : openDays[0] ?? null
 }
 
-async function showWeek(week: string, options: { jumpWhenEmpty?: boolean } = {}): Promise<void> {
+/** False when a newer load replaced this one before it finished, so the caller must not act on it. */
+async function showWeek(week: string, options: { jumpWhenEmpty?: boolean } = {}): Promise<boolean> {
     const generation = ++loadGeneration
     weekStart.value = week
     loading.value = true
     nextOpenDay.value = null
     const starts = await fetchWeek(week)
     if (generation !== loadGeneration) {
-        return
+        return false
     }
     if (starts.length === 0) {
         nextOpenDay.value = await findNextOpenDay(week, generation)
         if (generation !== loadGeneration) {
-            return
+            return false
         }
         // On first load, open the first week that has times instead of an empty one.
         if (options.jumpWhenEmpty === true && nextOpenDay.value !== null) {
@@ -385,11 +386,14 @@ async function showWeek(week: string, options: { jumpWhenEmpty?: boolean } = {})
     }
     pickDay()
     loading.value = false
+    return true
 }
 
 function jumpTo(day: string): void {
-    void showWeek(weekStartKey(day)).then(() => {
-        selectedDay.value = day
+    void showWeek(weekStartKey(day)).then(current => {
+        if (current) {
+            selectedDay.value = day
+        }
     })
 }
 
@@ -411,8 +415,8 @@ watch([
     () => props.spokenLanguages
 ], async () => {
     weeks.value = new Map()
-    await showWeek(weekStart.value, { jumpWhenEmpty: true })
-    if (props.modelValue !== null && !weekStarts.value.includes(props.modelValue)) {
+    const current = await showWeek(weekStart.value, { jumpWhenEmpty: true })
+    if (current && props.modelValue !== null && !weekStarts.value.includes(props.modelValue)) {
         emit('update:modelValue', null)
     }
 })
