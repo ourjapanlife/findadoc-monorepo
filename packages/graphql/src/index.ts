@@ -129,6 +129,8 @@ export type BookingForm = {
   /** Hosted clinic page id. Null when the clinic has no Find a Doc landing. */
   clinicSiteId?: Maybe<Scalars['ID']['output']>;
   clinicSiteSlug?: Maybe<Scalars['String']['output']>;
+  /** The offered length the Book page preselects. */
+  defaultDuration: Scalars['Int']['output'];
   /** Directory facility id. The reusable Book URL uses this when present. */
   facilityId?: Maybe<Scalars['ID']['output']>;
   fields: Array<BookingFormField>;
@@ -214,6 +216,8 @@ export type BookingSettings = {
   __typename?: 'BookingSettings';
   /** Visit lengths in minutes. Each value is 15, 30, 45, or 60. */
   allowedDurations: Array<Scalars['Int']['output']>;
+  /** The offered length the Book page preselects. */
+  defaultDuration: Scalars['Int']['output'];
   facilityId: Scalars['ID']['output'];
   /** Intake forms the clinic offers. The first is the default. */
   formDefinitionIds: Array<Scalars['String']['output']>;
@@ -2149,6 +2153,8 @@ export type UpdateBookingAppointmentStatusInput = {
 
 export type UpdateBookingSettingsInput = {
   allowedDurations: Array<Scalars['Int']['input']>;
+  /** One of allowedDurations. Omit for 30 minutes when offered, else the shortest. */
+  defaultDuration?: InputMaybe<Scalars['Int']['input']>;
   facilityId: Scalars['ID']['input'];
   /** Known form ids. The first is the default. */
   formDefinitionIds: Array<Scalars['String']['input']>;
@@ -2585,6 +2591,7 @@ export type BookingFormResolvers<ContextType = any, ParentType extends Resolvers
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  defaultDuration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   facilityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   fields?: Resolver<Array<ResolversTypes['BookingFormField']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -2633,6 +2640,7 @@ export type BookingPractitionerResolvers<ContextType = any, ParentType extends R
 
 export type BookingSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingSettings'] = ResolversParentTypes['BookingSettings']> = {
   allowedDurations?: Resolver<Array<ResolversTypes['Int']>, ParentType, ContextType>;
+  defaultDuration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   formDefinitionIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
 };

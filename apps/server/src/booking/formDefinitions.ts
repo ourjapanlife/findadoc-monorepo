@@ -6,7 +6,7 @@ import {
 } from '@findadoc/graphql'
 import { BOOKING_UPLOAD_MAX_BYTES } from './limits.js'
 import { BOOKING_FIELD_SENSITIVITY, type BookingFieldSensitivity as StoredSensitivity } from './retention.js'
-import { DEFAULT_ALLOWED_DURATIONS } from './schedule.js'
+import { DEFAULT_ALLOWED_DURATIONS, DEFAULT_APPOINTMENT_DURATION_MINUTES, resolveDefaultDuration } from './schedule.js'
 
 /**
  * Find a Doc owns the intake fields. Each entry in FORMS_BY_ID is one form type.
@@ -237,8 +237,10 @@ export function assembleBookingForm(input: {
     clinicName: string
     themePrimary?: string | null
     allowedDurations?: readonly number[]
+    defaultDuration?: number | null
 }): AssembledBookingForm {
     const source = resolveFormSource(input.formDefinitionId ?? DEFAULT_BOOKING_FORM_ID)
+    const allowedDurations = [...(input.allowedDurations ?? DEFAULT_ALLOWED_DURATIONS)]
 
     return {
         id: source.id,
@@ -248,7 +250,9 @@ export function assembleBookingForm(input: {
         clinicSiteSlug: input.clinicSiteSlug ?? null,
         clinicName: input.clinicName,
         themePrimary: input.themePrimary ?? null,
-        allowedDurations: [...(input.allowedDurations ?? DEFAULT_ALLOWED_DURATIONS)],
+        allowedDurations,
+        defaultDuration: resolveDefaultDuration(allowedDurations, input.defaultDuration)
+            ?? DEFAULT_APPOINTMENT_DURATION_MINUTES,
         fields: source.fields
     }
 }

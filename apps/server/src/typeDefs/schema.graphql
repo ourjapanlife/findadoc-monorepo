@@ -1230,6 +1230,8 @@ type BookingForm {
   themePrimary: String
   """Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60."""
   allowedDurations: [Int!]!
+  """The offered length the Book page preselects."""
+  defaultDuration: Int!
   fields: [BookingFormField!]!
   """Doctors at this clinic the patient may choose."""
   practitioners: [BookingPractitioner!]!
@@ -1359,6 +1361,8 @@ type BookingSettings {
   facilityId: ID!
   """Visit lengths in minutes. Each value is 15, 30, 45, or 60."""
   allowedDurations: [Int!]!
+  """The offered length the Book page preselects."""
+  defaultDuration: Int!
   """Intake forms the clinic offers. The first is the default."""
   formDefinitionIds: [String!]!
 }
@@ -1578,6 +1582,8 @@ input InviteClinicMemberInput {
 input UpdateBookingSettingsInput {
   facilityId: ID!
   allowedDurations: [Int!]!
+  """One of allowedDurations. Omit for 30 minutes when offered, else the shortest."""
+  defaultDuration: Int
   """Known form ids. The first is the default."""
   formDefinitionIds: [String!]!
 }

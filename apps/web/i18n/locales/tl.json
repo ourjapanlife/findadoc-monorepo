@@ -990,6 +990,7 @@
       "durationsHelp": "Pipili ang pasyente ng isa sa mga haba ng pagbisitang inaalok ninyo. Nakapili na ang default sa pahina ng booking.",
       "forms": "Mga intake form",
       "formsHelp": "Makikita ng pasyente ang default na form maliban kung ibang form na inaalok mo ang nakasaad sa Book link.",
+      "defaultDuration": "Default na haba",
       "defaultForm": "Default na form",
       "save": "I-save ang mga setting"
     },

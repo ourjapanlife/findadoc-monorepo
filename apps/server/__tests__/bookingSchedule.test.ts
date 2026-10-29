@@ -11,6 +11,8 @@ import {
     isAlignedToMinutes,
     isWeeklyHours,
     normalizeWeeklyHours,
+    resolveAppointmentDuration,
+    resolveDefaultDuration,
     subtractWindows,
     snapDownToAvailability,
     snapUpToAvailability
@@ -91,6 +93,15 @@ describe('booking schedule', () => {
         expect(starts.map(start => start.toISOString())).toEqual([
             '2026-11-05T01:30:00.000Z'
         ])
+    })
+
+    it('preselects the clinic default length, else 30 minutes, else the shortest', () => {
+        expect(resolveDefaultDuration([15, 30, 45, 60], 45)).toBe(45)
+        expect(resolveDefaultDuration([15, 30, 45, 60], null)).toBe(30)
+        expect(resolveDefaultDuration([15, 30], 60)).toBe(30)
+        expect(resolveDefaultDuration([45, 60])).toBe(45)
+        expect(resolveAppointmentDuration(null, [15, 30, 45, 60], 60)).toBe(60)
+        expect(resolveAppointmentDuration(15, [15, 30, 45, 60], 60)).toBe(15)
     })
 })
 

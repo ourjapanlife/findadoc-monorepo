@@ -319,7 +319,11 @@ const submitted = ref(false)
 const submissionId = ref('')
 const manageUrl = ref('')
 const selectedStart = ref<string | null>(props.query.start ?? null)
-const durationMinutes = ref(resolveDuration(props.query.duration, props.form.allowedDurations))
+const durationMinutes = ref(resolveDuration(
+    props.query.duration,
+    props.form.allowedDurations,
+    props.form.defaultDuration
+))
 // ?practitioner= preselects a doctor at this clinic. Anyone else falls back to "any doctor".
 const practitionerId = ref<string | null>(props.form.practitioners.some(practitioner =>
     practitioner.id === props.query.practitioner)

@@ -990,6 +990,7 @@
       "durationsHelp": "Les patients choisissent l’une des durées que vous proposez. La durée par défaut est présélectionnée sur la page de réservation.",
       "forms": "Formulaires d'admission",
       "formsHelp": "Les patients voient le formulaire par défaut, sauf si le lien de réservation indique un autre formulaire que vous proposez.",
+      "defaultDuration": "Durée par défaut",
       "defaultForm": "Par défaut",
       "save": "Enregistrer les paramètres"
     },

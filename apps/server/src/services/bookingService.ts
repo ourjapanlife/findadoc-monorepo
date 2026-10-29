@@ -72,7 +72,8 @@ function bookingFormForTarget(target: BookingTarget, formDefinitionId?: string |
         clinicSiteSlug: target.clinicSiteSlug,
         clinicName: target.clinicName,
         themePrimary: target.themePrimary,
-        allowedDurations: target.allowedDurations
+        allowedDurations: target.allowedDurations,
+        defaultDuration: target.defaultDuration
     })
 }
 
@@ -433,7 +434,11 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         return validationError('locale')
     }
 
-    const durationMinutes = resolveAppointmentDuration(input.durationMinutes, target.allowedDurations)
+    const durationMinutes = resolveAppointmentDuration(
+        input.durationMinutes,
+        target.allowedDurations,
+        target.defaultDuration
+    )
     if (durationMinutes === undefined) {
         return validationError('durationMinutes')
     }
@@ -710,7 +715,11 @@ export async function getAvailableBookingStarts(
     if (target === undefined) {
         return []
     }
-    const durationMinutes = resolveAppointmentDuration(durationMinutesInput, target.allowedDurations)
+    const durationMinutes = resolveAppointmentDuration(
+        durationMinutesInput,
+        target.allowedDurations,
+        target.defaultDuration
+    )
     if (durationMinutes === undefined) {
         return []
     }

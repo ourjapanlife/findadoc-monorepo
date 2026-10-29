@@ -114,7 +114,29 @@ describe('booking flow', () => {
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
         }, moderator)
         expect(saved.hasErrors).toBe(false)
+        expect(saved.data.defaultDuration).toBe(30)
         expect(await bookingService.getBookingForm(facilityId)).not.toBeNull()
+    })
+
+    it('saves a default visit length the clinic offers and rejects one it does not', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const saved = await clinicAccessService.updateBookingSettings({
+            facilityId,
+            allowedDurations: [15, 30, 45, 60],
+            defaultDuration: 45,
+            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
+        }, moderator)
+        expect(saved.hasErrors).toBe(false)
+        expect(saved.data.defaultDuration).toBe(45)
+        expect((await bookingService.getBookingForm(facilityId))?.defaultDuration).toBe(45)
+
+        const rejected = await clinicAccessService.updateBookingSettings({
+            facilityId,
+            allowedDurations: [15, 30],
+            defaultDuration: 45,
+            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
+        }, moderator)
+        expect(rejected.hasErrors).toBe(true)
     })
 
     it('holds a requested slot, confirms it, and frees it when the patient cancels', async () => {

@@ -990,6 +990,7 @@
       "durationsHelp": "Patients choose one of the lengths you offer. The default is preselected on the Book page.",
       "forms": "Intake forms",
       "formsHelp": "Patients see the default form unless the Book link names another form you offer.",
+      "defaultDuration": "Default length",
       "defaultForm": "Default",
       "save": "Save settings"
     },

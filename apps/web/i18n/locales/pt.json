@@ -990,6 +990,7 @@
       "durationsHelp": "Os pacientes escolhem uma das durações que você oferece. A duração padrão já vem selecionada na página de agendamento.",
       "forms": "Formulários de triagem",
       "formsHelp": "Os pacientes veem o formulário padrão, a menos que o link de agendamento indique outro formulário que você oferece.",
+      "defaultDuration": "Duração padrão",
       "defaultForm": "Padrão",
       "save": "Salvar configurações"
     },

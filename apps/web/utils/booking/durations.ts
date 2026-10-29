@@ -10,10 +10,14 @@ export function isAppointmentDuration(value: number): value is AppointmentDurati
 
 export function resolveDuration(
     value: number | null | undefined,
-    allowed: readonly number[] = DEFAULT_ALLOWED_DURATIONS
+    allowed: readonly number[] = DEFAULT_ALLOWED_DURATIONS,
+    defaultDuration?: number | null
 ): number {
     if (value !== null && value !== undefined && isAppointmentDuration(value) && allowed.includes(value)) {
         return value
+    }
+    if (defaultDuration !== null && defaultDuration !== undefined && allowed.includes(defaultDuration)) {
+        return defaultDuration
     }
     if (allowed.includes(DEFAULT_APPOINTMENT_DURATION_MINUTES)) {
         return DEFAULT_APPOINTMENT_DURATION_MINUTES

@@ -990,6 +990,7 @@
       "durationsHelp": "患者从您提供的时长中选择一个。预约页面会预先选中默认时长。",
       "forms": "问诊表",
       "formsHelp": "除非预约链接指定了您提供的其他表单，否则患者看到的是默认表单。",
+      "defaultDuration": "默认时长",
       "defaultForm": "默认",
       "save": "保存设置"
     },
