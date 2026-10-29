@@ -951,7 +951,8 @@
     "tabs": {
       "requests": "Mga kahilingan",
       "calendar": "Kalendaryo",
-      "settings": "Mga setting"
+      "settings": "Mga setting",
+      "team": "Koponan"
     },
     "roles": {
       "owner": "May-ari",

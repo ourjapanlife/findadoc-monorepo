@@ -951,7 +951,8 @@
     "tabs": {
       "requests": "リクエスト",
       "calendar": "カレンダー",
-      "settings": "設定"
+      "settings": "設定",
+      "team": "スタッフ"
     },
     "roles": {
       "owner": "オーナー",

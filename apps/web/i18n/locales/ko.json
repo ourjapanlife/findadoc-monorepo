@@ -951,7 +951,8 @@
     "tabs": {
       "requests": "요청",
       "calendar": "캘린더",
-      "settings": "설정"
+      "settings": "설정",
+      "team": "팀"
     },
     "roles": {
       "owner": "소유자",

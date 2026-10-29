@@ -951,7 +951,8 @@
     "tabs": {
       "requests": "Requests",
       "calendar": "Calendar",
-      "settings": "Settings"
+      "settings": "Settings",
+      "team": "Team"
     },
     "roles": {
       "owner": "Owner",

@@ -55,7 +55,7 @@ SES has production access (#157), so mail goes to any address.
 
 Clinic notices go to the clinic's members only (#161). A clinic with no members gets no notice; the request still shows in its dashboard and in moderation. Directory contacts (clinic-page doctors, the facility contact email, linked professionals) are never emailed.
 
-**For a production demo, use internal addresses only**: invite your own address as a member of the showcase clinic (Dashboard → Settings → Team), and type an internal address as the demo patient. Member emails get clinic notices even before the invite is claimed.
+**For a production demo, use internal addresses only**: invite your own address as a member of the showcase clinic (Dashboard → Team), and type an internal address as the demo patient. Member emails get clinic notices even before the invite is claimed.
 
 ## 3. Where to run the demo
 
@@ -97,7 +97,7 @@ From the repo root, on this branch.
 
 1. `pnpm db:push` has applied `20261029150000_booking_access_lifecycle.sql`.
 2. As a moderator, open `https://www.findadoc.jp/clinic-dashboard/c32c316a-a368-499b-abaf-c5c973cb67e5` → **Settings → Weekly hours** and check the week. The migration sets weekdays 09:00–12:00 and 13:00–17:00 JST. Close any day you don't want offered on the **Calendar**.
-3. **Settings → Team**: invite your own email (role Owner). Notices for the showcase then go to you.
+3. **Team**: invite your own email (role Owner). Notices for the showcase then go to you.
 4. Use an internal address for the demo patient (section 2).
 5. Open `https://multilingual-online-clinic.findadoc.jp/?preview=1` in both windows.
 6. Rehearse, then cancel the rehearsal bookings so their times free up.
@@ -199,7 +199,7 @@ Sign in with a plain (non-moderator) account with that sub. You see only the sho
 | Dashboard: "This account is not linked to a clinic yet" | Plain account and no claimed membership | Use a Moderator account, or the SQL above; production needs #158 |
 | Dashboard keeps showing "Sign in" | Auth0 session is per origin | Sign in on `localhost:3000` / `www.findadoc.jp`, not the clinic subdomain |
 | Request shows **Notify failed** | SES rejected the patient address | Check the address; the patient can use the manage link |
-| Clinic gets no email in production | The clinic has no members | Invite one (Settings → Team); section 2 |
+| Clinic gets no email in production | The clinic has no members | Invite one (Team tab); section 2 |
 | Times look shifted | Calendar uses your computer's time zone (#163) | Set your computer to Japan time for the demo |
 | Can't find the manage link later | It's only shown once and emailed | Locally: API terminal, `Booking email logged` → `textBody` |
 

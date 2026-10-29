@@ -951,7 +951,8 @@
     "tabs": {
       "requests": "申请",
       "calendar": "日历",
-      "settings": "设置"
+      "settings": "设置",
+      "team": "团队"
     },
     "roles": {
       "owner": "所有者",

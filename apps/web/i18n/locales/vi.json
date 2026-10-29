@@ -951,7 +951,8 @@
     "tabs": {
       "requests": "Yêu cầu",
       "calendar": "Lịch",
-      "settings": "Cài đặt"
+      "settings": "Cài đặt",
+      "team": "Nhân viên"
     },
     "roles": {
       "owner": "Chủ sở hữu",
