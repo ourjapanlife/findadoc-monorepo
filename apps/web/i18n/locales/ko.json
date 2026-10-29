@@ -887,7 +887,8 @@
       "email": "이메일",
       "website": "웹사이트",
       "clinicLink": "{clinic}(으)로 돌아가기"
-    }
+    },
+    "clinicQuestionsInEnglish": "병원의 일부 질문은 영어로만 제공됩니다."
   },
   "bookingDashboard": {
     "detailHeading": "예약",
@@ -1038,6 +1039,46 @@
       "invalid": "같은 날 두 시간대가 겹칩니다. 하나를 바꿔 주세요.",
       "save": "주간 진료 시간 저장",
       "doctorHelp": "이 의사만의 일주일입니다. 저장하면 이 의사는 클리닉 시간이나 다른 의사와 따로 예약을 받습니다. 클리닉 전체 휴진은 그대로 적용됩니다."
+    },
+    "forms": {
+      "newForm": "새 양식 만들기",
+      "newHeading": "새 문진표",
+      "editHeading": "문진표 편집",
+      "fixedFields": "모든 양식은 환자의 이메일, 전화번호, 이름으로 시작합니다. 그 뒤에 병원의 질문을 추가하세요. 질문을 바꿔 저장하면 새 버전이 되며, 이미 보낸 요청은 보낼 때의 질문을 그대로 유지합니다.",
+      "name": "양식 이름",
+      "yourForm": "병원 양식 · {n}번째 버전",
+      "edit": "질문 편집",
+      "question": "질문 {n}",
+      "questionText": "질문",
+      "type": "답변 유형",
+      "step": "단계",
+      "sensitivity": "보관 방식",
+      "identityHelp": "신분증과 보험 관련 파일은 짧은 기간 후 자동으로 삭제됩니다.",
+      "min": "최솟값",
+      "max": "최댓값",
+      "choices": "선택지",
+      "choice": "선택지 {n}",
+      "addChoice": "선택지 추가",
+      "removeChoice": "선택지 삭제",
+      "required": "필수",
+      "moveUp": "위로 이동",
+      "moveDown": "아래로 이동",
+      "removeQuestion": "삭제",
+      "addQuestion": "질문 추가",
+      "translations": "다른 언어",
+      "shownInEnglish": "영어로 표시되는 언어: {languages}",
+      "incomplete": "양식 이름을 입력하고, 모든 질문과 선택지를 영어로 작성하고, 선택형 질문에는 선택지를 두 개 이상 넣어 주세요.",
+      "saveFailed": "양식을 저장하지 못했습니다. 다시 시도해 주세요.",
+      "saved": "양식을 저장했습니다.",
+      "save": "양식 저장",
+      "cancel": "취소",
+      "types": {
+        "text": "짧은 글",
+        "textarea": "긴 글",
+        "select": "선택형",
+        "number": "숫자",
+        "file": "파일 업로드"
+      }
     }
   },
   "patientBooking": {

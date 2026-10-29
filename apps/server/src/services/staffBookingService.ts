@@ -11,7 +11,7 @@ import {
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
 import { canReadFacility, readableFacilityIds, type BookingAccess } from '../booking/access.js'
-import { staffAnswers } from '../booking/formDefinitions.js'
+import { formSourceById, staffAnswers } from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, CANCELLED_BY, type AppointmentStatus } from '../booking/lifecycle.js'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
@@ -272,6 +272,9 @@ export async function getBookingSubmissionDetail(
         .orderBy('created_date')
         .execute()
 
+    // The questions the patient answered, so an edited clinic form still labels old answers.
+    const fields = (await formSourceById(row.form_definition_id, row.form_version))?.fields ?? []
+
     return {
         id: row.id,
         clinicSiteId: row.clinic_site_id,
@@ -294,7 +297,7 @@ export async function getBookingSubmissionDetail(
         service: row.service_key,
         createdDate: row.created_date,
         updatedDate: row.updated_date,
-        answers: staffAnswers(row.form_definition_id, answersRecord, new Set(uploads.map(upload => upload.id))),
+        answers: staffAnswers(fields, answersRecord, new Set(uploads.map(upload => upload.id))),
         uploads: uploads.map(upload => ({
             id: upload.id,
             fieldId: upload.field_id,
@@ -304,7 +307,8 @@ export async function getBookingSubmissionDetail(
             retainUntil: upload.retain_until,
             purgedAt: upload.purged_at,
             byteSize: upload.byte_size
-        }))
+        })),
+        fields
     }
 }
 

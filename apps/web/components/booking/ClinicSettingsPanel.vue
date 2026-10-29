@@ -13,6 +13,15 @@
 
         <ClinicWeeklyHoursEditor :facility-id="props.facilityId" />
 
+        <ClinicFormEditor
+            v-if="editing !== undefined"
+            :key="editing?.id ?? 'new'"
+            :facility-id="props.facilityId"
+            :form="editing"
+            @saved="onFormSaved"
+            @cancel="editing = undefined"
+        />
+
         <form
             v-if="settings"
             class="card flex flex-col gap-6 p-5 shadow-card landscape:p-6"
@@ -108,7 +117,7 @@
                 </p>
                 <div class="grid gap-3 landscape:grid-cols-2">
                     <div
-                        v-for="formType in formTypes"
+                        v-for="formType in formChoices"
                         :key="formType.id"
                         class="flex flex-col gap-3 rounded-lg border p-4 transition-colors"
                         :class="formIds.includes(formType.id)
@@ -122,8 +131,25 @@
                                 class="mt-0.5 h-5 w-5 shrink-0 accent-primary"
                                 :value="formType.id"
                             >
-                            <span class="font-semibold text-primary-text">{{ t(formType.labelKey) }}</span>
+                            <span class="flex flex-col">
+                                <span class="font-semibold text-primary-text">{{ formType.label }}</span>
+                                <span
+                                    v-if="formType.clinicForm"
+                                    class="text-sm text-primary-text-muted"
+                                >
+                                    {{ t('clinicDashboard.forms.yourForm', { n: formType.clinicForm.version }) }}
+                                </span>
+                            </span>
                         </label>
+                        <button
+                            v-if="formType.clinicForm"
+                            type="button"
+                            class="btn btn-ghost btn-sm ml-8 self-start"
+                            :data-testid="`clinic-form-edit-${formType.id}`"
+                            @click="editing = formType.clinicForm"
+                        >
+                            {{ t('clinicDashboard.forms.edit') }}
+                        </button>
                         <label
                             v-if="formIds.includes(formType.id)"
                             class="ml-8 inline-flex w-fit cursor-pointer items-center gap-2 text-sm"
@@ -140,6 +166,15 @@
                         </label>
                     </div>
                 </div>
+                <button
+                    v-if="editing === undefined"
+                    type="button"
+                    class="btn btn-secondary btn-sm self-start"
+                    data-testid="clinic-form-new"
+                    @click="editing = null"
+                >
+                    {{ t('clinicDashboard.forms.newForm') }}
+                </button>
             </fieldset>
 
             <div class="flex items-center gap-3 border-t border-accent-bg pt-5">
@@ -161,7 +196,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { BookingFormType, BookingSettings } from '@findadoc/graphql'
+import type { BookingFormType, BookingSettings, ClinicBookingForm } from '@findadoc/graphql'
+import ClinicFormEditor from '~/components/booking/ClinicFormEditor.vue'
 import ClinicWeeklyHoursEditor from '~/components/booking/ClinicWeeklyHoursEditor.vue'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
@@ -169,7 +205,8 @@ import { ALLOWED_APPOINTMENT_DURATIONS, resolveDuration } from '~/utils/booking/
 import { fetchClinicAdmin, updateBookingSettings } from '~/utils/booking/staffQuery'
 
 /**
- * Owner settings: weekly hours, visit lengths, and which intake forms the clinic offers.
+ * Owner settings: weekly hours, visit lengths, which intake forms the clinic offers,
+ * and the clinic's own forms (ClinicFormEditor, #166).
  * Who may use the dashboard is the Team tab (ClinicTeamPanel).
  */
 const props = defineProps<{
@@ -180,6 +217,9 @@ const { t } = useI18n()
 const toast = useAppToast()
 const settings = ref<BookingSettings | null>(null)
 const formTypes = ref<BookingFormType[]>([])
+const clinicForms = ref<ClinicBookingForm[]>([])
+// The clinic form being written. Null is a new form; undefined closes the editor.
+const editing = ref<ClinicBookingForm | null | undefined>(undefined)
 const durations = ref<number[]>([])
 const defaultDuration = ref<number | undefined>(undefined)
 const defaultDurationLabelId = 'clinic-settings-default-duration'
@@ -189,6 +229,11 @@ const loadError = ref(false)
 const savingSettings = ref(false)
 
 const sortedDurations = computed(() => [...durations.value].sort((a, b) => a - b))
+// Find a Doc forms, then the clinic's own.
+const formChoices = computed(() => [
+    ...formTypes.value.map(formType => ({ id: formType.id, label: t(formType.labelKey), clinicForm: null })),
+    ...clinicForms.value.map(form => ({ id: form.id, label: form.name, clinicForm: form }))
+])
 
 async function load(): Promise<void> {
     const loaded = await fetchClinicAdmin(props.facilityId)
@@ -198,6 +243,7 @@ async function load(): Promise<void> {
     }
     settings.value = loaded.settings
     formTypes.value = loaded.formTypes
+    clinicForms.value = loaded.clinicForms
     durations.value = [...(loaded.settings?.allowedDurations ?? [])]
     defaultDuration.value = durations.value.length === 0
         ? undefined
@@ -236,6 +282,18 @@ async function saveSettings(): Promise<void> {
     }
     settings.value = saved
     toast.success(t('clinicDashboard.saved'))
+}
+
+// A saved form is listed at once. A new one is offered only after the clinic ticks it and saves settings.
+function onFormSaved(form: ClinicBookingForm): void {
+    const index = clinicForms.value.findIndex(item => item.id === form.id)
+    if (index === -1) {
+        clinicForms.value.push(form)
+    } else {
+        clinicForms.value.splice(index, 1, form)
+    }
+    editing.value = undefined
+    toast.success(t('clinicDashboard.forms.saved'))
 }
 
 onMounted(load)

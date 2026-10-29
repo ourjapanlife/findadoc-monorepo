@@ -887,7 +887,8 @@
       "email": "Courriel",
       "website": "Site web",
       "clinicLink": "Retour à {clinic}"
-    }
+    },
+    "clinicQuestionsInEnglish": "Certaines questions de la clinique sont uniquement en anglais."
   },
   "bookingDashboard": {
     "detailHeading": "Réservation",
@@ -1038,6 +1039,46 @@
       "invalid": "Deux plages du même jour se chevauchent. Modifiez l'une d'elles.",
       "save": "Enregistrer les horaires",
       "doctorHelp": "La semaine propre à ce médecin. Une fois enregistrée, ce médecin est réservé séparément des horaires de la clinique et des autres médecins. Les fermetures de toute la clinique s'appliquent toujours."
+    },
+    "forms": {
+      "newForm": "Créer un formulaire",
+      "newHeading": "Nouveau questionnaire d'admission",
+      "editHeading": "Modifier le questionnaire d'admission",
+      "fixedFields": "Chaque formulaire commence par l'e-mail, le téléphone et le nom complet du patient. Ajoutez vos propres questions ensuite. Enregistrer des questions modifiées crée une nouvelle version ; les demandes déjà envoyées gardent les questions de leur envoi.",
+      "name": "Nom du formulaire",
+      "yourForm": "Votre formulaire · version {n}",
+      "edit": "Modifier les questions",
+      "question": "Question n° {n}",
+      "questionText": "Intitulé de la question",
+      "type": "Type de réponse",
+      "step": "Étape",
+      "sensitivity": "Conservation",
+      "identityHelp": "Les fichiers d'identité et d'assurance sont supprimés automatiquement après une courte durée.",
+      "min": "Minimum",
+      "max": "Maximum",
+      "choices": "Choix possibles",
+      "choice": "Choix {n}",
+      "addChoice": "Ajouter un choix",
+      "removeChoice": "Retirer le choix",
+      "required": "Obligatoire",
+      "moveUp": "Monter",
+      "moveDown": "Descendre",
+      "removeQuestion": "Retirer",
+      "addQuestion": "Ajouter une question",
+      "translations": "Autres langues",
+      "shownInEnglish": "Affiché en anglais pour : {languages}",
+      "incomplete": "Nommez le formulaire, rédigez chaque question et chaque choix en anglais, et donnez au moins deux choix à chaque question à choix.",
+      "saveFailed": "Impossible d'enregistrer le formulaire. Réessayez.",
+      "saved": "Formulaire enregistré.",
+      "save": "Enregistrer le formulaire",
+      "cancel": "Annuler",
+      "types": {
+        "text": "Texte court",
+        "textarea": "Texte long",
+        "select": "Choix unique",
+        "number": "Nombre",
+        "file": "Envoi de fichier"
+      }
     }
   },
   "patientBooking": {

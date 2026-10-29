@@ -148,11 +148,39 @@ address can leave at most a day of upload budget behind.
 
 ## Forms
 
-`src/booking/formDefinitions.ts` holds every form type. A clinic offers one or
-more through `booking_settings.form_definition_ids`; the first is its default.
-`?form=` on the Book URL picks another form the clinic offers. Submit and
-upload reject a form the clinic does not offer. A later clinic-authored form
-only needs to return the same `FormSource` shape from `formSourceById`.
+`src/booking/formDefinitions.ts` holds the Find a Doc form types. A clinic
+offers one or more forms through `booking_settings.form_definition_ids`; the
+first is its default. `?form=` on the Book URL picks another form the clinic
+offers. Submit and upload reject a form the clinic does not offer.
+
+### Clinic forms
+
+An owner (or a moderator) writes the clinic's own forms in Dashboard →
+Settings (#166). A clinic form is a `booking_form_definitions` row with an id
+that starts with `clinic-`, owned by one facility. Its questions are a
+`booking_form_versions` row. `formSourceById` returns it as the same
+`FormSource` a Find a Doc form is, so the Book page, submit validation, and
+storage do not change. A clinic may offer only its own forms; another
+clinic's form id is refused.
+
+- Every clinic form asks Find a Doc's email, phone, and full name first. They
+  are not stored with the form, and a clinic question may not use their ids,
+  because the request emails and the open-request limit read them.
+- A question is one of the existing field types (`EMAIL`, `PHONE`, `NUMBER`,
+  `TEXT`, `TEXTAREA`, `FILE`, `SELECT`) on the `contact`, `visit`, or
+  `documents` step. `src/booking/clinicForms.ts` checks it.
+- Sensitivity is chosen per question. A `FILE` question defaults to
+  `IDENTITY_DOCUMENT`, so its upload gets the short retention.
+- English (`en-US`) is required on every question and choice. Another site
+  locale is optional. Without it the Book page shows English with a note, and
+  the editor lists the languages that will see English.
+- A save that changes the questions adds a version and moves
+  `current_version`. A rename alone keeps the version. A version is never
+  changed, so `booking_submissions.form_definition_id` and `form_version` still
+  label old answers: the staff detail returns that version's `fields`. A
+  patient who opened the form before an edit is asked to reload
+  (`formVersion`).
+- There is no delete yet. A clinic stops offering a form by unticking it.
 
 ## Dashboard
 

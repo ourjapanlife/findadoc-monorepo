@@ -887,7 +887,8 @@
       "email": "E-Mail",
       "website": "Webseite",
       "clinicLink": "Zurück zu {clinic}"
-    }
+    },
+    "clinicQuestionsInEnglish": "Einige Fragen der Praxis gibt es nur auf Englisch."
   },
   "bookingDashboard": {
     "detailHeading": "Buchung",
@@ -1038,6 +1039,46 @@
       "invalid": "Zwei Blöcke am selben Tag überschneiden sich. Ändern Sie einen davon.",
       "save": "Wochenzeiten speichern",
       "doctorHelp": "Die eigene Woche dieser Ärztin bzw. dieses Arztes. Nach dem Speichern wird sie bzw. er getrennt von den Praxiszeiten und anderen Ärzten gebucht. Schließungen der ganzen Praxis gelten weiterhin."
+    },
+    "forms": {
+      "newForm": "Neues Formular erstellen",
+      "newHeading": "Neuer Aufnahmebogen",
+      "editHeading": "Aufnahmebogen bearbeiten",
+      "fixedFields": "Jedes Formular beginnt mit E-Mail, Telefon und vollständigem Namen des Patienten. Fügen Sie danach Ihre eigenen Fragen hinzu. Geänderte Fragen werden als neue Version gespeichert; bereits gesendete Anfragen behalten die Fragen, mit denen sie gesendet wurden.",
+      "name": "Name des Formulars",
+      "yourForm": "Ihr Formular · Version {n}",
+      "edit": "Fragen bearbeiten",
+      "question": "Frage {n}",
+      "questionText": "Frage",
+      "type": "Antwortart",
+      "step": "Schritt",
+      "sensitivity": "Aufbewahrung",
+      "identityHelp": "Ausweis- und Versicherungsdateien werden nach kurzer Zeit automatisch gelöscht.",
+      "min": "Kleinster Wert",
+      "max": "Größter Wert",
+      "choices": "Auswahlmöglichkeiten",
+      "choice": "Auswahl {n}",
+      "addChoice": "Auswahl hinzufügen",
+      "removeChoice": "Auswahl entfernen",
+      "required": "Pflichtfeld",
+      "moveUp": "Nach oben",
+      "moveDown": "Nach unten",
+      "removeQuestion": "Entfernen",
+      "addQuestion": "Frage hinzufügen",
+      "translations": "Weitere Sprachen",
+      "shownInEnglish": "Auf Englisch angezeigt für: {languages}",
+      "incomplete": "Geben Sie dem Formular einen Namen, schreiben Sie jede Frage und Auswahl auf Englisch und geben Sie jeder Auswahlfrage mindestens zwei Möglichkeiten.",
+      "saveFailed": "Das Formular konnte nicht gespeichert werden. Bitte erneut versuchen.",
+      "saved": "Formular gespeichert.",
+      "save": "Formular speichern",
+      "cancel": "Abbrechen",
+      "types": {
+        "text": "Kurzer Text",
+        "textarea": "Langer Text",
+        "select": "Auswahl",
+        "number": "Zahl",
+        "file": "Datei-Upload"
+      }
     }
   },
   "patientBooking": {

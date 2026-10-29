@@ -1,5 +1,11 @@
 import { afterAll, describe, expect, it } from 'vitest'
-import { BookingAppointmentStatus, ClinicMemberRole, Locale } from '@findadoc/graphql'
+import {
+    BookingAppointmentStatus,
+    BookingFieldSensitivity,
+    BookingFormFieldType,
+    ClinicMemberRole,
+    Locale
+} from '@findadoc/graphql'
 import { sharedFacilityIds } from './testSetup.test.js'
 import { db } from '../src/kyselyClient.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
@@ -11,6 +17,7 @@ import * as availabilityService from '../src/services/availabilityService.js'
 import * as bookingService from '../src/services/bookingService.js'
 import * as appointmentService from '../src/services/appointmentService.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
+import * as clinicFormService from '../src/services/clinicFormService.js'
 import * as staffBookingService from '../src/services/staffBookingService.js'
 
 const moderator: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
@@ -77,6 +84,7 @@ describe('booking flow', () => {
         await db.deleteFrom('clinic_availability_closures').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('clinic_memberships').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_form_definitions').where('facility_id', '=', facilityId).execute()
         if (createdPractitionerIds.length > 0) {
             await db.deleteFrom('hps_facilities').where('hps_id', 'in', createdPractitionerIds).execute()
             await db.deleteFrom('hps').where('id', 'in', createdPractitionerIds).execute()
@@ -471,5 +479,136 @@ describe('booking flow', () => {
         const members = await clinicAccessService.listClinicMembers(facilityId, owner)
         expect(members.map(member => member.email)).toEqual(['staff@example.com'])
         expect(await clinicAccessService.listClinicMembers(facilityId, outsider)).toEqual([])
+    })
+
+    it('books with a form the clinic wrote, and an edit keeps earlier answers readable', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const owner: BookingAccess = {
+            readAll: false,
+            writeAll: false,
+            manageMembersAll: false,
+            memberships: new Map([[facilityId, MEMBERSHIP_ROLE.OWNER]])
+        }
+        const english = (text: string) => [{ locale: 'en-US', text }]
+        const questions = [
+            {
+                id: 'allergies',
+                stepKey: 'visit',
+                type: BookingFormFieldType.Textarea,
+                required: true,
+                sensitivity: BookingFieldSensitivity.Medical,
+                labels: [{ locale: 'en-US', text: 'Allergies' }, { locale: 'ja-JP', text: 'アレルギー' }]
+            },
+            {
+                id: 'referral',
+                stepKey: 'visit',
+                type: BookingFormFieldType.Select,
+                required: false,
+                labels: english('How did you hear about us?'),
+                options: [
+                    { value: 'friend', labels: english('A friend') },
+                    { value: 'web', labels: english('The web') }
+                ]
+            },
+            {
+                id: 'letter',
+                stepKey: 'documents',
+                type: BookingFormFieldType.File,
+                required: false,
+                labels: english('Referral letter')
+            }
+        ]
+
+        expect((await clinicFormService.saveClinicBookingForm(
+            { facilityId, name: 'New patient', fields: questions },
+            outsider
+        )).hasErrors).toBe(true)
+
+        const created = await clinicFormService.saveClinicBookingForm(
+            { facilityId, name: 'New patient', fields: questions },
+            owner,
+            'test|owner'
+        )
+        expect(created.hasErrors).toBe(false)
+        const formId = created.data.id
+        expect(formId.startsWith('clinic-')).toBe(true)
+        expect(created.data.version).toBe(1)
+        // A file question keeps identity-document retention unless the clinic picks another.
+        expect(created.data.fields.find(field => field.id === 'letter')?.sensitivity)
+            .toBe(BookingFieldSensitivity.IdentityDocument)
+        expect(await clinicFormService.listClinicBookingForms(facilityId, outsider)).toEqual([])
+
+        // A form id the clinic did not write is refused.
+        expect((await clinicAccessService.updateBookingSettings({
+            facilityId,
+            allowedDurations: [60],
+            formDefinitionIds: ['clinic-00000000-0000-4000-8000-000000000000']
+        }, owner)).hasErrors).toBe(true)
+        const offered = await clinicAccessService.updateBookingSettings({
+            facilityId,
+            allowedDurations: [60],
+            formDefinitionIds: [formId, DEFAULT_BOOKING_FORM_ID]
+        }, owner)
+        expect(offered.data.formDefinitionIds).toEqual([formId, DEFAULT_BOOKING_FORM_ID])
+
+        const form = await bookingService.getBookingForm(facilityId)
+        expect(form?.id).toBe(formId)
+        expect(form?.fields.map(field => field.id)).toEqual(['email', 'phone', 'fullName', 'allergies', 'referral', 'letter'])
+        expect(form?.fields.find(field => field.id === 'allergies')?.labels)
+            .toEqual([{ locale: 'en-US', text: 'Allergies' }, { locale: 'ja-JP', text: 'アレルギー' }])
+
+        await availabilityService.createClinicAvailabilityWindow(
+            { clinicSiteId: facilityId, startsAt: iso(720), endsAt: iso(840) },
+            'test|staff',
+            moderator
+        )
+        const clinicAnswers = [
+            ...answers.filter(answer => answer.fieldId !== 'reason'),
+            { fieldId: 'allergies', value: 'Penicillin' },
+            { fieldId: 'referral', value: 'friend' }
+        ]
+        const submitClinicForm = (formVersion: number, startsAt: string, formAnswers = clinicAnswers) =>
+            bookingService.submitBooking({
+                clinicSiteId: facilityId,
+                formDefinitionId: formId,
+                formVersion,
+                locale: 'en-US',
+                answers: formAnswers,
+                startsAt,
+                durationMinutes: 60,
+                confirmedInJapan: true,
+                healthDataConsent: true
+            })
+
+        const badChoice = await submitClinicForm(1, iso(720), clinicAnswers.map(answer =>
+            (answer.fieldId === 'referral' ? { ...answer, value: 'radio' } : answer)))
+        expect(badChoice.errors?.[0]?.field).toBe('referral')
+
+        const submitted = await submitClinicForm(1, iso(720))
+        expect(submitted.hasErrors).toBe(false)
+        createdSubmissionIds.push(submitted.data.id)
+
+        // A new name alone keeps the version.
+        const renamed = await clinicFormService.saveClinicBookingForm(
+            { facilityId, id: formId, name: 'First visit', fields: questions },
+            owner
+        )
+        expect(renamed.data.version).toBe(1)
+        expect(renamed.data.name).toBe('First visit')
+
+        const edited = await clinicFormService.saveClinicBookingForm(
+            { facilityId, id: formId, name: 'First visit', fields: [{ ...questions[0]!, labels: english('Known allergies') }] },
+            owner
+        )
+        expect(edited.data.version).toBe(2)
+        expect((await bookingService.getBookingForm(facilityId))?.version).toBe(2)
+        // A patient still on the first version is asked to reload.
+        expect((await submitClinicForm(1, iso(780))).errors?.[0]?.field).toBe('formVersion')
+
+        const detail = await staffBookingService.getBookingSubmissionDetail(submitted.data.id, owner)
+        expect(detail?.formVersion).toBe(1)
+        expect(detail?.fields.find(field => field.id === 'allergies')?.label).toBe('Allergies')
+        expect(detail?.fields.some(field => field.id === 'referral')).toBe(true)
+        expect(detail?.answers.find(answer => answer.fieldId === 'allergies')?.value).toBe('Penicillin')
     })
 })

@@ -887,7 +887,8 @@
       "email": "电子邮件",
       "website": "网站",
       "clinicLink": "返回{clinic}"
-    }
+    },
+    "clinicQuestionsInEnglish": "诊所的部分问题仅有英文。"
   },
   "bookingDashboard": {
     "detailHeading": "预约",
@@ -1038,6 +1039,46 @@
       "invalid": "同一天的两个时段重叠了。请修改其中一个。",
       "save": "保存每周营业时间",
       "doctorHelp": "这是该医生自己的一周时间。保存后，该医生将与诊所时间和其他医生分开预约。诊所的全体休诊仍然适用。"
+    },
+    "forms": {
+      "newForm": "新建表单",
+      "newHeading": "新的问诊表",
+      "editHeading": "编辑问诊表",
+      "fixedFields": "每份表单都以患者的电子邮箱、电话和姓名开头。请在其后添加您自己的问题。保存修改后的问题会生成新版本；已发送的预约请求保留发送时的问题。",
+      "name": "表单名称",
+      "yourForm": "您的表单 · 第 {n} 版",
+      "edit": "编辑问题",
+      "question": "问题 {n}",
+      "questionText": "问题",
+      "type": "回答类型",
+      "step": "步骤",
+      "sensitivity": "保存方式",
+      "identityHelp": "身份证明和保险文件会在短期内自动删除。",
+      "min": "最小值",
+      "max": "最大值",
+      "choices": "选项",
+      "choice": "选项 {n}",
+      "addChoice": "添加选项",
+      "removeChoice": "删除选项",
+      "required": "必填",
+      "moveUp": "上移",
+      "moveDown": "下移",
+      "removeQuestion": "删除",
+      "addQuestion": "添加问题",
+      "translations": "其他语言",
+      "shownInEnglish": "以下语言将显示英文：{languages}",
+      "incomplete": "请填写表单名称，用英文写出每个问题和选项，并为每个选择题提供至少两个选项。",
+      "saveFailed": "无法保存表单，请重试。",
+      "saved": "表单已保存。",
+      "save": "保存表单",
+      "cancel": "取消",
+      "types": {
+        "text": "简短文字",
+        "textarea": "长段文字",
+        "select": "选择",
+        "number": "数字",
+        "file": "上传文件"
+      }
     }
   },
   "patientBooking": {

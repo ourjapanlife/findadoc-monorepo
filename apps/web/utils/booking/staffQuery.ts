@@ -13,16 +13,19 @@ import type {
     BookingUploadDownloadUrl,
     ClinicAvailabilityClosure,
     ClinicAvailabilityWindow,
+    ClinicBookingForm,
     ClinicMember,
     ClinicMemberRole,
     ClinicWeeklyHours,
     CreateClinicAvailabilityClosureInput,
     CreateClinicAvailabilityWindowInput,
     DeleteResult,
+    SaveClinicBookingFormInput,
     SetClinicWeeklyHoursInput,
     UpdateBookingSettingsInput
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
+import { BOOKING_FORM_FIELD_SELECTION } from '~/utils/booking/formQuery'
 
 /**
  * Staff booking reads and writes. The API limits every call to the clinics the
@@ -74,6 +77,9 @@ const BOOKING_DETAIL_FIELDS = `
     purgedAt
     byteSize
   }
+  fields {
+    ${BOOKING_FORM_FIELD_SELECTION}
+  }
 `
 
 const APPOINTMENT_FIELDS = `
@@ -103,6 +109,17 @@ const MEMBER_FIELDS = `
   role
   claimed
   createdDate
+`
+
+const CLINIC_FORM_FIELDS = `
+  id
+  facilityId
+  name
+  version
+  updatedDate
+  fields {
+    ${BOOKING_FORM_FIELD_SELECTION}
+  }
 `
 
 const SETTINGS_FIELDS = `
@@ -293,6 +310,17 @@ const clinicAdminQuery = gql`
       id
       version
       labelKey
+    }
+    clinicBookingForms(facilityId: $facilityId) {
+      ${CLINIC_FORM_FIELDS}
+    }
+  }
+`
+
+const saveClinicFormMutation = gql`
+  mutation SaveClinicBookingForm($input: SaveClinicBookingFormInput!) {
+    saveClinicBookingForm(input: $input) {
+      ${CLINIC_FORM_FIELDS}
     }
   }
 `
@@ -492,11 +520,13 @@ export async function fetchClinicAdmin(facilityId: string): Promise<{
     settings: BookingSettings | null
     members: ClinicMember[]
     formTypes: BookingFormType[]
+    clinicForms: ClinicBookingForm[]
 } | null> {
     const data = await request<{
         bookingSettings: BookingSettings | null
         clinicMembers: ClinicMember[]
         bookingFormTypes: BookingFormType[]
+        clinicBookingForms: ClinicBookingForm[]
     }>(clinicAdminQuery, { facilityId }, READ)
     if (data === null) {
         return null
@@ -504,8 +534,15 @@ export async function fetchClinicAdmin(facilityId: string): Promise<{
     return {
         settings: data.bookingSettings ?? null,
         members: data.clinicMembers ?? [],
-        formTypes: data.bookingFormTypes ?? []
+        formTypes: data.bookingFormTypes ?? [],
+        clinicForms: data.clinicBookingForms ?? []
     }
+}
+
+/** Creates a clinic form, or saves a new version of one. Null when the API refused it. */
+export async function saveClinicBookingForm(input: SaveClinicBookingFormInput): Promise<ClinicBookingForm | null> {
+    const data = await request<{ saveClinicBookingForm: ClinicBookingForm }>(saveClinicFormMutation, { input }, WRITE)
+    return data?.saveClinicBookingForm ?? null
 }
 
 export async function inviteClinicMember(

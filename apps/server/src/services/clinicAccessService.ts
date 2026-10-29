@@ -16,7 +16,7 @@ import {
     type BookingAccess,
     type MembershipRole
 } from '../booking/access.js'
-import { formSourceById, listFormSources } from '../booking/formDefinitions.js'
+import { clinicFormIdsFor, isFindadocFormId, listFormSources } from '../booking/formDefinitions.js'
 import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedule.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
@@ -238,8 +238,10 @@ export async function updateBookingSettings(
         return invalid('defaultDuration')
     }
     const defaultDuration = resolveDefaultDuration(durations, chosenDefault) ?? durations[0]!
+    // A Find a Doc form, or a form this clinic wrote. Another clinic's form is refused.
     const formIds = [...new Set(input.formDefinitionIds)]
-    if (formIds.length === 0 || !formIds.every(id => formSourceById(id) !== undefined)) {
+    const ownFormIds = await clinicFormIdsFor(input.facilityId, formIds)
+    if (formIds.length === 0 || !formIds.every(id => isFindadocFormId(id) || ownFormIds.has(id))) {
         return invalid('formDefinitionIds')
     }
 

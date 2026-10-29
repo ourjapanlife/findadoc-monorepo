@@ -231,6 +231,28 @@ export interface BookingSettingsTable {
     updated_date: Generated<string>
 }
 
+/** A clinic-authored intake form (#166). The questions are in booking_form_versions. */
+export interface BookingFormDefinitionsTable {
+    /** 'clinic-' plus a uuid. */
+    id: string
+    facility_id: string
+    name: string
+    current_version: Generated<number>
+    created_by: string | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** One saved set of a clinic form's questions. Never changed after insert. */
+export interface BookingFormVersionsTable {
+    form_definition_id: string
+    version: number
+    /** The clinic's own questions (StoredClinicField[]). */
+    fields: unknown
+    created_by: string | null
+    created_date: Generated<string>
+}
+
 /** Patient booking intake. answers is the scalar map; files are booking_uploads rows. */
 export interface BookingSubmissionsTable {
     id: Generated<string>
@@ -352,6 +374,8 @@ export interface Database {
     clinic_site_doctors: ClinicSiteDoctorsTable
     clinic_site_locales: ClinicSiteLocalesTable
     booking_settings: BookingSettingsTable
+    booking_form_definitions: BookingFormDefinitionsTable
+    booking_form_versions: BookingFormVersionsTable
     booking_submissions: BookingSubmissionsTable
     booking_uploads: BookingUploadsTable
     clinic_availability_windows: ClinicAvailabilityWindowsTable

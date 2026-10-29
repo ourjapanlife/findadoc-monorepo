@@ -292,9 +292,11 @@ import {
     BookingFieldSensitivity,
     BookingSubmissionStatus,
     BookingUploadDisposition,
+    type BookingFormField,
     type BookingSubmissionDetail as Detail,
     type BookingUploadView
 } from '@findadoc/graphql'
+import { clinicLabel, isClinicWritten } from '~/utils/booking/clinicLabels'
 import { formatToReadableDate } from '~/utils/dateUtils'
 import { languageName } from '~/utils/languageName'
 import { practitionerName } from '~/utils/booking/practitioners'
@@ -338,7 +340,16 @@ const doctor = computed(() => practitionerName(detail.value?.practitionerNames, 
 const patientName = computed(() =>
     detail.value?.answers.find(answer => answer.fieldId === 'fullName')?.value ?? '')
 
+/** The question from the form version the patient answered, so an edited clinic form still reads. */
+function answeredField(fieldId: string): BookingFormField | undefined {
+    return detail.value?.fields.find(field => field.id === fieldId)
+}
+
 function answerLabel(fieldId: string): string {
+    const field = answeredField(fieldId)
+    if (field !== undefined && isClinicWritten(field.labels)) {
+        return clinicLabel(field.labels, String(locale.value))
+    }
     const key = `bookingPage.fields.${fieldId}`
     return te(key) ? t(key) : fieldId
 }
@@ -368,6 +379,10 @@ async function loadPreviews(): Promise<void> {
 function answerValue(fieldId: string, value: string | null | undefined): string {
     if (value === null || value === undefined || value === '') {
         return '—'
+    }
+    const option = answeredField(fieldId)?.options?.find(item => item.value === value)
+    if (option !== undefined && isClinicWritten(option.labels)) {
+        return clinicLabel(option.labels, String(locale.value))
     }
     const optionKey = `bookingPage.options.${fieldId}.${value}`
     return te(optionKey) ? t(optionKey) : value

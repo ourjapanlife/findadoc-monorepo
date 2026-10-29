@@ -47,6 +47,25 @@ export function bookingConfirmationsComplete(confirmations: BookingConfirmations
     return confirmations.confirmedInJapan && confirmations.healthDataConsent
 }
 
+/** One BookingFormField: the Book page, the staff detail, and the clinic form editor. */
+export const BOOKING_FORM_FIELD_SELECTION = `
+  id
+  type
+  stepKey
+  required
+  labelKey
+  label
+  labels { locale text }
+  placeholderKey
+  accept
+  maxLength
+  maxBytes
+  min
+  max
+  sensitivity
+  options { value labelKey label labels { locale text } }
+`
+
 const BOOKING_FORM_FIELDS = `
   id
   version
@@ -58,20 +77,7 @@ const BOOKING_FORM_FIELDS = `
   allowedDurations
   defaultDuration
   fields {
-    id
-    type
-    stepKey
-    required
-    labelKey
-    label
-    placeholderKey
-    accept
-    maxLength
-    maxBytes
-    min
-    max
-    sensitivity
-    options { value labelKey label }
+    ${BOOKING_FORM_FIELD_SELECTION}
   }
   practitioners {
     id

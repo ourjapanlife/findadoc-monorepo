@@ -887,7 +887,8 @@
       "email": "Email",
       "website": "Website",
       "clinicLink": "Bumalik sa {clinic}"
-    }
+    },
+    "clinicQuestionsInEnglish": "Ang ilan sa mga tanong ng klinika ay nasa Ingles lamang."
   },
   "bookingDashboard": {
     "detailHeading": "Pagpapareserba",
@@ -1038,6 +1039,46 @@
       "invalid": "Nagsasapawan ang dalawang block sa iisang araw. Baguhin ang isa sa mga ito.",
       "save": "I-save ang lingguhang oras",
       "doctorHelp": "Sariling linggo ng doktor na ito. Kapag na-save, hiwalay nang bino-book ang doktor sa oras ng klinika at sa ibang doktor. Nalalapat pa rin ang pagsasara ng buong klinika."
+    },
+    "forms": {
+      "newForm": "Gumawa ng bagong form",
+      "newHeading": "Bagong intake form",
+      "editHeading": "I-edit ang intake form",
+      "fixedFields": "Nagsisimula ang bawat form sa email, telepono, at buong pangalan ng pasyente. Idagdag ang sarili ninyong mga tanong pagkatapos nito. Ang pag-save ng binagong mga tanong ay gagawa ng bagong bersyon; mananatili sa mga naipadalang kahilingan ang mga tanong noong ipinadala ang mga ito.",
+      "name": "Pangalan ng form",
+      "yourForm": "Inyong form · bersyon {n}",
+      "edit": "I-edit ang mga tanong",
+      "question": "Tanong {n}",
+      "questionText": "Tanong",
+      "type": "Uri ng sagot",
+      "step": "Hakbang",
+      "sensitivity": "Paano ito itinatago",
+      "identityHelp": "Awtomatikong binubura pagkalipas ng maikling panahon ang mga file ng ID at insurance.",
+      "min": "Pinakamababa",
+      "max": "Pinakamataas",
+      "choices": "Mga pagpipilian",
+      "choice": "Pagpipilian {n}",
+      "addChoice": "Magdagdag ng pagpipilian",
+      "removeChoice": "Alisin ang pagpipilian",
+      "required": "Kailangan",
+      "moveUp": "Itaas",
+      "moveDown": "Ibaba",
+      "removeQuestion": "Alisin",
+      "addQuestion": "Magdagdag ng tanong",
+      "translations": "Ibang mga wika",
+      "shownInEnglish": "Ipinapakita sa Ingles para sa: {languages}",
+      "incomplete": "Pangalanan ang form, isulat sa Ingles ang bawat tanong at pagpipilian, at bigyan ng hindi bababa sa dalawang pagpipilian ang bawat tanong na may pagpipilian.",
+      "saveFailed": "Hindi ma-save ang form. Subukang muli.",
+      "saved": "Na-save ang form.",
+      "save": "I-save ang form",
+      "cancel": "Kanselahin",
+      "types": {
+        "text": "Maikling teksto",
+        "textarea": "Mahabang teksto",
+        "select": "Pagpipilian",
+        "number": "Numero",
+        "file": "Pag-upload ng file"
+      }
     }
   },
   "patientBooking": {

@@ -94,6 +94,14 @@
                         @update:duration-minutes="durationMinutes = $event"
                     />
 
+                    <p
+                        v-if="clinicQuestionsInEnglish"
+                        class="rounded-lg bg-accent-bg px-4 py-3 text-sm text-primary-text-muted"
+                        data-testid="clinic-booking-english-note"
+                    >
+                        {{ t('bookingPage.clinicQuestionsInEnglish') }}
+                    </p>
+
                     <div
                         v-for="field in visibleFields"
                         :key="field.id"
@@ -210,7 +218,7 @@
                                 :key="option.value"
                                 :value="option.value"
                             >
-                                {{ option.label || t(option.labelKey) }}
+                                {{ optionLabel(option) }}
                             </option>
                         </select>
 
@@ -302,6 +310,7 @@ import {
     BookingFormFieldType,
     type BookingForm,
     type BookingFormField,
+    type BookingFormFieldOption,
     type Locale
 } from '@findadoc/graphql'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
@@ -327,6 +336,7 @@ import {
     takeBookingDraft
 } from '~/utils/booking/draftMemory'
 import { localizedPath } from '~/utils/localePath'
+import { clinicLabel, hasClinicLabel, isClinicWritten } from '~/utils/booking/clinicLabels'
 import { resolveDuration } from '~/utils/booking/durations'
 import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
@@ -390,6 +400,11 @@ const formSteps = computed(() => {
 const currentStepKey = computed(() => formSteps.value[stepIndex.value]?.key ?? '')
 const visibleFields = computed(() =>
     props.form.fields.filter(field => field.stepKey === currentStepKey.value))
+// A clinic question without a label in this language shows English, and says so (#166).
+const clinicQuestionsInEnglish = computed(() => visibleFields.value.some(field =>
+    (isClinicWritten(field.labels) && !hasClinicLabel(field.labels, String(locale.value)))
+    || (field.options ?? []).some(option =>
+        isClinicWritten(option.labels) && !hasClinicLabel(option.labels, String(locale.value)))))
 const isLastStep = computed(() => stepIndex.value >= formSteps.value.length - 1)
 const showSlot = computed(() => {
     if (formSteps.value.some(step => step.key === 'visit')) {
@@ -571,6 +586,9 @@ onBeforeUnmount(() => {
 })
 
 function fieldLabel(field: BookingFormField): string {
+    if (isClinicWritten(field.labels)) {
+        return clinicLabel(field.labels, String(locale.value))
+    }
     if (field.label) {
         return field.label
     }
@@ -581,6 +599,13 @@ function fieldLabel(field: BookingFormField): string {
         return t(insuranceKey)
     }
     return te(field.labelKey) ? t(field.labelKey) : field.id
+}
+
+function optionLabel(option: BookingFormFieldOption): string {
+    if (isClinicWritten(option.labels)) {
+        return clinicLabel(option.labels, String(locale.value))
+    }
+    return option.label || t(option.labelKey)
 }
 
 function filePrompt(field: BookingFormField): string {

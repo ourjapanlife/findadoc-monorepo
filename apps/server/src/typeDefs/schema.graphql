@@ -1184,16 +1184,33 @@ enum BookingFieldSensitivity {
   MEDICAL
 }
 
+"""A clinic-written label in one site locale, such as en-US."""
+type BookingLocalizedText {
+  locale: String!
+  text: String!
+}
+
+input BookingLocalizedTextInput {
+  """A site locale, such as en-US or ja-JP."""
+  locale: String!
+  text: String!
+}
+
 """One choice on a SELECT booking field."""
 type BookingFormFieldOption {
   value: String!
   labelKey: String!
+  """The clinic's English label. Null on a Find a Doc form."""
   label: String
+  """The clinic's label in each locale it wrote. Empty on a Find a Doc form."""
+  labels: [BookingLocalizedText!]!
 }
 
 """
 One input on a clinic booking form.
-labelKey is the site i18n key when label is null. A CRM may set label per locale.
+A Find a Doc field has a site i18n labelKey and no label. A clinic-written field
+has an empty labelKey, its English label in label, and every locale it wrote in
+labels. A locale missing from labels shows the English label.
 """
 type BookingFormField {
   id: ID!
@@ -1201,6 +1218,7 @@ type BookingFormField {
   required: Boolean!
   labelKey: String!
   label: String
+  labels: [BookingLocalizedText!]!
   placeholderKey: String
   accept: String
   maxLength: Int
@@ -1215,7 +1233,7 @@ type BookingFormField {
 
 """
 The intake form for one clinic.
-Find a Doc owns the fields. The clinic owns allowed visit lengths.
+A Find a Doc form or one the clinic wrote. The clinic owns allowed visit lengths.
 clinicId in the URL is facilityId when the directory listing exists.
 """
 type BookingForm {
@@ -1317,6 +1335,66 @@ type BookingFormType {
   version: Int!
   """Site i18n key for the form name."""
   labelKey: String!
+}
+
+"""
+An intake form one clinic wrote (#166). Its id starts with clinic-.
+Every save that changes the questions is a new version; requests keep the version they used.
+"""
+type ClinicBookingForm {
+  id: ID!
+  facilityId: ID!
+  name: String!
+  version: Int!
+  """
+  The clinic's own questions. Every clinic form also asks Find a Doc's email,
+  phone, and full name first; those are not listed here.
+  """
+  fields: [BookingFormField!]!
+  updatedDate: String!
+}
+
+"""One choice on a clinic-written SELECT question."""
+input ClinicBookingFormOptionInput {
+  """Lowercase letters, digits, and hyphens. Unique on the question."""
+  value: String!
+  """English (en-US) is required. Other site locales are optional."""
+  labels: [BookingLocalizedTextInput!]!
+}
+
+"""One clinic-written question."""
+input ClinicBookingFormFieldInput {
+  """
+  Lowercase letters, digits, and hyphens, starting with a letter. Keep the id
+  when editing a question so earlier answers stay under it. email, phone, and
+  fullName are Find a Doc's and may not be used.
+  """
+  id: String!
+  """contact, visit, or documents."""
+  stepKey: String!
+  type: BookingFormFieldType!
+  required: Boolean!
+  """Omit for STANDARD, or IDENTITY_DOCUMENT on a FILE question."""
+  sensitivity: BookingFieldSensitivity
+  """English (en-US) is required. Other site locales are optional and show English when missing."""
+  labels: [BookingLocalizedTextInput!]!
+  """TEXT and TEXTAREA only."""
+  maxLength: Int
+  """NUMBER only."""
+  min: Float
+  """NUMBER only."""
+  max: Float
+  """SELECT only. Two or more."""
+  options: [ClinicBookingFormOptionInput!]
+}
+
+input SaveClinicBookingFormInput {
+  facilityId: ID!
+  """An existing clinic form id. Omit to create a form."""
+  id: ID
+  name: String!
+  """One to 30 questions."""
+  fields: [ClinicBookingFormFieldInput!]!
 }
 
 """One appointment on the clinic calendar."""
@@ -1425,6 +1503,8 @@ type BookingSubmissionDetail {
   updatedDate: String!
   answers: [BookingAnswerView!]!
   uploads: [BookingUploadView!]!
+  """The questions of the form version the patient answered, for labels."""
+  fields: [BookingFormField!]!
 }
 
 type BookingAnswerView {
@@ -1584,7 +1664,7 @@ input UpdateBookingSettingsInput {
   allowedDurations: [Int!]!
   """One of allowedDurations. Omit for 30 minutes when offered, else the shortest."""
   defaultDuration: Int
-  """Known form ids. The first is the default."""
+  """Find a Doc form ids or this clinic's own form ids. The first is the default."""
   formDefinitionIds: [String!]!
 }
 
@@ -1675,6 +1755,9 @@ type Query {
 
   """Booking options for one clinic. Members and moderators."""
   bookingSettings(facilityId: ID!): BookingSettings
+
+  """Intake forms one clinic wrote, at their current version. Members and moderators."""
+  clinicBookingForms(facilityId: ID!): [ClinicBookingForm!]!
 
   """The patient's own booking, found by the private token from the email link."""
   patientBooking(token: String!): PatientBookingView
@@ -1978,4 +2061,10 @@ type Mutation {
 
   """Change visit lengths and offered forms. Owners and moderators."""
   updateBookingSettings(input: UpdateBookingSettingsInput!): BookingSettings!
+
+  """
+  Create a clinic intake form, or save a new version of one. A save that keeps
+  the same questions and only renames the form keeps the version. Owners and moderators.
+  """
+  saveClinicBookingForm(input: SaveClinicBookingFormInput!): ClinicBookingForm!
 }

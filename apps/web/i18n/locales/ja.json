@@ -887,7 +887,8 @@
       "email": "メール",
       "website": "ウェブサイト",
       "clinicLink": "{clinic}のページに戻る"
-    }
+    },
+    "clinicQuestionsInEnglish": "クリニックの質問の一部は英語のみです。"
   },
   "bookingDashboard": {
     "detailHeading": "予約",
@@ -1038,6 +1039,46 @@
       "invalid": "同じ日の時間帯が重なっています。どちらかを変更してください。",
       "save": "週の診療時間を保存",
       "doctorHelp": "この医師専用の1週間です。保存すると、この医師はクリニックの時間や他の医師とは別に予約を受けます。クリニック全体の休診は引き続き適用されます。"
+    },
+    "forms": {
+      "newForm": "新しいフォームを作成",
+      "newHeading": "新しい問診フォーム",
+      "editHeading": "問診フォームを編集",
+      "fixedFields": "どのフォームも、患者のメールアドレス、電話番号、氏名から始まります。その後に独自の質問を追加してください。質問を変更して保存すると新しい版になり、送信済みの予約リクエストは送信時の質問のまま残ります。",
+      "name": "フォーム名",
+      "yourForm": "独自フォーム・第{n}版",
+      "edit": "質問を編集",
+      "question": "質問 {n}",
+      "questionText": "質問",
+      "type": "回答の種類",
+      "step": "ステップ",
+      "sensitivity": "保管方法",
+      "identityHelp": "本人確認書類や保険証のファイルは、短期間で自動的に削除されます。",
+      "min": "最小値",
+      "max": "最大値",
+      "choices": "選択肢",
+      "choice": "選択肢 {n}",
+      "addChoice": "選択肢を追加",
+      "removeChoice": "選択肢を削除",
+      "required": "必須",
+      "moveUp": "上へ移動",
+      "moveDown": "下へ移動",
+      "removeQuestion": "削除",
+      "addQuestion": "質問を追加",
+      "translations": "ほかの言語",
+      "shownInEnglish": "英語で表示される言語：{languages}",
+      "incomplete": "フォーム名を入力し、すべての質問と選択肢を英語で書き、選択式の質問には選択肢を2つ以上用意してください。",
+      "saveFailed": "フォームを保存できませんでした。もう一度お試しください。",
+      "saved": "フォームを保存しました。",
+      "save": "フォームを保存",
+      "cancel": "キャンセル",
+      "types": {
+        "text": "短い文章",
+        "textarea": "長い文章",
+        "select": "選択式",
+        "number": "数値",
+        "file": "ファイルのアップロード"
+      }
     }
   },
   "patientBooking": {

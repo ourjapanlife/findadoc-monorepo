@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Locale, type BookingPractitioner } from '@findadoc/graphql'
 import { clinicLanguages, parseRequestedLanguages, scheduleLanes } from '../src/booking/practitioners.js'
-import { DEFAULT_BOOKING_FORM_ID, staffAnswers } from '../src/booking/formDefinitions.js'
+import { DEFAULT_FORM_SOURCE, staffAnswers } from '../src/booking/formDefinitions.js'
 import { contentDisposition } from '../src/storage/objectStorage.js'
 import {
     availableStarts,
@@ -226,7 +226,7 @@ describe('schedule lanes', () => {
 
 describe('staff view of a request', () => {
     it('lists the full name first, then the form order, without file answers', () => {
-        const answers = staffAnswers(DEFAULT_BOOKING_FORM_ID, {
+        const answers = staffAnswers(DEFAULT_FORM_SOURCE.fields, {
             reason: 'Checkup',
             email: 'a@example.com',
             insuranceDocument: 'upload-1',

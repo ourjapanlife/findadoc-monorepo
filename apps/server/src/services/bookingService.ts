@@ -11,8 +11,11 @@ import { sql } from 'kysely'
 import {
     assembleBookingForm,
     chooseFormDefinitionId,
+    DEFAULT_BOOKING_FORM_ID,
+    DEFAULT_FORM_SOURCE,
     type AssembledBookingForm,
     fieldById,
+    formSourceById,
     isOfferedFormId,
     storedSensitivity
 } from '../booking/formDefinitions.js'
@@ -61,9 +64,14 @@ const ALLOWED_UPLOAD_TYPES = new Set([
     'application/pdf'
 ])
 
-function bookingFormForTarget(target: BookingTarget, formDefinitionId?: string | null): AssembledBookingForm {
+/** The form at its current version. A clinic form deleted since the settings were read shows the default. */
+async function bookingFormForTarget(
+    target: BookingTarget,
+    formDefinitionId?: string | null
+): Promise<AssembledBookingForm> {
+    const source = await formSourceById(formDefinitionId ?? target.formDefinitionIds[0] ?? DEFAULT_BOOKING_FORM_ID)
     return assembleBookingForm({
-        formDefinitionId: formDefinitionId ?? target.formDefinitionIds[0],
+        source: source ?? DEFAULT_FORM_SOURCE,
         facilityId: target.facilityId,
         clinicSiteId: target.clinicSiteId,
         clinicSiteSlug: target.clinicSiteSlug,
@@ -87,7 +95,7 @@ export async function getBookingForm(
         facilityLanguagesFor(target.facilityId)
     ])
     return {
-        ...bookingFormForTarget(target, chooseFormDefinitionId(target.formDefinitionIds, formId)),
+        ...await bookingFormForTarget(target, chooseFormDefinitionId(target.formDefinitionIds, formId)),
         practitioners,
         languages: clinicLanguages(practitioners, facilityLanguages)
     }
@@ -137,7 +145,7 @@ export async function createBookingUploadUrl(
     if (!isOfferedFormId(target.formDefinitionIds, formId)) {
         return validationError('formDefinitionId')
     }
-    const form = bookingFormForTarget(target, formId)
+    const form = await bookingFormForTarget(target, formId)
     const field = fieldById(form, input.fieldId)
     if (field === undefined || field.type !== BookingFormFieldType.File) {
         return validationError('fieldId')
@@ -427,7 +435,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
     if (!isOfferedFormId(target.formDefinitionIds, input.formDefinitionId)) {
         return validationError('formVersion')
     }
-    const form = bookingFormForTarget(target, input.formDefinitionId)
+    const form = await bookingFormForTarget(target, input.formDefinitionId)
 
     if (input.formVersion !== form.version) {
         return validationError('formVersion')

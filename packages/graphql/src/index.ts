@@ -118,7 +118,7 @@ export enum BookingFieldSensitivity {
 
 /**
  * The intake form for one clinic.
- * Find a Doc owns the fields. The clinic owns allowed visit lengths.
+ * A Find a Doc form or one the clinic wrote. The clinic owns allowed visit lengths.
  * clinicId in the URL is facilityId when the directory listing exists.
  */
 export type BookingForm = {
@@ -145,7 +145,9 @@ export type BookingForm = {
 
 /**
  * One input on a clinic booking form.
- * labelKey is the site i18n key when label is null. A CRM may set label per locale.
+ * A Find a Doc field has a site i18n labelKey and no label. A clinic-written field
+ * has an empty labelKey, its English label in label, and every locale it wrote in
+ * labels. A locale missing from labels shows the English label.
  */
 export type BookingFormField = {
   __typename?: 'BookingFormField';
@@ -153,6 +155,7 @@ export type BookingFormField = {
   id: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
   labelKey: Scalars['String']['output'];
+  labels: Array<BookingLocalizedText>;
   max?: Maybe<Scalars['Float']['output']>;
   maxBytes?: Maybe<Scalars['Int']['output']>;
   maxLength?: Maybe<Scalars['Int']['output']>;
@@ -169,8 +172,11 @@ export type BookingFormField = {
 /** One choice on a SELECT booking field. */
 export type BookingFormFieldOption = {
   __typename?: 'BookingFormFieldOption';
+  /** The clinic's English label. Null on a Find a Doc form. */
   label?: Maybe<Scalars['String']['output']>;
   labelKey: Scalars['String']['output'];
+  /** The clinic's label in each locale it wrote. Empty on a Find a Doc form. */
+  labels: Array<BookingLocalizedText>;
   value: Scalars['String']['output'];
 };
 
@@ -195,6 +201,19 @@ export type BookingFormType = {
   /** Site i18n key for the form name. */
   labelKey: Scalars['String']['output'];
   version: Scalars['Int']['output'];
+};
+
+/** A clinic-written label in one site locale, such as en-US. */
+export type BookingLocalizedText = {
+  __typename?: 'BookingLocalizedText';
+  locale: Scalars['String']['output'];
+  text: Scalars['String']['output'];
+};
+
+export type BookingLocalizedTextInput = {
+  /** A site locale, such as en-US or ja-JP. */
+  locale: Scalars['String']['input'];
+  text: Scalars['String']['input'];
 };
 
 /** A doctor at a booking clinic. */
@@ -236,6 +255,8 @@ export type BookingSubmissionDetail = {
   createdDate: Scalars['String']['output'];
   endsAt?: Maybe<Scalars['String']['output']>;
   facilityId?: Maybe<Scalars['ID']['output']>;
+  /** The questions of the form version the patient answered, for labels. */
+  fields: Array<BookingFormField>;
   formDefinitionId: Scalars['String']['output'];
   formVersion: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
@@ -409,6 +430,58 @@ export type ClinicAvailabilityWindow = {
   /** Null is the clinic's own schedule. */
   practitionerId?: Maybe<Scalars['ID']['output']>;
   startsAt: Scalars['String']['output'];
+};
+
+/**
+ * An intake form one clinic wrote (#166). Its id starts with clinic-.
+ * Every save that changes the questions is a new version; requests keep the version they used.
+ */
+export type ClinicBookingForm = {
+  __typename?: 'ClinicBookingForm';
+  facilityId: Scalars['ID']['output'];
+  /**
+   * The clinic's own questions. Every clinic form also asks Find a Doc's email,
+   * phone, and full name first; those are not listed here.
+   */
+  fields: Array<BookingFormField>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  updatedDate: Scalars['String']['output'];
+  version: Scalars['Int']['output'];
+};
+
+/** One clinic-written question. */
+export type ClinicBookingFormFieldInput = {
+  /**
+   * Lowercase letters, digits, and hyphens, starting with a letter. Keep the id
+   * when editing a question so earlier answers stay under it. email, phone, and
+   * fullName are Find a Doc's and may not be used.
+   */
+  id: Scalars['String']['input'];
+  /** English (en-US) is required. Other site locales are optional and show English when missing. */
+  labels: Array<BookingLocalizedTextInput>;
+  /** NUMBER only. */
+  max?: InputMaybe<Scalars['Float']['input']>;
+  /** TEXT and TEXTAREA only. */
+  maxLength?: InputMaybe<Scalars['Int']['input']>;
+  /** NUMBER only. */
+  min?: InputMaybe<Scalars['Float']['input']>;
+  /** SELECT only. Two or more. */
+  options?: InputMaybe<Array<ClinicBookingFormOptionInput>>;
+  required: Scalars['Boolean']['input'];
+  /** Omit for STANDARD, or IDENTITY_DOCUMENT on a FILE question. */
+  sensitivity?: InputMaybe<BookingFieldSensitivity>;
+  /** contact, visit, or documents. */
+  stepKey: Scalars['String']['input'];
+  type: BookingFormFieldType;
+};
+
+/** One choice on a clinic-written SELECT question. */
+export type ClinicBookingFormOptionInput = {
+  /** English (en-US) is required. Other site locales are optional. */
+  labels: Array<BookingLocalizedTextInput>;
+  /** Lowercase letters, digits, and hyphens. Unique on the question. */
+  value: Scalars['String']['input'];
 };
 
 /** A person invited to, or signed in to, one clinic's booking dashboard. */
@@ -1311,6 +1384,11 @@ export type Mutation = {
   recordCityPlaceId: City;
   /** Remove a clinic member. Moderators remove anyone; an owner removes staff. */
   removeClinicMember: DeleteResult;
+  /**
+   * Create a clinic intake form, or save a new version of one. A save that keeps
+   * the same questions and only renames the form keeps the version. Owners and moderators.
+   */
+  saveClinicBookingForm: ClinicBookingForm;
   /** Replace the clinic's usual week. Members and moderators. */
   setClinicWeeklyHours: Array<ClinicWeeklyHours>;
   /**
@@ -1430,6 +1508,11 @@ export type MutationRecordCityPlaceIdArgs = {
 
 export type MutationRemoveClinicMemberArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationSaveClinicBookingFormArgs = {
+  input: SaveClinicBookingFormInput;
 };
 
 
@@ -1651,6 +1734,8 @@ export type Query = {
   clinicAvailabilityClosures: Array<ClinicAvailabilityClosure>;
   /** Staff availability windows for the calendar editor. */
   clinicAvailabilityWindows: Array<ClinicAvailabilityWindow>;
+  /** Intake forms one clinic wrote, at their current version. Members and moderators. */
+  clinicBookingForms: Array<ClinicBookingForm>;
   /** Invited and signed-in members of one clinic. Owners and moderators only. */
   clinicMembers: Array<ClinicMember>;
   /** Doctors at one clinic, for the schedule picker. Members and moderators. */
@@ -1797,6 +1882,11 @@ export type QueryClinicAvailabilityWindowsArgs = {
   clinicSiteId: Scalars['ID']['input'];
   from: Scalars['String']['input'];
   to: Scalars['String']['input'];
+};
+
+
+export type QueryClinicBookingFormsArgs = {
+  facilityId: Scalars['ID']['input'];
 };
 
 
@@ -1953,6 +2043,15 @@ export enum ReservationStatus {
   /** The reservation has been fulfilled. */
   Completed = 'COMPLETED'
 }
+
+export type SaveClinicBookingFormInput = {
+  facilityId: Scalars['ID']['input'];
+  /** One to 30 questions. */
+  fields: Array<ClinicBookingFormFieldInput>;
+  /** An existing clinic form id. Omit to create a form. */
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+};
 
 /** The schema version used for audit log serialization. */
 export enum SchemaVersion {
@@ -2169,7 +2268,7 @@ export type UpdateBookingSettingsInput = {
   /** One of allowedDurations. Omit for 30 minutes when offered, else the shortest. */
   defaultDuration?: InputMaybe<Scalars['Int']['input']>;
   facilityId: Scalars['ID']['input'];
-  /** Known form ids. The first is the default. */
+  /** Find a Doc form ids or this clinic's own form ids. The first is the default. */
   formDefinitionIds: Array<Scalars['String']['input']>;
 };
 
@@ -2366,6 +2465,8 @@ export type ResolversTypes = {
   BookingFormFieldOption: ResolverTypeWrapper<BookingFormFieldOption>;
   BookingFormFieldType: BookingFormFieldType;
   BookingFormType: ResolverTypeWrapper<BookingFormType>;
+  BookingLocalizedText: ResolverTypeWrapper<BookingLocalizedText>;
+  BookingLocalizedTextInput: BookingLocalizedTextInput;
   BookingPractitioner: ResolverTypeWrapper<BookingPractitioner>;
   BookingSettings: ResolverTypeWrapper<BookingSettings>;
   BookingSubmissionDetail: ResolverTypeWrapper<BookingSubmissionDetail>;
@@ -2384,6 +2485,9 @@ export type ResolversTypes = {
   CitySuggestion: ResolverTypeWrapper<CitySuggestion>;
   ClinicAvailabilityClosure: ResolverTypeWrapper<ClinicAvailabilityClosure>;
   ClinicAvailabilityWindow: ResolverTypeWrapper<ClinicAvailabilityWindow>;
+  ClinicBookingForm: ResolverTypeWrapper<ClinicBookingForm>;
+  ClinicBookingFormFieldInput: ClinicBookingFormFieldInput;
+  ClinicBookingFormOptionInput: ClinicBookingFormOptionInput;
   ClinicMember: ResolverTypeWrapper<ClinicMember>;
   ClinicMemberRole: ClinicMemberRole;
   ClinicMembership: ResolverTypeWrapper<ClinicMembership>;
@@ -2451,6 +2555,7 @@ export type ResolversTypes = {
   RelationshipAction: RelationshipAction;
   Reservation: ResolverTypeWrapper<Reservation>;
   ReservationStatus: ReservationStatus;
+  SaveClinicBookingFormInput: SaveClinicBookingFormInput;
   SchemaVersion: SchemaVersion;
   SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   Specialty: Specialty;
@@ -2480,6 +2585,8 @@ export type ResolversParentTypes = {
   BookingFormField: BookingFormField;
   BookingFormFieldOption: BookingFormFieldOption;
   BookingFormType: BookingFormType;
+  BookingLocalizedText: BookingLocalizedText;
+  BookingLocalizedTextInput: BookingLocalizedTextInput;
   BookingPractitioner: BookingPractitioner;
   BookingSettings: BookingSettings;
   BookingSubmissionDetail: BookingSubmissionDetail;
@@ -2496,6 +2603,9 @@ export type ResolversParentTypes = {
   CitySuggestion: CitySuggestion;
   ClinicAvailabilityClosure: ClinicAvailabilityClosure;
   ClinicAvailabilityWindow: ClinicAvailabilityWindow;
+  ClinicBookingForm: ClinicBookingForm;
+  ClinicBookingFormFieldInput: ClinicBookingFormFieldInput;
+  ClinicBookingFormOptionInput: ClinicBookingFormOptionInput;
   ClinicMember: ClinicMember;
   ClinicMembership: ClinicMembership;
   ClinicSite: ClinicSite;
@@ -2548,6 +2658,7 @@ export type ResolversParentTypes = {
   Query: Record<PropertyKey, never>;
   Relationship: Relationship;
   Reservation: Reservation;
+  SaveClinicBookingFormInput: SaveClinicBookingFormInput;
   SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   String: Scalars['String']['output'];
   Submission: Submission;
@@ -2619,6 +2730,7 @@ export type BookingFormFieldResolvers<ContextType = any, ParentType extends Reso
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   labelKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Array<ResolversTypes['BookingLocalizedText']>, ParentType, ContextType>;
   max?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   maxBytes?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   maxLength?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -2634,6 +2746,7 @@ export type BookingFormFieldResolvers<ContextType = any, ParentType extends Reso
 export type BookingFormFieldOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingFormFieldOption'] = ResolversParentTypes['BookingFormFieldOption']> = {
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   labelKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Array<ResolversTypes['BookingLocalizedText']>, ParentType, ContextType>;
   value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
@@ -2641,6 +2754,11 @@ export type BookingFormTypeResolvers<ContextType = any, ParentType extends Resol
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   labelKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type BookingLocalizedTextResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingLocalizedText'] = ResolversParentTypes['BookingLocalizedText']> = {
+  locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type BookingPractitionerResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingPractitioner'] = ResolversParentTypes['BookingPractitioner']> = {
@@ -2669,6 +2787,7 @@ export type BookingSubmissionDetailResolvers<ContextType = any, ParentType exten
   createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   endsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   facilityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  fields?: Resolver<Array<ResolversTypes['BookingFormField']>, ParentType, ContextType>;
   formDefinitionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   formVersion?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -2778,6 +2897,15 @@ export type ClinicAvailabilityWindowResolvers<ContextType = any, ParentType exte
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   practitionerId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   startsAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ClinicBookingFormResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicBookingForm'] = ResolversParentTypes['ClinicBookingForm']> = {
+  facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  fields?: Resolver<Array<ResolversTypes['BookingFormField']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
 
 export type ClinicMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicMember'] = ResolversParentTypes['ClinicMember']> = {
@@ -3050,6 +3178,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   inviteClinicMember?: Resolver<ResolversTypes['ClinicMember'], ParentType, ContextType, RequireFields<MutationInviteClinicMemberArgs, 'input'>>;
   recordCityPlaceId?: Resolver<ResolversTypes['City'], ParentType, ContextType, RequireFields<MutationRecordCityPlaceIdArgs, 'cityId' | 'placeId'>>;
   removeClinicMember?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationRemoveClinicMemberArgs, 'id'>>;
+  saveClinicBookingForm?: Resolver<ResolversTypes['ClinicBookingForm'], ParentType, ContextType, RequireFields<MutationSaveClinicBookingFormArgs, 'input'>>;
   setClinicWeeklyHours?: Resolver<Array<ResolversTypes['ClinicWeeklyHours']>, ParentType, ContextType, RequireFields<MutationSetClinicWeeklyHoursArgs, 'input'>>;
   submitBooking?: Resolver<ResolversTypes['BookingSubmissionResult'], ParentType, ContextType, RequireFields<MutationSubmitBookingArgs, 'input'>>;
   updateBookingAppointmentStatus?: Resolver<ResolversTypes['BookingAppointment'], ParentType, ContextType, RequireFields<MutationUpdateBookingAppointmentStatusArgs, 'input'>>;
@@ -3109,6 +3238,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   clinicAppointments?: Resolver<Array<ResolversTypes['BookingAppointment']>, ParentType, ContextType, RequireFields<QueryClinicAppointmentsArgs, 'clinicId' | 'from' | 'to'>>;
   clinicAvailabilityClosures?: Resolver<Array<ResolversTypes['ClinicAvailabilityClosure']>, ParentType, ContextType, RequireFields<QueryClinicAvailabilityClosuresArgs, 'clinicId' | 'from' | 'to'>>;
   clinicAvailabilityWindows?: Resolver<Array<ResolversTypes['ClinicAvailabilityWindow']>, ParentType, ContextType, RequireFields<QueryClinicAvailabilityWindowsArgs, 'clinicSiteId' | 'from' | 'to'>>;
+  clinicBookingForms?: Resolver<Array<ResolversTypes['ClinicBookingForm']>, ParentType, ContextType, RequireFields<QueryClinicBookingFormsArgs, 'facilityId'>>;
   clinicMembers?: Resolver<Array<ResolversTypes['ClinicMember']>, ParentType, ContextType, RequireFields<QueryClinicMembersArgs, 'facilityId'>>;
   clinicPractitioners?: Resolver<Array<ResolversTypes['BookingPractitioner']>, ParentType, ContextType, RequireFields<QueryClinicPractitionersArgs, 'clinicId'>>;
   clinicSite?: Resolver<Maybe<ResolversTypes['ClinicSite']>, ParentType, ContextType, RequireFields<QueryClinicSiteArgs, 'slug'>>;
@@ -3177,6 +3307,7 @@ export type Resolvers<ContextType = any> = {
   BookingFormField?: BookingFormFieldResolvers<ContextType>;
   BookingFormFieldOption?: BookingFormFieldOptionResolvers<ContextType>;
   BookingFormType?: BookingFormTypeResolvers<ContextType>;
+  BookingLocalizedText?: BookingLocalizedTextResolvers<ContextType>;
   BookingPractitioner?: BookingPractitionerResolvers<ContextType>;
   BookingSettings?: BookingSettingsResolvers<ContextType>;
   BookingSubmissionDetail?: BookingSubmissionDetailResolvers<ContextType>;
@@ -3190,6 +3321,7 @@ export type Resolvers<ContextType = any> = {
   CitySuggestion?: CitySuggestionResolvers<ContextType>;
   ClinicAvailabilityClosure?: ClinicAvailabilityClosureResolvers<ContextType>;
   ClinicAvailabilityWindow?: ClinicAvailabilityWindowResolvers<ContextType>;
+  ClinicBookingForm?: ClinicBookingFormResolvers<ContextType>;
   ClinicMember?: ClinicMemberResolvers<ContextType>;
   ClinicMembership?: ClinicMembershipResolvers<ContextType>;
   ClinicSite?: ClinicSiteResolvers<ContextType>;

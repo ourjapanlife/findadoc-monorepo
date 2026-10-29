@@ -1,6 +1,6 @@
 import { db } from '../kyselyClient.js'
 import { clinicThemeFromRow } from '../services/clinicSiteService.js'
-import { DEFAULT_BOOKING_FORM_ID, parseFormDefinitionIds } from './formDefinitions.js'
+import { DEFAULT_BOOKING_FORM_ID, clinicFormIdsFor, parseFormDefinitionIds } from './formDefinitions.js'
 import { DEFAULT_ALLOWED_DURATIONS, parseAllowedDurations, resolveDefaultDuration } from './schedule.js'
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
@@ -63,7 +63,10 @@ export async function settingsForFacility(facilityId: string | null): Promise<{
     return {
         allowedDurations,
         defaultDuration: defaultDurationFor(allowedDurations, row.default_duration),
-        formDefinitionIds: parseFormDefinitionIds(row.form_definition_ids),
+        formDefinitionIds: parseFormDefinitionIds(
+            row.form_definition_ids,
+            await clinicFormIdsFor(facilityId, row.form_definition_ids)
+        ),
         enabled: true
     }
 }

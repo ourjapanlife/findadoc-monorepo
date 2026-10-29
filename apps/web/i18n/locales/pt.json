@@ -887,7 +887,8 @@
       "email": "E-mail",
       "website": "Site",
       "clinicLink": "Voltar para {clinic}"
-    }
+    },
+    "clinicQuestionsInEnglish": "Algumas perguntas da clínica estão apenas em inglês."
   },
   "bookingDashboard": {
     "detailHeading": "Reserva",
@@ -1038,6 +1039,46 @@
       "invalid": "Dois blocos no mesmo dia se sobrepõem. Altere um deles.",
       "save": "Salvar horário semanal",
       "doctorHelp": "A semana própria deste médico. Depois de salva, o médico é agendado separadamente do horário da clínica e dos outros médicos. Os fechamentos da clínica toda continuam valendo."
+    },
+    "forms": {
+      "newForm": "Criar um novo formulário",
+      "newHeading": "Novo formulário de triagem",
+      "editHeading": "Editar formulário de triagem",
+      "fixedFields": "Todo formulário começa com o e-mail, o telefone e o nome completo do paciente. Adicione suas próprias perguntas depois deles. Salvar perguntas alteradas cria uma nova versão; os pedidos já enviados mantêm as perguntas com que foram enviados.",
+      "name": "Nome do formulário",
+      "yourForm": "Seu formulário · versão {n}",
+      "edit": "Editar perguntas",
+      "question": "Pergunta {n}",
+      "questionText": "Pergunta",
+      "type": "Tipo de resposta",
+      "step": "Etapa",
+      "sensitivity": "Como é guardado",
+      "identityHelp": "Arquivos de identidade e de seguro são apagados automaticamente após pouco tempo.",
+      "min": "Mínimo",
+      "max": "Máximo",
+      "choices": "Opções",
+      "choice": "Opção {n}",
+      "addChoice": "Adicionar opção",
+      "removeChoice": "Remover opção",
+      "required": "Obrigatório",
+      "moveUp": "Mover para cima",
+      "moveDown": "Mover para baixo",
+      "removeQuestion": "Remover",
+      "addQuestion": "Adicionar pergunta",
+      "translations": "Outros idiomas",
+      "shownInEnglish": "Exibido em inglês para: {languages}",
+      "incomplete": "Dê um nome ao formulário, escreva cada pergunta e opção em inglês e dê pelo menos duas opções a cada pergunta de escolha.",
+      "saveFailed": "Não foi possível salvar o formulário. Tente novamente.",
+      "saved": "Formulário salvo.",
+      "save": "Salvar formulário",
+      "cancel": "Cancelar",
+      "types": {
+        "text": "Texto curto",
+        "textarea": "Texto longo",
+        "select": "Escolha",
+        "number": "Número",
+        "file": "Envio de arquivo"
+      }
     }
   },
   "patientBooking": {

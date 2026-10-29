@@ -887,7 +887,8 @@
       "email": "E-mail",
       "website": "Sito web",
       "clinicLink": "Torna a {clinic}"
-    }
+    },
+    "clinicQuestionsInEnglish": "Alcune domande della clinica sono solo in inglese."
   },
   "bookingDashboard": {
     "detailHeading": "Prenotazione",
@@ -1038,6 +1039,46 @@
       "invalid": "Due fasce nello stesso giorno si sovrappongono. Modificane una.",
       "save": "Salva orario settimanale",
       "doctorHelp": "La settimana propria di questo medico. Una volta salvata, il medico viene prenotato separatamente dall'orario della clinica e dagli altri medici. Le chiusure dell'intera clinica valgono comunque."
+    },
+    "forms": {
+      "newForm": "Crea un nuovo modulo",
+      "newHeading": "Nuovo modulo di accettazione",
+      "editHeading": "Modifica il modulo di accettazione",
+      "fixedFields": "Ogni modulo inizia con email, telefono e nome completo del paziente. Aggiungi le tue domande dopo di essi. Salvare domande modificate crea una nuova versione; le richieste già inviate mantengono le domande con cui sono state inviate.",
+      "name": "Nome del modulo",
+      "yourForm": "Il tuo modulo · versione {n}",
+      "edit": "Modifica le domande",
+      "question": "Domanda {n}",
+      "questionText": "Domanda",
+      "type": "Tipo di risposta",
+      "step": "Passaggio",
+      "sensitivity": "Conservazione",
+      "identityHelp": "I file di identità e assicurazione vengono eliminati automaticamente dopo poco tempo.",
+      "min": "Minimo",
+      "max": "Massimo",
+      "choices": "Opzioni",
+      "choice": "Opzione {n}",
+      "addChoice": "Aggiungi opzione",
+      "removeChoice": "Rimuovi opzione",
+      "required": "Obbligatorio",
+      "moveUp": "Sposta su",
+      "moveDown": "Sposta giù",
+      "removeQuestion": "Rimuovi",
+      "addQuestion": "Aggiungi domanda",
+      "translations": "Altre lingue",
+      "shownInEnglish": "Mostrato in inglese per: {languages}",
+      "incomplete": "Dai un nome al modulo, scrivi ogni domanda e opzione in inglese e dai almeno due opzioni a ogni domanda a scelta.",
+      "saveFailed": "Impossibile salvare il modulo. Riprova.",
+      "saved": "Modulo salvato.",
+      "save": "Salva modulo",
+      "cancel": "Annulla",
+      "types": {
+        "text": "Testo breve",
+        "textarea": "Testo lungo",
+        "select": "Scelta",
+        "number": "Numero",
+        "file": "Caricamento file"
+      }
     }
   },
   "patientBooking": {

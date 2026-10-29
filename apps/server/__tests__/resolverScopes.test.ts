@@ -23,6 +23,7 @@ const membershipFields = new Set([
     'bookingClinic',
     'clinicMembers',
     'bookingSettings',
+    'clinicBookingForms',
     'clinicAppointments',
     'bookingSubmissions',
     'bookingSubmissionsTotalCount',
@@ -40,7 +41,8 @@ const membershipFields = new Set([
     'updateBookingAppointmentStatus',
     'inviteClinicMember',
     'removeClinicMember',
-    'updateBookingSettings'
+    'updateBookingSettings',
+    'saveClinicBookingForm'
 ])
 
 type AnyResolver = (parent: unknown, args: unknown, context: UserContext, info: GraphQLResolveInfo) => unknown

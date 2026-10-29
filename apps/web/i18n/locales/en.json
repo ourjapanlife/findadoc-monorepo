@@ -887,7 +887,8 @@
       "email": "Email",
       "website": "Website",
       "clinicLink": "Back to {clinic}"
-    }
+    },
+    "clinicQuestionsInEnglish": "Some of the clinic's questions are only in English."
   },
   "bookingDashboard": {
     "detailHeading": "Booking",
@@ -1038,6 +1039,46 @@
       "invalid": "Two blocks on the same day overlap. Change one of them.",
       "save": "Save weekly hours",
       "doctorHelp": "This doctor's own week. Once it is saved, the doctor is booked separately from clinic hours and from other doctors. Clinic-wide closures still apply."
+    },
+    "forms": {
+      "newForm": "Write a new form",
+      "newHeading": "New intake form",
+      "editHeading": "Edit intake form",
+      "fixedFields": "Every form starts with the patient's email, phone, and full name. Add your own questions after them. Saving changed questions makes a new version; requests already sent keep the questions they were sent with.",
+      "name": "Form name",
+      "yourForm": "Your form · version {n}",
+      "edit": "Edit questions",
+      "question": "Question {n}",
+      "questionText": "Question",
+      "type": "Answer type",
+      "step": "Step",
+      "sensitivity": "How it is kept",
+      "identityHelp": "Identity and insurance files are deleted automatically after a short time.",
+      "min": "Lowest",
+      "max": "Highest",
+      "choices": "Choices",
+      "choice": "Choice {n}",
+      "addChoice": "Add a choice",
+      "removeChoice": "Remove choice",
+      "required": "Required",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "removeQuestion": "Remove",
+      "addQuestion": "Add a question",
+      "translations": "Other languages",
+      "shownInEnglish": "Shown in English for: {languages}",
+      "incomplete": "Give the form a name, write every question and choice in English, and give each choice question at least two choices.",
+      "saveFailed": "Could not save the form. Try again.",
+      "saved": "Form saved.",
+      "save": "Save form",
+      "cancel": "Cancel",
+      "types": {
+        "text": "Short text",
+        "textarea": "Long text",
+        "select": "Choice",
+        "number": "Number",
+        "file": "File upload"
+      }
     }
   },
   "patientBooking": {

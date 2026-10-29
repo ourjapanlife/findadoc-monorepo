@@ -26,6 +26,7 @@ import * as availabilityService from './services/availabilityService.js'
 import * as staffBookingService from './services/staffBookingService.js'
 import * as appointmentService from './services/appointmentService.js'
 import * as clinicAccessService from './services/clinicAccessService.js'
+import * as clinicFormService from './services/clinicFormService.js'
 import { envVariables } from '../utils/environmentVariables.js'
 import { ErrorCode, Result } from './result.js'
 import { logger } from './logger.js'
@@ -114,6 +115,12 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.BookingSettings | null> =>
             clinicAccessService.getBookingSettings(args.facilityId, await bookingAccessFor(context.user))),
+        clinicBookingForms: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { facilityId: string },
+            context: UserContext
+        ): Promise<gqlType.ClinicBookingForm[]> =>
+            clinicFormService.listClinicBookingForms(args.facilityId, await bookingAccessFor(context.user))),
         clinicAppointments: withAuthenticatedUser(async (
             _parent: unknown,
             args: { clinicId: string, from: string, to: string },
@@ -666,6 +673,20 @@ const resolvers = {
             const result = await clinicAccessService.updateBookingSettings(
                 args.input,
                 await bookingAccessFor(context.user)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        saveClinicBookingForm: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { input: gqlType.SaveClinicBookingFormInput },
+            context: UserContext
+        ): Promise<gqlType.ClinicBookingForm> => {
+            const result = await clinicFormService.saveClinicBookingForm(
+                args.input,
+                await bookingAccessFor(context.user),
+                context.user?.sub
             )
             convertErrorsToGqlErrors(result)
             return result.data
