@@ -110,7 +110,7 @@ From the repo root, on this branch.
 
 So the Requests list and Calendar have something in them before anyone books, migration `20261029170000_showcase_demo_bookings.sql` adds one request in each status: requested on 23 December 10:00 JST and 2 November, confirmed, declined with a note, cancelled by the patient, and completed. It also paints open hours for 21–25 December. `pnpm db:push` applies it on production like any migration.
 
-The rows are temporary. Every id starts `de300000-0000-4000-`, and a follow-up migration deletes only those rows about a week after the demo. They have no uploads and no manage link.
+The rows are temporary. Every id starts `de300000-0000-4000-`, and `20261105090000_remove_showcase_demo_bookings.sql` deletes only those rows. They have no uploads and no manage link.
 
 Locally the migration does nothing on a fresh reset (the showcase facility is seeded after migrations, and the seed clears booking rows). To rehearse with them, run the file by hand after `pnpm dev:seeded`:
 
