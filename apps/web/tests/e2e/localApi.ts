@@ -16,7 +16,11 @@ export function skipIfLocalApiIsDown(error: unknown): void {
     throw error
 }
 
-export function assertLocalApiOk(json: { errors?: unknown[] | null }): void {
+export function assertLocalApiOk(json: { errors?: unknown[] | null, statusCode?: number, message?: string }): void {
+    // A Fastify refusal, such as the 429 rate limit, has no data and no GraphQL errors.
+    if (typeof json.statusCode === 'number' && json.statusCode >= 400) {
+        throw new Error(`local API refused the request: ${json.statusCode} ${json.message ?? ''}`)
+    }
     if (json.errors?.length) {
         throw new Error(`local API returned errors: ${JSON.stringify(json.errors)}`)
     }
