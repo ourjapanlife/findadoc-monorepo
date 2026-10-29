@@ -10,6 +10,8 @@ export type BookingDraftMemory = {
     formVersion: number
     values: Record<string, string>
     startsAt: string | null
+    practitionerId: string | null
+    spokenLanguages: string[]
     stepIndex: number
     uploadIds: Record<string, string>
     fileNames: Record<string, string>

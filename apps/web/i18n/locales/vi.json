@@ -807,9 +807,7 @@
       "openRequestLimit": "Email này đã có yêu cầu đang chờ tại phòng khám này. Hãy đợi phòng khám trả lời, hoặc hủy một yêu cầu bằng liên kết trong email của bạn."
     },
     "slotLabel": "Giờ mong muốn",
-    "slotHelp": "Chọn giờ bắt đầu khớp thời lượng trong khung giờ trống.",
     "slotLoading": "Đang tải giờ trống…",
-    "slotEmpty": "Không còn giờ trống ngày này. Thử ngày hoặc thời lượng khác.",
     "authRequired": "Đăng nhập để mở biểu mẫu đặt lịch này…",
     "stepsNav": "Các bước đặt lịch",
     "stepOf": "Bước {current} / {total}",
@@ -825,7 +823,23 @@
     "durationHelp": "Phòng khám chọn các thời lượng có sẵn.",
     "durationMinutes": "{n} phút",
     "manageLinkHelp": "Hãy lưu liên kết riêng này. Bạn có thể xem hoặc hủy yêu cầu. Liên kết này cũng có trong email xác nhận.",
-    "manageLink": "Xem hoặc hủy yêu cầu này"
+    "manageLink": "Xem hoặc hủy yêu cầu này",
+    "languageLabel": "Ngôn ngữ bạn cần",
+    "languageHelp": "Chọn các ngôn ngữ quan trọng với bạn. Chỉ hiển thị bác sĩ nói được tất cả các ngôn ngữ đó.",
+    "doctorLabel": "Bác sĩ",
+    "anyDoctor": "Bất kỳ bác sĩ nào còn trống",
+    "anyDoctorHelp": "Bác sĩ nào rảnh vào giờ bạn chọn sẽ khám cho bạn.",
+    "anyDoctorLanguageHelp": "Một bác sĩ nói được {languages} và rảnh vào giờ bạn chọn.",
+    "doctorLanguages": "Ngôn ngữ sử dụng",
+    "doctorsHidden": "Bác sĩ bị ẩn vì không nói được mọi ngôn ngữ bạn chọn: {n}",
+    "slotWeekHelp": "Những ngày được tô màu còn giờ trống. Con số là số giờ trống.",
+    "previousWeek": "Tuần trước",
+    "nextWeek": "Tuần sau",
+    "japanTimeNote": "Mọi giờ đều theo giờ Nhật Bản (JST).",
+    "slotEmptyWeek": "Tuần này không còn giờ trống.",
+    "slotEmptyAhead": "Không còn giờ trống trong các tuần tới. Hãy thử thời lượng khám, bác sĩ hoặc ngôn ngữ khác.",
+    "nextAvailable": "Giờ trống gần nhất: {date}",
+    "openTimesCount": "giờ trống: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Đặt lịch",
@@ -834,7 +848,7 @@
     "empty": "Chưa có yêu cầu đặt lịch",
     "answersHeading": "Câu trả lời",
     "uploadsHeading": "Tệp tải lên",
-    "uploadsRetentionNote": "Ảnh giấy tờ và bảo hiểm chỉ giữ đến hạn retention rồi bị xóa.",
+    "uploadsRetentionNote": "Ảnh giấy tờ tùy thân và bảo hiểm được giữ đến ngày hết hạn lưu. Ảnh bị xóa ngay khi lịch khám bị hủy hoặc từ chối.",
     "download": "Tải xuống",
     "purged": "Đã xóa",
     "retainUntil": "Giữ đến {date}",
@@ -880,13 +894,19 @@
       "decline": "Từ chối",
       "cancel": "Hủy lịch hẹn",
       "complete": "Đánh dấu hoàn thành"
-    }
+    },
+    "doctor": "Bác sĩ",
+    "languagesRequested": "Ngôn ngữ yêu cầu",
+    "preview": "Xem trước",
+    "previewOf": "Mở {name} trong thẻ mới",
+    "purgedNote": "Tệp này đã bị xóa.",
+    "downloadNote": "Bản đã tải xuống do phòng khám giữ an toàn và xóa khi không còn cần."
   },
   "bookingAvailability": {
     "clinicLabel": "Trang phòng khám",
-    "help": "Kéo để tô khung trống 30 phút. Bấm để xóa. Bệnh nhân đặt 15, 30, 45 hoặc 60 phút trong các khung đó.",
+    "help": "Giờ làm việc hằng tuần được đặt trong Cài đặt. Kéo để thêm giờ mở thêm; nhấp vào giờ mở thêm để xóa. Nhấp vào một khung giờ hằng tuần để đóng khung đó trong ngày hôm đó. Bệnh nhân đặt lịch khám 15, 30, 45 hoặc 60 phút trong giờ mở.",
     "loading": "Đang tải lịch…",
-    "windowTitle": "Trống",
+    "windowTitle": "Giờ mở thêm",
     "createFailed": "Không lưu được khung trống.",
     "deleteFailed": "Không xóa được khung trống.",
     "removed": "Đã xóa khung giờ trống.",
@@ -894,7 +914,20 @@
     "legend": "Chú thích lịch",
     "patient": "Bệnh nhân",
     "loadFailed": "Không thể tải lịch này.",
-    "appointmentHelp": "Nhấp vào lịch hẹn để mở yêu cầu."
+    "appointmentHelp": "Nhấp vào lịch hẹn để mở yêu cầu.",
+    "closeHelp": "Kéo để đóng một khoảng thời gian, hoặc chọn ngày ở hàng Đóng cả ngày. Nhấp vào khung đã đóng để mở lại. Các lịch hẹn đã đặt vẫn giữ nguyên.",
+    "modeLabel": "Chế độ lịch",
+    "modeOpen": "Thêm giờ mở",
+    "modeClose": "Đóng giờ",
+    "weeklyTitle": "Giờ hằng tuần",
+    "closedTitle": "Đóng",
+    "closeDayRow": "Đóng cả ngày",
+    "closeFailed": "Không thể đóng khoảng thời gian đó.",
+    "closed": "Đã đóng khoảng thời gian.",
+    "reopened": "Đã mở lại khoảng thời gian.",
+    "scheduleLabel": "Lịch làm việc",
+    "scheduleClinic": "Toàn phòng khám",
+    "scheduleUsesClinic": "dùng giờ của phòng khám"
   },
   "bookingForms": {
     "standardIntake": "Yêu cầu khám thông thường",
@@ -918,7 +951,8 @@
     "tabs": {
       "requests": "Yêu cầu",
       "calendar": "Lịch",
-      "settings": "Cài đặt"
+      "settings": "Cài đặt",
+      "team": "Nhân viên"
     },
     "roles": {
       "owner": "Chủ sở hữu",
@@ -942,6 +976,19 @@
       "role": "Vai trò",
       "invite": "Mời",
       "invited": "Đã mời {email}"
+    },
+    "weeklyHours": {
+      "heading": "Giờ hằng tuần",
+      "help": "Lịch làm việc thường lệ trong tuần, theo giờ Nhật Bản (JST). Bệnh nhân có thể đặt lịch trong các giờ này. Thêm giờ mở một lần hoặc đóng một ngày trên Lịch.",
+      "closed": "Đóng cửa",
+      "opens": "Giờ mở {day}",
+      "closes": "Giờ đóng {day}",
+      "addBlock": "Thêm khung giờ",
+      "removeBlock": "Xóa",
+      "copyToWeekdays": "Sao chép sang thứ Ba–thứ Sáu",
+      "invalid": "Hai khung giờ trong cùng một ngày bị trùng nhau. Hãy sửa một trong hai.",
+      "save": "Lưu giờ hằng tuần",
+      "doctorHelp": "Lịch tuần riêng của bác sĩ này. Sau khi lưu, bác sĩ được đặt lịch riêng, tách khỏi giờ của phòng khám và các bác sĩ khác. Các ngày đóng cửa của cả phòng khám vẫn áp dụng."
     }
   },
   "patientBooking": {

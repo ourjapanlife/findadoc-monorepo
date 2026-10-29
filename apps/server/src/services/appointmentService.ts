@@ -18,6 +18,7 @@ import {
 import { hashPatientToken } from '../booking/links.js'
 import { emailFromUnknown, noticeClinic, sendBookingNotice } from '../booking/notifications.js'
 import { resolveBookingTarget } from '../booking/target.js'
+import { purgeSubmissionUploads } from '../booking/uploadPurge.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import { isStaffCalendarRange } from './availabilityService.js'
@@ -31,6 +32,11 @@ import { appointmentStatusFromRow, appointmentStatusToRow } from './staffBooking
  */
 
 const PATIENT_TOKEN_PATTERN = /^[A-Za-z0-9_-]{32,64}$/
+
+/** A cancelled or declined visit will not happen, so its uploads are purged at once. */
+function closesVisit(status: AppointmentStatus): boolean {
+    return status === APPOINTMENT_STATUS.CANCELLED || status === APPOINTMENT_STATUS.DECLINED
+}
 
 function invalid(field: string): Result<never> {
     return {
@@ -72,6 +78,7 @@ function appointmentFromRow(row: {
     duration_minutes: number
     status: string
     patient_name: string | null
+    practitioner_id: string | null
 }): BookingAppointment {
     return {
         id: row.id,
@@ -81,7 +88,8 @@ function appointmentFromRow(row: {
         endsAt: new Date(row.ends_at).toISOString(),
         durationMinutes: row.duration_minutes,
         status: appointmentStatusFromRow(row.status) ?? BookingAppointmentStatus.Requested,
-        patientName: row.patient_name
+        patientName: row.patient_name,
+        practitionerId: row.practitioner_id
     }
 }
 
@@ -97,6 +105,7 @@ function appointmentQuery() {
             'appointment.ends_at',
             'appointment.duration_minutes',
             'appointment.status',
+            'appointment.practitioner_id',
             'booking.answers',
             'booking.locale',
             sql<string | null>`booking.answers->>'fullName'`.as('patient_name')
@@ -184,6 +193,9 @@ export async function updateAppointmentStatus(
     if (Number(updated.numUpdatedRows) !== 1) {
         // Someone else changed it first.
         return invalid('status')
+    }
+    if (closesVisit(next) && current.booking_submission_id !== null) {
+        await purgeSubmissionUploads(current.booking_submission_id)
     }
 
     const notice = PATIENT_NOTICE[next]
@@ -276,6 +288,7 @@ export async function cancelBookingByToken(input: CancelBookingByTokenInput): Pr
     if (Number(updated.numUpdatedRows) !== 1) {
         return invalid('token')
     }
+    await purgeSubmissionUploads(row.booking_id)
 
     const cancelled = { ...row, status: APPOINTMENT_STATUS.CANCELLED }
     const view = await patientView(cancelled)

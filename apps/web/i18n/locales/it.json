@@ -807,9 +807,7 @@
       "openRequestLimit": "Questo indirizzo email ha già richieste in attesa presso questa clinica. Attendi la risposta della clinica, oppure annullane una dal link nella tua email."
     },
     "slotLabel": "Orario preferito",
-    "slotHelp": "Scegli un inizio che corrisponda alla durata negli orari aperti.",
     "slotLoading": "Caricamento orari…",
-    "slotEmpty": "Nessun orario libero in questo giorno. Prova un’altra data o durata.",
     "authRequired": "Accedi per aprire questo modulo di prenotazione…",
     "stepsNav": "Passaggi della richiesta",
     "stepOf": "Passo {current} di {total}",
@@ -825,7 +823,23 @@
     "durationHelp": "La clinica sceglie le durate disponibili.",
     "durationMinutes": "{n} minuti",
     "manageLinkHelp": "Salva questo link privato. Mostra la tua richiesta e ti permette di annullarla. Lo stesso link è nell'e-mail di conferma.",
-    "manageLink": "Vedi o annulla questa richiesta"
+    "manageLink": "Vedi o annulla questa richiesta",
+    "languageLabel": "Lingue di cui hai bisogno",
+    "languageHelp": "Scegli quelle che ti interessano. Vengono mostrati solo i medici che le parlano tutte.",
+    "doctorLabel": "Medico",
+    "anyDoctor": "Qualsiasi medico disponibile",
+    "anyDoctorHelp": "Ti visiterà il medico libero all'ora che scegli.",
+    "anyDoctorLanguageHelp": "Un medico che parla {languages} ed è libero all'ora che scegli.",
+    "doctorLanguages": "Lingue parlate",
+    "doctorsHidden": "Nascosti perché non parlano tutte le lingue scelte: {n}",
+    "slotWeekHelp": "I giorni evidenziati hanno orari liberi. Il numero indica quanti.",
+    "previousWeek": "Settimana precedente",
+    "nextWeek": "Settimana successiva",
+    "japanTimeNote": "Tutti gli orari sono in ora giapponese (JST).",
+    "slotEmptyWeek": "Nessun orario libero questa settimana.",
+    "slotEmptyAhead": "Nessun orario libero nelle prossime settimane. Prova un'altra durata, un altro medico o un'altra lingua.",
+    "nextAvailable": "Prossimo disponibile: {date}",
+    "openTimesCount": "orari liberi: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Prenotazione",
@@ -834,7 +848,7 @@
     "empty": "Nessuna richiesta di prenotazione",
     "answersHeading": "Risposte",
     "uploadsHeading": "Caricamenti",
-    "uploadsRetentionNote": "Le foto di identità e assicurazione restano solo fino alla data di conservazione, poi vengono eliminate.",
+    "uploadsRetentionNote": "Le foto dei documenti e dell'assicurazione restano fino alla data di conservazione. Vengono eliminate appena la visita è annullata o rifiutata.",
     "download": "Scarica",
     "purged": "Eliminato",
     "retainUntil": "Conservare fino al {date}",
@@ -880,13 +894,19 @@
       "decline": "Rifiuta",
       "cancel": "Annulla appuntamento",
       "complete": "Segna come completato"
-    }
+    },
+    "doctor": "Medico",
+    "languagesRequested": "Lingue richieste",
+    "preview": "Anteprima",
+    "previewOf": "Apri {name} in una nuova scheda",
+    "purgedNote": "Questo file è stato eliminato.",
+    "downloadNote": "Una copia scaricata è responsabilità della clinica, che deve custodirla e cancellarla quando non serve più."
   },
   "bookingAvailability": {
     "clinicLabel": "Sito della clinica",
-    "help": "Trascina per dipingere disponibilità da 30 minuti. Un clic rimuove un blocco. I pazienti prenotano 15, 30, 45 o 60 minuti in quelle finestre.",
+    "help": "L'orario settimanale si imposta in Impostazioni. Trascina per aggiungere un orario extra; fai clic sull'orario extra per rimuoverlo. Fai clic su un blocco settimanale per chiuderlo in quel giorno. I pazienti prenotano una visita di 15, 30, 45 o 60 minuti durante l'orario di apertura.",
     "loading": "Caricamento calendario…",
-    "windowTitle": "Disponibile",
+    "windowTitle": "Orario extra",
     "createFailed": "Impossibile salvare la disponibilità.",
     "deleteFailed": "Impossibile rimuovere la disponibilità.",
     "removed": "Disponibilità rimossa.",
@@ -894,7 +914,20 @@
     "legend": "Legenda del calendario",
     "patient": "Paziente",
     "loadFailed": "Impossibile caricare il calendario.",
-    "appointmentHelp": "Fai clic su un appuntamento per aprire la richiesta."
+    "appointmentHelp": "Fai clic su un appuntamento per aprire la richiesta.",
+    "closeHelp": "Trascina per chiudere un intervallo, oppure scegli i giorni nella riga Chiudi giornata. Fai clic su un blocco chiuso per riaprirlo. Gli appuntamenti già prenotati restano.",
+    "modeLabel": "Modalità calendario",
+    "modeOpen": "Aggiungi orario",
+    "modeClose": "Chiudi orario",
+    "weeklyTitle": "Orario settimanale",
+    "closedTitle": "Chiuso",
+    "closeDayRow": "Chiudi giornata",
+    "closeFailed": "Impossibile chiudere questo orario.",
+    "closed": "Orario chiuso.",
+    "reopened": "Orario riaperto.",
+    "scheduleLabel": "Agenda",
+    "scheduleClinic": "Tutta la clinica",
+    "scheduleUsesClinic": "usa l'orario della clinica"
   },
   "bookingForms": {
     "standardIntake": "Richiesta di visita standard",
@@ -918,7 +951,8 @@
     "tabs": {
       "requests": "Richieste",
       "calendar": "Calendario",
-      "settings": "Impostazioni"
+      "settings": "Impostazioni",
+      "team": "Staff"
     },
     "roles": {
       "owner": "Titolare",
@@ -942,6 +976,19 @@
       "role": "Ruolo",
       "invite": "Invita",
       "invited": "{email} invitato"
+    },
+    "weeklyHours": {
+      "heading": "Orario settimanale",
+      "help": "La vostra settimana abituale, in ora giapponese (JST). I pazienti possono prenotare in questi orari. Aggiungete un'apertura occasionale o chiudete un giorno nel Calendario.",
+      "closed": "Chiuso",
+      "opens": "Apertura di {day}",
+      "closes": "Chiusura di {day}",
+      "addBlock": "Aggiungi fascia",
+      "removeBlock": "Rimuovi",
+      "copyToWeekdays": "Copia da martedì a venerdì",
+      "invalid": "Due fasce nello stesso giorno si sovrappongono. Modificane una.",
+      "save": "Salva orario settimanale",
+      "doctorHelp": "La settimana propria di questo medico. Una volta salvata, il medico viene prenotato separatamente dall'orario della clinica e dagli altri medici. Le chiusure dell'intera clinica valgono comunque."
     }
   },
   "patientBooking": {

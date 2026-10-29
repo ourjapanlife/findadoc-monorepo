@@ -75,6 +75,13 @@
                 })"
             >
                 <div class="flex flex-col gap-4">
+                    <BookingDoctorPicker
+                        v-if="showSlot"
+                        v-model:practitioner-id="practitionerId"
+                        v-model:spoken-languages="spokenLanguages"
+                        :practitioners="form.practitioners"
+                        :languages="form.languages"
+                    />
                     <BookingSlotPicker
                         v-if="showSlot"
                         v-model="selectedStart"
@@ -82,6 +89,8 @@
                         :allowed-durations="form.allowedDurations"
                         :duration-minutes="durationMinutes"
                         :initial-day="query.start"
+                        :practitioner-id="practitionerId"
+                        :spoken-languages="spokenLanguages"
                         @update:duration-minutes="durationMinutes = $event"
                     />
 
@@ -251,7 +260,8 @@ import { useI18n } from 'vue-i18n'
 import {
     BookingFormFieldType,
     type BookingForm,
-    type BookingFormField
+    type BookingFormField,
+    type Locale
 } from '@findadoc/graphql'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 import {
@@ -278,6 +288,7 @@ import { resolveDuration } from '~/utils/booking/durations'
 import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
 import Stepper from '~/components/common/Stepper.vue'
+import BookingDoctorPicker from '~/components/booking/BookingDoctorPicker.vue'
 
 const props = withDefaults(defineProps<{
     form: BookingForm
@@ -302,6 +313,12 @@ const submissionId = ref('')
 const manageUrl = ref('')
 const selectedStart = ref<string | null>(props.query.start ?? null)
 const durationMinutes = ref(resolveDuration(props.query.duration, props.form.allowedDurations))
+// ?practitioner= preselects a doctor at this clinic. Anyone else falls back to "any doctor".
+const practitionerId = ref<string | null>(props.form.practitioners.some(practitioner =>
+    practitioner.id === props.query.practitioner)
+    ? props.query.practitioner ?? null
+    : null)
+const spokenLanguages = ref<Locale[]>([])
 const clinicKey = computed(() => bookingClinicKey(props.form))
 const stepIndex = ref(0)
 
@@ -365,6 +382,8 @@ if (resumedDraft !== null) {
         }
     }
     selectedStart.value = resumedDraft.startsAt
+    practitionerId.value = resumedDraft.practitionerId
+    spokenLanguages.value = resumedDraft.spokenLanguages as Locale[]
     const lastStep = Math.max(formSteps.value.length - 1, 0)
     stepIndex.value = Math.min(Math.max(resumedDraft.stepIndex, 0), lastStep)
     for (const [id, uploadId] of Object.entries(resumedDraft.uploadIds)) {
@@ -456,6 +475,8 @@ function rememberCurrentDraft(): void {
         formVersion: props.form.version,
         values: { ...values },
         startsAt: selectedStart.value,
+        practitionerId: practitionerId.value,
+        spokenLanguages: [...spokenLanguages.value],
         stepIndex: stepIndex.value,
         uploadIds: { ...uploadIds },
         fileNames: { ...fileNames },
@@ -770,7 +791,8 @@ async function onSubmit() {
             answers,
             startsAt: selectedStart.value,
             durationMinutes: durationMinutes.value,
-            practitionerId: props.query.practitioner,
+            practitionerId: practitionerId.value,
+            spokenLanguages: spokenLanguages.value,
             service: props.query.service
         })
 

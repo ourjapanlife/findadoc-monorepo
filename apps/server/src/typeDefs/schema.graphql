@@ -1230,6 +1230,23 @@ type BookingForm {
   """Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60."""
   allowedDurations: [Int!]!
   fields: [BookingFormField!]!
+  """Doctors at this clinic the patient may choose."""
+  practitioners: [BookingPractitioner!]!
+  """Languages the clinic or one of its doctors speaks, for the patient's language filter."""
+  languages: [Locale!]!
+}
+
+"""A doctor at a booking clinic."""
+type BookingPractitioner {
+  id: ID!
+  names: [LocalizedName!]!
+  spokenLanguages: [Locale!]!
+  specialties: [Specialty!]!
+  """
+  True when the doctor has weekly hours or open windows of their own, and is
+  booked separately from other doctors. Otherwise they book on the clinic schedule.
+  """
+  hasOwnSchedule: Boolean!
 }
 
 """A pending upload slot. The browser PUTs the file to uploadUrl, then submits the booking."""
@@ -1310,6 +1327,8 @@ type BookingAppointment {
   status: BookingAppointmentStatus!
   """The fullName answer, when the form asked for it."""
   patientName: String
+  """The doctor schedule this visit holds time on. Null is clinic time."""
+  practitionerId: ID
 }
 
 """A clinic the signed-in user may open in the booking dashboard."""
@@ -1392,6 +1411,10 @@ type BookingSubmissionDetail {
   """Reason staff or the patient gave for a decline or cancel."""
   statusReason: String
   practitionerId: ID
+  """The chosen or assigned doctor's names. Empty when no doctor was named."""
+  practitionerNames: [LocalizedName!]!
+  """Languages the patient asked for."""
+  spokenLanguages: [Locale!]!
   service: String
   createdDate: String!
   updatedDate: String!
@@ -1415,6 +1438,14 @@ type BookingUploadView {
   byteSize: Int
 }
 
+"""How the browser should open a booking upload."""
+enum BookingUploadDisposition {
+  """Show the file in the browser."""
+  INLINE
+  """Save the file."""
+  ATTACHMENT
+}
+
 type BookingUploadDownloadUrl {
   uploadId: ID!
   downloadUrl: String!
@@ -1435,6 +1466,8 @@ type ClinicAvailabilityWindow {
   id: ID!
   clinicSiteId: ID
   facilityId: ID
+  """Null is the clinic's own schedule."""
+  practitionerId: ID
   startsAt: String!
   endsAt: String!
   createdDate: String!
@@ -1442,8 +1475,66 @@ type ClinicAvailabilityWindow {
 
 input CreateClinicAvailabilityWindowInput {
   clinicSiteId: ID!
+  """A doctor at this clinic. Null paints clinic time."""
+  practitionerId: ID
   startsAt: String!
   endsAt: String!
+}
+
+"""
+One usual opening block in Japan time. Open starts are weekly hours plus painted
+windows, minus closures, minus held appointments.
+"""
+type ClinicWeeklyHours {
+  id: ID!
+  facilityId: ID!
+  """Null is the clinic's own schedule."""
+  practitionerId: ID
+  """ISO weekday: 1 is Monday, 7 is Sunday."""
+  weekday: Int!
+  """Minutes after midnight JST, on a 30-minute boundary."""
+  startMinute: Int!
+  """Minutes after midnight JST, on a 30-minute boundary. At most 1440."""
+  endMinute: Int!
+}
+
+input ClinicWeeklyHoursInput {
+  weekday: Int!
+  startMinute: Int!
+  endMinute: Int!
+}
+
+input SetClinicWeeklyHoursInput {
+  """Facility id, clinic site id, or clinic site slug."""
+  facilityId: ID!
+  """A doctor at this clinic. Null sets the clinic's own week. Other schedules are unchanged."""
+  practitionerId: ID
+  """The whole week. Blocks that overlap or touch on one day are joined."""
+  hours: [ClinicWeeklyHoursInput!]!
+}
+
+"""A dated range with no open time: a holiday, a day off, or one closed weekly block."""
+type ClinicAvailabilityClosure {
+  id: ID!
+  facilityId: ID!
+  """Null closes the whole clinic, every doctor included."""
+  practitionerId: ID
+  startsAt: String!
+  endsAt: String!
+  reason: String
+  createdDate: String!
+}
+
+input CreateClinicAvailabilityClosureInput {
+  """Facility id, clinic site id, or clinic site slug."""
+  clinicId: ID!
+  """A doctor at this clinic. Null closes the whole clinic."""
+  practitionerId: ID
+  """Snapped down to 30 minutes. ISO 8601 UTC."""
+  startsAt: String!
+  """Snapped up to 30 minutes. ISO 8601 UTC. At most 62 days after startsAt."""
+  endsAt: String!
+  reason: String
 }
 
 input CreateBookingUploadUrlInput {
@@ -1501,8 +1592,13 @@ input SubmitBookingInput {
   startsAt: String!
   """Visit length in minutes. Must be one of the clinic's allowedDurations."""
   durationMinutes: Int
-  """Optional directory professional id at this facility."""
+  """
+  Optional directory professional id at this facility. With no id, the visit goes
+  to a free doctor who speaks every language in spokenLanguages, or to clinic time.
+  """
   practitionerId: ID
+  """Languages the patient needs. At most 10."""
+  spokenLanguages: [Locale!]
   """Optional service or appointment-type key from the Book URL."""
   service: String
 }
@@ -1529,8 +1625,17 @@ type Query {
   """
   Open appointment starts that fit the requested duration inside staff availability.
   Times are ISO 8601 UTC. The range must be 16 days or shorter.
+  With practitionerId, only that doctor's times. Without it, times any doctor who
+  speaks every language in spokenLanguages has free, plus clinic time.
   """
-  availableBookingStarts(clinicSiteId: ID!, from: String!, to: String!, durationMinutes: Int): [String!]!
+  availableBookingStarts(
+    clinicSiteId: ID!
+    from: String!
+    to: String!
+    durationMinutes: Int
+    practitionerId: ID
+    spokenLanguages: [Locale!]
+  ): [String!]!
 
   """Intake form types a clinic may offer."""
   bookingFormTypes: [BookingFormType!]!
@@ -1566,6 +1671,15 @@ type Query {
 
   """Staff availability windows for the calendar editor."""
   clinicAvailabilityWindows(clinicSiteId: ID!, from: String!, to: String!): [ClinicAvailabilityWindow!]!
+
+  """Doctors at one clinic, for the schedule picker. Members and moderators."""
+  clinicPractitioners(clinicId: ID!): [BookingPractitioner!]!
+
+  """Every schedule's usual week in Japan time. Members and moderators."""
+  clinicWeeklyHours(clinicId: ID!): [ClinicWeeklyHours!]!
+
+  """Closures on one clinic calendar. The range must be 62 days or shorter."""
+  clinicAvailabilityClosures(clinicId: ID!, from: String!, to: String!): [ClinicAvailabilityClosure!]!
 
   """Look up a single facility by its unique ID. Returns null if not found."""
   facility(id: ID!): Facility
@@ -1808,14 +1922,26 @@ type Mutation {
   """
   submitBooking(input: SubmitBookingInput!): BookingSubmissionResult!
 
-  """Short-lived GET URL for a booking upload. Identity files are never inlined in GraphQL."""
-  bookingUploadDownloadUrl(uploadId: ID!): BookingUploadDownloadUrl!
+  """
+  Short-lived GET URL for a booking upload. Identity files are never inlined in GraphQL.
+  INLINE (the default) opens the file in the browser; ATTACHMENT saves a copy.
+  """
+  bookingUploadDownloadUrl(uploadId: ID!, disposition: BookingUploadDisposition): BookingUploadDownloadUrl!
 
   """Paint a 30-minute-aligned availability window on the clinic calendar."""
   createClinicAvailabilityWindow(input: CreateClinicAvailabilityWindowInput!): ClinicAvailabilityWindow!
 
   """Remove one availability window. Existing appointments are unchanged."""
   deleteClinicAvailabilityWindow(id: ID!): DeleteResult!
+
+  """Replace the clinic's usual week. Members and moderators."""
+  setClinicWeeklyHours(input: SetClinicWeeklyHoursInput!): [ClinicWeeklyHours!]!
+
+  """Close a range on the clinic calendar. Appointments already in it are unchanged."""
+  createClinicAvailabilityClosure(input: CreateClinicAvailabilityClosureInput!): ClinicAvailabilityClosure!
+
+  """Reopen a closed range."""
+  deleteClinicAvailabilityClosure(id: ID!): DeleteResult!
 
   """Staff confirm, decline, cancel, or complete an appointment. Declined and cancelled free the slot."""
   updateBookingAppointmentStatus(input: UpdateBookingAppointmentStatusInput!): BookingAppointment!

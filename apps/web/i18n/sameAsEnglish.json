@@ -35,7 +35,8 @@
     "submitPage.previewLocation",
     "moderationTable.name",
     "moderationTable.status",
-    "clinicPage.onlineBreadcrumb"
+    "clinicPage.onlineBreadcrumb",
+    "clinicDashboard.tabs.team"
   ],
   "it": [
     "common.menu",

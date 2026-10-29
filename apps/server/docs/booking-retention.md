@@ -53,9 +53,30 @@ Write:
 pnpm --filter @findadoc/server purge:booking-uploads:write
 ```
 
+## When the visit is cancelled or declined
+
+A cancelled visit (by the clinic or the patient) or a declined request will
+not happen, so its files are not needed. In the same call that changes the
+status, `src/booking/uploadPurge.ts` moves each file's `retain_until` to now
+and deletes it the same way the daily purge does. A file that call cannot
+delete is still past `retain_until`, so the next daily run takes it. A
+completed visit keeps its files until `retain_until`.
+
+## Preview and download
+
 Staff never receive identity file bytes inline in GraphQL list payloads.
-They use `bookingUploadDownloadUrl` for a short-lived GET while the object
-still exists.
+They use `bookingUploadDownloadUrl` for a short-lived GET (5 minutes) while
+the object still exists. `disposition: INLINE` (the default) opens it in the
+browser; the dashboard shows photos at their own aspect ratio, and Preview
+opens the file in a new tab. `ATTACHMENT` answers with
+`Content-Disposition: attachment`, so Download saves a copy. Each URL is
+logged with the upload id, facility, disposition, and the Auth0 `sub` that
+asked, never the file name. Locally, `GET /dev-uploads/*` serves the file.
+
+A downloaded copy is outside Find a Doc. The clinic is the handler of that
+copy under APPI and must keep it safe and delete it when it is no longer
+needed; the dashboard says so under the files. An individual number (My
+Number) must not be collected or kept from a card photo.
 
 ## Dashboard
 

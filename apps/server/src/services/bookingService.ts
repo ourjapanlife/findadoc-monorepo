@@ -11,6 +11,7 @@ import { sql } from 'kysely'
 import {
     assembleBookingForm,
     chooseFormDefinitionId,
+    type AssembledBookingForm,
     fieldById,
     isOfferedFormId,
     storedSensitivity
@@ -19,11 +20,20 @@ import { APPOINTMENT_STATUS, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.
 import { BOOKING_UPLOAD_MAX_BYTES } from '../booking/limits.js'
 import { newPatientToken, patientBookingUrl } from '../booking/links.js'
 import { noticeClinic, sendBookingNotice } from '../booking/notifications.js'
+import {
+    clinicLanguages,
+    facilityLanguagesFor,
+    listFacilityPractitioners,
+    parseRequestedLanguages,
+    scheduleLanes,
+    type ScheduleLane
+} from '../booking/practitioners.js'
 import { retainUntilFromNow } from '../booking/retention.js'
 import {
     appointmentEndFromStart,
     availableStarts,
     BOOKING_SLOT_STEP_MINUTES,
+    expandWeeklyHours,
     isAlignedToMinutes,
     isPublicSlotRange,
     resolveAppointmentDuration
@@ -54,7 +64,7 @@ const ALLOWED_UPLOAD_TYPES = new Set([
     'application/pdf'
 ])
 
-function bookingFormForTarget(target: BookingTarget, formDefinitionId?: string | null): BookingForm {
+function bookingFormForTarget(target: BookingTarget, formDefinitionId?: string | null): AssembledBookingForm {
     return assembleBookingForm({
         formDefinitionId: formDefinitionId ?? target.formDefinitionIds[0],
         facilityId: target.facilityId,
@@ -74,7 +84,34 @@ export async function getBookingForm(
     if (target === undefined) {
         return null
     }
-    return bookingFormForTarget(target, chooseFormDefinitionId(target.formDefinitionIds, formId))
+    const [practitioners, facilityLanguages] = await Promise.all([
+        listFacilityPractitioners(target.facilityId),
+        facilityLanguagesFor(target.facilityId)
+    ])
+    return {
+        ...bookingFormForTarget(target, chooseFormDefinitionId(target.formDefinitionIds, formId)),
+        practitioners,
+        languages: clinicLanguages(practitioners, facilityLanguages)
+    }
+}
+
+/** The schedules a patient's doctor and language choice may book on. Undefined when the choice is not valid. */
+async function lanesForChoice(
+    target: BookingTarget,
+    practitionerIdInput: string | null | undefined,
+    languagesInput: readonly string[] | null | undefined
+): Promise<{ lanes: ScheduleLane[], languages: string[] } | undefined> {
+    const languages = parseRequestedLanguages(languagesInput)
+    if (languages === undefined) {
+        return undefined
+    }
+    const practitionerId = practitionerIdInput?.trim() || null
+    const [practitioners, facilityLanguages] = await Promise.all([
+        listFacilityPractitioners(target.facilityId),
+        facilityLanguagesFor(target.facilityId)
+    ])
+    const lanes = scheduleLanes({ practitioners, facilityLanguages, practitionerId, languages })
+    return lanes === undefined ? undefined : { lanes, languages }
 }
 
 function validationError(field: string): Result<never> {
@@ -213,7 +250,7 @@ function scalarAnswerIsValid(
 }
 
 function collectAnswers(
-    form: BookingForm,
+    form: AssembledBookingForm,
     answers: SubmitBookingInput['answers']
 ): Result<{ storedAnswers: Record<string, string>, uploads: AnswerUpload[] }> {
     const answersByField = asAnswerMap(answers)
@@ -254,7 +291,7 @@ function collectAnswers(
 type AnswerUpload = { fieldId: string, uploadId: string }
 
 async function assertUploadsBelongToClinic(
-    form: BookingForm,
+    form: AssembledBookingForm,
     target: BookingTarget,
     answerUploads: readonly AnswerUpload[]
 ): Promise<Result<true>> {
@@ -290,27 +327,6 @@ async function assertUploadsBelongToClinic(
         if (byteSize === null || bookingUploadExceedsLimit(byteSize, field.maxBytes)) {
             return validationError('answers')
         }
-    }
-    return { data: true, hasErrors: false }
-}
-
-async function assertPractitionerAtFacility(
-    facilityId: string | null,
-    practitionerId: string | null
-): Promise<Result<true>> {
-    if (practitionerId === null) {
-        return { data: true, hasErrors: false }
-    }
-    if (facilityId === null) {
-        return validationError('practitionerId')
-    }
-    const row = await db.selectFrom('hps_facilities')
-        .select('hps_id')
-        .where('hps_id', '=', practitionerId)
-        .where('facilities_id', '=', facilityId)
-        .executeTakeFirst()
-    if (row === undefined) {
-        return validationError('practitionerId')
     }
     return { data: true, hasErrors: false }
 }
@@ -441,9 +457,9 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
     }
 
     const practitionerId = input.practitionerId?.trim() || null
-    const practitionerOk = await assertPractitionerAtFacility(target.facilityId, practitionerId)
-    if (practitionerOk.hasErrors) {
-        return practitionerOk as Result<never>
+    const choice = await lanesForChoice(target, practitionerId, input.spokenLanguages)
+    if (choice === undefined) {
+        return validationError(practitionerId === null ? 'spokenLanguages' : 'practitionerId')
     }
 
     const serviceKey = parseServiceKey(input.service)
@@ -458,9 +474,23 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         inserted = await db.transaction().execute(async transaction => {
             await sql`SELECT pg_advisory_xact_lock(hashtext(${bookingLockKey(target)}))`.execute(transaction)
 
-            const open = await listAvailableStartsForTarget(target, startsAt, endsAt, durationMinutes, transaction)
-            const allowed = open.some(start => start.getTime() === startsAt.getTime())
-            if (!allowed) {
+            // The first schedule that still has this start free takes the visit.
+            let lane: ScheduleLane | undefined
+            for (const candidate of choice.lanes) {
+                const open = await listAvailableStartsForTarget(
+                    target,
+                    startsAt,
+                    endsAt,
+                    durationMinutes,
+                    candidate.practitionerId,
+                    transaction
+                )
+                if (open.some(start => start.getTime() === startsAt.getTime())) {
+                    lane = candidate
+                    break
+                }
+            }
+            if (lane === undefined) {
                 throw new Error('BOOKING_SLOT_TAKEN')
             }
 
@@ -476,8 +506,9 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                 .values({
                     facility_id: target.facilityId,
                     clinic_site_id: target.clinicSiteId,
-                    practitioner_id: practitionerId,
+                    practitioner_id: practitionerId ?? lane.practitionerId,
                     service_key: serviceKey,
+                    spoken_languages: choice.languages,
                     form_definition_id: form.id,
                     form_version: form.version,
                     locale: input.locale,
@@ -510,6 +541,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                     facility_id: target.facilityId,
                     clinic_site_id: target.clinicSiteId,
                     booking_submission_id: row.id,
+                    practitioner_id: lane.practitionerId,
                     starts_at: startsAt.toISOString(),
                     ends_at: endsAt.toISOString(),
                     duration_minutes: durationMinutes,
@@ -588,22 +620,29 @@ async function countOpenRequestsForEmail(
     return Number(row.count)
 }
 
+/**
+ * Open starts on one schedule: a doctor's (practitionerId) or the clinic's (null).
+ * A clinic-wide closure closes every doctor too.
+ */
 async function listAvailableStartsForTarget(
     target: BookingTarget,
     from: Date,
     to: Date,
     durationMinutes: number,
+    practitionerId: string | null,
     executor: AvailabilityExecutor = db
 ): Promise<Date[]> {
     let windowQuery = executor.selectFrom('clinic_availability_windows')
         .select(['starts_at', 'ends_at'])
         .where('starts_at', '<', to.toISOString())
         .where('ends_at', '>', from.toISOString())
+        .where('practitioner_id', practitionerId === null ? 'is' : '=', practitionerId)
     let bookedQuery = executor.selectFrom('booking_appointments')
         .select(['starts_at', 'ends_at'])
         .where('status', 'in', SLOT_HOLDING_STATUSES)
         .where('starts_at', '<', to.toISOString())
         .where('ends_at', '>', from.toISOString())
+        .where('practitioner_id', practitionerId === null ? 'is' : '=', practitionerId)
 
     if (target.facilityId !== null) {
         windowQuery = windowQuery.where('facility_id', '=', target.facilityId)
@@ -615,14 +654,44 @@ async function listAvailableStartsForTarget(
         return []
     }
 
-    const [windows, booked] = await Promise.all([
+    // Weekly hours and closures are keyed by the facility. A clinic site without one has neither.
+    const facilityId = target.facilityId
+    const [windows, booked, weekly, closures] = await Promise.all([
         windowQuery.execute(),
-        bookedQuery.execute()
+        bookedQuery.execute(),
+        facilityId === null
+            ? []
+            : executor.selectFrom('clinic_weekly_hours')
+                .select(['weekday', 'start_minute', 'end_minute'])
+                .where('facility_id', '=', facilityId)
+                .where('practitioner_id', practitionerId === null ? 'is' : '=', practitionerId)
+                .execute(),
+        facilityId === null
+            ? []
+            : executor.selectFrom('clinic_availability_closures')
+                .select(['starts_at', 'ends_at'])
+                .where('facility_id', '=', facilityId)
+                .where('starts_at', '<', to.toISOString())
+                .where('ends_at', '>', from.toISOString())
+                .where(eb => practitionerId === null
+                    ? eb('practitioner_id', 'is', null)
+                    : eb.or([eb('practitioner_id', 'is', null), eb('practitioner_id', '=', practitionerId)]))
+                .execute()
     ])
 
+    const weeklyWindows = expandWeeklyHours(
+        weekly.map(row => ({ weekday: row.weekday, startMinute: row.start_minute, endMinute: row.end_minute })),
+        from,
+        to
+    )
+
     return availableStarts({
-        windows: windows.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
+        windows: [
+            ...weeklyWindows,
+            ...windows.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) }))
+        ],
         booked: booked.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
+        closed: closures.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
         rangeStart: from,
         rangeEnd: to,
         durationMs: durationMinutes * 60 * 1000
@@ -633,7 +702,9 @@ export async function getAvailableBookingStarts(
     clinicIdOrSlug: string,
     fromIso: string,
     toIso: string,
-    durationMinutesInput?: number | null
+    durationMinutesInput?: number | null,
+    practitionerId?: string | null,
+    spokenLanguages?: readonly string[] | null
 ): Promise<string[]> {
     const target = await resolvePublicBookingTarget(clinicIdOrSlug)
     if (target === undefined) {
@@ -648,6 +719,17 @@ export async function getAvailableBookingStarts(
     if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || !isPublicSlotRange(from, to)) {
         return []
     }
-    const starts = await listAvailableStartsForTarget(target, from, to, durationMinutes)
-    return starts.map(start => start.toISOString())
+    const choice = await lanesForChoice(target, practitionerId, spokenLanguages)
+    if (choice === undefined) {
+        return []
+    }
+    // One start may be free on several schedules; the patient sees it once.
+    const starts = new Set<number>()
+    for (const lane of choice.lanes) {
+        const laneStarts = await listAvailableStartsForTarget(target, from, to, durationMinutes, lane.practitionerId)
+        for (const start of laneStarts) {
+            starts.add(start.getTime())
+        }
+    }
+    return [...starts].sort((a, b) => a - b).map(start => new Date(start).toISOString())
 }

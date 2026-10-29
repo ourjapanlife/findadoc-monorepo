@@ -807,9 +807,7 @@
       "openRequestLimit": "このメールアドレスには、このクリニックで返答待ちのリクエストがすでにあります。クリニックの返答を待つか、メールのリンクからいずれかをキャンセルしてください。"
     },
     "slotLabel": "希望日時",
-    "slotHelp": "クリニックの空き枠の中から、診察時間に合う開始時刻を選んでください。",
     "slotLoading": "空き時間を読み込み中…",
-    "slotEmpty": "この日に空きがありません。別の日か時間の長さを試してください。",
     "authRequired": "予約フォームを開くにはサインインしてください…",
     "stepsNav": "予約の手順",
     "stepOf": "{total}ステップ中 {current}",
@@ -825,7 +823,23 @@
     "durationHelp": "選べる時間の長さはクリニックが決めています。",
     "durationMinutes": "{n}分",
     "manageLinkHelp": "この非公開リンクを保存してください。リクエストの確認とキャンセルができます。確認メールにも同じリンクがあります。",
-    "manageLink": "このリクエストを確認・キャンセル"
+    "manageLink": "このリクエストを確認・キャンセル",
+    "languageLabel": "希望する言語",
+    "languageHelp": "必要な言語を選んでください。選んだ言語をすべて話せる医師だけが表示されます。",
+    "doctorLabel": "医師",
+    "anyDoctor": "空いている医師なら誰でも",
+    "anyDoctorHelp": "選んだ時間に空いている医師が診察します。",
+    "anyDoctorLanguageHelp": "{languages}を話せて、選んだ時間に空いている医師が診察します。",
+    "doctorLanguages": "対応言語",
+    "doctorsHidden": "選んだ言語をすべて話せないため非表示の医師：{n}人",
+    "slotWeekHelp": "色の付いた日に空きがあります。数字は空き枠の数です。",
+    "previousWeek": "前の週",
+    "nextWeek": "次の週",
+    "japanTimeNote": "時刻はすべて日本時間です。",
+    "slotEmptyWeek": "この週に空きはありません。",
+    "slotEmptyAhead": "今後数週間に空きがありません。診察時間の長さ、医師、言語を変えてみてください。",
+    "nextAvailable": "次の空き：{date}",
+    "openTimesCount": "空き：{n}件"
   },
   "bookingDashboard": {
     "detailHeading": "予約",
@@ -834,7 +848,7 @@
     "empty": "予約申し込みはまだありません",
     "answersHeading": "回答",
     "uploadsHeading": "アップロード",
-    "uploadsRetentionNote": "保険証・マイナンバー等の本人確認画像は保持期限までだけ保管し、その後削除します。",
+    "uploadsRetentionNote": "本人確認・保険証の写真は保存期限まで保管します。予約がキャンセルまたはお断りになった時点ですぐに削除します。",
     "download": "ダウンロード",
     "purged": "削除済み",
     "retainUntil": "保持期限 {date}",
@@ -880,13 +894,19 @@
       "decline": "お断りする",
       "cancel": "予約をキャンセル",
       "complete": "完了にする"
-    }
+    },
+    "doctor": "医師",
+    "languagesRequested": "希望言語",
+    "preview": "プレビュー",
+    "previewOf": "{name}を新しいタブで開く",
+    "purgedNote": "このファイルは削除されました。",
+    "downloadNote": "ダウンロードした写しは、クリニックが安全に管理し、不要になったら削除してください。"
   },
   "bookingAvailability": {
     "clinicLabel": "クリニックサイト",
-    "help": "ドラッグして30分単位の空き枠を塗ります。枠をクリックすると削除します。患者は15・30・45・60分の診察をその中から予約します。",
+    "help": "週の診療時間は「設定」で決めます。ドラッグで臨時の受付時間を追加し、クリックで削除します。週の時間帯をクリックすると、その日だけ休診にできます。患者は受付時間内で15・30・45・60分の枠を予約します。",
     "loading": "カレンダーを読み込み中…",
-    "windowTitle": "受付可",
+    "windowTitle": "臨時の受付時間",
     "createFailed": "空き枠を保存できませんでした。",
     "deleteFailed": "空き枠を削除できませんでした。",
     "removed": "空き枠を削除しました。",
@@ -894,7 +914,20 @@
     "legend": "カレンダーの凡例",
     "patient": "患者さん",
     "loadFailed": "カレンダーを読み込めませんでした。",
-    "appointmentHelp": "予約をクリックするとリクエストを開きます。"
+    "appointmentHelp": "予約をクリックするとリクエストを開きます。",
+    "closeHelp": "ドラッグで時間帯を休診にするか、「終日休診」の行で日を選びます。休診の枠をクリックすると再開します。予約済みの予約はそのまま残ります。",
+    "modeLabel": "カレンダーの操作",
+    "modeOpen": "受付時間を追加",
+    "modeClose": "休診にする",
+    "weeklyTitle": "週の診療時間",
+    "closedTitle": "休診",
+    "closeDayRow": "終日休診",
+    "closeFailed": "その時間を休診にできませんでした。",
+    "closed": "休診にしました。",
+    "reopened": "受付を再開しました。",
+    "scheduleLabel": "スケジュール",
+    "scheduleClinic": "クリニック全体",
+    "scheduleUsesClinic": "クリニックの時間を使用"
   },
   "bookingForms": {
     "standardIntake": "通常の受診リクエスト",
@@ -918,7 +951,8 @@
     "tabs": {
       "requests": "リクエスト",
       "calendar": "カレンダー",
-      "settings": "設定"
+      "settings": "設定",
+      "team": "スタッフ"
     },
     "roles": {
       "owner": "オーナー",
@@ -942,6 +976,19 @@
       "role": "役割",
       "invite": "招待する",
       "invited": "{email} を招待しました"
+    },
+    "weeklyHours": {
+      "heading": "週の診療時間",
+      "help": "通常の1週間の診療時間です（日本時間）。患者はこの時間内で予約できます。臨時の受付や休診日は「カレンダー」で設定します。",
+      "closed": "休診",
+      "opens": "{day}の開始時刻",
+      "closes": "{day}の終了時刻",
+      "addBlock": "時間帯を追加",
+      "removeBlock": "削除",
+      "copyToWeekdays": "火曜〜金曜にコピー",
+      "invalid": "同じ日の時間帯が重なっています。どちらかを変更してください。",
+      "save": "週の診療時間を保存",
+      "doctorHelp": "この医師専用の1週間です。保存すると、この医師はクリニックの時間や他の医師とは別に予約を受けます。クリニック全体の休診は引き続き適用されます。"
     }
   },
   "patientBooking": {

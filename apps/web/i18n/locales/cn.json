@@ -807,9 +807,7 @@
       "openRequestLimit": "此电子邮箱在这家诊所已有等待回复的申请。请等待诊所回复，或通过邮件中的链接取消其中一个。"
     },
     "slotLabel": "希望时间",
-    "slotHelp": "请在诊所可预约时段内选择符合就诊时长的开始时间。",
     "slotLoading": "正在加载可预约时间…",
-    "slotEmpty": "当天没有可预约时间。请换一天或换一个时长。",
     "authRequired": "请登录以打开此预约表单…",
     "stepsNav": "预约步骤",
     "stepOf": "第 {current} 步，共 {total} 步",
@@ -825,7 +823,23 @@
     "durationHelp": "可选时长由诊所设定。",
     "durationMinutes": "{n} 分钟",
     "manageLinkHelp": "请保存此私人链接，可查看或取消您的申请。确认邮件中也有相同的链接。",
-    "manageLink": "查看或取消此申请"
+    "manageLink": "查看或取消此申请",
+    "languageLabel": "您需要的语言",
+    "languageHelp": "请选择对您重要的语言。只会显示能说全部所选语言的医生。",
+    "doctorLabel": "医生",
+    "anyDoctor": "任何有空的医生",
+    "anyDoctorHelp": "由您所选时间有空的医生为您看诊。",
+    "anyDoctorLanguageHelp": "由会说{languages}、且在您所选时间有空的医生看诊。",
+    "doctorLanguages": "使用语言",
+    "doctorsHidden": "因不会说您所选的全部语言而隐藏的医生：{n}位",
+    "slotWeekHelp": "有颜色的日期有空位，数字表示空位数量。",
+    "previousWeek": "上一周",
+    "nextWeek": "下一周",
+    "japanTimeNote": "所有时间均为日本时间（JST）。",
+    "slotEmptyWeek": "本周没有空位。",
+    "slotEmptyAhead": "接下来几周都没有空位。请尝试其他就诊时长、医生或语言。",
+    "nextAvailable": "最近空位：{date}",
+    "openTimesCount": "空位：{n}个"
   },
   "bookingDashboard": {
     "detailHeading": "预约",
@@ -834,7 +848,7 @@
     "empty": "暂无预约申请",
     "answersHeading": "回答",
     "uploadsHeading": "上传文件",
-    "uploadsRetentionNote": "身份与保险照片仅保留至保留期限，到期后清除。",
+    "uploadsRetentionNote": "身份和保险照片保存到保留期限为止。一旦就诊被取消或拒绝，会立即删除。",
     "download": "下载",
     "purged": "已清除",
     "retainUntil": "保留至 {date}",
@@ -880,13 +894,19 @@
       "decline": "拒绝",
       "cancel": "取消预约",
       "complete": "标记为已完成"
-    }
+    },
+    "doctor": "医生",
+    "languagesRequested": "所需语言",
+    "preview": "预览",
+    "previewOf": "在新标签页中打开{name}",
+    "purgedNote": "此文件已删除。",
+    "downloadNote": "下载的副本由诊所负责妥善保管，不再需要时请删除。"
   },
   "bookingAvailability": {
     "clinicLabel": "诊所站点",
-    "help": "拖动以涂出 30 分钟的可预约时段。点击时段可删除。患者可在其中预约 15、30、45 或 60 分钟。",
+    "help": "每周营业时间在“设置”中设定。拖动可添加临时开放时间，点击临时时间可删除。点击每周时段可将当天该时段设为休诊。患者可在开放时间内预约15、30、45或60分钟的就诊。",
     "loading": "正在加载日历…",
-    "windowTitle": "可预约",
+    "windowTitle": "临时开放时间",
     "createFailed": "无法保存该可预约时段。",
     "deleteFailed": "无法删除该时段。",
     "removed": "已删除可预约时间。",
@@ -894,7 +914,20 @@
     "legend": "日历图例",
     "patient": "患者",
     "loadFailed": "无法加载此日历。",
-    "appointmentHelp": "点击预约可打开申请。"
+    "appointmentHelp": "点击预约可打开申请。",
+    "closeHelp": "拖动可关闭一段时间，或在“全天休诊”一行中选择日期。点击已关闭的时段可重新开放。已预约的就诊不受影响。",
+    "modeLabel": "日历模式",
+    "modeOpen": "添加开放时间",
+    "modeClose": "关闭时间",
+    "weeklyTitle": "每周营业时间",
+    "closedTitle": "休诊",
+    "closeDayRow": "全天休诊",
+    "closeFailed": "无法关闭该时间。",
+    "closed": "已关闭该时间。",
+    "reopened": "已重新开放该时间。",
+    "scheduleLabel": "日程",
+    "scheduleClinic": "整个诊所",
+    "scheduleUsesClinic": "使用诊所时间"
   },
   "bookingForms": {
     "standardIntake": "普通就诊申请",
@@ -918,7 +951,8 @@
     "tabs": {
       "requests": "申请",
       "calendar": "日历",
-      "settings": "设置"
+      "settings": "设置",
+      "team": "团队"
     },
     "roles": {
       "owner": "所有者",
@@ -942,6 +976,19 @@
       "role": "角色",
       "invite": "邀请",
       "invited": "已邀请 {email}"
+    },
+    "weeklyHours": {
+      "heading": "每周营业时间",
+      "help": "诊所平常一周的营业时间（日本时间）。患者可在这些时间内预约。临时开放或休诊请在“日历”中设置。",
+      "closed": "休诊",
+      "opens": "{day}开始时间",
+      "closes": "{day}结束时间",
+      "addBlock": "添加时段",
+      "removeBlock": "删除",
+      "copyToWeekdays": "复制到周二至周五",
+      "invalid": "同一天的两个时段重叠了。请修改其中一个。",
+      "save": "保存每周营业时间",
+      "doctorHelp": "这是该医生自己的一周时间。保存后，该医生将与诊所时间和其他医生分开预约。诊所的全体休诊仍然适用。"
     }
   },
   "patientBooking": {

@@ -19,7 +19,13 @@ import { logger } from './logger.js'
 import { isServerError, requestErrorFields } from './requestErrors.js'
 import { clientIpFrom } from '@findadoc/utils'
 import { BOOKING_UPLOAD_MAX_BYTES } from './booking/limits.js'
-import { isSafeBookingObjectKey, storeLocalBookingUpload } from './storage/objectStorage.js'
+import {
+    contentDisposition,
+    isSafeBookingObjectKey,
+    localBookingContentType,
+    readLocalBookingUpload,
+    storeLocalBookingUpload
+} from './storage/objectStorage.js'
 
 /**
  * Builds the Fastify app with Apollo on `/`, ready to serve but not listening.
@@ -194,6 +200,38 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
 
             await storeLocalBookingUpload(objectKey, body, contentType)
             return reply.code(204).send()
+        }
+    })
+
+    // Local preview and download, the stand-in for the presigned S3 GET.
+    await fastify.route({
+        url: '/dev-uploads/*',
+        method: 'GET',
+        handler: async (request, reply) => {
+            if (envVariables.storageBackend() === 's3' || !envVariables.isLocal()) {
+                return reply.code(404).send({ error: 'Not found' })
+            }
+            let objectKey: string
+            try {
+                objectKey = decodeURIComponent((request.params as { '*': string })['*'] ?? '')
+            } catch {
+                return reply.code(400).send({ error: 'Invalid key' })
+            }
+            if (!isSafeBookingObjectKey(objectKey)) {
+                return reply.code(400).send({ error: 'Invalid key' })
+            }
+            let body: Buffer
+            try {
+                body = await readLocalBookingUpload(objectKey)
+            } catch {
+                return reply.code(404).send({ error: 'Not found' })
+            }
+            const attachment = (request.query as { disposition?: string }).disposition === 'attachment'
+            return reply
+                .header('Content-Type', localBookingContentType(objectKey))
+                .header('Content-Disposition', contentDisposition(attachment ? 'attachment' : 'inline', objectKey))
+                .header('Cache-Control', 'no-store')
+                .send(body)
         }
     })
 

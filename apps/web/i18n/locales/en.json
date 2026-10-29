@@ -807,9 +807,7 @@
       "openRequestLimit": "This email already has requests waiting at this clinic. Wait for the clinic to answer, or cancel one from the link in your email."
     },
     "slotLabel": "Preferred time",
-    "slotHelp": "Choose a start that fits the visit length inside clinic availability.",
     "slotLoading": "Loading open times…",
-    "slotEmpty": "No open times on this day. Try another date or length.",
     "authRequired": "Sign in to open this booking form…",
     "stepsNav": "Booking steps",
     "stepOf": "Step {current} of {total}",
@@ -825,7 +823,23 @@
     "durationHelp": "The clinic chooses which lengths are available.",
     "durationMinutes": "{n} minutes",
     "manageLinkHelp": "Save this private link. It shows your request and lets you cancel it. The same link is in your confirmation email.",
-    "manageLink": "View or cancel this request"
+    "manageLink": "View or cancel this request",
+    "languageLabel": "Languages you need",
+    "languageHelp": "Choose any that matter to you. Only doctors who speak all of them are shown.",
+    "doctorLabel": "Doctor",
+    "anyDoctor": "Any available doctor",
+    "anyDoctorHelp": "The clinic sees you with whoever is free at the time you choose.",
+    "anyDoctorLanguageHelp": "A doctor who speaks {languages} and is free at the time you choose.",
+    "doctorLanguages": "Languages spoken",
+    "doctorsHidden": "Hidden because they don't speak every language you chose: {n}",
+    "slotWeekHelp": "Highlighted days have open times. The number is how many.",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "japanTimeNote": "All times are Japan time (JST).",
+    "slotEmptyWeek": "No open times this week.",
+    "slotEmptyAhead": "No open times in the coming weeks. Try another visit length, doctor, or language.",
+    "nextAvailable": "Next available: {date}",
+    "openTimesCount": "open times: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Booking",
@@ -834,7 +848,7 @@
     "empty": "No booking submissions yet",
     "answersHeading": "Answers",
     "uploadsHeading": "Uploads",
-    "uploadsRetentionNote": "Identity and insurance photos are kept only until their retain-until date, then purged.",
+    "uploadsRetentionNote": "Identity and insurance photos are kept until their retain-until date. They are deleted as soon as the visit is cancelled or declined.",
     "download": "Download",
     "purged": "Purged",
     "retainUntil": "Retain until {date}",
@@ -848,7 +862,7 @@
       "appointment": "Appointment",
       "identity": "Identity upload",
       "created": "Created",
-      "locale": "Locale"
+      "locale": "Language"
     },
     "status": {
       "received": "Received",
@@ -880,13 +894,19 @@
       "decline": "Decline",
       "cancel": "Cancel appointment",
       "complete": "Mark completed"
-    }
+    },
+    "doctor": "Doctor",
+    "languagesRequested": "Languages requested",
+    "preview": "Preview",
+    "previewOf": "Open {name} in a new tab",
+    "purgedNote": "This file was deleted.",
+    "downloadNote": "A downloaded copy is the clinic's to keep safe and to delete when it is no longer needed."
   },
   "bookingAvailability": {
     "clinicLabel": "Clinic site",
-    "help": "Drag to paint 30-minute availability. Click a block to remove it. Patients book a 15, 30, 45, or 60 minute visit inside those windows.",
+    "help": "Weekly hours come from Settings. Drag to add extra open time; click extra time to remove it. Click a weekly block to close it for that day. Patients book a 15, 30, 45, or 60 minute visit inside open time.",
     "loading": "Loading calendar…",
-    "windowTitle": "Available",
+    "windowTitle": "Extra open time",
     "createFailed": "Could not save that availability window.",
     "deleteFailed": "Could not remove that window.",
     "removed": "Availability removed.",
@@ -894,7 +914,20 @@
     "legend": "Calendar key",
     "patient": "Patient",
     "loadFailed": "Could not load this calendar.",
-    "appointmentHelp": "Click an appointment to open the request."
+    "appointmentHelp": "Click an appointment to open the request.",
+    "closeHelp": "Drag to close a range, or pick days in the Close day row. Click a closed block to reopen it. Appointments already booked stay.",
+    "modeLabel": "Calendar mode",
+    "modeOpen": "Add open time",
+    "modeClose": "Close time",
+    "weeklyTitle": "Weekly hours",
+    "closedTitle": "Closed",
+    "closeDayRow": "Close day",
+    "closeFailed": "Could not close that time.",
+    "closed": "Time closed.",
+    "reopened": "Time reopened.",
+    "scheduleLabel": "Schedule",
+    "scheduleClinic": "Whole clinic",
+    "scheduleUsesClinic": "uses clinic hours"
   },
   "bookingForms": {
     "standardIntake": "Standard visit request",
@@ -918,7 +951,8 @@
     "tabs": {
       "requests": "Requests",
       "calendar": "Calendar",
-      "settings": "Settings"
+      "settings": "Settings",
+      "team": "Team"
     },
     "roles": {
       "owner": "Owner",
@@ -942,6 +976,19 @@
       "role": "Role",
       "invite": "Invite",
       "invited": "Invited {email}"
+    },
+    "weeklyHours": {
+      "heading": "Weekly hours",
+      "help": "Your usual week, in Japan time (JST). Patients can book inside these hours. Add one-off open time or close a day on the Calendar.",
+      "closed": "Closed",
+      "opens": "{day} opens",
+      "closes": "{day} closes",
+      "addBlock": "Add hours",
+      "removeBlock": "Remove",
+      "copyToWeekdays": "Copy to Tuesday–Friday",
+      "invalid": "Two blocks on the same day overlap. Change one of them.",
+      "save": "Save weekly hours",
+      "doctorHelp": "This doctor's own week. Once it is saved, the doctor is booked separately from clinic hours and from other doctors. Clinic-wide closures still apply."
     }
   },
   "patientBooking": {

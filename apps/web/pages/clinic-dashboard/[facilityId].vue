@@ -73,6 +73,10 @@
                 <ClinicSettingsPanel
                     v-else-if="tab === 'settings' && clinic.canManage"
                     :facility-id="facilityId"
+                />
+                <ClinicTeamPanel
+                    v-else-if="tab === 'team' && clinic.canManage"
+                    :facility-id="facilityId"
                     :is-moderator="clinic.role === null"
                 />
             </template>
@@ -91,14 +95,14 @@ import { formatPageTitle } from '~/utils/site'
 
 /**
  * `/clinic-dashboard/{facilityId}`: one clinic's booking requests, calendar,
- * and (for owners and moderators) settings and members. A clinic subdomain's
+ * and (for owners and moderators) settings and the team. A clinic subdomain's
  * `/dashboard` redirects here so sign-in stays on one origin.
  */
 definePageMeta({
     ssr: false
 })
 
-type Tab = 'requests' | 'calendar' | 'settings'
+type Tab = 'requests' | 'calendar' | 'settings' | 'team'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -109,7 +113,7 @@ const loading = ref(true)
 
 const tab = computed((): Tab => {
     const value = route.query.tab
-    if (value === 'calendar' || (value === 'settings' && clinic.value?.canManage)) {
+    if (value === 'calendar' || ((value === 'settings' || value === 'team') && clinic.value?.canManage)) {
         return value
     }
     return 'requests'
@@ -119,7 +123,12 @@ const bookingId = computed(() => typeof route.query.booking === 'string' ? route
 const tabs = computed(() => [
     { id: 'requests', label: t('clinicDashboard.tabs.requests') },
     { id: 'calendar', label: t('clinicDashboard.tabs.calendar') },
-    ...(clinic.value?.canManage ? [{ id: 'settings', label: t('clinicDashboard.tabs.settings') }] : [])
+    ...(clinic.value?.canManage
+        ? [
+            { id: 'settings', label: t('clinicDashboard.tabs.settings') },
+            { id: 'team', label: t('clinicDashboard.tabs.team') }
+        ]
+        : [])
 ])
 
 function openBooking(id: string): void {

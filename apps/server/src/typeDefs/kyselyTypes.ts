@@ -236,6 +236,8 @@ export interface BookingSubmissionsTable {
     clinic_site_id: string | null
     practitioner_id: string | null
     service_key: string | null
+    /** Languages the patient asked for. */
+    spoken_languages: ColumnType<string[], string[] | undefined, string[]>
     form_definition_id: string
     form_version: number
     locale: string
@@ -269,11 +271,40 @@ export interface ClinicAvailabilityWindowsTable {
     id: Generated<string>
     facility_id: string | null
     clinic_site_id: string | null
+    /** Null is the clinic's own schedule. */
+    practitioner_id: string | null
     starts_at: string
     ends_at: string
     created_by: string | null
     created_date: Generated<string>
     updated_date: Generated<string>
+}
+
+/** Usual opening hours in Japan time. weekday is ISO (1 Monday, 7 Sunday); minutes after midnight JST. */
+export interface ClinicWeeklyHoursTable {
+    id: Generated<string>
+    facility_id: string
+    /** Null is the clinic's own schedule. */
+    practitioner_id: string | null
+    weekday: number
+    start_minute: number
+    end_minute: number
+    created_by: string | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** A dated range with no open time: a holiday, a day off, or one closed weekly block. */
+export interface ClinicAvailabilityClosuresTable {
+    id: Generated<string>
+    facility_id: string
+    /** Null closes the whole clinic, every doctor included. */
+    practitioner_id: string | null
+    starts_at: string
+    ends_at: string
+    reason: string | null
+    created_by: string | null
+    created_date: Generated<string>
 }
 
 /** Patient appointment inside availability. 15-minute start alignment. Requested and confirmed rows hold time. */
@@ -282,6 +313,8 @@ export interface BookingAppointmentsTable {
     facility_id: string | null
     clinic_site_id: string | null
     booking_submission_id: string | null
+    /** The schedule this visit holds time on. Null is clinic time. */
+    practitioner_id: string | null
     starts_at: string
     ends_at: string
     duration_minutes: number
@@ -318,6 +351,8 @@ export interface Database {
     booking_submissions: BookingSubmissionsTable
     booking_uploads: BookingUploadsTable
     clinic_availability_windows: ClinicAvailabilityWindowsTable
+    clinic_weekly_hours: ClinicWeeklyHoursTable
+    clinic_availability_closures: ClinicAvailabilityClosuresTable
     booking_appointments: BookingAppointmentsTable
 }
 

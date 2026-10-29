@@ -146,6 +146,34 @@ export function listFormSources(): FormSource[] {
     return Object.values(FORMS_BY_ID)
 }
 
+/**
+ * Stored answers for staff, in the form's order with the full name first. A file
+ * field's answer is its upload id; the file is listed under uploads instead, so
+ * it is left out here, as is any answer that is one of the request's upload ids.
+ */
+export function staffAnswers(
+    formDefinitionId: string,
+    answers: Record<string, unknown>,
+    uploadIds: ReadonlySet<string>
+): Array<{ fieldId: string, value: string | null }> {
+    const fields = formSourceById(formDefinitionId)?.fields ?? []
+    const fileFieldIds = new Set(fields
+        .filter(formField => formField.type === BookingFormFieldType.File)
+        .map(formField => formField.id))
+    const order = fields.map(formField => formField.id)
+    const rank = (fieldId: string) => {
+        if (fieldId === 'fullName') {
+            return -1
+        }
+        const index = order.indexOf(fieldId)
+        return index === -1 ? order.length : index
+    }
+    return Object.entries(answers)
+        .filter(([fieldId, value]) => !fileFieldIds.has(fieldId) && !(typeof value === 'string' && uploadIds.has(value)))
+        .sort(([a], [b]) => rank(a) - rank(b))
+        .map(([fieldId, value]) => ({ fieldId, value: typeof value === 'string' ? value : null }))
+}
+
 export function resolveFormSource(formDefinitionId: string): FormSource {
     return formSourceById(formDefinitionId) ?? FORMS_BY_ID[DEFAULT_BOOKING_FORM_ID]!
 }
@@ -180,6 +208,9 @@ export function isOfferedFormId(offeredFormIds: readonly string[], formId: strin
     return parseFormDefinitionIds(offeredFormIds).includes(formId)
 }
 
+/** A form without the clinic's doctors and languages, which come from the database. */
+export type AssembledBookingForm = Omit<BookingForm, 'practitioners' | 'languages'>
+
 export function assembleBookingForm(input: {
     formDefinitionId?: string | null
     facilityId?: string | null
@@ -188,7 +219,7 @@ export function assembleBookingForm(input: {
     clinicName: string
     themePrimary?: string | null
     allowedDurations?: readonly number[]
-}): BookingForm {
+}): AssembledBookingForm {
     const source = resolveFormSource(input.formDefinitionId ?? DEFAULT_BOOKING_FORM_ID)
 
     return {
@@ -204,7 +235,7 @@ export function assembleBookingForm(input: {
     }
 }
 
-export function fieldById(form: BookingForm, fieldId: string): BookingFormField | undefined {
+export function fieldById(form: Pick<BookingForm, 'fields'>, fieldId: string): BookingFormField | undefined {
     return form.fields.find(item => item.id === fieldId)
 }
 

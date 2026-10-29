@@ -807,9 +807,7 @@
       "openRequestLimit": "May mga kahilingan na ang email na ito na naghihintay sa klinikang ito. Hintayin ang sagot ng klinika, o kanselahin ang isa gamit ang link sa iyong email."
     },
     "slotLabel": "Gustong oras",
-    "slotHelp": "Pumili ng simula na kasya sa haba sa loob ng available na oras.",
     "slotLoading": "Naglo-load ng bukas na oras…",
-    "slotEmpty": "Walang oras sa araw na ito. Subukan ang ibang petsa o haba.",
     "authRequired": "Mag-sign in upang buksan ang form ng booking na ito…",
     "stepsNav": "Mga hakbang sa pag-book",
     "stepOf": "Hakbang {current} ng {total}",
@@ -825,7 +823,23 @@
     "durationHelp": "Ang klinika ang pumipili kung anong haba ang available.",
     "durationMinutes": "{n} minuto",
     "manageLinkHelp": "I-save ang pribadong link na ito. Makikita mo rito ang iyong kahilingan at makakansela mo ito. Nasa email ng kumpirmasyon din ang link na ito.",
-    "manageLink": "Tingnan o kanselahin ang kahilingang ito"
+    "manageLink": "Tingnan o kanselahin ang kahilingang ito",
+    "languageLabel": "Mga wikang kailangan mo",
+    "languageHelp": "Piliin ang mahalaga sa iyo. Ang mga doktor lang na nagsasalita ng lahat ng ito ang ipinapakita.",
+    "doctorLabel": "Doktor",
+    "anyDoctor": "Kahit sinong bakanteng doktor",
+    "anyDoctorHelp": "Titingnan ka ng sinumang bakante sa oras na pipiliin mo.",
+    "anyDoctorLanguageHelp": "Isang doktor na nagsasalita ng {languages} at bakante sa oras na pipiliin mo.",
+    "doctorLanguages": "Mga wikang sinasalita",
+    "doctorsHidden": "Nakatago dahil hindi nila sinasalita ang lahat ng wikang pinili mo: {n}",
+    "slotWeekHelp": "May bakanteng oras ang mga naka-highlight na araw. Ang numero ay kung ilan.",
+    "previousWeek": "Nakaraang linggo",
+    "nextWeek": "Susunod na linggo",
+    "japanTimeNote": "Lahat ng oras ay oras ng Japan (JST).",
+    "slotEmptyWeek": "Walang bakanteng oras sa linggong ito.",
+    "slotEmptyAhead": "Walang bakanteng oras sa mga darating na linggo. Subukan ang ibang haba ng pagbisita, doktor, o wika.",
+    "nextAvailable": "Susunod na bakante: {date}",
+    "openTimesCount": "bakanteng oras: {n}"
   },
   "bookingDashboard": {
     "detailHeading": "Pagpapareserba",
@@ -834,7 +848,7 @@
     "empty": "Wala pang booking submissions",
     "answersHeading": "Mga sagot",
     "uploadsHeading": "Mga upload",
-    "uploadsRetentionNote": "Ang mga larawan ng ID at insurance ay itinatago hanggang sa retain-until date, tapos buburahin.",
+    "uploadsRetentionNote": "Itinatago ang mga larawan ng ID at insurance hanggang sa petsa ng pagtatago. Binubura ang mga ito kapag kinansela o tinanggihan ang pagbisita.",
     "download": "I-download",
     "purged": "Nabura na",
     "retainUntil": "Itago hanggang {date}",
@@ -880,13 +894,19 @@
       "decline": "Tanggihan",
       "cancel": "Kanselahin ang appointment",
       "complete": "Markahang tapos na"
-    }
+    },
+    "doctor": "Doktor",
+    "languagesRequested": "Mga hiniling na wika",
+    "preview": "Silipin",
+    "previewOf": "Buksan ang {name} sa bagong tab",
+    "purgedNote": "Nabura na ang file na ito.",
+    "downloadNote": "Ang kopyang na-download ay pananagutan ng klinika na ingatan at burahin kapag hindi na kailangan."
   },
   "bookingAvailability": {
     "clinicLabel": "Site ng klinika",
-    "help": "I-drag para magpinta ng 30-minutong availability. I-click para tanggalin. Ang pasyente ay nagbu-book ng 15, 30, 45, o 60 minuto.",
+    "help": "Ang lingguhang oras ay nasa Settings. I-drag para magdagdag ng dagdag na bukas na oras; i-click ang dagdag na oras para alisin ito. I-click ang isang lingguhang block para isara ito sa araw na iyon. Nagbu-book ang mga pasyente ng 15, 30, 45, o 60 minutong pagbisita sa loob ng bukas na oras.",
     "loading": "Naglo-load ang calendar…",
-    "windowTitle": "Bukas",
+    "windowTitle": "Dagdag na bukas na oras",
     "createFailed": "Hindi ma-save ang availability window.",
     "deleteFailed": "Hindi matanggal ang window.",
     "removed": "Inalis ang bakanteng oras.",
@@ -894,7 +914,20 @@
     "legend": "Gabay sa kalendaryo",
     "patient": "Pasyente",
     "loadFailed": "Hindi ma-load ang kalendaryong ito.",
-    "appointmentHelp": "I-click ang appointment para buksan ang kahilingan."
+    "appointmentHelp": "I-click ang appointment para buksan ang kahilingan.",
+    "closeHelp": "I-drag para isara ang isang saklaw ng oras, o pumili ng mga araw sa hanay na Isara ang araw. I-click ang saradong block para buksan ulit. Mananatili ang mga naka-book nang appointment.",
+    "modeLabel": "Mode ng kalendaryo",
+    "modeOpen": "Magdagdag ng bukas na oras",
+    "modeClose": "Isara ang oras",
+    "weeklyTitle": "Lingguhang oras",
+    "closedTitle": "Sarado",
+    "closeDayRow": "Isara ang araw",
+    "closeFailed": "Hindi maisara ang oras na iyon.",
+    "closed": "Naisara na ang oras.",
+    "reopened": "Nabuksan ulit ang oras.",
+    "scheduleLabel": "Iskedyul",
+    "scheduleClinic": "Buong klinika",
+    "scheduleUsesClinic": "gumagamit ng oras ng klinika"
   },
   "bookingForms": {
     "standardIntake": "Karaniwang kahilingan sa pagpapatingin",
@@ -918,7 +951,8 @@
     "tabs": {
       "requests": "Mga kahilingan",
       "calendar": "Kalendaryo",
-      "settings": "Mga setting"
+      "settings": "Mga setting",
+      "team": "Koponan"
     },
     "roles": {
       "owner": "May-ari",
@@ -942,6 +976,19 @@
       "role": "Tungkulin",
       "invite": "Imbitahan",
       "invited": "Inimbitahan si {email}"
+    },
+    "weeklyHours": {
+      "heading": "Lingguhang oras",
+      "help": "Ang karaniwang linggo ninyo, sa oras ng Japan (JST). Makakapag-book ang mga pasyente sa loob ng mga oras na ito. Magdagdag ng isang beses na bukas na oras o isara ang isang araw sa Kalendaryo.",
+      "closed": "Sarado",
+      "opens": "Bukas ng {day}",
+      "closes": "Sara ng {day}",
+      "addBlock": "Magdagdag ng oras",
+      "removeBlock": "Alisin",
+      "copyToWeekdays": "Kopyahin sa Martes–Biyernes",
+      "invalid": "Nagsasapawan ang dalawang block sa iisang araw. Baguhin ang isa sa mga ito.",
+      "save": "I-save ang lingguhang oras",
+      "doctorHelp": "Sariling linggo ng doktor na ito. Kapag na-save, hiwalay nang bino-book ang doktor sa oras ng klinika at sa ibang doktor. Nalalapat pa rin ang pagsasara ng buong klinika."
     }
   },
   "patientBooking": {

@@ -27,6 +27,8 @@ async function runSeed() {
         await client.query('DELETE FROM booking_uploads')
         await client.query('DELETE FROM booking_submissions')
         await client.query('DELETE FROM clinic_availability_windows')
+        await client.query('DELETE FROM clinic_availability_closures')
+        await client.query('DELETE FROM clinic_weekly_hours')
         await client.query('DELETE FROM booking_settings')
         await client.query('DELETE FROM clinic_memberships')
         await client.query('DELETE FROM clinic_site_locales')
@@ -259,14 +261,16 @@ async function runSeed() {
             [SHOWCASE_FACILITY_ID, SHOWCASE_CLINIC_SITE_ID]
         )
 
-        // The showcase Book button needs open times. Weekdays 09:00-12:00 and 13:00-17:00 JST.
-        for (const window of showcaseAvailabilityWindows(new Date(), 14)) {
-            await client.query(
-                `INSERT INTO clinic_availability_windows (
-                    facility_id, clinic_site_id, starts_at, ends_at, created_by
-                ) VALUES ($1, $2, $3, $4, 'seed')`,
-                [SHOWCASE_FACILITY_ID, SHOWCASE_CLINIC_SITE_ID, window.startsAt, window.endsAt]
-            )
+        // The showcase Book button needs open times: weekly hours, Monday to Friday, in JST.
+        for (let weekday = 1; weekday <= 5; weekday++) {
+            for (const [startHour, endHour] of SHOWCASE_HOURS_JST) {
+                await client.query(
+                    `INSERT INTO clinic_weekly_hours (
+                        facility_id, weekday, start_minute, end_minute, created_by
+                    ) VALUES ($1, $2, $3, $4, 'seed')`,
+                    [SHOWCASE_FACILITY_ID, weekday, startHour * 60, endHour * 60]
+                )
+            }
         }
 
         await client.query('COMMIT')
@@ -289,31 +293,7 @@ async function runSeed() {
     }
 }
 
-const JST_OFFSET_HOURS = 9
 const SHOWCASE_HOURS_JST = [[9, 12], [13, 17]] as const
-
-/** Weekday clinic hours (JST) from tomorrow for `days` days, as ISO UTC ranges. */
-function showcaseAvailabilityWindows(from: Date, days: number): Array<{ startsAt: string, endsAt: string }> {
-    const windows: Array<{ startsAt: string, endsAt: string }> = []
-    for (let offset = 1; offset <= days; offset++) {
-        const jstDay = new Date(from.getTime() + JST_OFFSET_HOURS * 60 * 60 * 1000)
-        jstDay.setUTCDate(jstDay.getUTCDate() + offset)
-        const weekday = jstDay.getUTCDay()
-        if (weekday === 0 || weekday === 6) {
-            continue
-        }
-        for (const [startHour, endHour] of SHOWCASE_HOURS_JST) {
-            const at = (hour: number) => new Date(Date.UTC(
-                jstDay.getUTCFullYear(),
-                jstDay.getUTCMonth(),
-                jstDay.getUTCDate(),
-                hour - JST_OFFSET_HOURS
-            )).toISOString()
-            windows.push({ startsAt: at(startHour), endsAt: at(endHour) })
-        }
-    }
-    return windows
-}
 
 async function lookupCityId(
     client: pg.Client,
