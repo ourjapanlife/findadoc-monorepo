@@ -243,8 +243,8 @@ const calendarOptions = computed((): CalendarOptions => ({
     snapDuration: '00:30:00',
     slotLabelInterval: '00:30:00',
     allDaySlot: false,
-    slotMinTime: '06:00:00',
-    slotMaxTime: '22:00:00',
+    // The whole day stays reachable: the grid uses the browser's time zone (#163), so JST
+    // hours can land anywhere for a user abroad. It opens scrolled to the morning.
     scrollTime: '08:30:00',
     nowIndicator: true,
     dayHeaderFormat: { weekday: 'short', day: 'numeric' },
@@ -298,8 +298,8 @@ async function reloadCalendar(): Promise<void> {
     appointments.value = loaded.appointments
 }
 
-async function addWindow(startsAt: string, endsAt: string): Promise<void> {
-    const created = await createClinicAvailabilityWindow({ clinicSiteId: clinicId.value, startsAt, endsAt })
+async function addWindow(clinicSiteId: string, startsAt: string, endsAt: string): Promise<void> {
+    const created = await createClinicAvailabilityWindow({ clinicSiteId, startsAt, endsAt })
     if (created === null) {
         toast.error(t('bookingAvailability.createFailed'))
         return
@@ -312,7 +312,7 @@ async function onSelect(selection: DateSelectArg): Promise<void> {
     if (clinicId.value === '') {
         return
     }
-    await addWindow(selection.start.toISOString(), selection.end.toISOString())
+    await addWindow(clinicId.value, selection.start.toISOString(), selection.end.toISOString())
 }
 
 async function onEventClick(info: EventClickArg): Promise<void> {
@@ -328,7 +328,9 @@ async function onEventClick(info: EventClickArg): Promise<void> {
     if (removed === undefined) {
         return
     }
-    // Remove at once and offer Undo, instead of a blocking browser dialog.
+    // Remove at once and offer Undo, instead of a blocking browser dialog. Undo restores to
+    // this clinic even if moderation has switched to another one since.
+    const removedFromClinicId = clinicId.value
     const result = await deleteClinicAvailabilityWindow(removed.id)
     if (result === null || !result.isSuccessful) {
         toast.error(t('bookingAvailability.deleteFailed'))
@@ -341,7 +343,7 @@ async function onEventClick(info: EventClickArg): Promise<void> {
             label: undo,
             altText: undo,
             onClick: () => {
-                void addWindow(removed.startsAt, removed.endsAt)
+                void addWindow(removedFromClinicId, removed.startsAt, removed.endsAt)
             }
         }
     })

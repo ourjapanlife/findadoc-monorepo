@@ -115,7 +115,7 @@
                 <button
                     type="submit"
                     class="btn btn-primary min-w-40"
-                    :disabled="savingSettings || durations.length === 0 || formIds.length === 0"
+                    :disabled="savingSettings || inviting || durations.length === 0 || formIds.length === 0"
                     :aria-busy="savingSettings"
                     data-testid="clinic-settings-save"
                 >
@@ -200,7 +200,7 @@
                 <button
                     type="submit"
                     class="btn btn-primary min-w-32"
-                    :disabled="inviting"
+                    :disabled="inviting || savingSettings"
                     :aria-busy="inviting"
                 >
                     <ButtonSpinner v-if="inviting" />
@@ -287,7 +287,11 @@ watch(formIds, ids => {
     }
 })
 
+// A save and an invite never overlap: the invite reloads settings, which would undo unsaved edits.
 async function saveSettings(): Promise<void> {
+    if (inviting.value) {
+        return
+    }
     savingSettings.value = true
     const ordered = [defaultFormId.value, ...formIds.value.filter(id => id !== defaultFormId.value)]
     const saved = await updateBookingSettings({
@@ -305,6 +309,9 @@ async function saveSettings(): Promise<void> {
 }
 
 async function invite(): Promise<void> {
+    if (savingSettings.value) {
+        return
+    }
     inviting.value = true
     const role = props.isModerator ? inviteRole.value : ClinicMemberRole.Staff
     const added = await inviteClinicMember(props.facilityId, inviteEmail.value, role)
@@ -318,10 +325,12 @@ async function invite(): Promise<void> {
     await load()
 }
 
-// Removing someone asks in a toast, not a browser dialog. The toast's button does it.
+// Removing someone asks in a toast, not a browser dialog. The toast's button does it, and
+// the toast stays until it is used or dismissed, so there is no deadline to confirm.
 function askRemove(member: ClinicMember): void {
     const label = t('clinicDashboard.members.remove')
     toast.warning(t('clinicDashboard.members.removeConfirm', { email: member.email ?? '' }), {
+        duration: Number.POSITIVE_INFINITY,
         action: {
             label,
             altText: label,
