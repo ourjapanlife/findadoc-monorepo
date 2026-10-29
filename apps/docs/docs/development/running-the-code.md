@@ -161,15 +161,18 @@ CI fails if the committed types do not match the schema.
 pnpm lint                # every package
 pnpm lint:fix
 pnpm typecheck           # includes the locale key check
-pnpm test                # web, MCP, and utils unit tests
-pnpm test:server         # API tests; needs the local database
+pnpm test                # web, MCP, and utils unit tests (with coverage)
+pnpm test:server         # API tests with coverage; needs the local database
 pnpm test:e2e            # Playwright, from the website
 ```
+
+Unit tests write a coverage report and fail when the package drops below its Vitest thresholds. The API and MCP bars are higher than the website; `@findadoc/utils` is gated too.
 
 Run one package's task with `--filter`:
 
 ```bash
 pnpm --filter @findadoc/web test:unit
+pnpm --filter @findadoc/utils test:coverage
 ```
 
 ## Documentation Site (`apps/docs`)
