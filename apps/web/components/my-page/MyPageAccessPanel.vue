@@ -379,9 +379,8 @@ function sidebarNavLinkClass(page: NavPage): string {
 
 const clinicLinkClass = computed(() => {
     const collapsedLayout = props.collapsed ? ' md:justify-center md:px-1.5 md:gap-0' : ''
-    return 'flex items-center gap-2 py-2 px-3 text-sm font-medium transition-colors border-l-2 rounded-r-md'
-        + ' border-transparent text-primary-text-muted hover:text-primary-text hover:bg-accent-bg/10'
-        + collapsedLayout
+    const base = `flex items-center gap-2 py-2 px-3 text-sm font-medium transition-colors border-l-2 rounded-r-md${collapsedLayout}`
+    return `${base} border-transparent text-primary-text-muted hover:text-primary-text hover:bg-accent-bg/10`
 })
 
 async function loadIfLoggedIn(): Promise<void> {
