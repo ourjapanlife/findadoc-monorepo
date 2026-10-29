@@ -775,7 +775,9 @@
     "dateLabel": "日期",
     "durationLabel": "就诊时长",
     "durationHelp": "可选时长由诊所设定。",
-    "durationMinutes": "{n} 分钟"
+    "durationMinutes": "{n} 分钟",
+    "manageLinkHelp": "请保存此私人链接，可查看或取消您的申请。确认邮件中也有相同的链接。",
+    "manageLink": "查看或取消此申请"
   },
   "bookingDashboard": {
     "detailHeading": "预约",

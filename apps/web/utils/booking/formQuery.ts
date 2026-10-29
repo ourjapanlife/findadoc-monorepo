@@ -69,6 +69,7 @@ const submitBookingMutation = gql`
       status
       appointmentId
       createdDate
+      manageToken
     }
   }
 `

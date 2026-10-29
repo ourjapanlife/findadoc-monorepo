@@ -775,7 +775,9 @@
     "dateLabel": "Дата",
     "durationLabel": "Длительность приёма",
     "durationHelp": "Клиника выбирает доступные длительности.",
-    "durationMinutes": "{n} минут"
+    "durationMinutes": "{n} минут",
+    "manageLinkHelp": "Сохраните эту личную ссылку. По ней можно посмотреть и отменить запрос. Та же ссылка есть в письме-подтверждении.",
+    "manageLink": "Посмотреть или отменить запрос"
   },
   "bookingDashboard": {
     "detailHeading": "Запись",

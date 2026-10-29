@@ -775,7 +775,9 @@
     "dateLabel": "Date",
     "durationLabel": "Visit length",
     "durationHelp": "The clinic chooses which lengths are available.",
-    "durationMinutes": "{n} minutes"
+    "durationMinutes": "{n} minutes",
+    "manageLinkHelp": "Save this private link. It shows your request and lets you cancel it. The same link is in your confirmation email.",
+    "manageLink": "View or cancel this request"
   },
   "bookingDashboard": {
     "detailHeading": "Booking",

@@ -775,7 +775,9 @@
     "dateLabel": "日付",
     "durationLabel": "診察時間",
     "durationHelp": "選べる時間の長さはクリニックが決めています。",
-    "durationMinutes": "{n}分"
+    "durationMinutes": "{n}分",
+    "manageLinkHelp": "この非公開リンクを保存してください。リクエストの確認とキャンセルができます。確認メールにも同じリンクがあります。",
+    "manageLink": "このリクエストを確認・キャンセル"
   },
   "bookingDashboard": {
     "detailHeading": "予約",

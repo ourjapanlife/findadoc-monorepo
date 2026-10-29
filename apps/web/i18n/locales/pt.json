@@ -775,7 +775,9 @@
     "dateLabel": "Data",
     "durationLabel": "Duração da consulta",
     "durationHelp": "A clínica define quais durações estão disponíveis.",
-    "durationMinutes": "{n} minutos"
+    "durationMinutes": "{n} minutos",
+    "manageLinkHelp": "Guarde este link privado. Ele mostra seu pedido e permite cancelá-lo. O mesmo link está no e-mail de confirmação.",
+    "manageLink": "Ver ou cancelar este pedido"
   },
   "bookingDashboard": {
     "detailHeading": "Reserva",

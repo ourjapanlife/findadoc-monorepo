@@ -775,7 +775,9 @@
     "dateLabel": "Datum",
     "durationLabel": "Termindauer",
     "durationHelp": "Die Klinik legt fest, welche Längen verfügbar sind.",
-    "durationMinutes": "{n} Minuten"
+    "durationMinutes": "{n} Minuten",
+    "manageLinkHelp": "Speichern Sie diesen privaten Link. Damit sehen Sie Ihre Anfrage und können sie stornieren. Derselbe Link steht in Ihrer Bestätigungs-E-Mail.",
+    "manageLink": "Anfrage ansehen oder stornieren"
   },
   "bookingDashboard": {
     "detailHeading": "Buchung",

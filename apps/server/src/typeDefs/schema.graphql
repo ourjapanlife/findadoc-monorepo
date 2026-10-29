@@ -1249,6 +1249,11 @@ type BookingSubmissionResult {
   status: BookingSubmissionStatus!
   appointmentId: ID
   createdDate: String!
+  """
+  The private token for /book/manage#{token}, returned once to the submitter.
+  The same link is in the confirmation email, which may not arrive (SES sandbox, typo).
+  """
+  manageToken: String
 }
 
 """Whether the request emails went out. The visit itself is BookingAppointmentStatus."""

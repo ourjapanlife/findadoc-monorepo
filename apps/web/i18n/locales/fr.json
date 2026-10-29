@@ -775,7 +775,9 @@
     "dateLabel": "Date",
     "durationLabel": "Durée de la visite",
     "durationHelp": "La clinique choisit les durées disponibles.",
-    "durationMinutes": "{n} minutes"
+    "durationMinutes": "{n} minutes",
+    "manageLinkHelp": "Conservez ce lien privé. Il affiche votre demande et permet de l'annuler. Le même lien figure dans votre e-mail de confirmation.",
+    "manageLink": "Voir ou annuler cette demande"
   },
   "bookingDashboard": {
     "detailHeading": "Réservation",

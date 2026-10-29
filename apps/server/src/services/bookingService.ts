@@ -537,7 +537,8 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
             facilityId: target.facilityId,
             status,
             appointmentId,
-            createdDate: inserted.created_date
+            createdDate: inserted.created_date,
+            manageToken: patientToken.token
         },
         hasErrors: false
     }

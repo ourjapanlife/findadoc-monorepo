@@ -38,6 +38,21 @@
             >
                 {{ t('bookingPage.reference', { id: submissionId }) }}
             </p>
+            <div
+                v-if="manageUrl"
+                class="flex flex-col gap-1"
+            >
+                <p class="text-sm">
+                    {{ t('bookingPage.manageLinkHelp') }}
+                </p>
+                <NuxtLink
+                    :to="manageUrl"
+                    class="break-all text-primary underline"
+                    data-testid="clinic-booking-manage-link"
+                >
+                    {{ t('bookingPage.manageLink') }}
+                </NuxtLink>
+            </div>
         </div>
 
         <form
@@ -256,6 +271,7 @@ import {
     rememberBookingDraft,
     takeBookingDraft
 } from '~/utils/booking/draftMemory'
+import { localizedPath } from '~/utils/localePath'
 import { resolveDuration } from '~/utils/booking/durations'
 import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
@@ -281,6 +297,7 @@ const formError = ref('')
 const submitting = ref(false)
 const submitted = ref(false)
 const submissionId = ref('')
+const manageUrl = ref('')
 const selectedStart = ref<string | null>(props.query.start ?? null)
 const durationMinutes = ref(resolveDuration(props.query.duration, props.form.allowedDurations))
 const clinicKey = computed(() => bookingClinicKey(props.form))
@@ -752,6 +769,9 @@ async function onSubmit() {
         makeNonDirty()
         submitted.value = true
         submissionId.value = result.id
+        manageUrl.value = result.manageToken
+            ? `${localizedPath('/book/manage', String(locale.value))}#${result.manageToken}`
+            : ''
         if (autofillEnabled.value) {
             clearBookingAutofill(props.form.id, hostname)
         }

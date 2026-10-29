@@ -775,7 +775,9 @@
     "dateLabel": "Ngày",
     "durationLabel": "Thời lượng khám",
     "durationHelp": "Phòng khám chọn các thời lượng có sẵn.",
-    "durationMinutes": "{n} phút"
+    "durationMinutes": "{n} phút",
+    "manageLinkHelp": "Hãy lưu liên kết riêng này. Bạn có thể xem hoặc hủy yêu cầu. Liên kết này cũng có trong email xác nhận.",
+    "manageLink": "Xem hoặc hủy yêu cầu này"
   },
   "bookingDashboard": {
     "detailHeading": "Đặt lịch",

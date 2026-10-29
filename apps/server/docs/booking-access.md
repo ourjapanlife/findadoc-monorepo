@@ -1,5 +1,7 @@
 # Booking access, lifecycle, and forms
 
+To demo or test the whole flow, see [booking-showcase.md](./booking-showcase.md).
+
 Booking is keyed by the directory facility (`facilities.id`). A hosted clinic
 page (`clinic_sites`) is optional branding.
 

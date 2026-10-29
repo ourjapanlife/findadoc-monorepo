@@ -102,12 +102,13 @@ describe('booking flow', () => {
         )
         expect(again.hasErrors).toBe(true)
 
-        // The email carries the token; the database keeps only its hash. Swap in a known token.
-        const token = 'patient-token-for-the-booking-flow-test-0001'
-        await db.updateTable('booking_submissions')
-            .set({ cancel_token_hash: hashPatientToken(token) })
+        // The submitter gets the token once; the database keeps only its hash.
+        const token = submitted.data.manageToken!
+        const stored = await db.selectFrom('booking_submissions')
+            .select('cancel_token_hash')
             .where('id', '=', submitted.data.id)
-            .execute()
+            .executeTakeFirstOrThrow()
+        expect(stored.cancel_token_hash).toBe(hashPatientToken(token))
 
         const view = await appointmentService.getPatientBooking(token)
         expect(view?.canCancel).toBe(true)

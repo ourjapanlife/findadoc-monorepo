@@ -775,7 +775,9 @@
     "dateLabel": "Petsa",
     "durationLabel": "Haba ng konsultasyon",
     "durationHelp": "Ang klinika ang pumipili kung anong haba ang available.",
-    "durationMinutes": "{n} minuto"
+    "durationMinutes": "{n} minuto",
+    "manageLinkHelp": "I-save ang pribadong link na ito. Makikita mo rito ang iyong kahilingan at makakansela mo ito. Nasa email ng kumpirmasyon din ang link na ito.",
+    "manageLink": "Tingnan o kanselahin ang kahilingang ito"
   },
   "bookingDashboard": {
     "detailHeading": "Pagpapareserba",

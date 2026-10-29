@@ -255,6 +255,11 @@ export type BookingSubmissionResult = {
   createdDate: Scalars['String']['output'];
   facilityId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
+  /**
+   * The private token for /book/manage#{token}, returned once to the submitter.
+   * The same link is in the confirmation email, which may not arrive (SES sandbox, typo).
+   */
+  manageToken?: Maybe<Scalars['String']['output']>;
   status: BookingSubmissionStatus;
 };
 
@@ -2501,6 +2506,7 @@ export type BookingSubmissionResultResolvers<ContextType = any, ParentType exten
   createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   facilityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  manageToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['BookingSubmissionStatus'], ParentType, ContextType>;
 };
 

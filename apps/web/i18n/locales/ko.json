@@ -775,7 +775,9 @@
     "dateLabel": "날짜",
     "durationLabel": "진료 시간",
     "durationHelp": "가능한 시간은 클리닉이 정합니다.",
-    "durationMinutes": "{n}분"
+    "durationMinutes": "{n}분",
+    "manageLinkHelp": "이 비공개 링크를 저장하세요. 요청을 확인하고 취소할 수 있습니다. 확인 이메일에도 같은 링크가 있습니다.",
+    "manageLink": "이 요청 확인 또는 취소"
   },
   "bookingDashboard": {
     "detailHeading": "예약",
