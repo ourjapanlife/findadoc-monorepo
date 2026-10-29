@@ -44,22 +44,18 @@ Cancel (+reason) ─────▶ CANCELLED by the patient (slot freed)       
 - **The manage link works without email.** It is on the success screen, and the same link is in the confirmation email. Anyone with the link can view and cancel that one booking, so treat it like a password.
 - Who can open the dashboard: moderators and admins see every clinic. Clinic owners and staff see their own clinic once they're invited and sign in (needs #158).
 
-## 2. Email today: SES is in the sandbox
+## 2. Email
 
-SES only delivers to **verified** addresses until AWS grants production access (#157).
+SES has production access (#157), so mail goes to any address.
 
 | Where you run it | What happens to booking emails |
 |---|---|
 | Local (`SES_FROM_ADDRESS` not set) | Nothing is sent. The API terminal logs `Booking email logged` with the full `textBody`, including the manage link. |
-| Production, recipient **verified** in SES | Delivered. |
-| Production, recipient **not verified** | SES rejects it. The booking is still saved, the request still shows in the dashboard, and the submission's email status shows **Notify failed**. The patient still has the manage link from the success screen. |
+| Production | Delivered to the patient, and to the clinic's members. |
 
-So the whole flow works without email. Email is only one of the ways people are told.
+Clinic notices go to the clinic's members only (#161). A clinic with no members gets no notice; the request still shows in its dashboard and in moderation. Directory contacts (clinic-page doctors, the facility contact email, linked professionals) are never emailed.
 
-**To have emails arrive during a production demo**, verify every address that should receive mail. In the AWS console, go to **SES** (`ap-northeast-1`) → **Identities** → **Create identity** → **Email address**. The address's owner clicks the link AWS sends. Verify:
-
-- the patient email you will type into the form, and
-- the clinic inbox: **invite your own address as a member of the showcase clinic** (Dashboard → Settings → Team). Member emails get clinic notices first, and this works even before the invite is claimed. Without a member, notices go to the directory contacts for that facility (#161), which in the sandbox just bounce.
+**For a production demo, use internal addresses only**: invite your own address as a member of the showcase clinic (Dashboard → Settings → Team), and type an internal address as the demo patient. Member emails get clinic notices even before the invite is claimed.
 
 ## 3. Where to run the demo
 
@@ -67,7 +63,7 @@ So the whole flow works without email. Email is only one of the ways people are 
 |---|---|---|
 | Works today | Yes, on this branch | Only after #153 is merged and deployed |
 | Open times | Seeded: weekdays 09:00–12:00, 13:00–17:00 JST, next 14 days | A moderator paints them on the calendar |
-| Emails | Printed in the API terminal | Real, verified addresses only |
+| Emails | Printed in the API terminal | Real; use internal addresses only |
 | Sign-in | Real Auth0, **Moderator or Admin account** | Same |
 | Risk | Laptop has to run the stack | Real data; demo bookings stay in the database unless cancelled |
 
@@ -102,7 +98,7 @@ From the repo root, on this branch.
 1. `pnpm db:push` has applied `20261029150000_booking_access_lifecycle.sql`.
 2. As a moderator, open `https://www.findadoc.jp/clinic-dashboard/c32c316a-a368-499b-abaf-c5c973cb67e5` → **Calendar** and drag to paint open hours for tomorrow and the next few days. Without this the Book page says there are no times.
 3. **Settings → Team**: invite your own email (role Owner). Notices for the showcase then go to you.
-4. Verify in SES (section 2) your email and the demo patient email.
+4. Use an internal address for the demo patient (section 2).
 5. Open `https://multilingual-online-clinic.findadoc.jp/?preview=1` in both windows.
 6. Rehearse, then cancel the rehearsal bookings so their times free up.
 
@@ -201,8 +197,8 @@ Sign in with a plain (non-moderator) account with that sub. You see only the sho
 | Clinic subdomain doesn't show the clinic page | Preview cookie missing on that host | Open `…/?preview=1` once in that window |
 | Dashboard: "This account is not linked to a clinic yet" | Plain account and no claimed membership | Use a Moderator account, or the SQL above; production needs #158 |
 | Dashboard keeps showing "Sign in" | Auth0 session is per origin | Sign in on `localhost:3000` / `www.findadoc.jp`, not the clinic subdomain |
-| Request shows **Notify failed** | SES rejected an unverified recipient (sandbox) | Expected; verify the address in SES, or use the manage link |
-| No email in production | Sandbox, or the address isn't verified | Section 2 |
+| Request shows **Notify failed** | SES rejected the patient address | Check the address; the patient can use the manage link |
+| Clinic gets no email in production | The clinic has no members | Invite one (Settings → Team); section 2 |
 | Times look shifted | Calendar uses your computer's time zone (#163) | Set your computer to Japan time for the demo |
 | Can't find the manage link later | It's only shown once and emailed | Locally: API terminal, `Booking email logged` → `textBody` |
 
@@ -213,4 +209,4 @@ Sign in with a plain (non-moderator) account with that sub. You see only the sho
 
 ## Known gaps
 
-SES sandbox (#157), Auth0 email claims (#158), scheduled identity-file purge (#159), rate limits (#160), notice fallback to directory contacts (#161), weekly opening hours (#162), calendar time zone (#163), localised emails (#164), dashboard in navigation (#165), clinic-authored forms (#166), browser tests (#167), hard-coded local DB port (#168), facility delete message (#169).
+Auth0 email claims (#158), scheduled identity-file purge (#159), rate limits (#160), weekly opening hours (#162), calendar time zone (#163), localised emails (#164), dashboard in navigation (#165), clinic-authored forms (#166), browser tests (#167), hard-coded local DB port (#168), facility delete message (#169).
