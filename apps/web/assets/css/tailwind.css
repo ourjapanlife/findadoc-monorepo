@@ -387,6 +387,22 @@
       aria-[invalid=true]:border-error;
   }
 
+  /*
+   * Native select arrows hug the border and differ per browser. Draw our own chevron from
+   * two diagonal gradient strokes so it follows the theme's muted-text token in every theme
+   * (an SVG data URI can't read CSS variables).
+   */
+  select.field:not([multiple]) {
+    --field-chevron: var(--color-primary-text-muted);
+    @apply appearance-none pr-10;
+    background-image:
+      linear-gradient(45deg, transparent calc(50% - 0.75px), var(--field-chevron) 0 calc(50% + 0.75px), transparent 0),
+      linear-gradient(135deg, transparent calc(50% - 0.75px), var(--field-chevron) 0 calc(50% + 0.75px), transparent 0);
+    background-position: right calc(1rem + 6px) center, right 1rem center;
+    background-size: 6px 6px;
+    background-repeat: no-repeat;
+  }
+
   .field-textarea {
     @apply h-auto min-h-28 py-3;
   }
