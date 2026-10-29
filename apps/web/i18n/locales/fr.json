@@ -884,9 +884,9 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Site de clinique",
-    "help": "Glissez pour peindre des disponibilités de 30 minutes. Un clic retire un bloc. Les patients réservent 15, 30, 45 ou 60 minutes dans ces plages.",
+    "help": "Les horaires hebdomadaires se règlent dans Paramètres. Faites glisser pour ajouter une plage d'ouverture supplémentaire ; cliquez dessus pour la retirer. Cliquez sur un créneau hebdomadaire pour le fermer ce jour-là. Les patients réservent une visite de 15, 30, 45 ou 60 minutes pendant les heures d'ouverture.",
     "loading": "Chargement du calendrier…",
-    "windowTitle": "Disponible",
+    "windowTitle": "Ouverture supplémentaire",
     "createFailed": "Impossible d’enregistrer cette disponibilité.",
     "deleteFailed": "Impossible de retirer cette disponibilité.",
     "removed": "Disponibilité supprimée.",
@@ -894,7 +894,17 @@
     "legend": "Légende du calendrier",
     "patient": "Patient·e",
     "loadFailed": "Impossible de charger ce calendrier.",
-    "appointmentHelp": "Cliquez sur un rendez-vous pour ouvrir la demande."
+    "appointmentHelp": "Cliquez sur un rendez-vous pour ouvrir la demande.",
+    "closeHelp": "Faites glisser pour fermer une plage, ou choisissez des jours dans la ligne Fermer la journée. Cliquez sur une plage fermée pour la rouvrir. Les rendez-vous déjà pris restent.",
+    "modeLabel": "Mode du calendrier",
+    "modeOpen": "Ajouter une ouverture",
+    "modeClose": "Fermer une plage",
+    "weeklyTitle": "Horaires hebdomadaires",
+    "closedTitle": "Fermé",
+    "closeDayRow": "Fermer la journée",
+    "closeFailed": "Impossible de fermer cette plage.",
+    "closed": "Plage fermée.",
+    "reopened": "Plage rouverte."
   },
   "bookingForms": {
     "standardIntake": "Demande de consultation standard",
@@ -942,6 +952,18 @@
       "role": "Rôle",
       "invite": "Inviter",
       "invited": "{email} invité"
+    },
+    "weeklyHours": {
+      "heading": "Horaires hebdomadaires",
+      "help": "Votre semaine habituelle, à l'heure du Japon (JST). Les patients peuvent réserver pendant ces heures. Ajoutez une ouverture ponctuelle ou fermez une journée dans le Calendrier.",
+      "closed": "Fermé",
+      "opens": "Ouverture du {day}",
+      "closes": "Fermeture du {day}",
+      "addBlock": "Ajouter une plage",
+      "removeBlock": "Retirer",
+      "copyToWeekdays": "Copier du mardi au vendredi",
+      "invalid": "Deux plages du même jour se chevauchent. Modifiez l'une d'elles.",
+      "save": "Enregistrer les horaires"
     }
   },
   "patientBooking": {

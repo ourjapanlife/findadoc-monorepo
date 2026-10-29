@@ -884,9 +884,9 @@
   },
   "bookingAvailability": {
     "clinicLabel": "诊所站点",
-    "help": "拖动以涂出 30 分钟的可预约时段。点击时段可删除。患者可在其中预约 15、30、45 或 60 分钟。",
+    "help": "每周营业时间在“设置”中设定。拖动可添加临时开放时间，点击临时时间可删除。点击每周时段可将当天该时段设为休诊。患者可在开放时间内预约15、30、45或60分钟的就诊。",
     "loading": "正在加载日历…",
-    "windowTitle": "可预约",
+    "windowTitle": "临时开放时间",
     "createFailed": "无法保存该可预约时段。",
     "deleteFailed": "无法删除该时段。",
     "removed": "已删除可预约时间。",
@@ -894,7 +894,17 @@
     "legend": "日历图例",
     "patient": "患者",
     "loadFailed": "无法加载此日历。",
-    "appointmentHelp": "点击预约可打开申请。"
+    "appointmentHelp": "点击预约可打开申请。",
+    "closeHelp": "拖动可关闭一段时间，或在“全天休诊”一行中选择日期。点击已关闭的时段可重新开放。已预约的就诊不受影响。",
+    "modeLabel": "日历模式",
+    "modeOpen": "添加开放时间",
+    "modeClose": "关闭时间",
+    "weeklyTitle": "每周营业时间",
+    "closedTitle": "休诊",
+    "closeDayRow": "全天休诊",
+    "closeFailed": "无法关闭该时间。",
+    "closed": "已关闭该时间。",
+    "reopened": "已重新开放该时间。"
   },
   "bookingForms": {
     "standardIntake": "普通就诊申请",
@@ -942,6 +952,18 @@
       "role": "角色",
       "invite": "邀请",
       "invited": "已邀请 {email}"
+    },
+    "weeklyHours": {
+      "heading": "每周营业时间",
+      "help": "诊所平常一周的营业时间（日本时间）。患者可在这些时间内预约。临时开放或休诊请在“日历”中设置。",
+      "closed": "休诊",
+      "opens": "{day}开始时间",
+      "closes": "{day}结束时间",
+      "addBlock": "添加时段",
+      "removeBlock": "删除",
+      "copyToWeekdays": "复制到周二至周五",
+      "invalid": "同一天的两个时段重叠了。请修改其中一个。",
+      "save": "保存每周营业时间"
     }
   },
   "patientBooking": {

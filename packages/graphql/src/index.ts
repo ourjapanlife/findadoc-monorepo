@@ -348,6 +348,17 @@ export type CitySuggestion = {
   placeId: Scalars['String']['output'];
 };
 
+/** A dated range with no open time: a holiday, a day off, or one closed weekly block. */
+export type ClinicAvailabilityClosure = {
+  __typename?: 'ClinicAvailabilityClosure';
+  createdDate: Scalars['String']['output'];
+  endsAt: Scalars['String']['output'];
+  facilityId: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  reason?: Maybe<Scalars['String']['output']>;
+  startsAt: Scalars['String']['output'];
+};
+
 /** Staff-painted availability. Boundaries are 30-minute aligned. */
 export type ClinicAvailabilityWindow = {
   __typename?: 'ClinicAvailabilityWindow';
@@ -556,6 +567,28 @@ export type ClinicSiteTheme = {
   primary?: Maybe<Scalars['String']['output']>;
 };
 
+/**
+ * One usual opening block in Japan time. Open starts are weekly hours plus painted
+ * windows, minus closures, minus held appointments.
+ */
+export type ClinicWeeklyHours = {
+  __typename?: 'ClinicWeeklyHours';
+  /** Minutes after midnight JST, on a 30-minute boundary. At most 1440. */
+  endMinute: Scalars['Int']['output'];
+  facilityId: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  /** Minutes after midnight JST, on a 30-minute boundary. */
+  startMinute: Scalars['Int']['output'];
+  /** ISO weekday: 1 is Monday, 7 is Sunday. */
+  weekday: Scalars['Int']['output'];
+};
+
+export type ClinicWeeklyHoursInput = {
+  endMinute: Scalars['Int']['input'];
+  startMinute: Scalars['Int']['input'];
+  weekday: Scalars['Int']['input'];
+};
+
 /** Contact information for a facility. */
 export type Contact = {
   __typename?: 'Contact';
@@ -600,6 +633,16 @@ export type CreateBookingUploadUrlInput = {
   fileName: Scalars['String']['input'];
   /** The form the file belongs to. Defaults to the clinic's default form. */
   formDefinitionId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateClinicAvailabilityClosureInput = {
+  /** Facility id, clinic site id, or clinic site slug. */
+  clinicId: Scalars['ID']['input'];
+  /** Snapped up to 30 minutes. ISO 8601 UTC. At most 62 days after startsAt. */
+  endsAt: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+  /** Snapped down to 30 minutes. ISO 8601 UTC. */
+  startsAt: Scalars['String']['input'];
 };
 
 export type CreateClinicAvailabilityWindowInput = {
@@ -1188,6 +1231,8 @@ export type Mutation = {
    * The browser uploads the file, then passes uploadId to submitBooking.
    */
   createBookingUploadUrl: BookingUploadUrl;
+  /** Close a range on the clinic calendar. Appointments already in it are unchanged. */
+  createClinicAvailabilityClosure: ClinicAvailabilityClosure;
   /** Paint a 30-minute-aligned availability window on the clinic calendar. */
   createClinicAvailabilityWindow: ClinicAvailabilityWindow;
   /** Create a new facility record. */
@@ -1200,6 +1245,8 @@ export type Mutation = {
   createSubmission: Submission;
   /** Create a new user account. */
   createUser: User;
+  /** Reopen a closed range. */
+  deleteClinicAvailabilityClosure: DeleteResult;
   /** Remove one availability window. Existing appointments are unchanged. */
   deleteClinicAvailabilityWindow: DeleteResult;
   /** Delete a facility by ID. */
@@ -1214,6 +1261,8 @@ export type Mutation = {
   recordCityPlaceId: City;
   /** Remove a clinic member. Moderators remove anyone; an owner removes staff. */
   removeClinicMember: DeleteResult;
+  /** Replace the clinic's usual week. Members and moderators. */
+  setClinicWeeklyHours: Array<ClinicWeeklyHours>;
   /**
    * Submit a clinic booking form.
    * Sends a SES notification when email is configured; otherwise records the row only.
@@ -1257,6 +1306,11 @@ export type MutationCreateBookingUploadUrlArgs = {
 };
 
 
+export type MutationCreateClinicAvailabilityClosureArgs = {
+  input: CreateClinicAvailabilityClosureInput;
+};
+
+
 export type MutationCreateClinicAvailabilityWindowArgs = {
   input: CreateClinicAvailabilityWindowInput;
 };
@@ -1284,6 +1338,11 @@ export type MutationCreateSubmissionArgs = {
 
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
+};
+
+
+export type MutationDeleteClinicAvailabilityClosureArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1320,6 +1379,11 @@ export type MutationRecordCityPlaceIdArgs = {
 
 export type MutationRemoveClinicMemberArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationSetClinicWeeklyHoursArgs = {
+  input: SetClinicWeeklyHoursInput;
 };
 
 
@@ -1524,6 +1588,8 @@ export type Query = {
   cityFacilities: Array<Facility>;
   /** Appointments on one clinic calendar. The range must be 62 days or shorter. */
   clinicAppointments: Array<BookingAppointment>;
+  /** Closures on one clinic calendar. The range must be 62 days or shorter. */
+  clinicAvailabilityClosures: Array<ClinicAvailabilityClosure>;
   /** Staff availability windows for the calendar editor. */
   clinicAvailabilityWindows: Array<ClinicAvailabilityWindow>;
   /** Invited and signed-in members of one clinic. Owners and moderators only. */
@@ -1532,6 +1598,8 @@ export type Query = {
   clinicSite?: Maybe<ClinicSite>;
   /** Hosted clinics that are in preview or published. Drafts are omitted. */
   clinicSites: Array<ClinicSiteSummary>;
+  /** The clinic's usual week in Japan time. Members and moderators. */
+  clinicWeeklyHours: Array<ClinicWeeklyHours>;
   /** Roles and effective API scopes for the authenticated user (always allowed when a user context exists). */
   currentUserAccess: CurrentUserAccess;
   /** Search for facilities matching the given filters. Returns an empty list if no matches. */
@@ -1655,6 +1723,13 @@ export type QueryClinicAppointmentsArgs = {
 };
 
 
+export type QueryClinicAvailabilityClosuresArgs = {
+  clinicId: Scalars['ID']['input'];
+  from: Scalars['String']['input'];
+  to: Scalars['String']['input'];
+};
+
+
 export type QueryClinicAvailabilityWindowsArgs = {
   clinicSiteId: Scalars['ID']['input'];
   from: Scalars['String']['input'];
@@ -1669,6 +1744,11 @@ export type QueryClinicMembersArgs = {
 
 export type QueryClinicSiteArgs = {
   slug: Scalars['String']['input'];
+};
+
+
+export type QueryClinicWeeklyHoursArgs = {
+  clinicId: Scalars['ID']['input'];
 };
 
 
@@ -1811,6 +1891,13 @@ export enum SchemaVersion {
   /** Version 1 of the audit log schema. */
   V1 = 'V1'
 }
+
+export type SetClinicWeeklyHoursInput = {
+  /** Facility id, clinic site id, or clinic site slug. */
+  facilityId: Scalars['ID']['input'];
+  /** The whole week. Blocks that overlap or touch on one day are joined. */
+  hours: Array<ClinicWeeklyHoursInput>;
+};
 
 /** Medical specialties that a healthcare professional may practice. */
 export enum Specialty {
@@ -2209,6 +2296,7 @@ export type ResolversTypes = {
   CancelBookingByTokenInput: CancelBookingByTokenInput;
   City: ResolverTypeWrapper<City>;
   CitySuggestion: ResolverTypeWrapper<CitySuggestion>;
+  ClinicAvailabilityClosure: ResolverTypeWrapper<ClinicAvailabilityClosure>;
   ClinicAvailabilityWindow: ResolverTypeWrapper<ClinicAvailabilityWindow>;
   ClinicMember: ResolverTypeWrapper<ClinicMember>;
   ClinicMemberRole: ClinicMemberRole;
@@ -2226,9 +2314,12 @@ export type ResolversTypes = {
   ClinicSiteStep: ResolverTypeWrapper<ClinicSiteStep>;
   ClinicSiteSummary: ResolverTypeWrapper<ClinicSiteSummary>;
   ClinicSiteTheme: ResolverTypeWrapper<ClinicSiteTheme>;
+  ClinicWeeklyHours: ResolverTypeWrapper<ClinicWeeklyHours>;
+  ClinicWeeklyHoursInput: ClinicWeeklyHoursInput;
   Contact: ResolverTypeWrapper<Contact>;
   ContactInput: ContactInput;
   CreateBookingUploadUrlInput: CreateBookingUploadUrlInput;
+  CreateClinicAvailabilityClosureInput: CreateClinicAvailabilityClosureInput;
   CreateClinicAvailabilityWindowInput: CreateClinicAvailabilityWindowInput;
   CreateFacilityInput: CreateFacilityInput;
   CreateHealthcareProfessionalInput: CreateHealthcareProfessionalInput;
@@ -2275,6 +2366,7 @@ export type ResolversTypes = {
   Reservation: ResolverTypeWrapper<Reservation>;
   ReservationStatus: ReservationStatus;
   SchemaVersion: SchemaVersion;
+  SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   Specialty: Specialty;
   SpecialtyCategory: SpecialtyCategory;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -2315,6 +2407,7 @@ export type ResolversParentTypes = {
   CancelBookingByTokenInput: CancelBookingByTokenInput;
   City: City;
   CitySuggestion: CitySuggestion;
+  ClinicAvailabilityClosure: ClinicAvailabilityClosure;
   ClinicAvailabilityWindow: ClinicAvailabilityWindow;
   ClinicMember: ClinicMember;
   ClinicMembership: ClinicMembership;
@@ -2329,9 +2422,12 @@ export type ResolversParentTypes = {
   ClinicSiteStep: ClinicSiteStep;
   ClinicSiteSummary: ClinicSiteSummary;
   ClinicSiteTheme: ClinicSiteTheme;
+  ClinicWeeklyHours: ClinicWeeklyHours;
+  ClinicWeeklyHoursInput: ClinicWeeklyHoursInput;
   Contact: Contact;
   ContactInput: ContactInput;
   CreateBookingUploadUrlInput: CreateBookingUploadUrlInput;
+  CreateClinicAvailabilityClosureInput: CreateClinicAvailabilityClosureInput;
   CreateClinicAvailabilityWindowInput: CreateClinicAvailabilityWindowInput;
   CreateFacilityInput: CreateFacilityInput;
   CreateHealthcareProfessionalInput: CreateHealthcareProfessionalInput;
@@ -2365,6 +2461,7 @@ export type ResolversParentTypes = {
   Query: Record<PropertyKey, never>;
   Relationship: Relationship;
   Reservation: Reservation;
+  SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   String: Scalars['String']['output'];
   Submission: Submission;
   SubmissionSearchFilters: SubmissionSearchFilters;
@@ -2561,6 +2658,15 @@ export type CitySuggestionResolvers<ContextType = any, ParentType extends Resolv
   placeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
+export type ClinicAvailabilityClosureResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicAvailabilityClosure'] = ResolversParentTypes['ClinicAvailabilityClosure']> = {
+  createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  endsAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  startsAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
 export type ClinicAvailabilityWindowResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicAvailabilityWindow'] = ResolversParentTypes['ClinicAvailabilityWindow']> = {
   clinicSiteId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2711,6 +2817,14 @@ export type ClinicSiteThemeResolvers<ContextType = any, ParentType extends Resol
   primary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
+export type ClinicWeeklyHoursResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicWeeklyHours'] = ResolversParentTypes['ClinicWeeklyHours']> = {
+  endMinute?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  startMinute?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  weekday?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
 export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = {
   address?: Resolver<Maybe<ResolversTypes['PhysicalAddress']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2816,12 +2930,14 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   cancelBookingByToken?: Resolver<ResolversTypes['PatientBookingView'], ParentType, ContextType, RequireFields<MutationCancelBookingByTokenArgs, 'input'>>;
   confirmFacilityPlaceId?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationConfirmFacilityPlaceIdArgs, 'facilityId' | 'placeId'>>;
   createBookingUploadUrl?: Resolver<ResolversTypes['BookingUploadUrl'], ParentType, ContextType, RequireFields<MutationCreateBookingUploadUrlArgs, 'input'>>;
+  createClinicAvailabilityClosure?: Resolver<ResolversTypes['ClinicAvailabilityClosure'], ParentType, ContextType, RequireFields<MutationCreateClinicAvailabilityClosureArgs, 'input'>>;
   createClinicAvailabilityWindow?: Resolver<ResolversTypes['ClinicAvailabilityWindow'], ParentType, ContextType, RequireFields<MutationCreateClinicAvailabilityWindowArgs, 'input'>>;
   createFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationCreateFacilityArgs, 'input'>>;
   createHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationCreateHealthcareProfessionalArgs, 'input'>>;
   createReservation?: Resolver<ResolversTypes['Reservation'], ParentType, ContextType, RequireFields<MutationCreateReservationArgs, 'input'>>;
   createSubmission?: Resolver<ResolversTypes['Submission'], ParentType, ContextType, RequireFields<MutationCreateSubmissionArgs, 'input'>>;
   createUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
+  deleteClinicAvailabilityClosure?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteClinicAvailabilityClosureArgs, 'id'>>;
   deleteClinicAvailabilityWindow?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteClinicAvailabilityWindowArgs, 'id'>>;
   deleteFacility?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteFacilityArgs, 'id'>>;
   deleteHealthcareProfessional?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteHealthcareProfessionalArgs, 'id'>>;
@@ -2829,6 +2945,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   inviteClinicMember?: Resolver<ResolversTypes['ClinicMember'], ParentType, ContextType, RequireFields<MutationInviteClinicMemberArgs, 'input'>>;
   recordCityPlaceId?: Resolver<ResolversTypes['City'], ParentType, ContextType, RequireFields<MutationRecordCityPlaceIdArgs, 'cityId' | 'placeId'>>;
   removeClinicMember?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationRemoveClinicMemberArgs, 'id'>>;
+  setClinicWeeklyHours?: Resolver<Array<ResolversTypes['ClinicWeeklyHours']>, ParentType, ContextType, RequireFields<MutationSetClinicWeeklyHoursArgs, 'input'>>;
   submitBooking?: Resolver<ResolversTypes['BookingSubmissionResult'], ParentType, ContextType, RequireFields<MutationSubmitBookingArgs, 'input'>>;
   updateBookingAppointmentStatus?: Resolver<ResolversTypes['BookingAppointment'], ParentType, ContextType, RequireFields<MutationUpdateBookingAppointmentStatusArgs, 'input'>>;
   updateBookingSettings?: Resolver<ResolversTypes['BookingSettings'], ParentType, ContextType, RequireFields<MutationUpdateBookingSettingsArgs, 'input'>>;
@@ -2884,10 +3001,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, Partial<QueryCitiesArgs>>;
   cityFacilities?: Resolver<Array<ResolversTypes['Facility']>, ParentType, ContextType, RequireFields<QueryCityFacilitiesArgs, 'citySlug' | 'prefecture'>>;
   clinicAppointments?: Resolver<Array<ResolversTypes['BookingAppointment']>, ParentType, ContextType, RequireFields<QueryClinicAppointmentsArgs, 'clinicId' | 'from' | 'to'>>;
+  clinicAvailabilityClosures?: Resolver<Array<ResolversTypes['ClinicAvailabilityClosure']>, ParentType, ContextType, RequireFields<QueryClinicAvailabilityClosuresArgs, 'clinicId' | 'from' | 'to'>>;
   clinicAvailabilityWindows?: Resolver<Array<ResolversTypes['ClinicAvailabilityWindow']>, ParentType, ContextType, RequireFields<QueryClinicAvailabilityWindowsArgs, 'clinicSiteId' | 'from' | 'to'>>;
   clinicMembers?: Resolver<Array<ResolversTypes['ClinicMember']>, ParentType, ContextType, RequireFields<QueryClinicMembersArgs, 'facilityId'>>;
   clinicSite?: Resolver<Maybe<ResolversTypes['ClinicSite']>, ParentType, ContextType, RequireFields<QueryClinicSiteArgs, 'slug'>>;
   clinicSites?: Resolver<Array<ResolversTypes['ClinicSiteSummary']>, ParentType, ContextType>;
+  clinicWeeklyHours?: Resolver<Array<ResolversTypes['ClinicWeeklyHours']>, ParentType, ContextType, RequireFields<QueryClinicWeeklyHoursArgs, 'clinicId'>>;
   currentUserAccess?: Resolver<ResolversTypes['CurrentUserAccess'], ParentType, ContextType>;
   facilities?: Resolver<Array<ResolversTypes['Facility']>, ParentType, ContextType, RequireFields<QueryFacilitiesArgs, 'filters'>>;
   facilitiesTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<QueryFacilitiesTotalCountArgs, 'filters'>>;
@@ -2961,6 +3080,7 @@ export type Resolvers<ContextType = any> = {
   BookingUploadView?: BookingUploadViewResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   CitySuggestion?: CitySuggestionResolvers<ContextType>;
+  ClinicAvailabilityClosure?: ClinicAvailabilityClosureResolvers<ContextType>;
   ClinicAvailabilityWindow?: ClinicAvailabilityWindowResolvers<ContextType>;
   ClinicMember?: ClinicMemberResolvers<ContextType>;
   ClinicMembership?: ClinicMembershipResolvers<ContextType>;
@@ -2975,6 +3095,7 @@ export type Resolvers<ContextType = any> = {
   ClinicSiteStep?: ClinicSiteStepResolvers<ContextType>;
   ClinicSiteSummary?: ClinicSiteSummaryResolvers<ContextType>;
   ClinicSiteTheme?: ClinicSiteThemeResolvers<ContextType>;
+  ClinicWeeklyHours?: ClinicWeeklyHoursResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   CurrentUserAccess?: CurrentUserAccessResolvers<ContextType>;
   DeleteResult?: DeleteResultResolvers<ContextType>;

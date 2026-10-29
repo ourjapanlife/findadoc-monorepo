@@ -884,9 +884,9 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Clinic site",
-    "help": "Drag to paint 30-minute availability. Click a block to remove it. Patients book a 15, 30, 45, or 60 minute visit inside those windows.",
+    "help": "Weekly hours come from Settings. Drag to add extra open time; click extra time to remove it. Click a weekly block to close it for that day. Patients book a 15, 30, 45, or 60 minute visit inside open time.",
     "loading": "Loading calendar…",
-    "windowTitle": "Available",
+    "windowTitle": "Extra open time",
     "createFailed": "Could not save that availability window.",
     "deleteFailed": "Could not remove that window.",
     "removed": "Availability removed.",
@@ -894,7 +894,17 @@
     "legend": "Calendar key",
     "patient": "Patient",
     "loadFailed": "Could not load this calendar.",
-    "appointmentHelp": "Click an appointment to open the request."
+    "appointmentHelp": "Click an appointment to open the request.",
+    "closeHelp": "Drag to close a range, or pick days in the Close day row. Click a closed block to reopen it. Appointments already booked stay.",
+    "modeLabel": "Calendar mode",
+    "modeOpen": "Add open time",
+    "modeClose": "Close time",
+    "weeklyTitle": "Weekly hours",
+    "closedTitle": "Closed",
+    "closeDayRow": "Close day",
+    "closeFailed": "Could not close that time.",
+    "closed": "Time closed.",
+    "reopened": "Time reopened."
   },
   "bookingForms": {
     "standardIntake": "Standard visit request",
@@ -942,6 +952,18 @@
       "role": "Role",
       "invite": "Invite",
       "invited": "Invited {email}"
+    },
+    "weeklyHours": {
+      "heading": "Weekly hours",
+      "help": "Your usual week, in Japan time (JST). Patients can book inside these hours. Add one-off open time or close a day on the Calendar.",
+      "closed": "Closed",
+      "opens": "{day} opens",
+      "closes": "{day} closes",
+      "addBlock": "Add hours",
+      "removeBlock": "Remove",
+      "copyToWeekdays": "Copy to Tuesday–Friday",
+      "invalid": "Two blocks on the same day overlap. Change one of them.",
+      "save": "Save weekly hours"
     }
   },
   "patientBooking": {

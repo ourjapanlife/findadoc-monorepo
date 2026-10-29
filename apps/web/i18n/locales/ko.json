@@ -884,9 +884,9 @@
   },
   "bookingAvailability": {
     "clinicLabel": "클리닉 사이트",
-    "help": "드래그하여 30분 단위 가능 시간을 칠합니다. 블록을 클릭하면 삭제됩니다. 환자는 그 안에서 15, 30, 45, 60분 예약을 합니다.",
+    "help": "주간 진료 시간은 설정에서 정합니다. 드래그하면 추가 진료 시간이 생기고, 추가 시간을 클릭하면 삭제됩니다. 주간 시간대를 클릭하면 그날만 휴진합니다. 환자는 진료 시간 안에서 15, 30, 45, 60분 진료를 예약합니다.",
     "loading": "캘린더 불러오는 중…",
-    "windowTitle": "가능",
+    "windowTitle": "추가 진료 시간",
     "createFailed": "가능 시간을 저장하지 못했습니다.",
     "deleteFailed": "가능 시간을 삭제하지 못했습니다.",
     "removed": "예약 가능 시간을 삭제했습니다.",
@@ -894,7 +894,17 @@
     "legend": "캘린더 범례",
     "patient": "환자",
     "loadFailed": "캘린더를 불러올 수 없습니다.",
-    "appointmentHelp": "예약을 클릭하면 요청이 열립니다."
+    "appointmentHelp": "예약을 클릭하면 요청이 열립니다.",
+    "closeHelp": "드래그해 시간대를 닫거나, 종일 휴진 줄에서 날짜를 고르세요. 닫힌 시간대를 클릭하면 다시 엽니다. 이미 잡힌 예약은 그대로 남습니다.",
+    "modeLabel": "캘린더 모드",
+    "modeOpen": "진료 시간 추가",
+    "modeClose": "휴진 설정",
+    "weeklyTitle": "주간 진료 시간",
+    "closedTitle": "휴진",
+    "closeDayRow": "종일 휴진",
+    "closeFailed": "그 시간을 닫지 못했습니다.",
+    "closed": "휴진으로 설정했습니다.",
+    "reopened": "다시 열었습니다."
   },
   "bookingForms": {
     "standardIntake": "일반 진료 요청",
@@ -942,6 +952,18 @@
       "role": "역할",
       "invite": "초대",
       "invited": "{email}을(를) 초대했습니다"
+    },
+    "weeklyHours": {
+      "heading": "주간 진료 시간",
+      "help": "평소 일주일의 진료 시간입니다(일본 시간). 환자는 이 시간 안에서 예약할 수 있습니다. 일회성 진료 시간이나 휴진일은 캘린더에서 설정하세요.",
+      "closed": "휴진",
+      "opens": "{day} 시작 시간",
+      "closes": "{day} 종료 시간",
+      "addBlock": "시간대 추가",
+      "removeBlock": "삭제",
+      "copyToWeekdays": "화요일~금요일에 복사",
+      "invalid": "같은 날 두 시간대가 겹칩니다. 하나를 바꿔 주세요.",
+      "save": "주간 진료 시간 저장"
     }
   },
   "patientBooking": {

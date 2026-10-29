@@ -123,10 +123,94 @@ export function mergeWindows(windows: readonly TimeWindow[]): TimeWindow[] {
     return merged
 }
 
+/** Removes every closed range from the windows. The result is merged and sorted. */
+export function subtractWindows(windows: readonly TimeWindow[], closed: readonly TimeWindow[]): TimeWindow[] {
+    let open = mergeWindows(windows)
+    for (const closure of mergeWindows(closed)) {
+        const next: TimeWindow[] = []
+        for (const window of open) {
+            if (closure.endsAt <= window.startsAt || closure.startsAt >= window.endsAt) {
+                next.push(window)
+                continue
+            }
+            if (closure.startsAt > window.startsAt) {
+                next.push({ startsAt: window.startsAt, endsAt: closure.startsAt })
+            }
+            if (closure.endsAt < window.endsAt) {
+                next.push({ startsAt: closure.endsAt, endsAt: window.endsAt })
+            }
+        }
+        open = next
+    }
+    return open
+}
+
+/** Japan has no daylight saving time, so JST is always UTC+9. */
+export const JST_OFFSET_MS = 9 * 60 * 60 * 1000
+const DAY_MS = 24 * 60 * 60 * 1000
+
+export type WeeklyHours = {
+    /** ISO weekday: 1 Monday to 7 Sunday. */
+    weekday: number
+    /** Minutes after midnight JST. */
+    startMinute: number
+    endMinute: number
+}
+
+export function isWeeklyHours(hours: WeeklyHours): boolean {
+    return Number.isInteger(hours.weekday) && hours.weekday >= 1 && hours.weekday <= 7
+        && Number.isInteger(hours.startMinute) && Number.isInteger(hours.endMinute)
+        && hours.startMinute >= 0 && hours.endMinute <= 24 * 60 && hours.endMinute > hours.startMinute
+        && hours.startMinute % AVAILABILITY_SNAP_MINUTES === 0
+        && hours.endMinute % AVAILABILITY_SNAP_MINUTES === 0
+}
+
+/** Joins blocks on the same weekday that overlap or touch, sorted by weekday then start. */
+export function normalizeWeeklyHours(hours: readonly WeeklyHours[]): WeeklyHours[] {
+    const normalized: WeeklyHours[] = []
+    const sorted = [...hours].sort((a, b) => a.weekday - b.weekday || a.startMinute - b.startMinute)
+    for (const block of sorted) {
+        const last = normalized.at(-1)
+        if (last !== undefined && last.weekday === block.weekday && block.startMinute <= last.endMinute) {
+            last.endMinute = Math.max(last.endMinute, block.endMinute)
+            continue
+        }
+        normalized.push({ weekday: block.weekday, startMinute: block.startMinute, endMinute: block.endMinute })
+    }
+    return normalized
+}
+
+/** Each weekly block as a dated window in the range, clipped to it. */
+export function expandWeeklyHours(hours: readonly WeeklyHours[], rangeStart: Date, rangeEnd: Date): TimeWindow[] {
+    const windows: TimeWindow[] = []
+    if (hours.length === 0 || !(rangeEnd > rangeStart)) {
+        return windows
+    }
+    // Midnight JST of the day that holds rangeStart, as a UTC instant.
+    const firstDay = Math.floor((rangeStart.getTime() + JST_OFFSET_MS) / DAY_MS) * DAY_MS - JST_OFFSET_MS
+    for (let day = firstDay; day < rangeEnd.getTime(); day += DAY_MS) {
+        // 1970-01-01 was a Thursday (ISO 4).
+        const weekday = ((Math.floor((day + JST_OFFSET_MS) / DAY_MS) + 3) % 7) + 1
+        for (const block of hours) {
+            if (block.weekday !== weekday) {
+                continue
+            }
+            const startsAt = Math.max(day + block.startMinute * 60 * 1000, rangeStart.getTime())
+            const endsAt = Math.min(day + block.endMinute * 60 * 1000, rangeEnd.getTime())
+            if (endsAt > startsAt) {
+                windows.push({ startsAt: new Date(startsAt), endsAt: new Date(endsAt) })
+            }
+        }
+    }
+    return windows
+}
+
 /** Candidate appointment starts every 15 minutes that fit duration inside windows and avoid booked ranges. */
 export function availableStarts(input: {
     windows: readonly TimeWindow[]
     booked: readonly TimeWindow[]
+    /** Closures. No visit may overlap one. */
+    closed?: readonly TimeWindow[]
     rangeStart: Date
     rangeEnd: Date
     durationMs?: number
@@ -134,7 +218,7 @@ export function availableStarts(input: {
     const durationMs = input.durationMs ?? DEFAULT_DURATION_MS
     const starts: Date[] = []
 
-    for (const window of mergeWindows(input.windows)) {
+    for (const window of subtractWindows(input.windows, input.closed ?? [])) {
         const from = Math.max(window.startsAt.getTime(), input.rangeStart.getTime())
         const to = Math.min(window.endsAt.getTime(), input.rangeEnd.getTime())
         if (!(to > from)) {

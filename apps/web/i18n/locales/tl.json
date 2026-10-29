@@ -884,9 +884,9 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Site ng klinika",
-    "help": "I-drag para magpinta ng 30-minutong availability. I-click para tanggalin. Ang pasyente ay nagbu-book ng 15, 30, 45, o 60 minuto.",
+    "help": "Ang lingguhang oras ay nasa Settings. I-drag para magdagdag ng dagdag na bukas na oras; i-click ang dagdag na oras para alisin ito. I-click ang isang lingguhang block para isara ito sa araw na iyon. Nagbu-book ang mga pasyente ng 15, 30, 45, o 60 minutong pagbisita sa loob ng bukas na oras.",
     "loading": "Naglo-load ang calendar…",
-    "windowTitle": "Bukas",
+    "windowTitle": "Dagdag na bukas na oras",
     "createFailed": "Hindi ma-save ang availability window.",
     "deleteFailed": "Hindi matanggal ang window.",
     "removed": "Inalis ang bakanteng oras.",
@@ -894,7 +894,17 @@
     "legend": "Gabay sa kalendaryo",
     "patient": "Pasyente",
     "loadFailed": "Hindi ma-load ang kalendaryong ito.",
-    "appointmentHelp": "I-click ang appointment para buksan ang kahilingan."
+    "appointmentHelp": "I-click ang appointment para buksan ang kahilingan.",
+    "closeHelp": "I-drag para isara ang isang saklaw ng oras, o pumili ng mga araw sa hanay na Isara ang araw. I-click ang saradong block para buksan ulit. Mananatili ang mga naka-book nang appointment.",
+    "modeLabel": "Mode ng kalendaryo",
+    "modeOpen": "Magdagdag ng bukas na oras",
+    "modeClose": "Isara ang oras",
+    "weeklyTitle": "Lingguhang oras",
+    "closedTitle": "Sarado",
+    "closeDayRow": "Isara ang araw",
+    "closeFailed": "Hindi maisara ang oras na iyon.",
+    "closed": "Naisara na ang oras.",
+    "reopened": "Nabuksan ulit ang oras."
   },
   "bookingForms": {
     "standardIntake": "Karaniwang kahilingan sa pagpapatingin",
@@ -942,6 +952,18 @@
       "role": "Tungkulin",
       "invite": "Imbitahan",
       "invited": "Inimbitahan si {email}"
+    },
+    "weeklyHours": {
+      "heading": "Lingguhang oras",
+      "help": "Ang karaniwang linggo ninyo, sa oras ng Japan (JST). Makakapag-book ang mga pasyente sa loob ng mga oras na ito. Magdagdag ng isang beses na bukas na oras o isara ang isang araw sa Kalendaryo.",
+      "closed": "Sarado",
+      "opens": "Bukas ng {day}",
+      "closes": "Sara ng {day}",
+      "addBlock": "Magdagdag ng oras",
+      "removeBlock": "Alisin",
+      "copyToWeekdays": "Kopyahin sa Martes–Biyernes",
+      "invalid": "Nagsasapawan ang dalawang block sa iisang araw. Baguhin ang isa sa mga ito.",
+      "save": "I-save ang lingguhang oras"
     }
   },
   "patientBooking": {

@@ -3,7 +3,11 @@ import {
     availableStarts,
     appointmentEndFromStart,
     assertAvailabilityRange,
+    expandWeeklyHours,
     isAlignedToMinutes,
+    isWeeklyHours,
+    normalizeWeeklyHours,
+    subtractWindows,
     snapDownToAvailability,
     snapUpToAvailability
 } from '../src/booking/schedule.js'
@@ -82,6 +86,78 @@ describe('booking schedule', () => {
         })
         expect(starts.map(start => start.toISOString())).toEqual([
             '2026-11-05T01:30:00.000Z'
+        ])
+    })
+})
+
+describe('weekly hours', () => {
+    // Thursday 5 November 2026 in Japan.
+    const thursdayJst = { from: new Date('2026-11-04T15:00:00.000Z'), to: new Date('2026-11-05T15:00:00.000Z') }
+
+    it('expands a weekday block into Japan time', () => {
+        const windows = expandWeeklyHours(
+            [{ weekday: 4, startMinute: 9 * 60, endMinute: 12 * 60 }, { weekday: 5, startMinute: 0, endMinute: 60 }],
+            thursdayJst.from,
+            thursdayJst.to
+        )
+        expect(windows.map(window => [window.startsAt.toISOString(), window.endsAt.toISOString()])).toEqual([
+            ['2026-11-05T00:00:00.000Z', '2026-11-05T03:00:00.000Z']
+        ])
+    })
+
+    it('clips a block to the range and reaches back to the JST day that holds the start', () => {
+        const windows = expandWeeklyHours(
+            [{ weekday: 4, startMinute: 9 * 60, endMinute: 12 * 60 }],
+            new Date('2026-11-05T01:00:00.000Z'),
+            new Date('2026-11-05T02:00:00.000Z')
+        )
+        expect(windows.map(window => [window.startsAt.toISOString(), window.endsAt.toISOString()])).toEqual([
+            ['2026-11-05T01:00:00.000Z', '2026-11-05T02:00:00.000Z']
+        ])
+    })
+
+    it('rejects blocks that are not 30-minute aligned or end after midnight', () => {
+        expect(isWeeklyHours({ weekday: 1, startMinute: 540, endMinute: 720 })).toBe(true)
+        expect(isWeeklyHours({ weekday: 0, startMinute: 540, endMinute: 720 })).toBe(false)
+        expect(isWeeklyHours({ weekday: 1, startMinute: 545, endMinute: 720 })).toBe(false)
+        expect(isWeeklyHours({ weekday: 1, startMinute: 1380, endMinute: 1470 })).toBe(false)
+        expect(isWeeklyHours({ weekday: 1, startMinute: 720, endMinute: 720 })).toBe(false)
+    })
+
+    it('joins blocks on one day that overlap or touch', () => {
+        expect(normalizeWeeklyHours([
+            { weekday: 2, startMinute: 780, endMinute: 1020 },
+            { weekday: 1, startMinute: 600, endMinute: 720 },
+            { weekday: 1, startMinute: 540, endMinute: 600 }
+        ])).toEqual([
+            { weekday: 1, startMinute: 540, endMinute: 720 },
+            { weekday: 2, startMinute: 780, endMinute: 1020 }
+        ])
+    })
+
+    it('subtracts a closure from the middle of a window', () => {
+        const open = subtractWindows(
+            [{ startsAt: new Date('2026-11-05T00:00:00.000Z'), endsAt: new Date('2026-11-05T03:00:00.000Z') }],
+            [{ startsAt: new Date('2026-11-05T01:00:00.000Z'), endsAt: new Date('2026-11-05T01:30:00.000Z') }]
+        )
+        expect(open.map(window => [window.startsAt.toISOString(), window.endsAt.toISOString()])).toEqual([
+            ['2026-11-05T00:00:00.000Z', '2026-11-05T01:00:00.000Z'],
+            ['2026-11-05T01:30:00.000Z', '2026-11-05T03:00:00.000Z']
+        ])
+    })
+
+    it('offers no start that would overlap a closure', () => {
+        const starts = availableStarts({
+            windows: [{ startsAt: new Date('2026-11-05T00:00:00.000Z'), endsAt: new Date('2026-11-05T02:00:00.000Z') }],
+            booked: [],
+            closed: [{ startsAt: new Date('2026-11-05T01:00:00.000Z'), endsAt: new Date('2026-11-05T02:00:00.000Z') }],
+            rangeStart: new Date('2026-11-05T00:00:00.000Z'),
+            rangeEnd: new Date('2026-11-05T03:00:00.000Z')
+        })
+        expect(starts.map(start => start.toISOString())).toEqual([
+            '2026-11-05T00:00:00.000Z',
+            '2026-11-05T00:15:00.000Z',
+            '2026-11-05T00:30:00.000Z'
         ])
     })
 })

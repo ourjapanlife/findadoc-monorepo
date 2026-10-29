@@ -24,6 +24,7 @@ import {
     appointmentEndFromStart,
     availableStarts,
     BOOKING_SLOT_STEP_MINUTES,
+    expandWeeklyHours,
     isAlignedToMinutes,
     isPublicSlotRange,
     resolveAppointmentDuration
@@ -615,14 +616,40 @@ async function listAvailableStartsForTarget(
         return []
     }
 
-    const [windows, booked] = await Promise.all([
+    // Weekly hours and closures are keyed by the facility. A clinic site without one has neither.
+    const facilityId = target.facilityId
+    const [windows, booked, weekly, closures] = await Promise.all([
         windowQuery.execute(),
-        bookedQuery.execute()
+        bookedQuery.execute(),
+        facilityId === null
+            ? []
+            : executor.selectFrom('clinic_weekly_hours')
+                .select(['weekday', 'start_minute', 'end_minute'])
+                .where('facility_id', '=', facilityId)
+                .execute(),
+        facilityId === null
+            ? []
+            : executor.selectFrom('clinic_availability_closures')
+                .select(['starts_at', 'ends_at'])
+                .where('facility_id', '=', facilityId)
+                .where('starts_at', '<', to.toISOString())
+                .where('ends_at', '>', from.toISOString())
+                .execute()
     ])
 
+    const weeklyWindows = expandWeeklyHours(
+        weekly.map(row => ({ weekday: row.weekday, startMinute: row.start_minute, endMinute: row.end_minute })),
+        from,
+        to
+    )
+
     return availableStarts({
-        windows: windows.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
+        windows: [
+            ...weeklyWindows,
+            ...windows.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) }))
+        ],
         booked: booked.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
+        closed: closures.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
         rangeStart: from,
         rangeEnd: to,
         durationMs: durationMinutes * 60 * 1000

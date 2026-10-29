@@ -34,6 +34,29 @@ exports.onExecutePostLogin = async (event, api) => {
 
 Without those claims no invite is claimed and a clinic member sees no clinics.
 
+## Open times
+
+Open starts are, for one clinic:
+
+1. weekly hours (`clinic_weekly_hours`), set in Dashboard → Settings in Japan
+   time: ISO weekday (1 Monday, 7 Sunday) and minutes after midnight JST, on
+   30-minute boundaries, ending by midnight;
+2. plus painted extra windows (`clinic_availability_windows`);
+3. minus closures (`clinic_availability_closures`): a holiday, a day off, or
+   one weekly block staff closed on the calendar;
+4. minus `requested` and `confirmed` appointments.
+
+Japan has no daylight saving time, so a weekly block is always the same UTC
+range. `src/booking/schedule.ts` does the arithmetic. Saving weekly hours
+replaces the whole week and joins blocks that overlap or touch. A closure does
+not touch an appointment already inside it; staff cancel that one themselves.
+Submit still takes the clinic's advisory lock and re-reads open starts inside
+it.
+
+On the calendar, a click on a weekly block closes that one occurrence. In
+**Close time** mode, a drag closes a range and the all-day row closes whole
+Japan days. A click on a closed range reopens it. Every change offers Undo.
+
 ## Appointment lifecycle
 
 ```

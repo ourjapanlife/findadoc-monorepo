@@ -58,6 +58,8 @@ describe('booking flow', () => {
             await db.deleteFrom('booking_submissions').where('id', 'in', createdSubmissionIds).execute()
         }
         await db.deleteFrom('clinic_availability_windows').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('clinic_weekly_hours').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('clinic_availability_closures').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('clinic_memberships').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
     })
@@ -196,6 +198,49 @@ describe('booking flow', () => {
         const afterDecline = await submit(facilityId, iso(480), 'flood@example.com')
         expect(afterDecline.hasErrors).toBe(false)
         createdSubmissionIds.push(afterDecline.data.id)
+    })
+
+    it('opens weekly hours without painting, and a closure takes them away', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        // The next day, 10:00-11:00 JST: nothing painted there.
+        const next = (minutes: number) => iso(24 * 60 + minutes)
+        const nextStarts = () => bookingService.getAvailableBookingStarts(facilityId, next(-60), next(120), 60)
+        const jstWeekday = new Date(new Date(next(0)).getTime() + 9 * 60 * 60 * 1000).getUTCDay() || 7
+
+        expect(await nextStarts()).toEqual([])
+        const hours = await availabilityService.setClinicWeeklyHours({
+            facilityId,
+            hours: [
+                { weekday: jstWeekday, startMinute: 600, endMinute: 630 },
+                { weekday: jstWeekday, startMinute: 630, endMinute: 660 }
+            ]
+        }, 'test|staff', moderator)
+        // Touching blocks are stored as one.
+        expect(hours.data.map(block => [block.startMinute, block.endMinute])).toEqual([[600, 660]])
+        expect(await nextStarts()).toEqual([next(0)])
+
+        expect((await availabilityService.setClinicWeeklyHours({
+            facilityId,
+            hours: [{ weekday: jstWeekday, startMinute: 605, endMinute: 660 }]
+        }, 'test|outsider', moderator)).hasErrors).toBe(true)
+        expect((await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|outsider', outsider))
+            .hasErrors).toBe(true)
+
+        const closure = await availabilityService.createClinicAvailabilityClosure(
+            { clinicId: facilityId, startsAt: next(30), endsAt: next(60), reason: 'Staff training' },
+            'test|staff',
+            moderator
+        )
+        expect(closure.hasErrors).toBe(false)
+        expect(await nextStarts()).toEqual([])
+        expect(await availabilityService.listClinicAvailabilityClosures(facilityId, next(-60), next(120), outsider))
+            .toEqual([])
+
+        const reopened = await availabilityService.deleteClinicAvailabilityClosure(closure.data.id, moderator)
+        expect(reopened.data.isSuccessful).toBe(true)
+        expect(await nextStarts()).toEqual([next(0)])
+
+        await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|staff', moderator)
     })
 
     it('lets an owner invite staff but not another owner', async () => {

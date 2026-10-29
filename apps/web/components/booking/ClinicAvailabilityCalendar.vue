@@ -42,10 +42,31 @@
                     <path d="M12 16v-4M12 8h.01" />
                 </svg>
                 <span>
-                    {{ t('bookingAvailability.help') }}
+                    {{ mode === 'close' ? t('bookingAvailability.closeHelp') : t('bookingAvailability.help') }}
                     {{ t('bookingAvailability.appointmentHelp') }}
                 </span>
             </p>
+        </div>
+        <div
+            class="flex w-fit rounded-lg border border-accent-bg bg-secondary-bg p-1"
+            role="radiogroup"
+            :aria-label="t('bookingAvailability.modeLabel')"
+        >
+            <button
+                v-for="option in modeOptions"
+                :key="option.mode"
+                type="button"
+                role="radio"
+                class="h-9 rounded-md px-3 text-sm font-semibold transition-colors"
+                :class="mode === option.mode
+                    ? 'bg-primary text-primary-text-inverted'
+                    : 'text-primary-text hover:bg-primary/5'"
+                :aria-checked="mode === option.mode"
+                :data-testid="`clinic-availability-mode-${option.mode}`"
+                @click="mode = option.mode"
+            >
+                {{ option.label }}
+            </button>
         </div>
         <ul
             class="flex flex-wrap gap-2"
@@ -94,23 +115,30 @@ import interactionPlugin from '@fullcalendar/interaction'
 import {
     BookingAppointmentStatus,
     type BookingAppointment,
+    type ClinicAvailabilityClosure,
     type ClinicAvailabilityWindow,
-    type ClinicSiteSummary
+    type ClinicSiteSummary,
+    type ClinicWeeklyHours
 } from '@findadoc/graphql'
 import allLocales from '@fullcalendar/core/locales-all'
 import { gql } from 'graphql-request'
 import FullCalendar from '@fullcalendar/vue3'
 import { useAppToast } from '~/composables/useAppToast'
 import {
+    createClinicAvailabilityClosure,
     createClinicAvailabilityWindow,
+    deleteClinicAvailabilityClosure,
     deleteClinicAvailabilityWindow,
     fetchClinicCalendar
 } from '~/utils/booking/staffQuery'
+import { expandWeeklyHours, jstMidnight, subtractRanges } from '~/utils/booking/japanTime'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
 
 /**
- * Staff paint 30-minute availability; appointments sit on top, coloured by status.
+ * Weekly hours (from Settings) and painted extra windows are open time. Staff close
+ * one weekly block by clicking it, or drag in Close mode to close a range or a whole
+ * day. Appointments sit on top, coloured by status.
  * With facilityId (the clinic dashboard) the calendar is fixed to that clinic.
  * Without it (moderation) a picker lists the hosted clinics.
  */
@@ -130,6 +158,14 @@ const pickedClinicId = ref('')
 const clinicId = computed(() => props.facilityId ?? pickedClinicId.value)
 const windows = ref<ClinicAvailabilityWindow[]>([])
 const appointments = ref<BookingAppointment[]>([])
+const weeklyHours = ref<ClinicWeeklyHours[]>([])
+const closures = ref<ClinicAvailabilityClosure[]>([])
+type CalendarMode = 'open' | 'close'
+const mode = ref<CalendarMode>('open')
+const modeOptions = computed(() => [
+    { mode: 'open' as const, label: t('bookingAvailability.modeOpen') },
+    { mode: 'close' as const, label: t('bookingAvailability.modeClose') }
+])
 const calendarReady = ref(false)
 const rangeFrom = ref(new Date().toISOString())
 const rangeTo = ref(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString())
@@ -176,12 +212,37 @@ const WINDOW_COLORS: EventColors = {
     text: 'var(--color-primary)'
 }
 
+// Usual weekly hours: a lighter tint than painted extra time.
+const WEEKLY_COLORS: EventColors = {
+    background: 'rgb(var(--theme-color-primary) / 0.07)',
+    border: 'rgb(var(--theme-color-primary) / 0.25)',
+    text: 'var(--color-primary)'
+}
+
+const CLOSURE_COLORS: EventColors = {
+    background: 'var(--color-secondary-bg)',
+    border: 'var(--color-border-strong)',
+    text: 'var(--color-primary-text-muted)'
+}
+
 const legend = computed(() => [
+    {
+        status: 'weekly',
+        color: WEEKLY_COLORS.background,
+        border: WEEKLY_COLORS.border,
+        label: t('bookingAvailability.weeklyTitle')
+    },
     {
         status: 'available',
         color: WINDOW_COLORS.background,
         border: WINDOW_COLORS.border,
         label: t('bookingAvailability.windowTitle')
+    },
+    {
+        status: 'closed',
+        color: CLOSURE_COLORS.background,
+        border: CLOSURE_COLORS.border,
+        label: t('bookingAvailability.closedTitle')
     },
     ...[
         BookingAppointmentStatus.Requested,
@@ -200,7 +261,31 @@ function isClosed(status: BookingAppointmentStatus): boolean {
     return status === BookingAppointmentStatus.Cancelled || status === BookingAppointmentStatus.Declined
 }
 
+// Each weekly block in the visible range, minus the parts a closure covers.
+const weeklySegments = computed(() => expandWeeklyHours(weeklyHours.value, rangeFrom.value, rangeTo.value)
+    .flatMap(occurrence => subtractRanges(occurrence, closures.value)))
+
 const events = computed((): EventInput[] => [
+    ...weeklySegments.value.map(segment => ({
+        id: `weekly:${segment.startsAt}|${segment.endsAt}`,
+        title: t('bookingAvailability.weeklyTitle'),
+        start: segment.startsAt,
+        end: segment.endsAt,
+        backgroundColor: WEEKLY_COLORS.background,
+        borderColor: WEEKLY_COLORS.border,
+        textColor: WEEKLY_COLORS.text,
+        classNames: ['clinic-calendar-weekly']
+    })),
+    ...closures.value.map(closure => ({
+        id: `closure:${closure.id}`,
+        title: closure.reason || t('bookingAvailability.closedTitle'),
+        start: closure.startsAt,
+        end: closure.endsAt,
+        backgroundColor: CLOSURE_COLORS.background,
+        borderColor: CLOSURE_COLORS.border,
+        textColor: CLOSURE_COLORS.text,
+        classNames: ['clinic-calendar-closure']
+    })),
     ...windows.value.map(window => ({
         id: `window:${window.id}`,
         title: t('bookingAvailability.windowTitle'),
@@ -242,7 +327,9 @@ const calendarOptions = computed((): CalendarOptions => ({
     slotDuration: '00:30:00',
     snapDuration: '00:30:00',
     slotLabelInterval: '00:30:00',
-    allDaySlot: false,
+    // In Close mode the all-day row closes whole days.
+    allDaySlot: mode.value === 'close',
+    allDayText: t('bookingAvailability.closeDayRow'),
     // The whole day stays reachable: the grid uses the browser's time zone (#163), so JST
     // hours can land anywhere for a user abroad. It opens scrolled to the morning.
     scrollTime: '08:30:00',
@@ -251,8 +338,9 @@ const calendarOptions = computed((): CalendarOptions => ({
     eventTimeFormat: { hour: 'numeric', minute: '2-digit' },
     selectable: true,
     selectMirror: true,
-    // No painting over existing availability. Appointments may sit under new availability.
-    selectOverlap: event => !event.id.startsWith('window:'),
+    // No painting over open time. Closing may cover anything. Appointments may sit under either.
+    selectOverlap: event => mode.value === 'close'
+      || !(event.id.startsWith('window:') || event.id.startsWith('weekly:')),
     events: events.value,
     select: onSelect,
     eventClick: onEventClick,
@@ -296,6 +384,8 @@ async function reloadCalendar(): Promise<void> {
     }
     windows.value = loaded.windows
     appointments.value = loaded.appointments
+    weeklyHours.value = loaded.weeklyHours
+    closures.value = loaded.closures
 }
 
 async function addWindow(clinicSiteId: string, startsAt: string, endsAt: string): Promise<void> {
@@ -307,9 +397,71 @@ async function addWindow(clinicSiteId: string, startsAt: string, endsAt: string)
     await reloadCalendar()
 }
 
+async function addClosure(closureClinicId: string, startsAt: string, endsAt: string, reason?: string | null): Promise<void> {
+    const created = await createClinicAvailabilityClosure({ clinicId: closureClinicId, startsAt, endsAt, reason })
+    if (created === null) {
+        toast.error(t('bookingAvailability.closeFailed'))
+        return
+    }
+    await reloadCalendar()
+    const undo = t('bookingAvailability.undo')
+    toast.success(t('bookingAvailability.closed'), {
+        action: {
+            label: undo,
+            altText: undo,
+            onClick: () => {
+                void removeClosure(created, false)
+            }
+        }
+    })
+}
+
+async function removeClosure(closure: ClinicAvailabilityClosure, offerUndo: boolean): Promise<void> {
+    const removedFromClinicId = clinicId.value
+    const result = await deleteClinicAvailabilityClosure(closure.id)
+    if (result === null || !result.isSuccessful) {
+        toast.error(t('bookingAvailability.deleteFailed'))
+        return
+    }
+    await reloadCalendar()
+    if (!offerUndo) {
+        return
+    }
+    const undo = t('bookingAvailability.undo')
+    toast.success(t('bookingAvailability.reopened'), {
+        action: {
+            label: undo,
+            altText: undo,
+            onClick: () => {
+                void addClosure(removedFromClinicId, closure.startsAt, closure.endsAt, closure.reason)
+            }
+        }
+    })
+}
+
+/** An all-day pick is local dates; it closes those days in Japan time. */
+function allDayRange(selection: DateSelectArg): { startsAt: string, endsAt: string } {
+    const key = (date: Date) => [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0')
+    ].join('-')
+    return {
+        startsAt: jstMidnight(key(selection.start)).toISOString(),
+        endsAt: jstMidnight(key(selection.end)).toISOString()
+    }
+}
+
 async function onSelect(selection: DateSelectArg): Promise<void> {
     selection.view.calendar.unselect()
     if (clinicId.value === '') {
+        return
+    }
+    if (mode.value === 'close') {
+        const range = selection.allDay
+            ? allDayRange(selection)
+            : { startsAt: selection.start.toISOString(), endsAt: selection.end.toISOString() }
+        await addClosure(clinicId.value, range.startsAt, range.endsAt)
         return
     }
     await addWindow(clinicId.value, selection.start.toISOString(), selection.end.toISOString())
@@ -321,6 +473,21 @@ async function onEventClick(info: EventClickArg): Promise<void> {
         const bookingSubmissionId = info.event.extendedProps.bookingSubmissionId as string | null
         if (bookingSubmissionId) {
             emit('open-booking', bookingSubmissionId)
+        }
+        return
+    }
+    if (kind === 'weekly' && id !== undefined) {
+        // Clicking a weekly block closes that one occurrence.
+        const [startsAt, endsAt] = id.split('|')
+        if (startsAt !== undefined && endsAt !== undefined) {
+            await addClosure(clinicId.value, startsAt, endsAt)
+        }
+        return
+    }
+    if (kind === 'closure') {
+        const closure = closures.value.find(item => item.id === id)
+        if (closure !== undefined) {
+            await removeClosure(closure, true)
         }
         return
     }
@@ -483,6 +650,22 @@ defineExpose({ reloadCalendar })
 .clinic-calendar .clinic-calendar-appointment {
     font-weight: 600;
     box-shadow: var(--shadow-card);
+}
+
+.clinic-calendar .clinic-calendar-weekly {
+    border-style: dashed;
+}
+
+.clinic-calendar .clinic-calendar-weekly:hover {
+    background-color: rgb(var(--theme-color-primary) / 0.14) !important;
+}
+
+.clinic-calendar .clinic-calendar-closure {
+    background-image: repeating-linear-gradient(
+        135deg,
+        transparent 0 6px,
+        rgb(var(--theme-color-primary) / 0.08) 6px 12px
+    );
 }
 
 .clinic-calendar .clinic-calendar-window:hover {

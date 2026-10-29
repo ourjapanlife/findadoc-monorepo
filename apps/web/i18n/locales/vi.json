@@ -884,9 +884,9 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Trang phòng khám",
-    "help": "Kéo để tô khung trống 30 phút. Bấm để xóa. Bệnh nhân đặt 15, 30, 45 hoặc 60 phút trong các khung đó.",
+    "help": "Giờ làm việc hằng tuần được đặt trong Cài đặt. Kéo để thêm giờ mở thêm; nhấp vào giờ mở thêm để xóa. Nhấp vào một khung giờ hằng tuần để đóng khung đó trong ngày hôm đó. Bệnh nhân đặt lịch khám 15, 30, 45 hoặc 60 phút trong giờ mở.",
     "loading": "Đang tải lịch…",
-    "windowTitle": "Trống",
+    "windowTitle": "Giờ mở thêm",
     "createFailed": "Không lưu được khung trống.",
     "deleteFailed": "Không xóa được khung trống.",
     "removed": "Đã xóa khung giờ trống.",
@@ -894,7 +894,17 @@
     "legend": "Chú thích lịch",
     "patient": "Bệnh nhân",
     "loadFailed": "Không thể tải lịch này.",
-    "appointmentHelp": "Nhấp vào lịch hẹn để mở yêu cầu."
+    "appointmentHelp": "Nhấp vào lịch hẹn để mở yêu cầu.",
+    "closeHelp": "Kéo để đóng một khoảng thời gian, hoặc chọn ngày ở hàng Đóng cả ngày. Nhấp vào khung đã đóng để mở lại. Các lịch hẹn đã đặt vẫn giữ nguyên.",
+    "modeLabel": "Chế độ lịch",
+    "modeOpen": "Thêm giờ mở",
+    "modeClose": "Đóng giờ",
+    "weeklyTitle": "Giờ hằng tuần",
+    "closedTitle": "Đóng",
+    "closeDayRow": "Đóng cả ngày",
+    "closeFailed": "Không thể đóng khoảng thời gian đó.",
+    "closed": "Đã đóng khoảng thời gian.",
+    "reopened": "Đã mở lại khoảng thời gian."
   },
   "bookingForms": {
     "standardIntake": "Yêu cầu khám thông thường",
@@ -942,6 +952,18 @@
       "role": "Vai trò",
       "invite": "Mời",
       "invited": "Đã mời {email}"
+    },
+    "weeklyHours": {
+      "heading": "Giờ hằng tuần",
+      "help": "Lịch làm việc thường lệ trong tuần, theo giờ Nhật Bản (JST). Bệnh nhân có thể đặt lịch trong các giờ này. Thêm giờ mở một lần hoặc đóng một ngày trên Lịch.",
+      "closed": "Đóng cửa",
+      "opens": "Giờ mở {day}",
+      "closes": "Giờ đóng {day}",
+      "addBlock": "Thêm khung giờ",
+      "removeBlock": "Xóa",
+      "copyToWeekdays": "Sao chép sang thứ Ba–thứ Sáu",
+      "invalid": "Hai khung giờ trong cùng một ngày bị trùng nhau. Hãy sửa một trong hai.",
+      "save": "Lưu giờ hằng tuần"
     }
   },
   "patientBooking": {

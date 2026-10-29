@@ -276,6 +276,29 @@ export interface ClinicAvailabilityWindowsTable {
     updated_date: Generated<string>
 }
 
+/** Usual opening hours in Japan time. weekday is ISO (1 Monday, 7 Sunday); minutes after midnight JST. */
+export interface ClinicWeeklyHoursTable {
+    id: Generated<string>
+    facility_id: string
+    weekday: number
+    start_minute: number
+    end_minute: number
+    created_by: string | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** A dated range with no open time: a holiday, a day off, or one closed weekly block. */
+export interface ClinicAvailabilityClosuresTable {
+    id: Generated<string>
+    facility_id: string
+    starts_at: string
+    ends_at: string
+    reason: string | null
+    created_by: string | null
+    created_date: Generated<string>
+}
+
 /** Patient appointment inside availability. 15-minute start alignment. Requested and confirmed rows hold time. */
 export interface BookingAppointmentsTable {
     id: Generated<string>
@@ -318,6 +341,8 @@ export interface Database {
     booking_submissions: BookingSubmissionsTable
     booking_uploads: BookingUploadsTable
     clinic_availability_windows: ClinicAvailabilityWindowsTable
+    clinic_weekly_hours: ClinicWeeklyHoursTable
+    clinic_availability_closures: ClinicAvailabilityClosuresTable
     booking_appointments: BookingAppointmentsTable
 }
 

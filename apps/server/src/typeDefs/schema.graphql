@@ -1446,6 +1446,54 @@ input CreateClinicAvailabilityWindowInput {
   endsAt: String!
 }
 
+"""
+One usual opening block in Japan time. Open starts are weekly hours plus painted
+windows, minus closures, minus held appointments.
+"""
+type ClinicWeeklyHours {
+  id: ID!
+  facilityId: ID!
+  """ISO weekday: 1 is Monday, 7 is Sunday."""
+  weekday: Int!
+  """Minutes after midnight JST, on a 30-minute boundary."""
+  startMinute: Int!
+  """Minutes after midnight JST, on a 30-minute boundary. At most 1440."""
+  endMinute: Int!
+}
+
+input ClinicWeeklyHoursInput {
+  weekday: Int!
+  startMinute: Int!
+  endMinute: Int!
+}
+
+input SetClinicWeeklyHoursInput {
+  """Facility id, clinic site id, or clinic site slug."""
+  facilityId: ID!
+  """The whole week. Blocks that overlap or touch on one day are joined."""
+  hours: [ClinicWeeklyHoursInput!]!
+}
+
+"""A dated range with no open time: a holiday, a day off, or one closed weekly block."""
+type ClinicAvailabilityClosure {
+  id: ID!
+  facilityId: ID!
+  startsAt: String!
+  endsAt: String!
+  reason: String
+  createdDate: String!
+}
+
+input CreateClinicAvailabilityClosureInput {
+  """Facility id, clinic site id, or clinic site slug."""
+  clinicId: ID!
+  """Snapped down to 30 minutes. ISO 8601 UTC."""
+  startsAt: String!
+  """Snapped up to 30 minutes. ISO 8601 UTC. At most 62 days after startsAt."""
+  endsAt: String!
+  reason: String
+}
+
 input CreateBookingUploadUrlInput {
   """Facility id, clinic site id, or clinic site slug."""
   clinicSiteId: ID!
@@ -1566,6 +1614,12 @@ type Query {
 
   """Staff availability windows for the calendar editor."""
   clinicAvailabilityWindows(clinicSiteId: ID!, from: String!, to: String!): [ClinicAvailabilityWindow!]!
+
+  """The clinic's usual week in Japan time. Members and moderators."""
+  clinicWeeklyHours(clinicId: ID!): [ClinicWeeklyHours!]!
+
+  """Closures on one clinic calendar. The range must be 62 days or shorter."""
+  clinicAvailabilityClosures(clinicId: ID!, from: String!, to: String!): [ClinicAvailabilityClosure!]!
 
   """Look up a single facility by its unique ID. Returns null if not found."""
   facility(id: ID!): Facility
@@ -1816,6 +1870,15 @@ type Mutation {
 
   """Remove one availability window. Existing appointments are unchanged."""
   deleteClinicAvailabilityWindow(id: ID!): DeleteResult!
+
+  """Replace the clinic's usual week. Members and moderators."""
+  setClinicWeeklyHours(input: SetClinicWeeklyHoursInput!): [ClinicWeeklyHours!]!
+
+  """Close a range on the clinic calendar. Appointments already in it are unchanged."""
+  createClinicAvailabilityClosure(input: CreateClinicAvailabilityClosureInput!): ClinicAvailabilityClosure!
+
+  """Reopen a closed range."""
+  deleteClinicAvailabilityClosure(id: ID!): DeleteResult!
 
   """Staff confirm, decline, cancel, or complete an appointment. Declined and cancelled free the slot."""
   updateBookingAppointmentStatus(input: UpdateBookingAppointmentStatusInput!): BookingAppointment!

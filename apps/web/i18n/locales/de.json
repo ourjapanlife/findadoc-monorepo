@@ -884,9 +884,9 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Klinikseite",
-    "help": "Ziehen, um 30-Minuten-Verfügbarkeit zu malen. Klick entfernt einen Block. Patientinnen buchen 15, 30, 45 oder 60 Minuten darin.",
+    "help": "Die Wochenzeiten kommen aus den Einstellungen. Ziehen Sie, um zusätzliche Öffnungszeit hinzuzufügen; klicken Sie darauf, um sie zu entfernen. Klicken Sie auf einen Wochenblock, um ihn für diesen Tag zu schließen. Patienten buchen innerhalb der Öffnungszeit einen Termin von 15, 30, 45 oder 60 Minuten.",
     "loading": "Kalender wird geladen…",
-    "windowTitle": "Verfügbar",
+    "windowTitle": "Zusätzliche Öffnungszeit",
     "createFailed": "Verfügbarkeit konnte nicht gespeichert werden.",
     "deleteFailed": "Verfügbarkeit konnte nicht entfernt werden.",
     "removed": "Verfügbarkeit entfernt.",
@@ -894,7 +894,17 @@
     "legend": "Kalenderlegende",
     "patient": "Patient/in",
     "loadFailed": "Der Kalender konnte nicht geladen werden.",
-    "appointmentHelp": "Klicken Sie auf einen Termin, um die Anfrage zu öffnen."
+    "appointmentHelp": "Klicken Sie auf einen Termin, um die Anfrage zu öffnen.",
+    "closeHelp": "Ziehen Sie, um einen Zeitraum zu schließen, oder wählen Sie Tage in der Zeile „Tag schließen“. Klicken Sie auf einen geschlossenen Block, um ihn wieder zu öffnen. Bereits gebuchte Termine bleiben bestehen.",
+    "modeLabel": "Kalendermodus",
+    "modeOpen": "Öffnungszeit hinzufügen",
+    "modeClose": "Zeit schließen",
+    "weeklyTitle": "Wochenzeiten",
+    "closedTitle": "Geschlossen",
+    "closeDayRow": "Tag schließen",
+    "closeFailed": "Diese Zeit konnte nicht geschlossen werden.",
+    "closed": "Zeit geschlossen.",
+    "reopened": "Zeit wieder geöffnet."
   },
   "bookingForms": {
     "standardIntake": "Normale Terminanfrage",
@@ -942,6 +952,18 @@
       "role": "Rolle",
       "invite": "Einladen",
       "invited": "{email} eingeladen"
+    },
+    "weeklyHours": {
+      "heading": "Wochenzeiten",
+      "help": "Ihre übliche Woche in japanischer Zeit (JST). Patienten können innerhalb dieser Zeiten buchen. Einmalige Öffnungszeiten oder geschlossene Tage legen Sie im Kalender fest.",
+      "closed": "Geschlossen",
+      "opens": "Beginn am {day}",
+      "closes": "Ende am {day}",
+      "addBlock": "Zeiten hinzufügen",
+      "removeBlock": "Entfernen",
+      "copyToWeekdays": "Auf Dienstag–Freitag kopieren",
+      "invalid": "Zwei Blöcke am selben Tag überschneiden sich. Ändern Sie einen davon.",
+      "save": "Wochenzeiten speichern"
     }
   },
   "patientBooking": {

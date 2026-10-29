@@ -9,11 +9,15 @@ import type {
     BookingSubmissionListItem,
     BookingSubmissionSearchFilters,
     BookingUploadDownloadUrl,
+    ClinicAvailabilityClosure,
     ClinicAvailabilityWindow,
     ClinicMember,
     ClinicMemberRole,
+    ClinicWeeklyHours,
+    CreateClinicAvailabilityClosureInput,
     CreateClinicAvailabilityWindowInput,
     DeleteResult,
+    SetClinicWeeklyHoursInput,
     UpdateBookingSettingsInput
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
@@ -111,6 +115,23 @@ const WINDOW_FIELDS = `
   createdDate
 `
 
+const WEEKLY_HOURS_FIELDS = `
+  id
+  facilityId
+  weekday
+  startMinute
+  endMinute
+`
+
+const CLOSURE_FIELDS = `
+  id
+  facilityId
+  startsAt
+  endsAt
+  reason
+  createdDate
+`
+
 const listQuery = gql`
   query BookingSubmissions($filters: BookingSubmissionSearchFilters!) {
     bookingSubmissions(filters: $filters) {
@@ -153,6 +174,44 @@ const calendarQuery = gql`
     }
     clinicAppointments(clinicId: $clinicId, from: $from, to: $to) {
       ${APPOINTMENT_FIELDS}
+    }
+    clinicWeeklyHours(clinicId: $clinicId) {
+      ${WEEKLY_HOURS_FIELDS}
+    }
+    clinicAvailabilityClosures(clinicId: $clinicId, from: $from, to: $to) {
+      ${CLOSURE_FIELDS}
+    }
+  }
+`
+
+const weeklyHoursQuery = gql`
+  query ClinicWeeklyHours($clinicId: ID!) {
+    clinicWeeklyHours(clinicId: $clinicId) {
+      ${WEEKLY_HOURS_FIELDS}
+    }
+  }
+`
+
+const setWeeklyHoursMutation = gql`
+  mutation SetClinicWeeklyHours($input: SetClinicWeeklyHoursInput!) {
+    setClinicWeeklyHours(input: $input) {
+      ${WEEKLY_HOURS_FIELDS}
+    }
+  }
+`
+
+const createClosureMutation = gql`
+  mutation CreateClinicAvailabilityClosure($input: CreateClinicAvailabilityClosureInput!) {
+    createClinicAvailabilityClosure(input: $input) {
+      ${CLOSURE_FIELDS}
+    }
+  }
+`
+
+const deleteClosureMutation = gql`
+  mutation DeleteClinicAvailabilityClosure($id: ID!) {
+    deleteClinicAvailabilityClosure(id: $id) {
+      isSuccessful
     }
   }
 `
@@ -296,19 +355,58 @@ export async function fetchClinicAvailabilityWindows(
     return data?.clinicAvailabilityWindows ?? []
 }
 
-/** Availability and appointments for one calendar range. Null when the request failed. */
+/** Availability, weekly hours, closures, and appointments for one calendar range. Null when the request failed. */
 export async function fetchClinicCalendar(clinicId: string, from: string, to: string): Promise<{
     windows: ClinicAvailabilityWindow[]
     appointments: BookingAppointment[]
+    weeklyHours: ClinicWeeklyHours[]
+    closures: ClinicAvailabilityClosure[]
 } | null> {
     const data = await request<{
         clinicAvailabilityWindows: ClinicAvailabilityWindow[]
         clinicAppointments: BookingAppointment[]
+        clinicWeeklyHours: ClinicWeeklyHours[]
+        clinicAvailabilityClosures: ClinicAvailabilityClosure[]
     }>(calendarQuery, { clinicId, from, to }, READ)
     if (data === null) {
         return null
     }
-    return { windows: data.clinicAvailabilityWindows ?? [], appointments: data.clinicAppointments ?? [] }
+    return {
+        windows: data.clinicAvailabilityWindows ?? [],
+        appointments: data.clinicAppointments ?? [],
+        weeklyHours: data.clinicWeeklyHours ?? [],
+        closures: data.clinicAvailabilityClosures ?? []
+    }
+}
+
+export async function fetchClinicWeeklyHours(clinicId: string): Promise<ClinicWeeklyHours[] | null> {
+    const data = await request<{ clinicWeeklyHours: ClinicWeeklyHours[] }>(weeklyHoursQuery, { clinicId }, READ)
+    return data === null ? null : data.clinicWeeklyHours ?? []
+}
+
+export async function setClinicWeeklyHours(input: SetClinicWeeklyHoursInput): Promise<ClinicWeeklyHours[] | null> {
+    const data = await request<{ setClinicWeeklyHours: ClinicWeeklyHours[] }>(setWeeklyHoursMutation, { input }, WRITE)
+    return data?.setClinicWeeklyHours ?? null
+}
+
+export async function createClinicAvailabilityClosure(
+    input: CreateClinicAvailabilityClosureInput
+): Promise<ClinicAvailabilityClosure | null> {
+    const data = await request<{ createClinicAvailabilityClosure: ClinicAvailabilityClosure }>(
+        createClosureMutation,
+        { input },
+        WRITE
+    )
+    return data?.createClinicAvailabilityClosure ?? null
+}
+
+export async function deleteClinicAvailabilityClosure(id: string): Promise<DeleteResult | null> {
+    const data = await request<{ deleteClinicAvailabilityClosure: DeleteResult }>(
+        deleteClosureMutation,
+        { id },
+        WRITE
+    )
+    return data?.deleteClinicAvailabilityClosure ?? null
 }
 
 export async function createClinicAvailabilityWindow(

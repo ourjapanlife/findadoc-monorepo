@@ -11,6 +11,8 @@
             {{ t('clinicDashboard.loadError') }}
         </p>
 
+        <ClinicWeeklyHoursEditor :facility-id="props.facilityId" />
+
         <form
             v-if="settings"
             class="card flex flex-col gap-6 p-5 shadow-card landscape:p-6"
@@ -220,6 +222,7 @@ import {
     type BookingSettings,
     type ClinicMember
 } from '@findadoc/graphql'
+import ClinicWeeklyHoursEditor from '~/components/booking/ClinicWeeklyHoursEditor.vue'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
 import { ALLOWED_APPOINTMENT_DURATIONS, resolveDuration } from '~/utils/booking/durations'
@@ -231,7 +234,7 @@ import {
 } from '~/utils/booking/staffQuery'
 
 /**
- * Owner settings: visit lengths, which intake forms the clinic offers, and who
+ * Owner settings: weekly hours, visit lengths, which intake forms the clinic offers, and who
  * may use the dashboard. An owner invites staff; a moderator may also invite owners.
  */
 const props = defineProps<{

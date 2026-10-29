@@ -62,7 +62,7 @@ Clinic notices go to the clinic's members only (#161). A clinic with no members 
 | | Local laptop | Production (`findadoc.jp`) |
 |---|---|---|
 | Works today | Yes, on this branch | Only after #153 is merged and deployed |
-| Open times | Seeded: weekdays 09:00–12:00, 13:00–17:00 JST, next 14 days | A moderator paints them on the calendar |
+| Open times | Weekly hours: weekdays 09:00–12:00, 13:00–17:00 JST (seed) | The same weekly hours (migration `20261030090000_booking_weekly_hours.sql`) |
 | Emails | Printed in the API terminal | Real; use internal addresses only |
 | Sign-in | Real Auth0, **Moderator or Admin account** | Same |
 | Risk | Laptop has to run the stack | Real data; demo bookings stay in the database unless cancelled |
@@ -96,7 +96,7 @@ From the repo root, on this branch.
 ## 5. Night-before setup: production (only if #153 is deployed)
 
 1. `pnpm db:push` has applied `20261029150000_booking_access_lifecycle.sql`.
-2. As a moderator, open `https://www.findadoc.jp/clinic-dashboard/c32c316a-a368-499b-abaf-c5c973cb67e5` → **Calendar** and drag to paint open hours for tomorrow and the next few days. Without this the Book page says there are no times.
+2. As a moderator, open `https://www.findadoc.jp/clinic-dashboard/c32c316a-a368-499b-abaf-c5c973cb67e5` → **Settings → Weekly hours** and check the week. The migration sets weekdays 09:00–12:00 and 13:00–17:00 JST. Close any day you don't want offered on the **Calendar**.
 3. **Settings → Team**: invite your own email (role Owner). Notices for the showcase then go to you.
 4. Use an internal address for the demo patient (section 2).
 5. Open `https://multilingual-online-clinic.findadoc.jp/?preview=1` in both windows.
@@ -170,7 +170,8 @@ Run these before the demo. Expected results assume the local seed.
 | 13 | Closed is closed | Manage link of a cancelled booking | Shows *Cancelled*, no cancel button |
 | 14 | Bad link | `/book/manage#nonsense` | "We could not find this booking" |
 | 15 | Complete | Confirmed booking → Mark completed | *Completed*, no more buttons |
-| 16 | Calendar edit | Drag to paint, click to remove | Block appears/disappears; Book page follows |
+| 16 | Calendar edit | Drag to add extra time, click it to remove; click a weekly block to close it; Close time mode → all-day row closes a day | Blocks appear, disappear, or show as closed; Book page follows |
+| 16a | Weekly hours | Settings → Weekly hours: close Wednesday, save | No Wednesday times on the Book page |
 | 17 | Long visit | Paint two touching 30-min blocks on an empty day | A 60-min visit can start at the first block |
 | 18 | Settings | Untick 15 min, change default form, save | Book page follows both |
 | 19 | `?form=` | `?form=findadoc-intake-v1`, then `?form=nope` | Standard form; unknown id falls back to the default |
@@ -193,7 +194,7 @@ Sign in with a plain (non-moderator) account with that sub. You see only the sho
 | Symptom | Cause | Fix |
 |---|---|---|
 | `pnpm db:start`: "port is already allocated" | Old Supabase stack on 54322 | Section 4 step 1 (#168) |
-| Book page: no times | No open hours in range | Re-seed locally, or paint on the calendar |
+| Book page: no times | No open hours in range | Check Settings → Weekly hours and closures on the calendar, or re-seed locally |
 | Clinic subdomain doesn't show the clinic page | Preview cookie missing on that host | Open `…/?preview=1` once in that window |
 | Dashboard: "This account is not linked to a clinic yet" | Plain account and no claimed membership | Use a Moderator account, or the SQL above; production needs #158 |
 | Dashboard keeps showing "Sign in" | Auth0 session is per origin | Sign in on `localhost:3000` / `www.findadoc.jp`, not the clinic subdomain |
@@ -205,7 +206,7 @@ Sign in with a plain (non-moderator) account with that sub. You see only the sho
 ## 9. Reset between runs
 
 - **Local**: stop the dev servers and run `pnpm dev:seeded` again. This wipes and re-seeds the local database, including fresh open hours.
-- **Production**: cancel demo bookings from the dashboard (that frees their times). Rows are kept for the record. Remove painted hours you don't want by clicking them.
+- **Production**: cancel demo bookings from the dashboard (that frees their times). Rows are kept for the record. Remove extra hours you don't want by clicking them, and close weekly blocks the same way.
 
 ## Known gaps
 

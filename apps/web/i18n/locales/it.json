@@ -884,9 +884,9 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Sito della clinica",
-    "help": "Trascina per dipingere disponibilità da 30 minuti. Un clic rimuove un blocco. I pazienti prenotano 15, 30, 45 o 60 minuti in quelle finestre.",
+    "help": "L'orario settimanale si imposta in Impostazioni. Trascina per aggiungere un orario extra; fai clic sull'orario extra per rimuoverlo. Fai clic su un blocco settimanale per chiuderlo in quel giorno. I pazienti prenotano una visita di 15, 30, 45 o 60 minuti durante l'orario di apertura.",
     "loading": "Caricamento calendario…",
-    "windowTitle": "Disponibile",
+    "windowTitle": "Orario extra",
     "createFailed": "Impossibile salvare la disponibilità.",
     "deleteFailed": "Impossibile rimuovere la disponibilità.",
     "removed": "Disponibilità rimossa.",
@@ -894,7 +894,17 @@
     "legend": "Legenda del calendario",
     "patient": "Paziente",
     "loadFailed": "Impossibile caricare il calendario.",
-    "appointmentHelp": "Fai clic su un appuntamento per aprire la richiesta."
+    "appointmentHelp": "Fai clic su un appuntamento per aprire la richiesta.",
+    "closeHelp": "Trascina per chiudere un intervallo, oppure scegli i giorni nella riga Chiudi giornata. Fai clic su un blocco chiuso per riaprirlo. Gli appuntamenti già prenotati restano.",
+    "modeLabel": "Modalità calendario",
+    "modeOpen": "Aggiungi orario",
+    "modeClose": "Chiudi orario",
+    "weeklyTitle": "Orario settimanale",
+    "closedTitle": "Chiuso",
+    "closeDayRow": "Chiudi giornata",
+    "closeFailed": "Impossibile chiudere questo orario.",
+    "closed": "Orario chiuso.",
+    "reopened": "Orario riaperto."
   },
   "bookingForms": {
     "standardIntake": "Richiesta di visita standard",
@@ -942,6 +952,18 @@
       "role": "Ruolo",
       "invite": "Invita",
       "invited": "{email} invitato"
+    },
+    "weeklyHours": {
+      "heading": "Orario settimanale",
+      "help": "La vostra settimana abituale, in ora giapponese (JST). I pazienti possono prenotare in questi orari. Aggiungete un'apertura occasionale o chiudete un giorno nel Calendario.",
+      "closed": "Chiuso",
+      "opens": "Apertura di {day}",
+      "closes": "Chiusura di {day}",
+      "addBlock": "Aggiungi fascia",
+      "removeBlock": "Rimuovi",
+      "copyToWeekdays": "Copia da martedì a venerdì",
+      "invalid": "Due fasce nello stesso giorno si sovrappongono. Modificane una.",
+      "save": "Salva orario settimanale"
     }
   },
   "patientBooking": {
