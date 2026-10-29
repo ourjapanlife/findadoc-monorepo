@@ -15,6 +15,8 @@
 export type ConsentChoice = 'granted' | 'denied'
 
 export const CONSENT_COOKIE = 'fad_consent'
+/** `#cookie-settings` opens the banner, so the footer link works before hydration. */
+export const CONSENT_SETTINGS_HASH = 'cookie-settings'
 export const CONSENT_MAX_AGE_SECONDS = 180 * 24 * 60 * 60
 
 /** EEA, UK, and Switzerland as ISO 3166-1 alpha-2 codes. */

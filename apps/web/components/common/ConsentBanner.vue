@@ -22,6 +22,7 @@
             <!-- Same style and size for both: declining must be as easy as accepting. -->
             <div class="flex shrink-0 gap-2">
                 <button
+                    ref="firstAction"
                     type="button"
                     class="btn btn-secondary"
                     data-testid="consent-decline"
@@ -43,14 +44,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useConsent } from '~/composables/useConsent'
 import { localizedPath } from '~/utils/localePath'
 
 const { t, locale } = useI18n()
-const { isOpen, openIfUndecided, choose } = useConsent()
+const { isOpen, openedOnRequest, openIfUndecided, openFromHash, choose } = useConsent()
 const privacyPath = computed(() => `${localizedPath('/privacypolicy', String(locale.value))}#cookies`)
+const firstAction = ref<HTMLButtonElement | null>(null)
 
-onMounted(openIfUndecided)
+// Opened from Cookie settings: move focus in, so the change is obvious and keyboard users land on it.
+watch(isOpen, async open => {
+    if (open && openedOnRequest.value) {
+        await nextTick()
+        firstAction.value?.focus()
+    }
+})
+
+onMounted(() => {
+    openIfUndecided()
+    openFromHash()
+    window.addEventListener('hashchange', openFromHash)
+})
+onBeforeUnmount(() => window.removeEventListener('hashchange', openFromHash))
 </script>

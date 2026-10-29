@@ -121,14 +121,16 @@
                             >{{ t('footer.npo') }}</NuxtLink>
                         </li>
                         <li>
-                            <button
-                                type="button"
+                            <!--
+                                A real link: a click before hydration still sets #cookie-settings,
+                                and the banner opens from the hash once the app is ready.
+                            -->
+                            <a
+                                :href="`#${CONSENT_SETTINGS_HASH}`"
                                 :class="footerLink"
                                 data-testid="cookie-settings-link"
-                                @click="openSettings"
-                            >
-                                {{ t('consent.settings') }}
-                            </button>
+                                @click.prevent="openSettings"
+                            >{{ t('consent.settings') }}</a>
                         </li>
                     </ul>
                 </nav>
@@ -156,6 +158,7 @@ import { useI18n } from 'vue-i18n'
 import SVGSiteLogo from '~/assets/icons/site-logo.svg'
 import { GITHUB_ORGANIZATION_URL, LINKEDIN_ORGANIZATION_URL } from '~/utils/site'
 import { useConsent } from '~/composables/useConsent'
+import { CONSENT_SETTINGS_HASH } from '~/utils/consent'
 
 const { t } = useI18n()
 
