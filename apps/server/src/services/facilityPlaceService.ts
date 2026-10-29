@@ -1,7 +1,7 @@
 import { envVariables } from '../../utils/environmentVariables.js'
 import { logger } from '../logger.js'
 import { ErrorCode, Result } from '../result.js'
-import type { Facility } from '@findadoc/graphql'
+import type { FacilityParent } from '../typeDefs/resolverParents.js'
 import { namesAgree } from '../places/facilityPlaceMatch.js'
 import { allowModeratorPreviewCall, previewTargetFromMapsUrl } from '../places/mapsLink.js'
 import {
@@ -92,7 +92,7 @@ export async function confirmFacilityPlaceId(
     facilityId: string,
     placeId: string,
     updatedBy: string
-): Promise<Result<Facility | null>> {
+): Promise<Result<FacilityParent | null>> {
     const normalized = normalizePlaceId(placeId)
     if (!normalized) {
         return {

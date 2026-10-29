@@ -16,7 +16,8 @@ export function isNewSubmission(
     return !submission.isRejected && !submission.isApproved && !submission.isUnderReview
 }
 
-export type ModerationDashboardView = 'submissions' | 'facilities' | 'healthcare-professionals'
+export type ModerationDashboardView
+    = 'submissions' | 'facilities' | 'healthcare-professionals' | 'bookings' | 'availability'
 
 const MY_PAGE_FORM_ROUTE = /^\/(?:my-page|moderation)\/(?:edit-|create-)/
 
@@ -53,6 +54,12 @@ function syncModerationListView(view: ModerationDashboardView) {
             moderationSubmissionsStore.setSelectedModerationListViewChosen(
                 SelectedModerationListView.HealthcareProfessionals
             )
+            break
+        case 'bookings':
+            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Bookings)
+            break
+        case 'availability':
+            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Availability)
             break
         default:
             moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Submissions)

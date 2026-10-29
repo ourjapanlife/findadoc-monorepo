@@ -44,7 +44,14 @@ const envVariables = {
             return process.env.NODE_ENV === 'production' ? 0.1 : 1.0
         }
         return parsed
-    }
+    },
+    /** `s3` uses the uploads bucket. Anything else keeps files in the local API store. */
+    storageBackend: () => process.env.STORAGE_BACKEND ?? 'none',
+    s3Bucket: () => process.env.S3_BUCKET,
+    s3Region: () => process.env.S3_REGION ?? process.env.AWS_REGION ?? 'ap-northeast-1',
+    sesFromAddress: () => process.env.SES_FROM_ADDRESS,
+    sesConfigurationSet: () => process.env.SES_CONFIGURATION_SET,
+    sesRegion: () => process.env.SES_REGION ?? process.env.AWS_REGION ?? 'ap-northeast-1'
 }
 
 console.log('🔌 Loaded env variables 🔌')

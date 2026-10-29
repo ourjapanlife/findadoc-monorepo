@@ -1,9 +1,14 @@
 import { clinicLandingGate, useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
-import { clinicHostLandingTarget, clinicLandingHostSlug, isClinicHostPage } from '~/utils/clinicLanding'
+import {
+    clinicHostLandingTarget,
+    clinicLandingHostSlug,
+    isClinicHostSurface
+} from '~/utils/clinicLanding'
 
 /**
- * A clinic hostname opens the clinic at `/`. Other pages on that host come back
- * to `/`. The preview cookie is the same gate as `/clinic/{slug}` on the main site.
+ * A clinic hostname opens the clinic at `/` and booking at `/book`. Other pages
+ * on that host come back to `/`. The preview cookie is the same gate as
+ * `/clinic/{slug}` on the main site.
  */
 export default defineNuxtRouteMiddleware(to => {
     const mode = useClinicLandingMode()
@@ -12,7 +17,7 @@ export default defineNuxtRouteMiddleware(to => {
         return
     }
 
-    if (isClinicHostPage(to.path)) {
+    if (isClinicHostSurface(to.path)) {
         return clinicLandingGate(to, mode)
     }
 

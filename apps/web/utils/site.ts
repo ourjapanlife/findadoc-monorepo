@@ -51,7 +51,7 @@ export const CONTACT_EMAIL = 'contact@findadoc.jp'
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}`
 
 /** Registered name, as published in the footer and on /npo. */
-export const NPO_LEGAL_NAME = 'NPO法人Find a Doc, Japan'
+export const NPO_LEGAL_NAME = 'NPO法人Find a Doc Japan'
 
 /** 東京都 NPO法人台帳 registration number. Shown on /npo. */
 export const NPO_REGISTRATION_NUMBER = '9011005010215'

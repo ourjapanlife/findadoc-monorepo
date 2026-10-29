@@ -55,6 +55,10 @@ Moderation forms that already have saved data open in preview. Create forms stay
 
 The web Auth0 client keeps its cache in memory on the production site. A reload there restores the session through the iframe on `findadoc.jp.auth0.com`. That cookie is third-party on localhost, so the browser blocks it and a local reload logs the user out. `auth0CacheLocation` in `apps/web/utils/auth0Config.ts` uses localStorage only for localhost and `127.0.0.1`. Do not use localStorage for the production origin. A refresh token is not requested. After the access token expires, a local reload still cannot renew it until Auth0 allows refresh tokens for this client.
 
+## Booking
+
+`apps/server/docs/booking-access.md` is the booking access rule. Clinic owners and staff are plain users: their resolvers use `withAuthenticatedUser`, and every booking service checks the facility through `apps/server/src/booking/access.ts`. Do not give a clinic member a global booking scope. Only `requested` and `confirmed` appointments hold a slot, and a status change is a compare-and-set on the current status. A new intake form is a `FormSource` in `apps/server/src/booking/formDefinitions.ts`; a clinic offers it through `booking_settings.form_definition_ids`.
+
 ## Locale files
 
 `apps/web/i18n/checkLocaleKeys.js` compares every file in `apps/web/i18n/locales` with `en.json`. Web typecheck runs it, and it does not write the locale files. A missing key, an extra key, or a `{token}` that does not match English fails the check. A value that is still the English sentence also fails, unless that key is listed in `apps/web/i18n/sameAsEnglish.json` because it is a brand name, a person's name, or a word that is the same in that language. Add the translation. Do not copy the English sentence in to make the check pass.

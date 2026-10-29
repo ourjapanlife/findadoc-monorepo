@@ -3,8 +3,9 @@ import type * as gqlTypes from '@findadoc/graphql'
 /**
  * What a query resolver returns for a Facility before the field resolvers run.
  * `healthcareProfessionalIds` is filled by its field resolver unless a mutation already returned it.
+ * `bookingEnabled` always comes from its field resolver.
  */
-export type FacilityParent = Omit<gqlTypes.Facility, 'healthcareProfessionalIds'>
+export type FacilityParent = Omit<gqlTypes.Facility, 'healthcareProfessionalIds' | 'bookingEnabled'>
     & Partial<Pick<gqlTypes.Facility, 'healthcareProfessionalIds'>>
 
 /**

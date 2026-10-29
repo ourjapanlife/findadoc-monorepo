@@ -157,6 +157,10 @@ const updateTextForModerationDashboard = (selectedView: SelectedModerationListVi
             return t('modDashboardTopbar.facilities')
         case SelectedModerationListView.HealthcareProfessionals:
             return t('modDashboardTopbar.healthcareProfessionals')
+        case SelectedModerationListView.Bookings:
+            return t('modDashboardLeftNav.bookings')
+        case SelectedModerationListView.Availability:
+            return t('modDashboardLeftNav.availability')
         default:
             return ''
     }

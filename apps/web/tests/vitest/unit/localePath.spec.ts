@@ -2,6 +2,7 @@ import { expect } from 'chai'
 import { isSearchCrawler } from '@/utils/crawler'
 import {
     localeCodeFromPath,
+    isLocaleOnlyNavigation,
     localizedPath,
     routeMatchesPath,
     unlocalizedPath,
@@ -27,6 +28,10 @@ describe('locale paths', () => {
         expect(localizedPath('/ja-JP/about', 'en-US')).to.equal('/about')
         expect(localizedPath('/', 'ja-JP')).to.equal('/ja-JP')
         expect(localizedPath('/my-page?view=facilities', 'ja-JP')).to.equal('/ja-JP/my-page?view=facilities')
+        expect(isLocaleOnlyNavigation('/book', '/ja-JP/book')).to.equal(true)
+        expect(isLocaleOnlyNavigation('/book?preview=1', '/ko-KR/book?preview=1')).to.equal(true)
+        expect(isLocaleOnlyNavigation('/book', '/ja-JP')).to.equal(false)
+        expect(isLocaleOnlyNavigation('/my-page?view=bookings', '/my-page?view=availability')).to.equal(false)
         expect(withLocaleVariants(['/about'])[0]).to.equal('/about')
         expect(withLocaleVariants(['/about'])).to.include('/ja-JP/about')
         expect(withLocaleVariants(['/about'])).to.include('/zh-CN/about')

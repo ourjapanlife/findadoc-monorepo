@@ -16,7 +16,7 @@
     "whatHeading": "Wobei wir helfen können",
     "whatBody": "Nennen Sie eine Klinik oder einen Arzt, die aufgenommen werden sollten, eine Korrektur an einer bereits veröffentlichten Seite oder ein Problem mit der Website. Wir beantworten auch Fragen von Partnern, Journalisten und Behörden zur Organisation selbst. Wir geben keine medizinische Beratung, keine Diagnose und keine Termine. Für Behandlung finden Sie eine Klinik im Verzeichnis und kontaktieren diese direkt.",
     "npoHeading": "Die Organisation",
-    "npoBody": "Der eingetragene Name ist NPO法人Find a Doc, Japan, Nummer 9011005010215, am 28. August 2023 in Tokio zertifiziert. Eingereichte Unterlagen, einschließlich der Bilanz, stehen auf der Seite zur NPO-Offenlegung. Der eingetragene Sitz ist ein virtuelles Büro, die Straße wird daher nicht abgedruckt und auf Anfrage mitgeteilt.",
+    "npoBody": "Der eingetragene Name ist NPO法人Find a Doc Japan, Nummer 9011005010215, am 28. August 2023 in Tokio zertifiziert. Eingereichte Unterlagen, einschließlich der Bilanz, stehen auf der Seite zur NPO-Offenlegung. Der eingetragene Sitz ist ein virtuelles Büro, die Straße wird daher nicht abgedruckt und auf Anfrage mitgeteilt.",
     "addressNote": "Wir arbeiten ortsunabhängig in ganz Japan."
   },
   "npoPage": {
@@ -78,7 +78,7 @@
     "privacy": "Datenschutz",
     "contribute": "Mitmachen",
     "contact": "Kontakt",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "Entdecken",
     "communityHeading": "Gemeinschaft",
     "legalHeading": "Rechtliches"
@@ -86,7 +86,7 @@
   "hamburgerMenu": {
     "logout": "Abmelden",
     "languageDropdownTitle": "Sprache:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "Anmelden",
     "logoutToast": "Erfolgreich abgemeldet"
   },
@@ -260,7 +260,9 @@
     "rejected": "Abgelehnt",
     "submissions": "Einreichungen",
     "collapse": "Seitenleiste einklappen",
-    "expand": "Seitenleiste ausklappen"
+    "expand": "Seitenleiste ausklappen",
+    "bookings": "Buchungen",
+    "availability": "Verfügbarkeit"
   },
   "accessPanel": {
     "loading": "Berechtigungen werden geladen…",
@@ -648,7 +650,8 @@
     "onlineMetaDescription": "{name}. Online-Einrichtung ohne Straßenadresse. Telefon und Sprachen des Personals.",
     "locationNav": "Ort",
     "relatedSpecialtiesHeading": "Nach Fachgebiet stöbern",
-    "relatedLanguagesHeading": "Nach Sprache stöbern"
+    "relatedLanguagesHeading": "Nach Sprache stöbern",
+    "book": "Buchen"
   },
   "doctorPage": {
     "backToSearch": "Zurück zur Suche",
@@ -710,5 +713,195 @@
     "dismiss": "Schließen",
     "announceLabel": "Meldung",
     "viewportLabel": "Hinweise ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "Termin · {clinic}",
+    "eyebrow": "Terminanfrage",
+    "heading": "Termin bei {clinic}",
+    "lead": "Senden Sie Ihre Angaben an die Klinik. Bestätigt ist erst nach ihrer Antwort.",
+    "optional": "freiwillig",
+    "selectPlaceholder": "Auswählen",
+    "submit": "Anfrage senden",
+    "submitting": "Wird gesendet…",
+    "chooseFile": "Datei auswählen",
+    "choosePhoto": "Foto auswählen",
+    "browse": "Durchsuchen",
+    "privacyNote": "Die Klinik erhält diese Anfrage. Find a Doc, Japan gibt keine medizinische Beratung.",
+    "successHeading": "Anfrage gesendet",
+    "successBody": "Die Klinik meldet sich wegen des Termins.",
+    "reference": "Referenz: {id}",
+    "fields": {
+      "email": "E-Mail",
+      "phone": "Telefonnummer",
+      "fullName": "Vollständiger Name",
+      "age": "Alter",
+      "reason": "Grund des Besuchs",
+      "insuranceDocument": "Versicherungskarte oder Berechtigungsnachweis",
+      "selfie": "Foto von Ihnen"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "Name wie im Ausweis",
+      "age": "35",
+      "reason": "Kurz beschreiben, was Sie brauchen"
+    },
+    "errors": {
+      "required": "Pflichtfeld",
+      "email": "Gültige E-Mail eingeben",
+      "phone": "Gültige Telefonnummer eingeben",
+      "number": "Zahl eingeben",
+      "fileTooLarge": "Datei ist zu groß",
+      "uploadFailed": "Upload fehlgeschlagen. Erneut versuchen.",
+      "form": "Markierte Felder prüfen",
+      "submitFailed": "Senden fehlgeschlagen. Erneut versuchen.",
+      "slot": "Wählen Sie eine freie Zeit",
+      "duration": "Wählen Sie eine von der Klinik angebotene Dauer"
+    },
+    "slotLabel": "Wunschzeit",
+    "slotHelp": "Wählen Sie einen Start, der zur Termindauer in den freien Zeiten passt.",
+    "slotLoading": "Freie Zeiten werden geladen…",
+    "slotEmpty": "An diesem Tag keine freien Zeiten. Anderes Datum oder andere Dauer versuchen.",
+    "authRequired": "Melden Sie sich an, um dieses Buchungsformular zu öffnen…",
+    "stepsNav": "Buchungsschritte",
+    "stepOf": "Schritt {current} von {total}",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "steps": {
+      "contact": "Kontakt",
+      "visit": "Besuch",
+      "documents": "Unterlagen"
+    },
+    "dateLabel": "Datum",
+    "durationLabel": "Termindauer",
+    "durationHelp": "Die Klinik legt fest, welche Längen verfügbar sind.",
+    "durationMinutes": "{n} Minuten",
+    "manageLinkHelp": "Speichern Sie diesen privaten Link. Damit sehen Sie Ihre Anfrage und können sie stornieren. Derselbe Link steht in Ihrer Bestätigungs-E-Mail.",
+    "manageLink": "Anfrage ansehen oder stornieren"
+  },
+  "bookingDashboard": {
+    "detailHeading": "Buchung",
+    "back": "Zurück zu Buchungen",
+    "loadError": "Diese Buchung konnte nicht geladen werden.",
+    "empty": "Noch keine Buchungsanfragen",
+    "answersHeading": "Antworten",
+    "uploadsHeading": "Hochgeladene Dateien",
+    "uploadsRetentionNote": "Identitäts- und Versicherungsfotos werden nur bis zum Aufbewahrungsdatum gespeichert und danach gelöscht.",
+    "download": "Herunterladen",
+    "purged": "Gelöscht",
+    "retainUntil": "Aufbewahren bis {date}",
+    "noAppointment": "Kein Termin gewählt",
+    "identityBadge": "Ausweisdatei",
+    "identityYes": "Ja",
+    "identityNo": "Nein",
+    "columns": {
+      "clinic": "Klinik",
+      "status": "Zustand",
+      "appointment": "Termin",
+      "identity": "Identitätsupload",
+      "created": "Erstellt",
+      "locale": "Sprache"
+    },
+    "status": {
+      "received": "Empfangen",
+      "notified": "Benachrichtigt",
+      "failedNotify": "Benachrichtigung fehlgeschlagen"
+    },
+    "sensitivity": {
+      "standard": "Allgemein",
+      "identityDocument": "Identität / Versicherung",
+      "medical": "Medizinisch"
+    },
+    "requestEyebrow": "Terminanfrage",
+    "emailStatus": "Bestätigungs-E-Mail",
+    "downloadFailed": "Die Datei konnte nicht geöffnet werden.",
+    "actionFailed": "Der Termin konnte nicht aktualisiert werden. Er hat sich möglicherweise geändert; der aktuelle Stand wird angezeigt.",
+    "reasonLabel": "Hinweis für die Patientin oder den Patienten (optional, wird bei Absage oder Stornierung gesendet)",
+    "reasonShown": "Hinweis: {reason}",
+    "cancelledByPatient": "Von der Patientin oder dem Patienten storniert",
+    "cancelledByClinic": "Von der Praxis storniert",
+    "appointmentStatus": {
+      "requested": "Angefragt",
+      "confirmed": "Bestätigt",
+      "declined": "Abgelehnt",
+      "cancelled": "Storniert",
+      "completed": "Abgeschlossen"
+    },
+    "actions": {
+      "confirm": "Bestätigen",
+      "decline": "Ablehnen",
+      "cancel": "Termin stornieren",
+      "complete": "Als abgeschlossen markieren"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "Klinikseite",
+    "help": "Ziehen, um 30-Minuten-Verfügbarkeit zu malen. Klick entfernt einen Block. Patientinnen buchen 15, 30, 45 oder 60 Minuten darin.",
+    "loading": "Kalender wird geladen…",
+    "windowTitle": "Verfügbar",
+    "createFailed": "Verfügbarkeit konnte nicht gespeichert werden.",
+    "deleteConfirm": "Diese Verfügbarkeit entfernen?",
+    "deleteFailed": "Verfügbarkeit konnte nicht entfernt werden.",
+    "legend": "Kalenderlegende",
+    "patient": "Patient/in",
+    "loadFailed": "Der Kalender konnte nicht geladen werden.",
+    "appointmentHelp": "Klicken Sie auf einen Termin, um die Anfrage zu öffnen."
+  },
+  "bookingForms": {
+    "standardIntake": "Normale Terminanfrage",
+    "onlineConsultIntake": "Online-Sprechstunde mit Versicherungskarte und Foto"
+  },
+  "clinicDashboard": {
+    "heading": "Praxis-Übersicht",
+    "loading": "Wird geladen…",
+    "loadError": "Die Übersicht konnte nicht geladen werden. Bitte erneut versuchen.",
+    "signInHeading": "Bei der Praxis-Übersicht anmelden",
+    "signInBody": "Verwenden Sie die E-Mail-Adresse, an die die Einladung Ihrer Praxis ging.",
+    "signIn": "Anmelden",
+    "noClinics": "Dieses Konto ist noch mit keiner Praxis verknüpft.",
+    "noClinicsHelp": "Bitten Sie Find a Doc, Japan, die E-Mail-Adresse einzuladen, mit der Sie sich anmelden. Die Einladung wird bei der nächsten Anmeldung verknüpft.",
+    "noAccessHeading": "Sie haben keinen Zugriff auf diese Praxis",
+    "statusFilter": "Anzeigen",
+    "allStatuses": "Alle Anfragen",
+    "saved": "Gespeichert",
+    "saveFailed": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "tabs": {
+      "requests": "Anfragen",
+      "calendar": "Kalender",
+      "settings": "Einstellungen"
+    },
+    "roles": {
+      "owner": "Inhaber/in",
+      "staff": "Mitarbeitende"
+    },
+    "settings": {
+      "heading": "Buchungseinstellungen",
+      "forms": "Anamnesebögen",
+      "formsHelp": "Patientinnen und Patienten sehen den Standardbogen, außer der Buchungslink nennt einen anderen Bogen, den Sie anbieten.",
+      "defaultForm": "Standard",
+      "save": "Einstellungen speichern"
+    },
+    "members": {
+      "heading": "Praxisteam",
+      "help": "Hier eingeladene Personen sehen nach der Anmeldung mit dieser E-Mail die Anfragen der Praxis und können ihren Kalender bearbeiten.",
+      "active": "Angemeldet",
+      "pending": "Eingeladen",
+      "remove": "Entfernen",
+      "removeConfirm": "{email} aus dieser Praxis entfernen?",
+      "role": "Rolle",
+      "invite": "Einladen",
+      "invited": "{email} eingeladen"
+    }
+  },
+  "patientBooking": {
+    "heading": "Ihre Terminanfrage",
+    "notFound": "Diese Buchung wurde nicht gefunden. Öffnen Sie den Link aus Ihrer Bestätigungs-E-Mail erneut.",
+    "reasonLabel": "Grund (optional, wird der Praxis mitgeteilt)",
+    "cancel": "Diesen Termin stornieren",
+    "confirmCancel": "Diesen Termin stornieren? Die Praxis wird informiert und die Zeit anderen Patientinnen und Patienten angeboten.",
+    "yesCancel": "Ja, stornieren",
+    "keep": "Behalten",
+    "cancelled": "Dieser Termin ist storniert.",
+    "cancelFailed": "Stornierung nicht möglich. Der Termin hat vielleicht schon begonnen oder sich geändert; der aktuelle Stand wird angezeigt."
   }
 }

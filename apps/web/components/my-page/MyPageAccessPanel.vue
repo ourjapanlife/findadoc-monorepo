@@ -235,6 +235,11 @@ const canReadFacilities = computed(() => allowLinksWhileAccessUnknown.value || a
 const canReadHealthcareProfessionals = computed(
     () => allowLinksWhileAccessUnknown.value || accessStore.hasScope('read:healthcareprofessionals')
 )
+// Booking dashboards stay hidden until scopes load — no anonymous or unknown-access peek.
+const canReadBookings = computed(() =>
+    accessStore.isLoaded && !accessStore.loadError && accessStore.hasScope('read:bookings'))
+const canWriteAvailability = computed(() =>
+    accessStore.isLoaded && !accessStore.loadError && accessStore.hasScope('write:clinic_availability'))
 
 const settingsPages = computed<NavPage[]>(() => [{
     id: 'my-page',
@@ -274,6 +279,26 @@ const moderationPages = computed<NavPage[]>(() => [
             iconClass: '',
             listView: SelectedModerationListView.HealthcareProfessionals
         }]
+        : []),
+    ...(canReadBookings.value
+        ? [{
+            id: 'moderation-bookings',
+            route: '/my-page',
+            label: t('modDashboardLeftNav.bookings'),
+            icon: SVGInbox,
+            iconClass: '',
+            listView: SelectedModerationListView.Bookings
+        }]
+        : []),
+    ...(canWriteAvailability.value
+        ? [{
+            id: 'moderation-availability',
+            route: '/my-page',
+            label: t('modDashboardLeftNav.availability'),
+            icon: SVGFacilityIcon,
+            iconClass: '',
+            listView: SelectedModerationListView.Availability
+        }]
         : [])
 ])
 
@@ -293,7 +318,11 @@ function pageRoute(page: NavPage): { path: string, query?: { view: string } } {
         ? 'submissions'
         : page.listView === SelectedModerationListView.Facilities
             ? 'facilities'
-            : 'healthcare-professionals'
+            : page.listView === SelectedModerationListView.Bookings
+                ? 'bookings'
+                : page.listView === SelectedModerationListView.Availability
+                    ? 'availability'
+                    : 'healthcare-professionals'
 
     return {
         path: page.route,

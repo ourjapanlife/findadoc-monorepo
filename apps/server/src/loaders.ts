@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import type { UserContext } from './auth.js'
 import type { City } from '@findadoc/graphql'
+import { bookingEnabledFacilityIds } from './booking/target.js'
 import { getCitiesByIds } from './services/cityService.js'
 import { hpIdsByFacilityIds } from './services/facilityService.js'
 import { facilityIdsByHpIds } from './services/healthcareProfessionalService.js'
@@ -21,6 +22,11 @@ export function createLoaders() {
             const byProfessional = await facilityIdsByHpIds([...hpIds])
 
             return hpIds.map(id => byProfessional.get(id) ?? [])
+        }),
+        bookingEnabledByFacility: new DataLoader<string, boolean>(async facilityIds => {
+            const enabled = await bookingEnabledFacilityIds(facilityIds)
+
+            return facilityIds.map(id => enabled.has(id))
         }),
         cityById: new DataLoader<string, City | null>(async cityIds => {
             const byId = await getCitiesByIds(cityIds)

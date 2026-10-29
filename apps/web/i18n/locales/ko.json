@@ -141,7 +141,7 @@
     "privacy": "개인정보 처리방침",
     "contribute": "기여하기",
     "contact": "문의하기",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "exploreHeading": "둘러보기",
     "communityHeading": "커뮤니티",
     "legalHeading": "법적 고지"
@@ -149,7 +149,7 @@
   "hamburgerMenu": {
     "logout": "로그아웃",
     "languageDropdownTitle": "언어:",
-    "copyright": "NPO法人Find a Doc, Japan",
+    "copyright": "NPO法人Find a Doc Japan",
     "login": "로그인",
     "logoutToast": "로그아웃되었습니다"
   },
@@ -329,7 +329,9 @@
     "rejected": "거절됨",
     "submissions": "제보",
     "collapse": "사이드바 접기",
-    "expand": "사이드바 펼치기"
+    "expand": "사이드바 펼치기",
+    "bookings": "예약 신청",
+    "availability": "가능 시간"
   },
   "accessPanel": {
     "loading": "권한을 불러오는 중…",
@@ -652,7 +654,8 @@
     "onlineBreadcrumb": "온라인",
     "onlineMetaDescription": "{name}. 거리 주소가 없는 온라인 의료기관. 전화와 직원이 구사하는 언어.",
     "relatedSpecialtiesHeading": "전문 과목으로 찾기",
-    "relatedLanguagesHeading": "언어로 찾기"
+    "relatedLanguagesHeading": "언어로 찾기",
+    "book": "예약하기"
   },
   "doctorPage": {
     "backToSearch": "검색으로 돌아가기",
@@ -710,5 +713,195 @@
     "dismiss": "닫기",
     "announceLabel": "알림",
     "viewportLabel": "알림 ({hotkey})"
+  },
+  "bookingPage": {
+    "documentTitle": "예약 · {clinic}",
+    "eyebrow": "예약 요청",
+    "heading": "{clinic} 예약하기",
+    "lead": "클리닉에 정보를 보냅니다. 클리닉이 답할 때까지 확정되지 않습니다.",
+    "optional": "선택",
+    "selectPlaceholder": "선택하세요",
+    "submit": "요청 보내기",
+    "submitting": "보내는 중…",
+    "chooseFile": "파일 선택",
+    "choosePhoto": "사진 선택",
+    "browse": "찾아보기",
+    "privacyNote": "클리닉이 이 요청을 받습니다. Find a Doc, Japan은 의학적 조언을 하지 않습니다.",
+    "successHeading": "요청이 전송되었습니다",
+    "successBody": "클리닉에서 예약에 대해 연락드립니다.",
+    "reference": "접수 번호: {id}",
+    "fields": {
+      "email": "이메일",
+      "phone": "전화번호",
+      "fullName": "성명",
+      "age": "나이",
+      "reason": "방문 사유",
+      "insuranceDocument": "보험증 또는 자격확인서",
+      "selfie": "본인 사진"
+    },
+    "placeholders": {
+      "email": "name{'@'}example.com",
+      "phone": "090-0000-0000",
+      "fullName": "신분증과 같은 이름",
+      "age": "35",
+      "reason": "필요한 내용을 짧게 적어 주세요"
+    },
+    "errors": {
+      "required": "필수 항목입니다",
+      "email": "올바른 이메일을 입력하세요",
+      "phone": "올바른 전화번호를 입력하세요",
+      "number": "숫자를 입력하세요",
+      "fileTooLarge": "파일이 너무 큽니다",
+      "uploadFailed": "업로드에 실패했습니다. 다시 시도하세요.",
+      "form": "표시된 항목을 확인하세요",
+      "submitFailed": "요청을 보내지 못했습니다. 다시 시도하세요.",
+      "slot": "가능한 시간을 선택하세요",
+      "duration": "클리닉이 제공하는 진료 시간을 선택하세요"
+    },
+    "slotLabel": "희망 시간",
+    "slotHelp": "클리닉 예약 가능 시간 안에서 진료 시간에 맞는 시작 시각을 고르세요.",
+    "slotLoading": "가능 시간 불러오는 중…",
+    "slotEmpty": "이날은 가능한 시간이 없습니다. 다른 날짜나 시간을 선택하세요.",
+    "authRequired": "이 예약 양식을 열려면 로그인하세요…",
+    "stepsNav": "예약 단계",
+    "stepOf": "{total}단계 중 {current}",
+    "next": "다음",
+    "previous": "이전",
+    "steps": {
+      "contact": "연락처",
+      "visit": "진료 내용",
+      "documents": "서류"
+    },
+    "dateLabel": "날짜",
+    "durationLabel": "진료 시간",
+    "durationHelp": "가능한 시간은 클리닉이 정합니다.",
+    "durationMinutes": "{n}분",
+    "manageLinkHelp": "이 비공개 링크를 저장하세요. 요청을 확인하고 취소할 수 있습니다. 확인 이메일에도 같은 링크가 있습니다.",
+    "manageLink": "이 요청 확인 또는 취소"
+  },
+  "bookingDashboard": {
+    "detailHeading": "예약",
+    "back": "예약 목록으로",
+    "loadError": "이 예약을 불러올 수 없습니다.",
+    "empty": "예약 신청이 아직 없습니다",
+    "answersHeading": "답변",
+    "uploadsHeading": "업로드",
+    "uploadsRetentionNote": "신분증·보험 사진은 보관 기한까지만 유지된 뒤 삭제됩니다.",
+    "download": "다운로드",
+    "purged": "삭제됨",
+    "retainUntil": "{date}까지 보관",
+    "noAppointment": "시간 미선택",
+    "identityBadge": "신분증",
+    "identityYes": "예",
+    "identityNo": "아니요",
+    "columns": {
+      "clinic": "클리닉",
+      "status": "상태",
+      "appointment": "예약 시간",
+      "identity": "신분증 업로드",
+      "created": "작성일",
+      "locale": "언어"
+    },
+    "status": {
+      "received": "수신",
+      "notified": "알림 완료",
+      "failedNotify": "알림 실패"
+    },
+    "sensitivity": {
+      "standard": "일반",
+      "identityDocument": "신분증 / 보험",
+      "medical": "의료"
+    },
+    "requestEyebrow": "예약 요청",
+    "emailStatus": "확인 이메일",
+    "downloadFailed": "파일을 열 수 없습니다.",
+    "actionFailed": "예약을 업데이트할 수 없습니다. 상태가 바뀌었을 수 있어 최신 상태를 표시합니다.",
+    "reasonLabel": "환자에게 남길 메모 (선택, 거절 또는 취소 시 전송)",
+    "reasonShown": "메모: {reason}",
+    "cancelledByPatient": "환자가 취소함",
+    "cancelledByClinic": "병원이 취소함",
+    "appointmentStatus": {
+      "requested": "요청됨",
+      "confirmed": "확정됨",
+      "declined": "거절됨",
+      "cancelled": "취소됨",
+      "completed": "완료됨"
+    },
+    "actions": {
+      "confirm": "확정",
+      "decline": "거절",
+      "cancel": "예약 취소",
+      "complete": "완료로 표시"
+    }
+  },
+  "bookingAvailability": {
+    "clinicLabel": "클리닉 사이트",
+    "help": "드래그하여 30분 단위 가능 시간을 칠합니다. 블록을 클릭하면 삭제됩니다. 환자는 그 안에서 15, 30, 45, 60분 예약을 합니다.",
+    "loading": "캘린더 불러오는 중…",
+    "windowTitle": "가능",
+    "createFailed": "가능 시간을 저장하지 못했습니다.",
+    "deleteConfirm": "이 가능 시간을 삭제할까요?",
+    "deleteFailed": "가능 시간을 삭제하지 못했습니다.",
+    "legend": "캘린더 범례",
+    "patient": "환자",
+    "loadFailed": "캘린더를 불러올 수 없습니다.",
+    "appointmentHelp": "예약을 클릭하면 요청이 열립니다."
+  },
+  "bookingForms": {
+    "standardIntake": "일반 진료 요청",
+    "onlineConsultIntake": "온라인 진료 (보험증 및 사진 포함)"
+  },
+  "clinicDashboard": {
+    "heading": "병원 대시보드",
+    "loading": "불러오는 중…",
+    "loadError": "대시보드를 불러올 수 없습니다. 다시 시도해 주세요.",
+    "signInHeading": "병원 대시보드에 로그인",
+    "signInBody": "병원 초대를 받은 이메일 주소로 로그인하세요.",
+    "signIn": "로그인",
+    "noClinics": "이 계정은 아직 병원과 연결되지 않았습니다.",
+    "noClinicsHelp": "로그인에 사용하는 이메일 주소를 Find a Doc, Japan에 초대해 달라고 요청하세요. 다음 로그인 때 초대가 연결됩니다.",
+    "noAccessHeading": "이 병원에 접근할 권한이 없습니다",
+    "statusFilter": "표시",
+    "allStatuses": "모든 요청",
+    "saved": "저장됨",
+    "saveFailed": "저장할 수 없습니다. 다시 시도해 주세요.",
+    "tabs": {
+      "requests": "요청",
+      "calendar": "캘린더",
+      "settings": "설정"
+    },
+    "roles": {
+      "owner": "소유자",
+      "staff": "직원"
+    },
+    "settings": {
+      "heading": "예약 설정",
+      "forms": "문진표",
+      "formsHelp": "예약 링크에서 다른 양식을 지정하지 않으면 환자에게 기본 양식이 표시됩니다.",
+      "defaultForm": "기본",
+      "save": "설정 저장"
+    },
+    "members": {
+      "heading": "팀",
+      "help": "여기서 초대한 사람은 해당 이메일로 로그인하면 이 병원의 요청을 보고 캘린더를 편집할 수 있습니다.",
+      "active": "로그인함",
+      "pending": "초대됨",
+      "remove": "삭제",
+      "removeConfirm": "{email}을(를) 이 병원에서 삭제할까요?",
+      "role": "역할",
+      "invite": "초대",
+      "invited": "{email}을(를) 초대했습니다"
+    }
+  },
+  "patientBooking": {
+    "heading": "내 예약 요청",
+    "notFound": "이 예약을 찾을 수 없습니다. 확인 이메일의 링크를 다시 열어 주세요.",
+    "reasonLabel": "사유 (선택, 병원과 공유됨)",
+    "cancel": "이 예약 취소",
+    "confirmCancel": "이 예약을 취소할까요? 병원에 알림이 가고 해당 시간은 다른 환자에게 열립니다.",
+    "yesCancel": "네, 취소합니다",
+    "keep": "유지",
+    "cancelled": "이 예약은 취소되었습니다.",
+    "cancelFailed": "취소할 수 없습니다. 이미 시작되었거나 변경되었을 수 있어 최신 상태를 표시합니다."
   }
 }

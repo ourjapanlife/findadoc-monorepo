@@ -1,5 +1,13 @@
 import { GraphQLError, GraphQLResolveInfo } from 'graphql'
-import { withAnyScope, withScope, UserContext, Scope, getEffectiveScopes } from './auth.js'
+import {
+    withAnyScope,
+    withAuthenticatedUser,
+    withScope,
+    UserContext,
+    Scope,
+    getEffectiveScopes
+} from './auth.js'
+import { bookingAccessFor } from './booking/access.js'
 import * as facilityService from './services/facilityService.js'
 import * as healthcareProfessionalService from './services/healthcareProfessionalService.js'
 import * as gqlType from '@findadoc/graphql'
@@ -11,6 +19,12 @@ import * as citySuggestionService from './services/citySuggestionService.js'
 import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
 import * as facilityPlaceService from './services/facilityPlaceService.js'
 import * as clinicSiteService from './services/clinicSiteService.js'
+import * as bookingService from './services/bookingService.js'
+import * as availabilityService from './services/availabilityService.js'
+import * as staffBookingService from './services/staffBookingService.js'
+import * as appointmentService from './services/appointmentService.js'
+import * as clinicAccessService from './services/clinicAccessService.js'
+import { envVariables } from '../utils/environmentVariables.js'
 import { Result } from './result.js'
 import { logger } from './logger.js'
 import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
@@ -34,6 +48,89 @@ const resolvers = {
         : Promise<gqlType.ClinicSite | null> => clinicSiteService.getClinicSiteBySlug(args.slug)),
         clinicSites: withScope(Scope['read:facilities'], async ()
         : Promise<gqlType.ClinicSiteSummary[]> => clinicSiteService.listPublicClinicSites()),
+        // Intake and open slots are public. Staff list and the calendar require a signed-in session.
+        bookingForm: withScope(Scope['create:bookings'], async (
+            _parent: unknown,
+            args: { clinicSiteId: string, formId?: string | null }
+        ): Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId, args.formId)),
+        availableBookingStarts: withScope(Scope['create:bookings'], async (
+            _parent: unknown,
+            args: { clinicSiteId: string, from: string, to: string, durationMinutes?: number | null }
+        ): Promise<string[]> => bookingService.getAvailableBookingStarts(
+            args.clinicSiteId,
+            args.from,
+            args.to,
+            args.durationMinutes
+        )),
+        bookingFormTypes: withScope(Scope['create:bookings'], async ()
+        : Promise<gqlType.BookingFormType[]> => clinicAccessService.listBookingFormTypes()),
+        patientBooking: withScope(Scope['create:bookings'], async (
+            _parent: unknown,
+            args: { token: string }
+        ): Promise<gqlType.PatientBookingView | null> => appointmentService.getPatientBooking(args.token)),
+        // Staff reads: any signed-in user. The service limits rows to that user's clinics (booking/access.ts).
+        myBookingClinics: withAuthenticatedUser(async (
+            _parent: unknown,
+            _args: unknown,
+            context: UserContext
+        ): Promise<gqlType.BookingClinic[]> =>
+            clinicAccessService.listMyBookingClinics(await bookingAccessFor(context.user))),
+        bookingClinic: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { facilityId: string },
+            context: UserContext
+        ): Promise<gqlType.BookingClinic | null> =>
+            clinicAccessService.getBookingClinic(args.facilityId, await bookingAccessFor(context.user))),
+        clinicMembers: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { facilityId: string },
+            context: UserContext
+        ): Promise<gqlType.ClinicMember[]> =>
+            clinicAccessService.listClinicMembers(args.facilityId, await bookingAccessFor(context.user))),
+        bookingSettings: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { facilityId: string },
+            context: UserContext
+        ): Promise<gqlType.BookingSettings | null> =>
+            clinicAccessService.getBookingSettings(args.facilityId, await bookingAccessFor(context.user))),
+        clinicAppointments: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { clinicId: string, from: string, to: string },
+            context: UserContext
+        ): Promise<gqlType.BookingAppointment[]> => appointmentService.listClinicAppointments(
+            args.clinicId,
+            args.from,
+            args.to,
+            await bookingAccessFor(context.user)
+        )),
+        bookingSubmissions: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { filters: gqlType.BookingSubmissionSearchFilters },
+            context: UserContext
+        ): Promise<gqlType.BookingSubmissionListItem[]> =>
+            staffBookingService.searchBookingSubmissions(args.filters, await bookingAccessFor(context.user))),
+        bookingSubmissionsTotalCount: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { filters: gqlType.BookingSubmissionSearchFilters },
+            context: UserContext
+        ): Promise<number> =>
+            staffBookingService.countBookingSubmissions(args.filters, await bookingAccessFor(context.user))),
+        bookingSubmission: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { id: string },
+            context: UserContext
+        ): Promise<gqlType.BookingSubmissionDetail | null> =>
+            staffBookingService.getBookingSubmissionDetail(args.id, await bookingAccessFor(context.user))),
+        clinicAvailabilityWindows: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { clinicSiteId: string, from: string, to: string },
+            context: UserContext
+        ): Promise<gqlType.ClinicAvailabilityWindow[]> => availabilityService.listClinicAvailabilityWindows(
+            args.clinicSiteId,
+            args.from,
+            args.to,
+            await bookingAccessFor(context.user)
+        )),
         facility: withScope(Scope['read:facilities'], async (_parent: unknown, args: { id: string; })
         : Promise<FacilityParent> => {
             const queryResults = await facilityService.getFacilityById(args.id)
@@ -204,6 +301,8 @@ const resolvers = {
         healthcareProfessionalIds: (parent: FacilityParent, _args: unknown, context: ApiContext)
         : string[] | Promise<string[]> =>
             parent.healthcareProfessionalIds ?? context.loaders.healthcareProfessionalIdsByFacility.load(parent.id),
+        bookingEnabled: (parent: FacilityParent, _args: unknown, context: ApiContext): Promise<boolean> =>
+            context.loaders.bookingEnabledByFacility.load(parent.id),
         city: (parent: FacilityParent, _args: unknown, context: ApiContext): Promise<gqlType.City | null> => {
             if (!parent.cityId) {
                 return Promise.resolve(null)
@@ -222,7 +321,7 @@ const resolvers = {
     Mutation: {
         createFacility: withScope(Scope['write:facilities'], async (_parent: unknown, args: {
             input: gqlType.CreateFacilityInput
-        }, context: UserContext): Promise<gqlType.Facility> => {
+        }, context: UserContext): Promise<FacilityParent> => {
             const newFacilityResult = await facilityService.createFacility(args.input, context.user.sub)
 
             convertErrorsToGqlErrors(newFacilityResult)
@@ -232,7 +331,7 @@ const resolvers = {
         updateFacility: withScope(Scope['write:facilities'], async (_parent: unknown, args: {
             id: string,
             input: gqlType.UpdateFacilityInput
-        }, context: UserContext): Promise<gqlType.Facility> => {
+        }, context: UserContext): Promise<FacilityParent> => {
             const updateFacilityResult = await facilityService.updateFacility(args.id, args.input, context.user.sub)
 
             convertErrorsToGqlErrors(updateFacilityResult)
@@ -242,7 +341,7 @@ const resolvers = {
             _parent: unknown,
             args: { facilityId: string, placeId: string },
             context: UserContext
-        ): Promise<gqlType.Facility> => {
+        ): Promise<FacilityParent> => {
             const result = await facilityPlaceService.confirmFacilityPlaceId(
                 args.facilityId,
                 args.placeId,
@@ -354,6 +453,125 @@ const resolvers = {
             const createReservationResult = await reservationService.createReservation(args.input)
 
             return createReservationResult.data
+        }),
+
+        createBookingUploadUrl: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
+            input: gqlType.CreateBookingUploadUrlInput
+        }): Promise<gqlType.BookingUploadUrl> => {
+            const result = await bookingService.createBookingUploadUrl(
+                args.input,
+                envVariables.apiURL() || 'http://127.0.0.1:4000'
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        submitBooking: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
+            input: gqlType.SubmitBookingInput
+        }): Promise<gqlType.BookingSubmissionResult> => {
+            const result = await bookingService.submitBooking(args.input)
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        bookingUploadDownloadUrl: withAuthenticatedUser(async (_parent: unknown, args: {
+            uploadId: string
+        }, context: UserContext): Promise<gqlType.BookingUploadDownloadUrl> => {
+            const result = await staffBookingService.createStaffBookingDownloadUrl(
+                args.uploadId,
+                envVariables.apiURL() || 'http://127.0.0.1:4000',
+                await bookingAccessFor(context.user)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        createClinicAvailabilityWindow: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { input: gqlType.CreateClinicAvailabilityWindowInput },
+            context: UserContext
+        ): Promise<gqlType.ClinicAvailabilityWindow> => {
+            const result = await availabilityService.createClinicAvailabilityWindow(
+                args.input,
+                context.user?.sub,
+                await bookingAccessFor(context.user)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        deleteClinicAvailabilityWindow: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { id: string },
+            context: UserContext
+        ): Promise<gqlType.DeleteResult> => {
+            const result = await availabilityService.deleteClinicAvailabilityWindow(
+                args.id,
+                await bookingAccessFor(context.user)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        updateBookingAppointmentStatus: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { input: gqlType.UpdateBookingAppointmentStatusInput },
+            context: UserContext
+        ): Promise<gqlType.BookingAppointment> => {
+            const result = await appointmentService.updateAppointmentStatus(
+                args.input,
+                await bookingAccessFor(context.user),
+                context.user?.sub
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        // The patient is signed out. The private token is the credential.
+        cancelBookingByToken: withScope(Scope['create:bookings'], async (
+            _parent: unknown,
+            args: { input: gqlType.CancelBookingByTokenInput }
+        ): Promise<gqlType.PatientBookingView> => {
+            const result = await appointmentService.cancelBookingByToken(args.input)
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        inviteClinicMember: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { input: gqlType.InviteClinicMemberInput },
+            context: UserContext
+        ): Promise<gqlType.ClinicMember> => {
+            const result = await clinicAccessService.inviteClinicMember(
+                args.input,
+                await bookingAccessFor(context.user),
+                context.user?.sub
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        removeClinicMember: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { id: string },
+            context: UserContext
+        ): Promise<gqlType.DeleteResult> => {
+            const result = await clinicAccessService.removeClinicMember(args.id, await bookingAccessFor(context.user))
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        updateBookingSettings: withAuthenticatedUser(async (
+            _parent: unknown,
+            args: { input: gqlType.UpdateBookingSettingsInput },
+            context: UserContext
+        ): Promise<gqlType.BookingSettings> => {
+            const result = await clinicAccessService.updateBookingSettings(
+                args.input,
+                await bookingAccessFor(context.user)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
         })
     }
 }

@@ -54,8 +54,8 @@ const { t, locale } = useI18n()
 const clinicMode = useClinicLandingMode()
 const { host, hostname } = useRequestHost()
 
-// `{slug}.findadoc.jp/` and `/{locale}` on that host are the clinic. Every other
-// path on that host has already been redirected by `clinic-host.global`.
+// `{slug}.findadoc.jp/` and `/{locale}` on that host are the clinic. `/book` on
+// that host bounces to Find a Doc `/book/{facilityId}`. Other paths redirect.
 const hostedClinicSlug = computed(() => {
     if (clinicMode === 'off' || !isClinicHostPage(route.path)) {
         return undefined

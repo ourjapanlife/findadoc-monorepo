@@ -8,6 +8,7 @@ import {
     CLINIC_LANDING_LOCALE_PREFIXES,
     CLINIC_LANDING_MODE,
     CLINIC_PREVIEW_SHELL_SLUGS,
+    clinicHostBookPath,
     clinicHostLandingTarget,
     clinicHostPagePath,
     clinicLandingAccess,
@@ -21,7 +22,10 @@ import {
     clinicSiteFetchIsServer,
     clinicSubdomainHreflang,
     clinicSubdomainUrl,
+    isClinicHostBookPage,
+    isClinicHostDashboardPage,
     isClinicHostPage,
+    isClinicHostSurface,
     isClinicLandingPath,
     markClinicHostReady,
     type HostedClinicRef
@@ -56,6 +60,10 @@ describe('clinic landings', () => {
         expect(clinicLandingHostSlug('findadoc.jp')).to.equal(undefined)
         expect(clinicHostLandingTarget(`${slug}.localhost`, '/', 'preview')).to.equal(undefined)
         expect(clinicHostLandingTarget(`${slug}.findadoc.jp`, '/ja-JP', 'public')).to.equal(undefined)
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/book', 'preview')).to.equal(undefined)
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/ja-JP/book', 'preview')).to.equal(undefined)
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/book/extra', 'preview')).to.equal('/book')
+        expect(clinicHostLandingTarget(`${slug}.localhost`, '/ja-JP/book/extra', 'preview')).to.equal('/ja-JP/book')
         expect(clinicHostLandingTarget(`${slug}.localhost`, '/submit', 'preview')).to.equal('/')
         expect(clinicHostLandingTarget(`${slug}.localhost`, '/ja-JP/submit', 'preview')).to.equal('/ja-JP')
         expect(clinicHostLandingTarget(`${slug}.localhost`, clean, 'preview')).to.equal('/')
@@ -104,6 +112,18 @@ describe('clinic landings', () => {
         expect(isClinicHostPage('/zh-CN/')).to.equal(true)
         expect(isClinicHostPage('/submit')).to.equal(false)
         expect(isClinicHostPage(clean)).to.equal(false)
+        expect(isClinicHostBookPage('/book')).to.equal(true)
+        expect(isClinicHostBookPage('/ja-JP/book')).to.equal(true)
+        expect(isClinicHostDashboardPage('/dashboard')).to.equal(true)
+        expect(isClinicHostDashboardPage('/ja-JP/dashboard')).to.equal(true)
+        expect(isClinicHostSurface('/dashboard')).to.equal(true)
+        expect(isClinicHostDashboardPage('/dashboard/x')).to.equal(false)
+        expect(isClinicHostBookPage('/book/x')).to.equal(false)
+        expect(isClinicHostSurface('/book')).to.equal(true)
+        expect(isClinicHostSurface('/')).to.equal(true)
+        expect(isClinicHostSurface('/submit')).to.equal(false)
+        expect(clinicHostBookPath('/ja-JP/submit')).to.equal('/ja-JP/book')
+        expect(clinicHostBookPath('/')).to.equal('/book')
     })
 
     it('builds the clinic hostname from the request host', () => {

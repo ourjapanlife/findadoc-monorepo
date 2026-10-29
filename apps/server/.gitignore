@@ -30,3 +30,4 @@ eslint-results.sarif
 dist
 
 *seed_data.sql
+.booking-uploads

@@ -30,7 +30,9 @@ export enum SelectedSubmissionListViewTab {
 export enum SelectedModerationListView {
     Facilities = 'FACILITIES',
     HealthcareProfessionals = 'HEALTHCARE_PROFESSIONALS',
-    Submissions = 'SUBMISSIONS'
+    Submissions = 'SUBMISSIONS',
+    Bookings = 'BOOKINGS',
+    Availability = 'AVAILABILITY'
 }
 
 type SubmissionStatusFilter = Pick<SubmissionSearchFilters, 'isUnderReview' | 'isApproved' | 'isRejected'>

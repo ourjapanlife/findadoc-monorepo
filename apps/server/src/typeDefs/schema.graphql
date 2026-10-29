@@ -28,6 +28,11 @@ type Facility {
   """IDs of healthcare professionals associated with this facility."""
   healthcareProfessionalIds: [ID!]!
   """
+  True once a moderator or the clinic owner has saved booking settings for this facility.
+  The clinic page shows Book, and patients may book, only then.
+  """
+  bookingEnabled: Boolean!
+  """
   Languages this facility advertises without a named professional.
   Only values from the published language list. Storing these does not create a healthcare professional.
   """
@@ -1154,6 +1159,354 @@ type ClinicSiteSummary {
   shareImagePath: String!
 }
 
+"""
+Field type on a clinic booking form.
+A later CRM picks the fields; the web renderer stays generic.
+"""
+enum BookingFormFieldType {
+  EMAIL
+  PHONE
+  NUMBER
+  TEXT
+  TEXTAREA
+  FILE
+  SELECT
+}
+
+"""
+How carefully an answer or upload must be retained.
+IDENTITY_DOCUMENT covers insurance cards and My Number / eligibility photos.
+"""
+enum BookingFieldSensitivity {
+  STANDARD
+  IDENTITY_DOCUMENT
+  MEDICAL
+}
+
+"""One choice on a SELECT booking field."""
+type BookingFormFieldOption {
+  value: String!
+  labelKey: String!
+  label: String
+}
+
+"""
+One input on a clinic booking form.
+labelKey is the site i18n key when label is null. A CRM may set label per locale.
+"""
+type BookingFormField {
+  id: ID!
+  type: BookingFormFieldType!
+  required: Boolean!
+  labelKey: String!
+  label: String
+  placeholderKey: String
+  accept: String
+  maxLength: Int
+  maxBytes: Int
+  min: Float
+  max: Float
+  sensitivity: BookingFieldSensitivity!
+  """Groups fields into one step of the intake form. The site renders steps in first-seen order."""
+  stepKey: String!
+  options: [BookingFormFieldOption!]
+}
+
+"""
+The intake form for one clinic.
+Find a Doc owns the fields. The clinic owns allowed visit lengths.
+clinicId in the URL is facilityId when the directory listing exists.
+"""
+type BookingForm {
+  id: ID!
+  version: Int!
+  """Directory facility id. The reusable Book URL uses this when present."""
+  facilityId: ID
+  """Hosted clinic page id. Null when the clinic has no Find a Doc landing."""
+  clinicSiteId: ID
+  clinicSiteSlug: String
+  clinicName: String!
+  themePrimary: String
+  """Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60."""
+  allowedDurations: [Int!]!
+  fields: [BookingFormField!]!
+}
+
+"""A pending upload slot. The browser PUTs the file to uploadUrl, then submits the booking."""
+type BookingUploadUrl {
+  uploadId: ID!
+  objectKey: String!
+  uploadUrl: String!
+  headers: [BookingUploadHeader!]!
+  expiresAt: String!
+}
+
+type BookingUploadHeader {
+  name: String!
+  value: String!
+}
+
+"""Result of a patient booking submission. No medical free-text is returned."""
+type BookingSubmissionResult {
+  id: ID!
+  clinicSiteId: ID
+  facilityId: ID
+  status: BookingSubmissionStatus!
+  appointmentId: ID
+  createdDate: String!
+  """
+  The private token for /book/manage#{token}, returned once to the submitter.
+  The same link is in the confirmation email, which may not arrive (SES sandbox, typo).
+  """
+  manageToken: String
+}
+
+"""Whether the request emails went out. The visit itself is BookingAppointmentStatus."""
+enum BookingSubmissionStatus {
+  RECEIVED
+  NOTIFIED
+  FAILED_NOTIFY
+}
+
+"""
+Appointment lifecycle. A submit creates REQUESTED. Staff confirm or decline it.
+Staff or the patient may cancel. REQUESTED and CONFIRMED hold the slot.
+"""
+enum BookingAppointmentStatus {
+  REQUESTED
+  CONFIRMED
+  DECLINED
+  CANCELLED
+  COMPLETED
+}
+
+enum BookingCancelledBy {
+  PATIENT
+  CLINIC
+}
+
+"""OWNER also manages members and booking settings. STAFF reads bookings and edits the calendar."""
+enum ClinicMemberRole {
+  OWNER
+  STAFF
+}
+
+"""One intake form type a clinic may offer. Definitions are owned by Find a Doc."""
+type BookingFormType {
+  id: ID!
+  version: Int!
+  """Site i18n key for the form name."""
+  labelKey: String!
+}
+
+"""One appointment on the clinic calendar."""
+type BookingAppointment {
+  id: ID!
+  bookingSubmissionId: ID
+  facilityId: ID
+  startsAt: String!
+  endsAt: String!
+  durationMinutes: Int!
+  status: BookingAppointmentStatus!
+  """The fullName answer, when the form asked for it."""
+  patientName: String
+}
+
+"""A clinic the signed-in user may open in the booking dashboard."""
+type BookingClinic {
+  facilityId: ID!
+  clinicName: String!
+  clinicSiteSlug: String
+  """Null for moderators, who reach every clinic without a membership."""
+  role: ClinicMemberRole
+  """True when the user may change members and booking settings."""
+  canManage: Boolean!
+}
+
+"""A person invited to, or signed in to, one clinic's booking dashboard."""
+type ClinicMember {
+  id: ID!
+  facilityId: ID!
+  email: String
+  role: ClinicMemberRole!
+  """True after the invited person signed in with that verified email."""
+  claimed: Boolean!
+  createdDate: String!
+}
+
+"""Clinic-chosen booking options."""
+type BookingSettings {
+  facilityId: ID!
+  """Visit lengths in minutes. Each value is 15, 30, 45, or 60."""
+  allowedDurations: [Int!]!
+  """Intake forms the clinic offers. The first is the default."""
+  formDefinitionIds: [String!]!
+}
+
+"""What the patient sees on the private cancel page. No answers are returned."""
+type PatientBookingView {
+  clinicName: String!
+  startsAt: String
+  endsAt: String
+  status: BookingAppointmentStatus
+  canCancel: Boolean!
+}
+
+"""Staff list row. Identity files are never inlined; use bookingUploadDownloadUrl."""
+type BookingSubmissionListItem {
+  id: ID!
+  clinicSiteId: ID
+  facilityId: ID
+  clinicSiteSlug: String
+  clinicName: String!
+  locale: String!
+  status: BookingSubmissionStatus!
+  formDefinitionId: String!
+  formVersion: Int!
+  startsAt: String
+  endsAt: String
+  appointmentId: ID
+  appointmentStatus: BookingAppointmentStatus
+  patientName: String
+  createdDate: String!
+  updatedDate: String!
+  hasIdentityUploads: Boolean!
+}
+
+"""Read-only staff detail. Scalar answers only; files are separate download links."""
+type BookingSubmissionDetail {
+  id: ID!
+  clinicSiteId: ID
+  facilityId: ID
+  clinicSiteSlug: String
+  clinicName: String!
+  locale: String!
+  status: BookingSubmissionStatus!
+  formDefinitionId: String!
+  formVersion: Int!
+  startsAt: String
+  endsAt: String
+  appointmentId: ID
+  appointmentStatus: BookingAppointmentStatus
+  cancelledBy: BookingCancelledBy
+  """Reason staff or the patient gave for a decline or cancel."""
+  statusReason: String
+  practitionerId: ID
+  service: String
+  createdDate: String!
+  updatedDate: String!
+  answers: [BookingAnswerView!]!
+  uploads: [BookingUploadView!]!
+}
+
+type BookingAnswerView {
+  fieldId: String!
+  value: String
+}
+
+type BookingUploadView {
+  id: ID!
+  fieldId: String!
+  fileName: String!
+  contentType: String!
+  sensitivity: BookingFieldSensitivity!
+  retainUntil: String
+  purgedAt: String
+  byteSize: Int
+}
+
+type BookingUploadDownloadUrl {
+  uploadId: ID!
+  downloadUrl: String!
+  expiresAt: String!
+}
+
+input BookingSubmissionSearchFilters {
+  clinicSiteId: ID
+  facilityId: ID
+  appointmentStatus: BookingAppointmentStatus
+  limit: Int
+  offset: Int
+  orderBy: [OrderBy!]
+}
+
+"""Staff-painted availability. Boundaries are 30-minute aligned."""
+type ClinicAvailabilityWindow {
+  id: ID!
+  clinicSiteId: ID
+  facilityId: ID
+  startsAt: String!
+  endsAt: String!
+  createdDate: String!
+}
+
+input CreateClinicAvailabilityWindowInput {
+  clinicSiteId: ID!
+  startsAt: String!
+  endsAt: String!
+}
+
+input CreateBookingUploadUrlInput {
+  """Facility id, clinic site id, or clinic site slug."""
+  clinicSiteId: ID!
+  """The form the file belongs to. Defaults to the clinic's default form."""
+  formDefinitionId: String
+  fieldId: String!
+  contentType: String!
+  fileName: String!
+  byteSize: Int
+}
+
+input BookingAnswerInput {
+  fieldId: String!
+  """Scalar answer as text. FILE fields use uploadId instead."""
+  value: String
+  uploadId: ID
+}
+
+input UpdateBookingAppointmentStatusInput {
+  appointmentId: ID!
+  """CONFIRMED, DECLINED, CANCELLED, or COMPLETED."""
+  status: BookingAppointmentStatus!
+  reason: String
+}
+
+input CancelBookingByTokenInput {
+  """The private token from the confirmation email link."""
+  token: String!
+  reason: String
+}
+
+input InviteClinicMemberInput {
+  facilityId: ID!
+  email: String!
+  role: ClinicMemberRole!
+}
+
+input UpdateBookingSettingsInput {
+  facilityId: ID!
+  allowedDurations: [Int!]!
+  """Known form ids. The first is the default."""
+  formDefinitionIds: [String!]!
+}
+
+input SubmitBookingInput {
+  """Facility id, clinic site id, or clinic site slug."""
+  clinicSiteId: ID!
+  formDefinitionId: String!
+  formVersion: Int!
+  locale: String!
+  answers: [BookingAnswerInput!]!
+  """Required start inside a staff availability window. ISO 8601 UTC."""
+  startsAt: String!
+  """Visit length in minutes. Must be one of the clinic's allowedDurations."""
+  durationMinutes: Int
+  """Optional directory professional id at this facility."""
+  practitionerId: ID
+  """Optional service or appointment-type key from the Book URL."""
+  service: String
+}
+
 type Query {
   """Roles and effective API scopes for the authenticated user (always allowed when a user context exists)."""
   currentUserAccess: CurrentUserAccess!
@@ -1165,6 +1518,54 @@ type Query {
 
   """Hosted clinics that are in preview or published. Drafts are omitted."""
   clinicSites: [ClinicSiteSummary!]!
+
+  """
+  The booking intake form for a directory facility or hosted clinic.
+  Pass a facility id, clinic site id, or slug. Unknown clinics are null.
+  Open to a signed-out visitor. create:bookings is on the anonymous user role.
+  """
+  bookingForm(clinicSiteId: ID!, formId: String): BookingForm
+
+  """
+  Open appointment starts that fit the requested duration inside staff availability.
+  Times are ISO 8601 UTC. The range must be 16 days or shorter.
+  """
+  availableBookingStarts(clinicSiteId: ID!, from: String!, to: String!, durationMinutes: Int): [String!]!
+
+  """Intake form types a clinic may offer."""
+  bookingFormTypes: [BookingFormType!]!
+
+  """Clinics the signed-in user belongs to. Claims a pending invite for a verified email."""
+  myBookingClinics: [BookingClinic!]!
+
+  """One clinic for the dashboard header. Null when the user may not open it."""
+  bookingClinic(facilityId: ID!): BookingClinic
+
+  """Appointments on one clinic calendar. The range must be 62 days or shorter."""
+  clinicAppointments(clinicId: ID!, from: String!, to: String!): [BookingAppointment!]!
+
+  """Invited and signed-in members of one clinic. Owners and moderators only."""
+  clinicMembers(facilityId: ID!): [ClinicMember!]!
+
+  """Booking options for one clinic. Members and moderators."""
+  bookingSettings(facilityId: ID!): BookingSettings
+
+  """The patient's own booking, found by the private token from the email link."""
+  patientBooking(token: String!): PatientBookingView
+
+  """
+  Staff list of booking submissions, limited to the clinics the user belongs to.
+  Moderators see every clinic.
+  """
+  bookingSubmissions(filters: BookingSubmissionSearchFilters!): [BookingSubmissionListItem!]!
+
+  bookingSubmissionsTotalCount(filters: BookingSubmissionSearchFilters!): Int!
+
+  """Staff read-only detail for one booking submission."""
+  bookingSubmission(id: ID!): BookingSubmissionDetail
+
+  """Staff availability windows for the calendar editor."""
+  clinicAvailabilityWindows(clinicSiteId: ID!, from: String!, to: String!): [ClinicAvailabilityWindow!]!
 
   """Look up a single facility by its unique ID. Returns null if not found."""
   facility(id: ID!): Facility
@@ -1394,4 +1795,40 @@ type Mutation {
 
   """Update an existing reservation."""
   updateReservation(input: UpdateReservationInput!): Reservation!
+
+  """
+  Create a short-lived upload URL for one booking file field.
+  The browser uploads the file, then passes uploadId to submitBooking.
+  """
+  createBookingUploadUrl(input: CreateBookingUploadUrlInput!): BookingUploadUrl!
+
+  """
+  Submit a clinic booking form.
+  Sends a SES notification when email is configured; otherwise records the row only.
+  """
+  submitBooking(input: SubmitBookingInput!): BookingSubmissionResult!
+
+  """Short-lived GET URL for a booking upload. Identity files are never inlined in GraphQL."""
+  bookingUploadDownloadUrl(uploadId: ID!): BookingUploadDownloadUrl!
+
+  """Paint a 30-minute-aligned availability window on the clinic calendar."""
+  createClinicAvailabilityWindow(input: CreateClinicAvailabilityWindowInput!): ClinicAvailabilityWindow!
+
+  """Remove one availability window. Existing appointments are unchanged."""
+  deleteClinicAvailabilityWindow(id: ID!): DeleteResult!
+
+  """Staff confirm, decline, cancel, or complete an appointment. Declined and cancelled free the slot."""
+  updateBookingAppointmentStatus(input: UpdateBookingAppointmentStatusInput!): BookingAppointment!
+
+  """The patient cancels with the private token from the email link. Frees the slot."""
+  cancelBookingByToken(input: CancelBookingByTokenInput!): PatientBookingView!
+
+  """Invite an email to one clinic. Moderators invite anyone; an owner invites staff."""
+  inviteClinicMember(input: InviteClinicMemberInput!): ClinicMember!
+
+  """Remove a clinic member. Moderators remove anyone; an owner removes staff."""
+  removeClinicMember(id: ID!): DeleteResult!
+
+  """Change visit lengths and offered forms. Owners and moderators."""
+  updateBookingSettings(input: UpdateBookingSettingsInput!): BookingSettings!
 }

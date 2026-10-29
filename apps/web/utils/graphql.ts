@@ -110,7 +110,7 @@ export const graphQLClientRequestWithRetry = async <T>(
 export interface graphQLClientRequestWithRetryOptions {
     requestTimeoutInMilliseconds?: number
     retryAmount?: number
-    /** Send no bearer token and do not wait for Auth0. Only for reads the API serves anonymously. */
+    /** Send no bearer token and do not wait for Auth0. For operations the API serves without a session. */
     skipAuth?: boolean
     /** Fail an attempt that has not responded in this long. Without it a hung request never settles. */
     abortAfterMs?: number

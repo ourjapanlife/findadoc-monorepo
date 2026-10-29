@@ -25,6 +25,15 @@
 
         <BreadcrumbNav :items="crumbs" />
 
+        <NuxtLink
+            v-if="facility.bookingEnabled"
+            :to="bookPath"
+            class="btn btn-primary self-start"
+            data-testid="clinic-page-book"
+        >
+            {{ t('clinicPage.book') }}
+        </NuxtLink>
+
         <SearchResultDetails
             :facility="facility"
             heading="h1"
@@ -54,6 +63,7 @@ import { useI18n } from 'vue-i18n'
 import { createError, navigateTo, useAsyncData, useHead, useRoute } from '#imports'
 import { fetchClinicById } from '~/utils/clinicFacility'
 import { canonicalPathMatches, facilityDocumentTitle, facilityIdFromSlugParam, facilityPath } from '~/utils/clinicPath'
+import { bookingClinicPath } from '~/utils/booking/paths'
 import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
 import { facilityCrumbs, facilityFacetLinks, facilityHubPaths } from '~/utils/directoryLinks'
 import { loadFacetLinkCatalog } from '~/utils/hubDirectory'
@@ -107,6 +117,7 @@ if (!canonicalPathMatches(route.path, canonicalPath)) {
 }
 
 const facility = computed(() => data.value!)
+const bookPath = computed(() => bookingClinicPath(facility.value.id, String(locale.value)))
 const specialtyFacetItems = computed(() => (facetLinks.value ?? [])
     .filter(link => link.kind === 'specialty')
     .map(link => ({ path: link.path, label: link.label })))
