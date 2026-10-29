@@ -24,7 +24,7 @@ import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~
  */
 
 // Fields on both BookingSubmissionListItem and BookingSubmissionDetail.
-const SUBMISSION_FIELDS = `
+const BOOKING_SUBMISSION_FIELDS = `
   id
   clinicSiteId
   facilityId
@@ -43,14 +43,14 @@ const SUBMISSION_FIELDS = `
 `
 
 // patientName and hasIdentityUploads are list-only. The detail has the answers and uploads instead.
-const LIST_ITEM_FIELDS = `
-  ${SUBMISSION_FIELDS}
+const BOOKING_LIST_ITEM_FIELDS = `
+  ${BOOKING_SUBMISSION_FIELDS}
   patientName
   hasIdentityUploads
 `
 
-const DETAIL_FIELDS = `
-  ${SUBMISSION_FIELDS}
+const BOOKING_DETAIL_FIELDS = `
+  ${BOOKING_SUBMISSION_FIELDS}
   cancelledBy
   statusReason
   practitionerId
@@ -114,7 +114,7 @@ const WINDOW_FIELDS = `
 const listQuery = gql`
   query BookingSubmissions($filters: BookingSubmissionSearchFilters!) {
     bookingSubmissions(filters: $filters) {
-      ${LIST_ITEM_FIELDS}
+      ${BOOKING_LIST_ITEM_FIELDS}
     }
     bookingSubmissionsTotalCount(filters: $filters)
   }
@@ -123,7 +123,7 @@ const listQuery = gql`
 const detailQuery = gql`
   query BookingSubmission($id: ID!) {
     bookingSubmission(id: $id) {
-      ${DETAIL_FIELDS}
+      ${BOOKING_DETAIL_FIELDS}
     }
   }
 `
