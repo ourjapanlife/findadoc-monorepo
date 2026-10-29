@@ -256,6 +256,30 @@ describe('getEffectiveScopes()', () => {
         expect(scopes.includes(Scope['create:bookings'])).toBe(true)
     })
 
+    it('strips read:bookings in production for non-admin non-moderator', () => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
+        const devUser = {
+            sub: 'dev1',
+            name: 'Dev',
+            email: 'd@d.com',
+            roles: [Role.Dev],
+            scope: 'read:bookings'
+        }
+        expect(getEffectiveScopes(devUser).includes(Scope['read:bookings'])).toBe(false)
+    })
+
+    it('keeps read:bookings in production for Moderator', () => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
+        const mod = {
+            sub: 'm1',
+            name: 'Mod',
+            email: 'm@m.com',
+            roles: [Role.Moderator],
+            scope: ''
+        }
+        expect(getEffectiveScopes(mod).includes(Scope['read:bookings'])).toBe(true)
+    })
+
     it('does not strip write scopes in production for Moderator', () => {
         vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
         const mod = {

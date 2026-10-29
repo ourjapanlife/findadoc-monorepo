@@ -35,7 +35,9 @@ export function umamiScript() {
         defer: true,
         'data-website-id': siteId,
         'data-host-url': UMAMI_DATA_HOST_URL,
-        'data-domains': umamiDataDomains()
+        'data-domains': umamiDataDomains(),
+        // /book/manage carries the patient's cancel token in the hash.
+        'data-exclude-hash': 'true'
     }]
 }
 

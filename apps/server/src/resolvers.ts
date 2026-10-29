@@ -301,6 +301,8 @@ const resolvers = {
         healthcareProfessionalIds: (parent: FacilityParent, _args: unknown, context: ApiContext)
         : string[] | Promise<string[]> =>
             parent.healthcareProfessionalIds ?? context.loaders.healthcareProfessionalIdsByFacility.load(parent.id),
+        bookingEnabled: (parent: FacilityParent, _args: unknown, context: ApiContext): Promise<boolean> =>
+            context.loaders.bookingEnabledByFacility.load(parent.id),
         city: (parent: FacilityParent, _args: unknown, context: ApiContext): Promise<gqlType.City | null> => {
             if (!parent.cityId) {
                 return Promise.resolve(null)
@@ -319,7 +321,7 @@ const resolvers = {
     Mutation: {
         createFacility: withScope(Scope['write:facilities'], async (_parent: unknown, args: {
             input: gqlType.CreateFacilityInput
-        }, context: UserContext): Promise<gqlType.Facility> => {
+        }, context: UserContext): Promise<FacilityParent> => {
             const newFacilityResult = await facilityService.createFacility(args.input, context.user.sub)
 
             convertErrorsToGqlErrors(newFacilityResult)
@@ -329,7 +331,7 @@ const resolvers = {
         updateFacility: withScope(Scope['write:facilities'], async (_parent: unknown, args: {
             id: string,
             input: gqlType.UpdateFacilityInput
-        }, context: UserContext): Promise<gqlType.Facility> => {
+        }, context: UserContext): Promise<FacilityParent> => {
             const updateFacilityResult = await facilityService.updateFacility(args.id, args.input, context.user.sub)
 
             convertErrorsToGqlErrors(updateFacilityResult)
@@ -339,7 +341,7 @@ const resolvers = {
             _parent: unknown,
             args: { facilityId: string, placeId: string },
             context: UserContext
-        ): Promise<gqlType.Facility> => {
+        ): Promise<FacilityParent> => {
             const result = await facilityPlaceService.confirmFacilityPlaceId(
                 args.facilityId,
                 args.placeId,

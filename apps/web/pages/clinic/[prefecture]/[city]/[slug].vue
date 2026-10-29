@@ -26,6 +26,7 @@
         <BreadcrumbNav :items="crumbs" />
 
         <NuxtLink
+            v-if="facility.bookingEnabled"
             :to="bookPath"
             class="btn btn-primary self-start"
             data-testid="clinic-page-book"

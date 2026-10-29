@@ -123,8 +123,10 @@ export function getEffectiveScopes(user: User | null | undefined): Scope[] {
     if (envVariables.isProduction() &&
         !currentUserRoles.includes(Role.Admin) &&
         !currentUserRoles.includes(Role.Moderator)) {
+        // read:bookings opens every clinic's patient answers and identity files.
+        // Only admins and moderators keep it in production.
         merged = merged.filter(scope =>
-            scope.startsWith('read:')
+            (scope.startsWith('read:') && scope !== Scope['read:bookings'])
             || scope === Scope['create:submissions']
             || scope === Scope['create:bookings'])
     }

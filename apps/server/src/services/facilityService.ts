@@ -25,7 +25,7 @@ import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
 import type { FacilityParent } from '../typeDefs/resolverParents.js'
 
-function invalidCityId(): Result<gqlTypes.Facility> {
+function invalidCityId(): Result<FacilityParent> {
     return {
         data: {} as gqlTypes.Facility,
         hasErrors: true,
@@ -38,7 +38,7 @@ function invalidCityId(): Result<gqlTypes.Facility> {
 }
 
 class FacilityUpdateRejected extends Error {
-    constructor(readonly result: Result<gqlTypes.Facility>) {
+    constructor(readonly result: Result<FacilityParent>) {
         super('Facility update rejected')
     }
 }
@@ -585,13 +585,13 @@ async function facilityIdSubsetForFilters(
 export async function createFacility(
     facilityInput: gqlTypes.CreateFacilityInput,
     updatedBy: string
-): Promise<Result<gqlTypes.Facility>> {
+): Promise<Result<FacilityParent>> {
     try {
         // Validate input before attempting database operations
         const validationResult = validateCreateFacilityInput(facilityInput)
 
         if (validationResult.hasErrors) {
-            return validationResult as Result<gqlTypes.Facility>
+            return validationResult as Result<FacilityParent>
         }
 
         const isOnline = facilityInput.online === true
@@ -866,13 +866,13 @@ export const updateFacility = async (
     facilityId: string,
     fieldsToUpdate: Partial<gqlTypes.UpdateFacilityInput>,
     updatedBy: string
-): Promise<Result<gqlTypes.Facility>> => {
+): Promise<Result<FacilityParent>> => {
     try {
         // Validate input before attempting database operations
         const validationResult = validateUpdateFacilityInput(fieldsToUpdate)
 
         if (validationResult.hasErrors) {
-            return validationResult as Result<gqlTypes.Facility>
+            return validationResult as Result<FacilityParent>
         }
 
         let fields = fieldsToUpdate
@@ -922,7 +922,7 @@ export const updateFacility = async (
                 const mergedLng = fields.mapLongitude !== undefined
                     ? fields.mapLongitude
                     : originalFacility.map_longitude
-                const offlineLocationErrors: NonNullable<Result<gqlTypes.Facility>['errors']> = []
+                const offlineLocationErrors: NonNullable<Result<FacilityParent>['errors']> = []
                 if (!mergedAddress) {
                     offlineLocationErrors.push({
                         field: 'contact.address',

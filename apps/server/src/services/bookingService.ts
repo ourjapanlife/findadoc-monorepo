@@ -28,7 +28,7 @@ import {
     isPublicSlotRange,
     resolveAppointmentDuration
 } from '../booking/schedule.js'
-import { bookingLockKey, resolveBookingTarget, type BookingTarget } from '../booking/target.js'
+import { bookingLockKey, resolvePublicBookingTarget, type BookingTarget } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import {
@@ -68,7 +68,7 @@ export async function getBookingForm(
     clinicIdOrSlug: string,
     formId?: string | null
 ): Promise<BookingForm | null> {
-    const target = await resolveBookingTarget(clinicIdOrSlug)
+    const target = await resolvePublicBookingTarget(clinicIdOrSlug)
     if (target === undefined) {
         return null
     }
@@ -91,7 +91,7 @@ export async function createBookingUploadUrl(
     input: CreateBookingUploadUrlInput,
     apiBaseUrl: string
 ): Promise<Result<BookingUploadUrl>> {
-    const target = await resolveBookingTarget(input.clinicSiteId)
+    const target = await resolvePublicBookingTarget(input.clinicSiteId)
     if (target === undefined) {
         return validationError('clinicSiteId')
     }
@@ -397,7 +397,7 @@ function parseServiceKey(value: string | null | undefined): string | null {
 }
 
 export async function submitBooking(input: SubmitBookingInput): Promise<Result<BookingSubmissionResult>> {
-    const target = await resolveBookingTarget(input.clinicSiteId)
+    const target = await resolvePublicBookingTarget(input.clinicSiteId)
     if (target === undefined) {
         return validationError('clinicSiteId')
     }
@@ -593,7 +593,7 @@ export async function getAvailableBookingStarts(
     toIso: string,
     durationMinutesInput?: number | null
 ): Promise<string[]> {
-    const target = await resolveBookingTarget(clinicIdOrSlug)
+    const target = await resolvePublicBookingTarget(clinicIdOrSlug)
     if (target === undefined) {
         return []
     }

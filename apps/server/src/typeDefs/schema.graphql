@@ -28,6 +28,11 @@ type Facility {
   """IDs of healthcare professionals associated with this facility."""
   healthcareProfessionalIds: [ID!]!
   """
+  True once a moderator or the clinic owner has saved booking settings for this facility.
+  The clinic page shows Book, and patients may book, only then.
+  """
+  bookingEnabled: Boolean!
+  """
   Languages this facility advertises without a named professional.
   Only values from the published language list. Storing these does not create a healthcare professional.
   """

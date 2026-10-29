@@ -58,6 +58,23 @@ describe('booking flow', () => {
         }
         await db.deleteFrom('clinic_availability_windows').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('clinic_memberships').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
+    })
+
+    it('does not book a facility until its booking settings are saved', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
+
+        expect(await bookingService.getBookingForm(facilityId)).toBeNull()
+        expect((await submit(facilityId, iso(0))).hasErrors).toBe(true)
+
+        const saved = await clinicAccessService.updateBookingSettings({
+            facilityId,
+            allowedDurations: [15, 30, 45, 60],
+            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
+        }, moderator)
+        expect(saved.hasErrors).toBe(false)
+        expect(await bookingService.getBookingForm(facilityId)).not.toBeNull()
     })
 
     it('holds a requested slot, confirms it, and frees it when the patient cancels', async () => {

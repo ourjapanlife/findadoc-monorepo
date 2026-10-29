@@ -15,6 +15,8 @@ export type BookingTarget = {
     allowedDurations: number[]
     /** Forms the clinic offers. The first is the default. */
     formDefinitionIds: string[]
+    /** True when the facility has a booking_settings row. Patients may book only then. */
+    bookingEnabled: boolean
 }
 
 function isUuid(value: string): boolean {
@@ -24,11 +26,13 @@ function isUuid(value: string): boolean {
 export async function settingsForFacility(facilityId: string | null): Promise<{
     allowedDurations: number[]
     formDefinitionIds: string[]
+    enabled: boolean
 }> {
     if (facilityId === null) {
         return {
             allowedDurations: [...DEFAULT_ALLOWED_DURATIONS],
-            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
+            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID],
+            enabled: false
         }
     }
 
@@ -40,13 +44,15 @@ export async function settingsForFacility(facilityId: string | null): Promise<{
     if (row === undefined) {
         return {
             allowedDurations: [...DEFAULT_ALLOWED_DURATIONS],
-            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
+            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID],
+            enabled: false
         }
     }
 
     return {
         allowedDurations: parseAllowedDurations(row.allowed_durations),
-        formDefinitionIds: parseFormDefinitionIds(row.form_definition_ids)
+        formDefinitionIds: parseFormDefinitionIds(row.form_definition_ids),
+        enabled: true
     }
 }
 
@@ -87,7 +93,8 @@ async function targetFromFacility(facilityId: string): Promise<BookingTarget | u
         clinicName,
         themePrimary: theme?.primary ?? null,
         allowedDurations: settings.allowedDurations,
-        formDefinitionIds: settings.formDefinitionIds
+        formDefinitionIds: settings.formDefinitionIds,
+        bookingEnabled: settings.enabled
     }
 }
 
@@ -130,7 +137,8 @@ async function targetFromClinicSite(siteIdOrSlug: string, byId: boolean): Promis
         clinicName: site.name?.trim() || site.slug,
         themePrimary: theme.primary,
         allowedDurations: settings.allowedDurations,
-        formDefinitionIds: settings.formDefinitionIds
+        formDefinitionIds: settings.formDefinitionIds,
+        bookingEnabled: settings.enabled
     }
 }
 
@@ -154,6 +162,28 @@ export async function resolveBookingTarget(clinicIdOrSlug: string): Promise<Book
     }
 
     return undefined
+}
+
+/**
+ * resolveBookingTarget for the patient surface. A facility books only after a
+ * moderator or owner saves its booking settings, so a directory clinic that
+ * never opted in reads as missing.
+ */
+export async function resolvePublicBookingTarget(clinicIdOrSlug: string): Promise<BookingTarget | undefined> {
+    const target = await resolveBookingTarget(clinicIdOrSlug)
+    return target?.bookingEnabled === true ? target : undefined
+}
+
+/** Facility ids in the list that have saved booking settings. */
+export async function bookingEnabledFacilityIds(facilityIds: readonly string[]): Promise<Set<string>> {
+    if (facilityIds.length === 0) {
+        return new Set()
+    }
+    const rows = await db.selectFrom('booking_settings')
+        .select('facility_id')
+        .where('facility_id', 'in', [...facilityIds])
+        .execute()
+    return new Set(rows.map(row => row.facility_id))
 }
 
 export function bookingLockKey(target: BookingTarget): string {

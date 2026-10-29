@@ -158,6 +158,9 @@ async function cancel(): Promise<void> {
 
 onMounted(async () => {
     token = window.location.hash.replace(/^#/, '').trim()
+    // The token cancels the visit. Drop it from the URL so later page views,
+    // error reports, and screenshots of the address bar do not carry it.
+    window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
     booking.value = token === '' ? null : await fetchPatientBooking(token)
     loading.value = false
 })

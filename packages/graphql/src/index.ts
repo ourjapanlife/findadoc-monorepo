@@ -757,6 +757,11 @@ export type DeleteResult = {
 /** A medical facility (hospital, clinic, etc.) registered in the Find a Doc database. */
 export type Facility = {
   __typename?: 'Facility';
+  /**
+   * True once a moderator or the clinic owner has saved booking settings for this facility.
+   * The clinic page shows Book, and patients may book, only then.
+   */
+  bookingEnabled: Scalars['Boolean']['output'];
   /** The city record for cityId. Null when the facility has no city. */
   city?: Maybe<City>;
   /** City this facility is published under. Null until a city we own is chosen. */
@@ -2725,6 +2730,7 @@ export type DeleteResultResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type FacilityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Facility'] = ResolversParentTypes['Facility']> = {
+  bookingEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   cityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   contact?: Resolver<ResolversTypes['Contact'], ParentType, ContextType>;

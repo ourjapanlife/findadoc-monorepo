@@ -20,6 +20,9 @@ export interface WebStackProps extends StackProps {
 // ja-JP is generated, so it is not listed here.
 const CLIENT_LOCALES = ['zh-CN', 'vi-VN', 'ko-KR', 'tl-PH', 'pt-BR', 'fr-FR', 'ru-RU', 'de-DE', 'it-IT']
 const CLIENT_PATHS = ['search', 'u/<*>', 'login', 'login/<*>', 'my-page', 'my-page/<*>']
+// Booking and the clinic dashboard are client-only in every locale, ja-JP included.
+const BOOKING_LOCALES = ['ja-JP', ...CLIENT_LOCALES]
+const BOOKING_PATHS = ['book', 'book/<*>', 'dashboard', 'clinic-dashboard', 'clinic-dashboard/<*>']
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '../..')
 
@@ -179,14 +182,15 @@ function siteBuildSpec(): string {
 }
 
 function siteRules(): CfnApp.CustomRuleProperty[] {
-    const clientRules = ['', ...CLIENT_LOCALES].flatMap(locale => {
+    const rewrite = (locales: string[], paths: string[]) => ['', ...locales].flatMap(locale => {
         const root = locale === '' ? '' : `/${locale}`
-        return CLIENT_PATHS.map(path => ({
+        return paths.map(path => ({
             source: `${root}/${path}`,
             target: '/200.html',
             status: '200',
         }))
     })
+    const clientRules = [...rewrite(CLIENT_LOCALES, CLIENT_PATHS), ...rewrite(BOOKING_LOCALES, BOOKING_PATHS)]
 
     return [
         { source: '/stats.js', target: 'https://cloud.umami.is/script.js', status: '200' },
