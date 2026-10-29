@@ -190,7 +190,7 @@ INSERT INTO clinic_memberships (facility_id, invited_email, auth0_sub, claimed_a
 VALUES ('c32c316a-a368-499b-abaf-c5c973cb67e5', 'you@example.com', '<your Auth0 sub, e.g. google-oauth2|123>', now(), 'owner');
 ```
 
-Sign in with a plain (non-admin) account with that sub. You see only the showcase clinic. Any other `/clinic-dashboard/{id}` says you don't have access.
+Sign in with a plain (non-admin) account with that sub. You see only the showcase clinic. Any other `/clinic-dashboard/{id}` says you don't have access. My Page → Access lists `FacilityOwner` (or `FacilityStaff` for a staff row). The API adds that role from the row on each request, so deleting the row removes it on the next request.
 
 ## 8. Troubleshooting
 

@@ -14,7 +14,11 @@ export enum Role {
     Admin = 'Admin',
     Moderator = 'Moderator',
     Dev = 'Dev',
-    User = 'User'
+    User = 'User',
+    // Derived by the API from a claimed clinic_memberships row (src/booking/facilityRoles.ts).
+    // Never read from the Auth0 token.
+    FacilityOwner = 'FacilityOwner',
+    FacilityStaff = 'FacilityStaff'
 }
 
 // These are the different scopes or permissions that are available in the system.
@@ -41,6 +45,11 @@ export enum Scope {
     'read:bookings' = 'read:bookings',
     'write:clinic_availability' = 'write:clinic_availability',
     'write:clinic_memberships' = 'write:clinic_memberships',
+    'read:own_clinic_bookings' = 'read:own_clinic_bookings',
+    'write:own_clinic_bookings' = 'write:own_clinic_bookings',
+    'write:own_clinic_availability' = 'write:own_clinic_availability',
+    'write:own_clinic_settings' = 'write:own_clinic_settings',
+    'write:own_clinic_memberships' = 'write:own_clinic_memberships',
     'read:reservations' = 'read:reservations',
     'write:reservations' = 'write:reservations'
 }
@@ -55,6 +64,16 @@ export enum Scope {
 const ALL_CLINIC_BOOKING_SCOPES: readonly Scope[] = [
     Scope['read:bookings'], Scope['write:clinic_availability'], Scope['write:clinic_memberships']
 ]
+
+// Own-clinic scopes come only from FacilityOwner and FacilityStaff. A scope alone does not
+// name a clinic: the booking services still check the facility (src/booking/access.ts).
+const OWN_CLINIC_SCOPES: readonly Scope[] = [
+    Scope['read:own_clinic_bookings'], Scope['write:own_clinic_bookings'], Scope['write:own_clinic_availability'],
+    Scope['write:own_clinic_settings'], Scope['write:own_clinic_memberships']
+]
+
+/** Roles the API derives from clinic_memberships. A token that names them is ignored. */
+export const FACILITY_ROLES: readonly Role[] = [Role.FacilityOwner, Role.FacilityStaff]
 
 const roleScopes: Record<Role, Scope[]> = {
     [Role.Admin]: [
@@ -97,6 +116,13 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['create:bookings'],
         Scope['read:profile'],
         Scope['read:reservations'], Scope['write:reservations']
+    ],
+    [Role.FacilityOwner]: [
+        Scope['read:own_clinic_bookings'], Scope['write:own_clinic_bookings'], Scope['write:own_clinic_availability'],
+        Scope['write:own_clinic_settings'], Scope['write:own_clinic_memberships']
+    ],
+    [Role.FacilityStaff]: [
+        Scope['read:own_clinic_bookings'], Scope['write:own_clinic_bookings'], Scope['write:own_clinic_availability']
     ]
 }
 
@@ -114,14 +140,17 @@ export interface User {
 /**
  * Effective API scopes for this user: JWT `scope` claim plus scopes implied by roles,
  * with production non-admin/moderator stripping applied (same rules as {@link authorize}).
- * Only admins keep the every-clinic booking scopes.
+ * Only admins keep the every-clinic booking scopes. Own-clinic scopes come only from
+ * FacilityOwner and FacilityStaff, which the API adds from clinic_memberships.
  */
 export function getEffectiveScopes(user: User | null | undefined): Scope[] {
     if (!user) {
         return []
     }
 
-    const currentUserScopes = (user.scope?.split(/\s+/).filter(Boolean) ?? []) as Scope[]
+    // The token cannot grant own-clinic scopes. They come from the derived facility roles.
+    const currentUserScopes = ((user.scope?.split(/\s+/).filter(Boolean) ?? []) as Scope[])
+        .filter(scope => !OWN_CLINIC_SCOPES.includes(scope))
     const currentUserRoles = (user.roles as Role[]) || []
 
     const currentUserScopesFromRoles = currentUserRoles.flatMap(role => roleScopes[role] ?? [])
@@ -140,7 +169,8 @@ export function getEffectiveScopes(user: User | null | undefined): Scope[] {
         merged = merged.filter(scope =>
             scope.startsWith('read:')
             || scope === Scope['create:submissions']
-            || scope === Scope['create:bookings'])
+            || scope === Scope['create:bookings']
+            || OWN_CLINIC_SCOPES.includes(scope))
     }
 
     return [...new Set(merged)]
@@ -239,8 +269,8 @@ export function withScope<TParent, TArgs, TContext extends UserContext, TResult>
 }
 
 /**
- * Any signed-in user, with no scope required. Clinic owners and staff are plain
- * users. The booking services check their facility membership (booking/access.ts).
+ * Any signed-in user, with no scope required. myBookingClinics uses this: it claims
+ * pending invites and returns an empty list to someone with no clinic.
  */
 export function withAuthenticatedUser<TParent, TArgs, TContext extends UserContext, TResult>(
     resolver: Resolver<TParent, TArgs, TContext, TResult>
@@ -286,6 +316,7 @@ export const EMAIL_VERIFIED_CLAIM = 'https://findadoc.jp/email_verified'
 // This function builds the user context from the FastifyRequest object so it can be used in the graphQL resolvers.
 export async function buildUserContext(req: FastifyRequest): Promise<UserContext> {
     const userFromRequest = req?.user as User
+    const tokenRoles = userFromRequest['https://findadoc.jp/roles'] as Role[] || userFromRequest?.roles as Role[] || []
 
     return {
         user: {
@@ -297,7 +328,8 @@ export async function buildUserContext(req: FastifyRequest): Promise<UserContext
             scope: userFromRequest?.scope || '',
             // These are custom roles defined in the Auth0 dashboard
             // They are JWT recommended prefixes with https://findadoc.jp/roles to avoid conflicts with standard JWT claims
-            roles: userFromRequest['https://findadoc.jp/roles'] as Role[] || userFromRequest?.roles as Role[] || []
+            // Facility roles are derived from clinic_memberships per request, never taken from the token.
+            roles: tokenRoles.filter(role => !FACILITY_ROLES.includes(role))
         } satisfies User,
         clientIp: clientIpFrom(req, envVariables.edgeSharedSecret()),
         viewerCountry: viewerCountryFrom(req, envVariables.edgeSharedSecret())

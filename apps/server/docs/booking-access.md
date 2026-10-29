@@ -10,17 +10,41 @@ page (`clinic_sites`) is optional branding.
 | Who | How | Can |
 |---|---|---|
 | Admin | `read:bookings`, `write:clinic_availability`, `write:clinic_memberships` scopes | Every clinic while booking is in preview. Invite owners and staff. |
-| Clinic owner | `clinic_memberships.role = 'owner'` for the facility | That clinic's requests, calendar, settings, and staff. |
-| Clinic staff | `clinic_memberships.role = 'staff'` | That clinic's requests and calendar. |
+| Clinic owner | `Role.FacilityOwner`, from `clinic_memberships.role = 'owner'` | That clinic's requests, calendar, settings, and staff. |
+| Clinic staff | `Role.FacilityStaff`, from `clinic_memberships.role = 'staff'` | That clinic's requests and calendar. |
 | Patient | Private token from the confirmation email | Their own booking: view and cancel. |
+
+Admin access is wide only because booking is in preview. Later an admin will
+only create and manage the owner and staff memberships for a clinic. Bookings,
+calendar, and settings will be the owner's job.
 
 Moderators manage the directory and have no booking access. `getEffectiveScopes` in
 `src/auth.ts` removes the three every-clinic scopes from anyone who is not an admin,
 even when Auth0 puts them on the token. Do not give them back to moderators.
 
-Owners and staff are plain users with no extra Auth0 role. Their resolvers use
-`withAuthenticatedUser`, and every service checks the facility through
-`src/booking/access.ts`. Another clinic's booking reads as missing.
+### Owner and staff roles
+
+The API derives `FacilityOwner` and `FacilityStaff` on every request from the
+user's claimed `clinic_memberships` rows (`src/booking/facilityRoles.ts`). They
+do not come from Auth0. `buildUserContext` drops them from the token, and
+`getEffectiveScopes` drops the own-clinic scopes the token names. No Auth0
+Action or Management API change is needed. An invite counts on the request
+after it is claimed, and a removed member loses the role on their next request.
+
+| Scope | Owner | Staff | Resolvers |
+|---|---|---|---|
+| `read:own_clinic_bookings` | yes | yes | clinic, requests, appointments, uploads, settings read |
+| `write:own_clinic_bookings` | yes | yes | appointment status |
+| `write:own_clinic_availability` | yes | yes | weekly hours, windows, closures, doctors |
+| `write:own_clinic_settings` | yes | no | booking settings |
+| `write:own_clinic_memberships` | yes | no | members, invite, remove |
+
+Clinic resolvers use `withClinicScope`, which accepts the admin's every-clinic
+scope or the own-clinic scope. A role does not name a clinic, so every service
+still checks the facility through `src/booking/access.ts`. Another clinic's
+booking reads as missing. `myBookingClinics` needs only a signed-in session: it
+claims invites and returns an empty list to someone with no clinic.
+`currentUserAccess` shows the derived roles on My Page.
 
 ### Invites
 
