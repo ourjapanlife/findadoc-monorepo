@@ -57,6 +57,16 @@
                     {{ t('privacyPage.paragraph13') }}
                 </p>
 
+                <h2 id="cookies">
+                    {{ t('privacyPage.cookiesHeading') }}
+                </h2>
+                <p>
+                    {{ t('privacyPage.cookiesBody') }}
+                </p>
+                <p>
+                    {{ t('privacyPage.cookiesChoice') }}
+                </p>
+
                 <h2>{{ t('privacyPage.paragraph14') }}</h2>
                 <p>
                     {{ t('privacyPage.paragraph15') }}

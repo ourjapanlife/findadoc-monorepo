@@ -109,7 +109,10 @@
     "paragraph13": "Unser Service richtet sich nicht an Personen unter 13 Jahren. Wir sammeln wissentlich keine persönlichen Informationen von Kindern. Wenn Sie glauben, dass wir versehentlich Informationen von einem Kind gesammelt haben, kontaktieren Sie uns bitte umgehend.",
     "paragraph14": "7. Änderungen der Datenschutzerklärung",
     "paragraph15": "Wir behalten uns das Recht vor, diese Datenschutzerklärung zu aktualisieren, um Änderungen in unseren Praktiken und Dienstleistungen widerzuspiegeln. Wir werden Sie über alle wesentlichen Änderungen informieren, indem wir die aktualisierte Richtlinie auf unserer Website veröffentlichen.",
-    "paragraph16": "Durch die Nutzung unseres Dienstes stimmen Sie den in dieser Datenschutzerklärung dargelegten Bedingungen zu."
+    "paragraph16": "Durch die Nutzung unseres Dienstes stimmen Sie den in dieser Datenschutzerklärung dargelegten Bedingungen zu.",
+    "cookiesHeading": "8. Cookies und Werbemessung",
+    "cookiesBody": "Wir nutzen Google Ads und, wenn aktiviert, Google Analytics der Google LLC, um zu messen, wie Besucher zu unserem Dienst finden und ihn nutzen. Bei einem Besuch sendet Ihr Browser Google die Seitenadresse, Ihre IP-Adresse, Browserangaben und eine in einem Cookie gespeicherte Kennung. Google nutzt dies, um unsere Anzeigen zu messen. Wir nutzen es nicht, um Anzeigen für Sie zu personalisieren. Die Datenschutzerklärung von Google finden Sie unter policies.google.com/privacy.",
+    "cookiesChoice": "Besucher aus dem Europäischen Wirtschaftsraum, dem Vereinigten Königreich und der Schweiz werden gefragt, bevor diese Cookies gesetzt werden. Alle können jederzeit unter Cookie-Einstellungen unten auf jeder Seite zustimmen oder ablehnen. Wenn Sie ablehnen, werden keine Werbe- oder Analyse-Cookies gesetzt; Google kann jedoch weiterhin ein Signal ohne Cookies erhalten, um Anzeigenergebnisse zu schätzen."
   },
   "submitPage": {
     "firstName": "Vorname",
@@ -710,5 +713,13 @@
     "dismiss": "Schließen",
     "announceLabel": "Meldung",
     "viewportLabel": "Hinweise ({hotkey})"
+  },
+  "consent": {
+    "title": "Cookies auf dieser Website",
+    "body": "Wir verwenden Google-Cookies, um zu messen, welche Anzeigen Menschen zu Find a Doc, Japan bringen. Sie werden nie zur Personalisierung von Anzeigen genutzt. Ihre Wahl können Sie jederzeit unter Cookie-Einstellungen unten auf der Seite ändern.",
+    "privacyLink": "Datenschutzerklärung",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen",
+    "settings": "Cookie-Einstellungen"
   }
 }

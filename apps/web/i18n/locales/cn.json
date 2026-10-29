@@ -109,7 +109,10 @@
     "paragraph13": "我们的服务不针对13岁以下的儿童。我们不会有意收集儿童的个人信息。如果您认为我们在不知情的状况下收集了儿童的信息，请立即与我们联系。",
     "paragraph14": "7. 隐私政策变更",
     "paragraph15": "我们保留更新本隐私政策的权利，以适应我们工作和服务过程中可能存在的变化。我们将通过在网站上发布更新的隐私政策来通知您任何重大变更。",
-    "paragraph16": "使用我们的服务即表示您同意本隐私政策中列出的条款。"
+    "paragraph16": "使用我们的服务即表示您同意本隐私政策中列出的条款。",
+    "cookiesHeading": "8. Cookie 与广告效果衡量",
+    "cookiesBody": "我们使用由 Google LLC 提供的 Google Ads（以及启用时的 Google Analytics），来衡量访问者如何找到并使用我们的服务。您访问时，浏览器会向 Google 发送页面地址、IP 地址、浏览器信息以及 Cookie 中存储的标识符。Google 用这些信息衡量我们的广告效果。我们不会用它为您个性化广告。Google 的隐私政策见 policies.google.com/privacy。",
+    "cookiesChoice": "来自欧洲经济区、英国和瑞士的访问者在设置这些 Cookie 前会先被询问。任何人都可以随时通过每个页面底部的“Cookie 设置”接受或拒绝。若您拒绝，将不会设置广告或分析 Cookie，但 Google 仍可能收到不含 Cookie 的信号以估算广告效果。"
   },
   "submitPage": {
     "firstName": "名",
@@ -710,5 +713,13 @@
     "dismiss": "关闭",
     "announceLabel": "通知",
     "viewportLabel": "通知（{hotkey}）"
+  },
+  "consent": {
+    "title": "本网站的 Cookie",
+    "body": "我们使用 Google Cookie 来衡量哪些广告把访问者带到 Find a Doc, Japan。这些 Cookie 绝不会用于个性化广告。您可以随时通过页面底部的“Cookie 设置”更改选择。",
+    "privacyLink": "隐私政策",
+    "accept": "接受",
+    "decline": "拒绝",
+    "settings": "Cookie 设置"
   }
 }

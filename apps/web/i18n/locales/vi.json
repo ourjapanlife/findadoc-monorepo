@@ -109,7 +109,10 @@
     "paragraph13": "Dịch vụ của chúng tôi không dành cho những người dưới 13 tuổi. Chúng tôi không cố ý thu thập thông tin cá nhân từ trẻ em. Nếu bạn cho rằng chúng tôi đã vô tình thu thập thông tin từ một trẻ em, vui lòng liên hệ với chúng tôi ngay lập tức.",
     "paragraph14": "7.Các thay đổi đối với Chính sách Bảo mật",
     "paragraph15": "Chúng tôi có quyền cập nhật Chính sách Bảo mật này để phản ánh những thay đổi trong thực tiễn và dịch vụ của mình. Chúng tôi sẽ thông báo cho bạn về bất kỳ thay đổi quan trọng nào bằng cách đăng chính sách đã cập nhật trên trang web của chúng tôi.",
-    "paragraph16": "Bằng cách sử dụng dịch vụ của chúng tôi, bạn đồng ý với các điều khoản được nêu trong Chính sách Bảo mật này."
+    "paragraph16": "Bằng cách sử dụng dịch vụ của chúng tôi, bạn đồng ý với các điều khoản được nêu trong Chính sách Bảo mật này.",
+    "cookiesHeading": "8. Cookie và đo lường quảng cáo",
+    "cookiesBody": "Chúng tôi sử dụng Google Ads, và Google Analytics khi được bật, do Google LLC cung cấp, để đo lường cách khách truy cập tìm đến và sử dụng dịch vụ. Khi bạn truy cập, trình duyệt gửi cho Google địa chỉ trang, địa chỉ IP, thông tin trình duyệt và một mã định danh lưu trong cookie. Google dùng thông tin này để đo lường quảng cáo của chúng tôi. Chúng tôi không dùng nó để cá nhân hóa quảng cáo cho bạn. Chính sách quyền riêng tư của Google có tại policies.google.com/privacy.",
+    "cookiesChoice": "Khách truy cập từ Khu vực Kinh tế Châu Âu, Vương quốc Anh và Thụy Sĩ sẽ được hỏi trước khi đặt các cookie này. Bất kỳ ai cũng có thể chấp nhận hoặc từ chối bất cứ lúc nào tại Cài đặt cookie ở cuối mỗi trang. Nếu bạn từ chối, sẽ không có cookie quảng cáo hay phân tích nào được đặt, tuy Google vẫn có thể nhận một tín hiệu không dùng cookie để ước tính hiệu quả quảng cáo."
   },
   "submitPage": {
     "firstName": "Tên",
@@ -710,5 +713,13 @@
     "dismiss": "Đóng",
     "announceLabel": "Thông báo",
     "viewportLabel": "Thông báo ({hotkey})"
+  },
+  "consent": {
+    "title": "Cookie trên trang này",
+    "body": "Chúng tôi dùng cookie của Google để đo lường quảng cáo nào đưa mọi người đến Find a Doc, Japan. Cookie này không bao giờ được dùng để cá nhân hóa quảng cáo. Bạn có thể đổi lựa chọn bất cứ lúc nào tại Cài đặt cookie ở cuối trang.",
+    "privacyLink": "Chính sách quyền riêng tư",
+    "accept": "Chấp nhận",
+    "decline": "Từ chối",
+    "settings": "Cài đặt cookie"
   }
 }

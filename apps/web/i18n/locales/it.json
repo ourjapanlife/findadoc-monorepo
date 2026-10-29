@@ -135,7 +135,10 @@
     "paragraph13": "Il nostro servizio non è rivolto a persone di età inferiore ai 13 anni. Non raccogliamo consapevolmente informazioni personali da bambini. Se ritieni che abbiamo raccolto informazioni da un bambino, ti preghiamo di contattarci immediatamente.",
     "paragraph14": "7. Modifiche all'informativa sulla privacy",
     "paragraph15": "Ci riserviamo il diritto di aggiornare questa Informativa sulla privacy per riflettere i cambiamenti nelle nostre pratiche e nei nostri servizi. Ti informeremo di eventuali modifiche significative pubblicando l'informativa aggiornata sul nostro sito web.",
-    "paragraph16": "Utilizzando il nostro servizio, accetti i termini descritti in questa Informativa sulla privacy."
+    "paragraph16": "Utilizzando il nostro servizio, accetti i termini descritti in questa Informativa sulla privacy.",
+    "cookiesHeading": "8. Cookie e misurazione pubblicitaria",
+    "cookiesBody": "Usiamo Google Ads e, quando attivo, Google Analytics, forniti da Google LLC, per misurare come i visitatori raggiungono e usano il nostro servizio. Durante la visita il tuo browser invia a Google l'indirizzo della pagina, il tuo indirizzo IP, dati sul browser e un identificativo salvato in un cookie. Google li usa per misurare i nostri annunci. Non li usiamo per personalizzare gli annunci per te. L'informativa sulla privacy di Google è su policies.google.com/privacy.",
+    "cookiesChoice": "Ai visitatori dello Spazio economico europeo, del Regno Unito e della Svizzera viene chiesto il consenso prima di impostare questi cookie. Chiunque può accettare o rifiutare in qualsiasi momento da Impostazioni dei cookie in fondo a ogni pagina. Se rifiuti, non viene impostato alcun cookie pubblicitario o di analisi, anche se Google può comunque ricevere un segnale senza cookie per stimare i risultati degli annunci."
   },
   "submitPage": {
     "firstName": "Nome",
@@ -710,5 +713,13 @@
     "dismiss": "Chiudi",
     "announceLabel": "Notifica",
     "viewportLabel": "Notifiche ({hotkey})"
+  },
+  "consent": {
+    "title": "Cookie su questo sito",
+    "body": "Usiamo i cookie di Google per misurare quali annunci portano le persone su Find a Doc, Japan. Non vengono mai usati per personalizzare gli annunci. Puoi cambiare la tua scelta in qualsiasi momento da Impostazioni dei cookie in fondo alla pagina.",
+    "privacyLink": "Informativa sulla privacy",
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "settings": "Impostazioni dei cookie"
   }
 }

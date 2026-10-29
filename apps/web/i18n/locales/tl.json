@@ -109,7 +109,10 @@
     "paragraph13": "Ang aming serbisyo ay hindi dikretang inilaan para sa mga indibidwal mula sa edad 13 taong gulang pababa. Hindi namin kinokolekta ang personal na impormasyon mula sa mga bata. Kung kayo ay naniniwala na nakolekta namin ang impormasyon mula sa mga nasabing gulang, edad 13 pababa, mangyaring makipag-ugnayan kaagad sa amin.",
     "paragraph14": "7. Mga Pagbabago sa Patakaran sa Pribasiya",
     "paragraph15": "Inilalaan namin ang karapatang baguhin ang Patakaran sa Pribasiya na ito upang ipakita ang mga pagbabago sa aming serbisyo. Ibabahagi namin ang anumang mahahalagang impormasyon sa pamamagitan ng pag-post ng anumang pagbabago ng mga patakaran sa aming website.",
-    "paragraph16": "Sa paggamit ng aming serbisyo, ikaw ay sumasang-ayon sa mga tuntunin na nakasaad sa Patakaran sa Pribasiya na ito."
+    "paragraph16": "Sa paggamit ng aming serbisyo, ikaw ay sumasang-ayon sa mga tuntunin na nakasaad sa Patakaran sa Pribasiya na ito.",
+    "cookiesHeading": "8. Mga Cookie at Pagsukat ng Advertising",
+    "cookiesBody": "Gumagamit kami ng Google Ads, at ng Google Analytics kapag naka-on ito, na ibinibigay ng Google LLC, para sukatin kung paano dumarating at gumagamit ang mga bisita sa aming serbisyo. Kapag bumisita ka, ipinapadala ng iyong browser sa Google ang address ng pahina, ang iyong IP address, mga detalye ng browser, at isang identifier na nakatago sa cookie. Ginagamit ito ng Google para sukatin ang aming mga ad. Hindi namin ito ginagamit para i-personalize ang mga ad para sa iyo. Nasa policies.google.com/privacy ang patakaran sa privacy ng Google.",
+    "cookiesChoice": "Tinatanong muna ang mga bisita mula sa European Economic Area, United Kingdom, at Switzerland bago itakda ang mga cookie na ito. Sinuman ay maaaring tumanggap o tumanggi anumang oras sa Mga setting ng cookie sa ibaba ng bawat pahina. Kung tatanggi ka, walang itatakdang cookie para sa advertising o analytics, bagaman maaari pa ring makatanggap ang Google ng signal na walang cookie para tantyahin ang resulta ng mga ad."
   },
   "submitPage": {
     "firstName": "Pangalan",
@@ -710,5 +713,13 @@
     "dismiss": "Isara",
     "announceLabel": "Abiso",
     "viewportLabel": "Mga abiso ({hotkey})"
+  },
+  "consent": {
+    "title": "Mga cookie sa site na ito",
+    "body": "Gumagamit kami ng mga cookie ng Google para sukatin kung aling mga ad ang nagdadala ng mga tao sa Find a Doc, Japan. Hindi kailanman ginagamit ang mga ito para i-personalize ang mga ad. Mababago mo ang iyong pasya anumang oras sa Mga setting ng cookie sa ibaba ng pahina.",
+    "privacyLink": "Patakaran sa privacy",
+    "accept": "Tanggapin",
+    "decline": "Tanggihan",
+    "settings": "Mga setting ng cookie"
   }
 }

@@ -120,6 +120,16 @@
                                 data-testid="npo-link"
                             >{{ t('footer.npo') }}</NuxtLink>
                         </li>
+                        <li>
+                            <button
+                                type="button"
+                                :class="footerLink"
+                                data-testid="cookie-settings-link"
+                                @click="openSettings"
+                            >
+                                {{ t('consent.settings') }}
+                            </button>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -145,8 +155,11 @@
 import { useI18n } from 'vue-i18n'
 import SVGSiteLogo from '~/assets/icons/site-logo.svg'
 import { GITHUB_ORGANIZATION_URL, LINKEDIN_ORGANIZATION_URL } from '~/utils/site'
+import { useConsent } from '~/composables/useConsent'
 
 const { t } = useI18n()
+
+const { openSettings } = useConsent()
 
 const currentYear = new Date().getUTCFullYear()
 

@@ -178,7 +178,10 @@
     "paragraph13": "Our service is not directed at individuals under the age of 13. We do not knowingly collect personal information from children. If you believe that we have inadvertently collected information from a child, please contact us immediately.",
     "paragraph14": "7. Changes to the Privacy Policy",
     "paragraph15": "We reserve the right to update this Privacy Policy to reflect changes in our practices and services. We will notify you of any significant changes by posting the updated policy on our website.",
-    "paragraph16": "By using our service, you agree to the terms outlined in this Privacy Policy."
+    "paragraph16": "By using our service, you agree to the terms outlined in this Privacy Policy.",
+    "cookiesHeading": "8. Cookies and Advertising Measurement",
+    "cookiesBody": "We use Google Ads, and Google Analytics when it is enabled, provided by Google LLC, to measure how visitors reach and use our service. When you visit, your browser sends Google the page address, your IP address, browser details, and an identifier stored in a cookie. Google uses this to measure our ads. We do not use it to personalise ads for you. Google's privacy policy is at policies.google.com/privacy.",
+    "cookiesChoice": "Visitors from the European Economic Area, the United Kingdom, and Switzerland are asked before these cookies are set. Anyone can accept or decline at any time with Cookie settings at the bottom of every page. If you decline, no advertising or analytics cookies are set, though Google may still receive a signal without cookies to estimate ad results."
   },
   "submitPage": {
     "firstName": "First name",
@@ -710,5 +713,13 @@
     "dismiss": "Dismiss",
     "announceLabel": "Notification",
     "viewportLabel": "Notifications ({hotkey})"
+  },
+  "consent": {
+    "title": "Cookies on this site",
+    "body": "We use Google cookies to measure which ads bring people to Find a Doc, Japan. They are never used to personalise ads. You can change your choice any time from Cookie settings at the bottom of the page.",
+    "privacyLink": "Privacy policy",
+    "accept": "Accept",
+    "decline": "Decline",
+    "settings": "Cookie settings"
   }
 }

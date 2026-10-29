@@ -24,6 +24,10 @@
     <ClientOnly>
         <ConfirmationDialog />
     </ClientOnly>
+    <!-- Reads the consent cookie and the browser time zone, so it only renders in the browser. -->
+    <ClientOnly>
+        <ConsentBanner />
+    </ClientOnly>
 </template>
 
 <script setup lang="ts">

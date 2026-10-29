@@ -7,6 +7,7 @@ import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
 import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
+import { consentBootstrapScript } from './utils/consent'
 import { CLINIC_HOST_BOOTSTRAP, CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
 import { writeClinicPreviewShells } from './utils/nuxt/clinicPreviewShell'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
@@ -15,6 +16,9 @@ import {
     applyEntityDirectoryToNuxt,
     entityDirectoryVitePlugins
 } from './utils/nuxt/entityDirectoryGenerate'
+
+// The Google tag (Ads, and Analytics when ENABLE_GOOGLE_ANALYTICS is set) and its consent defaults.
+const GOOGLE_TAG_ENABLED = process.env.NODE_ENV === 'production'
 
 export default defineNuxtConfig({
 
@@ -123,6 +127,8 @@ export default defineNuxtConfig({
             script: [
                 { innerHTML: COLOR_SCHEME_BOOTSTRAP, tagPosition: 'head' },
                 { innerHTML: CLINIC_HOST_BOOTSTRAP, tagPosition: 'head' },
+                // Consent defaults must reach dataLayer before the Google tag's config.
+                ...(GOOGLE_TAG_ENABLED ? [{ innerHTML: consentBootstrapScript(), tagPosition: 'head' as const }] : []),
                 ...umamiScript()
             ]
         }
@@ -305,10 +311,14 @@ export default defineNuxtConfig({
         }
     },
 
-    // Google analytics configuration
+    // Google tag. One gtag.js for every tag ID.
+    // Google Ads loads on every production build. Analytics stays opt-in with ENABLE_GOOGLE_ANALYTICS.
     gtag: {
-        enabled: process.env.NODE_ENV === 'production' && process.env.ENABLE_GOOGLE_ANALYTICS === 'true',
-        id: 'G-T0RE9B3PRG'
+        enabled: GOOGLE_TAG_ENABLED,
+        tags: [
+            'AW-18541704359',
+            ...(process.env.ENABLE_GOOGLE_ANALYTICS === 'true' ? ['G-T0RE9B3PRG'] : [])
+        ]
     },
 
     i18n: {
