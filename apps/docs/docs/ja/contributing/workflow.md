@@ -29,6 +29,7 @@ pnpm test
 - PRタイトルは[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)に従うこと（例：`feat: add search filter`、`fix: correct map marker position`）
 - すべての自動チェックとリンターがパスすること
 - PR説明にテスト手順を含めること
+- 大きな変更（マイグレーション、認証、新しいルート、インフラ）では、テンプレートの任意セクション（理由、データモデルとマイグレーション、API変更、デプロイ手順、ロールバック、既知の制限と今後の対応）を記入すること。該当しないセクションは削除すること
 - 変更によってページが古くなる場合は `apps/docs` を更新すること
 
 ## コードレビュー

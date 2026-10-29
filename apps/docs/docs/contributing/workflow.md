@@ -29,6 +29,7 @@ pnpm test
 - PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) (e.g., `feat: add search filter`, `fix: correct map marker position`)
 - All automated checks and linters must pass
 - Include testing instructions in the PR description
+- For larger changes (migrations, auth, new routes, infra), fill in the template's optional sections: why, data model and migrations, API changes, deploy checklist, rollback, and known limitations. Delete the ones that don't apply
 - Update `apps/docs` when the change makes a page out of date
 
 ## Code Review
