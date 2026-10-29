@@ -36,7 +36,8 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     NEGATIVE_NUMBER: 'serverErrorMessages.negativeNumber',
     NO_UPDATES_FOUND: 'serverErrorMessages.nothingToSave',
     // withScope answers 403 both for a missing scope and for a request with no signed-in user.
-    UNAUTHORIZED: 'serverErrorMessages.notAllowed'
+    UNAUTHORIZED: 'serverErrorMessages.notAllowed',
+    NETWORK: 'serverErrorMessages.network'
 }
 
 /**

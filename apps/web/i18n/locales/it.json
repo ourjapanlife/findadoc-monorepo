@@ -95,7 +95,10 @@
     "fieldTooShort": "Uno dei campi è troppo corto.",
     "negativeNumber": "Un numero non può essere negativo.",
     "nothingToSave": "Non c’è nulla di nuovo da salvare.",
-    "notAllowed": "Non hai l’autorizzazione per farlo. Accedi di nuovo o chiedi l’accesso a un amministratore."
+    "notAllowed": "Non hai l’autorizzazione per farlo. Accedi di nuovo o chiedi l’accesso a un amministratore.",
+    "network": "La richiesta non è stata completata. Controlla la connessione e riprova.",
+    "prefectureMismatch": "Il nome inglese e quello giapponese della prefettura devono coincidere.",
+    "prefectureRequired": "Aggiungi la prefettura in inglese e in giapponese."
   },
   "footer": {
     "poweredBy": "Offerto da {name}",
@@ -424,7 +427,7 @@
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "L'ID della struttura è obbligatiorio per aggiornare la struttura",
-    "facilitySuccessfullyRejected": "Struttura rifiutata con successo",
+    "submissionRejected": "Segnalazione rifiutata",
     "healthcareProfessionalId": "ID professionista sanitario",
     "labelHealthcareProfessionalFirstName": "Nome",
     "labelHealthcareProfessionalLastName": "Cognome",
@@ -710,5 +713,14 @@
     "dismiss": "Chiudi",
     "announceLabel": "Notifica",
     "viewportLabel": "Notifiche ({hotkey})"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Questa segnalazione non può essere approvata perché non è aperta.",
+    "unableToReject": "Questa segnalazione non può essere rifiutata perché non è aperta."
+  },
+  "moderationListErrors": {
+    "submissions": "Non è stato possibile caricare le segnalazioni. Riprova.",
+    "facilities": "Non è stato possibile caricare le strutture. Riprova.",
+    "professionals": "Non è stato possibile caricare i professionisti sanitari. Riprova."
   }
 }

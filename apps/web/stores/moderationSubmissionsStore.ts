@@ -8,7 +8,8 @@ import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql.js'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { usePersistentFilters } from '~/composables/usePersistentFilters'
 import { useTranslation } from '~/composables/useTranslation'
-import { isNewSubmission } from '~/utils/moderationUtils'
+import { hasServerErrors, isNewSubmission } from '~/utils/moderationUtils'
+import { toastModerationLoadError } from '~/utils/moderationListToast'
 import {
     DEFAULT_MODERATION_PAGE_SIZE,
     loadPageInRange,
@@ -190,8 +191,7 @@ export const useModerationSubmissionsStore = defineStore(
                 applySubmissionPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
                 console.error(`Error fetching submissions: ${JSON.stringify(error)}`)
-                //eslint-disable-next-line
-                alert('Error loading submissions. Please try again later.')
+                toastModerationLoadError('moderationListErrors.submissions')
                 submissionsData.value = []
                 filteredSubmissionDataForListComponent.value = []
                 totalSubmissionsCount.value = 0
@@ -260,7 +260,7 @@ export const useModerationSubmissionsStore = defineStore(
                 updateSubmissionInput
             )
 
-            if (serverResponse.errors?.length) {
+            if (hasServerErrors(serverResponse)) {
                 setDidMutationFail(true)
                 return serverResponse
             }
@@ -339,7 +339,9 @@ export const useModerationSubmissionsStore = defineStore(
                 { id, input }
             )
             const updatedSubmission = serverResponse.data?.updateSubmission
-            return serverResponse.errors?.length ? false : updatedSubmission !== undefined && updatedSubmission !== null
+            return !hasServerErrors(serverResponse)
+              && updatedSubmission !== undefined
+              && updatedSubmission !== null
         }
 
         return {

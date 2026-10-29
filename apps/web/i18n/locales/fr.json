@@ -236,7 +236,7 @@
     "labelHealthcareProfessionalMiddleName": "Deuxième prénom",
     "submissionConfirmationAcceptanceButton": "Oui, envoyer",
     "submissionConfirmationMessage": "Envoyer ce formulaire ?",
-    "facilitySuccessfullyRejected": "Établissement rejeté",
+    "submissionRejected": "Soumission rejetée",
     "rejectSubmissionConfirmationMessage": "Rejeter cette soumission ?",
     "rejectSubmissionConfirmationButton": "Oui, rejeter",
     "searchExistingFacilities": "Rechercher un établissement existant",
@@ -434,7 +434,10 @@
     "fieldTooShort": "L’un des champs est trop court.",
     "negativeNumber": "Un nombre ne peut pas être négatif.",
     "nothingToSave": "Il n’y a rien de nouveau à enregistrer.",
-    "notAllowed": "Vous n’avez pas l’autorisation de faire cela. Reconnectez-vous ou demandez l’accès à un administrateur."
+    "notAllowed": "Vous n’avez pas l’autorisation de faire cela. Reconnectez-vous ou demandez l’accès à un administrateur.",
+    "network": "La requête ne s’est pas terminée. Vérifiez la connexion et réessayez.",
+    "prefectureMismatch": "Le nom anglais et le nom japonais de la préfecture doivent correspondre.",
+    "prefectureRequired": "Ajoutez la préfecture en anglais et en japonais."
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
@@ -710,5 +713,14 @@
     "dismiss": "Fermer",
     "announceLabel": "Message",
     "viewportLabel": "Messages ({hotkey})"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Cette soumission ne peut pas être approuvée, car elle n’est pas ouverte.",
+    "unableToReject": "Cette soumission ne peut pas être rejetée, car elle n’est pas ouverte."
+  },
+  "moderationListErrors": {
+    "submissions": "Les soumissions n’ont pas pu être chargées. Réessayez.",
+    "facilities": "Les établissements n’ont pas pu être chargés. Réessayez.",
+    "professionals": "Les professionnels de santé n’ont pas pu être chargés. Réessayez."
   }
 }

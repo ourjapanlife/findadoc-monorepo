@@ -49,5 +49,7 @@ export enum ErrorCode {
     INVALID_INPUT = 'INVALID_INPUT',
     BAD_USER_INPUT = 'BAD_USER_INPUT',
     UNAUTHORIZED = 'UNAUTHORIZED',
-    NO_UPDATES_FOUND = 'NO_UPDATES_FOUND'
+    NO_UPDATES_FOUND = 'NO_UPDATES_FOUND',
+    /** The request never produced GraphQL errors: a timeout, a dropped connection, or an empty failure. */
+    NETWORK = 'NETWORK'
 }
