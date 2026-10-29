@@ -23,7 +23,8 @@ import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~
  * signed-in user belongs to; moderators reach every clinic.
  */
 
-const LIST_ITEM_FIELDS = `
+// Fields on both BookingSubmissionListItem and BookingSubmissionDetail.
+const SUBMISSION_FIELDS = `
   id
   clinicSiteId
   facilityId
@@ -37,14 +38,19 @@ const LIST_ITEM_FIELDS = `
   endsAt
   appointmentId
   appointmentStatus
-  patientName
   createdDate
   updatedDate
+`
+
+// patientName and hasIdentityUploads are list-only. The detail has the answers and uploads instead.
+const LIST_ITEM_FIELDS = `
+  ${SUBMISSION_FIELDS}
+  patientName
   hasIdentityUploads
 `
 
 const DETAIL_FIELDS = `
-  ${LIST_ITEM_FIELDS}
+  ${SUBMISSION_FIELDS}
   cancelledBy
   statusReason
   practitionerId
