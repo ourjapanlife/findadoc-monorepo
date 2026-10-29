@@ -126,7 +126,7 @@
       "cookies": {
         "heading": "6. Cookies et mesure publicitaire",
         "p1": "Nous utilisons Google Ads, ainsi que Google Analytics lorsqu'il est activé, fournis par Google LLC, pour mesurer comment les visiteurs arrivent sur notre service et l'utilisent. Lors de votre visite, votre navigateur envoie à Google l'adresse de la page, votre adresse IP, des informations sur le navigateur et un identifiant stocké dans un cookie. Google s'en sert pour mesurer nos publicités. Nous ne nous en servons pas pour personnaliser les publicités qui vous sont montrées. La politique de confidentialité de Google se trouve sur policies.google.com/privacy.",
-        "p2": "Nous demandons votre accord avant de charger ces outils. Rien n'est envoyé à Google tant que vous n'avez pas accepté. Vous pouvez accepter ou refuser à tout moment via Paramètres des cookies en bas de chaque page. Si vous refusez, ou si vous changez plus tard d'avis pour refuser, les outils ne sont pas chargés et leurs cookies sont supprimés.",
+        "p2": "Nous demandons votre accord avant de charger ces outils. Google Ads et Google Analytics n'envoient rien à Google tant que vous n'avez pas accepté. Vous pouvez accepter ou refuser à tout moment via Paramètres des cookies en bas de chaque page. Si vous refusez, ou si vous changez plus tard d'avis pour refuser, les outils ne sont pas chargés et leurs cookies sont supprimés.",
         "p3": "Nous utilisons aussi des cookies pour mémoriser votre langue et votre choix concernant les cookies. Umami compte les visites sans cookie."
       },
       "security": {

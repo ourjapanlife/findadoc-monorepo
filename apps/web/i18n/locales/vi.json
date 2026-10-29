@@ -126,7 +126,7 @@
       "cookies": {
         "heading": "6. Cookie và đo lường quảng cáo",
         "p1": "Chúng tôi sử dụng Google Ads, và Google Analytics khi được bật, do Google LLC cung cấp, để đo lường cách khách truy cập tìm đến và sử dụng dịch vụ. Khi bạn truy cập, trình duyệt gửi cho Google địa chỉ trang, địa chỉ IP, thông tin trình duyệt và một mã định danh lưu trong cookie. Google dùng thông tin này để đo lường quảng cáo của chúng tôi. Chúng tôi không dùng nó để cá nhân hóa quảng cáo cho bạn. Chính sách quyền riêng tư của Google có tại policies.google.com/privacy.",
-        "p2": "Chúng tôi hỏi trước khi tải bất kỳ công cụ nào trong số này. Không có gì được gửi tới Google cho đến khi bạn chấp nhận. Bạn có thể chấp nhận hoặc từ chối bất cứ lúc nào tại Cài đặt cookie ở cuối mỗi trang. Nếu bạn từ chối, hoặc sau đó đổi sang từ chối, các công cụ sẽ không được tải và cookie của chúng sẽ bị xóa.",
+        "p2": "Chúng tôi hỏi trước khi tải bất kỳ công cụ nào trong số này. Google Ads và Google Analytics không gửi gì tới Google cho đến khi bạn chấp nhận. Bạn có thể chấp nhận hoặc từ chối bất cứ lúc nào tại Cài đặt cookie ở cuối mỗi trang. Nếu bạn từ chối, hoặc sau đó đổi sang từ chối, các công cụ sẽ không được tải và cookie của chúng sẽ bị xóa.",
         "p3": "Chúng tôi cũng dùng cookie để ghi nhớ ngôn ngữ và lựa chọn cookie của bạn. Umami đếm lượt truy cập mà không dùng cookie."
       },
       "security": {

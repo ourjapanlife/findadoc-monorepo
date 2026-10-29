@@ -8,13 +8,20 @@ import {
     type ConsentChoice
 } from '~/utils/consent'
 
-/** Google tag ids for this build. Empty in dev, so there is nothing to consent to. */
+/**
+ * Google tag ids for this build. Empty in dev, so there is nothing to consent to.
+ * In testing mode an e2e override in localStorage wins, even over configured ids.
+ */
 export function useGoogleTagIds(): string[] {
     const config = useRuntimeConfig().public
     const ids = [...(config.googleTagIds ?? [])]
-    if (ids.length === 0 && config.isTestingMode && import.meta.client) {
+    if (config.isTestingMode && import.meta.client) {
         try {
-            const stored = JSON.parse(window.localStorage.getItem(E2E_GOOGLE_TAG_IDS_KEY) ?? '[]') as unknown
+            const raw = window.localStorage.getItem(E2E_GOOGLE_TAG_IDS_KEY)
+            if (raw === null) {
+                return ids
+            }
+            const stored = JSON.parse(raw) as unknown
             return Array.isArray(stored) ? stored.filter((id): id is string => typeof id === 'string') : []
         } catch {
             return []

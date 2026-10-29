@@ -195,7 +195,7 @@
       "cookies": {
         "heading": "6. Cookies and advertising measurement",
         "p1": "We use Google Ads, and Google Analytics when it is enabled, provided by Google LLC, to measure how visitors reach and use our service. When you visit, your browser sends Google the page address, your IP address, browser details, and an identifier stored in a cookie. Google uses this to measure our ads. We do not use it to personalise ads for you. Google's privacy policy is at policies.google.com/privacy.",
-        "p2": "We ask before loading any of these tools. Nothing is sent to Google until you accept. You can accept or decline at any time with Cookie settings at the bottom of every page. If you decline, or later change your choice to decline, the tools are not loaded and their cookies are deleted.",
+        "p2": "We ask before loading any of these tools. Google Ads and Google Analytics send nothing to Google until you accept. You can accept or decline at any time with Cookie settings at the bottom of every page. If you decline, or later change your choice to decline, the tools are not loaded and their cookies are deleted.",
         "p3": "We also use cookies to remember your language and your cookie choice. Umami counts visits without cookies."
       },
       "security": {
