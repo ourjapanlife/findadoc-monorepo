@@ -6,6 +6,8 @@ export type OutboundEmail = {
     to: string
     subject: string
     textBody: string
+    /** Sent as the HTML part alongside the text part. */
+    htmlBody?: string
     bookingId?: string
 }
 
@@ -45,7 +47,8 @@ export async function sendTransactionalEmail(message: OutboundEmail): Promise<'s
             Simple: {
                 Subject: { Data: message.subject, Charset: 'UTF-8' },
                 Body: {
-                    Text: { Data: message.textBody, Charset: 'UTF-8' }
+                    Text: { Data: message.textBody, Charset: 'UTF-8' },
+                    ...(message.htmlBody === undefined ? {} : { Html: { Data: message.htmlBody, Charset: 'UTF-8' } })
                 }
             }
         },

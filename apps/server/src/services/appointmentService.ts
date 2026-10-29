@@ -15,6 +15,7 @@ import {
     canStaffMoveTo,
     type AppointmentStatus
 } from '../booking/lifecycle.js'
+import { clinicPatientCancelledEmail, patientStatusEmail, type PatientNoticeStatus } from '../booking/emailCopy.js'
 import { hashPatientToken } from '../booking/links.js'
 import { emailFromUnknown, noticeClinic, sendBookingNotice } from '../booking/notifications.js'
 import { resolveBookingTarget } from '../booking/target.js'
@@ -138,19 +139,11 @@ export async function listClinicAppointments(
     return rows.map(appointmentFromRow)
 }
 
-const PATIENT_NOTICE: Partial<Record<AppointmentStatus, { subject: string, line: string }>> = {
-    [APPOINTMENT_STATUS.CONFIRMED]: {
-        subject: 'Your appointment is confirmed',
-        line: 'The clinic confirmed your appointment.'
-    },
-    [APPOINTMENT_STATUS.DECLINED]: {
-        subject: 'Your appointment request was declined',
-        line: 'The clinic could not take this request. The time is free again; you may request another.'
-    },
-    [APPOINTMENT_STATUS.CANCELLED]: {
-        subject: 'Your appointment was cancelled',
-        line: 'The clinic cancelled this appointment.'
-    }
+/** Staff changes the patient hears about. Completed sends nothing. */
+const PATIENT_NOTICE: Partial<Record<AppointmentStatus, PatientNoticeStatus>> = {
+    [APPOINTMENT_STATUS.CONFIRMED]: 'confirmed',
+    [APPOINTMENT_STATUS.DECLINED]: 'declined',
+    [APPOINTMENT_STATUS.CANCELLED]: 'cancelled'
 }
 
 /** Staff confirm, decline, cancel, or complete. Declined and cancelled free the slot. */
@@ -205,14 +198,15 @@ export async function updateAppointmentStatus(
         await sendBookingNotice({
             to: patientEmail,
             bookingId: current.booking_submission_id,
-            subject: `${notice.subject} · ${target?.clinicName ?? 'Find a Doc, Japan'}`,
-            lines: [
-                notice.line,
-                `Time (UTC): ${new Date(current.starts_at).toISOString()}`,
-                ...(reason !== null ? [`Note from the clinic: ${reason}`] : []),
-                `Reference: ${current.booking_submission_id}`,
-                'Sent through Find a Doc, Japan.'
-            ]
+            email: patientStatusEmail({
+                locale: current.locale,
+                status: notice,
+                clinicName: target?.clinicName ?? 'Find a Doc, Japan',
+                startsAt: new Date(current.starts_at),
+                durationMinutes: current.duration_minutes,
+                reference: current.booking_submission_id,
+                clinicNote: reason
+            })
         })
     }
 
@@ -234,7 +228,8 @@ async function appointmentForToken(token: string) {
             'appointment.id as appointment_id',
             'appointment.status',
             'appointment.starts_at',
-            'appointment.ends_at'
+            'appointment.ends_at',
+            'appointment.duration_minutes'
         ])
         .where('booking.cancel_token_hash', '=', hashPatientToken(trimmed))
         .executeTakeFirst()
@@ -297,14 +292,14 @@ export async function cancelBookingByToken(input: CancelBookingByTokenInput): Pr
         target: { facilityId: row.facility_id, clinicSiteId: row.clinic_site_id },
         bookingId: row.booking_id,
         patientEmail: emailFromUnknown(answers.email),
-        subject: `Appointment cancelled by the patient · ${view.clinicName}`,
-        lines: [
-            'The patient cancelled this appointment. The time is free again on your calendar.',
-            `Time (UTC): ${new Date(row.starts_at).toISOString()}`,
-            `Booking id: ${row.booking_id}`,
-            `Name: ${answers.fullName ?? ''}`,
-            ...(reason !== null ? [`Reason: ${reason}`] : [])
-        ]
+        email: clinicPatientCancelledEmail({
+            clinicName: view.clinicName,
+            startsAt: new Date(row.starts_at),
+            durationMinutes: row.duration_minutes,
+            bookingId: row.booking_id,
+            patientName: answers.fullName ?? '',
+            reason
+        })
     })
 
     return { data: view, hasErrors: false }

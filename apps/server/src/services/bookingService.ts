@@ -17,8 +17,9 @@ import {
     storedSensitivity
 } from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
+import { clinicRequestEmail, isSiteLocale, patientRequestEmail } from '../booking/emailCopy.js'
 import { BOOKING_UPLOAD_MAX_BYTES } from '../booking/limits.js'
-import { newPatientToken, patientBookingUrl } from '../booking/links.js'
+import { clinicDashboardUrl, newPatientToken, patientBookingUrl } from '../booking/links.js'
 import { noticeClinic, sendBookingNotice } from '../booking/notifications.js'
 import {
     clinicLanguages,
@@ -53,10 +54,6 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_UPLOAD_BYTES = BOOKING_UPLOAD_MAX_BYTES
 /** Upcoming `requested` appointments one email may hold at one clinic (#160). */
 export const MAX_OPEN_REQUESTS_PER_EMAIL = 3
-const SITE_LOCALES = new Set([
-    'en-US', 'ja-JP', 'zh-CN', 'vi-VN', 'ko-KR', 'tl-PH',
-    'pt-BR', 'fr-FR', 'ru-RU', 'de-DE', 'it-IT'
-])
 const ALLOWED_UPLOAD_TYPES = new Set([
     'image/jpeg',
     'image/png',
@@ -349,44 +346,41 @@ async function notifyBookingParties(input: {
     bookingId: string
     storedAnswers: Record<string, string>
     startsAt: Date
+    durationMinutes: number
     locale: string
     patientToken: string
 }): Promise<BookingSubmissionStatus> {
     const requester = requesterEmail(input.storedAnswers)
     const clinicName = input.target.clinicName
-    const when = input.startsAt.toISOString()
 
     const patientSent = requester === undefined
         ? false
         : await sendBookingNotice({
             to: requester,
             bookingId: input.bookingId,
-            subject: `We received your request · ${clinicName}`,
-            lines: [
-                'Your appointment request was received. The clinic will confirm it.',
-                'Sent through Find a Doc, Japan.',
-                `Clinic: ${clinicName}`,
-                `Requested time (UTC): ${when}`,
-                `Reference: ${input.bookingId}`,
-                '',
-                'To see or cancel this request, open your private link:',
-                patientBookingUrl(input.patientToken, input.locale)
-            ]
+            email: patientRequestEmail({
+                locale: input.locale,
+                clinicName,
+                startsAt: input.startsAt,
+                durationMinutes: input.durationMinutes,
+                reference: input.bookingId,
+                manageUrl: patientBookingUrl(input.patientToken, input.locale)
+            })
         })
 
     await noticeClinic({
         target: input.target,
         bookingId: input.bookingId,
         patientEmail: requester,
-        subject: `New appointment request · ${clinicName}`,
-        lines: [
-            'A patient requested an appointment. Confirm or decline it in your Find a Doc, Japan booking dashboard.',
-            `Clinic: ${clinicName}`,
-            `Requested time (UTC): ${when}`,
-            `Booking id: ${input.bookingId}`,
-            `Name: ${input.storedAnswers.fullName ?? ''}`,
-            `Email: ${requester ?? ''}`
-        ]
+        email: clinicRequestEmail({
+            clinicName,
+            startsAt: input.startsAt,
+            durationMinutes: input.durationMinutes,
+            bookingId: input.bookingId,
+            patientName: input.storedAnswers.fullName ?? '',
+            patientEmail: requester ?? '',
+            dashboardUrl: input.target.facilityId === null ? null : clinicDashboardUrl(input.target.facilityId)
+        })
     })
 
     if (requester === undefined) {
@@ -439,7 +433,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         return validationError('formVersion')
     }
 
-    if (!SITE_LOCALES.has(input.locale)) {
+    if (!isSiteLocale(input.locale)) {
         return validationError('locale')
     }
 
@@ -590,6 +584,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         bookingId: inserted.id,
         storedAnswers,
         startsAt,
+        durationMinutes,
         locale: input.locale,
         patientToken: patientToken.token
     })

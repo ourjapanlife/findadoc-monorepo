@@ -1,4 +1,5 @@
 import { sendTransactionalEmail } from '../email/sesClient.js'
+import type { BookingEmail } from './emailCopy.js'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
 
@@ -40,15 +41,15 @@ export async function clinicNotifyAddresses(target: {
 export async function sendBookingNotice(input: {
     to: string
     bookingId: string
-    subject: string
-    lines: string[]
+    email: BookingEmail
 }): Promise<boolean> {
     try {
         await sendTransactionalEmail({
             to: input.to,
             bookingId: input.bookingId,
-            subject: input.subject,
-            textBody: input.lines.join('\n')
+            subject: input.email.subject,
+            textBody: input.email.textBody,
+            htmlBody: input.email.htmlBody
         })
         return true
     } catch (error) {
@@ -57,18 +58,17 @@ export async function sendBookingNotice(input: {
     }
 }
 
-/** Every clinic inbox except the patient's own address. */
+/** Every clinic inbox except the patient's own address. The email is Japanese and English (#164). */
 export async function noticeClinic(input: {
     target: { facilityId: string | null, clinicSiteId: string | null }
     bookingId: string
     patientEmail?: string
-    subject: string
-    lines: string[]
+    email: BookingEmail
 }): Promise<void> {
     const patient = input.patientEmail?.toLowerCase()
     const addresses = (await clinicNotifyAddresses(input.target))
         .filter(address => address.toLowerCase() !== patient)
     for (const address of addresses) {
-        await sendBookingNotice({ to: address, bookingId: input.bookingId, subject: input.subject, lines: input.lines })
+        await sendBookingNotice({ to: address, bookingId: input.bookingId, email: input.email })
     }
 }
