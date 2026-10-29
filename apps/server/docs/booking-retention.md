@@ -87,8 +87,10 @@ the download mutation. There is no edit path for patient answers.
 ## Auth
 
 The booking form lives on Find a Doc at `/book/{facilityId}`. Open slots,
-upload, and submit are public. A signed-out visitor is the anonymous user
-role, which includes `create:bookings`.
+upload, and submit need no sign-in. A signed-out visitor is the anonymous user
+role, which includes `create:bookings`. While clinic landings are in preview,
+the page itself needs the `?preview=1` cookie (see booking-showcase.md); the
+API endpoints do not check it.
 
 The my-page booking list, file download, and availability calendar require a
 signed-in session with `read:bookings` or `write:clinic_availability`.

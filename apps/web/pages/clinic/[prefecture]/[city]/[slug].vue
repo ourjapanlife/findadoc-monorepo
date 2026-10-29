@@ -26,7 +26,7 @@
         <BreadcrumbNav :items="crumbs" />
 
         <NuxtLink
-            v-if="facility.bookingEnabled"
+            v-if="facility.bookingEnabled && bookingVisible"
             :to="bookPath"
             class="btn btn-primary self-start"
             data-testid="clinic-page-book"
@@ -58,12 +58,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { createError, navigateTo, useAsyncData, useHead, useRoute } from '#imports'
 import { fetchClinicById } from '~/utils/clinicFacility'
 import { canonicalPathMatches, facilityDocumentTitle, facilityIdFromSlugParam, facilityPath } from '~/utils/clinicPath'
 import { bookingClinicPath } from '~/utils/booking/paths'
+import { useClinicPreviewAccess } from '~/composables/useClinicLanding'
 import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
 import { facilityCrumbs, facilityFacetLinks, facilityHubPaths } from '~/utils/directoryLinks'
 import { loadFacetLinkCatalog } from '~/utils/hubDirectory'
@@ -118,6 +119,13 @@ if (!canonicalPathMatches(route.path, canonicalPath)) {
 
 const facility = computed(() => data.value!)
 const bookPath = computed(() => bookingClinicPath(facility.value.id, String(locale.value)))
+// Booking is behind the preview cookie, so the button is added in the browser only and
+// never appears in the prerendered page that search engines read.
+const canSeePreview = useClinicPreviewAccess()
+const bookingVisible = ref(false)
+onMounted(() => {
+    bookingVisible.value = canSeePreview()
+})
 const specialtyFacetItems = computed(() => (facetLinks.value ?? [])
     .filter(link => link.kind === 'specialty')
     .map(link => ({ path: link.path, label: link.label })))
