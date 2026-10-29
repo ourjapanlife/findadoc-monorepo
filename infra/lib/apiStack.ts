@@ -4,6 +4,8 @@ import { CfnOutput, Duration, RemovalPolicy, Stack, type StackProps } from 'aws-
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager'
 import { Alarm, ComparisonOperator, Stats, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch'
 import { SubnetType, type ISecurityGroup, type IVpc } from 'aws-cdk-lib/aws-ec2'
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events'
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets'
 import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction, OutputFormat, type BundlingOptions } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { FilterPattern, LogGroup, MetricFilter, QueryDefinition, QueryString, RetentionDays } from 'aws-cdk-lib/aws-logs'
@@ -62,6 +64,7 @@ function bundling(afterBundling: (inputDir: string, outputDir: string) => string
 // and CloudFront (1 TB, 10M requests) allowances. No NAT gateway, no load balancer.
 export class ApiStack extends Stack {
     readonly apiFunction: NodejsFunction
+    readonly purgeFunction: NodejsFunction
 
     constructor(scope: Construct, id: string, props: ApiStackProps) {
         super(scope, id, props)
@@ -158,10 +161,53 @@ export class ApiStack extends Stack {
 
         props.database.grantConnect(this.apiFunction, props.apiDatabaseUser)
 
+        // Booking upload retention (#159, apps/server/docs/booking-retention.md). Same network and
+        // database user as the API. FindadocUploads grants it S3 delete and sets the bucket.
+        this.purgeFunction = new NodejsFunction(this, 'BookingPurge', {
+            functionName: 'findadoc-booking-purge',
+            description: 'Deletes booking uploads past retain_until',
+            entry: path.join(serverRoot, 'src/lambdaPurge.ts'),
+            handler: 'handler',
+            runtime: Runtime.NODEJS_24_X,
+            architecture: Architecture.ARM_64,
+            memorySize: 512,
+            timeout: Duration.minutes(5),
+            projectRoot: repoRoot,
+            depsLockFilePath: path.join(repoRoot, 'pnpm-lock.yaml'),
+            ...inVpc,
+            ipv6AllowedForDualStack: true,
+            logGroup: new LogGroup(this, 'BookingPurgeLogs', {
+                logGroupName: '/aws/lambda/findadoc-booking-purge',
+                retention: RetentionDays.ONE_MONTH,
+                removalPolicy: RemovalPolicy.DESTROY,
+            }),
+            environment: {
+                NODE_ENV: 'production',
+                PGHOST: props.database.dbInstanceEndpointAddress,
+                PGPORT: props.database.dbInstanceEndpointPort,
+                PGUSER: props.apiDatabaseUser,
+                DB_IAM_AUTH: 'true',
+                DB_POOL_MAX: '1',
+                NODE_EXTRA_CA_CERTS: RDS_CA_BUNDLE,
+                LOG_LEVEL: 'info',
+            },
+            bundling: bundling(() => []),
+        })
+
+        props.database.grantConnect(this.purgeFunction, props.apiDatabaseUser)
+
+        // 03:00 JST every day. An asynchronous invoke is retried twice on error.
+        new Rule(this, 'BookingPurgeDaily', {
+            ruleName: 'findadoc-booking-purge-daily',
+            description: 'Deletes booking uploads past retain_until (#159)',
+            schedule: Schedule.cron({ minute: '0', hour: '18' }),
+            targets: [new LambdaFunction(this.purgeFunction)],
+        })
+
         new Trigger(this, 'MigrateOnDeploy', {
             handler: migrateFunction,
             timeout: Duration.minutes(5),
-            executeBefore: [this.apiFunction],
+            executeBefore: [this.apiFunction, this.purgeFunction],
         })
 
         // CloudFront calls the Function URL. CORS and auth stay in the app.
@@ -245,6 +291,20 @@ export class ApiStack extends Stack {
             threshold: 1,
             comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
             evaluationPeriods: 1,
+            treatMissingData: TreatMissingData.NOT_BREACHING,
+        }))
+
+        // The purge throws when it fails, or when an upload is still past retain_until after it
+        // runs. Any error in the last 25 hours keeps this in ALARM, so a run that fails again the
+        // next day does not post OK in between.
+        alerts.notify(new Alarm(this, 'BookingPurgeFailed', {
+            alarmName: 'findadoc-booking-purge-failed',
+            alarmDescription: 'The daily booking upload purge failed, or left an upload past retain_until.',
+            metric: this.purgeFunction.metricErrors({ period: Duration.hours(1), statistic: Stats.SUM }),
+            threshold: 1,
+            comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+            evaluationPeriods: 25,
+            datapointsToAlarm: 1,
             treatMissingData: TreatMissingData.NOT_BREACHING,
         }))
     }

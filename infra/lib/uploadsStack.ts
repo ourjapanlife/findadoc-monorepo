@@ -13,6 +13,8 @@ import { FINDADOC_ENV } from './environment.js'
 
 export interface UploadsStackProps extends StackProps {
     apiFunction: Function
+    // findadoc-booking-purge, which deletes booking uploads past retain_until (#159).
+    purgeFunction: Function
 }
 
 // Private object storage for clinic images, and later for documents.
@@ -78,10 +80,29 @@ export class UploadsStack extends Stack {
             ],
         })
 
+        const purgeRole = props.purgeFunction.role
+        if (purgeRole === undefined) {
+            throw new Error('The purge function needs a role so it can delete booking uploads.')
+        }
+
+        // Delete on booking objects only. The purge never reads or writes a file.
+        new Policy(this, 'BookingPurge', {
+            policyName: 'findadoc-booking-purge',
+            roles: [purgeRole],
+            statements: [
+                new PolicyStatement({
+                    actions: ['s3:DeleteObject'],
+                    resources: [this.bucket.arnForObjects('uploads/booking/*')],
+                }),
+            ],
+        })
+
         // Booking intake uploads insurance images through API-signed URLs.
-        props.apiFunction.addEnvironment('STORAGE_BACKEND', 's3')
-        props.apiFunction.addEnvironment('S3_BUCKET', bucketName)
-        props.apiFunction.addEnvironment('S3_REGION', FINDADOC_ENV.region)
+        for (const fn of [props.apiFunction, props.purgeFunction]) {
+            fn.addEnvironment('STORAGE_BACKEND', 's3')
+            fn.addEnvironment('S3_BUCKET', bucketName)
+            fn.addEnvironment('S3_REGION', FINDADOC_ENV.region)
+        }
 
         new CfnOutput(this, 'UploadsBucketName', { value: bucketName })
     }

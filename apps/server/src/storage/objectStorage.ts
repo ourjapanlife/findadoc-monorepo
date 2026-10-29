@@ -198,8 +198,9 @@ export async function deleteBookingObject(objectKey: string): Promise<void> {
     }
     try {
         await unlink(localBookingFilePath(objectKey))
-    } catch (error) {
-        logger.warn(`Local booking object missing during purge: ${objectKey} (${String(error)})`)
+    } catch {
+        // The key holds the patient's file name, so it is not logged.
+        logger.warn('Local booking object missing during purge')
     }
 }
 

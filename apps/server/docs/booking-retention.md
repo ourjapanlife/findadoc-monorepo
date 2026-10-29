@@ -17,20 +17,41 @@ That needs a separate policy once the CRM export path is decided.
 
 ## Purge
 
-Dry-run (default):
+On AWS, `findadoc-booking-purge` (`apps/server/src/lambdaPurge.ts`) runs the
+write purge at 03:00 JST every day. An EventBridge rule in `FindadocApi`
+invokes it. It runs in the VPC as `findadoc_api`, like the API, and may only
+`s3:DeleteObject` under `uploads/booking/*`. Each run:
+
+- deletes the object of every upload past `retain_until`, sets `purged_at`,
+  replaces `object_key` with the marker `purged/{id}`, which no storage call
+  fetches, and clears `file_name`, which can name the patient;
+- deletes uploads that were never attached to a submission and are older than
+  one day, object and row;
+- logs one line of counts (`type = "bookingPurge"`: `scanned`, `purged`,
+  `unclaimed`, `unclaimedDeleted`, `failed`, `overdue`). It never logs an
+  upload id, object key, file name, or error message. The key holds the
+  patient's file name, and an S3 error can repeat it.
+
+A failed upload does not stop the run. If any upload failed, or an upload is
+still past `retain_until` when the run ends (`overdue`), the function throws.
+That error posts `findadoc-booking-purge-failed` to Slack `#alerts`. The
+alarm returns to OK after 25 hours without an error. To run it now:
 
 ```bash
-pnpm --filter @findadoc/server exec node --loader ts-node/esm utils/purgeExpiredBookingUploads.ts
+aws lambda invoke --function-name findadoc-booking-purge out.json && cat out.json
 ```
 
-Write (deletes the object, sets `purged_at`, replaces `object_key` with a
-non-fetchable marker):
+By hand, against the database in your environment. Dry-run (default):
 
 ```bash
-pnpm --filter @findadoc/server exec node --loader ts-node/esm utils/purgeExpiredBookingUploads.ts --write
+pnpm --filter @findadoc/server purge:booking-uploads
 ```
 
-Uploads that were never attached to a submission and are older than one day are included in the same dry-run. `--write` deletes those objects and rows.
+Write:
+
+```bash
+pnpm --filter @findadoc/server purge:booking-uploads:write
+```
 
 Staff never receive identity file bytes inline in GraphQL list payloads.
 They use `bookingUploadDownloadUrl` for a short-lived GET while the object

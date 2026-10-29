@@ -19,10 +19,10 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocEdgeCertificates` | **us-east-1.** The ACM certificates for `api-staging`/`api.findadoc.jp` and `mcp-staging`/`mcp.findadoc.jp`. CloudFront only accepts certificates from us-east-1. |
 | `FindadocApiSecrets` | The `findadoc/api` secret: `GOOGLE_API_KEY`, `SENTRY_DSN`, and a generated `EDGE_SHARED_SECRET`. |
 | `FindadocEmail` | Verifies `findadoc.jp` in Amazon SES, writes the DKIM and MAIL FROM records, and lets the API Lambda send from `noreply@findadoc.jp`. |
-| `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, API alarms, and saved log queries. |
+| `FindadocApi` | The API Lambda (`findadoc-api`) and its Function URL, the CloudFront distribution and DNS for `api-staging.findadoc.jp`, the migration Lambda that runs on every deploy, the daily booking upload purge (`findadoc-booking-purge`), API alarms, and saved log queries. |
 | `FindadocMcp` | The MCP Lambda (`findadoc-mcp`, outside the VPC) behind CloudFront at `mcp-staging.findadoc.jp`, with an error alarm. Its tools call `https://api.findadoc.jp`. |
 | `FindadocDataCopy` | **Temporary (#81).** `findadoc-db-copy`, the one-off function that copies the Supabase database into RDS. Remove after the cutover (#13). |
-| `FindadocUploads` | Private S3 bucket. The API Lambda may presign `uploads/*`. `STORAGE_BACKEND` stays `none` until a feature writes files. |
+| `FindadocUploads` | Private S3 bucket. The API Lambda may presign `uploads/*`. The booking purge may delete `uploads/booking/*`. |
 
 ## Monthly cost
 
@@ -39,7 +39,9 @@ Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hou
 | PostgreSQL logs in CloudWatch, kept 30 days | Inside the 5 GB free allowance |
 | SNS topic, AWS Chatbot, and alarms (the first 10 are free) | $0 |
 | S3 uploads bucket and the S3 gateway endpoint | $0 while empty. Stored bytes are $0.025/GB-month |
-| API, migration and MCP Lambdas | $0 inside the always-free 1M requests and 400k GB-seconds |
+| API, migration, booking purge and MCP Lambdas | $0 inside the always-free 1M requests and 400k GB-seconds |
+| EventBridge rule for the daily purge | $0 (scheduled rules are free) |
+| `findadoc-booking-purge-failed`, the 11th alarm | $0.10 |
 | CloudFront distribution and the viewer-IP CloudFront Function | $0 inside the free 1 TB, 10M requests and 2M function invocations |
 | ACM certificate, Route 53 alias records | $0 |
 | Secrets Manager secret `findadoc/api` | $0.40 |
@@ -192,6 +194,11 @@ Every deploy of `FindadocApi` first runs `findadoc-db-migrate` (`apps/server/src
 | `findadoc-api-p95-duration` | p95 duration above 3 s for 15 minutes |
 | `findadoc-api-throttles` | any throttled request |
 | `findadoc-api-search-failures` | a facility or professional search fails on the server (metric filter on `searchFailed` in the request log) |
+| `findadoc-booking-purge-failed` | the daily booking upload purge threw in the last 25 hours: it failed, or left an upload past `retain_until` |
+
+### Booking upload purge
+
+`findadoc-booking-purge` (`apps/server/src/lambdaPurge.ts`) deletes booking uploads past `retain_until`, and stale uploads that never reached a submission (#159). The rule `findadoc-booking-purge-daily` invokes it at 18:00 UTC (03:00 JST). It runs in the private subnets as `findadoc_api` with an IAM token, like the API, and `FindadocUploads` lets it `s3:DeleteObject` on `uploads/booking/*` only. The migration trigger runs before it changes. Logs in `/aws/lambda/findadoc-booking-purge` are one line of counts per run, never an upload id, key, or file name. The rules are in `apps/server/docs/booking-retention.md`.
 
 Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-operations`, `findadoc/api/errors-by-operation`, `findadoc/api/failed-searches`.
 
@@ -208,7 +215,8 @@ Saved Logs Insights queries for `/aws/lambda/findadoc-api`: `findadoc/api/slow-o
 
   Deleting this stack does not change that account setting. The bucket block stays either way.
 - The API role may `s3:PutObject` and `s3:GetObject` on `uploads/*` only. A browser uploads or downloads with a presigned URL signed by that role. There is no access key.
-- `STORAGE_BACKEND=s3`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api` so clinic booking can store insurance uploads under `uploads/booking/*`. Local development leaves the variables unset and uses the API’s `/dev-uploads/*` path instead.
+- The `findadoc-booking-purge` role may `s3:DeleteObject` on `uploads/booking/*` only. It cannot read a file.
+- `STORAGE_BACKEND=s3`, `S3_BUCKET`, and `S3_REGION` are set on `findadoc-api` and `findadoc-booking-purge` so clinic booking can store insurance uploads under `uploads/booking/*`. Local development leaves the variables unset and uses the API’s `/dev-uploads/*` path instead.
 - An incomplete multipart upload is aborted after 7 days.
 - CORS allows `PUT` and `GET` from the site, clinic hostnames, Amplify previews, and localhost. The signature is what authorizes the call.
 
@@ -247,7 +255,7 @@ The API Lambda has no IPv4 route to the internet. A sender has to call the dual-
 | `findadoc-email-bounce-rate` | the configuration set's bounce rate is above 5% |
 | `findadoc-email-complaint-rate` | the configuration set's complaint rate is above 0.1% |
 
-Both post to Slack `#alerts`. They stay quiet until SES publishes reputation data. With the alarms already on the database, API, and MCP, these two use the last of the 10 free alarms.
+Both post to Slack `#alerts`. They stay quiet until SES publishes reputation data. With the alarms already on the database, API, and MCP, these two use the last of the 10 free alarms. `findadoc-booking-purge-failed` is the 11th, at $0.10 a month.
 
 ## Copying the data from Supabase (#81)
 
