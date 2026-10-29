@@ -44,13 +44,15 @@ function validationError(field: string): Result<never> {
 
 function listQuery(filters: BookingSubmissionSearchFilters) {
     let query = db.selectFrom('booking_submissions as booking')
-        .innerJoin('clinic_sites as site', 'site.id', 'booking.clinic_site_id')
+        .leftJoin('clinic_sites as site', 'site.id', 'booking.clinic_site_id')
         .leftJoin('clinic_site_locales as locale', join =>
             join.onRef('locale.clinic_site_id', '=', 'site.id').on('locale.locale', '=', 'en-US'))
+        .leftJoin('facilities as facility', 'facility.id', 'booking.facility_id')
         .leftJoin('booking_appointments as appointment', 'appointment.booking_submission_id', 'booking.id')
         .select([
             'booking.id',
             'booking.clinic_site_id',
+            'booking.facility_id',
             'booking.locale',
             'booking.status',
             'booking.form_definition_id',
@@ -59,12 +61,16 @@ function listQuery(filters: BookingSubmissionSearchFilters) {
             'booking.updated_date',
             'site.slug',
             'locale.name as clinic_name',
+            'facility.name_en as facility_name',
             'appointment.starts_at',
             'appointment.ends_at'
         ])
 
     if (filters.clinicSiteId) {
         query = query.where('booking.clinic_site_id', '=', filters.clinicSiteId)
+    }
+    if (filters.facilityId) {
+        query = query.where('booking.facility_id', '=', filters.facilityId)
     }
 
     return query
@@ -100,8 +106,9 @@ export async function searchBookingSubmissions(
     return rows.map(row => ({
         id: row.id,
         clinicSiteId: row.clinic_site_id,
+        facilityId: row.facility_id,
         clinicSiteSlug: row.slug,
-        clinicName: row.clinic_name ?? row.slug,
+        clinicName: row.clinic_name ?? row.facility_name ?? row.slug ?? row.facility_id ?? row.id,
         locale: row.locale,
         status: statusFromRow(row.status),
         formDefinitionId: row.form_definition_id,
@@ -123,6 +130,9 @@ export async function countBookingSubmissions(
     if (filters.clinicSiteId) {
         query = query.where('clinic_site_id', '=', filters.clinicSiteId)
     }
+    if (filters.facilityId) {
+        query = query.where('facility_id', '=', filters.facilityId)
+    }
 
     const row = await query.executeTakeFirst()
     return Number(row?.count ?? 0)
@@ -130,13 +140,17 @@ export async function countBookingSubmissions(
 
 export async function getBookingSubmissionDetail(id: string): Promise<BookingSubmissionDetail | null> {
     const row = await db.selectFrom('booking_submissions as booking')
-        .innerJoin('clinic_sites as site', 'site.id', 'booking.clinic_site_id')
+        .leftJoin('clinic_sites as site', 'site.id', 'booking.clinic_site_id')
         .leftJoin('clinic_site_locales as locale', join =>
             join.onRef('locale.clinic_site_id', '=', 'site.id').on('locale.locale', '=', 'en-US'))
+        .leftJoin('facilities as facility', 'facility.id', 'booking.facility_id')
         .leftJoin('booking_appointments as appointment', 'appointment.booking_submission_id', 'booking.id')
         .select([
             'booking.id',
             'booking.clinic_site_id',
+            'booking.facility_id',
+            'booking.practitioner_id',
+            'booking.service_key',
             'booking.locale',
             'booking.status',
             'booking.form_definition_id',
@@ -146,6 +160,7 @@ export async function getBookingSubmissionDetail(id: string): Promise<BookingSub
             'booking.updated_date',
             'site.slug',
             'locale.name as clinic_name',
+            'facility.name_en as facility_name',
             'appointment.starts_at',
             'appointment.ends_at'
         ])
@@ -178,14 +193,17 @@ export async function getBookingSubmissionDetail(id: string): Promise<BookingSub
     return {
         id: row.id,
         clinicSiteId: row.clinic_site_id,
+        facilityId: row.facility_id,
         clinicSiteSlug: row.slug,
-        clinicName: row.clinic_name ?? row.slug,
+        clinicName: row.clinic_name ?? row.facility_name ?? row.slug ?? row.facility_id ?? row.id,
         locale: row.locale,
         status: statusFromRow(row.status),
         formDefinitionId: row.form_definition_id,
         formVersion: row.form_version,
         startsAt: row.starts_at ? new Date(row.starts_at).toISOString() : null,
         endsAt: row.ends_at ? new Date(row.ends_at).toISOString() : null,
+        practitionerId: row.practitioner_id,
+        service: row.service_key,
         createdDate: row.created_date,
         updatedDate: row.updated_date,
         answers: Object.entries(answersRecord).map(([fieldId, value]) => ({

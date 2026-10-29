@@ -55,7 +55,7 @@ const clinicMode = useClinicLandingMode()
 const { host, hostname } = useRequestHost()
 
 // `{slug}.findadoc.jp/` and `/{locale}` on that host are the clinic. `/book` on
-// that host uses NuxtPage with the clinic-landing layout. Other paths redirect.
+// that host bounces to Find a Doc `/book/{facilityId}`. Other paths redirect.
 const hostedClinicSlug = computed(() => {
     if (clinicMode === 'off' || !isClinicHostPage(route.path)) {
         return undefined

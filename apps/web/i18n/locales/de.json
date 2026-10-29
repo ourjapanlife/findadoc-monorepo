@@ -650,7 +650,8 @@
     "onlineMetaDescription": "{name}. Online-Einrichtung ohne Straßenadresse. Telefon und Sprachen des Personals.",
     "locationNav": "Ort",
     "relatedSpecialtiesHeading": "Nach Fachgebiet stöbern",
-    "relatedLanguagesHeading": "Nach Sprache stöbern"
+    "relatedLanguagesHeading": "Nach Sprache stöbern",
+    "book": "Buchen"
   },
   "doctorPage": {
     "backToSearch": "Zurück zur Suche",
@@ -753,12 +754,14 @@
       "fileTooLarge": "Datei ist zu groß",
       "uploadFailed": "Upload fehlgeschlagen. Erneut versuchen.",
       "form": "Markierte Felder prüfen",
-      "submitFailed": "Senden fehlgeschlagen. Erneut versuchen."
+      "submitFailed": "Senden fehlgeschlagen. Erneut versuchen.",
+      "slot": "Wählen Sie eine freie Zeit",
+      "duration": "Wählen Sie eine von der Klinik angebotene Dauer"
     },
     "slotLabel": "Wunschzeit",
-    "slotHelp": "Optional. Starts alle 15 Minuten innerhalb der Klinikverfügbarkeit.",
+    "slotHelp": "Wählen Sie einen Start, der zur Termindauer in den freien Zeiten passt.",
     "slotLoading": "Freie Zeiten werden geladen…",
-    "slotEmpty": "Keine freien Zeiten in den nächsten zwei Wochen. Sie können trotzdem anfragen.",
+    "slotEmpty": "An diesem Tag keine freien Zeiten. Anderes Datum oder andere Dauer versuchen.",
     "authRequired": "Melden Sie sich an, um dieses Buchungsformular zu öffnen…",
     "stepsNav": "Buchungsschritte",
     "stepOf": "Schritt {current} von {total}",
@@ -768,7 +771,11 @@
       "contact": "Kontakt",
       "visit": "Besuch",
       "documents": "Unterlagen"
-    }
+    },
+    "dateLabel": "Datum",
+    "durationLabel": "Termindauer",
+    "durationHelp": "Die Klinik legt fest, welche Längen verfügbar sind.",
+    "durationMinutes": "{n} Minuten"
   },
   "bookingDashboard": {
     "readOnly": "Buchungsanfrage (nur Lesen)",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Klinikseite",
-    "help": "Ziehen Sie, um 30-Minuten-Verfügbarkeit zu setzen. Klicken Sie einen Block zum Entfernen. Patienten buchen in 15-Minuten-Schritten.",
+    "help": "Ziehen, um 30-Minuten-Verfügbarkeit zu malen. Klick entfernt einen Block. Patientinnen buchen 15, 30, 45 oder 60 Minuten darin.",
     "loading": "Kalender wird geladen…",
     "windowTitle": "Verfügbar",
     "createFailed": "Verfügbarkeit konnte nicht gespeichert werden.",

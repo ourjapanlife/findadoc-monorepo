@@ -24,7 +24,9 @@
     "npoPage.contactLabel",
     "footer.contact",
     "submitPage.previewNotes",
-    "submitPage.previewLocation"
+    "submitPage.previewLocation",
+    "bookingPage.dateLabel",
+    "bookingPage.durationMinutes"
   ],
   "de": [
     "submitPage.previewName",

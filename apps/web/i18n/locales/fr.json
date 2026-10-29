@@ -650,7 +650,8 @@
     "onlineMetaDescription": "{name}. Établissement en ligne sans adresse postale. Téléphone et langues parlées par le personnel.",
     "locationNav": "Lieu",
     "relatedSpecialtiesHeading": "Parcourir par spécialité",
-    "relatedLanguagesHeading": "Parcourir par langue"
+    "relatedLanguagesHeading": "Parcourir par langue",
+    "book": "Réserver"
   },
   "doctorPage": {
     "backToSearch": "Retour à la recherche",
@@ -753,12 +754,14 @@
       "fileTooLarge": "Ce fichier est trop volumineux",
       "uploadFailed": "Échec du téléversement. Réessayez.",
       "form": "Vérifiez les champs surlignés",
-      "submitFailed": "Impossible d’envoyer. Réessayez."
+      "submitFailed": "Impossible d’envoyer. Réessayez.",
+      "slot": "Choisissez un horaire disponible",
+      "duration": "Choisissez une durée proposée par la clinique"
     },
     "slotLabel": "Horaire souhaité",
-    "slotHelp": "Facultatif. Départs toutes les 15 minutes dans les disponibilités de la clinique.",
+    "slotHelp": "Choisissez un début qui correspond à la durée dans les créneaux ouverts.",
     "slotLoading": "Chargement des créneaux…",
-    "slotEmpty": "Aucun créneau dans les deux prochaines semaines. Vous pouvez quand même envoyer une demande.",
+    "slotEmpty": "Aucun créneau ce jour-là. Essayez une autre date ou durée.",
     "authRequired": "Connectez-vous pour ouvrir ce formulaire de réservation…",
     "stepsNav": "Étapes de la demande",
     "stepOf": "Étape {current} sur {total}",
@@ -768,7 +771,11 @@
       "contact": "Coordonnées",
       "visit": "Consultation",
       "documents": "Justificatifs"
-    }
+    },
+    "dateLabel": "Date",
+    "durationLabel": "Durée de la visite",
+    "durationHelp": "La clinique choisit les durées disponibles.",
+    "durationMinutes": "{n} minutes"
   },
   "bookingDashboard": {
     "readOnly": "Demande de réservation (lecture seule)",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Site de clinique",
-    "help": "Glissez pour peindre des disponibilités de 30 minutes. Cliquez un bloc pour le retirer. Les patients réservent par pas de 15 minutes.",
+    "help": "Glissez pour peindre des disponibilités de 30 minutes. Un clic retire un bloc. Les patients réservent 15, 30, 45 ou 60 minutes dans ces plages.",
     "loading": "Chargement du calendrier…",
     "windowTitle": "Disponible",
     "createFailed": "Impossible d’enregistrer cette disponibilité.",

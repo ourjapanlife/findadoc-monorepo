@@ -435,7 +435,7 @@ import {
     clinicSiteFetchIsServer,
     clinicSubdomainUrl
 } from '~/utils/clinicLanding'
-import { bookingClinicPath, clinicBookPath } from '~/utils/booking/paths'
+import { bookingClinicPath, findadocBookUrl } from '~/utils/booking/paths'
 import { fetchClinicSite } from '~/utils/clinicSiteQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
 import { DEFAULT_LOCALE_CODE } from '~/utils/localePath'
@@ -516,11 +516,15 @@ const sections = computed(() => [
 function onBook() {
     track('Clinic landing book')
     const localeCode = String(locale.value)
+    const clinicId = landing.facilityId ?? landing.id
     if (clinicLandingHostSlug(hostname) === props.slug) {
-        void navigateTo(clinicBookPath(localeCode))
+        void navigateTo(findadocBookUrl(clinicId, {
+            localeCode,
+            requestHost: host
+        }), { external: true })
         return
     }
-    void navigateTo(bookingClinicPath(props.slug, localeCode))
+    void navigateTo(bookingClinicPath(clinicId, localeCode))
 }
 
 const shareImage = clinicLandingShareImage(landing.shareImagePath)

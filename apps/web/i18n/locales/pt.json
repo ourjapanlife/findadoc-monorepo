@@ -650,7 +650,8 @@
     "onlineMetaDescription": "{name}. Estabelecimento online sem endereço. Telefone e idiomas falados pela equipe.",
     "locationNav": "Local",
     "relatedSpecialtiesHeading": "Navegar por especialidade",
-    "relatedLanguagesHeading": "Navegar por idioma"
+    "relatedLanguagesHeading": "Navegar por idioma",
+    "book": "Agendar"
   },
   "doctorPage": {
     "backToSearch": "Voltar à pesquisa",
@@ -753,12 +754,14 @@
       "fileTooLarge": "O ficheiro é demasiado grande",
       "uploadFailed": "O envio falhou. Tente novamente.",
       "form": "Verifique os campos assinalados",
-      "submitFailed": "Não foi possível enviar. Tente novamente."
+      "submitFailed": "Não foi possível enviar. Tente novamente.",
+      "slot": "Escolha um horário disponível",
+      "duration": "Escolha uma duração oferecida pela clínica"
     },
     "slotLabel": "Horário preferido",
-    "slotHelp": "Opcional. Inícios a cada 15 minutos dentro da disponibilidade da clínica.",
+    "slotHelp": "Escolha um início que caiba na duração dentro dos horários abertos.",
     "slotLoading": "Carregando horários…",
-    "slotEmpty": "Sem horários nas próximas duas semanas. Você ainda pode enviar o pedido.",
+    "slotEmpty": "Sem horários neste dia. Tente outra data ou duração.",
     "authRequired": "Entre para abrir este formulário de reserva…",
     "stepsNav": "Etapas do pedido",
     "stepOf": "Etapa {current} de {total}",
@@ -768,7 +771,11 @@
       "contact": "Contato",
       "visit": "Consulta",
       "documents": "Documentos"
-    }
+    },
+    "dateLabel": "Data",
+    "durationLabel": "Duração da consulta",
+    "durationHelp": "A clínica define quais durações estão disponíveis.",
+    "durationMinutes": "{n} minutos"
   },
   "bookingDashboard": {
     "readOnly": "Pedido de reserva (somente leitura)",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Site da clínica",
-    "help": "Arraste para marcar disponibilidade de 30 minutos. Clique num bloco para remover. Pacientes reservam em intervalos de 15 minutos.",
+    "help": "Arraste para pintar disponibilidade de 30 minutos. Clique para remover. Pacientes agendam 15, 30, 45 ou 60 minutos nessas janelas.",
     "loading": "Carregando calendário…",
     "windowTitle": "Disponível",
     "createFailed": "Não foi possível salvar a disponibilidade.",

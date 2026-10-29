@@ -1,6 +1,6 @@
 import pg from 'pg'
 import { seedData } from './data.js'
-import { clinicSiteSeeds } from './clinicSiteContent.js'
+import { clinicSiteSeeds, SHOWCASE_CLINIC_SITE_ID, SHOWCASE_FACILITY_ID } from './clinicSiteContent.js'
 import type {
     ClinicSiteDoctorInsert,
     ClinicSiteInsert,
@@ -23,6 +23,11 @@ async function runSeed() {
 
     try {
         await client.query('BEGIN')
+        await client.query('DELETE FROM booking_appointments')
+        await client.query('DELETE FROM booking_uploads')
+        await client.query('DELETE FROM booking_submissions')
+        await client.query('DELETE FROM clinic_availability_windows')
+        await client.query('DELETE FROM booking_settings')
         await client.query('DELETE FROM clinic_memberships')
         await client.query('DELETE FROM clinic_site_locales')
         await client.query('DELETE FROM clinic_site_doctors')
@@ -246,6 +251,13 @@ async function runSeed() {
                 )
             }
         }
+
+        await client.query(
+            `INSERT INTO booking_settings (
+                facility_id, clinic_site_id, form_definition_id, allowed_durations
+            ) VALUES ($1, $2, 'showcase-intake-v1', ARRAY[15, 30, 45, 60])`,
+            [SHOWCASE_FACILITY_ID, SHOWCASE_CLINIC_SITE_ID]
+        )
 
         await client.query('COMMIT')
 

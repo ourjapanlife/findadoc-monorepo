@@ -6,14 +6,16 @@ import {
 } from '@findadoc/graphql'
 import { BOOKING_UPLOAD_MAX_BYTES } from './limits.js'
 import { BOOKING_FIELD_SENSITIVITY, type BookingFieldSensitivity as StoredSensitivity } from './retention.js'
+import { DEFAULT_ALLOWED_DURATIONS } from './schedule.js'
 
 /**
- * Code-defined booking forms keyed by clinic_sites.id.
- * A later CRM replaces this map with a row (or versioned document) without
- * changing the GraphQL BookingForm shape or the submission table.
- *
- * Showcase id matches `SHOWCASE_CLINIC_SITE_ID` in clinicSiteContent.ts.
+ * Find a Doc owns the intake fields. A clinic may choose a named variant
+ * (showcase online consult) through booking_settings.form_definition_id.
+ * `?form=` on the Book URL may select a known id, not an arbitrary document.
  */
+
+export const DEFAULT_BOOKING_FORM_ID = 'findadoc-intake-v1'
+export const SHOWCASE_BOOKING_FORM_ID = 'showcase-intake-v1'
 export const SHOWCASE_BOOKING_CLINIC_SITE_ID = 'a303a8ac-31c9-45d8-96d1-cf6630aa11bd'
 
 type FormSource = {
@@ -41,7 +43,7 @@ function field(
     }
 }
 
-const showcaseFields: BookingFormField[] = [
+const contactAndVisitFields: BookingFormField[] = [
     field({
         id: 'email',
         stepKey: 'contact',
@@ -70,6 +72,20 @@ const showcaseFields: BookingFormField[] = [
         maxLength: 120
     }),
     field({
+        id: 'reason',
+        stepKey: 'visit',
+        type: BookingFormFieldType.Textarea,
+        required: true,
+        labelKey: 'bookingPage.fields.reason',
+        placeholderKey: 'bookingPage.placeholders.reason',
+        maxLength: 2000,
+        sensitivity: BookingFieldSensitivity.Medical
+    })
+]
+
+const showcaseFields: BookingFormField[] = [
+    ...contactAndVisitFields.slice(0, 3),
+    field({
         id: 'age',
         stepKey: 'contact',
         type: BookingFormFieldType.Number,
@@ -79,16 +95,7 @@ const showcaseFields: BookingFormField[] = [
         min: 0,
         max: 120
     }),
-    field({
-        id: 'reason',
-        stepKey: 'visit',
-        type: BookingFormFieldType.Textarea,
-        required: true,
-        labelKey: 'bookingPage.fields.reason',
-        placeholderKey: 'bookingPage.placeholders.reason',
-        maxLength: 2000,
-        sensitivity: BookingFieldSensitivity.Medical
-    }),
+    contactAndVisitFields[3]!,
     field({
         id: 'insuranceDocument',
         stepKey: 'documents',
@@ -111,36 +118,68 @@ const showcaseFields: BookingFormField[] = [
     })
 ]
 
-const FORMS_BY_CLINIC_SITE_ID: Record<string, FormSource> = {
-    [SHOWCASE_BOOKING_CLINIC_SITE_ID]: {
-        id: 'showcase-intake-v1',
+const FORMS_BY_ID: Record<string, FormSource> = {
+    [DEFAULT_BOOKING_FORM_ID]: {
+        id: DEFAULT_BOOKING_FORM_ID,
+        version: 1,
+        fields: contactAndVisitFields
+    },
+    [SHOWCASE_BOOKING_FORM_ID]: {
+        id: SHOWCASE_BOOKING_FORM_ID,
         version: 1,
         fields: showcaseFields
     }
 }
 
+export function formSourceById(formId: string): FormSource | undefined {
+    return FORMS_BY_ID[formId]
+}
+
 export function formSourceForClinicSite(clinicSiteId: string): FormSource | undefined {
-    return FORMS_BY_CLINIC_SITE_ID[clinicSiteId]
+    if (clinicSiteId === SHOWCASE_BOOKING_CLINIC_SITE_ID) {
+        return FORMS_BY_ID[SHOWCASE_BOOKING_FORM_ID]
+    }
+    return FORMS_BY_ID[DEFAULT_BOOKING_FORM_ID]
+}
+
+export function resolveFormSource(formDefinitionId: string): FormSource {
+    return formSourceById(formDefinitionId) ?? FORMS_BY_ID[DEFAULT_BOOKING_FORM_ID]!
+}
+
+/** Clinic settings win. `?form=` may only pick a known id the clinic already uses, or the default. */
+export function chooseFormDefinitionId(
+    clinicFormId: string,
+    requestedFormId?: string | null
+): string {
+    if (requestedFormId === null || requestedFormId === undefined || requestedFormId === '') {
+        return clinicFormId
+    }
+    if (requestedFormId === clinicFormId || requestedFormId === DEFAULT_BOOKING_FORM_ID) {
+        return requestedFormId
+    }
+    return clinicFormId
 }
 
 export function assembleBookingForm(input: {
-    clinicSiteId: string
-    clinicSiteSlug: string
+    formDefinitionId?: string | null
+    facilityId?: string | null
+    clinicSiteId?: string | null
+    clinicSiteSlug?: string | null
     clinicName: string
-    themePrimary: string | null
-}): BookingForm | null {
-    const source = formSourceForClinicSite(input.clinicSiteId)
-    if (source === undefined) {
-        return null
-    }
+    themePrimary?: string | null
+    allowedDurations?: readonly number[]
+}): BookingForm {
+    const source = resolveFormSource(input.formDefinitionId ?? DEFAULT_BOOKING_FORM_ID)
 
     return {
         id: source.id,
         version: source.version,
-        clinicSiteId: input.clinicSiteId,
-        clinicSiteSlug: input.clinicSiteSlug,
+        facilityId: input.facilityId ?? null,
+        clinicSiteId: input.clinicSiteId ?? null,
+        clinicSiteSlug: input.clinicSiteSlug ?? null,
         clinicName: input.clinicName,
-        themePrimary: input.themePrimary,
+        themePrimary: input.themePrimary ?? null,
+        allowedDurations: [...(input.allowedDurations ?? DEFAULT_ALLOWED_DURATIONS)],
         fields: source.fields
     }
 }

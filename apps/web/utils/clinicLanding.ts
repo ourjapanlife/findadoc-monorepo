@@ -16,8 +16,8 @@ import { SITE_ORIGIN } from './site.ts'
  * from the sitemap. The id address still redirects to the subdomain.
  * `public` is the later value that prerenders and indexes a published clinic.
  *
- * Booking lives at `/book` on the clinic hostname. The form definition is keyed
- * by clinic_sites.id so a later CRM can swap the fields without a new route.
+ * Book on a clinic hostname bounces to Find a Doc `/book/{facilityId}`.
+ * The directory facility id is the reusable param. A hosted page is optional.
  */
 
 export const CLINIC_LANDING_PREVIEW_COOKIE = 'online_clinic_preview'

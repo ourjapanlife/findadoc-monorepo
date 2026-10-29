@@ -650,7 +650,8 @@
     "onlineMetaDescription": "{name}。无街道地址的在线医疗机构。电话以及工作人员使用的语言。",
     "locationNav": "位置",
     "relatedSpecialtiesHeading": "按专科浏览",
-    "relatedLanguagesHeading": "按语言浏览"
+    "relatedLanguagesHeading": "按语言浏览",
+    "book": "预约"
   },
   "doctorPage": {
     "backToSearch": "返回搜索",
@@ -753,12 +754,14 @@
       "fileTooLarge": "文件过大",
       "uploadFailed": "上传失败，请重试。",
       "form": "请检查标出的字段",
-      "submitFailed": "无法发送申请，请重试。"
+      "submitFailed": "无法发送申请，请重试。",
+      "slot": "请选择可预约时间",
+      "duration": "请选择诊所提供的就诊时长"
     },
     "slotLabel": "希望时间",
-    "slotHelp": "可选。在诊所可预约时段内每 15 分钟一个起点。",
+    "slotHelp": "请在诊所可预约时段内选择符合就诊时长的开始时间。",
     "slotLoading": "正在加载可预约时间…",
-    "slotEmpty": "未来两周没有可预约时间。仍可发送申请。",
+    "slotEmpty": "当天没有可预约时间。请换一天或换一个时长。",
     "authRequired": "请登录以打开此预约表单…",
     "stepsNav": "预约步骤",
     "stepOf": "第 {current} 步，共 {total} 步",
@@ -768,7 +771,11 @@
       "contact": "联系方式",
       "visit": "就诊内容",
       "documents": "材料"
-    }
+    },
+    "dateLabel": "日期",
+    "durationLabel": "就诊时长",
+    "durationHelp": "可选时长由诊所设定。",
+    "durationMinutes": "{n} 分钟"
   },
   "bookingDashboard": {
     "readOnly": "预约申请（只读）",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "诊所站点",
-    "help": "拖选以设置 30 分钟可预约时段。点击区块可删除。患者按 15 分钟起点预约。",
+    "help": "拖动以涂出 30 分钟的可预约时段。点击时段可删除。患者可在其中预约 15、30、45 或 60 分钟。",
     "loading": "正在加载日历…",
     "windowTitle": "可预约",
     "createFailed": "无法保存该可预约时段。",

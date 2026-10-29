@@ -650,7 +650,8 @@
     "onlineMetaDescription": "{name}. Struttura online senza indirizzo. Telefono e lingue parlate dal personale.",
     "locationNav": "Luogo",
     "relatedSpecialtiesHeading": "Sfoglia per specialità",
-    "relatedLanguagesHeading": "Sfoglia per lingua"
+    "relatedLanguagesHeading": "Sfoglia per lingua",
+    "book": "Prenota"
   },
   "doctorPage": {
     "backToSearch": "Torna alla ricerca",
@@ -753,12 +754,14 @@
       "fileTooLarge": "File troppo grande",
       "uploadFailed": "Caricamento non riuscito. Riprova.",
       "form": "Controlla i campi evidenziati",
-      "submitFailed": "Impossibile inviare. Riprova."
+      "submitFailed": "Impossibile inviare. Riprova.",
+      "slot": "Scegli un orario disponibile",
+      "duration": "Scegli una durata offerta dalla clinica"
     },
     "slotLabel": "Orario preferito",
-    "slotHelp": "Facoltativo. Inizi ogni 15 minuti entro la disponibilità della clinica.",
+    "slotHelp": "Scegli un inizio che corrisponda alla durata negli orari aperti.",
     "slotLoading": "Caricamento orari…",
-    "slotEmpty": "Nessun orario nelle prossime due settimane. Puoi comunque inviare la richiesta.",
+    "slotEmpty": "Nessun orario libero in questo giorno. Prova un’altra data o durata.",
     "authRequired": "Accedi per aprire questo modulo di prenotazione…",
     "stepsNav": "Passaggi della richiesta",
     "stepOf": "Passo {current} di {total}",
@@ -768,7 +771,11 @@
       "contact": "Contatti",
       "visit": "Visita",
       "documents": "Documenti"
-    }
+    },
+    "dateLabel": "Data",
+    "durationLabel": "Durata della visita",
+    "durationHelp": "La clinica sceglie le durate disponibili.",
+    "durationMinutes": "{n} minuti"
   },
   "bookingDashboard": {
     "readOnly": "Richiesta di prenotazione (sola lettura)",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Sito della clinica",
-    "help": "Trascina per impostare disponibilità di 30 minuti. Clicca un blocco per rimuoverlo. I pazienti prenotano a intervalli di 15 minuti.",
+    "help": "Trascina per dipingere disponibilità da 30 minuti. Un clic rimuove un blocco. I pazienti prenotano 15, 30, 45 o 60 minuti in quelle finestre.",
     "loading": "Caricamento calendario…",
     "windowTitle": "Disponibile",
     "createFailed": "Impossibile salvare la disponibilità.",

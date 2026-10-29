@@ -212,10 +212,23 @@ export interface ClinicSiteLocalesTable {
     document: ColumnType<Record<string, unknown>, string, string>
 }
 
+/** Clinic-chosen booking config. The intake form is Find a Doc owned. */
+export interface BookingSettingsTable {
+    facility_id: string
+    clinic_site_id: string | null
+    form_definition_id: string
+    allowed_durations: number[]
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
 /** Patient booking intake. answers is the scalar map; files are booking_uploads rows. */
 export interface BookingSubmissionsTable {
     id: Generated<string>
-    clinic_site_id: string
+    facility_id: string | null
+    clinic_site_id: string | null
+    practitioner_id: string | null
+    service_key: string | null
     form_definition_id: string
     form_version: number
     locale: string
@@ -229,7 +242,8 @@ export interface BookingSubmissionsTable {
 /** One uploaded file for a booking field. object_key is under uploads/booking/. */
 export interface BookingUploadsTable {
     id: Generated<string>
-    clinic_site_id: string
+    facility_id: string | null
+    clinic_site_id: string | null
     booking_submission_id: string | null
     field_id: string
     object_key: string
@@ -245,7 +259,8 @@ export interface BookingUploadsTable {
 /** Staff-painted availability. 30-minute aligned. */
 export interface ClinicAvailabilityWindowsTable {
     id: Generated<string>
-    clinic_site_id: string
+    facility_id: string | null
+    clinic_site_id: string | null
     starts_at: string
     ends_at: string
     created_by: string | null
@@ -256,10 +271,12 @@ export interface ClinicAvailabilityWindowsTable {
 /** Patient appointment inside availability. 15-minute start alignment. */
 export interface BookingAppointmentsTable {
     id: Generated<string>
-    clinic_site_id: string
+    facility_id: string | null
+    clinic_site_id: string | null
     booking_submission_id: string | null
     starts_at: string
     ends_at: string
+    duration_minutes: number
     status: string
     created_date: Generated<string>
     updated_date: Generated<string>
@@ -284,6 +301,7 @@ export interface Database {
     clinic_site_languages: ClinicSiteLanguagesTable
     clinic_site_doctors: ClinicSiteDoctorsTable
     clinic_site_locales: ClinicSiteLocalesTable
+    booking_settings: BookingSettingsTable
     booking_submissions: BookingSubmissionsTable
     booking_uploads: BookingUploadsTable
     clinic_availability_windows: ClinicAvailabilityWindowsTable

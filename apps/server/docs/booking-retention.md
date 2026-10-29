@@ -44,8 +44,9 @@ the download mutation. There is no edit path for patient answers.
 
 ## Auth
 
-The booking form, open slots, upload, and submit are public. A signed-out
-visitor is the anonymous user role, which includes `create:bookings`.
+The booking form lives on Find a Doc at `/book/{facilityId}`. Open slots,
+upload, and submit are public. A signed-out visitor is the anonymous user
+role, which includes `create:bookings`.
 
 The my-page booking list, file download, and availability calendar require a
 signed-in session with `read:bookings` or `write:clinic_availability`.

@@ -656,7 +656,8 @@
     "onlineMetaDescription": "{name}。番地のないオンラインの医療機関。電話番号とスタッフが話す言語。",
     "locationNav": "所在地",
     "relatedSpecialtiesHeading": "専門分野から探す",
-    "relatedLanguagesHeading": "言語から探す"
+    "relatedLanguagesHeading": "言語から探す",
+    "book": "予約する"
   },
   "doctorPage": {
     "backToSearch": "検索に戻る",
@@ -753,12 +754,14 @@
       "fileTooLarge": "ファイルが大きすぎます",
       "uploadFailed": "アップロードに失敗しました。もう一度お試しください。",
       "form": "赤字の項目を確認してください",
-      "submitFailed": "送信できませんでした。もう一度お試しください。"
+      "submitFailed": "送信できませんでした。もう一度お試しください。",
+      "slot": "空きのある時刻を選んでください",
+      "duration": "クリニックが提供する診察時間を選んでください"
     },
     "slotLabel": "希望日時",
-    "slotHelp": "任意。クリニックの空き枠内で15分刻みの開始時刻です。",
+    "slotHelp": "クリニックの空き枠の中から、診察時間に合う開始時刻を選んでください。",
     "slotLoading": "空き時間を読み込み中…",
-    "slotEmpty": "今後2週間に空きがありません。枠なしでも申し込めます。",
+    "slotEmpty": "この日に空きがありません。別の日か時間の長さを試してください。",
     "authRequired": "予約フォームを開くにはサインインしてください…",
     "stepsNav": "予約の手順",
     "stepOf": "{total}ステップ中 {current}",
@@ -768,7 +771,11 @@
       "contact": "連絡先",
       "visit": "受診内容",
       "documents": "書類"
-    }
+    },
+    "dateLabel": "日付",
+    "durationLabel": "診察時間",
+    "durationHelp": "選べる時間の長さはクリニックが決めています。",
+    "durationMinutes": "{n}分"
   },
   "bookingDashboard": {
     "readOnly": "予約申し込み（閲覧のみ）",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "クリニックサイト",
-    "help": "ドラッグで30分単位の空き枠を設定します。枠をクリックすると削除します。患者は15分刻みで開始時刻を選びます。",
+    "help": "ドラッグして30分単位の空き枠を塗ります。枠をクリックすると削除します。患者は15・30・45・60分の診察をその中から予約します。",
     "loading": "カレンダーを読み込み中…",
     "windowTitle": "受付可",
     "createFailed": "空き枠を保存できませんでした。",

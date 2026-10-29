@@ -13,6 +13,7 @@ import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~
 const LIST_ITEM_FIELDS = `
   id
   clinicSiteId
+  facilityId
   clinicSiteSlug
   clinicName
   locale
@@ -28,6 +29,8 @@ const LIST_ITEM_FIELDS = `
 
 const DETAIL_FIELDS = `
   ${LIST_ITEM_FIELDS}
+  practitionerId
+  service
   answers { fieldId value }
   uploads {
     id

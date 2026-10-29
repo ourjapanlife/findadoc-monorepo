@@ -46,6 +46,27 @@ describe('booking schedule', () => {
         expect(appointmentEndFromStart(starts[0]!).toISOString()).toBe('2026-11-05T01:30:00.000Z')
     })
 
+    it('fits a 60-minute visit into a two-hour window', () => {
+        const starts = availableStarts({
+            windows: [{
+                startsAt: new Date('2026-11-05T01:00:00.000Z'),
+                endsAt: new Date('2026-11-05T03:00:00.000Z')
+            }],
+            booked: [],
+            rangeStart: new Date('2026-11-05T00:00:00.000Z'),
+            rangeEnd: new Date('2026-11-05T04:00:00.000Z'),
+            durationMs: 60 * 60 * 1000
+        })
+        expect(starts.map(start => start.toISOString())).toEqual([
+            '2026-11-05T01:00:00.000Z',
+            '2026-11-05T01:15:00.000Z',
+            '2026-11-05T01:30:00.000Z',
+            '2026-11-05T01:45:00.000Z',
+            '2026-11-05T02:00:00.000Z'
+        ])
+        expect(appointmentEndFromStart(starts[0]!, 60).toISOString()).toBe('2026-11-05T02:00:00.000Z')
+    })
+
     it('skips starts that overlap a booked appointment', () => {
         const starts = availableStarts({
             windows: [{

@@ -5,10 +5,12 @@ import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~
 const BOOKING_FORM_FIELDS = `
   id
   version
+  facilityId
   clinicSiteId
   clinicSiteSlug
   clinicName
   themePrimary
+  allowedDurations
   fields {
     id
     type
@@ -28,8 +30,8 @@ const BOOKING_FORM_FIELDS = `
 `
 
 const bookingFormQuery = gql`
-  query BookingForm($clinicSiteId: ID!) {
-    bookingForm(clinicSiteId: $clinicSiteId) {
+  query BookingForm($clinicSiteId: ID!, $formId: String) {
+    bookingForm(clinicSiteId: $clinicSiteId, formId: $formId) {
       ${BOOKING_FORM_FIELDS}
     }
   }
@@ -48,8 +50,8 @@ const createUploadMutation = gql`
 `
 
 const availableStartsQuery = gql`
-  query AvailableBookingStarts($clinicSiteId: ID!, $from: String!, $to: String!) {
-    availableBookingStarts(clinicSiteId: $clinicSiteId, from: $from, to: $to)
+  query AvailableBookingStarts($clinicSiteId: ID!, $from: String!, $to: String!, $durationMinutes: Int) {
+    availableBookingStarts(clinicSiteId: $clinicSiteId, from: $from, to: $to, durationMinutes: $durationMinutes)
   }
 `
 
@@ -58,6 +60,7 @@ const submitBookingMutation = gql`
     submitBooking(input: $input) {
       id
       clinicSiteId
+      facilityId
       status
       appointmentId
       createdDate
@@ -65,15 +68,19 @@ const submitBookingMutation = gql`
   }
 `
 
-export async function fetchBookingForm(clinicSiteId: string): Promise<BookingForm | null> {
-    if (!clinicSiteId) {
+export function bookingClinicKey(form: Pick<BookingForm, 'facilityId' | 'clinicSiteId'>): string {
+    return form.facilityId ?? form.clinicSiteId ?? ''
+}
+
+export async function fetchBookingForm(clinicId: string, formId?: string): Promise<BookingForm | null> {
+    if (!clinicId) {
         return null
     }
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ bookingForm: BookingForm | null }>(
         gqlClient.request.bind(gqlClient),
         bookingFormQuery,
-        { clinicSiteId },
+        { clinicSiteId: clinicId, formId },
         { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
@@ -108,7 +115,10 @@ export async function submitBookingForm(input: {
     formVersion: number
     locale: string
     answers: Array<{ fieldId: string, value?: string | null, uploadId?: string | null }>
-    startsAt?: string | null
+    startsAt: string
+    durationMinutes: number
+    practitionerId?: string | null
+    service?: string | null
 }): Promise<BookingSubmissionResult | null> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ submitBooking: BookingSubmissionResult }>(
@@ -123,11 +133,11 @@ export async function submitBookingForm(input: {
     return response.data.submitBooking
 }
 
-/** 15-minute starts that fit a painted calendar window. Empty when the clinic has none. */
 export async function fetchAvailableBookingStarts(
-    clinicSiteId: string,
+    clinicId: string,
     from: string,
-    to: string
+    to: string,
+    durationMinutes: number
 ): Promise<string[]> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{
@@ -135,7 +145,7 @@ export async function fetchAvailableBookingStarts(
     }>(
         gqlClient.request.bind(gqlClient),
         availableStartsQuery,
-        { clinicSiteId, from, to },
+        { clinicSiteId: clinicId, from, to, durationMinutes },
         { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {

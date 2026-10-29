@@ -660,7 +660,8 @@
     "onlineBreadcrumb": "Online",
     "onlineMetaDescription": "{name}. Online clinic with no street address. Phone and the languages spoken by staff.",
     "relatedSpecialtiesHeading": "Browse by specialty",
-    "relatedLanguagesHeading": "Browse by language"
+    "relatedLanguagesHeading": "Browse by language",
+    "book": "Book"
   },
   "doctorPage": {
     "backToSearch": "Back to search",
@@ -753,12 +754,14 @@
       "fileTooLarge": "That file is too large",
       "uploadFailed": "Upload failed. Try again.",
       "form": "Check the highlighted fields",
-      "submitFailed": "Could not send the request. Try again."
+      "submitFailed": "Could not send the request. Try again.",
+      "slot": "Choose an available time",
+      "duration": "Choose a visit length the clinic offers"
     },
     "slotLabel": "Preferred time",
-    "slotHelp": "Optional. Starts every 15 minutes inside clinic availability.",
+    "slotHelp": "Choose a start that fits the visit length inside clinic availability.",
     "slotLoading": "Loading open times…",
-    "slotEmpty": "No open times in the next two weeks. You can still send a request without a slot.",
+    "slotEmpty": "No open times on this day. Try another date or length.",
     "authRequired": "Sign in to open this booking form…",
     "stepsNav": "Booking steps",
     "stepOf": "Step {current} of {total}",
@@ -768,7 +771,11 @@
       "contact": "Contact",
       "visit": "Visit",
       "documents": "Documents"
-    }
+    },
+    "dateLabel": "Date",
+    "durationLabel": "Visit length",
+    "durationHelp": "The clinic chooses which lengths are available.",
+    "durationMinutes": "{n} minutes"
   },
   "bookingDashboard": {
     "readOnly": "Read-only booking submission",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Clinic site",
-    "help": "Drag to paint 30-minute availability. Click a block to remove it. Patients book in 15-minute starts.",
+    "help": "Drag to paint 30-minute availability. Click a block to remove it. Patients book a 15, 30, 45, or 60 minute visit inside those windows.",
     "loading": "Loading calendar…",
     "windowTitle": "Available",
     "createFailed": "Could not save that availability window.",

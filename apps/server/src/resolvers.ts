@@ -48,12 +48,17 @@ const resolvers = {
         // Intake and open slots are public. Staff list and the calendar require a signed-in session.
         bookingForm: withScope(Scope['create:bookings'], async (
             _parent: unknown,
-            args: { clinicSiteId: string }
-        ): Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId)),
+            args: { clinicSiteId: string, formId?: string | null }
+        ): Promise<gqlType.BookingForm | null> => bookingService.getBookingForm(args.clinicSiteId, args.formId)),
         availableBookingStarts: withScope(Scope['create:bookings'], async (
             _parent: unknown,
-            args: { clinicSiteId: string, from: string, to: string }
-        ): Promise<string[]> => bookingService.getAvailableBookingStarts(args.clinicSiteId, args.from, args.to)),
+            args: { clinicSiteId: string, from: string, to: string, durationMinutes?: number | null }
+        ): Promise<string[]> => bookingService.getAvailableBookingStarts(
+            args.clinicSiteId,
+            args.from,
+            args.to,
+            args.durationMinutes
+        )),
         bookingSubmissions: withAuthenticatedScope(Scope['read:bookings'], async (
             _parent: unknown,
             args: { filters: gqlType.BookingSubmissionSearchFilters }

@@ -2,8 +2,6 @@
     <div
         data-testid="clinic-booking"
         class="mx-auto flex w-full max-w-xl flex-col gap-8 px-6 py-10 landscape:px-12"
-        :class="{ 'clinic-theme': themeStyle !== undefined }"
-        :style="themeStyle"
     >
         <div class="flex items-start justify-between gap-4">
             <header class="flex min-w-0 flex-col gap-3">
@@ -65,7 +63,11 @@
                     <BookingSlotPicker
                         v-if="showSlot"
                         v-model="selectedStart"
-                        :clinic-site-id="form.clinicSiteId"
+                        :clinic-id="clinicKey"
+                        :allowed-durations="form.allowedDurations"
+                        :duration-minutes="durationMinutes"
+                        :initial-day="query.start"
+                        @update:duration-minutes="durationMinutes = $event"
                     />
 
                     <div
@@ -244,6 +246,7 @@ import {
     writeBookingAutofill
 } from '~/utils/booking/localhostAutofill'
 import {
+    bookingClinicKey,
     putBookingFile,
     requestBookingUploadUrl,
     submitBookingForm
@@ -253,13 +256,17 @@ import {
     rememberBookingDraft,
     takeBookingDraft
 } from '~/utils/booking/draftMemory'
-import { clinicThemeVars } from '~/utils/clinicTheme'
+import { resolveDuration } from '~/utils/booking/durations'
+import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
 import Stepper from '~/components/common/Stepper.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     form: BookingForm
-}>()
+    query?: BookingQuery
+}>(), {
+    query: () => ({})
+})
 
 const { t, locale, te } = useI18n()
 const { hostname } = useRequestHost()
@@ -274,7 +281,9 @@ const formError = ref('')
 const submitting = ref(false)
 const submitted = ref(false)
 const submissionId = ref('')
-const selectedStart = ref<string | null>(null)
+const selectedStart = ref<string | null>(props.query.start ?? null)
+const durationMinutes = ref(resolveDuration(props.query.duration, props.form.allowedDurations))
+const clinicKey = computed(() => bookingClinicKey(props.form))
 const stepIndex = ref(0)
 
 const formSteps = computed(() => {
@@ -301,7 +310,6 @@ const showSlot = computed(() => {
     return isLastStep.value
 })
 
-const themeStyle = clinicThemeVars(props.form.themePrimary)
 const autofillEnabled = computed(() => isBookingAutofillHost(hostname))
 
 for (const field of props.form.fields) {
@@ -652,7 +660,7 @@ async function uploadPendingFiles(): Promise<boolean> {
             continue
         }
         const signed = await requestBookingUploadUrl({
-            clinicSiteId: props.form.clinicSiteId,
+            clinicSiteId: clinicKey.value,
             fieldId: field.id,
             contentType: file.type || 'application/octet-stream',
             fileName: file.name,
@@ -682,13 +690,24 @@ async function onSubmit() {
             valid = false
         }
     }
+    if (selectedStart.value === null || selectedStart.value === '') {
+        valid = false
+        formError.value = t('bookingPage.errors.slot')
+        const visitStep = formSteps.value.findIndex(item => item.key === 'visit')
+        if (visitStep >= 0) {
+            stepIndex.value = visitStep
+        }
+    }
+
     if (!valid) {
         const firstInvalid = props.form.fields.find(field => fieldErrors[field.id])
         const step = formSteps.value.findIndex(item => item.key === firstInvalid?.stepKey)
-        if (step >= 0) {
+        if (step >= 0 && formError.value !== t('bookingPage.errors.slot')) {
             stepIndex.value = step
         }
-        formError.value = t('bookingPage.errors.form')
+        if (formError.value === '') {
+            formError.value = t('bookingPage.errors.form')
+        }
         return
     }
 
@@ -707,13 +726,21 @@ async function onSubmit() {
             return { fieldId: field.id, value: fieldText(values[field.id]), uploadId: null }
         })
 
+        if (selectedStart.value === null) {
+            formError.value = t('bookingPage.errors.slot')
+            return
+        }
+
         const result = await submitBookingForm({
-            clinicSiteId: props.form.clinicSiteId,
+            clinicSiteId: clinicKey.value,
             formDefinitionId: props.form.id,
             formVersion: props.form.version,
             locale: String(locale.value),
             answers,
-            startsAt: selectedStart.value
+            startsAt: selectedStart.value,
+            durationMinutes: durationMinutes.value,
+            practitionerId: props.query.practitioner,
+            service: props.query.service
         })
 
         if (result === null) {

@@ -37,7 +37,8 @@ export const useBookingSubmissionsStore = defineStore('bookingSubmissionsStore',
                 ? result.rows
                 : result.rows.filter(row =>
                     row.clinicName.toLowerCase().includes(query)
-                    || row.clinicSiteSlug.toLowerCase().includes(query)
+                    || (row.clinicSiteSlug ?? '').toLowerCase().includes(query)
+                    || (row.facilityId ?? '').toLowerCase().includes(query)
                     || row.id.toLowerCase().includes(query))
             totalCount.value = result.totalCount
         } catch {

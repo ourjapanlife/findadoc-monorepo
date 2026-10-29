@@ -1208,17 +1208,22 @@ type BookingFormField {
 }
 
 """
-The intake form for one hosted clinic.
-id and version are stable so a CRM can replace the definition later without
-changing the submission table. Until then the API serves a code-defined form.
+The intake form for one clinic.
+Find a Doc owns the fields. The clinic owns allowed visit lengths.
+clinicId in the URL is facilityId when the directory listing exists.
 """
 type BookingForm {
   id: ID!
   version: Int!
-  clinicSiteId: ID!
-  clinicSiteSlug: String!
+  """Directory facility id. The reusable Book URL uses this when present."""
+  facilityId: ID
+  """Hosted clinic page id. Null when the clinic has no Find a Doc landing."""
+  clinicSiteId: ID
+  clinicSiteSlug: String
   clinicName: String!
   themePrimary: String
+  """Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60."""
+  allowedDurations: [Int!]!
   fields: [BookingFormField!]!
 }
 
@@ -1239,7 +1244,8 @@ type BookingUploadHeader {
 """Result of a patient booking submission. No medical free-text is returned."""
 type BookingSubmissionResult {
   id: ID!
-  clinicSiteId: ID!
+  clinicSiteId: ID
+  facilityId: ID
   status: BookingSubmissionStatus!
   appointmentId: ID
   createdDate: String!
@@ -1254,8 +1260,9 @@ enum BookingSubmissionStatus {
 """Staff list row. Identity files are never inlined; use bookingUploadDownloadUrl."""
 type BookingSubmissionListItem {
   id: ID!
-  clinicSiteId: ID!
-  clinicSiteSlug: String!
+  clinicSiteId: ID
+  facilityId: ID
+  clinicSiteSlug: String
   clinicName: String!
   locale: String!
   status: BookingSubmissionStatus!
@@ -1271,8 +1278,9 @@ type BookingSubmissionListItem {
 """Read-only staff detail. Scalar answers only; files are separate download links."""
 type BookingSubmissionDetail {
   id: ID!
-  clinicSiteId: ID!
-  clinicSiteSlug: String!
+  clinicSiteId: ID
+  facilityId: ID
+  clinicSiteSlug: String
   clinicName: String!
   locale: String!
   status: BookingSubmissionStatus!
@@ -1280,6 +1288,8 @@ type BookingSubmissionDetail {
   formVersion: Int!
   startsAt: String
   endsAt: String
+  practitionerId: ID
+  service: String
   createdDate: String!
   updatedDate: String!
   answers: [BookingAnswerView!]!
@@ -1310,6 +1320,7 @@ type BookingUploadDownloadUrl {
 
 input BookingSubmissionSearchFilters {
   clinicSiteId: ID
+  facilityId: ID
   limit: Int
   offset: Int
   orderBy: [OrderBy!]
@@ -1318,7 +1329,8 @@ input BookingSubmissionSearchFilters {
 """Staff-painted availability. Boundaries are 30-minute aligned."""
 type ClinicAvailabilityWindow {
   id: ID!
-  clinicSiteId: ID!
+  clinicSiteId: ID
+  facilityId: ID
   startsAt: String!
   endsAt: String!
   createdDate: String!
@@ -1331,7 +1343,7 @@ input CreateClinicAvailabilityWindowInput {
 }
 
 input CreateBookingUploadUrlInput {
-  """Clinic site id or slug."""
+  """Facility id, clinic site id, or clinic site slug."""
   clinicSiteId: ID!
   fieldId: String!
   contentType: String!
@@ -1347,14 +1359,20 @@ input BookingAnswerInput {
 }
 
 input SubmitBookingInput {
-  """Clinic site id or slug."""
+  """Facility id, clinic site id, or clinic site slug."""
   clinicSiteId: ID!
   formDefinitionId: String!
   formVersion: Int!
   locale: String!
   answers: [BookingAnswerInput!]!
-  """Optional 15-minute-aligned start inside a staff availability window."""
-  startsAt: String
+  """Required start inside a staff availability window. ISO 8601 UTC."""
+  startsAt: String!
+  """Visit length in minutes. Must be one of the clinic's allowedDurations."""
+  durationMinutes: Int
+  """Optional directory professional id at this facility."""
+  practitionerId: ID
+  """Optional service or appointment-type key from the Book URL."""
+  service: String
 }
 
 type Query {
@@ -1370,17 +1388,17 @@ type Query {
   clinicSites: [ClinicSiteSummary!]!
 
   """
-  The booking intake form for a hosted clinic.
-  Pass the clinic site id or slug. Drafts and unknown clinics are null.
+  The booking intake form for a directory facility or hosted clinic.
+  Pass a facility id, clinic site id, or slug. Unknown clinics are null.
   Open to a signed-out visitor. create:bookings is on the anonymous user role.
   """
-  bookingForm(clinicSiteId: ID!): BookingForm
+  bookingForm(clinicSiteId: ID!, formId: String): BookingForm
 
   """
-  Open 15-minute appointment starts inside staff 30-minute availability.
-  Only starts that fit a painted calendar window are returned. Times are ISO 8601 UTC.
+  Open appointment starts that fit the requested duration inside staff availability.
+  Times are ISO 8601 UTC. The range must be 16 days or shorter.
   """
-  availableBookingStarts(clinicSiteId: ID!, from: String!, to: String!): [String!]!
+  availableBookingStarts(clinicSiteId: ID!, from: String!, to: String!, durationMinutes: Int): [String!]!
 
   """Staff list of booking submissions. Read-only; not for editing answers."""
   bookingSubmissions(filters: BookingSubmissionSearchFilters!): [BookingSubmissionListItem!]!

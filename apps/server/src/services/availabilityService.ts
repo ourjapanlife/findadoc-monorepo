@@ -4,33 +4,10 @@ import type {
     DeleteResult
 } from '@findadoc/graphql'
 import { randomUUID } from 'node:crypto'
+import { resolveBookingTarget } from '../booking/target.js'
 import { assertAvailabilityRange, snapDownToAvailability, snapUpToAvailability } from '../booking/schedule.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
-
-const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-async function resolveClinicSiteId(clinicSiteIdOrSlug: string): Promise<string | undefined> {
-    const trimmed = clinicSiteIdOrSlug.trim()
-    if (UUID_PATTERN.test(trimmed)) {
-        const row = await db.selectFrom('clinic_sites')
-            .select('id')
-            .where('id', '=', trimmed)
-            .where('status', '!=', 'draft')
-            .executeTakeFirst()
-        return row?.id
-    }
-    if (!SLUG_PATTERN.test(trimmed)) {
-        return undefined
-    }
-    const row = await db.selectFrom('clinic_sites')
-        .select('id')
-        .where('slug', '=', trimmed)
-        .where('status', '!=', 'draft')
-        .executeTakeFirst()
-    return row?.id
-}
 
 function validationError(field: string): Result<never> {
     return {
@@ -41,12 +18,12 @@ function validationError(field: string): Result<never> {
 }
 
 export async function listClinicAvailabilityWindows(
-    clinicSiteIdOrSlug: string,
+    clinicIdOrSlug: string,
     fromIso: string,
     toIso: string
 ): Promise<ClinicAvailabilityWindow[]> {
-    const clinicSiteId = await resolveClinicSiteId(clinicSiteIdOrSlug)
-    if (clinicSiteId === undefined) {
+    const target = await resolveBookingTarget(clinicIdOrSlug)
+    if (target === undefined) {
         return []
     }
     const from = new Date(fromIso)
@@ -55,17 +32,26 @@ export async function listClinicAvailabilityWindows(
         return []
     }
 
-    const rows = await db.selectFrom('clinic_availability_windows')
-        .select(['id', 'clinic_site_id', 'starts_at', 'ends_at', 'created_date'])
-        .where('clinic_site_id', '=', clinicSiteId)
+    let query = db.selectFrom('clinic_availability_windows')
+        .select(['id', 'clinic_site_id', 'facility_id', 'starts_at', 'ends_at', 'created_date'])
         .where('starts_at', '<', to.toISOString())
         .where('ends_at', '>', from.toISOString())
         .orderBy('starts_at')
-        .execute()
+
+    if (target.facilityId !== null) {
+        query = query.where('facility_id', '=', target.facilityId)
+    } else if (target.clinicSiteId !== null) {
+        query = query.where('clinic_site_id', '=', target.clinicSiteId)
+    } else {
+        return []
+    }
+
+    const rows = await query.execute()
 
     return rows.map(row => ({
         id: row.id,
         clinicSiteId: row.clinic_site_id,
+        facilityId: row.facility_id,
         startsAt: new Date(row.starts_at).toISOString(),
         endsAt: new Date(row.ends_at).toISOString(),
         createdDate: row.created_date
@@ -76,8 +62,8 @@ export async function createClinicAvailabilityWindow(
     input: CreateClinicAvailabilityWindowInput,
     createdBy: string | undefined
 ): Promise<Result<ClinicAvailabilityWindow>> {
-    const clinicSiteId = await resolveClinicSiteId(input.clinicSiteId)
-    if (clinicSiteId === undefined) {
+    const target = await resolveBookingTarget(input.clinicSiteId)
+    if (target === undefined) {
         return validationError('clinicSiteId')
     }
 
@@ -99,18 +85,20 @@ export async function createClinicAvailabilityWindow(
     const row = await db.insertInto('clinic_availability_windows')
         .values({
             id,
-            clinic_site_id: clinicSiteId,
+            facility_id: target.facilityId,
+            clinic_site_id: target.clinicSiteId,
             starts_at: startsAt.toISOString(),
             ends_at: endsAt.toISOString(),
             created_by: createdBy ?? null
         })
-        .returning(['id', 'clinic_site_id', 'starts_at', 'ends_at', 'created_date'])
+        .returning(['id', 'clinic_site_id', 'facility_id', 'starts_at', 'ends_at', 'created_date'])
         .executeTakeFirstOrThrow()
 
     return {
         data: {
             id: row.id,
             clinicSiteId: row.clinic_site_id,
+            facilityId: row.facility_id,
             startsAt: new Date(row.starts_at).toISOString(),
             endsAt: new Date(row.ends_at).toISOString(),
             createdDate: row.created_date

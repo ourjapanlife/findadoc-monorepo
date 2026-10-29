@@ -650,7 +650,8 @@
     "onlineMetaDescription": "{name}. Online na pasilidad na walang street address. Telepono at mga wika ng kawani.",
     "locationNav": "Lokasyon",
     "relatedSpecialtiesHeading": "Mag-browse ayon sa specialty",
-    "relatedLanguagesHeading": "Mag-browse ayon sa wika"
+    "relatedLanguagesHeading": "Mag-browse ayon sa wika",
+    "book": "Mag-book"
   },
   "doctorPage": {
     "backToSearch": "Bumalik sa paghahanap",
@@ -753,12 +754,14 @@
       "fileTooLarge": "Masyadong malaki ang file",
       "uploadFailed": "Hindi na-upload. Subukan ulit.",
       "form": "Suriin ang mga naka-highlight na field",
-      "submitFailed": "Hindi maipadala ang kahilingan. Subukan ulit."
+      "submitFailed": "Hindi maipadala ang kahilingan. Subukan ulit.",
+      "slot": "Pumili ng available na oras",
+      "duration": "Pumili ng haba na inaalok ng klinika"
     },
     "slotLabel": "Gustong oras",
-    "slotHelp": "Opsyonal. Nagsisimula tuwing 15 minuto sa loob ng availability ng clinic.",
+    "slotHelp": "Pumili ng simula na kasya sa haba sa loob ng available na oras.",
     "slotLoading": "Naglo-load ng bukas na oras…",
-    "slotEmpty": "Walang bukas na oras sa susunod na dalawang linggo. Maaari pa ring magpadala ng request.",
+    "slotEmpty": "Walang oras sa araw na ito. Subukan ang ibang petsa o haba.",
     "authRequired": "Mag-sign in upang buksan ang form ng booking na ito…",
     "stepsNav": "Mga hakbang sa pag-book",
     "stepOf": "Hakbang {current} ng {total}",
@@ -768,7 +771,11 @@
       "contact": "Impormasyon sa pakikipag-ugnayan",
       "visit": "Pagbisita",
       "documents": "Mga dokumento"
-    }
+    },
+    "dateLabel": "Petsa",
+    "durationLabel": "Haba ng konsultasyon",
+    "durationHelp": "Ang klinika ang pumipili kung anong haba ang available.",
+    "durationMinutes": "{n} minuto"
   },
   "bookingDashboard": {
     "readOnly": "Booking submission (basahin lang)",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Site ng klinika",
-    "help": "I-drag para magpinta ng 30-minutong availability. I-click ang block para tanggalin. Ang mga pasyente ay nagbu-book sa 15-minutong simula.",
+    "help": "I-drag para magpinta ng 30-minutong availability. I-click para tanggalin. Ang pasyente ay nagbu-book ng 15, 30, 45, o 60 minuto.",
     "loading": "Naglo-load ang calendar…",
     "windowTitle": "Bukas",
     "createFailed": "Hindi ma-save ang availability window.",

@@ -650,7 +650,8 @@
     "onlineMetaDescription": "{name}. Cơ sở trực tuyến không có địa chỉ đường phố. Điện thoại và ngôn ngữ của nhân viên.",
     "locationNav": "Địa điểm",
     "relatedSpecialtiesHeading": "Duyệt theo chuyên khoa",
-    "relatedLanguagesHeading": "Duyệt theo ngôn ngữ"
+    "relatedLanguagesHeading": "Duyệt theo ngôn ngữ",
+    "book": "Đặt lịch"
   },
   "doctorPage": {
     "backToSearch": "Về tìm kiếm",
@@ -753,12 +754,14 @@
       "fileTooLarge": "Tệp quá lớn",
       "uploadFailed": "Tải lên thất bại. Thử lại.",
       "form": "Kiểm tra các trường được tô sáng",
-      "submitFailed": "Không gửi được yêu cầu. Thử lại."
+      "submitFailed": "Không gửi được yêu cầu. Thử lại.",
+      "slot": "Chọn một giờ còn trống",
+      "duration": "Chọn thời lượng phòng khám cung cấp"
     },
     "slotLabel": "Giờ mong muốn",
-    "slotHelp": "Tùy chọn. Bắt đầu mỗi 15 phút trong khung trống của phòng khám.",
+    "slotHelp": "Chọn giờ bắt đầu khớp thời lượng trong khung giờ trống.",
     "slotLoading": "Đang tải giờ trống…",
-    "slotEmpty": "Không có giờ trống trong hai tuần tới. Bạn vẫn có thể gửi yêu cầu.",
+    "slotEmpty": "Không còn giờ trống ngày này. Thử ngày hoặc thời lượng khác.",
     "authRequired": "Đăng nhập để mở biểu mẫu đặt lịch này…",
     "stepsNav": "Các bước đặt lịch",
     "stepOf": "Bước {current} / {total}",
@@ -768,7 +771,11 @@
       "contact": "Liên hệ",
       "visit": "Lý do khám",
       "documents": "Giấy tờ"
-    }
+    },
+    "dateLabel": "Ngày",
+    "durationLabel": "Thời lượng khám",
+    "durationHelp": "Phòng khám chọn các thời lượng có sẵn.",
+    "durationMinutes": "{n} phút"
   },
   "bookingDashboard": {
     "readOnly": "Yêu cầu đặt lịch (chỉ xem)",
@@ -807,7 +814,7 @@
   },
   "bookingAvailability": {
     "clinicLabel": "Trang phòng khám",
-    "help": "Kéo để tô khung trống 30 phút. Bấm một khối để xóa. Bệnh nhân đặt theo bước 15 phút.",
+    "help": "Kéo để tô khung trống 30 phút. Bấm để xóa. Bệnh nhân đặt 15, 30, 45 hoặc 60 phút trong các khung đó.",
     "loading": "Đang tải lịch…",
     "windowTitle": "Trống",
     "createFailed": "Không lưu được khung trống.",

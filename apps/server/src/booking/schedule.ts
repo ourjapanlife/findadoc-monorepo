@@ -1,16 +1,72 @@
 /**
- * Clinic availability is painted in 30-minute windows.
+ * Staff availability is painted in 30-minute windows.
  * Patients pick a start every 15 minutes inside those windows.
- * Default visit length is 30 minutes (matches the availability snap).
+ * Visit length is one of 15, 30, 45, or 60 minutes from the clinic settings.
  */
 
 export const AVAILABILITY_SNAP_MINUTES = 30
 export const BOOKING_SLOT_STEP_MINUTES = 15
 export const DEFAULT_APPOINTMENT_DURATION_MINUTES = 30
+export const ALLOWED_APPOINTMENT_DURATIONS = [15, 30, 45, 60] as const
+export const DEFAULT_ALLOWED_DURATIONS = [...ALLOWED_APPOINTMENT_DURATIONS]
+export const MAX_PUBLIC_SLOT_RANGE_MS = 16 * 24 * 60 * 60 * 1000
+
+export type AppointmentDurationMinutes = typeof ALLOWED_APPOINTMENT_DURATIONS[number]
 
 const AVAILABILITY_SNAP_MS = AVAILABILITY_SNAP_MINUTES * 60 * 1000
 const SLOT_STEP_MS = BOOKING_SLOT_STEP_MINUTES * 60 * 1000
 const DEFAULT_DURATION_MS = DEFAULT_APPOINTMENT_DURATION_MINUTES * 60 * 1000
+
+export function isAppointmentDuration(value: number): value is AppointmentDurationMinutes {
+    return ALLOWED_APPOINTMENT_DURATIONS.some(duration => duration === value)
+}
+
+export function parseAppointmentDuration(
+    value: number | null | undefined,
+    allowed: readonly number[] = DEFAULT_ALLOWED_DURATIONS
+): AppointmentDurationMinutes | undefined {
+    if (value === null || value === undefined || !Number.isInteger(value)) {
+        return undefined
+    }
+    if (!isAppointmentDuration(value) || !allowed.includes(value)) {
+        return undefined
+    }
+    return value
+}
+
+export function resolveAppointmentDuration(
+    value: number | null | undefined,
+    allowed: readonly number[] = DEFAULT_ALLOWED_DURATIONS
+): AppointmentDurationMinutes | undefined {
+    const parsed = parseAppointmentDuration(value, allowed)
+    if (parsed !== undefined) {
+        return parsed
+    }
+    if (value !== null && value !== undefined) {
+        return undefined
+    }
+    if (allowed.includes(DEFAULT_APPOINTMENT_DURATION_MINUTES)
+      && isAppointmentDuration(DEFAULT_APPOINTMENT_DURATION_MINUTES)) {
+        return DEFAULT_APPOINTMENT_DURATION_MINUTES
+    }
+    const first = allowed[0]
+    return first !== undefined && isAppointmentDuration(first) ? first : undefined
+}
+
+export function parseAllowedDurations(value: unknown): AppointmentDurationMinutes[] {
+    if (!Array.isArray(value)) {
+        return [...DEFAULT_ALLOWED_DURATIONS]
+    }
+    const unique: AppointmentDurationMinutes[] = []
+    for (const item of value) {
+        const minutes = typeof item === 'number' ? item : Number(item)
+        if (!isAppointmentDuration(minutes) || unique.includes(minutes)) {
+            continue
+        }
+        unique.push(minutes)
+    }
+    return unique.length > 0 ? unique : [...DEFAULT_ALLOWED_DURATIONS]
+}
 
 export function snapUpToAvailability(date: Date): Date {
     const ms = date.getTime()
@@ -36,6 +92,13 @@ export function assertAvailabilityRange(startsAt: Date, endsAt: Date): void {
       || !isAlignedToMinutes(endsAt, AVAILABILITY_SNAP_MINUTES)) {
         throw new Error('Availability must align to 30-minute boundaries')
     }
+}
+
+export function isPublicSlotRange(from: Date, to: Date): boolean {
+    if (!(to.getTime() > from.getTime())) {
+        return false
+    }
+    return (to.getTime() - from.getTime()) <= MAX_PUBLIC_SLOT_RANGE_MS
 }
 
 export type TimeWindow = { startsAt: Date, endsAt: Date }
@@ -75,6 +138,9 @@ export function availableStarts(input: {
     return starts.sort((a, b) => a.getTime() - b.getTime())
 }
 
-export function appointmentEndFromStart(startsAt: Date, durationMs = DEFAULT_DURATION_MS): Date {
-    return new Date(startsAt.getTime() + durationMs)
+export function appointmentEndFromStart(
+    startsAt: Date,
+    durationMinutes: number = DEFAULT_APPOINTMENT_DURATION_MINUTES
+): Date {
+    return new Date(startsAt.getTime() + durationMinutes * 60 * 1000)
 }
