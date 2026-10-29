@@ -47,6 +47,8 @@ export interface FunctionUrlEdgeProps {
  * Caching is off. The managed AllViewerExceptHostHeader policy sends every viewer header but
  * Host (a Function URL only answers its own hostname), plus CloudFront's viewer location
  * headers. A custom policy cannot add those to "all but Host".
+ * That policy also forwards cookies. The API reads none, so the function drops them all and the
+ * origin gets no cookies, as before: analytics and consent cookies on .findadoc.jp stay off the API.
  * A CloudFront Function writes the viewer's address to x-findadoc-viewer-ip and
  * CloudFront-Viewer-Country to x-findadoc-viewer-country, replacing anything the client sent,
  * and the origin adds the edge secret. Rate limits count people rather than CloudFront edges,
@@ -63,6 +65,7 @@ export function addFunctionUrlEdge(scope: Construct, props: FunctionUrlEdgeProps
         code: FunctionCode.fromInline([
             'function handler(event) {',
             '    var headers = event.request.headers',
+            '    event.request.cookies = {}',
             '    headers[\'x-findadoc-viewer-ip\'] = { value: event.viewer.ip }',
             '    var country = headers[\'cloudfront-viewer-country\']',
             '    if (country) {',
