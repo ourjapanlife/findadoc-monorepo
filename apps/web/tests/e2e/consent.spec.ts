@@ -10,7 +10,9 @@ import { expect, test, type Page } from '@playwright/test'
  * (E2E_GOOGLE_TAG_IDS_KEY in utils/consent.ts).
  */
 
+// Used only when the build has no tag ids (the e2e dev server). A production build uses its own.
 const TAG_ID = 'AW-E2E0000001'
+const GTAG_URL = /googletagmanager\.com\/gtag\/js\?id=((?:AW|G)-[\w-]+)/
 const GOOGLE_HOSTS = /googletagmanager\.com|google-analytics\.com|googleadservices\.com|doubleclick\.net|google\.com\/(ccm|pagead)/
 
 async function trackGoogle(page: Page): Promise<string[]> {
@@ -33,6 +35,9 @@ async function consentCalls(page: Page): Promise<unknown[][]> {
         .map(call => call[0] === 'js' ? ['js'] : call))
 }
 
+// Start undecided: playwright.config.ts gives every other spec a stored choice.
+test.use({ storageState: { cookies: [], origins: [] } })
+
 test.describe('Google tag consent', () => {
     test('nothing goes to Google before a choice, and Accept switches it on', async ({ page }) => {
         const google = await trackGoogle(page)
@@ -54,7 +59,8 @@ test.describe('Google tag consent', () => {
 
         await expect(page.getByTestId('consent-banner')).toBeHidden()
         await expect.poll(() => google.length).toBe(1)
-        expect(google[0]).toContain(`googletagmanager.com/gtag/js?id=${TAG_ID}`)
+        const tagId = GTAG_URL.exec(google[0]!)?.[1]
+        expect(tagId, google[0]).toBeTruthy()
         const after = await consentCalls(page)
         const update = after.findIndex(call => call[1] === 'update')
         const config = after.findIndex(call => call[0] === 'config')
@@ -65,11 +71,11 @@ test.describe('Google tag consent', () => {
             ad_personalization: 'denied'
         }])
         expect(update).toBeLessThan(config)
-        expect(after[config]).toEqual(['config', TAG_ID])
+        expect(after[config]).toEqual(['config', tagId])
     })
 
-    test('a returning visitor who accepted gets the tag on load, without the banner', async ({ page, context }) => {
-        await context.addCookies([{ name: 'fad_consent', value: 'granted', url: 'http://localhost:4242' }])
+    test('a returning visitor who accepted gets the tag on load, without the banner', async ({ page, context, baseURL }) => {
+        await context.addCookies([{ name: 'fad_consent', value: 'granted', url: baseURL! }])
         const google = await trackGoogle(page)
         await page.goto('/privacypolicy')
 
@@ -91,11 +97,11 @@ test.describe('Google tag consent', () => {
         expect(google).toEqual([])
     })
 
-    test('changing Accept to Decline reloads without the tag and deletes Google cookies', async ({ page, context }) => {
+    test('changing Accept to Decline reloads without the tag and deletes Google cookies', async ({ page, context, baseURL }) => {
         await context.addCookies([
-            { name: 'fad_consent', value: 'granted', url: 'http://localhost:4242' },
-            { name: '_ga', value: 'GA1.1.123', url: 'http://localhost:4242' },
-            { name: '_gcl_au', value: '1.1.456', url: 'http://localhost:4242' }
+            { name: 'fad_consent', value: 'granted', url: baseURL! },
+            { name: '_ga', value: 'GA1.1.123', url: baseURL! },
+            { name: '_gcl_au', value: '1.1.456', url: baseURL! }
         ])
         const google = await trackGoogle(page)
         await page.goto('/privacypolicy')

@@ -11,6 +11,20 @@ export function moderationSuccessToastPattern(expectedMessage: string, keySuffix
     return new RegExp(`(${escapedMessage}|${escapedKeySuffix})`, 'i')
 }
 
+/** A stored "denied" cookie choice, so the consent banner stays closed in specs that are not about it. */
+export function consentDeniedCookie(domain: string) {
+    return {
+        name: 'fad_consent',
+        value: 'denied',
+        domain,
+        path: '/',
+        expires: -1,
+        httpOnly: false,
+        secure: false,
+        sameSite: 'Lax' as const
+    }
+}
+
 /** Run moderation tests: always in CI; locally only when Auth0 credentials are present. */
 export function shouldRunModerationTests(): boolean {
     if (process.env.CI) return true
