@@ -782,8 +782,9 @@
       "fullName": "Nom complet",
       "age": "Âge",
       "reason": "Motif de la visite",
-      "insuranceDocument": "Carte d’assurance ou certificat d’éligibilité",
-      "selfie": "Photo de vous"
+      "insuranceDocument": "Justificatif d'assurance",
+      "selfie": "Photo de vous",
+      "insuranceType": "Quel justificatif d'assurance maladie utilisez-vous ?"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "Aucun créneau libre cette semaine.",
     "slotEmptyAhead": "Aucun créneau libre dans les semaines à venir. Essayez une autre durée, un autre médecin ou une autre langue.",
     "nextAvailable": "Prochain créneau : {date}",
-    "openTimesCount": "créneaux libres : {n}"
+    "openTimesCount": "créneaux libres : {n}",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "Carte d'assurance maladie (保険証)",
+        "eligibilityCertificate": "Certificat d'éligibilité (資格確認書)",
+        "mynaInsurance": "Carte My Number enregistrée comme carte d'assurance (マイナ保険証)"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "Photo de votre carte d'assurance maladie",
+      "eligibilityCertificate": "Photo de votre certificat d'éligibilité",
+      "mynaInsurance": "Capture d'écran de vos informations d'assurance sur マイナポータル"
+    },
+    "insuranceGuide": {
+      "card": "Photographiez le recto de la carte. Votre nom, l'assureur, ainsi que le symbole et le numéro doivent être lisibles.",
+      "certificate": "Photographiez la page qui indique votre nom et vos informations d'assurance.",
+      "myna": {
+        "heading": "Envoyez vos informations d'assurance depuis マイナポータル",
+        "step1": "Ouvrez l'application ou le site マイナポータル et connectez-vous avec votre carte My Number.",
+        "step2": "Ouvrez vos informations d'assurance maladie (健康保険証).",
+        "step3": "Faites une capture d'écran de la page qui indique l'assureur et vos informations d'assurance.",
+        "step4": "Téléversez cette capture ci-dessous.",
+        "portalLink": "Ouvrir マイナポータル"
+      },
+      "noMyNumber": "N'envoyez pas de photo de votre carte My Number, ni le recto ni le verso, ni son numéro à 12 chiffres.",
+      "bringCard": "La clinique vérifie votre assurance avec la carte elle-même."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Réservation",

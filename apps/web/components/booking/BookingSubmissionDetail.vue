@@ -160,7 +160,7 @@
                             {{ answerLabel(answer.fieldId) }}
                         </dt>
                         <dd class="whitespace-pre-wrap wrap-break-word">
-                            {{ answer.value || '—' }}
+                            {{ answerValue(answer.fieldId, answer.value) }}
                         </dd>
                     </div>
                 </dl>
@@ -360,6 +360,15 @@ async function loadPreviews(): Promise<void> {
         }
     })
     previewUrls.value = urls
+}
+
+/** A choice answer reads as its label in the staff's language, such as "Health insurance card". */
+function answerValue(fieldId: string, value: string | null | undefined): string {
+    if (value === null || value === undefined || value === '') {
+        return '—'
+    }
+    const optionKey = `bookingPage.options.${fieldId}.${value}`
+    return te(optionKey) ? t(optionKey) : value
 }
 
 async function load(): Promise<void> {

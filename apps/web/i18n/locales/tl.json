@@ -782,8 +782,9 @@
       "fullName": "Buong pangalan",
       "age": "Edad",
       "reason": "Dahilan ng pagbisita",
-      "insuranceDocument": "Insurance card o eligibility certificate",
-      "selfie": "Larawan ng mukha"
+      "insuranceDocument": "Patunay ng insurance",
+      "selfie": "Larawan ng mukha",
+      "insuranceType": "Ano ang ginagamit mo para sa health insurance?"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "Walang bakanteng oras sa linggong ito.",
     "slotEmptyAhead": "Walang bakanteng oras sa mga darating na linggo. Subukan ang ibang haba ng pagbisita, doktor, o wika.",
     "nextAvailable": "Susunod na bakante: {date}",
-    "openTimesCount": "bakanteng oras: {n}"
+    "openTimesCount": "bakanteng oras: {n}",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "Kard ng health insurance (保険証)",
+        "eligibilityCertificate": "Sertipiko ng pagiging kwalipikado (資格確認書)",
+        "mynaInsurance": "My Number card na nakarehistro bilang insurance (マイナ保険証)"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "Larawan ng iyong health insurance card",
+      "eligibilityCertificate": "Larawan ng iyong eligibility certificate",
+      "mynaInsurance": "Screenshot ng iyong insurance information mula sa マイナポータル"
+    },
+    "insuranceGuide": {
+      "card": "Kunan ng larawan ang harap ng card. Dapat mabasa ang pangalan mo, ang insurer, at ang simbolo at numero.",
+      "certificate": "Kunan ng larawan ang pahinang may pangalan mo at mga detalye ng insurance.",
+      "myna": {
+        "heading": "Ipadala ang iyong insurance information mula sa マイナポータル",
+        "step1": "Buksan ang マイナポータル app o website at mag-sign in gamit ang iyong My Number card.",
+        "step2": "Buksan ang iyong health insurance information (健康保険証).",
+        "step3": "Mag-screenshot ng pahinang nagpapakita ng insurer at mga detalye ng insurance mo.",
+        "step4": "I-upload ang screenshot na iyon sa ibaba.",
+        "portalLink": "Buksan ang マイナポータル"
+      },
+      "noMyNumber": "Huwag mag-upload ng larawan ng iyong My Number card, harap man o likod, at huwag ipadala ang 12-digit na numero nito.",
+      "bringCard": "Kinukumpirma ng klinika ang iyong insurance gamit ang mismong card."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Pagpapareserba",

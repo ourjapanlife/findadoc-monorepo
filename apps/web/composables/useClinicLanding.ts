@@ -28,6 +28,34 @@ export function useRequestHost(): { host: string, hostname: string } {
     return { host: url.host, hostname: url.hostname }
 }
 
+function useClinicPreviewCookie() {
+    return useCookie<string | null>(CLINIC_LANDING_PREVIEW_COOKIE, {
+        path: '/',
+        sameSite: 'lax',
+        maxAge: CLINIC_LANDING_PREVIEW_MAX_AGE,
+        // The default codec writes the JSON `"1"` and reads a bare `1` back as a number.
+        // Store the bare value so `online_clinic_preview=1` means the same everywhere.
+        encode: value => value ?? '',
+        decode: value => value ?? null
+    })
+}
+
+/**
+ * Whether this browser may see preview-only surfaces (clinic landings and booking),
+ * without changing the cookie. Call this in setup and the returned check in
+ * `onMounted`: prerendered HTML has no cookie, so a link it hides must never be
+ * in the static page.
+ */
+export function useClinicPreviewAccess(): () => boolean {
+    const mode = useClinicLandingMode()
+    const cookie = useClinicPreviewCookie()
+    return () => {
+        const preview = clinicLandingPreviewFlag(undefined, import.meta.client ? window.location.search : undefined)
+        const access = clinicLandingAccess(mode, preview, cookie.value)
+        return access === 'allow' || access === 'grant'
+    }
+}
+
 /**
  * The preview gate for a landing navigation. `?preview=1` stores the cookie and
  * `?preview=0` clears it. Returns the 404 to hand back from route middleware, or
@@ -43,15 +71,7 @@ export function clinicLandingGate(
         to.query.preview,
         import.meta.client ? window.location.search : undefined
     )
-    const cookie = useCookie<string | null>(CLINIC_LANDING_PREVIEW_COOKIE, {
-        path: '/',
-        sameSite: 'lax',
-        maxAge: CLINIC_LANDING_PREVIEW_MAX_AGE,
-        // The default codec writes the JSON `"1"` and reads a bare `1` back as a number.
-        // Store the bare value so `online_clinic_preview=1` means the same everywhere.
-        encode: value => value ?? '',
-        decode: value => value ?? null
-    })
+    const cookie = useClinicPreviewCookie()
 
     switch (clinicLandingAccess(mode, preview, cookie.value)) {
         case 'grant':

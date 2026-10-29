@@ -782,8 +782,9 @@
       "fullName": "氏名",
       "age": "年齢",
       "reason": "受診理由",
-      "insuranceDocument": "保険証または資格確認書",
-      "selfie": "顔写真"
+      "insuranceDocument": "保険の確認書類",
+      "selfie": "顔写真",
+      "insuranceType": "健康保険の確認に使うもの"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "この週に空きはありません。",
     "slotEmptyAhead": "今後数週間に空きがありません。診察時間の長さ、医師、言語を変えてみてください。",
     "nextAvailable": "次の空き：{date}",
-    "openTimesCount": "空き：{n}件"
+    "openTimesCount": "空き：{n}件",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "健康保険証",
+        "eligibilityCertificate": "資格確認書",
+        "mynaInsurance": "マイナ保険証（保険証として登録したマイナンバーカード）"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "健康保険証の写真",
+      "eligibilityCertificate": "資格確認書の写真",
+      "mynaInsurance": "マイナポータルの保険情報のスクリーンショット"
+    },
+    "insuranceGuide": {
+      "card": "保険証の表面を撮影してください。氏名、保険者、記号・番号が読めるようにしてください。",
+      "certificate": "氏名と保険の情報が載っている面を撮影してください。",
+      "myna": {
+        "heading": "マイナポータルから保険の情報を送ってください",
+        "step1": "マイナポータルのアプリかウェブサイトを開き、マイナンバーカードでログインします。",
+        "step2": "健康保険証の情報を開きます。",
+        "step3": "保険者と保険の情報が表示された画面のスクリーンショットを撮ります。",
+        "step4": "そのスクリーンショットを下にアップロードします。",
+        "portalLink": "マイナポータルを開く"
+      },
+      "noMyNumber": "マイナンバーカードの写真（表・裏とも）はアップロードしないでください。12桁のマイナンバーも送らないでください。",
+      "bringCard": "保険の確認は、クリニックがカードそのもので行います。"
+    }
   },
   "bookingDashboard": {
     "detailHeading": "予約",

@@ -782,8 +782,9 @@
       "fullName": "Vollständiger Name",
       "age": "Alter",
       "reason": "Grund des Besuchs",
-      "insuranceDocument": "Versicherungskarte oder Berechtigungsnachweis",
-      "selfie": "Foto von Ihnen"
+      "insuranceDocument": "Versicherungsnachweis",
+      "selfie": "Foto von Ihnen",
+      "insuranceType": "Womit weisen Sie Ihre Krankenversicherung nach?"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "Diese Woche gibt es keine freien Termine.",
     "slotEmptyAhead": "In den nächsten Wochen gibt es keine freien Termine. Versuchen Sie eine andere Dauer, einen anderen Arzt oder eine andere Sprache.",
     "nextAvailable": "Nächster freier Termin: {date}",
-    "openTimesCount": "freie Termine: {n}"
+    "openTimesCount": "freie Termine: {n}",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "Krankenversicherungskarte (保険証)",
+        "eligibilityCertificate": "Berechtigungsnachweis (資格確認書)",
+        "mynaInsurance": "Als Versicherungskarte registrierte My-Number-Karte (マイナ保険証)"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "Foto Ihrer Krankenversicherungskarte",
+      "eligibilityCertificate": "Foto Ihres Berechtigungsnachweises",
+      "mynaInsurance": "Screenshot Ihrer Versicherungsdaten aus マイナポータル"
+    },
+    "insuranceGuide": {
+      "card": "Fotografieren Sie die Vorderseite der Karte. Name, Versicherer sowie Kennzeichen und Nummer müssen lesbar sein.",
+      "certificate": "Fotografieren Sie die Seite mit Ihrem Namen und den Versicherungsdaten.",
+      "myna": {
+        "heading": "Senden Sie Ihre Versicherungsdaten aus マイナポータル",
+        "step1": "Öffnen Sie die App oder Website マイナポータル und melden Sie sich mit Ihrer My-Number-Karte an.",
+        "step2": "Öffnen Sie Ihre Krankenversicherungsdaten (健康保険証).",
+        "step3": "Machen Sie einen Screenshot der Seite mit Versicherer und Versicherungsdaten.",
+        "step4": "Laden Sie den Screenshot unten hoch.",
+        "portalLink": "マイナポータル öffnen"
+      },
+      "noMyNumber": "Laden Sie kein Foto Ihrer My-Number-Karte hoch, weder Vorder- noch Rückseite, und senden Sie nicht die 12-stellige Nummer.",
+      "bringCard": "Die Praxis prüft Ihre Versicherung mit der Karte selbst."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Buchung",

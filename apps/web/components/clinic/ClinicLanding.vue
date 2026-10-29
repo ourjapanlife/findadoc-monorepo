@@ -519,9 +519,12 @@ function onBook() {
     const localeCode = String(locale.value)
     const clinicId = bookingClinicId
     if (clinicLandingHostSlug(hostname) === props.slug) {
+        // The preview cookie is per host. This visitor passed the gate here, so carry
+        // `?preview=1` to Find a Doc, whose Book page has the same gate.
         void navigateTo(findadocBookUrl(clinicId, {
             localeCode,
-            requestHost: host
+            requestHost: host,
+            preview: mode === 'preview' ? '1' : undefined
         }), { external: true })
         return
     }

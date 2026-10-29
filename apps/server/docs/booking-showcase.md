@@ -120,8 +120,8 @@ Replace `localhost:3000` with `www.findadoc.jp` (and `.localhost:3000` with `.fi
 
 **Act 1: a patient books (patient window)**
 
-1. Open `http://multilingual-online-clinic.localhost:3000/`. *"This is a clinic's own page on its subdomain."* Switch the language to show it's multilingual.
-2. Click **Book**. You land on Find a Doc: `localhost:3000/book/c32c316a-…`. *"Booking always happens on Find a Doc, so the patient sees one trusted flow for every clinic."*
+1. Open `http://multilingual-online-clinic.localhost:3000/?preview=1` (the preview cookie gates the landing and Book). *"This is a clinic's own page on its subdomain."* Switch the language to show it's multilingual.
+2. Click **Book**. You land on Find a Doc: `localhost:3000/book/c32c316a-…?preview=1`, which sets the cookie there too. *"Booking always happens on Find a Doc, so the patient sees one trusted flow for every clinic."*
 3. Choose **30 minutes** and a time tomorrow. Fill **Contact** (use an email you can show), **Visit**, and **Documents** (any small JPG/PNG/PDF for the insurance card and photo). Submit.
 4. The success screen shows the reference and **View or cancel this request**. *"No account needed. This private link is also emailed."* Keep this tab open.
 5. Go back to the Book page: that time is gone. *"The slot is held while the clinic decides."*
@@ -156,6 +156,7 @@ Run these before the demo. Expected results assume the local seed.
 | # | Test | Steps | Expected |
 |---|---|---|---|
 | 1 | Subdomain Book | Clinic page → Book (header and the Book section) | Lands on `/book/c32c316a-…` with the clinic's name and colour |
+| 1a | Book is hidden | In a private window, open `/book/c32c316a-…` without `?preview=1`, and the directory clinic page | 404, and no Book button on the clinic page |
 | 2 | Open times | Pick 15, 30, 45, 60 min | Only weekday times 09:00–12:00 and 13:00–17:00 JST that fit the whole visit; 60 min never crosses the lunch break |
 | 3 | Required fields | Press Next with an empty required field | Stays on the step with an error |
 | 4 | Upload types | Upload a `.txt` or a file over 8 MB | Rejected with a message |

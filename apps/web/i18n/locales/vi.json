@@ -782,8 +782,9 @@
       "fullName": "Họ và tên",
       "age": "Tuổi",
       "reason": "Lý do khám",
-      "insuranceDocument": "Thẻ bảo hiểm hoặc giấy xác nhận tư cách",
-      "selfie": "Ảnh của bạn"
+      "insuranceDocument": "Giấy tờ bảo hiểm",
+      "selfie": "Ảnh của bạn",
+      "insuranceType": "Bạn dùng giấy tờ gì để chứng minh bảo hiểm y tế?"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "Tuần này không còn giờ trống.",
     "slotEmptyAhead": "Không còn giờ trống trong các tuần tới. Hãy thử thời lượng khám, bác sĩ hoặc ngôn ngữ khác.",
     "nextAvailable": "Giờ trống gần nhất: {date}",
-    "openTimesCount": "giờ trống: {n}"
+    "openTimesCount": "giờ trống: {n}",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "Thẻ bảo hiểm y tế (保険証)",
+        "eligibilityCertificate": "Giấy xác nhận tư cách (資格確認書)",
+        "mynaInsurance": "Thẻ My Number đã đăng ký làm thẻ bảo hiểm (マイナ保険証)"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "Ảnh thẻ bảo hiểm y tế",
+      "eligibilityCertificate": "Ảnh giấy xác nhận tư cách",
+      "mynaInsurance": "Ảnh chụp màn hình thông tin bảo hiểm trên マイナポータル"
+    },
+    "insuranceGuide": {
+      "card": "Chụp mặt trước của thẻ. Tên, đơn vị bảo hiểm, ký hiệu và số phải đọc được rõ.",
+      "certificate": "Chụp trang có tên bạn và thông tin bảo hiểm.",
+      "myna": {
+        "heading": "Gửi thông tin bảo hiểm của bạn từ マイナポータル",
+        "step1": "Mở ứng dụng hoặc trang web マイナポータル và đăng nhập bằng thẻ My Number.",
+        "step2": "Mở thông tin bảo hiểm y tế của bạn (健康保険証).",
+        "step3": "Chụp màn hình trang hiển thị đơn vị bảo hiểm và thông tin bảo hiểm.",
+        "step4": "Tải ảnh chụp màn hình đó lên bên dưới.",
+        "portalLink": "Mở マイナポータル"
+      },
+      "noMyNumber": "Đừng tải ảnh thẻ My Number lên (cả mặt trước lẫn mặt sau) và đừng gửi số My Number 12 chữ số.",
+      "bringCard": "Phòng khám xác nhận bảo hiểm bằng chính tấm thẻ."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Đặt lịch",

@@ -12,7 +12,8 @@ import { clinicLandingHostSlug } from '~/utils/clinicLanding'
  */
 definePageMeta({
     layout: 'clinic-landing',
-    ssr: false
+    ssr: false,
+    middleware: ['online-clinic-preview']
 })
 
 const route = useRoute()
@@ -39,7 +40,9 @@ const target = findadocBookUrl(clinicId, {
     localeCode: String(locale.value),
     requestHost: host,
     query: bookingQueryFromRoute(route.query as Record<string, unknown>),
-    preview: bookingPreviewFromRoute(route.query as Record<string, unknown>)
+    // The middleware let this visitor through on the clinic host. The cookie does not
+    // cross hosts, so in preview mode the Find a Doc Book page gets `?preview=1`.
+    preview: mode === 'preview' ? '1' : bookingPreviewFromRoute(route.query as Record<string, unknown>)
 })
 await navigateTo(target, { redirectCode: 302, external: true })
 </script>

@@ -214,6 +214,12 @@
                             </option>
                         </select>
 
+                        <BookingInsuranceGuide
+                            v-if="field.id === 'insuranceType'"
+                            class="mt-3"
+                            :type="fieldText(values.insuranceType)"
+                        />
+
                         <p
                             v-if="visibleError(field.id)"
                             class="field-error"
@@ -289,6 +295,7 @@ import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
 import Stepper from '~/components/common/Stepper.vue'
 import BookingDoctorPicker from '~/components/booking/BookingDoctorPicker.vue'
+import BookingInsuranceGuide from '~/components/booking/BookingInsuranceGuide.vue'
 
 const props = withDefaults(defineProps<{
     form: BookingForm
@@ -521,6 +528,12 @@ onBeforeUnmount(() => {
 function fieldLabel(field: BookingFormField): string {
     if (field.label) {
         return field.label
+    }
+    // The insurance upload is named after the proof the patient said they have.
+    const insuranceType = fieldText(values.insuranceType)
+    const insuranceKey = `bookingPage.insuranceUpload.${insuranceType}`
+    if (field.id === 'insuranceDocument' && insuranceType !== '' && te(insuranceKey)) {
+        return t(insuranceKey)
     }
     return te(field.labelKey) ? t(field.labelKey) : field.id
 }

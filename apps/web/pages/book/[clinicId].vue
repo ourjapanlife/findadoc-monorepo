@@ -17,12 +17,15 @@ import { bookingClinicPath, bookingQueryFromRoute } from '~/utils/booking/paths'
 import { formatPageTitle } from '~/utils/site'
 
 /**
- * Find a Doc Book surface: `/book/{facility-id}`.
+ * Find a Doc Book surface: `/book/{facility-id}`. Behind the same preview cookie as the
+ * clinic landings: without `?preview=1` (or the cookie it sets) the page is a 404.
+ * The patient's manage link (`/book/manage`) is not gated, so cancelling always works.
  * Also accepts a clinic site id or slug, then replaces the path with the facility id.
  * A hosted clinic page or subdomain is not required.
  */
 definePageMeta({
-    ssr: false
+    ssr: false,
+    middleware: ['online-clinic-preview']
 })
 
 const route = useRoute()

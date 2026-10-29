@@ -782,8 +782,9 @@
       "fullName": "全名",
       "age": "年龄",
       "reason": "就诊原因",
-      "insuranceDocument": "保险证或资格确认书",
-      "selfie": "本人照片"
+      "insuranceDocument": "保险证明",
+      "selfie": "本人照片",
+      "insuranceType": "您用什么证明医疗保险？"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
@@ -839,7 +840,33 @@
     "slotEmptyWeek": "本周没有空位。",
     "slotEmptyAhead": "接下来几周都没有空位。请尝试其他就诊时长、医生或语言。",
     "nextAvailable": "最近空位：{date}",
-    "openTimesCount": "空位：{n}个"
+    "openTimesCount": "空位：{n}个",
+    "options": {
+      "insuranceType": {
+        "insuranceCard": "健康保险证（保険証）",
+        "eligibilityCertificate": "资格确认书（資格確認書）",
+        "mynaInsurance": "已登记为保险证的个人编号卡（マイナ保険証）"
+      }
+    },
+    "insuranceUpload": {
+      "insuranceCard": "健康保险证的照片",
+      "eligibilityCertificate": "资格确认书的照片",
+      "mynaInsurance": "マイナポータル中保险信息的截图"
+    },
+    "insuranceGuide": {
+      "card": "请拍摄保险证正面。姓名、保险机构、记号和编号必须清晰可读。",
+      "certificate": "请拍摄显示您姓名和保险信息的那一页。",
+      "myna": {
+        "heading": "请从マイナポータル发送您的保险信息",
+        "step1": "打开マイナポータル的应用或网站，用个人编号卡登录。",
+        "step2": "打开您的健康保险信息（健康保険証）。",
+        "step3": "对显示保险机构和保险信息的页面截图。",
+        "step4": "在下方上传该截图。",
+        "portalLink": "打开マイナポータル"
+      },
+      "noMyNumber": "请不要上传个人编号卡的照片（正反面都不要），也不要发送12位个人编号。",
+      "bringCard": "诊所会用卡片本身确认您的保险。"
+    }
   },
   "bookingDashboard": {
     "detailHeading": "预约",
