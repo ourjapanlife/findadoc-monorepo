@@ -886,8 +886,9 @@
     "loading": "カレンダーを読み込み中…",
     "windowTitle": "受付可",
     "createFailed": "空き枠を保存できませんでした。",
-    "deleteConfirm": "この空き枠を削除しますか？",
     "deleteFailed": "空き枠を削除できませんでした。",
+    "removed": "空き枠を削除しました。",
+    "undo": "元に戻す",
     "legend": "カレンダーの凡例",
     "patient": "患者さん",
     "loadFailed": "カレンダーを読み込めませんでした。",
@@ -911,6 +912,7 @@
     "allStatuses": "すべてのリクエスト",
     "saved": "保存しました",
     "saveFailed": "保存できませんでした。もう一度お試しください。",
+    "saving": "保存中…",
     "tabs": {
       "requests": "リクエスト",
       "calendar": "カレンダー",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "予約の設定",
+      "durationsHelp": "患者さんは、提供している長さから1つを選びます。予約ページでは既定の長さが最初から選ばれています。",
       "forms": "問診フォーム",
       "formsHelp": "予約リンクで別のフォームを指定しない限り、患者さんには既定のフォームが表示されます。",
       "defaultForm": "既定",

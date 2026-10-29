@@ -886,8 +886,9 @@
     "loading": "Đang tải lịch…",
     "windowTitle": "Trống",
     "createFailed": "Không lưu được khung trống.",
-    "deleteConfirm": "Xóa khung trống này?",
     "deleteFailed": "Không xóa được khung trống.",
+    "removed": "Đã xóa khung giờ trống.",
+    "undo": "Hoàn tác",
     "legend": "Chú thích lịch",
     "patient": "Bệnh nhân",
     "loadFailed": "Không thể tải lịch này.",
@@ -911,6 +912,7 @@
     "allStatuses": "Tất cả yêu cầu",
     "saved": "Đã lưu",
     "saveFailed": "Không thể lưu. Vui lòng thử lại.",
+    "saving": "Đang lưu…",
     "tabs": {
       "requests": "Yêu cầu",
       "calendar": "Lịch",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "Cài đặt đặt lịch",
+      "durationsHelp": "Bệnh nhân chọn một trong các thời lượng bạn cung cấp. Thời lượng mặc định được chọn sẵn trên trang đặt lịch.",
       "forms": "Mẫu thông tin khám",
       "formsHelp": "Bệnh nhân sẽ thấy mẫu mặc định trừ khi liên kết đặt lịch chỉ định một mẫu khác mà bạn cung cấp.",
       "defaultForm": "Mặc định",

@@ -886,8 +886,9 @@
     "loading": "正在加载日历…",
     "windowTitle": "可预约",
     "createFailed": "无法保存该可预约时段。",
-    "deleteConfirm": "删除此可预约时段？",
     "deleteFailed": "无法删除该时段。",
+    "removed": "已删除可预约时间。",
+    "undo": "撤销",
     "legend": "日历图例",
     "patient": "患者",
     "loadFailed": "无法加载此日历。",
@@ -911,6 +912,7 @@
     "allStatuses": "全部申请",
     "saved": "已保存",
     "saveFailed": "无法保存，请重试。",
+    "saving": "正在保存…",
     "tabs": {
       "requests": "申请",
       "calendar": "日历",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "预约设置",
+      "durationsHelp": "患者从您提供的时长中选择一个。预约页面会预先选中默认时长。",
       "forms": "问诊表",
       "formsHelp": "除非预约链接指定了您提供的其他表单，否则患者看到的是默认表单。",
       "defaultForm": "默认",

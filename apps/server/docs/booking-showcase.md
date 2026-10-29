@@ -106,6 +106,18 @@ From the repo root, on this branch.
 5. Open `https://multilingual-online-clinic.findadoc.jp/?preview=1` in both windows.
 6. Rehearse, then cancel the rehearsal bookings so their times free up.
 
+## Demo requests
+
+So the Requests list and Calendar have something in them before anyone books, migration `20261029170000_showcase_demo_bookings.sql` adds one request in each status: requested on 23 December 10:00 JST and 2 November, confirmed, declined with a note, cancelled by the patient, and completed. It also paints open hours for 21–25 December. `pnpm db:push` applies it on production like any migration.
+
+The rows are temporary. Every id starts `de300000-0000-4000-`, and a follow-up migration deletes only those rows about a week after the demo. They have no uploads and no manage link.
+
+Locally the migration does nothing on a fresh reset (the showcase facility is seeded after migrations, and the seed clears booking rows). To rehearse with them, run the file by hand after `pnpm dev:seeded`:
+
+```bash
+docker exec -i findadoc-db psql -U postgres < apps/server/supabase/migrations/20261029170000_showcase_demo_bookings.sql
+```
+
 ## 6. Demo script (about 10 minutes)
 
 Replace `localhost:3000` with `www.findadoc.jp` (and `.localhost:3000` with `.findadoc.jp`) on production.
@@ -123,7 +135,7 @@ Replace `localhost:3000` with `www.findadoc.jp` (and `.localhost:3000` with `.fi
 6. Open `http://multilingual-online-clinic.localhost:3000/dashboard`. It redirects to `localhost:3000/clinic-dashboard/c32c316a-…`. *"The clinic's own subdomain takes staff to their dashboard."*
 7. **Requests** (filtered to *Requested*): open the new request. Show the answers, and download the insurance file. *"Identity documents are kept for 30 days, then purged."*
 8. Click **Confirm**. Status becomes *Confirmed*.
-9. **Calendar**: the appointment is green on top of the clinic's open hours. Drag to add an hour; click an empty block to remove it. Click the appointment to jump back to the request.
+9. **Calendar**: the appointment is green on top of the clinic's open hours. Drag to add an hour; click an open block to remove it, and **Undo** in the toast puts it back. Click the appointment to jump back to the request.
 10. Locally, show the API terminal: the two `Booking email logged` entries (patient receipt, clinic notice) and the *confirmed* email.
 
 **Act 3: the patient cancels (patient window)**
