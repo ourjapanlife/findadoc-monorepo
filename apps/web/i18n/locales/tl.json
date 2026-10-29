@@ -837,6 +837,7 @@
     "previousWeek": "Nakaraang linggo",
     "nextWeek": "Susunod na linggo",
     "japanTimeNote": "Lahat ng oras ay oras ng Japan (JST).",
+    "yourTime": "Oras mo: {time}",
     "slotEmptyWeek": "Walang bakanteng oras sa linggong ito.",
     "slotEmptyAhead": "Walang bakanteng oras sa mga darating na linggo. Subukan ang ibang haba ng pagbisita, doktor, o wika.",
     "nextAvailable": "Susunod na bakante: {date}",

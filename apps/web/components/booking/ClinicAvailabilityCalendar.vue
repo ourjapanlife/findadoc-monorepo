@@ -89,6 +89,12 @@
                 {{ item.label }}
             </li>
         </ul>
+        <p
+            class="text-xs text-primary-text-muted"
+            data-testid="clinic-availability-time-zone"
+        >
+            {{ t('bookingPage.japanTimeNote') }}
+        </p>
         <ClientOnly>
             <div class="clinic-calendar card min-h-0 flex-1 overflow-auto p-3 shadow-card">
                 <FullCalendar
@@ -116,6 +122,7 @@ import type {
 } from '@fullcalendar/core'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import luxonPlugin from '@fullcalendar/luxon3'
 import {
     BookingAppointmentStatus,
     type BookingAppointment,
@@ -139,7 +146,7 @@ import {
     fetchClinicPractitioners
 } from '~/utils/booking/staffQuery'
 import { practitionerName } from '~/utils/booking/practitioners'
-import { expandWeeklyHours, jstMidnight, subtractRanges } from '~/utils/booking/japanTime'
+import { expandWeeklyHours, JAPAN_TIME_ZONE, jstMidnight, subtractRanges } from '~/utils/booking/japanTime'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
 
@@ -152,6 +159,7 @@ import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~
  * shows on every schedule, because it closes every doctor.
  * With facilityId (the clinic dashboard) the calendar is fixed to that clinic.
  * Without it (moderation) a picker lists the hosted clinics.
+ * The grid is Japan time whatever the browser's zone, so staff abroad paint the clinic's hours.
  */
 const props = defineProps<{
     facilityId?: string
@@ -346,7 +354,8 @@ const events = computed((): EventInput[] => [
 ])
 
 const calendarOptions = computed((): CalendarOptions => ({
-    plugins: [timeGridPlugin, interactionPlugin],
+    plugins: [timeGridPlugin, interactionPlugin, luxonPlugin],
+    timeZone: JAPAN_TIME_ZONE,
     locales: allLocales,
     // Site codes are `ja_JP`; FullCalendar matches `ja-jp`, then `ja`, then English.
     locale: locale.value.replace('_', '-').toLowerCase(),
@@ -362,8 +371,7 @@ const calendarOptions = computed((): CalendarOptions => ({
     // In Close mode the all-day row closes whole days.
     allDaySlot: mode.value === 'close',
     allDayText: t('bookingAvailability.closeDayRow'),
-    // The whole day stays reachable: the grid uses the browser's time zone (#163), so JST
-    // hours can land anywhere for a user abroad. It opens scrolled to the morning.
+    // The whole day stays reachable. It opens scrolled to the morning.
     scrollTime: '08:30:00',
     nowIndicator: true,
     dayHeaderFormat: { weekday: 'short', day: 'numeric' },
@@ -494,16 +502,11 @@ async function removeClosure(closure: ClinicAvailabilityClosure, offerUndo: bool
     })
 }
 
-/** An all-day pick is local dates; it closes those days in Japan time. */
+/** An all-day pick is Japan dates ('YYYY-MM-DD'); it closes those whole days. */
 function allDayRange(selection: DateSelectArg): { startsAt: string, endsAt: string } {
-    const key = (date: Date) => [
-        date.getFullYear(),
-        String(date.getMonth() + 1).padStart(2, '0'),
-        String(date.getDate()).padStart(2, '0')
-    ].join('-')
     return {
-        startsAt: jstMidnight(key(selection.start)).toISOString(),
-        endsAt: jstMidnight(key(selection.end)).toISOString()
+        startsAt: jstMidnight(selection.startStr.slice(0, 10)).toISOString(),
+        endsAt: jstMidnight(selection.endStr.slice(0, 10)).toISOString()
     }
 }
 

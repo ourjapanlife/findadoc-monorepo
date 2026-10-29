@@ -307,6 +307,9 @@ importers:
       '@fullcalendar/interaction':
         specifier: 6.1.19
         version: 6.1.19(@fullcalendar/core@6.1.19)
+      '@fullcalendar/luxon3':
+        specifier: 6.1.19
+        version: 6.1.19(@fullcalendar/core@6.1.19)(luxon@3.7.2)
       '@fullcalendar/timegrid':
         specifier: 6.1.19
         version: 6.1.19(@fullcalendar/core@6.1.19)
@@ -325,6 +328,9 @@ importers:
       graphql-request:
         specifier: ^7.4.0
         version: 7.4.0(graphql@16.14.2)
+      luxon:
+        specifier: 3.7.2
+        version: 3.7.2
       nuxt-svgo:
         specifier: ^4.2.6
         version: 4.2.6(magicast@0.5.5)(vue@3.5.44(typescript@5.9.3))
@@ -404,6 +410,9 @@ importers:
       '@types/google.maps':
         specifier: ^3.58.1
         version: 3.66.6
+      '@types/luxon':
+        specifier: 3.7.1
+        version: 3.7.1
       '@vitejs/plugin-vue':
         specifier: ^6.0.3
         version: 6.0.10(vite@8.3.4(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))(vue@3.5.44(typescript@5.9.3))
@@ -1917,6 +1926,12 @@ packages:
     resolution: {integrity: sha512-GOciy79xe8JMVp+1evAU3ytdwN/7tv35t5i1vFkifiuWcQMLC/JnLg/RA2s4sYmQwoYhTw/p4GLcP0gO5B3X5w==}
     peerDependencies:
       '@fullcalendar/core': ~6.1.19
+
+  '@fullcalendar/luxon3@6.1.19':
+    resolution: {integrity: sha512-hjLKOkVIn3KqUsRZqiESIMSe+y1Gwu4qlHGypkB3XCKe//YBGQN6TkLQsflApB62pqgBQNII9HSafHsGdGCI5g==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.19
+      luxon: ^3.0.0
 
   '@fullcalendar/timegrid@6.1.19':
     resolution: {integrity: sha512-OuzpUueyO9wB5OZ8rs7TWIoqvu4v3yEqdDxZ2VcsMldCpYJRiOe7yHWKr4ap5Tb0fs7Rjbserc/b6Nt7ol6BRg==}
@@ -4387,6 +4402,9 @@ packages:
 
   '@types/long@4.0.2':
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
+
+  '@types/luxon@3.7.1':
+    resolution: {integrity: sha512-H3iskjFIAn5SlJU7OuxUmTEpebK6TKB8rxZShDslBMZJ5u9S//KM1sbdAisiSrqwLQncVjnpi2OK2J51h+4lsg==}
 
   '@types/mdx@2.0.14':
     resolution: {integrity: sha512-T48PeuJtvLosNTPVhfnIp3i/n3a4g4Bad7YCq5k64D4u7NwDrAotikQ+5+sjtUvBmxCMlbo3dVL+C2dP0rWHzg==}
@@ -7997,6 +8015,10 @@ packages:
   lru-cache@8.0.5:
     resolution: {integrity: sha512-MhWWlVnuab1RG5/zMRRcVGXZLCXrZTgfwMikgzCegsPnG62yDQo5JnqKkrK4jO5iKqDAZGItAqN5CtKBCBWRUA==}
     engines: {node: '>=16.14'}
+
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
 
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
@@ -12552,6 +12574,11 @@ snapshots:
     dependencies:
       '@fullcalendar/core': 6.1.19
 
+  '@fullcalendar/luxon3@6.1.19(@fullcalendar/core@6.1.19)(luxon@3.7.2)':
+    dependencies:
+      '@fullcalendar/core': 6.1.19
+      luxon: 3.7.2
+
   '@fullcalendar/timegrid@6.1.19(@fullcalendar/core@6.1.19)':
     dependencies:
       '@fullcalendar/core': 6.1.19
@@ -15656,6 +15683,8 @@ snapshots:
   '@types/less@3.0.6': {}
 
   '@types/long@4.0.2': {}
+
+  '@types/luxon@3.7.1': {}
 
   '@types/mdx@2.0.14': {}
 
@@ -19776,6 +19805,8 @@ snapshots:
   lru-cache@7.18.3: {}
 
   lru-cache@8.0.5: {}
+
+  luxon@3.7.2: {}
 
   lz-string@1.5.0: {}
 

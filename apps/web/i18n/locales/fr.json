@@ -837,6 +837,7 @@
     "previousWeek": "Semaine précédente",
     "nextWeek": "Semaine suivante",
     "japanTimeNote": "Toutes les heures sont à l'heure du Japon (JST).",
+    "yourTime": "Votre heure : {time}",
     "slotEmptyWeek": "Aucun créneau libre cette semaine.",
     "slotEmptyAhead": "Aucun créneau libre dans les semaines à venir. Essayez une autre durée, un autre médecin ou une autre langue.",
     "nextAvailable": "Prochain créneau : {date}",

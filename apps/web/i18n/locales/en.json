@@ -837,6 +837,7 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "japanTimeNote": "All times are Japan time (JST).",
+    "yourTime": "Your time: {time}",
     "slotEmptyWeek": "No open times this week.",
     "slotEmptyAhead": "No open times in the coming weeks. Try another visit length, doctor, or language.",
     "nextAvailable": "Next available: {date}",

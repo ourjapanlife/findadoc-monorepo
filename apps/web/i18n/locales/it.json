@@ -837,6 +837,7 @@
     "previousWeek": "Settimana precedente",
     "nextWeek": "Settimana successiva",
     "japanTimeNote": "Tutti gli orari sono in ora giapponese (JST).",
+    "yourTime": "La tua ora: {time}",
     "slotEmptyWeek": "Nessun orario libero questa settimana.",
     "slotEmptyAhead": "Nessun orario libero nelle prossime settimane. Prova un'altra durata, un altro medico o un'altra lingua.",
     "nextAvailable": "Prossimo disponibile: {date}",

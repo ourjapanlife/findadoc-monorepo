@@ -45,7 +45,7 @@
                     <dt class="text-sm text-primary-text-muted">
                         {{ t('bookingDashboard.columns.appointment') }}
                     </dt>
-                    <dd>{{ booking.startsAt ? formatToReadableDate(booking.startsAt) : '—' }}</dd>
+                    <dd>{{ booking.startsAt ? formatJapanDateTime(booking.startsAt, intlLocale(locale)) : '—' }}</dd>
                 </div>
             </dl>
 
@@ -122,7 +122,8 @@ import { BookingAppointmentStatus, type PatientBookingView } from '@findadoc/gra
 import { definePageMeta, useHead } from '#imports'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { cancelPatientBooking, fetchPatientBooking, isBookingRefusal } from '~/utils/booking/formQuery'
-import { formatToReadableDate } from '~/utils/dateUtils'
+import { formatJapanDateTime } from '~/utils/booking/japanTime'
+import { intlLocale } from '~/utils/intlLocale'
 import { formatPageTitle } from '~/utils/site'
 
 /**
@@ -133,7 +134,7 @@ definePageMeta({
     ssr: false
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const booking = ref<PatientBookingView | null>(null)
 const loading = ref(true)
 const reason = ref('')

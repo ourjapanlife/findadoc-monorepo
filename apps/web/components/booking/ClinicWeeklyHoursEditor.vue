@@ -160,6 +160,7 @@ import BookingScheduleSelect from '~/components/booking/BookingScheduleSelect.vu
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
 import { addDaysToKey, dateFromKey, minutesLabel } from '~/utils/booking/japanTime'
+import { intlLocale } from '~/utils/intlLocale'
 import { fetchClinicPractitioners, fetchClinicWeeklyHours, setClinicWeeklyHours } from '~/utils/booking/staffQuery'
 
 /**
@@ -199,7 +200,7 @@ function endOptions(startMinute: number): number[] {
 }
 
 const days = computed(() => {
-    const format = new Intl.DateTimeFormat(locale.value || 'en', { weekday: 'long', timeZone: 'UTC' })
+    const format = new Intl.DateTimeFormat(intlLocale(locale.value), { weekday: 'long', timeZone: 'UTC' })
     return [1, 2, 3, 4, 5, 6, 7].map(weekday => ({
         weekday,
         label: format.format(dateFromKey(addDaysToKey(MONDAY_KEY, weekday - 1)))
