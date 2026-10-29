@@ -39,6 +39,7 @@ const BOOKING_FORM_FIELDS = `
   clinicName
   themePrimary
   allowedDurations
+  defaultDuration
   fields {
     id
     type

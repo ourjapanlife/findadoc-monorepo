@@ -108,6 +108,7 @@ const MEMBER_FIELDS = `
 const SETTINGS_FIELDS = `
   facilityId
   allowedDurations
+  defaultDuration
   formDefinitionIds
 `
 

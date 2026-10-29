@@ -963,6 +963,7 @@
       "durationsHelp": "Patienten wählen eine der angebotenen Längen. Die Standardlänge ist auf der Buchungsseite vorausgewählt.",
       "forms": "Anamnesebögen",
       "formsHelp": "Patientinnen und Patienten sehen den Standardbogen, außer der Buchungslink nennt einen anderen Bogen, den Sie anbieten.",
+      "defaultDuration": "Standarddauer",
       "defaultForm": "Standard",
       "save": "Einstellungen speichern"
     },

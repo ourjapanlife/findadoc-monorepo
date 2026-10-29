@@ -963,6 +963,7 @@
       "durationsHelp": "Bệnh nhân chọn một trong các thời lượng bạn cung cấp. Thời lượng mặc định được chọn sẵn trên trang đặt lịch.",
       "forms": "Mẫu thông tin khám",
       "formsHelp": "Bệnh nhân sẽ thấy mẫu mặc định trừ khi liên kết đặt lịch chỉ định một mẫu khác mà bạn cung cấp.",
+      "defaultDuration": "Thời lượng mặc định",
       "defaultForm": "Mặc định",
       "save": "Lưu cài đặt"
     },

@@ -225,6 +225,8 @@ export interface BookingSettingsTable {
     /** Intake forms the clinic offers. The first is the default. */
     form_definition_ids: string[]
     allowed_durations: number[]
+    /** The offered length the Book page preselects. Null means 30 when offered, else the shortest. */
+    default_duration: number | null
     created_date: Generated<string>
     updated_date: Generated<string>
 }

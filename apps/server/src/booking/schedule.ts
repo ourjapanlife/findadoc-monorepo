@@ -34,9 +34,27 @@ export function parseAppointmentDuration(
     return value
 }
 
+/** The length the Book page preselects: the clinic's choice, else 30 minutes when offered, else the shortest. */
+export function resolveDefaultDuration(
+    allowed: readonly number[] = DEFAULT_ALLOWED_DURATIONS,
+    preferred?: number | null
+): AppointmentDurationMinutes | undefined {
+    const chosen = parseAppointmentDuration(preferred, allowed)
+    if (chosen !== undefined) {
+        return chosen
+    }
+    if (allowed.includes(DEFAULT_APPOINTMENT_DURATION_MINUTES)
+      && isAppointmentDuration(DEFAULT_APPOINTMENT_DURATION_MINUTES)) {
+        return DEFAULT_APPOINTMENT_DURATION_MINUTES
+    }
+    const shortest = [...allowed].sort((a, b) => a - b)[0]
+    return shortest !== undefined && isAppointmentDuration(shortest) ? shortest : undefined
+}
+
 export function resolveAppointmentDuration(
     value: number | null | undefined,
-    allowed: readonly number[] = DEFAULT_ALLOWED_DURATIONS
+    allowed: readonly number[] = DEFAULT_ALLOWED_DURATIONS,
+    defaultDuration?: number | null
 ): AppointmentDurationMinutes | undefined {
     const parsed = parseAppointmentDuration(value, allowed)
     if (parsed !== undefined) {
@@ -45,12 +63,7 @@ export function resolveAppointmentDuration(
     if (value !== null && value !== undefined) {
         return undefined
     }
-    if (allowed.includes(DEFAULT_APPOINTMENT_DURATION_MINUTES)
-      && isAppointmentDuration(DEFAULT_APPOINTMENT_DURATION_MINUTES)) {
-        return DEFAULT_APPOINTMENT_DURATION_MINUTES
-    }
-    const first = allowed[0]
-    return first !== undefined && isAppointmentDuration(first) ? first : undefined
+    return resolveDefaultDuration(allowed, defaultDuration)
 }
 
 export function parseAllowedDurations(value: unknown): AppointmentDurationMinutes[] {

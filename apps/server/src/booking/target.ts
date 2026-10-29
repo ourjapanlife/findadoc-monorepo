@@ -1,7 +1,7 @@
 import { db } from '../kyselyClient.js'
 import { clinicThemeFromRow } from '../services/clinicSiteService.js'
 import { DEFAULT_BOOKING_FORM_ID, parseFormDefinitionIds } from './formDefinitions.js'
-import { DEFAULT_ALLOWED_DURATIONS, parseAllowedDurations } from './schedule.js'
+import { DEFAULT_ALLOWED_DURATIONS, parseAllowedDurations, resolveDefaultDuration } from './schedule.js'
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -13,10 +13,17 @@ export type BookingTarget = {
     clinicName: string
     themePrimary: string | null
     allowedDurations: number[]
+    /** The offered length the Book page preselects. */
+    defaultDuration: number
     /** Forms the clinic offers. The first is the default. */
     formDefinitionIds: string[]
     /** True when the facility has a booking_settings row. Patients may book only then. */
     bookingEnabled: boolean
+}
+
+// parseAllowedDurations never returns an empty list, so a default always resolves.
+function defaultDurationFor(allowed: readonly number[], preferred?: number | null): number {
+    return resolveDefaultDuration(allowed, preferred) ?? allowed[0]!
 }
 
 function isUuid(value: string): boolean {
@@ -25,32 +32,37 @@ function isUuid(value: string): boolean {
 
 export async function settingsForFacility(facilityId: string | null): Promise<{
     allowedDurations: number[]
+    defaultDuration: number
     formDefinitionIds: string[]
     enabled: boolean
 }> {
     if (facilityId === null) {
         return {
             allowedDurations: [...DEFAULT_ALLOWED_DURATIONS],
+            defaultDuration: defaultDurationFor(DEFAULT_ALLOWED_DURATIONS),
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID],
             enabled: false
         }
     }
 
     const row = await db.selectFrom('booking_settings')
-        .select(['form_definition_ids', 'allowed_durations'])
+        .select(['form_definition_ids', 'allowed_durations', 'default_duration'])
         .where('facility_id', '=', facilityId)
         .executeTakeFirst()
 
     if (row === undefined) {
         return {
             allowedDurations: [...DEFAULT_ALLOWED_DURATIONS],
+            defaultDuration: defaultDurationFor(DEFAULT_ALLOWED_DURATIONS),
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID],
             enabled: false
         }
     }
 
+    const allowedDurations = parseAllowedDurations(row.allowed_durations)
     return {
-        allowedDurations: parseAllowedDurations(row.allowed_durations),
+        allowedDurations,
+        defaultDuration: defaultDurationFor(allowedDurations, row.default_duration),
         formDefinitionIds: parseFormDefinitionIds(row.form_definition_ids),
         enabled: true
     }
@@ -93,6 +105,7 @@ async function targetFromFacility(facilityId: string): Promise<BookingTarget | u
         clinicName,
         themePrimary: theme?.primary ?? null,
         allowedDurations: settings.allowedDurations,
+        defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,
         bookingEnabled: settings.enabled
     }
@@ -137,6 +150,7 @@ async function targetFromClinicSite(siteIdOrSlug: string, byId: boolean): Promis
         clinicName: site.name?.trim() || site.slug,
         themePrimary: theme.primary,
         allowedDurations: settings.allowedDurations,
+        defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,
         bookingEnabled: settings.enabled
     }

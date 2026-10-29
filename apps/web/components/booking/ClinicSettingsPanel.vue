@@ -68,6 +68,35 @@
                         </span>
                     </label>
                 </div>
+                <div
+                    v-if="durations.length > 1"
+                    role="radiogroup"
+                    :aria-labelledby="defaultDurationLabelId"
+                    class="flex flex-wrap items-center gap-x-4 gap-y-2"
+                >
+                    <span
+                        :id="defaultDurationLabelId"
+                        class="text-sm font-semibold text-primary-text"
+                    >
+                        {{ t('clinicDashboard.settings.defaultDuration') }}
+                    </span>
+                    <label
+                        v-for="minutes in sortedDurations"
+                        :key="minutes"
+                        class="inline-flex cursor-pointer items-center gap-2 text-sm"
+                        :class="defaultDuration === minutes ? 'font-semibold text-primary' : 'text-primary-text-muted'"
+                    >
+                        <input
+                            v-model="defaultDuration"
+                            type="radio"
+                            name="default-duration"
+                            class="h-4 w-4 accent-primary"
+                            :value="minutes"
+                            data-testid="clinic-settings-default-duration"
+                        >
+                        {{ t('bookingPage.durationMinutes', { n: minutes }) }}
+                    </label>
+                </div>
             </fieldset>
 
             <fieldset class="flex flex-col gap-3">
@@ -152,15 +181,14 @@ const toast = useAppToast()
 const settings = ref<BookingSettings | null>(null)
 const formTypes = ref<BookingFormType[]>([])
 const durations = ref<number[]>([])
+const defaultDuration = ref<number | undefined>(undefined)
+const defaultDurationLabelId = 'clinic-settings-default-duration'
 const formIds = ref<string[]>([])
 const defaultFormId = ref('')
 const loadError = ref(false)
 const savingSettings = ref(false)
 
-// The length the Book page preselects: 30 minutes when offered, else the shortest.
-const defaultDuration = computed(() => durations.value.length === 0
-    ? undefined
-    : resolveDuration(null, [...durations.value].sort((a, b) => a - b)))
+const sortedDurations = computed(() => [...durations.value].sort((a, b) => a - b))
 
 async function load(): Promise<void> {
     const loaded = await fetchClinicAdmin(props.facilityId)
@@ -171,9 +199,19 @@ async function load(): Promise<void> {
     settings.value = loaded.settings
     formTypes.value = loaded.formTypes
     durations.value = [...(loaded.settings?.allowedDurations ?? [])]
+    defaultDuration.value = durations.value.length === 0
+        ? undefined
+        : resolveDuration(loaded.settings?.defaultDuration, sortedDurations.value)
     formIds.value = [...(loaded.settings?.formDefinitionIds ?? [])]
     defaultFormId.value = formIds.value[0] ?? ''
 }
+
+// Unchecking the default length moves it to 30 minutes when offered, else the shortest.
+watch(durations, offered => {
+    if (defaultDuration.value === undefined || !offered.includes(defaultDuration.value)) {
+        defaultDuration.value = offered.length === 0 ? undefined : resolveDuration(null, sortedDurations.value)
+    }
+})
 
 // Unchecking the default form moves the default to the next offered form.
 watch(formIds, ids => {
@@ -187,7 +225,8 @@ async function saveSettings(): Promise<void> {
     const ordered = [defaultFormId.value, ...formIds.value.filter(id => id !== defaultFormId.value)]
     const saved = await updateBookingSettings({
         facilityId: props.facilityId,
-        allowedDurations: [...durations.value].sort((a, b) => a - b),
+        allowedDurations: sortedDurations.value,
+        defaultDuration: defaultDuration.value,
         formDefinitionIds: ordered
     })
     savingSettings.value = false

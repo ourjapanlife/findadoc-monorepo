@@ -963,6 +963,7 @@
       "durationsHelp": "I pazienti scelgono una delle durate che offri. Quella predefinita è già selezionata nella pagina di prenotazione.",
       "forms": "Moduli di accettazione",
       "formsHelp": "I pazienti vedono il modulo predefinito, a meno che il link di prenotazione indichi un altro modulo che offri.",
+      "defaultDuration": "Durata predefinita",
       "defaultForm": "Predefinito",
       "save": "Salva impostazioni"
     },

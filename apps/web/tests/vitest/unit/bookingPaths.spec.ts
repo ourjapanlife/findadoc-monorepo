@@ -35,5 +35,7 @@ describe('booking paths', () => {
         expect(parseBookingQuery({ duration: '20' }).duration).to.equal(undefined)
         expect(resolveDuration(45, [15, 30, 45, 60])).to.equal(45)
         expect(resolveDuration(20, [15, 45])).to.equal(15)
+        expect(resolveDuration(undefined, [15, 30, 45, 60], 45)).to.equal(45)
+        expect(resolveDuration(undefined, [15, 30], 45)).to.equal(30)
     })
 })

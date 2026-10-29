@@ -17,7 +17,7 @@ import {
     type MembershipRole
 } from '../booking/access.js'
 import { formSourceById, listFormSources } from '../booking/formDefinitions.js'
-import { isAppointmentDuration } from '../booking/schedule.js'
+import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedule.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
@@ -215,6 +215,7 @@ export async function getBookingSettings(facilityId: string, access: BookingAcce
     return {
         facilityId,
         allowedDurations: settings.allowedDurations,
+        defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds
     }
 }
@@ -231,6 +232,12 @@ export async function updateBookingSettings(
     if (durations.length === 0 || !durations.every(isAppointmentDuration)) {
         return invalid('allowedDurations')
     }
+    // An omitted default keeps the rule: 30 minutes when offered, else the shortest.
+    const chosenDefault = input.defaultDuration ?? null
+    if (chosenDefault !== null && !durations.some(minutes => minutes === chosenDefault)) {
+        return invalid('defaultDuration')
+    }
+    const defaultDuration = resolveDefaultDuration(durations, chosenDefault) ?? durations[0]!
     const formIds = [...new Set(input.formDefinitionIds)]
     if (formIds.length === 0 || !formIds.every(id => formSourceById(id) !== undefined)) {
         return invalid('formDefinitionIds')
@@ -253,17 +260,24 @@ export async function updateBookingSettings(
             facility_id: input.facilityId,
             clinic_site_id: site?.id ?? null,
             form_definition_ids: formIds,
-            allowed_durations: durations
+            allowed_durations: durations,
+            default_duration: chosenDefault
         })
         .onConflict(conflict => conflict.column('facility_id').doUpdateSet({
             form_definition_ids: formIds,
             allowed_durations: durations,
+            default_duration: chosenDefault,
             updated_date: sql`now()`
         }))
         .execute()
 
     return {
-        data: { facilityId: input.facilityId, allowedDurations: durations, formDefinitionIds: formIds },
+        data: {
+            facilityId: input.facilityId,
+            allowedDurations: durations,
+            defaultDuration,
+            formDefinitionIds: formIds
+        },
         hasErrors: false
     }
 }
