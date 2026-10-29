@@ -886,8 +886,9 @@
     "loading": "Caricamento calendario…",
     "windowTitle": "Disponibile",
     "createFailed": "Impossibile salvare la disponibilità.",
-    "deleteConfirm": "Rimuovere questa disponibilità?",
     "deleteFailed": "Impossibile rimuovere la disponibilità.",
+    "removed": "Disponibilità rimossa.",
+    "undo": "Annulla",
     "legend": "Legenda del calendario",
     "patient": "Paziente",
     "loadFailed": "Impossibile caricare il calendario.",
@@ -911,6 +912,7 @@
     "allStatuses": "Tutte le richieste",
     "saved": "Salvato",
     "saveFailed": "Impossibile salvare. Riprova.",
+    "saving": "Salvataggio…",
     "tabs": {
       "requests": "Richieste",
       "calendar": "Calendario",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "Impostazioni di prenotazione",
+      "durationsHelp": "I pazienti scelgono una delle durate che offri. Quella predefinita è già selezionata nella pagina di prenotazione.",
       "forms": "Moduli di accettazione",
       "formsHelp": "I pazienti vedono il modulo predefinito, a meno che il link di prenotazione indichi un altro modulo che offri.",
       "defaultForm": "Predefinito",

@@ -886,8 +886,9 @@
     "loading": "Naglo-load ang calendar…",
     "windowTitle": "Bukas",
     "createFailed": "Hindi ma-save ang availability window.",
-    "deleteConfirm": "Tanggalin ang availability window na ito?",
     "deleteFailed": "Hindi matanggal ang window.",
+    "removed": "Inalis ang bakanteng oras.",
+    "undo": "I-undo",
     "legend": "Gabay sa kalendaryo",
     "patient": "Pasyente",
     "loadFailed": "Hindi ma-load ang kalendaryong ito.",
@@ -911,6 +912,7 @@
     "allStatuses": "Lahat ng kahilingan",
     "saved": "Na-save",
     "saveFailed": "Hindi ma-save. Subukang muli.",
+    "saving": "Sine-save…",
     "tabs": {
       "requests": "Mga kahilingan",
       "calendar": "Kalendaryo",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "Mga setting ng booking",
+      "durationsHelp": "Pipili ang pasyente ng isa sa mga haba ng pagbisitang inaalok ninyo. Nakapili na ang default sa pahina ng booking.",
       "forms": "Mga intake form",
       "formsHelp": "Makikita ng pasyente ang default na form maliban kung ibang form na inaalok mo ang nakasaad sa Book link.",
       "defaultForm": "Default na form",

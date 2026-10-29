@@ -1,7 +1,7 @@
 <template>
     <ClinicDashboardGate>
         <div
-            class="mx-auto flex w-full max-w-6xl flex-col gap-4 p-4 md:p-6"
+            class="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 md:p-6"
             data-testid="clinic-dashboard"
         >
             <p
@@ -24,10 +24,10 @@
             </div>
             <template v-else>
                 <header class="flex flex-col gap-1">
-                    <p class="text-sm text-primary-text-muted">
+                    <p class="eyebrow">
                         {{ t('clinicDashboard.heading') }}
                     </p>
-                    <h1 class="text-2xl font-semibold text-primary-text">
+                    <h1 class="page-title-sm">
                         {{ clinic.clinicName }}
                     </h1>
                 </header>
@@ -40,10 +40,10 @@
                         v-for="item in tabs"
                         :key="item.id"
                         :to="{ query: { tab: item.id } }"
-                        class="-mb-px border-b-2 px-3 py-2"
+                        class="-mb-px border-b-2 px-4 py-2.5 font-semibold transition-colors"
                         :class="tab === item.id && !bookingId
-                            ? 'border-primary font-semibold text-primary'
-                            : 'border-transparent text-primary-text-muted'"
+                            ? 'border-primary text-primary'
+                            : 'border-transparent text-primary-text-muted hover:border-accent-bg hover:text-primary'"
                         :aria-current="tab === item.id && !bookingId ? 'page' : undefined"
                         :data-testid="`clinic-dashboard-tab-${item.id}`"
                     >

@@ -886,8 +886,9 @@
     "loading": "Carregando calendário…",
     "windowTitle": "Disponível",
     "createFailed": "Não foi possível salvar a disponibilidade.",
-    "deleteConfirm": "Remover esta disponibilidade?",
     "deleteFailed": "Não foi possível remover a disponibilidade.",
+    "removed": "Disponibilidade removida.",
+    "undo": "Desfazer",
     "legend": "Legenda do calendário",
     "patient": "Paciente",
     "loadFailed": "Não foi possível carregar este calendário.",
@@ -911,6 +912,7 @@
     "allStatuses": "Todos os pedidos",
     "saved": "Salvo",
     "saveFailed": "Não foi possível salvar. Tente novamente.",
+    "saving": "Salvando…",
     "tabs": {
       "requests": "Pedidos",
       "calendar": "Calendário",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "Configurações de agendamento",
+      "durationsHelp": "Os pacientes escolhem uma das durações que você oferece. A duração padrão já vem selecionada na página de agendamento.",
       "forms": "Formulários de triagem",
       "formsHelp": "Os pacientes veem o formulário padrão, a menos que o link de agendamento indique outro formulário que você oferece.",
       "defaultForm": "Padrão",

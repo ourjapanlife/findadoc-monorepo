@@ -886,8 +886,9 @@
     "loading": "Loading calendar…",
     "windowTitle": "Available",
     "createFailed": "Could not save that availability window.",
-    "deleteConfirm": "Remove this availability window?",
     "deleteFailed": "Could not remove that window.",
+    "removed": "Availability removed.",
+    "undo": "Undo",
     "legend": "Calendar key",
     "patient": "Patient",
     "loadFailed": "Could not load this calendar.",
@@ -911,6 +912,7 @@
     "allStatuses": "All requests",
     "saved": "Saved",
     "saveFailed": "Could not save. Try again.",
+    "saving": "Saving…",
     "tabs": {
       "requests": "Requests",
       "calendar": "Calendar",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "Booking settings",
+      "durationsHelp": "Patients choose one of the lengths you offer. The default is preselected on the Book page.",
       "forms": "Intake forms",
       "formsHelp": "Patients see the default form unless the Book link names another form you offer.",
       "defaultForm": "Default",

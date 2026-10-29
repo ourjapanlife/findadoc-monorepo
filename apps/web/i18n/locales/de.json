@@ -886,8 +886,9 @@
     "loading": "Kalender wird geladen…",
     "windowTitle": "Verfügbar",
     "createFailed": "Verfügbarkeit konnte nicht gespeichert werden.",
-    "deleteConfirm": "Diese Verfügbarkeit entfernen?",
     "deleteFailed": "Verfügbarkeit konnte nicht entfernt werden.",
+    "removed": "Verfügbarkeit entfernt.",
+    "undo": "Rückgängig",
     "legend": "Kalenderlegende",
     "patient": "Patient/in",
     "loadFailed": "Der Kalender konnte nicht geladen werden.",
@@ -911,6 +912,7 @@
     "allStatuses": "Alle Anfragen",
     "saved": "Gespeichert",
     "saveFailed": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "saving": "Wird gespeichert…",
     "tabs": {
       "requests": "Anfragen",
       "calendar": "Kalender",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "Buchungseinstellungen",
+      "durationsHelp": "Patienten wählen eine der angebotenen Längen. Die Standardlänge ist auf der Buchungsseite vorausgewählt.",
       "forms": "Anamnesebögen",
       "formsHelp": "Patientinnen und Patienten sehen den Standardbogen, außer der Buchungslink nennt einen anderen Bogen, den Sie anbieten.",
       "defaultForm": "Standard",

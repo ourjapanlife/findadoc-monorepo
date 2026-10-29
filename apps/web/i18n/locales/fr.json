@@ -886,8 +886,9 @@
     "loading": "Chargement du calendrier…",
     "windowTitle": "Disponible",
     "createFailed": "Impossible d’enregistrer cette disponibilité.",
-    "deleteConfirm": "Retirer cette disponibilité ?",
     "deleteFailed": "Impossible de retirer cette disponibilité.",
+    "removed": "Disponibilité supprimée.",
+    "undo": "Annuler",
     "legend": "Légende du calendrier",
     "patient": "Patient·e",
     "loadFailed": "Impossible de charger ce calendrier.",
@@ -911,6 +912,7 @@
     "allStatuses": "Toutes les demandes",
     "saved": "Enregistré",
     "saveFailed": "Impossible d'enregistrer. Réessayez.",
+    "saving": "Enregistrement…",
     "tabs": {
       "requests": "Demandes",
       "calendar": "Calendrier",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "Paramètres de réservation",
+      "durationsHelp": "Les patients choisissent l’une des durées que vous proposez. La durée par défaut est présélectionnée sur la page de réservation.",
       "forms": "Formulaires d'admission",
       "formsHelp": "Les patients voient le formulaire par défaut, sauf si le lien de réservation indique un autre formulaire que vous proposez.",
       "defaultForm": "Par défaut",

@@ -886,8 +886,9 @@
     "loading": "캘린더 불러오는 중…",
     "windowTitle": "가능",
     "createFailed": "가능 시간을 저장하지 못했습니다.",
-    "deleteConfirm": "이 가능 시간을 삭제할까요?",
     "deleteFailed": "가능 시간을 삭제하지 못했습니다.",
+    "removed": "예약 가능 시간을 삭제했습니다.",
+    "undo": "실행 취소",
     "legend": "캘린더 범례",
     "patient": "환자",
     "loadFailed": "캘린더를 불러올 수 없습니다.",
@@ -911,6 +912,7 @@
     "allStatuses": "모든 요청",
     "saved": "저장됨",
     "saveFailed": "저장할 수 없습니다. 다시 시도해 주세요.",
+    "saving": "저장 중…",
     "tabs": {
       "requests": "요청",
       "calendar": "캘린더",
@@ -922,6 +924,7 @@
     },
     "settings": {
       "heading": "예약 설정",
+      "durationsHelp": "환자는 제공하는 진료 시간 중 하나를 선택합니다. 예약 페이지에서는 기본 시간이 미리 선택됩니다.",
       "forms": "문진표",
       "formsHelp": "예약 링크에서 다른 양식을 지정하지 않으면 환자에게 기본 양식이 표시됩니다.",
       "defaultForm": "기본",
