@@ -149,6 +149,7 @@
     /* text */
     --theme-color-text-base: 18 33 43;           /* #12212B — 15.66:1 */
     --theme-color-text-muted: 79 99 107;         /* #4F636B — 6.01:1 */
+    --field-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234F636B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     --theme-color-text-inverted: 255 255 255;    /* #FFFFFF */
 
     /* surfaces */
@@ -179,6 +180,7 @@
 
       --theme-color-text-base: 241 245 246;        /* #F1F5F6 — 16.65:1 */
       --theme-color-text-muted: 169 184 189;       /* #A9B8BD — 8.94:1 */
+      --field-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A9B8BD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
       --theme-color-text-inverted: 11 18 20;
 
       --theme-color-bg-primary: 16 22 23;          /* #101617 */
@@ -235,6 +237,7 @@
 
     --theme-color-text-base: 241 245 246;
     --theme-color-text-muted: 169 184 189;
+    --field-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A9B8BD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     --theme-color-text-inverted: 11 18 20;
 
     --theme-color-bg-primary: 16 22 23;
@@ -255,12 +258,14 @@
   @media (prefers-contrast: more) {
     :root {
       --theme-color-text-muted: 18 33 43;
+      --field-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2312212B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
       --theme-color-bg-accent: 118 138 145;
       --theme-color-border-strong: 18 33 43;
     }
 
     :root.theme-dark {
       --theme-color-text-muted: 241 245 246;
+      --field-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F1F5F6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
       --theme-color-bg-accent: 106 124 130;
       --theme-color-border-strong: 241 245 246;
     }
@@ -268,6 +273,7 @@
     @media (prefers-color-scheme: dark) {
       :root:not(.theme-light) {
         --theme-color-text-muted: 241 245 246;
+        --field-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F1F5F6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
         --theme-color-bg-accent: 106 124 130;
         --theme-color-border-strong: 241 245 246;
       }
@@ -388,19 +394,13 @@
   }
 
   /*
-   * Native select arrows hug the border and differ per browser. Draw our own chevron from
-   * two diagonal gradient strokes so it follows the theme's muted-text token in every theme
-   * (an SVG data URI can't read CSS variables).
+   * Native select arrows hug the border and differ per browser. Swap in the same chevron
+   * LocaleSelector draws. A data URI can't read CSS variables, so each theme sets its own
+   * `--field-chevron` next to the muted-text colour it matches.
    */
   select.field:not([multiple]) {
-    --field-chevron: var(--color-primary-text-muted);
-    @apply appearance-none pr-10;
-    background-image:
-      linear-gradient(45deg, transparent calc(50% - 0.75px), var(--field-chevron) 0 calc(50% + 0.75px), transparent 0),
-      linear-gradient(135deg, transparent calc(50% - 0.75px), var(--field-chevron) 0 calc(50% + 0.75px), transparent 0);
-    background-position: right calc(1rem + 6px) center, right 1rem center;
-    background-size: 6px 6px;
-    background-repeat: no-repeat;
+    @apply appearance-none bg-[length:1rem] bg-[position:right_0.75rem_center] bg-no-repeat pr-10;
+    background-image: var(--field-chevron);
   }
 
   .field-textarea {
