@@ -98,6 +98,30 @@ The patient token is 32 random bytes in the URL fragment of
 `/book/manage#{token}`, so it is never in a server or CDN log. Only its sha256
 is stored (`booking_submissions.cancel_token_hash`).
 
+## Only visitors in Japan
+
+Booking is offered only to people who are in Japan now (#173). A request
+carries health information and identity documents, and keeping booking to
+visitors in Japan keeps it under the APPI rather than the GDPR's rules for
+special-category data. The directory, clinic pages, and the patient's manage
+link (`patientBooking`, `cancelBookingByToken`) stay open everywhere.
+
+`src/booking/region.ts` reads the viewer's country from CloudFront's
+`CloudFront-Viewer-Country`. The edge function copies it to
+`x-findadoc-viewer-country`, and `viewerCountryFrom` trusts it only with the
+edge secret, as `clientIpFrom` does for the address. `submitBooking` and
+`createBookingUploadUrl` refuse anything but `JP`, including a missing
+country, with `BOOKING_REGION_UNAVAILABLE` (HTTP 403). The `bookingAvailable`
+query gives the Book page the same answer, and the page shows a notice with
+the clinic's contact details instead of the form. Local development and tests
+have no CloudFront, so they skip the check.
+
+A VPN changes the country, so the patient also ticks "I am currently in
+Japan". A second box consents to the reason for the visit going to the
+clinic. `submitBooking` requires both (`confirmedInJapan`,
+`healthDataConsent`) and stores the consent time in
+`booking_submissions.health_data_consented_at`.
+
 ## Limits on the signed-out endpoints
 
 The intake form and the patient link work without a session, so

@@ -103,8 +103,8 @@
         "heading": "2. Informations que nous collectons",
         "p1": "Recherche dans l'annuaire : vous pouvez chercher sans compte. Nous recevons vos termes de recherche, vos filtres et votre langue. Votre langue, votre thème et vos filtres récents sont enregistrés dans votre propre navigateur.",
         "p2": "Suggestion d'une clinique ou d'un médecin : nous recevons ce que vous saisissez, par exemple un lien Google Maps, des noms, les langues parlées et des remarques. N'y mettez pas d'informations sur votre propre santé.",
-        "p3": "Prise de rendez-vous : lorsqu'une clinique reçoit des demandes de rendez-vous via Find a Doc, Japan, nous collectons ce que son formulaire demande. Cela peut inclure votre nom, votre adresse e-mail, votre numéro de téléphone, votre âge, le motif de consultation, l'horaire choisi et des fichiers comme une photo de vous et de votre carte d'assurance maladie ou de votre certificat d'éligibilité.",
-        "p4": "Le motif de consultation est une information de santé, que l'APPI considère comme une information personnelle nécessitant une attention particulière. Nous ne la collectons que lorsque vous envoyez vous-même le formulaire. En l'envoyant, vous consentez à ce que nous la collections et la transmettions à la clinique choisie.",
+        "p3": "Prise de rendez-vous : lorsqu'une clinique reçoit des demandes de rendez-vous via Find a Doc, Japan, nous collectons ce que son formulaire demande. Cela peut inclure votre nom, votre adresse e-mail, votre numéro de téléphone, votre âge, le motif de consultation, l'horaire choisi et des fichiers comme une photo de vous et de votre carte d'assurance maladie ou de votre certificat d'éligibilité. La prise de rendez-vous n'est proposée qu'aux personnes qui se trouvent au Japon au moment de l'envoi de la demande.",
+        "p4": "Le motif de consultation est une information de santé, que l'APPI considère comme une information personnelle nécessitant une attention particulière. Nous ne la collectons que lorsque vous envoyez vous-même le formulaire, après avoir coché une case par laquelle vous consentez à ce que nous la collections et la transmettions à la clinique choisie. Nous enregistrons la date et l'heure de ce consentement.",
         "p5": "Comptes et informations techniques : les modérateurs et le personnel des cliniques se connectent via Auth0, qui nous transmet leur nom, leur adresse e-mail et un identifiant de compte. Nos serveurs enregistrent les adresses IP et le détail des requêtes pour assurer le fonctionnement du service et prévenir les abus."
       },
       "use": {
@@ -147,7 +147,7 @@
       },
       "gdpr": {
         "heading": "11. Visiteurs de l'EEE, du Royaume-Uni et de la Suisse",
-        "p1": "Si vous utilisez Find a Doc, Japan depuis l'Espace économique européen, le Royaume-Uni ou la Suisse, le RGPD (ou le RGPD britannique ou la loi suisse sur la protection des données) s'applique également. Nous nous fondons sur votre consentement pour les cookies et la mesure publicitaire ainsi que pour les informations de santé d'une demande de rendez-vous ; sur les mesures prises à votre demande avant un rendez-vous, pour transmettre votre demande à la clinique ; et sur nos intérêts légitimes pour faire fonctionner, sécuriser et corriger le service.",
+        "p1": "Si vous utilisez Find a Doc, Japan depuis l'Espace économique européen, le Royaume-Uni ou la Suisse, le RGPD (ou le RGPD britannique ou la loi suisse sur la protection des données) s'applique également. La prise de rendez-vous n'est proposée qu'aux personnes qui se trouvent au Japon : nous n'acceptons donc pas de demandes de rendez-vous, ni les informations de santé qu'elles contiennent, depuis ces pays. Nous nous fondons sur votre consentement pour les cookies et la mesure publicitaire, et sur nos intérêts légitimes pour faire fonctionner, sécuriser et corriger le service.",
         "p2": "Vous avez aussi le droit de recevoir vos informations dans un format portable, de vous opposer aux traitements fondés sur l'intérêt légitime, de retirer votre consentement à tout moment sans remettre en cause les traitements antérieurs, et d'introduire une réclamation auprès de votre autorité de protection des données. Retirez votre consentement aux cookies via Paramètres des cookies et envoyez vos autres demandes à contact{'@'}findadoc.jp.",
         "p3": "La Commission européenne a reconnu que le Japon assure un niveau de protection adéquat des informations personnelles ; elles peuvent donc être transférées de l'EEE vers le Japon. Les transferts vers des prestataires aux États-Unis reposent sur le cadre de protection des données UE-États-Unis ou sur les clauses contractuelles types de la Commission européenne."
       },
@@ -805,7 +805,9 @@
       "slot": "Choisissez un horaire disponible",
       "duration": "Choisissez une durée proposée par la clinique",
       "tooManyRequests": "Trop de demandes depuis cette connexion. Patientez quelques minutes, puis réessayez.",
-      "openRequestLimit": "Cette adresse e-mail a déjà des demandes en attente auprès de cette clinique. Attendez la réponse de la clinique, ou annulez-en une avec le lien reçu par e-mail."
+      "openRequestLimit": "Cette adresse e-mail a déjà des demandes en attente auprès de cette clinique. Attendez la réponse de la clinique, ou annulez-en une avec le lien reçu par e-mail.",
+      "confirmations": "Cochez les deux cases avant d'envoyer la demande",
+      "regionUnavailable": "La prise de rendez-vous est actuellement réservée aux personnes qui se trouvent au Japon."
     },
     "slotLabel": "Horaire souhaité",
     "slotLoading": "Chargement des créneaux…",
@@ -867,6 +869,18 @@
       },
       "noMyNumber": "N'envoyez pas de photo de votre carte My Number, ni le recto ni le verso, ni son numéro à 12 chiffres.",
       "bringCard": "La clinique vérifie votre assurance avec la carte elle-même."
+    },
+    "confirmationsLegend": "Avant l'envoi",
+    "confirmInJapan": "Je suis actuellement au Japon.",
+    "healthDataConsent": "J'accepte que Find a Doc, Japan transmette le motif de ma consultation, qui est une information de santé, à {clinic}.",
+    "privacyPolicyLink": "Politique de confidentialité",
+    "regionNotice": {
+      "heading": "La prise de rendez-vous est actuellement réservée aux personnes qui se trouvent au Japon",
+      "body": "Vous ne pouvez pas envoyer de demande de rendez-vous depuis l'endroit où vous vous trouvez. Pour prendre rendez-vous, contactez directement {clinic}.",
+      "phone": "Téléphone",
+      "email": "Courriel",
+      "website": "Site web",
+      "clinicLink": "Retour à {clinic}"
     }
   },
   "bookingDashboard": {

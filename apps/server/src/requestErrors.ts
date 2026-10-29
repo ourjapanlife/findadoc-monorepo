@@ -17,7 +17,8 @@ const CLIENT_ERROR_CODES: ReadonlySet<string> = new Set([
     'GRAPHQL_VALIDATION_FAILED',
     'BAD_REQUEST',
     'PERSISTED_QUERY_NOT_FOUND',
-    'OPERATION_RESOLUTION_FAILURE'
+    'OPERATION_RESOLUTION_FAILURE',
+    'BOOKING_REGION_UNAVAILABLE'
 ])
 
 type ServiceError = { httpStatus?: number }

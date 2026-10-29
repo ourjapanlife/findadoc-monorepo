@@ -103,8 +103,8 @@
         "heading": "2. Impormasyong kinokolekta namin",
         "p1": "Paghahanap sa direktoryo: makakapaghanap ka nang walang account. Natatanggap namin ang iyong mga hinahanap, filter, at wika. Nakatago sa sarili mong browser ang iyong wika, tema, at mga kamakailang filter.",
         "p2": "Pagmumungkahi ng klinika o doktor: natatanggap namin ang inilagay mo, gaya ng link ng Google Maps, mga pangalan, mga wikang sinasalita, at mga tala. Huwag isama ang sarili mong impormasyong pangkalusugan.",
-        "p3": "Pag-book ng appointment: kapag tumatanggap ang isang klinika ng mga kahilingan sa booking sa pamamagitan ng Find a Doc, Japan, kinokolekta namin ang hinihingi ng form nito. Maaaring kasama rito ang iyong pangalan, email address, numero ng telepono, edad, dahilan ng pagpapatingin, oras na pinili mo, at mga file gaya ng larawan mo at ng iyong health insurance card o eligibility certificate.",
-        "p4": "Ang dahilan ng pagpapatingin ay impormasyong pangkalusugan, na itinuturing ng APPI na special care-required personal information. Kinokolekta lang namin ito kapag ikaw mismo ang nagpasa ng form. Sa pagpapasa, pumapayag kang kolektahin namin ito at ipasa sa klinikang pinili mo.",
+        "p3": "Pag-book ng appointment: kapag tumatanggap ang isang klinika ng mga kahilingan sa booking sa pamamagitan ng Find a Doc, Japan, kinokolekta namin ang hinihingi ng form nito. Maaaring kasama rito ang iyong pangalan, email address, numero ng telepono, edad, dahilan ng pagpapatingin, oras na pinili mo, at mga file gaya ng larawan mo at ng iyong health insurance card o eligibility certificate. Para lang sa mga nasa Japan sa oras ng pagpapadala ng kahilingan ang booking.",
+        "p4": "Ang dahilan ng pagpapatingin ay impormasyong pangkalusugan, na itinuturing ng APPI na special care-required personal information. Kinokolekta lang namin ito kapag ikaw mismo ang nagpasa ng form, matapos mong lagyan ng tsek ang kahong pumapayag kang kolektahin namin ito at ipasa sa klinikang pinili mo. Itinatala namin kung kailan ka pumayag.",
         "p5": "Mga account at teknikal na impormasyon: nagsa-sign in ang mga moderator at kawani ng klinika sa pamamagitan ng Auth0, na nagbibigay sa amin ng kanilang pangalan, email address, at account identifier. Itinatala ng aming mga server ang mga IP address at detalye ng request para mapanatiling gumagana ang serbisyo at maiwasan ang pang-aabuso."
       },
       "use": {
@@ -147,7 +147,7 @@
       },
       "gdpr": {
         "heading": "11. Mga bisita mula sa EEA, United Kingdom, at Switzerland",
-        "p1": "Kung ginagamit mo ang Find a Doc, Japan mula sa European Economic Area, United Kingdom, o Switzerland, nalalapat din ang GDPR (o ang UK GDPR o ang batas sa proteksyon ng datos ng Switzerland). Batay sa iyong pahintulot ang mga cookie, ang pagsukat ng advertising, at ang impormasyong pangkalusugan sa kahilingan sa booking; batay sa paggawa ng mga hakbang na hiniling mo bago ang appointment ang pagpapasa ng iyong booking sa klinika; at batay sa aming lehitimong interes ang pagpapatakbo, pag-secure, at pag-aayos ng serbisyo.",
+        "p1": "Kung ginagamit mo ang Find a Doc, Japan mula sa European Economic Area, United Kingdom, o Switzerland, nalalapat din ang GDPR (o ang UK GDPR o ang batas sa proteksyon ng datos ng Switzerland). Para lang sa mga nasa Japan ang booking, kaya hindi kami tumatanggap ng mga kahilingan sa booking, o ng impormasyong pangkalusugan sa mga ito, mula sa mga lugar na iyon. Batay sa iyong pahintulot ang mga cookie at ang pagsukat ng advertising, at batay sa aming lehitimong interes ang pagpapatakbo, pag-secure, at pag-aayos ng serbisyo.",
         "p2": "May karapatan ka rin na matanggap ang iyong impormasyon sa portable na format, tumutol sa pagproseso na batay sa lehitimong interes, bawiin ang pahintulot anumang oras nang hindi naaapektuhan ang naunang pagproseso, at magreklamo sa awtoridad sa proteksyon ng datos sa iyong lugar. Bawiin ang pahintulot sa cookie sa Mga setting ng cookie, at ipadala ang iba pang kahilingan sa contact{'@'}findadoc.jp.",
         "p3": "Nagpasya ang European Commission na sapat ang proteksyon ng Japan sa personal na impormasyon, kaya maaaring ilipat ang impormasyon mula sa EEA papuntang Japan. Ang paglilipat sa mga provider sa United States ay batay sa EU-U.S. Data Privacy Framework o sa standard contractual clauses ng European Commission."
       },
@@ -805,7 +805,9 @@
       "slot": "Pumili ng available na oras",
       "duration": "Pumili ng haba na inaalok ng klinika",
       "tooManyRequests": "Masyadong maraming kahilingan mula sa koneksyong ito. Maghintay ng ilang minuto at subukan ulit.",
-      "openRequestLimit": "May mga kahilingan na ang email na ito na naghihintay sa klinikang ito. Hintayin ang sagot ng klinika, o kanselahin ang isa gamit ang link sa iyong email."
+      "openRequestLimit": "May mga kahilingan na ang email na ito na naghihintay sa klinikang ito. Hintayin ang sagot ng klinika, o kanselahin ang isa gamit ang link sa iyong email.",
+      "confirmations": "Lagyan ng tsek ang dalawang kahon bago ipadala ang kahilingan",
+      "regionUnavailable": "Sa ngayon, para lang sa mga nasa Japan ang booking."
     },
     "slotLabel": "Gustong oras",
     "slotLoading": "Naglo-load ng bukas na oras…",
@@ -867,6 +869,18 @@
       },
       "noMyNumber": "Huwag mag-upload ng larawan ng iyong My Number card, harap man o likod, at huwag ipadala ang 12-digit na numero nito.",
       "bringCard": "Kinukumpirma ng klinika ang iyong insurance gamit ang mismong card."
+    },
+    "confirmationsLegend": "Bago ipadala",
+    "confirmInJapan": "Kasalukuyan akong nasa Japan.",
+    "healthDataConsent": "Pumapayag akong ipadala ng Find a Doc, Japan sa {clinic} ang dahilan ng aking pagpapatingin, na impormasyong pangkalusugan.",
+    "privacyPolicyLink": "Patakaran sa privacy",
+    "regionNotice": {
+      "heading": "Sa ngayon, para lang sa mga nasa Japan ang booking",
+      "body": "Hindi ka makakapagpadala ng kahilingan sa booking mula sa kinaroroonan mo ngayon. Para magpa-appointment, direktang makipag-ugnayan sa {clinic}.",
+      "phone": "Telepono",
+      "email": "Email",
+      "website": "Website",
+      "clinicLink": "Bumalik sa {clinic}"
     }
   },
   "bookingDashboard": {

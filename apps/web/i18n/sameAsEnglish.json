@@ -52,7 +52,9 @@
   "tl": [
     "common.menu",
     "submitPage.previewLocation",
-    "clinicPage.onlineBreadcrumb"
+    "clinicPage.onlineBreadcrumb",
+    "bookingPage.regionNotice.email",
+    "bookingPage.regionNotice.website"
   ],
   "vi": [
     "common.menu",

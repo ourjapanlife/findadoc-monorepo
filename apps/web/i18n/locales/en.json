@@ -172,8 +172,8 @@
         "heading": "2. Information we collect",
         "p1": "Searching the directory: you can search without an account. We receive your search terms, filters, and language. Your language, theme, and recent filters are saved in your own browser.",
         "p2": "Suggesting a clinic or doctor: we receive what you enter, such as a Google Maps link, names, languages spoken, and notes. Please do not include your own health information.",
-        "p3": "Booking an appointment: when a clinic takes booking requests through Find a Doc, Japan, we collect what its form asks for. This can include your name, email address, phone number, age, the reason for your visit, the time you choose, and files such as a photo of you and of your health insurance card or eligibility certificate.",
-        "p4": "The reason for your visit is health information, which the APPI treats as special care-required personal information. We collect it only when you submit the form yourself. By submitting, you consent to us collecting it and passing it to the clinic you chose.",
+        "p3": "Booking an appointment: when a clinic takes booking requests through Find a Doc, Japan, we collect what its form asks for. This can include your name, email address, phone number, age, the reason for your visit, the time you choose, and files such as a photo of you and of your health insurance card or eligibility certificate. Booking is offered only to people who are in Japan when they send the request.",
+        "p4": "The reason for your visit is health information, which the APPI treats as special care-required personal information. We collect it only when you submit the form yourself, after you tick a box consenting to us collecting it and passing it to the clinic you chose. We record when you gave that consent.",
         "p5": "Accounts and technical information: moderators and clinic staff sign in through Auth0, which gives us their name, email address, and an account identifier. Our servers record IP addresses and request details to keep the service running and to prevent abuse."
       },
       "use": {
@@ -216,7 +216,7 @@
       },
       "gdpr": {
         "heading": "11. Visitors in the EEA, the UK, and Switzerland",
-        "p1": "If you use Find a Doc, Japan from the European Economic Area, the United Kingdom, or Switzerland, the GDPR (or the UK GDPR or Swiss data protection law) also applies. We rely on your consent for cookies and advertising measurement and for the health information in a booking request; on taking steps you ask for before an appointment, to pass your booking to the clinic; and on our legitimate interests to run, secure, and fix the service.",
+        "p1": "If you use Find a Doc, Japan from the European Economic Area, the United Kingdom, or Switzerland, the GDPR (or the UK GDPR or Swiss data protection law) also applies. Booking is offered only to people in Japan, so we do not take booking requests, or the health information in them, from those places. We rely on your consent for cookies and advertising measurement, and on our legitimate interests to run, secure, and fix the service.",
         "p2": "You also have the right to receive your information in a portable format, to object to processing based on legitimate interests, to withdraw consent at any time without affecting earlier processing, and to complain to your local data protection authority. Withdraw cookie consent with Cookie settings, and send other requests to contact{'@'}findadoc.jp.",
         "p3": "The European Commission has decided that Japan protects personal information adequately, so information can be transferred from the EEA to Japan. Transfers to providers in the United States rely on the EU-U.S. Data Privacy Framework or the European Commission's standard contractual clauses."
       },
@@ -805,7 +805,9 @@
       "slot": "Choose an available time",
       "duration": "Choose a visit length the clinic offers",
       "tooManyRequests": "Too many requests from this connection. Wait a few minutes and try again.",
-      "openRequestLimit": "This email already has requests waiting at this clinic. Wait for the clinic to answer, or cancel one from the link in your email."
+      "openRequestLimit": "This email already has requests waiting at this clinic. Wait for the clinic to answer, or cancel one from the link in your email.",
+      "confirmations": "Tick both boxes before you send the request",
+      "regionUnavailable": "Booking is currently available only to people in Japan."
     },
     "slotLabel": "Preferred time",
     "slotLoading": "Loading open times…",
@@ -867,6 +869,18 @@
       },
       "noMyNumber": "Don't upload a photo of your My Number card, front or back, and don't send its 12-digit number.",
       "bringCard": "The clinic confirms your insurance with the card itself."
+    },
+    "confirmationsLegend": "Before you send",
+    "confirmInJapan": "I am currently in Japan.",
+    "healthDataConsent": "I consent to Find a Doc, Japan sending the reason for my visit, which is health information, to {clinic}.",
+    "privacyPolicyLink": "Privacy policy",
+    "regionNotice": {
+      "heading": "Booking is currently available only to people in Japan",
+      "body": "You can't send a booking request from where you are now. To book a visit, contact {clinic} directly.",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "clinicLink": "Back to {clinic}"
     }
   },
   "bookingDashboard": {

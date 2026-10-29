@@ -9,6 +9,7 @@ import {
 } from './auth.js'
 import { bookingAccessFor } from './booking/access.js'
 import { allowBookingCall, type BookingBudget } from './booking/rateLimits.js'
+import { assertBookingRegion, isBookingAvailableIn } from './booking/region.js'
 import * as facilityService from './services/facilityService.js'
 import * as healthcareProfessionalService from './services/healthcareProfessionalService.js'
 import * as gqlType from '@findadoc/graphql'
@@ -72,6 +73,12 @@ const resolvers = {
             args.practitionerId,
             args.spokenLanguages
         )),
+        // The Book page asks first, so the server decides whether to show the form (#173).
+        bookingAvailable: withScope(Scope['create:bookings'], (
+            _parent: unknown,
+            _args: unknown,
+            context: UserContext
+        ): boolean => isBookingAvailableIn(context.viewerCountry)),
         bookingFormTypes: withScope(Scope['create:bookings'], async ()
         : Promise<gqlType.BookingFormType[]> => clinicAccessService.listBookingFormTypes()),
         patientBooking: withScope(Scope['create:bookings'], async (
@@ -498,6 +505,7 @@ const resolvers = {
         createBookingUploadUrl: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
             input: gqlType.CreateBookingUploadUrlInput
         }, context: UserContext): Promise<gqlType.BookingUploadUrl> => {
+            assertBookingRegion(context.viewerCountry)
             enforceBookingBudget('upload', context.clientIp)
             const result = await bookingService.createBookingUploadUrl(
                 args.input,
@@ -510,6 +518,7 @@ const resolvers = {
         submitBooking: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
             input: gqlType.SubmitBookingInput
         }, context: UserContext): Promise<gqlType.BookingSubmissionResult> => {
+            assertBookingRegion(context.viewerCountry)
             enforceBookingBudget('submit', context.clientIp)
             const result = await bookingService.submitBooking(args.input)
             convertErrorsToGqlErrors(result)

@@ -8,10 +8,7 @@ import {
     FunctionRuntime,
     Function as CloudFrontFunction,
     HttpVersion,
-    OriginRequestCookieBehavior,
-    OriginRequestHeaderBehavior,
     OriginRequestPolicy,
-    OriginRequestQueryStringBehavior,
     PriceClass,
     ViewerProtocolPolicy,
 } from 'aws-cdk-lib/aws-cloudfront'
@@ -26,7 +23,7 @@ export interface FunctionUrlEdgeProps {
     fn: IFunction & { addFunctionUrl: (options: { authType: FunctionUrlAuthType }) => FunctionUrl }
     // "API" or "MCP", used in descriptions.
     label: string
-    // Names for the CloudFront resources: `${name}` for the policy, `${name}-viewer-ip` for the function.
+    // Names for the CloudFront resources: `${name}-viewer-ip` for the function.
     name: string
     // Each hostname and how it is attached. Record ids come from the first label (api-staging → RecordApiStagingA).
     hostnames: Record<string, HostnameState>
@@ -39,7 +36,6 @@ export interface FunctionUrlEdgeProps {
     zoneName: string
     // Construct ids, kept stable so a deployed stack keeps its resources.
     ids: {
-        originRequest: string
         viewerIp: string
         distribution: string
     }
@@ -48,30 +44,35 @@ export interface FunctionUrlEdgeProps {
 /**
  * A Lambda Function URL behind CloudFront, with its hostnames attached as their states say
  * (see HostnameState in environment.ts).
- * Caching is off. Every viewer header but Host reaches the function (a Function URL only
- * answers its own hostname). A CloudFront Function writes the viewer's address to
- * x-findadoc-viewer-ip, replacing anything the client sent, and the origin adds the edge
- * secret, so rate limits count people rather than CloudFront edges (clientIpFrom in
+ * Caching is off. The managed AllViewerExceptHostHeader policy sends every viewer header but
+ * Host (a Function URL only answers its own hostname), plus CloudFront's viewer location
+ * headers. A custom policy cannot add those to "all but Host".
+ * That policy also forwards cookies. The API reads none, so the function drops them all and the
+ * origin gets no cookies, as before: analytics and consent cookies on .findadoc.jp stay off the API.
+ * A CloudFront Function writes the viewer's address to x-findadoc-viewer-ip and
+ * CloudFront-Viewer-Country to x-findadoc-viewer-country, replacing anything the client sent,
+ * and the origin adds the edge secret. Rate limits count people rather than CloudFront edges,
+ * and booking is offered only to viewers in Japan (#173; clientIpFrom and viewerCountryFrom in
  * @findadoc/utils). Inside CloudFront's free tier at this traffic.
  */
 export function addFunctionUrlEdge(scope: Construct, props: FunctionUrlEdgeProps): { distribution: Distribution, functionUrl: FunctionUrl } {
     const functionUrl = props.fn.addFunctionUrl({ authType: FunctionUrlAuthType.NONE })
 
-    const originRequestPolicy = new OriginRequestPolicy(scope, props.ids.originRequest, {
-        originRequestPolicyName: props.name,
-        comment: 'All viewer headers except Host',
-        headerBehavior: OriginRequestHeaderBehavior.denyList('host'),
-        queryStringBehavior: OriginRequestQueryStringBehavior.all(),
-        cookieBehavior: OriginRequestCookieBehavior.none(),
-    })
-
     const viewerIp = new CloudFrontFunction(scope, props.ids.viewerIp, {
         functionName: `${props.name}-viewer-ip`,
-        comment: `Sends the viewer IP to the ${props.label}`,
+        comment: `Sends the viewer IP and country to the ${props.label}`,
         runtime: FunctionRuntime.JS_2_0,
         code: FunctionCode.fromInline([
             'function handler(event) {',
-            '    event.request.headers[\'x-findadoc-viewer-ip\'] = { value: event.viewer.ip }',
+            '    var headers = event.request.headers',
+            '    event.request.cookies = {}',
+            '    headers[\'x-findadoc-viewer-ip\'] = { value: event.viewer.ip }',
+            '    var country = headers[\'cloudfront-viewer-country\']',
+            '    if (country) {',
+            '        headers[\'x-findadoc-viewer-country\'] = { value: country.value }',
+            '    } else {',
+            '        delete headers[\'x-findadoc-viewer-country\']',
+            '    }',
             '    return event.request',
             '}',
         ].join('\n')),
@@ -96,7 +97,7 @@ export function addFunctionUrlEdge(scope: Construct, props: FunctionUrlEdgeProps
             }),
             allowedMethods: AllowedMethods.ALLOW_ALL,
             cachePolicy: CachePolicy.CACHING_DISABLED,
-            originRequestPolicy,
+            originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
             viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             compress: true,
             functionAssociations: [{ function: viewerIp, eventType: FunctionEventType.VIEWER_REQUEST }],

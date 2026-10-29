@@ -1615,6 +1615,12 @@ export type Query = {
    * speaks every language in spokenLanguages has free, plus clinic time.
    */
   availableBookingStarts: Array<Scalars['String']['output']>;
+  /**
+   * Whether this visitor may send a booking request. Booking is offered only to people
+   * in Japan (CloudFront's viewer country). Always true in local development and tests.
+   * submitBooking and createBookingUploadUrl refuse with BOOKING_REGION_UNAVAILABLE otherwise.
+   */
+  bookingAvailable: Scalars['Boolean']['output'];
   /** One clinic for the dashboard header. Null when the user may not open it. */
   bookingClinic?: Maybe<BookingClinic>;
   /**
@@ -2126,10 +2132,17 @@ export type SubmitBookingInput = {
   answers: Array<BookingAnswerInput>;
   /** Facility id, clinic site id, or clinic site slug. */
   clinicSiteId: Scalars['ID']['input'];
+  /** The patient ticked "I am currently in Japan". Must be true. */
+  confirmedInJapan: Scalars['Boolean']['input'];
   /** Visit length in minutes. Must be one of the clinic's allowedDurations. */
   durationMinutes?: InputMaybe<Scalars['Int']['input']>;
   formDefinitionId: Scalars['String']['input'];
   formVersion: Scalars['Int']['input'];
+  /**
+   * The patient consented to the reason for the visit being sent to the clinic.
+   * Must be true. The consent time is stored with the request.
+   */
+  healthDataConsent: Scalars['Boolean']['input'];
   locale: Scalars['String']['input'];
   /**
    * Optional directory professional id at this facility. With no id, the visit goes
@@ -3083,6 +3096,7 @@ export type PrefectureResolvers<ContextType = any, ParentType extends ResolversP
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   auditLog?: Resolver<Maybe<ResolversTypes['AuditLog']>, ParentType, ContextType, Partial<QueryAuditLogArgs>>;
   availableBookingStarts?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryAvailableBookingStartsArgs, 'clinicSiteId' | 'from' | 'to'>>;
+  bookingAvailable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   bookingClinic?: Resolver<Maybe<ResolversTypes['BookingClinic']>, ParentType, ContextType, RequireFields<QueryBookingClinicArgs, 'facilityId'>>;
   bookingForm?: Resolver<Maybe<ResolversTypes['BookingForm']>, ParentType, ContextType, RequireFields<QueryBookingFormArgs, 'clinicSiteId'>>;
   bookingFormTypes?: Resolver<Array<ResolversTypes['BookingFormType']>, ParentType, ContextType>;

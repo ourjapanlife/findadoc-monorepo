@@ -129,8 +129,8 @@
         "heading": "2. Informazioni che raccogliamo",
         "p1": "Ricerca nella directory: puoi cercare senza account. Riceviamo i termini di ricerca, i filtri e la lingua. La tua lingua, il tema e i filtri recenti vengono salvati nel tuo browser.",
         "p2": "Suggerimento di una clinica o di un medico: riceviamo ciò che inserisci, come un link di Google Maps, nomi, lingue parlate e note. Non includere informazioni sulla tua salute.",
-        "p3": "Prenotazione: quando una clinica riceve richieste di prenotazione tramite Find a Doc, Japan, raccogliamo ciò che il suo modulo richiede. Può includere nome, indirizzo e-mail, numero di telefono, età, motivo della visita, orario scelto e file come una tua foto e quella della tessera di assicurazione sanitaria o del certificato di idoneità.",
-        "p4": "Il motivo della visita è un'informazione sulla salute, che l'APPI considera un'informazione personale che richiede particolare attenzione. La raccogliamo solo quando invii tu stesso il modulo. Inviandolo, acconsenti alla raccolta e alla sua trasmissione alla clinica scelta.",
+        "p3": "Prenotazione: quando una clinica riceve richieste di prenotazione tramite Find a Doc, Japan, raccogliamo ciò che il suo modulo richiede. Può includere nome, indirizzo e-mail, numero di telefono, età, motivo della visita, orario scelto e file come una tua foto e quella della tessera di assicurazione sanitaria o del certificato di idoneità. La prenotazione è offerta solo a chi si trova in Giappone al momento dell'invio della richiesta.",
+        "p4": "Il motivo della visita è un'informazione sulla salute, che l'APPI considera un'informazione personale che richiede particolare attenzione. La raccogliamo solo quando invii tu stesso il modulo, dopo aver spuntato una casella con cui acconsenti alla raccolta e alla sua trasmissione alla clinica scelta. Registriamo il momento in cui hai dato il consenso.",
         "p5": "Account e informazioni tecniche: moderatori e personale delle cliniche accedono tramite Auth0, che ci fornisce nome, indirizzo e-mail e un identificativo dell'account. I nostri server registrano indirizzi IP e dettagli delle richieste per mantenere attivo il servizio e prevenire abusi."
       },
       "use": {
@@ -173,7 +173,7 @@
       },
       "gdpr": {
         "heading": "11. Visitatori dal SEE, dal Regno Unito e dalla Svizzera",
-        "p1": "Se usi Find a Doc, Japan dallo Spazio economico europeo, dal Regno Unito o dalla Svizzera, si applica anche il GDPR (o il GDPR britannico o la legge svizzera sulla protezione dei dati). Ci basiamo sul tuo consenso per i cookie, la misurazione pubblicitaria e le informazioni sulla salute di una richiesta di prenotazione; sull'esecuzione di misure da te richieste prima di una visita, per inoltrare la prenotazione alla clinica; e sui nostri legittimi interessi per gestire, proteggere e correggere il servizio.",
+        "p1": "Se usi Find a Doc, Japan dallo Spazio economico europeo, dal Regno Unito o dalla Svizzera, si applica anche il GDPR (o il GDPR britannico o la legge svizzera sulla protezione dei dati). La prenotazione è offerta solo a chi si trova in Giappone, quindi non accettiamo richieste di prenotazione, né le informazioni sulla salute che contengono, da questi paesi. Ci basiamo sul tuo consenso per i cookie e la misurazione pubblicitaria, e sui nostri legittimi interessi per gestire, proteggere e correggere il servizio.",
         "p2": "Hai inoltre il diritto di ricevere le tue informazioni in un formato portabile, di opporti al trattamento basato su legittimi interessi, di revocare il consenso in qualsiasi momento senza pregiudicare il trattamento precedente e di presentare reclamo all'autorità di protezione dei dati del tuo paese. Revoca il consenso ai cookie da Impostazioni dei cookie e invia le altre richieste a contact{'@'}findadoc.jp.",
         "p3": "La Commissione europea ha stabilito che il Giappone protegge adeguatamente le informazioni personali, quindi le informazioni possono essere trasferite dal SEE al Giappone. I trasferimenti verso fornitori negli Stati Uniti si basano sul quadro UE-USA per la protezione dei dati personali o sulle clausole contrattuali tipo della Commissione europea."
       },
@@ -805,7 +805,9 @@
       "slot": "Scegli un orario disponibile",
       "duration": "Scegli una durata offerta dalla clinica",
       "tooManyRequests": "Troppe richieste da questa connessione. Attendi qualche minuto e riprova.",
-      "openRequestLimit": "Questo indirizzo email ha già richieste in attesa presso questa clinica. Attendi la risposta della clinica, oppure annullane una dal link nella tua email."
+      "openRequestLimit": "Questo indirizzo email ha già richieste in attesa presso questa clinica. Attendi la risposta della clinica, oppure annullane una dal link nella tua email.",
+      "confirmations": "Spunta entrambe le caselle prima di inviare la richiesta",
+      "regionUnavailable": "Al momento la prenotazione è disponibile solo per chi si trova in Giappone."
     },
     "slotLabel": "Orario preferito",
     "slotLoading": "Caricamento orari…",
@@ -867,6 +869,18 @@
       },
       "noMyNumber": "Non caricare foto della carta My Number, né fronte né retro, e non inviare il numero di 12 cifre.",
       "bringCard": "La clinica verifica l'assicurazione con la carta stessa."
+    },
+    "confirmationsLegend": "Prima di inviare",
+    "confirmInJapan": "Mi trovo attualmente in Giappone.",
+    "healthDataConsent": "Acconsento a che Find a Doc, Japan invii il motivo della mia visita, che è un'informazione sulla salute, a {clinic}.",
+    "privacyPolicyLink": "Informativa sulla privacy",
+    "regionNotice": {
+      "heading": "Al momento la prenotazione è disponibile solo per chi si trova in Giappone",
+      "body": "Non puoi inviare una richiesta di prenotazione dal luogo in cui ti trovi ora. Per prenotare una visita, contatta direttamente {clinic}.",
+      "phone": "Telefono",
+      "email": "E-mail",
+      "website": "Sito web",
+      "clinicLink": "Torna a {clinic}"
     }
   },
   "bookingDashboard": {

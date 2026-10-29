@@ -103,8 +103,8 @@
         "heading": "2. Thông tin chúng tôi thu thập",
         "p1": "Tìm kiếm danh bạ: bạn có thể tìm kiếm mà không cần tài khoản. Chúng tôi nhận từ khóa, bộ lọc và ngôn ngữ của bạn. Ngôn ngữ, giao diện và các bộ lọc gần đây được lưu trong chính trình duyệt của bạn.",
         "p2": "Đề xuất phòng khám hoặc bác sĩ: chúng tôi nhận những gì bạn nhập, như liên kết Google Maps, tên, ngôn ngữ sử dụng và ghi chú. Vui lòng không đưa thông tin sức khỏe của chính bạn.",
-        "p3": "Đặt lịch hẹn: khi một phòng khám nhận yêu cầu đặt lịch qua Find a Doc, Japan, chúng tôi thu thập những gì mẫu của họ yêu cầu. Thông tin này có thể gồm họ tên, email, số điện thoại, tuổi, lý do khám, thời gian bạn chọn, và các tệp như ảnh của bạn và ảnh thẻ bảo hiểm y tế hoặc giấy xác nhận tư cách.",
-        "p4": "Lý do khám là thông tin sức khỏe, được APPI coi là thông tin cá nhân cần lưu ý đặc biệt. Chúng tôi chỉ thu thập khi bạn tự gửi mẫu. Khi gửi, bạn đồng ý để chúng tôi thu thập và chuyển thông tin này cho phòng khám bạn đã chọn.",
+        "p3": "Đặt lịch hẹn: khi một phòng khám nhận yêu cầu đặt lịch qua Find a Doc, Japan, chúng tôi thu thập những gì mẫu của họ yêu cầu. Thông tin này có thể gồm họ tên, email, số điện thoại, tuổi, lý do khám, thời gian bạn chọn, và các tệp như ảnh của bạn và ảnh thẻ bảo hiểm y tế hoặc giấy xác nhận tư cách. Dịch vụ đặt lịch chỉ dành cho người đang ở Nhật Bản tại thời điểm gửi yêu cầu.",
+        "p4": "Lý do khám là thông tin sức khỏe, được APPI coi là thông tin cá nhân cần lưu ý đặc biệt. Chúng tôi chỉ thu thập khi bạn tự gửi mẫu, sau khi bạn đánh dấu ô đồng ý để chúng tôi thu thập và chuyển thông tin này cho phòng khám bạn đã chọn. Chúng tôi ghi lại thời điểm bạn đồng ý.",
         "p5": "Tài khoản và thông tin kỹ thuật: người kiểm duyệt và nhân viên phòng khám đăng nhập qua Auth0, cho chúng tôi biết tên, email và mã định danh tài khoản. Máy chủ ghi lại địa chỉ IP và chi tiết yêu cầu để duy trì dịch vụ và ngăn lạm dụng."
       },
       "use": {
@@ -147,7 +147,7 @@
       },
       "gdpr": {
         "heading": "11. Khách truy cập từ EEA, Vương quốc Anh và Thụy Sĩ",
-        "p1": "Nếu bạn dùng Find a Doc, Japan từ Khu vực Kinh tế Châu Âu, Vương quốc Anh hoặc Thụy Sĩ, GDPR (hoặc UK GDPR hay luật bảo vệ dữ liệu của Thụy Sĩ) cũng được áp dụng. Chúng tôi dựa trên sự đồng ý của bạn đối với cookie, đo lường quảng cáo và thông tin sức khỏe trong yêu cầu đặt lịch; dựa trên việc thực hiện các bước bạn yêu cầu trước buổi khám để chuyển yêu cầu đặt lịch cho phòng khám; và dựa trên lợi ích chính đáng của chúng tôi để vận hành, bảo mật và sửa lỗi dịch vụ.",
+        "p1": "Nếu bạn dùng Find a Doc, Japan từ Khu vực Kinh tế Châu Âu, Vương quốc Anh hoặc Thụy Sĩ, GDPR (hoặc UK GDPR hay luật bảo vệ dữ liệu của Thụy Sĩ) cũng được áp dụng. Dịch vụ đặt lịch chỉ dành cho người đang ở Nhật Bản, nên chúng tôi không nhận yêu cầu đặt lịch, cũng như thông tin sức khỏe trong đó, từ những nơi này. Chúng tôi dựa trên sự đồng ý của bạn đối với cookie và đo lường quảng cáo, và dựa trên lợi ích chính đáng của chúng tôi để vận hành, bảo mật và sửa lỗi dịch vụ.",
         "p2": "Bạn còn có quyền nhận thông tin của mình ở định dạng có thể chuyển giao, phản đối việc xử lý dựa trên lợi ích chính đáng, rút lại sự đồng ý bất cứ lúc nào mà không ảnh hưởng đến việc xử lý trước đó, và khiếu nại với cơ quan bảo vệ dữ liệu nơi bạn sống. Rút lại đồng ý cookie tại Cài đặt cookie, và gửi các yêu cầu khác tới contact{'@'}findadoc.jp.",
         "p3": "Ủy ban Châu Âu đã quyết định rằng Nhật Bản bảo vệ thông tin cá nhân ở mức đầy đủ, nên thông tin có thể được chuyển từ EEA sang Nhật Bản. Việc chuyển tới nhà cung cấp tại Hoa Kỳ dựa trên Khung Bảo mật Dữ liệu EU-Hoa Kỳ hoặc các điều khoản hợp đồng tiêu chuẩn của Ủy ban Châu Âu."
       },
@@ -805,7 +805,9 @@
       "slot": "Chọn một giờ còn trống",
       "duration": "Chọn thời lượng phòng khám cung cấp",
       "tooManyRequests": "Có quá nhiều yêu cầu từ kết nối này. Đợi vài phút rồi thử lại.",
-      "openRequestLimit": "Email này đã có yêu cầu đang chờ tại phòng khám này. Hãy đợi phòng khám trả lời, hoặc hủy một yêu cầu bằng liên kết trong email của bạn."
+      "openRequestLimit": "Email này đã có yêu cầu đang chờ tại phòng khám này. Hãy đợi phòng khám trả lời, hoặc hủy một yêu cầu bằng liên kết trong email của bạn.",
+      "confirmations": "Hãy đánh dấu cả hai ô trước khi gửi yêu cầu",
+      "regionUnavailable": "Hiện chỉ những người đang ở Nhật Bản mới có thể đặt lịch."
     },
     "slotLabel": "Giờ mong muốn",
     "slotLoading": "Đang tải giờ trống…",
@@ -867,6 +869,18 @@
       },
       "noMyNumber": "Đừng tải ảnh thẻ My Number lên (cả mặt trước lẫn mặt sau) và đừng gửi số My Number 12 chữ số.",
       "bringCard": "Phòng khám xác nhận bảo hiểm bằng chính tấm thẻ."
+    },
+    "confirmationsLegend": "Trước khi gửi",
+    "confirmInJapan": "Tôi hiện đang ở Nhật Bản.",
+    "healthDataConsent": "Tôi đồng ý để Find a Doc, Japan gửi lý do khám của tôi, là thông tin sức khỏe, đến {clinic}.",
+    "privacyPolicyLink": "Chính sách quyền riêng tư",
+    "regionNotice": {
+      "heading": "Hiện chỉ những người đang ở Nhật Bản mới có thể đặt lịch",
+      "body": "Bạn không thể gửi yêu cầu đặt lịch từ nơi bạn đang ở. Để đặt lịch khám, hãy liên hệ trực tiếp với {clinic}.",
+      "phone": "Điện thoại",
+      "email": "Thư điện tử",
+      "website": "Trang web",
+      "clinicLink": "Quay lại {clinic}"
     }
   },
   "bookingDashboard": {

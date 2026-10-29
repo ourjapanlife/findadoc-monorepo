@@ -6,6 +6,7 @@ export type ClientIpRequest = {
 
 const EDGE_SECRET_HEADER = 'x-findadoc-edge'
 const VIEWER_IP_HEADER = 'x-findadoc-viewer-ip'
+const VIEWER_COUNTRY_HEADER = 'x-findadoc-viewer-country'
 
 function header(request: ClientIpRequest, name: string): string | undefined {
     const value = request.headers?.[name]
@@ -40,11 +41,33 @@ function sameSecret(sent: string, expected: string): boolean {
  */
 export function clientIpFrom(request: ClientIpRequest, edgeSecret: string | undefined): string {
     const viewerIp = header(request, VIEWER_IP_HEADER)
-    const sentSecret = header(request, EDGE_SECRET_HEADER)
 
-    if (edgeSecret && viewerIp && sentSecret && sameSecret(sentSecret, edgeSecret)) {
+    if (viewerIp && fromEdge(request, edgeSecret)) {
         return viewerIp
     }
 
     return request?.ip || 'unknown'
+}
+
+/**
+ * The viewer's country as CloudFront sees it, such as `JP`. Undefined when unknown.
+ *
+ * The same CloudFront Function copies CloudFront-Viewer-Country to x-findadoc-viewer-country,
+ * replacing anything the client sent. The value is trusted only with the edge secret,
+ * as the viewer address is.
+ */
+export function viewerCountryFrom(request: ClientIpRequest, edgeSecret: string | undefined): string | undefined {
+    const country = header(request, VIEWER_COUNTRY_HEADER)?.trim().toUpperCase()
+
+    if (country && /^[A-Z]{2}$/.test(country) && fromEdge(request, edgeSecret)) {
+        return country
+    }
+
+    return undefined
+}
+
+function fromEdge(request: ClientIpRequest, edgeSecret: string | undefined): boolean {
+    const sentSecret = header(request, EDGE_SECRET_HEADER)
+
+    return Boolean(edgeSecret && sentSecret && sameSecret(sentSecret, edgeSecret))
 }

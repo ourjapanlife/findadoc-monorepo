@@ -243,6 +243,41 @@
                     >
                         {{ t('bookingPage.privacyNote') }}
                     </p>
+                    <fieldset
+                        v-if="isLastStep"
+                        class="flex flex-col gap-3"
+                    >
+                        <legend class="sr-only">
+                            {{ t('bookingPage.confirmationsLegend') }}
+                        </legend>
+                        <label class="flex items-start gap-2 text-sm text-primary-text">
+                            <input
+                                v-model="confirmations.confirmedInJapan"
+                                type="checkbox"
+                                class="mt-1"
+                                required
+                                data-testid="clinic-booking-confirm-in-japan"
+                            >
+                            <span>{{ t('bookingPage.confirmInJapan') }}</span>
+                        </label>
+                        <label class="flex items-start gap-2 text-sm text-primary-text">
+                            <input
+                                v-model="confirmations.healthDataConsent"
+                                type="checkbox"
+                                class="mt-1"
+                                required
+                                data-testid="clinic-booking-health-consent"
+                            >
+                            <span>
+                                {{ t('bookingPage.healthDataConsent', { clinic: form.clinicName }) }}
+                                <NuxtLink
+                                    :to="privacyPolicyPath"
+                                    class="text-primary underline"
+                                    target="_blank"
+                                >{{ t('bookingPage.privacyPolicyLink') }}</NuxtLink>
+                            </span>
+                        </label>
+                    </fieldset>
                 </div>
 
                 <template #action>
@@ -250,7 +285,7 @@
                         type="submit"
                         class="btn btn-primary"
                         data-testid="clinic-booking-submit"
-                        :disabled="submitting"
+                        :disabled="submitting || !confirmationsComplete"
                     >
                         {{ submitting ? t('bookingPage.submitting') : t('bookingPage.submit') }}
                     </button>
@@ -278,10 +313,12 @@ import {
 } from '~/utils/booking/localhostAutofill'
 import {
     bookingClinicKey,
+    bookingConfirmationsComplete,
     isBookingRefusal,
     putBookingFile,
     requestBookingUploadUrl,
     submitBookingForm,
+    type BookingConfirmations,
     type BookingRefusal
 } from '~/utils/booking/formQuery'
 import {
@@ -314,6 +351,10 @@ const pendingFiles = reactive<Record<string, File | undefined>>({})
 const touched = reactive<Record<string, boolean>>({})
 const fieldErrors = reactive<Record<string, string>>({})
 const formError = ref('')
+// "I am currently in Japan" and the health-data consent. Submit stays disabled until both are ticked (#173).
+const confirmations = reactive<BookingConfirmations>({ confirmedInJapan: false, healthDataConsent: false })
+const confirmationsComplete = computed(() => bookingConfirmationsComplete(confirmations))
+const privacyPolicyPath = computed(() => localizedPath('/privacypolicy', String(locale.value)))
 const submitting = ref(false)
 const submitted = ref(false)
 const submissionId = ref('')
@@ -747,6 +788,9 @@ function refusalMessage(refusal: BookingRefusal, otherwise: string): string {
     if (refusal === 'openRequestLimit') {
         return t('bookingPage.errors.openRequestLimit')
     }
+    if (refusal === 'regionUnavailable') {
+        return t('bookingPage.errors.regionUnavailable')
+    }
     return otherwise
 }
 
@@ -766,6 +810,11 @@ async function onSubmit() {
         if (visitStep >= 0) {
             stepIndex.value = visitStep
         }
+    }
+
+    if (valid && !confirmationsComplete.value) {
+        formError.value = t('bookingPage.errors.confirmations')
+        return
     }
 
     if (!valid) {
@@ -810,7 +859,9 @@ async function onSubmit() {
             durationMinutes: durationMinutes.value,
             practitionerId: practitionerId.value,
             spokenLanguages: spokenLanguages.value,
-            service: props.query.service
+            service: props.query.service,
+            confirmedInJapan: confirmations.confirmedInJapan,
+            healthDataConsent: confirmations.healthDataConsent
         })
 
         if (isBookingRefusal(result)) {
