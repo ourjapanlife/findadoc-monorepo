@@ -303,6 +303,14 @@ export enum BookingSubmissionStatus {
   Received = 'RECEIVED'
 }
 
+/** How the browser should open a booking upload. */
+export enum BookingUploadDisposition {
+  /** Save the file. */
+  Attachment = 'ATTACHMENT',
+  /** Show the file in the browser. */
+  Inline = 'INLINE'
+}
+
 export type BookingUploadDownloadUrl = {
   __typename?: 'BookingUploadDownloadUrl';
   downloadUrl: Scalars['String']['output'];
@@ -1251,7 +1259,10 @@ export type MapsPlacePreview = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  /** Short-lived GET URL for a booking upload. Identity files are never inlined in GraphQL. */
+  /**
+   * Short-lived GET URL for a booking upload. Identity files are never inlined in GraphQL.
+   * INLINE (the default) opens the file in the browser; ATTACHMENT saves a copy.
+   */
   bookingUploadDownloadUrl: BookingUploadDownloadUrl;
   /** The patient cancels with the private token from the email link. Frees the slot. */
   cancelBookingByToken: PatientBookingView;
@@ -1320,6 +1331,7 @@ export type Mutation = {
 
 
 export type MutationBookingUploadDownloadUrlArgs = {
+  disposition?: InputMaybe<BookingUploadDisposition>;
   uploadId: Scalars['ID']['input'];
 };
 
@@ -2341,6 +2353,7 @@ export type ResolversTypes = {
   BookingSubmissionResult: ResolverTypeWrapper<BookingSubmissionResult>;
   BookingSubmissionSearchFilters: BookingSubmissionSearchFilters;
   BookingSubmissionStatus: BookingSubmissionStatus;
+  BookingUploadDisposition: BookingUploadDisposition;
   BookingUploadDownloadUrl: ResolverTypeWrapper<BookingUploadDownloadUrl>;
   BookingUploadHeader: ResolverTypeWrapper<BookingUploadHeader>;
   BookingUploadUrl: ResolverTypeWrapper<BookingUploadUrl>;

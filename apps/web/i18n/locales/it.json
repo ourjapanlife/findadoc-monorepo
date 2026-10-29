@@ -848,7 +848,7 @@
     "empty": "Nessuna richiesta di prenotazione",
     "answersHeading": "Risposte",
     "uploadsHeading": "Caricamenti",
-    "uploadsRetentionNote": "Le foto di identità e assicurazione restano solo fino alla data di conservazione, poi vengono eliminate.",
+    "uploadsRetentionNote": "Le foto dei documenti e dell'assicurazione restano fino alla data di conservazione. Vengono eliminate appena la visita è annullata o rifiutata.",
     "download": "Scarica",
     "purged": "Eliminato",
     "retainUntil": "Conservare fino al {date}",
@@ -896,7 +896,11 @@
       "complete": "Segna come completato"
     },
     "doctor": "Medico",
-    "languagesRequested": "Lingue richieste"
+    "languagesRequested": "Lingue richieste",
+    "preview": "Anteprima",
+    "previewOf": "Apri {name} in una nuova scheda",
+    "purgedNote": "Questo file è stato eliminato.",
+    "downloadNote": "Una copia scaricata è responsabilità della clinica, che deve custodirla e cancellarla quando non serve più."
   },
   "bookingAvailability": {
     "clinicLabel": "Sito della clinica",

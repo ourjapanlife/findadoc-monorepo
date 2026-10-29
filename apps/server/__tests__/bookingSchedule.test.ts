@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { Locale, type BookingPractitioner } from '@findadoc/graphql'
 import { clinicLanguages, parseRequestedLanguages, scheduleLanes } from '../src/booking/practitioners.js'
+import { DEFAULT_BOOKING_FORM_ID, staffAnswers } from '../src/booking/formDefinitions.js'
+import { contentDisposition } from '../src/storage/objectStorage.js'
 import {
     availableStarts,
     appointmentEndFromStart,
@@ -208,6 +210,26 @@ describe('schedule lanes', () => {
         expect(parseRequestedLanguages(['xx_XX'])).toBeUndefined()
         expect(parseRequestedLanguages(['und'])).toBeUndefined()
         expect(clinicLanguages(practitioners, [Locale.JaJp, 'und'])).toEqual([Locale.JaJp, Locale.EnUs, Locale.KoKr])
+    })
+})
+
+describe('staff view of a request', () => {
+    it('lists the full name first, then the form order, without file answers', () => {
+        const answers = staffAnswers(DEFAULT_BOOKING_FORM_ID, {
+            reason: 'Checkup',
+            email: 'a@example.com',
+            insuranceDocument: 'upload-1',
+            fullName: 'Test Patient',
+            phone: '090',
+            legacyField: 'upload-2'
+        }, new Set(['upload-1', 'upload-2']))
+        expect(answers.map(answer => answer.fieldId)).toEqual(['fullName', 'email', 'phone', 'reason'])
+    })
+
+    it('names a download in ASCII and UTF-8', () => {
+        expect(contentDisposition('attachment', 'uploads/booking/x/保険証.jpg'))
+            .toBe(`attachment; filename="___.jpg"; filename*=UTF-8''${encodeURIComponent('保険証.jpg')}`)
+        expect(contentDisposition('inline', 'a"b.png')).toBe('inline; filename="a_b.png"; filename*=UTF-8\'\'a%22b.png')
     })
 })
 

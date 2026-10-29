@@ -848,7 +848,7 @@
     "empty": "Ainda não há pedidos de reserva",
     "answersHeading": "Respostas",
     "uploadsHeading": "Envios",
-    "uploadsRetentionNote": "Fotos de identidade e seguro são guardadas só até a data de retenção e depois apagadas.",
+    "uploadsRetentionNote": "As fotos de identidade e do seguro ficam guardadas até a data limite. São apagadas assim que a consulta é cancelada ou recusada.",
     "download": "Baixar",
     "purged": "Apagado",
     "retainUntil": "Reter até {date}",
@@ -896,7 +896,11 @@
       "complete": "Marcar como concluída"
     },
     "doctor": "Médico",
-    "languagesRequested": "Idiomas pedidos"
+    "languagesRequested": "Idiomas pedidos",
+    "preview": "Visualizar",
+    "previewOf": "Abrir {name} em uma nova aba",
+    "purgedNote": "Este arquivo foi apagado.",
+    "downloadNote": "A cópia baixada fica sob responsabilidade da clínica, que deve guardá-la com segurança e apagá-la quando não for mais necessária."
   },
   "bookingAvailability": {
     "clinicLabel": "Site da clínica",

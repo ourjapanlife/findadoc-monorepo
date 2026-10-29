@@ -848,7 +848,7 @@
     "empty": "予約申し込みはまだありません",
     "answersHeading": "回答",
     "uploadsHeading": "アップロード",
-    "uploadsRetentionNote": "保険証・マイナンバー等の本人確認画像は保持期限までだけ保管し、その後削除します。",
+    "uploadsRetentionNote": "本人確認・保険証の写真は保存期限まで保管します。予約がキャンセルまたはお断りになった時点ですぐに削除します。",
     "download": "ダウンロード",
     "purged": "削除済み",
     "retainUntil": "保持期限 {date}",
@@ -896,7 +896,11 @@
       "complete": "完了にする"
     },
     "doctor": "医師",
-    "languagesRequested": "希望言語"
+    "languagesRequested": "希望言語",
+    "preview": "プレビュー",
+    "previewOf": "{name}を新しいタブで開く",
+    "purgedNote": "このファイルは削除されました。",
+    "downloadNote": "ダウンロードした写しは、クリニックが安全に管理し、不要になったら削除してください。"
   },
   "bookingAvailability": {
     "clinicLabel": "クリニックサイト",

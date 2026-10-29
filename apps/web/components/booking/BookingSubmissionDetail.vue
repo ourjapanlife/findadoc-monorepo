@@ -51,7 +51,7 @@
                 </div>
                 <p
                     v-if="detail.statusReason"
-                    class="whitespace-pre-wrap break-words text-sm"
+                    class="whitespace-pre-wrap wrap-break-word text-sm"
                 >
                     {{ t('bookingDashboard.reasonShown', { reason: detail.statusReason }) }}
                 </p>
@@ -126,7 +126,7 @@
                     <dt class="text-sm text-primary-text-muted">
                         {{ t('bookingDashboard.columns.locale') }}
                     </dt>
-                    <dd>{{ detail.locale }}</dd>
+                    <dd>{{ languageName(detail.locale, locale) }}</dd>
                 </div>
                 <div v-if="doctor !== ''">
                     <dt class="text-sm text-primary-text-muted">
@@ -159,14 +159,17 @@
                         <dt class="text-sm text-primary-text-muted">
                             {{ answerLabel(answer.fieldId) }}
                         </dt>
-                        <dd class="whitespace-pre-wrap break-words">
+                        <dd class="whitespace-pre-wrap wrap-break-word">
                             {{ answer.value || '—' }}
                         </dd>
                     </div>
                 </dl>
             </section>
 
-            <section class="flex flex-col gap-3">
+            <section
+                v-if="detail.uploads.length > 0"
+                class="flex flex-col gap-3"
+            >
                 <h2 class="text-lg font-semibold">
                     {{ t('bookingDashboard.uploadsHeading') }}
                 </h2>
@@ -180,47 +183,100 @@
                 >
                     {{ t('bookingDashboard.downloadFailed') }}
                 </p>
-                <ul class="flex flex-col gap-2">
+                <ul class="flex flex-col gap-3">
                     <li
                         v-for="upload in detail.uploads"
                         :key="upload.id"
-                        class="flex flex-col gap-2 rounded-lg border border-accent-bg bg-secondary-bg p-3
-                        landscape:flex-row landscape:items-center landscape:justify-between"
+                        class="flex flex-col gap-3 rounded-lg border border-accent-bg bg-secondary-bg p-3"
+                        :data-testid="`booking-upload-${upload.id}`"
                     >
-                        <div>
-                            <p
-                                v-if="upload.fileName !== ''"
-                                class="font-medium"
-                            >
-                                {{ upload.fileName }}
+                        <div class="flex flex-col">
+                            <p class="font-medium">
+                                {{ answerLabel(upload.fieldId) }}
                             </p>
                             <p class="text-sm text-primary-text-muted">
                                 {{ sensitivityLabel(upload.sensitivity) }}
-                                <template v-if="upload.retainUntil">
+                                <template v-if="upload.retainUntil && !isPurged(upload)">
                                     · {{ t('bookingDashboard.retainUntil', {
                                         date: formatToReadableDate(upload.retainUntil),
                                     }) }}
                                 </template>
-                                <template v-if="upload.purgedAt">
-                                    · {{ t('bookingDashboard.purged') }}
-                                </template>
                             </p>
                         </div>
-                        <button
-                            v-if="upload.purgedAt === null || upload.purgedAt === undefined"
-                            type="button"
-                            class="btn btn-secondary"
-                            :data-testid="`booking-upload-download-${upload.id}`"
-                            @click="downloadUpload(upload.id)"
+
+                        <p
+                            v-if="isPurged(upload)"
+                            class="rounded-lg border border-dashed border-accent-bg p-4 text-sm text-primary-text-muted"
                         >
-                            {{ t('bookingDashboard.download') }}
-                        </button>
-                        <span
-                            v-else
-                            class="text-sm text-primary-text-muted"
-                        >{{ t('bookingDashboard.purged') }}</span>
+                            {{ t('bookingDashboard.purgedNote') }}
+                        </p>
+                        <template v-else>
+                            <button
+                                v-if="isImage(upload) && previewUrls[upload.id]"
+                                type="button"
+                                class="block w-fit max-w-full overflow-hidden rounded-lg border border-accent-bg
+                                bg-primary-bg"
+                                :aria-label="t('bookingDashboard.previewOf', { name: answerLabel(upload.fieldId) })"
+                                @click="previewUpload(upload.id)"
+                            >
+                                <!-- No fixed size: the photo keeps its own aspect ratio inside the limits. -->
+                                <img
+                                    :src="previewUrls[upload.id]"
+                                    :alt="answerLabel(upload.fieldId)"
+                                    class="block h-auto max-h-80 w-auto max-w-full object-contain"
+                                    :data-testid="`booking-upload-preview-${upload.id}`"
+                                >
+                            </button>
+                            <div
+                                v-else-if="!isImage(upload)"
+                                class="flex w-fit items-center gap-2 rounded-lg border border-accent-bg bg-primary-bg
+                                px-4 py-3 text-sm font-semibold text-primary-text"
+                            >
+                                <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <path d="M14 2v6h6" />
+                                </svg>
+                                {{ upload.contentType === 'application/pdf' ? 'PDF' : upload.contentType }}
+                            </div>
+                            <p
+                                v-if="upload.fileName !== ''"
+                                class="break-all text-xs text-primary-text-muted"
+                            >
+                                {{ upload.fileName }}
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary btn-sm"
+                                    :data-testid="`booking-upload-open-${upload.id}`"
+                                    @click="previewUpload(upload.id)"
+                                >
+                                    {{ t('bookingDashboard.preview') }}
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary btn-sm"
+                                    :data-testid="`booking-upload-download-${upload.id}`"
+                                    @click="downloadUpload(upload.id)"
+                                >
+                                    {{ t('bookingDashboard.download') }}
+                                </button>
+                            </div>
+                        </template>
                     </li>
                 </ul>
+                <p class="text-xs text-primary-text-muted">
+                    {{ t('bookingDashboard.downloadNote') }}
+                </p>
             </section>
         </template>
     </div>
@@ -235,7 +291,9 @@ import {
     BookingCancelledBy,
     BookingFieldSensitivity,
     BookingSubmissionStatus,
-    type BookingSubmissionDetail as Detail
+    BookingUploadDisposition,
+    type BookingSubmissionDetail as Detail,
+    type BookingUploadView
 } from '@findadoc/graphql'
 import { formatToReadableDate } from '~/utils/dateUtils'
 import { languageName } from '~/utils/languageName'
@@ -266,6 +324,9 @@ const { t, te, locale } = useI18n()
 const detail = ref<Detail | null>(null)
 const loadError = ref(false)
 const downloadError = ref(false)
+// Inline URLs for photo previews, by upload id. They expire after a few minutes;
+// an image already shown stays on screen, and Preview asks for a fresh one.
+const previewUrls = ref<Record<string, string>>({})
 const reason = ref('')
 const updating = ref(false)
 const actionError = ref('')
@@ -280,9 +341,32 @@ function answerLabel(fieldId: string): string {
     return te(key) ? t(key) : fieldId
 }
 
+function isPurged(upload: BookingUploadView): boolean {
+    return upload.purgedAt !== null && upload.purgedAt !== undefined
+}
+
+function isImage(upload: BookingUploadView): boolean {
+    return upload.contentType.startsWith('image/')
+}
+
+async function loadPreviews(): Promise<void> {
+    const images = (detail.value?.uploads ?? []).filter(upload => isImage(upload) && !isPurged(upload))
+    const signed = await Promise.all(images.map(upload =>
+        requestBookingUploadDownloadUrl(upload.id, BookingUploadDisposition.Inline)))
+    const urls: Record<string, string> = {}
+    signed.forEach((url, index) => {
+        if (url !== null) {
+            urls[images[index]!.id] = url.downloadUrl
+        }
+    })
+    previewUrls.value = urls
+}
+
 async function load(): Promise<void> {
     detail.value = await fetchBookingSubmissionDetail(props.bookingId)
     loadError.value = detail.value === null
+    previewUrls.value = {}
+    void loadPreviews()
 }
 
 async function changeStatus(next: BookingAppointmentStatus): Promise<void> {
@@ -328,14 +412,31 @@ function sensitivityLabel(sensitivity: BookingFieldSensitivity): string {
     return t('bookingDashboard.sensitivity.standard')
 }
 
-async function downloadUpload(uploadId: string): Promise<void> {
+/** Opens the file in a new tab. */
+async function previewUpload(uploadId: string): Promise<void> {
     downloadError.value = false
-    const signed = await requestBookingUploadDownloadUrl(uploadId)
+    const signed = await requestBookingUploadDownloadUrl(uploadId, BookingUploadDisposition.Inline)
     if (signed === null) {
         downloadError.value = true
         return
     }
     window.open(signed.downloadUrl, '_blank', 'noopener,noreferrer')
+}
+
+/** Saves the file. The URL answers with Content-Disposition: attachment, so the page stays put. */
+async function downloadUpload(uploadId: string): Promise<void> {
+    downloadError.value = false
+    const signed = await requestBookingUploadDownloadUrl(uploadId, BookingUploadDisposition.Attachment)
+    if (signed === null) {
+        downloadError.value = true
+        return
+    }
+    const link = document.createElement('a')
+    link.href = signed.downloadUrl
+    link.rel = 'noopener'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
 }
 
 onMounted(load)

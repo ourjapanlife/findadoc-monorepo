@@ -848,7 +848,7 @@
     "empty": "Chưa có yêu cầu đặt lịch",
     "answersHeading": "Câu trả lời",
     "uploadsHeading": "Tệp tải lên",
-    "uploadsRetentionNote": "Ảnh giấy tờ và bảo hiểm chỉ giữ đến hạn retention rồi bị xóa.",
+    "uploadsRetentionNote": "Ảnh giấy tờ tùy thân và bảo hiểm được giữ đến ngày hết hạn lưu. Ảnh bị xóa ngay khi lịch khám bị hủy hoặc từ chối.",
     "download": "Tải xuống",
     "purged": "Đã xóa",
     "retainUntil": "Giữ đến {date}",
@@ -896,7 +896,11 @@
       "complete": "Đánh dấu hoàn thành"
     },
     "doctor": "Bác sĩ",
-    "languagesRequested": "Ngôn ngữ yêu cầu"
+    "languagesRequested": "Ngôn ngữ yêu cầu",
+    "preview": "Xem trước",
+    "previewOf": "Mở {name} trong thẻ mới",
+    "purgedNote": "Tệp này đã bị xóa.",
+    "downloadNote": "Bản đã tải xuống do phòng khám giữ an toàn và xóa khi không còn cần."
   },
   "bookingAvailability": {
     "clinicLabel": "Trang phòng khám",

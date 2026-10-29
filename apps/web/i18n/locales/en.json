@@ -848,7 +848,7 @@
     "empty": "No booking submissions yet",
     "answersHeading": "Answers",
     "uploadsHeading": "Uploads",
-    "uploadsRetentionNote": "Identity and insurance photos are kept only until their retain-until date, then purged.",
+    "uploadsRetentionNote": "Identity and insurance photos are kept until their retain-until date. They are deleted as soon as the visit is cancelled or declined.",
     "download": "Download",
     "purged": "Purged",
     "retainUntil": "Retain until {date}",
@@ -862,7 +862,7 @@
       "appointment": "Appointment",
       "identity": "Identity upload",
       "created": "Created",
-      "locale": "Locale"
+      "locale": "Language"
     },
     "status": {
       "received": "Received",
@@ -896,7 +896,11 @@
       "complete": "Mark completed"
     },
     "doctor": "Doctor",
-    "languagesRequested": "Languages requested"
+    "languagesRequested": "Languages requested",
+    "preview": "Preview",
+    "previewOf": "Open {name} in a new tab",
+    "purgedNote": "This file was deleted.",
+    "downloadNote": "A downloaded copy is the clinic's to keep safe and to delete when it is no longer needed."
   },
   "bookingAvailability": {
     "clinicLabel": "Clinic site",

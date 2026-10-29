@@ -518,11 +518,14 @@ const resolvers = {
 
         bookingUploadDownloadUrl: withAuthenticatedUser(async (_parent: unknown, args: {
             uploadId: string
+            disposition?: gqlType.BookingUploadDisposition | null
         }, context: UserContext): Promise<gqlType.BookingUploadDownloadUrl> => {
             const result = await staffBookingService.createStaffBookingDownloadUrl(
                 args.uploadId,
                 envVariables.apiURL() || 'http://127.0.0.1:4000',
-                await bookingAccessFor(context.user)
+                await bookingAccessFor(context.user),
+                args.disposition ?? undefined,
+                context.user?.sub
             )
             convertErrorsToGqlErrors(result)
             return result.data

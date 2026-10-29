@@ -848,7 +848,7 @@
     "empty": "Noch keine Buchungsanfragen",
     "answersHeading": "Antworten",
     "uploadsHeading": "Hochgeladene Dateien",
-    "uploadsRetentionNote": "Identitäts- und Versicherungsfotos werden nur bis zum Aufbewahrungsdatum gespeichert und danach gelöscht.",
+    "uploadsRetentionNote": "Ausweis- und Versicherungsfotos werden bis zu ihrem Aufbewahrungsdatum gespeichert. Sie werden gelöscht, sobald der Termin abgesagt oder abgelehnt wird.",
     "download": "Herunterladen",
     "purged": "Gelöscht",
     "retainUntil": "Aufbewahren bis {date}",
@@ -896,7 +896,11 @@
       "complete": "Als abgeschlossen markieren"
     },
     "doctor": "Arzt oder Ärztin",
-    "languagesRequested": "Gewünschte Sprachen"
+    "languagesRequested": "Gewünschte Sprachen",
+    "preview": "Vorschau",
+    "previewOf": "{name} in neuem Tab öffnen",
+    "purgedNote": "Diese Datei wurde gelöscht.",
+    "downloadNote": "Für eine heruntergeladene Kopie ist die Praxis verantwortlich: sicher aufbewahren und löschen, wenn sie nicht mehr gebraucht wird."
   },
   "bookingAvailability": {
     "clinicLabel": "Klinikseite",

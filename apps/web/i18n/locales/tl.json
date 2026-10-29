@@ -848,7 +848,7 @@
     "empty": "Wala pang booking submissions",
     "answersHeading": "Mga sagot",
     "uploadsHeading": "Mga upload",
-    "uploadsRetentionNote": "Ang mga larawan ng ID at insurance ay itinatago hanggang sa retain-until date, tapos buburahin.",
+    "uploadsRetentionNote": "Itinatago ang mga larawan ng ID at insurance hanggang sa petsa ng pagtatago. Binubura ang mga ito kapag kinansela o tinanggihan ang pagbisita.",
     "download": "I-download",
     "purged": "Nabura na",
     "retainUntil": "Itago hanggang {date}",
@@ -896,7 +896,11 @@
       "complete": "Markahang tapos na"
     },
     "doctor": "Doktor",
-    "languagesRequested": "Mga hiniling na wika"
+    "languagesRequested": "Mga hiniling na wika",
+    "preview": "Silipin",
+    "previewOf": "Buksan ang {name} sa bagong tab",
+    "purgedNote": "Nabura na ang file na ito.",
+    "downloadNote": "Ang kopyang na-download ay pananagutan ng klinika na ingatan at burahin kapag hindi na kailangan."
   },
   "bookingAvailability": {
     "clinicLabel": "Site ng klinika",

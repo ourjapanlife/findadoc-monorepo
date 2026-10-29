@@ -130,10 +130,37 @@ export function newUploadId(): string {
     return randomUUID()
 }
 
-/** Short-lived GET URL for staff download. Purged objects must not call this. */
+/** `inline` opens the file in the browser (Preview). `attachment` saves it (Download). */
+export type BookingFileDisposition = 'inline' | 'attachment'
+
+const LOCAL_CONTENT_TYPES: Record<string, string> = {
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+    pdf: 'application/pdf'
+}
+
+/** The type a local object is served as, from its file extension. */
+export function localBookingContentType(objectKey: string): string {
+    const extension = objectKey.split('.').pop()?.toLowerCase() ?? ''
+    return LOCAL_CONTENT_TYPES[extension] ?? 'application/octet-stream'
+}
+
+/** A Content-Disposition value with an ASCII fallback name and the UTF-8 name (RFC 6266). */
+export function contentDisposition(disposition: BookingFileDisposition, fileName: string): string {
+    const name = fileName.split(/[/\\]/).pop()?.trim() || 'upload'
+    const ascii = name.replace(/[^\x20-\x7e]|["\\]/g, '_')
+    return `${disposition}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(name)}`
+}
+
+/** Short-lived GET URL for staff preview or download. Purged objects must not call this. */
 export async function createBookingDownloadUrl(input: {
     objectKey: string
     apiBaseUrl: string
+    disposition: BookingFileDisposition
+    fileName: string
+    contentType: string
 }): Promise<{ downloadUrl: string, expiresAt: string }> {
     const expiresAt = new Date(Date.now() + DOWNLOAD_TTL_SECONDS * 1000).toISOString()
     if (usesS3()) {
@@ -141,12 +168,18 @@ export async function createBookingDownloadUrl(input: {
         if (bucket === undefined || bucket === '') {
             throw new Error('S3_BUCKET is required when STORAGE_BACKEND=s3')
         }
-        const command = new GetObjectCommand({ Bucket: bucket, Key: input.objectKey })
+        const command = new GetObjectCommand({
+            Bucket: bucket,
+            Key: input.objectKey,
+            ResponseContentDisposition: contentDisposition(input.disposition, input.fileName),
+            ResponseContentType: input.contentType
+        })
         const downloadUrl = await getSignedUrl(s3Client(), command, { expiresIn: DOWNLOAD_TTL_SECONDS })
         return { downloadUrl, expiresAt }
     }
+    const query = input.disposition === 'attachment' ? '?disposition=attachment' : ''
     return {
-        downloadUrl: `${input.apiBaseUrl.replace(/\/$/, '')}/dev-uploads/${encodeURIComponent(input.objectKey)}`,
+        downloadUrl: `${input.apiBaseUrl.replace(/\/$/, '')}/dev-uploads/${encodeURIComponent(input.objectKey)}${query}`,
         expiresAt
     }
 }

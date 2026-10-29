@@ -9,6 +9,7 @@ import type {
     BookingSubmissionDetail,
     BookingSubmissionListItem,
     BookingSubmissionSearchFilters,
+    BookingUploadDisposition,
     BookingUploadDownloadUrl,
     ClinicAvailabilityClosure,
     ClinicAvailabilityWindow,
@@ -157,8 +158,8 @@ const detailQuery = gql`
 `
 
 const downloadMutation = gql`
-  mutation BookingUploadDownloadUrl($uploadId: ID!) {
-    bookingUploadDownloadUrl(uploadId: $uploadId) {
+  mutation BookingUploadDownloadUrl($uploadId: ID!, $disposition: BookingUploadDisposition) {
+    bookingUploadDownloadUrl(uploadId: $uploadId, disposition: $disposition) {
       uploadId
       downloadUrl
       expiresAt
@@ -356,10 +357,14 @@ export async function fetchBookingSubmissionDetail(id: string): Promise<BookingS
     return data?.bookingSubmission ?? null
 }
 
-export async function requestBookingUploadDownloadUrl(uploadId: string): Promise<BookingUploadDownloadUrl | null> {
+/** INLINE opens the file in the browser (Preview); ATTACHMENT saves it (Download). */
+export async function requestBookingUploadDownloadUrl(
+    uploadId: string,
+    disposition: BookingUploadDisposition
+): Promise<BookingUploadDownloadUrl | null> {
     const data = await request<{ bookingUploadDownloadUrl: BookingUploadDownloadUrl }>(
         downloadMutation,
-        { uploadId },
+        { uploadId, disposition },
         WRITE
     )
     return data?.bookingUploadDownloadUrl ?? null

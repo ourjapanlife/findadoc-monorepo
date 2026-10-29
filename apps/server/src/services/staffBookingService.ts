@@ -3,6 +3,7 @@ import {
     BookingCancelledBy,
     BookingFieldSensitivity,
     BookingSubmissionStatus,
+    BookingUploadDisposition,
     type BookingSubmissionDetail,
     type BookingSubmissionListItem,
     type BookingSubmissionSearchFilters,
@@ -10,8 +11,10 @@ import {
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
 import { canReadFacility, readableFacilityIds, type BookingAccess } from '../booking/access.js'
+import { staffAnswers } from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, CANCELLED_BY, type AppointmentStatus } from '../booking/lifecycle.js'
 import { db } from '../kyselyClient.js'
+import { logger } from '../logger.js'
 import { ErrorCode, Result } from '../result.js'
 import { createBookingDownloadUrl } from '../storage/objectStorage.js'
 
@@ -291,10 +294,7 @@ export async function getBookingSubmissionDetail(
         service: row.service_key,
         createdDate: row.created_date,
         updatedDate: row.updated_date,
-        answers: Object.entries(answersRecord).map(([fieldId, value]) => ({
-            fieldId,
-            value: typeof value === 'string' ? value : null
-        })),
+        answers: staffAnswers(row.form_definition_id, answersRecord, new Set(uploads.map(upload => upload.id))),
         uploads: uploads.map(upload => ({
             id: upload.id,
             fieldId: upload.field_id,
@@ -308,14 +308,29 @@ export async function getBookingSubmissionDetail(
     }
 }
 
-/** Identity documents are downloadable until purged, but never inlined in list payloads. */
+/**
+ * Identity documents are viewable until purged, but never inlined in list payloads.
+ * INLINE opens the file in the browser; ATTACHMENT saves a copy. Each URL is logged
+ * with who asked for it, never with the file name.
+ */
 export async function createStaffBookingDownloadUrl(
     uploadId: string,
     apiBaseUrl: string,
-    access: BookingAccess
+    access: BookingAccess,
+    disposition: BookingUploadDisposition = BookingUploadDisposition.Inline,
+    actorSub?: string
 ): Promise<Result<BookingUploadDownloadUrl>> {
     const upload = await db.selectFrom('booking_uploads')
-        .select(['id', 'object_key', 'purged_at', 'facility_id', 'booking_submission_id'])
+        .select([
+            'id',
+            'object_key',
+            'purged_at',
+            'facility_id',
+            'booking_submission_id',
+            'file_name',
+            'field_id',
+            'content_type'
+        ])
         .where('id', '=', uploadId)
         .executeTakeFirst()
 
@@ -327,9 +342,21 @@ export async function createStaffBookingDownloadUrl(
         return validationError('uploadId')
     }
 
+    const attachment = disposition === BookingUploadDisposition.Attachment
+    const extension = upload.object_key.split('.').pop() ?? ''
     const signed = await createBookingDownloadUrl({
         objectKey: upload.object_key,
-        apiBaseUrl
+        apiBaseUrl,
+        disposition: attachment ? 'attachment' : 'inline',
+        fileName: upload.file_name || `${upload.field_id}.${extension}`,
+        contentType: upload.content_type
+    })
+    logger.info('booking upload url', {
+        type: 'bookingUploadAccess',
+        uploadId: upload.id,
+        facilityId: upload.facility_id,
+        disposition: attachment ? 'attachment' : 'inline',
+        actor: actorSub ?? 'unknown'
     })
 
     return {

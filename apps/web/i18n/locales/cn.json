@@ -848,7 +848,7 @@
     "empty": "暂无预约申请",
     "answersHeading": "回答",
     "uploadsHeading": "上传文件",
-    "uploadsRetentionNote": "身份与保险照片仅保留至保留期限，到期后清除。",
+    "uploadsRetentionNote": "身份和保险照片保存到保留期限为止。一旦就诊被取消或拒绝，会立即删除。",
     "download": "下载",
     "purged": "已清除",
     "retainUntil": "保留至 {date}",
@@ -896,7 +896,11 @@
       "complete": "标记为已完成"
     },
     "doctor": "医生",
-    "languagesRequested": "所需语言"
+    "languagesRequested": "所需语言",
+    "preview": "预览",
+    "previewOf": "在新标签页中打开{name}",
+    "purgedNote": "此文件已删除。",
+    "downloadNote": "下载的副本由诊所负责妥善保管，不再需要时请删除。"
   },
   "bookingAvailability": {
     "clinicLabel": "诊所站点",

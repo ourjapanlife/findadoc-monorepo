@@ -1,6 +1,7 @@
 import { pathToFileURL } from 'node:url'
 import { closeDatabase, db, initializeKyselyClient } from '../src/kyselyClient.js'
 import { initializeLogger } from '../src/logger.js'
+import { purgeBookingUpload } from '../src/booking/uploadPurge.js'
 import { deleteBookingObject } from '../src/storage/objectStorage.js'
 
 /**
@@ -71,17 +72,7 @@ export async function purgeExpiredBookingUploads(options: {
     if (options.write) {
         for (const upload of expired) {
             try {
-                await deleteBookingObject(upload.object_key)
-                await db.updateTable('booking_uploads')
-                    .set({
-                        purged_at: nowIso,
-                        object_key: `purged/${upload.id}`,
-                        // The patient's own file name can identify them, so it goes with the file.
-                        file_name: ''
-                    })
-                    .where('id', '=', upload.id)
-                    .where('purged_at', 'is', null)
-                    .execute()
+                await purgeBookingUpload(upload, nowIso)
                 purged += 1
             } catch {
                 failed += 1

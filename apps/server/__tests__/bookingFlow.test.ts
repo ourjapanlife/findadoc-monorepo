@@ -280,6 +280,55 @@ describe('booking flow', () => {
         await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|staff', moderator)
     })
 
+    it('purges the patient\'s files when the clinic declines the visit', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const at = (minutes: number) => iso(3 * 24 * 60 + minutes)
+        const window = await availabilityService.createClinicAvailabilityWindow(
+            { clinicSiteId: facilityId, startsAt: at(0), endsAt: at(60) },
+            'test|staff',
+            moderator
+        )
+        expect(window.hasErrors).toBe(false)
+        const submitted = await submit(facilityId, at(0), 'files@example.com')
+        expect(submitted.hasErrors).toBe(false)
+        createdSubmissionIds.push(submitted.data.id)
+
+        const upload = await db.insertInto('booking_uploads')
+            .values({
+                facility_id: facilityId,
+                clinic_site_id: null,
+                booking_submission_id: submitted.data.id,
+                field_id: 'insuranceDocument',
+                object_key: `uploads/booking/${facilityId}/test-purge/card.jpg`,
+                content_type: 'image/jpeg',
+                file_name: 'Patient insurance card.jpg',
+                byte_size: 10,
+                sensitivity: 'identity_document',
+                retain_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                purged_at: null
+            })
+            .returning('id')
+            .executeTakeFirstOrThrow()
+
+        const declined = await appointmentService.updateAppointmentStatus(
+            { appointmentId: submitted.data.appointmentId!, status: BookingAppointmentStatus.Declined },
+            moderator,
+            'test|staff'
+        )
+        expect(declined.hasErrors).toBe(false)
+
+        const row = await db.selectFrom('booking_uploads')
+            .select(['purged_at', 'object_key', 'file_name'])
+            .where('id', '=', upload.id)
+            .executeTakeFirstOrThrow()
+        expect(row.purged_at).not.toBeNull()
+        expect(row.object_key).toBe(`purged/${upload.id}`)
+        expect(row.file_name).toBe('')
+        expect((await staffBookingService.createStaffBookingDownloadUrl(upload.id, 'http://127.0.0.1:4000', moderator))
+            .hasErrors).toBe(true)
+        await db.deleteFrom('booking_uploads').where('id', '=', upload.id).execute()
+    })
+
     it('books two doctors at the same time, and picks one who speaks the language', async () => {
         const facilityId = sharedFacilityIds[0]!
         // Two days on, 10:00-11:00 JST: no clinic hours there.
@@ -302,7 +351,9 @@ describe('booking flow', () => {
         expect(form?.languages).toEqual(expect.arrayContaining([Locale.EnUs, Locale.JaJp]))
 
         const starts = (practitionerId?: string, spokenLanguages?: Locale[]) =>
-            bookingService.getAvailableBookingStarts(facilityId, later(-60), later(120), 60, practitionerId, spokenLanguages)
+            bookingService.getAvailableBookingStarts(
+                facilityId, later(-60), later(120), 60, practitionerId, spokenLanguages
+            )
         expect(await starts()).toEqual([later(0)])
         expect(await starts(english)).toEqual([later(0)])
         expect(await starts(undefined, [Locale.EnUs])).toEqual([later(0)])
@@ -324,7 +375,9 @@ describe('booking flow', () => {
         const second = await submit(facilityId, later(0), 'second@example.com')
         expect(second.hasErrors).toBe(false)
         createdSubmissionIds.push(second.data.id)
-        const appointments = await appointmentService.listClinicAppointments(facilityId, later(-60), later(120), moderator)
+        const appointments = await appointmentService.listClinicAppointments(
+            facilityId, later(-60), later(120), moderator
+        )
         expect(appointments.map(appointment => appointment.practitionerId).sort()).toEqual([english, japanese].sort())
 
         expect((await submit(facilityId, later(0), 'third@example.com')).hasErrors).toBe(true)

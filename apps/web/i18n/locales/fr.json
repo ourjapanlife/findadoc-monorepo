@@ -848,7 +848,7 @@
     "empty": "Aucune demande de réservation pour le moment",
     "answersHeading": "Réponses",
     "uploadsHeading": "Fichiers",
-    "uploadsRetentionNote": "Les photos d’identité et d’assurance ne sont conservées que jusqu’à leur date limite, puis purgées.",
+    "uploadsRetentionNote": "Les photos d'identité et d'assurance sont conservées jusqu'à leur date limite. Elles sont supprimées dès que la visite est annulée ou refusée.",
     "download": "Télécharger",
     "purged": "Purgé",
     "retainUntil": "Conserver jusqu’au {date}",
@@ -896,7 +896,11 @@
       "complete": "Marquer comme terminé"
     },
     "doctor": "Médecin",
-    "languagesRequested": "Langues demandées"
+    "languagesRequested": "Langues demandées",
+    "preview": "Aperçu",
+    "previewOf": "Ouvrir {name} dans un nouvel onglet",
+    "purgedNote": "Ce fichier a été supprimé.",
+    "downloadNote": "Une copie téléchargée relève de la clinique, qui doit la protéger et la supprimer quand elle n'est plus utile."
   },
   "bookingAvailability": {
     "clinicLabel": "Site de clinique",
