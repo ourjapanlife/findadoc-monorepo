@@ -16,10 +16,12 @@ const unauthorized = { extensions: { code: 'UNAUTHORIZED', http: { status: 403 }
 // currentUserAccess reports the caller's own roles and scopes, so it has no scope of its own.
 const fieldsWithoutScope = new Set(['currentUserAccess'])
 
-// Clinic owners and staff are plain users. These need a signed-in session, then the
-// booking services check the facility membership (src/booking/access.ts).
-const membershipFields = new Set([
-    'myBookingClinics',
+// myBookingClinics needs only a signed-in session. It returns an empty list to someone with no clinic.
+const signedInFields = new Set(['myBookingClinics'])
+
+// These count FacilityOwner and FacilityStaff, which the API derives from clinic_memberships
+// (src/booking/facilityRoles.ts). The booking services then check which facility.
+const clinicFields = new Set([
     'bookingClinic',
     'clinicMembers',
     'bookingSettings',
@@ -42,6 +44,7 @@ const membershipFields = new Set([
     'removeClinicMember',
     'updateBookingSettings'
 ])
+const membershipFields = new Set([...signedInFields, ...clinicFields])
 
 type AnyResolver = (parent: unknown, args: unknown, context: UserContext, info: GraphQLResolveInfo) => unknown
 
@@ -77,6 +80,7 @@ describe('root resolver scopes', () => {
     })
 
     it('lists every membership field it exempts', () => {
+        expect([...signedInFields].some(name => clinicFields.has(name))).toBe(false)
         expect(membershipRootFields.map(([name]) => fieldName(name)).sort()).toEqual([...membershipFields].sort())
     })
 
@@ -84,6 +88,19 @@ describe('root resolver scopes', () => {
         vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
 
         await expect(Promise.resolve().then(() => resolver({}, {}, anonymousContext, info)))
+            .rejects.toMatchObject(unauthorized)
+    })
+
+    const clinicRootFields = membershipRootFields.filter(([name]) => clinicFields.has(fieldName(name)))
+
+    it.each(clinicRootFields)('%s rejects a signed-in user with no clinic, even when the token names own-clinic scopes', async (_name, resolver) => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const context = contextWithScopes(
+            Scope['read:own_clinic_bookings'], Scope['write:own_clinic_bookings'], Scope['write:own_clinic_availability'],
+            Scope['write:own_clinic_settings'], Scope['write:own_clinic_memberships']
+        )
+
+        await expect(Promise.resolve().then(() => resolver({}, {}, context, info)))
             .rejects.toMatchObject(unauthorized)
     })
 })

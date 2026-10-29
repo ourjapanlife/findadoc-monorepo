@@ -300,6 +300,52 @@ describe('getEffectiveScopes()', () => {
         expect(scopes.includes(Scope['write:clinic_memberships'])).toBe(true)
     })
 
+    it.each([Role.User, Role.Moderator, Role.Admin])('drops own-clinic scopes the token names for %s', role => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(false)
+        const user = {
+            sub: 't1',
+            name: 'Token',
+            email: 't@t.com',
+            roles: [role],
+            scope: 'read:own_clinic_bookings write:own_clinic_availability write:own_clinic_memberships'
+        }
+        const scopes = getEffectiveScopes(user)
+        expect(scopes.includes(Scope['read:own_clinic_bookings'])).toBe(false)
+        expect(scopes.includes(Scope['write:own_clinic_availability'])).toBe(false)
+        expect(scopes.includes(Scope['write:own_clinic_memberships'])).toBe(false)
+    })
+
+    it('keeps the own-clinic write scopes in production for a clinic owner', () => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
+        const owner = {
+            sub: 'o1',
+            name: 'Owner',
+            email: 'o@o.com',
+            roles: [Role.User, Role.FacilityOwner],
+            scope: ''
+        }
+        const scopes = getEffectiveScopes(owner)
+        expect(scopes.includes(Scope['write:own_clinic_memberships'])).toBe(true)
+        expect(scopes.includes(Scope['write:own_clinic_settings'])).toBe(true)
+        expect(scopes.includes(Scope['write:own_clinic_availability'])).toBe(true)
+        expect(scopes.includes(Scope['write:clinic_memberships'])).toBe(false)
+        expect(scopes.includes(Scope['read:bookings'])).toBe(false)
+    })
+
+    it('gives a Moderator who owns a clinic only the own-clinic scopes', () => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
+        const mod = {
+            sub: 'm2',
+            name: 'Mod',
+            email: 'm@m.com',
+            roles: [Role.Moderator, Role.FacilityOwner],
+            scope: ''
+        }
+        const scopes = getEffectiveScopes(mod)
+        expect(scopes.includes(Scope['read:own_clinic_bookings'])).toBe(true)
+        expect(scopes.includes(Scope['read:bookings'])).toBe(false)
+    })
+
     it('does not strip write scopes in production for Moderator', () => {
         vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
         const mod = {
@@ -355,6 +401,13 @@ describe('roleScopes invariant: no accidental changes', () => {
             Scope['create:bookings'],
             Scope['read:profile'],
             Scope['read:reservations'], Scope['write:reservations']
+        ],
+        [Role.FacilityOwner]: [
+            Scope['read:own_clinic_bookings'], Scope['write:own_clinic_bookings'], Scope['write:own_clinic_availability'],
+            Scope['write:own_clinic_settings'], Scope['write:own_clinic_memberships']
+        ],
+        [Role.FacilityStaff]: [
+            Scope['read:own_clinic_bookings'], Scope['write:own_clinic_bookings'], Scope['write:own_clinic_availability']
         ]
     }
 
@@ -436,6 +489,17 @@ describe('buildUserContext()', () => {
         const ctx = await buildUserContext(fakeReq)
 
         expect(ctx.user.roles).toContain(Role.Moderator)
+    })
+
+    it('drops facility roles from the token. The API derives them from clinic_memberships', async () => {
+        const fakeReq = { user: { sub: 'tokenOwner',
+            name: 'TokenOwner',
+            email: 'owner@example.com',
+            scope: '',
+            'https://findadoc.jp/roles': [Role.User, Role.FacilityOwner, Role.FacilityStaff] } } as FastifyRequest
+        const ctx = await buildUserContext(fakeReq)
+
+        expect(ctx.user.roles).toEqual([Role.User])
     })
 
     it('should default to empty roles if none provided', async () => {

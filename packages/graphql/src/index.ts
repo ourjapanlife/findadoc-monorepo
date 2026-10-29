@@ -791,7 +791,7 @@ export type CurrentUserAccess = {
   effectiveScopes: Array<Scalars['String']['output']>;
   /** Space-delimited OAuth scopes from the access token `scope` claim. */
   jwtScopes: Array<Scalars['String']['output']>;
-  /** Application roles from the token (e.g. Admin, Moderator). */
+  /** Application roles: Admin, Moderator, and so on from the token, plus FacilityOwner and FacilityStaff from claimed clinic memberships. */
   roles: Array<Scalars['String']['output']>;
 };
 
