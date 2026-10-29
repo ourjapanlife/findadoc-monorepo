@@ -8,6 +8,7 @@ import {
     getEffectiveScopes
 } from './auth.js'
 import { bookingAccessFor } from './booking/access.js'
+import { allowBookingCall, type BookingBudget } from './booking/rateLimits.js'
 import * as facilityService from './services/facilityService.js'
 import * as healthcareProfessionalService from './services/healthcareProfessionalService.js'
 import * as gqlType from '@findadoc/graphql'
@@ -25,7 +26,7 @@ import * as staffBookingService from './services/staffBookingService.js'
 import * as appointmentService from './services/appointmentService.js'
 import * as clinicAccessService from './services/clinicAccessService.js'
 import { envVariables } from '../utils/environmentVariables.js'
-import { Result } from './result.js'
+import { ErrorCode, Result } from './result.js'
 import { logger } from './logger.js'
 import { PUBLISHED_LOCALES } from './languages/publishedLocales.js'
 import { facilityListMaxLimit } from '../utils/requestedFields.js'
@@ -66,8 +67,12 @@ const resolvers = {
         : Promise<gqlType.BookingFormType[]> => clinicAccessService.listBookingFormTypes()),
         patientBooking: withScope(Scope['create:bookings'], async (
             _parent: unknown,
-            args: { token: string }
-        ): Promise<gqlType.PatientBookingView | null> => appointmentService.getPatientBooking(args.token)),
+            args: { token: string },
+            context: UserContext
+        ): Promise<gqlType.PatientBookingView | null> => {
+            enforceBookingBudget('token', context.clientIp)
+            return appointmentService.getPatientBooking(args.token)
+        }),
         // Staff reads: any signed-in user. The service limits rows to that user's clinics (booking/access.ts).
         myBookingClinics: withAuthenticatedUser(async (
             _parent: unknown,
@@ -457,7 +462,8 @@ const resolvers = {
 
         createBookingUploadUrl: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
             input: gqlType.CreateBookingUploadUrlInput
-        }): Promise<gqlType.BookingUploadUrl> => {
+        }, context: UserContext): Promise<gqlType.BookingUploadUrl> => {
+            enforceBookingBudget('upload', context.clientIp)
             const result = await bookingService.createBookingUploadUrl(
                 args.input,
                 envVariables.apiURL() || 'http://127.0.0.1:4000'
@@ -468,7 +474,8 @@ const resolvers = {
 
         submitBooking: withScope(Scope['create:bookings'], async (_parent: unknown, args: {
             input: gqlType.SubmitBookingInput
-        }): Promise<gqlType.BookingSubmissionResult> => {
+        }, context: UserContext): Promise<gqlType.BookingSubmissionResult> => {
+            enforceBookingBudget('submit', context.clientIp)
             const result = await bookingService.submitBooking(args.input)
             convertErrorsToGqlErrors(result)
             return result.data
@@ -530,8 +537,10 @@ const resolvers = {
         // The patient is signed out. The private token is the credential.
         cancelBookingByToken: withScope(Scope['create:bookings'], async (
             _parent: unknown,
-            args: { input: gqlType.CancelBookingByTokenInput }
+            args: { input: gqlType.CancelBookingByTokenInput },
+            context: UserContext
         ): Promise<gqlType.PatientBookingView> => {
+            enforceBookingBudget('token', context.clientIp)
             const result = await appointmentService.cancelBookingByToken(args.input)
             convertErrorsToGqlErrors(result)
             return result.data
@@ -574,6 +583,19 @@ const resolvers = {
             return result.data
         })
     }
+}
+
+/** Refuses a signed-out booking call once this address has used its budget (booking/rateLimits.ts). */
+function enforceBookingBudget(budget: BookingBudget, clientIp: string | undefined): void {
+    if (allowBookingCall(budget, clientIp || 'unknown')) {
+        return
+    }
+    logger.warn(`Booking ${budget} limit reached`)
+    convertErrorsToGqlErrors({
+        data: undefined,
+        hasErrors: true,
+        errors: [{ field: 'clientIp', errorCode: ErrorCode.TOO_MANY_REQUESTS, httpStatus: 429 }]
+    })
 }
 
 function convertErrorsToGqlErrors(resultObject: Result<unknown>): void {

@@ -802,7 +802,9 @@
       "form": "请检查标出的字段",
       "submitFailed": "无法发送申请，请重试。",
       "slot": "请选择可预约时间",
-      "duration": "请选择诊所提供的就诊时长"
+      "duration": "请选择诊所提供的就诊时长",
+      "tooManyRequests": "来自此网络连接的请求过多。请等待几分钟后重试。",
+      "openRequestLimit": "此电子邮箱在这家诊所已有等待回复的申请。请等待诊所回复，或通过邮件中的链接取消其中一个。"
     },
     "slotLabel": "希望时间",
     "slotHelp": "请在诊所可预约时段内选择符合就诊时长的开始时间。",
@@ -951,7 +953,8 @@
     "yesCancel": "是，取消",
     "keep": "保留",
     "cancelled": "此预约已取消。",
-    "cancelFailed": "无法取消。预约可能已开始或已变化，已显示最新状态。"
+    "cancelFailed": "无法取消。预约可能已开始或已变化，已显示最新状态。",
+    "tooManyRequests": "来自此网络连接的请求过多。请等待几分钟后重试。"
   },
   "consent": {
     "title": "本网站的 Cookie",

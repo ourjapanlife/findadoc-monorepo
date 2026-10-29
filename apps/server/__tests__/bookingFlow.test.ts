@@ -5,6 +5,7 @@ import { db } from '../src/kyselyClient.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
 import { DEFAULT_BOOKING_FORM_ID } from '../src/booking/formDefinitions.js'
 import { hashPatientToken } from '../src/booking/links.js'
+import { ErrorCode } from '../src/result.js'
 import * as availabilityService from '../src/services/availabilityService.js'
 import * as bookingService from '../src/services/bookingService.js'
 import * as appointmentService from '../src/services/appointmentService.js'
@@ -31,13 +32,13 @@ const answers = [
     { fieldId: 'reason', value: 'Checkup' }
 ]
 
-async function submit(facilityId: string, startsAt: string) {
+async function submit(facilityId: string, startsAt: string, email = 'patient@example.com') {
     return bookingService.submitBooking({
         clinicSiteId: facilityId,
         formDefinitionId: DEFAULT_BOOKING_FORM_ID,
         formVersion: 1,
         locale: 'en-US',
-        answers,
+        answers: answers.map(answer => (answer.fieldId === 'email' ? { ...answer, value: email } : answer)),
         startsAt,
         durationMinutes: 60
     })
@@ -159,6 +160,42 @@ describe('booking flow', () => {
             outsider
         )
         expect(created.hasErrors).toBe(true)
+    })
+
+    it('caps the open requests one email holds at one clinic', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const window = await availabilityService.createClinicAvailabilityWindow(
+            { clinicSiteId: facilityId, startsAt: iso(240), endsAt: iso(540) },
+            'test|staff',
+            moderator
+        )
+        expect(window.hasErrors).toBe(false)
+
+        const held: string[] = []
+        for (const [start, email] of [[240, 'flood@example.com'], [300, 'Flood@Example.com'], [360, 'FLOOD@example.com']] as const) {
+            const submitted = await submit(facilityId, iso(start), email)
+            expect(submitted.hasErrors).toBe(false)
+            createdSubmissionIds.push(submitted.data.id)
+            held.push(submitted.data.appointmentId!)
+        }
+
+        const refused = await submit(facilityId, iso(420), 'flood@example.com')
+        expect(refused.errors?.[0]?.errorCode).toBe(ErrorCode.OPEN_REQUEST_LIMIT)
+        // Another sender can still book the free time.
+        const other = await submit(facilityId, iso(420), 'someone-else@example.com')
+        expect(other.hasErrors).toBe(false)
+        createdSubmissionIds.push(other.data.id)
+
+        // An answered request no longer counts.
+        const declined = await appointmentService.updateAppointmentStatus(
+            { appointmentId: held[0]!, status: BookingAppointmentStatus.Declined },
+            moderator,
+            'test|staff'
+        )
+        expect(declined.hasErrors).toBe(false)
+        const afterDecline = await submit(facilityId, iso(480), 'flood@example.com')
+        expect(afterDecline.hasErrors).toBe(false)
+        createdSubmissionIds.push(afterDecline.data.id)
     })
 
     it('lets an owner invite staff but not another owner', async () => {

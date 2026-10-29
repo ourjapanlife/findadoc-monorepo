@@ -802,7 +802,9 @@
       "form": "Suriin ang mga naka-highlight na field",
       "submitFailed": "Hindi maipadala ang kahilingan. Subukan ulit.",
       "slot": "Pumili ng available na oras",
-      "duration": "Pumili ng haba na inaalok ng klinika"
+      "duration": "Pumili ng haba na inaalok ng klinika",
+      "tooManyRequests": "Masyadong maraming kahilingan mula sa koneksyong ito. Maghintay ng ilang minuto at subukan ulit.",
+      "openRequestLimit": "May mga kahilingan na ang email na ito na naghihintay sa klinikang ito. Hintayin ang sagot ng klinika, o kanselahin ang isa gamit ang link sa iyong email."
     },
     "slotLabel": "Gustong oras",
     "slotHelp": "Pumili ng simula na kasya sa haba sa loob ng available na oras.",
@@ -951,7 +953,8 @@
     "yesCancel": "Oo, kanselahin",
     "keep": "Panatilihin",
     "cancelled": "Kinansela na ang appointment na ito.",
-    "cancelFailed": "Hindi makansela. Maaaring nagsimula na o nagbago ito; ipinapakita ang pinakabagong katayuan."
+    "cancelFailed": "Hindi makansela. Maaaring nagsimula na o nagbago ito; ipinapakita ang pinakabagong katayuan.",
+    "tooManyRequests": "Masyadong maraming kahilingan mula sa koneksyong ito. Maghintay ng ilang minuto at subukan ulit."
   },
   "consent": {
     "title": "Mga cookie sa site na ito",

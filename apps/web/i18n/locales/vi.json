@@ -802,7 +802,9 @@
       "form": "Kiểm tra các trường được tô sáng",
       "submitFailed": "Không gửi được yêu cầu. Thử lại.",
       "slot": "Chọn một giờ còn trống",
-      "duration": "Chọn thời lượng phòng khám cung cấp"
+      "duration": "Chọn thời lượng phòng khám cung cấp",
+      "tooManyRequests": "Có quá nhiều yêu cầu từ kết nối này. Đợi vài phút rồi thử lại.",
+      "openRequestLimit": "Email này đã có yêu cầu đang chờ tại phòng khám này. Hãy đợi phòng khám trả lời, hoặc hủy một yêu cầu bằng liên kết trong email của bạn."
     },
     "slotLabel": "Giờ mong muốn",
     "slotHelp": "Chọn giờ bắt đầu khớp thời lượng trong khung giờ trống.",
@@ -951,7 +953,8 @@
     "yesCancel": "Có, hủy",
     "keep": "Giữ lại",
     "cancelled": "Lịch hẹn này đã bị hủy.",
-    "cancelFailed": "Không thể hủy. Lịch hẹn có thể đã bắt đầu hoặc đã thay đổi; đang hiển thị trạng thái mới nhất."
+    "cancelFailed": "Không thể hủy. Lịch hẹn có thể đã bắt đầu hoặc đã thay đổi; đang hiển thị trạng thái mới nhất.",
+    "tooManyRequests": "Có quá nhiều yêu cầu từ kết nối này. Đợi vài phút rồi thử lại."
   },
   "consent": {
     "title": "Cookie trên trang này",

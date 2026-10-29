@@ -18,7 +18,7 @@
             role="alert"
             data-testid="patient-booking-not-found"
         >
-            {{ t('patientBooking.notFound') }}
+            {{ rateLimited ? t('patientBooking.tooManyRequests') : t('patientBooking.notFound') }}
         </p>
         <template v-else>
             <dl class="grid gap-3 rounded-lg border border-accent-bg bg-secondary-bg p-4 sm:grid-cols-2">
@@ -109,7 +109,7 @@
                 class="field-error"
                 role="alert"
             >
-                {{ t('patientBooking.cancelFailed') }}
+                {{ rateLimited ? t('patientBooking.tooManyRequests') : t('patientBooking.cancelFailed') }}
             </p>
         </template>
     </div>
@@ -121,7 +121,7 @@ import { useI18n } from 'vue-i18n'
 import { BookingAppointmentStatus, type PatientBookingView } from '@findadoc/graphql'
 import { definePageMeta, useHead } from '#imports'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
-import { cancelPatientBooking, fetchPatientBooking } from '~/utils/booking/formQuery'
+import { cancelPatientBooking, fetchPatientBooking, isBookingRefusal } from '~/utils/booking/formQuery'
 import { formatToReadableDate } from '~/utils/dateUtils'
 import { formatPageTitle } from '~/utils/site'
 
@@ -140,7 +140,15 @@ const reason = ref('')
 const confirmingCancel = ref(false)
 const cancelling = ref(false)
 const cancelError = ref(false)
+// The API refused the last call because this address made too many (#160).
+const rateLimited = ref(false)
 let token = ''
+
+async function loadBooking(): Promise<void> {
+    const loaded = token === '' ? null : await fetchPatientBooking(token)
+    rateLimited.value = loaded === 'rateLimited'
+    booking.value = isBookingRefusal(loaded) ? null : loaded
+}
 
 async function cancel(): Promise<void> {
     cancelling.value = true
@@ -148,11 +156,17 @@ async function cancel(): Promise<void> {
     const updated = await cancelPatientBooking(token, reason.value)
     cancelling.value = false
     confirmingCancel.value = false
-    if (updated === null) {
+    if (isBookingRefusal(updated)) {
         cancelError.value = true
-        booking.value = await fetchPatientBooking(token)
+        if (updated === 'rateLimited') {
+            // Another lookup would be refused too. Keep the booking on screen.
+            rateLimited.value = true
+            return
+        }
+        await loadBooking()
         return
     }
+    rateLimited.value = false
     booking.value = updated
 }
 
@@ -161,7 +175,7 @@ onMounted(async () => {
     // The token cancels the visit. Drop it from the URL so later page views,
     // error reports, and screenshots of the address bar do not carry it.
     window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
-    booking.value = token === '' ? null : await fetchPatientBooking(token)
+    await loadBooking()
     loading.value = false
 })
 

@@ -802,7 +802,9 @@
       "form": "Controlla i campi evidenziati",
       "submitFailed": "Impossibile inviare. Riprova.",
       "slot": "Scegli un orario disponibile",
-      "duration": "Scegli una durata offerta dalla clinica"
+      "duration": "Scegli una durata offerta dalla clinica",
+      "tooManyRequests": "Troppe richieste da questa connessione. Attendi qualche minuto e riprova.",
+      "openRequestLimit": "Questo indirizzo email ha già richieste in attesa presso questa clinica. Attendi la risposta della clinica, oppure annullane una dal link nella tua email."
     },
     "slotLabel": "Orario preferito",
     "slotHelp": "Scegli un inizio che corrisponda alla durata negli orari aperti.",
@@ -951,7 +953,8 @@
     "yesCancel": "Sì, annulla",
     "keep": "Mantieni",
     "cancelled": "Questo appuntamento è annullato.",
-    "cancelFailed": "Impossibile annullare. Potrebbe essere già iniziato o cambiato; viene mostrato lo stato più recente."
+    "cancelFailed": "Impossibile annullare. Potrebbe essere già iniziato o cambiato; viene mostrato lo stato più recente.",
+    "tooManyRequests": "Troppe richieste da questa connessione. Attendi qualche minuto e riprova."
   },
   "consent": {
     "title": "Cookie su questo sito",

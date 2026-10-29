@@ -51,6 +51,30 @@ The patient token is 32 random bytes in the URL fragment of
 `/book/manage#{token}`, so it is never in a server or CDN log. Only its sha256
 is stored (`booking_submissions.cancel_token_hash`).
 
+## Limits on the signed-out endpoints
+
+The intake form and the patient link work without a session, so
+`src/booking/rateLimits.ts` limits them per client address (`clientIpFrom`):
+
+| Budget | Calls | Per address |
+|---|---|---|
+| `upload` | `createBookingUploadUrl` | 20 an hour |
+| `submit` | `submitBooking` | 10 an hour |
+| `token` | `patientBooking`, `cancelBookingByToken` | 30 every 10 minutes |
+
+A refused call answers `TOO_MANY_REQUESTS` and is not counted. The counts are
+in memory, one set per API instance, like the Maps lookup budget. They are
+generous because one mobile-carrier address can be many people.
+
+One email may hold 3 upcoming `requested` appointments at one clinic
+(`MAX_OPEN_REQUESTS_PER_EMAIL`, case-insensitive). A fourth answers
+`OPEN_REQUEST_LIMIT` until the clinic answers one, or one ends or is
+cancelled. The count runs inside the clinic's booking lock.
+
+An upload URL that is never submitted leaves an unclaimed row. The daily
+purge deletes it and its object after 24 hours (booking-retention.md), so one
+address can leave at most a day of upload budget behind.
+
 ## Forms
 
 `src/booking/formDefinitions.ts` holds every form type. A clinic offers one or
