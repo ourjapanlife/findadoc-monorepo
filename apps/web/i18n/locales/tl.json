@@ -91,28 +91,71 @@
     "logoutToast": "Naka-logout na"
   },
   "privacyPage": {
-    "heading": "Patakaran sa Pribasiya",
-    "subheading": "Ang Patakaran sa pribasiya na ito ay nilalayong tulungan kang maunawaan kung anong impormasyon ang aming kinokolekta, bakit namin ito kinokolekta, at kung paano mo ma-update, pamahalaan, i-export, at tanggalin ang iyong impormasyon.",
-    "date": "Epektibo mula: Disyembre 3, 2023",
-    "paragraph1": "Maraming salamat sa pag-gamit ng aming serbisyo upang maghanap ng mga doktor sa iyong piniling wika. Ang Patakaran sa Pribasiya na ito ay nilalayon upang tulungan kang maunawaan kung paano namin kinokolekta at ginagamit ang iyong personal na impormasyon.",
-    "paragraph2": "1. Impormasyon na aming kinokolekta",
-    "paragraph3": "a. Impormasyong Ibinabahagi ng user: Maaaring naming kolektahin ang anumang impormasyong ibinahagi ng user tuwing ginagamit ang aming serbisyo, tulad ng iyong piniling wika, mga query sa pangangalap ng impormasyon, at anumang komento na nais mong ibahagi.",
-    "paragraph4": "2. Paano namin ginagamit ang iyong impormasyon",
-    "paragraph5": "a. a. Pag-personalize: Ginagamit namin ang nakolektang impormasyon upang i-personalize ang iyong karanasan, tulad ng pagbibigay ng mga resulta sa paghahanap sa iyong piniling wika at paggawa ng mga rekomendasyon. b. Pagpapabuti ng Serbisyo: Ang iyong komento at mga pattern ng paggamit ay nakakatulong sa amin upang mapabuti ang aming serbisyo at ayusin ang mga isyu. c. Komunikasyon: Maaaring gamitin namin ang iyong impormasyon sa pakikipag-ugnayan upang magbigay ng mga mahahalagang update, mga pagbabago sa aming serbisyo, o upang tumugon sa iyong mga katanungan.",
-    "paragraph6": "3. Pagbabahagi ng impormasyon",
-    "paragraph7": "a. Sa iyong pahintulot: Maaaring ibahagi namin ang iyong impormasyon sa third-party kung ikaw ay magbibigay ng malinaw na pahintulot. b. Mga Legal na Kinakailangan: Maaaring ibahagi namin ang iyong impormasyon kung kinakailangan ng batas o bilang tugon sa isang wastong legal na kahilingan.",
-    "paragraph8": "4. Seguridad ng Data",
-    "paragraph9": "a. Pag-eenkripyto: Gumagamit kami ng mga pamantayang enkrypsyon at mga hakbang sa seguridad upang protektahan ang iyong impormasyon mula sa hindi awtorisadong pag-gamit o pagbubunyag. b. Kontrol sa Pag-gamit ng Data: Ang pag-access sa iyong personal na impormasyon ay limitado lamang sa mga awtorisadong tao.",
-    "paragraph10": "5. Mga link ng ikatlong partido",
-    "paragraph11": "Ang aming serbisyo ay maaaring maglaman ng mga link sa mga website ng ikatlong partido. Hindi kami responsable para sa mga gawi sa pribasiya o nilalaman ng mga site na ito. Hinihikayat namin ang lahat na suriin ang kanilang mga patakaran ukol sa pribasiya.",
-    "paragraph12": "6. Pribasiya ng mga bata",
-    "paragraph13": "Ang aming serbisyo ay hindi dikretang inilaan para sa mga indibidwal mula sa edad 13 taong gulang pababa. Hindi namin kinokolekta ang personal na impormasyon mula sa mga bata. Kung kayo ay naniniwala na nakolekta namin ang impormasyon mula sa mga nasabing gulang, edad 13 pababa, mangyaring makipag-ugnayan kaagad sa amin.",
-    "paragraph14": "7. Mga Pagbabago sa Patakaran sa Pribasiya",
-    "paragraph15": "Inilalaan namin ang karapatang baguhin ang Patakaran sa Pribasiya na ito upang ipakita ang mga pagbabago sa aming serbisyo. Ibabahagi namin ang anumang mahahalagang impormasyon sa pamamagitan ng pag-post ng anumang pagbabago ng mga patakaran sa aming website.",
-    "paragraph16": "Sa paggamit ng aming serbisyo, ikaw ay sumasang-ayon sa mga tuntunin na nakasaad sa Patakaran sa Pribasiya na ito.",
-    "cookiesHeading": "8. Mga Cookie at Pagsukat ng Advertising",
-    "cookiesBody": "Gumagamit kami ng Google Ads, at ng Google Analytics kapag naka-on ito, na ibinibigay ng Google LLC, para sukatin kung paano dumarating at gumagamit ang mga bisita sa aming serbisyo. Kapag bumisita ka, ipinapadala ng iyong browser sa Google ang address ng pahina, ang iyong IP address, mga detalye ng browser, at isang identifier na nakatago sa cookie. Ginagamit ito ng Google para sukatin ang aming mga ad. Hindi namin ito ginagamit para i-personalize ang mga ad para sa iyo. Nasa policies.google.com/privacy ang patakaran sa privacy ng Google.",
-    "cookiesChoice": "Nagtatanong muna kami bago i-load ang alinman sa mga tool na ito. Walang ipinapadala sa Google hangga't hindi ka pumapayag. Maaari kang tumanggap o tumanggi anumang oras sa Mga setting ng cookie sa ibaba ng bawat pahina. Kung tatanggi ka, o babaguhin mo kalaunan sa pagtanggi, hindi ilo-load ang mga tool at buburahin ang kanilang mga cookie."
+    "heading": "Patakaran sa Privacy",
+    "subheading": "Ano ang kinokolekta namin, bakit, kanino namin ito ibinabahagi, at paano kami makakausap tungkol sa iyong impormasyon.",
+    "date": "Petsa ng bisa: Oktubre 29, 2026",
+    "sections": {
+      "whoWeAre": {
+        "heading": "1. Sino kami",
+        "p1": "Ang Find a Doc, Japan (NPO法人Find a Doc, Japan, isang specified non-profit corporation sa Tokyo, corporate number 9011005010215) ang nagpapatakbo ng findadoc.jp at ng mga pahina ng klinika sa mga subdomain nito. Pinangangasiwaan namin ang personal na impormasyon ayon sa Act on the Protection of Personal Information (APPI) ng Japan."
+      },
+      "collect": {
+        "heading": "2. Impormasyong kinokolekta namin",
+        "p1": "Paghahanap sa direktoryo: makakapaghanap ka nang walang account. Natatanggap namin ang iyong mga hinahanap, filter, at wika. Nakatago sa sarili mong browser ang iyong wika, tema, at mga kamakailang filter.",
+        "p2": "Pagmumungkahi ng klinika o doktor: natatanggap namin ang inilagay mo, gaya ng link ng Google Maps, mga pangalan, mga wikang sinasalita, at mga tala. Huwag isama ang sarili mong impormasyong pangkalusugan.",
+        "p3": "Pag-book ng appointment: kapag tumatanggap ang isang klinika ng mga kahilingan sa booking sa pamamagitan ng Find a Doc, Japan, kinokolekta namin ang hinihingi ng form nito. Maaaring kasama rito ang iyong pangalan, email address, numero ng telepono, edad, dahilan ng pagpapatingin, oras na pinili mo, at mga file gaya ng larawan mo at ng iyong health insurance card o eligibility certificate.",
+        "p4": "Ang dahilan ng pagpapatingin ay impormasyong pangkalusugan, na itinuturing ng APPI na special care-required personal information. Kinokolekta lang namin ito kapag ikaw mismo ang nagpasa ng form. Sa pagpapasa, pumapayag kang kolektahin namin ito at ipasa sa klinikang pinili mo.",
+        "p5": "Mga account at teknikal na impormasyon: nagsa-sign in ang mga moderator at kawani ng klinika sa pamamagitan ng Auth0, na nagbibigay sa amin ng kanilang pangalan, email address, at account identifier. Itinatala ng aming mga server ang mga IP address at detalye ng request para mapanatiling gumagana ang serbisyo at maiwasan ang pang-aabuso."
+      },
+      "use": {
+        "heading": "3. Paano namin ito ginagamit",
+        "p1": "Ginagamit namin ang impormasyong ito para patakbuhin ang direktoryo at panatilihin itong tama, ipasa ang iyong kahilingan sa booking sa klinikang pinili mo, i-email ka tungkol sa iyong kahilingan, hayaan ang kawani ng klinika na pamahalaan ang kanilang mga booking, ayusin ang mga error at maiwasan ang pang-aabuso, at, kapag tinanggap mo lang ang mga cookie, sukatin ang aming advertising (seksyon 6). Hindi kami nagbebenta ng personal na impormasyon, at hindi namin ito ginagamit para i-personalize ang mga ad."
+      },
+      "share": {
+        "heading": "4. Kanino namin ito ibinabahagi",
+        "p1": "Natatanggap ng klinikang pinag-book-an mo ang iyong kahilingan, mga sagot, at mga file, at pinangangasiwaan nito ang mga ito ayon sa sarili nitong obligasyon bilang medical provider.",
+        "p2": "Ang mga service provider na nagpapatakbo ng bahagi ng serbisyo para sa amin ay maaaring gumamit ng impormasyon para lamang doon: Amazon Web Services (hosting, database, imbakan ng file, at email, sa Tokyo), Auth0 by Okta (sign-in), Sentry (mga ulat ng error, walang pangalan o email address), Umami (bilang ng bisita nang walang cookie), Google Maps (ang mapa sa resulta ng paghahanap), at Google Ads at Google Analytics (pagkatapos mo lang tanggapin ang mga cookie).",
+        "p3": "Maaaring iproseso ng Google, Auth0, at Sentry ang impormasyon sa labas ng Japan, pangunahin sa United States. Pumipili kami ng mga provider na nagpoprotekta sa personal na impormasyon sa pamantayang katumbas ng APPI. Makipag-ugnayan sa amin para sa detalye tungkol sa isang provider at sa bansang sangkot.",
+        "p4": "Ibinubunyag lang namin ang personal na impormasyon sa iba kapag may pahintulot ka, o kapag hinihingi ng batas."
+      },
+      "retention": {
+        "heading": "5. Gaano katagal namin ito itinatago",
+        "p1": "Binubura ang mga larawan ng insurance card at iba pang identity document na na-upload kasama ng booking 30 araw matapos i-upload. Binubura ang iba pang file ng booking pagkalipas ng isang taon, at ang mga file mula sa booking na hindi naipadala ay binubura pagkalipas ng 24 oras.",
+        "p2": "Itinatago ang mga sagot sa booking at mga talaan ng appointment habang kailangan ng klinika at hangga't kailangan para lutasin ang mga alitan o tuparin ang mga legal na obligasyon. Itinatago ang impormasyon ng account habang aktibo ang account. Maaari mong hilinging burahin namin nang mas maaga ang iyong impormasyon (seksyon 8)."
+      },
+      "cookies": {
+        "heading": "6. Mga Cookie at Pagsukat ng Advertising",
+        "p1": "Gumagamit kami ng Google Ads, at ng Google Analytics kapag naka-on ito, na ibinibigay ng Google LLC, para sukatin kung paano dumarating at gumagamit ang mga bisita sa aming serbisyo. Kapag bumisita ka, ipinapadala ng iyong browser sa Google ang address ng pahina, ang iyong IP address, mga detalye ng browser, at isang identifier na nakatago sa cookie. Ginagamit ito ng Google para sukatin ang aming mga ad. Hindi namin ito ginagamit para i-personalize ang mga ad para sa iyo. Nasa policies.google.com/privacy ang patakaran sa privacy ng Google.",
+        "p2": "Nagtatanong muna kami bago i-load ang alinman sa mga tool na ito. Walang ipinapadala sa Google hangga't hindi ka pumapayag. Maaari kang tumanggap o tumanggi anumang oras sa Mga setting ng cookie sa ibaba ng bawat pahina. Kung tatanggi ka, o babaguhin mo kalaunan sa pagtanggi, hindi ilo-load ang mga tool at buburahin ang kanilang mga cookie.",
+        "p3": "Gumagamit din kami ng mga cookie para tandaan ang iyong wika at ang iyong pasya sa cookie. Binibilang ng Umami ang mga bisita nang walang cookie."
+      },
+      "security": {
+        "heading": "7. Seguridad",
+        "p1": "Naka-encrypt ang impormasyon habang ipinapadala, at limitado ang access sa mga taong nangangailangan nito: ang aming mga moderator, at ang kawani ng klinikang pinag-book-an mo. Ang kawani ng klinika ay nakakakita lang ng mga booking ng sarili nilang klinika."
+      },
+      "rights": {
+        "heading": "8. Ang iyong mga karapatan",
+        "p1": "Sa ilalim ng APPI, maaari mong hilingin sa amin na ibunyag ang personal na impormasyon mo na hawak namin, itama ito, itigil ang paggamit nito, burahin ito, o itigil ang pagbabahagi nito sa iba. Mag-email sa contact{'@'}findadoc.jp. Maaaring kailanganin muna naming kumpirmahin kung sino ka. Maaari mo ring kanselahin ang isang booking gamit ang pribadong link sa iyong email ng kumpirmasyon."
+      },
+      "children": {
+        "heading": "9. Mga bata",
+        "p1": "Ang magulang o tagapag-alaga ang dapat mag-book para sa isang bata. Kung sa tingin mo ay nagbigay ang isang bata ng personal na impormasyon nang walang magulang o tagapag-alaga, makipag-ugnayan sa amin at buburahin namin ito."
+      },
+      "changes": {
+        "heading": "10. Mga pagbabago sa patakarang ito",
+        "p1": "Ipinapaskil namin ang mga pagbabago sa pahinang ito at ina-update ang petsa ng bisa. Para sa malalaking pagbabago, nagpapakita rin kami ng abiso sa site."
+      },
+      "gdpr": {
+        "heading": "11. Mga bisita mula sa EEA, United Kingdom, at Switzerland",
+        "p1": "Kung ginagamit mo ang Find a Doc, Japan mula sa European Economic Area, United Kingdom, o Switzerland, nalalapat din ang GDPR (o ang UK GDPR o ang batas sa proteksyon ng datos ng Switzerland). Batay sa iyong pahintulot ang mga cookie, ang pagsukat ng advertising, at ang impormasyong pangkalusugan sa kahilingan sa booking; batay sa paggawa ng mga hakbang na hiniling mo bago ang appointment ang pagpapasa ng iyong booking sa klinika; at batay sa aming lehitimong interes ang pagpapatakbo, pag-secure, at pag-aayos ng serbisyo.",
+        "p2": "May karapatan ka rin na matanggap ang iyong impormasyon sa portable na format, tumutol sa pagproseso na batay sa lehitimong interes, bawiin ang pahintulot anumang oras nang hindi naaapektuhan ang naunang pagproseso, at magreklamo sa awtoridad sa proteksyon ng datos sa iyong lugar. Bawiin ang pahintulot sa cookie sa Mga setting ng cookie, at ipadala ang iba pang kahilingan sa contact{'@'}findadoc.jp.",
+        "p3": "Nagpasya ang European Commission na sapat ang proteksyon ng Japan sa personal na impormasyon, kaya maaaring ilipat ang impormasyon mula sa EEA papuntang Japan. Ang paglilipat sa mga provider sa United States ay batay sa EU-U.S. Data Privacy Framework o sa standard contractual clauses ng European Commission."
+      },
+      "contact": {
+        "heading": "12. Makipag-ugnayan",
+        "p1": "NPO法人Find a Doc, Japan · contact{'@'}findadoc.jp"
+      }
+    }
   },
   "submitPage": {
     "firstName": "Pangalan",

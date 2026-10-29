@@ -47,11 +47,15 @@ describe('agent discovery files', () => {
     it('keeps trust-anchor copy long enough for a reader who does not run JavaScript', () => {
         const en = JSON.parse(readFileSync(join(rootDir, 'i18n/locales/en.json'), 'utf8')) as {
             about: { storyParagraph1: string, storyParagraph2: string }
-            privacyPage: Record<string, string>
+            privacyPage: Record<string, unknown>
             contactPage: Record<string, string>
         }
         const about = `${en.about.storyParagraph1} ${en.about.storyParagraph2}`
-        const privacy = Object.values(en.privacyPage).join(' ')
+        // The policy is nested by section; collect every string in it.
+        const strings = (value: unknown): string[] => typeof value === 'string'
+            ? [value]
+            : Object.values(value as Record<string, unknown>).flatMap(strings)
+        const privacy = strings(en.privacyPage).join(' ')
         const contact = [
             en.contactPage.intro,
             en.contactPage.whatBody,

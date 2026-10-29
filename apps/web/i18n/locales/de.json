@@ -92,27 +92,70 @@
   },
   "privacyPage": {
     "heading": "Datenschutzerklärung",
-    "subheading": "Diese Datenschutzerklärung soll Ihnen helfen zu verstehen, welche Informationen wir sammeln, warum wir sie sammeln und wie Sie Ihre Informationen aktualisieren, verwalten, exportieren und löschen können.",
-    "date": "Gültig ab: 3. Dezember 2023",
-    "paragraph1": "Vielen Dank, dass Sie unseren Service nutzen, um Ärzte in der Sprache Ihrer Wahl zu suchen. Diese Datenschutzerklärung soll Ihnen helfen zu verstehen, wie wir Ihre persönlichen Informationen sammeln, verwenden und schützen.",
-    "paragraph2": "1. Informationen, die wir sammeln",
-    "paragraph3": "a. Von Benutzern bereitgestellte Informationen: Wir können Informationen sammeln, die Sie bei der Nutzung unseres Dienstes bereitstellen, wie Ihre bevorzugte Sprache, Suchanfragen und jegliches Feedback, das Sie teilen möchten.",
-    "paragraph4": "2. Wie wir Ihre Informationen verwenden",
-    "paragraph5": "a. Personalisierung: Wir verwenden die gesammelten Informationen, um Ihre Erfahrung zu personalisieren, wie das Bereitstellen von Suchergebnissen in Ihrer bevorzugten Sprache und das Anpassen von Empfehlungen. b. Verbesserung des Dienstes: Ihr Feedback und Nutzungsmuster helfen uns, unseren Service zu verbessern, Probleme zu beheben und die Gesamtleistung zu steigern. c. Kommunikation: Wir können Ihre Kontaktinformationen verwenden, um mit Ihnen über wichtige Updates, Änderungen an unserem Service zu kommunizieren oder um auf Ihre Anfragen zu antworten.",
-    "paragraph6": "3. Informationsaustausch",
-    "paragraph7": "a. Mit Ihrer Zustimmung: Wir können Ihre Informationen mit Dritten teilen, wenn Sie ausdrücklich zustimmen. b. Gesetzliche Anforderungen: Wir können Ihre Informationen offenlegen, wenn dies gesetzlich vorgeschrieben ist oder als Antwort auf eine gültige rechtliche Anfrage.",
-    "paragraph8": "4. Datensicherheit",
-    "paragraph9": "a. Verschlüsselung: Wir setzen branchenübliche Verschlüsselungs- und Sicherheitsmaßnahmen ein, um Ihre Informationen vor unbefugtem Zugriff oder Offenlegung zu schützen. b. Datenzugriffskontrolle: Der Zugriff auf Ihre persönlichen Informationen ist auf autorisiertes Personal beschränkt.",
-    "paragraph10": "5. Links zu Drittanbietern",
-    "paragraph11": "Unser Service kann Links zu Websites von Drittanbietern enthalten. Wir sind nicht verantwortlich für die Datenschutzpraktiken oder den Inhalt dieser Websites von Drittanbietern. Wir empfehlen Ihnen, deren Datenschutzrichtlinien zu überprüfen.",
-    "paragraph12": "6. Kinderdatenschutz",
-    "paragraph13": "Unser Service richtet sich nicht an Personen unter 13 Jahren. Wir sammeln wissentlich keine persönlichen Informationen von Kindern. Wenn Sie glauben, dass wir versehentlich Informationen von einem Kind gesammelt haben, kontaktieren Sie uns bitte umgehend.",
-    "paragraph14": "7. Änderungen der Datenschutzerklärung",
-    "paragraph15": "Wir behalten uns das Recht vor, diese Datenschutzerklärung zu aktualisieren, um Änderungen in unseren Praktiken und Dienstleistungen widerzuspiegeln. Wir werden Sie über alle wesentlichen Änderungen informieren, indem wir die aktualisierte Richtlinie auf unserer Website veröffentlichen.",
-    "paragraph16": "Durch die Nutzung unseres Dienstes stimmen Sie den in dieser Datenschutzerklärung dargelegten Bedingungen zu.",
-    "cookiesHeading": "8. Cookies und Werbemessung",
-    "cookiesBody": "Wir nutzen Google Ads und, wenn aktiviert, Google Analytics der Google LLC, um zu messen, wie Besucher zu unserem Dienst finden und ihn nutzen. Bei einem Besuch sendet Ihr Browser Google die Seitenadresse, Ihre IP-Adresse, Browserangaben und eine in einem Cookie gespeicherte Kennung. Google nutzt dies, um unsere Anzeigen zu messen. Wir nutzen es nicht, um Anzeigen für Sie zu personalisieren. Die Datenschutzerklärung von Google finden Sie unter policies.google.com/privacy.",
-    "cookiesChoice": "Wir fragen, bevor wir eines dieser Werkzeuge laden. Bis Sie zustimmen, wird nichts an Google gesendet. Sie können jederzeit unter Cookie-Einstellungen unten auf jeder Seite zustimmen oder ablehnen. Wenn Sie ablehnen oder Ihre Wahl später auf Ablehnen ändern, werden die Werkzeuge nicht geladen und ihre Cookies gelöscht."
+    "subheading": "Was wir erheben, warum, an wen wir es weitergeben und wie Sie uns zu Ihren Daten erreichen.",
+    "date": "Gültig ab: 29. Oktober 2026",
+    "sections": {
+      "whoWeAre": {
+        "heading": "1. Wer wir sind",
+        "p1": "Find a Doc, Japan (NPO法人Find a Doc, Japan, eine gemeinnützige Körperschaft nach japanischem NPO-Recht in Tokio, Unternehmensnummer 9011005010215) betreibt findadoc.jp und die Praxisseiten auf seinen Subdomains. Wir verarbeiten personenbezogene Daten nach dem japanischen Gesetz zum Schutz personenbezogener Informationen (APPI)."
+      },
+      "collect": {
+        "heading": "2. Welche Daten wir erheben",
+        "p1": "Suche im Verzeichnis: Sie können ohne Konto suchen. Wir erhalten Ihre Suchbegriffe, Filter und Sprache. Ihre Sprache, Ihr Design und Ihre letzten Filter werden in Ihrem eigenen Browser gespeichert.",
+        "p2": "Vorschlag einer Praxis oder eines Arztes: Wir erhalten Ihre Eingaben, etwa einen Google-Maps-Link, Namen, gesprochene Sprachen und Notizen. Bitte geben Sie keine Angaben zu Ihrer eigenen Gesundheit an.",
+        "p3": "Terminanfrage: Wenn eine Praxis Terminanfragen über Find a Doc, Japan annimmt, erheben wir, was ihr Formular abfragt. Dazu können Ihr Name, Ihre E-Mail-Adresse, Telefonnummer, Ihr Alter, der Besuchsgrund, die gewählte Zeit sowie Dateien wie ein Foto von Ihnen und von Ihrer Krankenversicherungskarte oder Berechtigungsbescheinigung gehören.",
+        "p4": "Der Besuchsgrund ist eine Gesundheitsangabe, die das APPI als besonders schutzbedürftige personenbezogene Information einstuft. Wir erheben sie nur, wenn Sie das Formular selbst absenden. Mit dem Absenden willigen Sie ein, dass wir sie erheben und an die gewählte Praxis weitergeben.",
+        "p5": "Konten und technische Daten: Moderatoren und Praxispersonal melden sich über Auth0 an, wodurch wir Name, E-Mail-Adresse und eine Kontokennung erhalten. Unsere Server protokollieren IP-Adressen und Anfragedetails, um den Dienst zu betreiben und Missbrauch zu verhindern."
+      },
+      "use": {
+        "heading": "3. Wofür wir sie nutzen",
+        "p1": "Wir nutzen diese Daten, um das Verzeichnis zu betreiben und aktuell zu halten, Ihre Terminanfrage an die gewählte Praxis weiterzuleiten, Ihnen zu Ihrer Anfrage zu schreiben, dem Praxispersonal die Terminverwaltung zu ermöglichen, Fehler zu beheben und Missbrauch zu verhindern sowie – nur wenn Sie Cookies akzeptieren – unsere Werbung zu messen (Abschnitt 6). Wir verkaufen keine personenbezogenen Daten und nutzen sie nicht zur Personalisierung von Werbung."
+      },
+      "share": {
+        "heading": "4. An wen wir sie weitergeben",
+        "p1": "Die Praxis, bei der Sie einen Termin anfragen, erhält Ihre Anfrage, Ihre Antworten und Ihre Dateien und verarbeitet sie nach ihren eigenen Pflichten als medizinischer Leistungserbringer.",
+        "p2": "Dienstleister betreiben Teile des Dienstes für uns und dürfen die Daten nur dafür nutzen: Amazon Web Services (Hosting, Datenbank, Dateispeicher und E-Mail, in Tokio), Auth0 by Okta (Anmeldung), Sentry (Fehlerberichte, ohne Namen oder E-Mail-Adressen), Umami (Besuchszählung ohne Cookies), Google Maps (die Karte in den Suchergebnissen) sowie Google Ads und Google Analytics (nur nachdem Sie Cookies akzeptiert haben).",
+        "p3": "Google, Auth0 und Sentry verarbeiten Daten möglicherweise außerhalb Japans, vor allem in den USA. Wir wählen Anbieter, die personenbezogene Daten auf einem dem APPI gleichwertigen Niveau schützen. Fragen Sie uns nach Einzelheiten zu einem Anbieter und dem betroffenen Land.",
+        "p4": "Wir geben personenbezogene Daten nur mit Ihrer Einwilligung oder aufgrund gesetzlicher Pflicht an andere weiter."
+      },
+      "retention": {
+        "heading": "5. Wie lange wir sie speichern",
+        "p1": "Fotos von Versicherungskarten und anderen Ausweisdokumenten, die mit einer Terminanfrage hochgeladen werden, löschen wir 30 Tage nach dem Hochladen. Andere Dateien einer Terminanfrage löschen wir nach einem Jahr, Dateien einer nie abgesendeten Anfrage nach 24 Stunden.",
+        "p2": "Antworten und Termindaten speichern wir, solange die Praxis sie braucht und solange es zur Klärung von Streitigkeiten oder zur Erfüllung gesetzlicher Pflichten nötig ist. Kontodaten speichern wir, solange das Konto besteht. Sie können eine frühere Löschung verlangen (Abschnitt 8)."
+      },
+      "cookies": {
+        "heading": "6. Cookies und Werbemessung",
+        "p1": "Wir nutzen Google Ads und, wenn aktiviert, Google Analytics der Google LLC, um zu messen, wie Besucher zu unserem Dienst finden und ihn nutzen. Bei einem Besuch sendet Ihr Browser Google die Seitenadresse, Ihre IP-Adresse, Browserangaben und eine in einem Cookie gespeicherte Kennung. Google nutzt dies, um unsere Anzeigen zu messen. Wir nutzen es nicht, um Anzeigen für Sie zu personalisieren. Die Datenschutzerklärung von Google finden Sie unter policies.google.com/privacy.",
+        "p2": "Wir fragen, bevor wir eines dieser Werkzeuge laden. Bis Sie zustimmen, wird nichts an Google gesendet. Sie können jederzeit unter Cookie-Einstellungen unten auf jeder Seite zustimmen oder ablehnen. Wenn Sie ablehnen oder Ihre Wahl später auf Ablehnen ändern, werden die Werkzeuge nicht geladen und ihre Cookies gelöscht.",
+        "p3": "Außerdem speichern wir Ihre Sprache und Ihre Cookie-Wahl in Cookies. Umami zählt Besuche ohne Cookies."
+      },
+      "security": {
+        "heading": "7. Sicherheit",
+        "p1": "Daten werden bei der Übertragung verschlüsselt, und Zugriff haben nur Personen, die ihn brauchen: unsere Moderatoren und das Personal der Praxis, bei der Sie angefragt haben. Praxispersonal sieht nur die Termine der eigenen Praxis."
+      },
+      "rights": {
+        "heading": "8. Ihre Rechte",
+        "p1": "Nach dem APPI können Sie verlangen, dass wir Ihnen die über Sie gespeicherten personenbezogenen Daten offenlegen, sie berichtigen, ihre Nutzung einstellen, sie löschen oder ihre Weitergabe beenden. Schreiben Sie an contact{'@'}findadoc.jp. Gegebenenfalls müssen wir zuerst Ihre Identität prüfen. Einen Termin können Sie auch selbst über den privaten Link in Ihrer Bestätigungs-E-Mail stornieren."
+      },
+      "children": {
+        "heading": "9. Kinder",
+        "p1": "Termine für ein Kind sollte ein Elternteil oder Vormund anfragen. Wenn Sie glauben, dass ein Kind uns ohne Elternteil oder Vormund personenbezogene Daten übermittelt hat, melden Sie sich bei uns; wir löschen sie dann."
+      },
+      "changes": {
+        "heading": "10. Änderungen dieser Erklärung",
+        "p1": "Wir veröffentlichen Änderungen auf dieser Seite und aktualisieren das Gültigkeitsdatum. Bei wesentlichen Änderungen weisen wir zusätzlich auf der Website darauf hin."
+      },
+      "gdpr": {
+        "heading": "11. Besucher aus dem EWR, dem Vereinigten Königreich und der Schweiz",
+        "p1": "Wenn Sie Find a Doc, Japan aus dem Europäischen Wirtschaftsraum, dem Vereinigten Königreich oder der Schweiz nutzen, gilt zusätzlich die DSGVO (bzw. die UK-DSGVO oder das Schweizer Datenschutzgesetz). Cookies, Werbemessung und die Gesundheitsangaben einer Terminanfrage verarbeiten wir auf Grundlage Ihrer Einwilligung; die Weitergabe Ihrer Anfrage an die Praxis zur Durchführung vorvertraglicher Maßnahmen auf Ihre Anfrage; Betrieb, Absicherung und Fehlerbehebung des Dienstes auf Grundlage unserer berechtigten Interessen.",
+        "p2": "Sie haben außerdem das Recht, Ihre Daten in einem übertragbaren Format zu erhalten, einer Verarbeitung aufgrund berechtigter Interessen zu widersprechen, Ihre Einwilligung jederzeit mit Wirkung für die Zukunft zu widerrufen und sich bei Ihrer Datenschutzaufsichtsbehörde zu beschweren. Die Cookie-Einwilligung widerrufen Sie unter Cookie-Einstellungen; andere Anliegen senden Sie an contact{'@'}findadoc.jp.",
+        "p3": "Die Europäische Kommission hat festgestellt, dass Japan ein angemessenes Datenschutzniveau bietet; Daten dürfen daher aus dem EWR nach Japan übermittelt werden. Übermittlungen an Anbieter in den USA stützen sich auf das EU-US-Datenschutzrahmenwerk oder auf die Standardvertragsklauseln der Europäischen Kommission."
+      },
+      "contact": {
+        "heading": "12. Kontakt",
+        "p1": "NPO法人Find a Doc, Japan · contact{'@'}findadoc.jp"
+      }
+    }
   },
   "submitPage": {
     "firstName": "Vorname",
