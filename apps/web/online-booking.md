@@ -188,7 +188,7 @@ Recommendation: adopt the interim option in §9.7 (see answer below) to protect 
 ## 9. Open Questions
 
 1. Credit card authentication method (auth-only vs. capture at booking; provider selection).
-2. Feasibility and method of My Number / MyNa Portal integration vs. guided manual submission.
+2. Feasibility and method of My Number / MyNa Portal integration vs. guided manual submission. **Draft answer:** [`my-number-form.md`](./my-number-form.md) — never collect the 12-digit Individual Number; ship guided MyNa upload (Path C) for launch; treat Digital Agency MyNa APIs (Path B) as a long approval track; leave オンライン資格確認 to the clinic (Path A).
 3. Final consultation fee and its display breakdown; handling of the ¥550 system usage fee. Note §6.1 and §9.3 currently disagree on whether the fee is inclusive.
 4. Bank transfer flow: verification method and who bears transfer fees.
 5. Flow for uninsured / payment-difficulty patients (fee-exemption slots begin post break-even per the Toyota plan).
