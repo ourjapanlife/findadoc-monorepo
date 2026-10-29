@@ -28,7 +28,7 @@ type Facility {
   """IDs of healthcare professionals associated with this facility."""
   healthcareProfessionalIds: [ID!]!
   """
-  True once a moderator or the clinic owner has saved booking settings for this facility.
+  True once an admin or the clinic owner has saved booking settings for this facility.
   The clinic page shows Book, and patients may book, only then.
   """
   bookingEnabled: Boolean!
@@ -1339,10 +1339,12 @@ type BookingClinic {
   facilityId: ID!
   clinicName: String!
   clinicSiteSlug: String
-  """Null for moderators, who reach every clinic without a membership."""
+  """Null for admins, who reach every clinic without a membership."""
   role: ClinicMemberRole
   """True when the user may change members and booking settings."""
   canManage: Boolean!
+  """Appointments still REQUESTED, waiting for the clinic to confirm or decline."""
+  requestedCount: Int!
 }
 
 """A person invited to, or signed in to, one clinic's booking dashboard."""
@@ -1650,16 +1652,19 @@ type Query {
   """Clinics the signed-in user belongs to. Claims a pending invite for a verified email."""
   myBookingClinics: [BookingClinic!]!
 
+  """Every clinic set up for booking, for the admin clinic picker. Admins only."""
+  bookingClinics: [BookingClinic!]!
+
   """One clinic for the dashboard header. Null when the user may not open it."""
   bookingClinic(facilityId: ID!): BookingClinic
 
   """Appointments on one clinic calendar. The range must be 62 days or shorter."""
   clinicAppointments(clinicId: ID!, from: String!, to: String!): [BookingAppointment!]!
 
-  """Invited and signed-in members of one clinic. Owners and moderators only."""
+  """Invited and signed-in members of one clinic. Owners and admins only."""
   clinicMembers(facilityId: ID!): [ClinicMember!]!
 
-  """Booking options for one clinic. Members and moderators."""
+  """Booking options for one clinic. Members and admins."""
   bookingSettings(facilityId: ID!): BookingSettings
 
   """The patient's own booking, found by the private token from the email link."""
@@ -1667,7 +1672,7 @@ type Query {
 
   """
   Staff list of booking submissions, limited to the clinics the user belongs to.
-  Moderators see every clinic.
+  Admins see every clinic.
   """
   bookingSubmissions(filters: BookingSubmissionSearchFilters!): [BookingSubmissionListItem!]!
 
@@ -1679,10 +1684,10 @@ type Query {
   """Staff availability windows for the calendar editor."""
   clinicAvailabilityWindows(clinicSiteId: ID!, from: String!, to: String!): [ClinicAvailabilityWindow!]!
 
-  """Doctors at one clinic, for the schedule picker. Members and moderators."""
+  """Doctors at one clinic, for the schedule picker. Members and admins."""
   clinicPractitioners(clinicId: ID!): [BookingPractitioner!]!
 
-  """Every schedule's usual week in Japan time. Members and moderators."""
+  """Every schedule's usual week in Japan time. Members and admins."""
   clinicWeeklyHours(clinicId: ID!): [ClinicWeeklyHours!]!
 
   """Closures on one clinic calendar. The range must be 62 days or shorter."""
@@ -1956,12 +1961,12 @@ type Mutation {
   """The patient cancels with the private token from the email link. Frees the slot."""
   cancelBookingByToken(input: CancelBookingByTokenInput!): PatientBookingView!
 
-  """Invite an email to one clinic. Moderators invite anyone; an owner invites staff."""
+  """Invite an email to one clinic. Admins invite anyone; an owner invites staff."""
   inviteClinicMember(input: InviteClinicMemberInput!): ClinicMember!
 
-  """Remove a clinic member. Moderators remove anyone; an owner removes staff."""
+  """Remove a clinic member. Admins remove anyone; an owner removes staff."""
   removeClinicMember(id: ID!): DeleteResult!
 
-  """Change visit lengths and offered forms. Owners and moderators."""
+  """Change visit lengths and offered forms. Owners and admins."""
   updateBookingSettings(input: UpdateBookingSettingsInput!): BookingSettings!
 }

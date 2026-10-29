@@ -43,7 +43,10 @@
                         class="flex items-center justify-between rounded-lg border border-accent-bg
                         bg-secondary-bg p-4 hover:border-primary"
                     >
-                        <span class="font-medium">{{ clinic.clinicName }}</span>
+                        <span class="flex items-center gap-2 font-medium">
+                            {{ clinic.clinicName }}
+                            <ClinicRequestCountBadge :count="clinic.requestedCount" />
+                        </span>
                         <span class="text-sm text-primary-text-muted">
                             {{ clinic.role === ClinicMemberRole.Owner
                                 ? t('clinicDashboard.roles.owner')
@@ -61,8 +64,9 @@ import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ClinicMemberRole, type BookingClinic } from '@findadoc/graphql'
 import { definePageMeta, navigateTo, useHead } from '#imports'
+import ClinicRequestCountBadge from '~/components/booking/ClinicRequestCountBadge.vue'
 import { useAuthStore } from '~/stores/authStore'
-import { fetchMyBookingClinics } from '~/utils/booking/staffQuery'
+import { useMyBookingClinicsStore } from '~/stores/myBookingClinicsStore'
 import { localizedPath } from '~/utils/localePath'
 import { formatPageTitle } from '~/utils/site'
 
@@ -76,6 +80,7 @@ definePageMeta({
 
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
+const myBookingClinicsStore = useMyBookingClinicsStore()
 const clinics = ref<BookingClinic[] | null>(null)
 const loading = ref(true)
 
@@ -85,7 +90,8 @@ function dashboardPath(facilityId: string): string {
 
 async function load(): Promise<void> {
     loading.value = true
-    clinics.value = await fetchMyBookingClinics()
+    // Refresh, so the account menu count matches this list.
+    clinics.value = await myBookingClinicsStore.refresh()
     loading.value = false
     if (clinics.value?.length === 1) {
         await navigateTo(dashboardPath(clinics.value[0]!.facilityId), { replace: true })

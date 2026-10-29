@@ -137,6 +137,17 @@
                                 >
                                     {{ t('topNav.myPage') }}
                                 </NuxtLink>
+                                <NuxtLink
+                                    v-if="myBookingClinicsStore.hasClinics"
+                                    :to="localizedPath('/clinic-dashboard', localeCodeFromPath(route.path))"
+                                    :class="menuLinkClass('/clinic-dashboard')"
+                                    class="gap-2"
+                                    data-testid="hamburger-clinic-dashboard-link"
+                                    @click="closeMenu"
+                                >
+                                    <span class="flex-1">{{ t('clinicDashboard.heading') }}</span>
+                                    <ClinicRequestCountBadge :count="myBookingClinicsStore.requestedCount" />
+                                </NuxtLink>
                                 <button
                                     type="button"
                                     :class="menuLinkClass('')"
@@ -229,8 +240,10 @@ import { useFocusTrap } from '~/composables/useFocusTrap'
 import SVGHamburgerMenuIcon from '~/assets/icons/hamburger-menu.svg'
 import SVGGithubIcon from '~/assets/icons/social-github.svg'
 import SVGUserIcon from '~/assets/icons/user-icon.svg'
+import ClinicRequestCountBadge from '~/components/booking/ClinicRequestCountBadge.vue'
 import { useAuthStore } from '~/stores/authStore'
 import { useModalStore } from '~/stores/modalStore'
+import { useMyBookingClinicsStore } from '~/stores/myBookingClinicsStore'
 import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { buildLoginRoute, resolveAuthReturnPath } from '~/utils/auth0Config'
@@ -247,6 +260,7 @@ const authStore = useAuthStore()
 const moderationScreenStore = useModerationScreenStore()
 const moderationSubmissionUnsavedStore = useModerationSubmissionUnsavedStore()
 const modalStore = useModalStore()
+const myBookingClinicsStore = useMyBookingClinicsStore()
 
 const isMenuOpen = ref(false)
 const panelRef = ref<HTMLElement | null>(null)

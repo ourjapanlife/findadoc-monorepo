@@ -311,6 +311,7 @@ import {
     requestBookingUploadDownloadUrl,
     updateAppointmentStatus
 } from '~/utils/booking/staffQuery'
+import { useMyBookingClinicsStore } from '~/stores/myBookingClinicsStore'
 
 const props = defineProps<{
     bookingId: string
@@ -323,6 +324,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, te, locale } = useI18n()
+const myBookingClinicsStore = useMyBookingClinicsStore()
 const detail = ref<Detail | null>(null)
 const loadError = ref(false)
 const downloadError = ref(false)
@@ -400,6 +402,8 @@ async function changeStatus(next: BookingAppointmentStatus): Promise<void> {
         return
     }
     reason.value = ''
+    // The account menu count changes when a request is confirmed or declined.
+    void myBookingClinicsStore.refresh()
     emit('changed')
 }
 

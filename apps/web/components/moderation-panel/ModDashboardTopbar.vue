@@ -32,6 +32,39 @@
                 >
                     {{ t('modDashboardTopbar.addFacility') }}
                 </NuxtLink>
+                <label
+                    v-if="showClinicPicker"
+                    class="flex w-full min-w-0 flex-col gap-1 text-sm landscape:w-auto"
+                >
+                    <span class="font-medium text-primary-text">{{ t('modDashboardTopbar.openClinicDashboard') }}</span>
+                    <select
+                        v-model="pickedClinicId"
+                        class="field max-w-md"
+                        data-testid="mod-clinic-dashboard-picker"
+                        :disabled="bookingClinics === null || bookingClinics.length === 0"
+                        @change="openClinicDashboard"
+                    >
+                        <option
+                            value=""
+                            disabled
+                        >
+                            {{ bookingClinics === null
+                                ? t('modDashboardTopbar.clinicsLoadError')
+                                : bookingClinics.length === 0
+                                    ? t('modDashboardTopbar.noBookingClinics')
+                                    : t('modDashboardTopbar.chooseClinic') }}
+                        </option>
+                        <option
+                            v-for="clinic in bookingClinics ?? []"
+                            :key="clinic.facilityId"
+                            :value="clinic.facilityId"
+                        >
+                            {{ clinic.requestedCount > 0
+                                ? `${clinic.clinicName} (${clinic.requestedCount})`
+                                : clinic.clinicName }}
+                        </option>
+                    </select>
+                </label>
             </div>
         </div>
         <div
@@ -88,7 +121,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import type { BookingClinic } from '@findadoc/graphql'
 import {
     SelectedModerationListView,
     SelectedSubmissionListViewTab,
@@ -96,7 +131,9 @@ import {
 } from '~/stores/moderationSubmissionsStore'
 import { useCurrentUserAccessStore } from '~/stores/currentUserAccessStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
-import { useI18n } from '#imports'
+import { navigateTo, useI18n } from '#imports'
+import { fetchAllBookingClinics } from '~/utils/booking/staffQuery'
+import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
 
 const { t } = useI18n()
 const moderationSubmissionsStore = useModerationSubmissionsStore()
@@ -120,6 +157,30 @@ const showAddFacilityButton = computed(() =>
         || !accessStore.isLoaded
         || accessStore.hasScope('write:facilities')
     ))
+
+const route = useRoute()
+const bookingClinics = ref<BookingClinic[] | null>([])
+const pickedClinicId = ref('')
+
+// Only admins hold read:bookings (moderators never see bookings). The picker opens one clinic's dashboard.
+const showClinicPicker = computed(() =>
+    moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.Bookings
+    && accessStore.isLoaded
+    && !accessStore.loadError
+    && accessStore.hasScope('read:bookings'))
+
+watch(showClinicPicker, async show => {
+    if (show) {
+        bookingClinics.value = await fetchAllBookingClinics()
+    }
+}, { immediate: true })
+
+async function openClinicDashboard(): Promise<void> {
+    if (pickedClinicId.value === '') {
+        return
+    }
+    await navigateTo(localizedPath(`/clinic-dashboard/${pickedClinicId.value}`, localeCodeFromPath(route.path)))
+}
 
 const showLicenseReviewFilter = computed(() =>
     moderationSubmissionsStore.selectedModerationListViewChosen

@@ -270,7 +270,8 @@
     "none": "—",
     "sections": {
       "settings": "Cài đặt",
-      "moderation": "Kiểm duyệt"
+      "moderation": "Kiểm duyệt",
+      "clinic": "Phòng khám"
     }
   },
   "modPanelSubmissionLeftNavbar": {
@@ -285,7 +286,11 @@
     "healthcareProfessionals": "Các Chuyên gia Chăm sóc Sức khỏe",
     "facilities": "Cơ sở vật chất",
     "addHealthcareProfessional": "Thêm nhân viên y tế",
-    "licenseReview": "Cần xem lại giấy phép"
+    "licenseReview": "Cần xem lại giấy phép",
+    "openClinicDashboard": "Mở bảng điều khiển phòng khám",
+    "chooseClinic": "Chọn phòng khám",
+    "noBookingClinics": "Chưa có phòng khám nào nhận đặt lịch",
+    "clinicsLoadError": "Không thể tải danh sách phòng khám"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Xóa",
@@ -1018,7 +1023,8 @@
       "invalid": "Hai khung giờ trong cùng một ngày bị trùng nhau. Hãy sửa một trong hai.",
       "save": "Lưu giờ hằng tuần",
       "doctorHelp": "Lịch tuần riêng của bác sĩ này. Sau khi lưu, bác sĩ được đặt lịch riêng, tách khỏi giờ của phòng khám và các bác sĩ khác. Các ngày đóng cửa của cả phòng khám vẫn áp dụng."
-    }
+    },
+    "requestedCount": "Yêu cầu đang chờ: {count}"
   },
   "patientBooking": {
     "heading": "Yêu cầu đặt lịch của bạn",

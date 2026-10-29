@@ -270,7 +270,8 @@
     "none": "—",
     "sections": {
       "settings": "設定",
-      "moderation": "モデレーション"
+      "moderation": "モデレーション",
+      "clinic": "クリニック"
     }
   },
   "modEditSubmissionTopNav": {
@@ -368,7 +369,11 @@
     "healthcareProfessionals": "医療従事者",
     "facilities": "医療機関",
     "addHealthcareProfessional": "医療従事者を追加",
-    "licenseReview": "免許の確認が必要"
+    "licenseReview": "免許の確認が必要",
+    "openClinicDashboard": "クリニックダッシュボードを開く",
+    "chooseClinic": "クリニックを選択",
+    "noBookingClinics": "予約を受け付けているクリニックはまだありません",
+    "clinicsLoadError": "クリニックを読み込めませんでした"
   },
   "modFacilitySection": {
     "addresses": "住所",
@@ -1018,7 +1023,8 @@
       "invalid": "同じ日の時間帯が重なっています。どちらかを変更してください。",
       "save": "週の診療時間を保存",
       "doctorHelp": "この医師専用の1週間です。保存すると、この医師はクリニックの時間や他の医師とは別に予約を受けます。クリニック全体の休診は引き続き適用されます。"
-    }
+    },
+    "requestedCount": "確認待ちのリクエスト: {count}件"
   },
   "patientBooking": {
     "heading": "あなたの予約リクエスト",

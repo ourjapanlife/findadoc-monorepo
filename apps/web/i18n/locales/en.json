@@ -386,7 +386,8 @@
     "roles": "Roles:",
     "sections": {
       "settings": "Settings",
-      "moderation": "Moderation"
+      "moderation": "Moderation",
+      "clinic": "Clinic"
     },
     "none": "—"
   },
@@ -402,7 +403,11 @@
     "placeholderText": "Enter name or ID to search",
     "healthcareProfessionals": "Healthcare Professionals",
     "facilities": "Facilities",
-    "licenseReview": "Needs license review"
+    "licenseReview": "Needs license review",
+    "openClinicDashboard": "Open a clinic dashboard",
+    "chooseClinic": "Choose a clinic",
+    "noBookingClinics": "No clinics take bookings yet",
+    "clinicsLoadError": "Could not load clinics"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Delete",
@@ -1018,7 +1023,8 @@
       "invalid": "Two blocks on the same day overlap. Change one of them.",
       "save": "Save weekly hours",
       "doctorHelp": "This doctor's own week. Once it is saved, the doctor is booked separately from clinic hours and from other doctors. Clinic-wide closures still apply."
-    }
+    },
+    "requestedCount": "Requests waiting: {count}"
   },
   "patientBooking": {
     "heading": "Your appointment request",

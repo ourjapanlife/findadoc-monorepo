@@ -49,6 +49,13 @@ export enum Scope {
 // For example, an admin might have permissions to read, write, and delete healthcare professionals,
 // while a user might only have permission to read their own profile and posts.
 // A user can have separate scopes from their roles, so we need to check both.
+// Every clinic's bookings, calendars, and members. Moderators manage the directory and never
+// see a booking. Only admins hold these while booking is in preview; clinic owners and staff
+// reach their own clinic through clinic_memberships (src/booking/access.ts).
+const ALL_CLINIC_BOOKING_SCOPES: readonly Scope[] = [
+    Scope['read:bookings'], Scope['write:clinic_availability'], Scope['write:clinic_memberships']
+]
+
 const roleScopes: Record<Role, Scope[]> = {
     [Role.Admin]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -69,8 +76,7 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['read:profile'], 
         Scope['write:posts'],
         Scope['read:reservations'], Scope['write:reservations'],
-        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
-        Scope['write:clinic_memberships']
+        Scope['create:bookings']
     ],
     [Role.Dev]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -108,6 +114,7 @@ export interface User {
 /**
  * Effective API scopes for this user: JWT `scope` claim plus scopes implied by roles,
  * with production non-admin/moderator stripping applied (same rules as {@link authorize}).
+ * Only admins keep the every-clinic booking scopes.
  */
 export function getEffectiveScopes(user: User | null | undefined): Scope[] {
     if (!user) {
@@ -120,13 +127,18 @@ export function getEffectiveScopes(user: User | null | undefined): Scope[] {
     const currentUserScopesFromRoles = currentUserRoles.flatMap(role => roleScopes[role] ?? [])
     let merged = [...currentUserScopes, ...currentUserScopesFromRoles]
 
+    // A token scope cannot grant every clinic's bookings either. Dev keeps them only off production.
+    const keepsAllClinicBookings = currentUserRoles.includes(Role.Admin)
+        || (!envVariables.isProduction() && currentUserRoles.includes(Role.Dev))
+    if (!keepsAllClinicBookings) {
+        merged = merged.filter(scope => !ALL_CLINIC_BOOKING_SCOPES.includes(scope))
+    }
+
     if (envVariables.isProduction() &&
         !currentUserRoles.includes(Role.Admin) &&
         !currentUserRoles.includes(Role.Moderator)) {
-        // read:bookings opens every clinic's patient answers and identity files.
-        // Only admins and moderators keep it in production.
         merged = merged.filter(scope =>
-            (scope.startsWith('read:') && scope !== Scope['read:bookings'])
+            scope.startsWith('read:')
             || scope === Scope['create:submissions']
             || scope === Scope['create:bookings'])
     }

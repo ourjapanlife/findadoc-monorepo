@@ -270,7 +270,8 @@
     "none": "—",
     "sections": {
       "settings": "Mga Setting",
-      "moderation": "Moderasyon"
+      "moderation": "Moderasyon",
+      "clinic": "Klinika"
     }
   },
   "modPanelSubmissionLeftNavbar": {
@@ -285,7 +286,11 @@
     "healthcareProfessionals": "Propesyonal sa Pangangalagang Pangkalusugan",
     "facilities": "Pasilidad",
     "addHealthcareProfessional": "Magdagdag ng propesyonal sa kalusugan",
-    "licenseReview": "Kailangang suriin ang lisensya"
+    "licenseReview": "Kailangang suriin ang lisensya",
+    "openClinicDashboard": "Buksan ang dashboard ng isang klinika",
+    "chooseClinic": "Pumili ng klinika",
+    "noBookingClinics": "Wala pang klinikang tumatanggap ng booking",
+    "clinicsLoadError": "Hindi ma-load ang mga klinika"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Burahin",
@@ -1018,7 +1023,8 @@
       "invalid": "Nagsasapawan ang dalawang block sa iisang araw. Baguhin ang isa sa mga ito.",
       "save": "I-save ang lingguhang oras",
       "doctorHelp": "Sariling linggo ng doktor na ito. Kapag na-save, hiwalay nang bino-book ang doktor sa oras ng klinika at sa ibang doktor. Nalalapat pa rin ang pagsasara ng buong klinika."
-    }
+    },
+    "requestedCount": "Mga naghihintay na kahilingan: {count}"
   },
   "patientBooking": {
     "heading": "Ang iyong kahilingan sa appointment",

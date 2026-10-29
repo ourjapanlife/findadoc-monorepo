@@ -270,7 +270,8 @@
     "none": "—",
     "sections": {
       "settings": "设置",
-      "moderation": "审核"
+      "moderation": "审核",
+      "clinic": "诊所"
     }
   },
   "modEditSubmissionTopNav": {
@@ -368,7 +369,11 @@
     "healthcareProfessionals": "医疗人员",
     "facilities": "医疗机构",
     "addHealthcareProfessional": "添加医疗人员",
-    "licenseReview": "需要核对执照"
+    "licenseReview": "需要核对执照",
+    "openClinicDashboard": "打开诊所控制面板",
+    "chooseClinic": "选择诊所",
+    "noBookingClinics": "目前还没有接受预约的诊所",
+    "clinicsLoadError": "无法加载诊所"
   },
   "modFacilitySection": {
     "addresses": "地址",
@@ -1018,7 +1023,8 @@
       "invalid": "同一天的两个时段重叠了。请修改其中一个。",
       "save": "保存每周营业时间",
       "doctorHelp": "这是该医生自己的一周时间。保存后，该医生将与诊所时间和其他医生分开预约。诊所的全体休诊仍然适用。"
-    }
+    },
+    "requestedCount": "待处理的预约请求：{count}"
   },
   "patientBooking": {
     "heading": "您的预约申请",

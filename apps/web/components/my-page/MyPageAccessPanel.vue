@@ -178,7 +178,35 @@
                 </div>
 
                 <div
-                    v-if="settingsPages.length === 0 && moderationPages.length === 0"
+                    v-if="myBookingClinicsStore.hasClinics"
+                    class="flex flex-col gap-1"
+                >
+                    <span
+                        class="font-bold text-primary-text"
+                        :class="collapsed ? 'md:hidden' : ''"
+                    >
+                        {{ t('accessPanel.sections.clinic') }}
+                    </span>
+                    <NuxtLink
+                        :to="localizedPath('/clinic-dashboard', localeCodeFromPath(route.path))"
+                        :class="clinicLinkClass"
+                        :title="collapsed ? t('clinicDashboard.heading') : undefined"
+                        data-testid="access-page-link-clinic-dashboard"
+                    >
+                        <SVGFacilityIcon
+                            class="h-5 w-5 shrink-0"
+                            aria-hidden="true"
+                        />
+                        <span
+                            class="flex-1"
+                            :class="collapsed ? 'md:sr-only' : ''"
+                        >{{ t('clinicDashboard.heading') }}</span>
+                        <ClinicRequestCountBadge :count="myBookingClinicsStore.requestedCount" />
+                    </NuxtLink>
+                </div>
+
+                <div
+                    v-if="settingsPages.length === 0 && moderationPages.length === 0 && !myBookingClinicsStore.hasClinics"
                     class="text-primary-text-muted py-1 px-2"
                 >
                     {{ t('accessPanel.none') }}
@@ -193,6 +221,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/authStore'
 import { useCurrentUserAccessStore } from '~/stores/currentUserAccessStore'
+import { useMyBookingClinicsStore } from '~/stores/myBookingClinicsStore'
+import ClinicRequestCountBadge from '~/components/booking/ClinicRequestCountBadge.vue'
 import SVGSettingsIcon from '~/assets/icons/settings-icon.svg'
 import SVGInbox from '~/assets/icons/inbox.svg'
 import SVGFacilityIcon from '~/assets/icons/hospital-facility-icon.svg'
@@ -204,7 +234,7 @@ import {
 import { useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
 import { ModerationScreen, useModerationScreenStore } from '~/stores/moderationScreenStore'
 import SVGAccordionArrow from '~/assets/icons/accordion-arrow.svg'
-import { unlocalizedPath } from '~/utils/localePath'
+import { localeCodeFromPath, localizedPath, unlocalizedPath } from '~/utils/localePath'
 
 interface NavPage {
     id: string
@@ -223,6 +253,7 @@ const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
 const accessStore = useCurrentUserAccessStore()
+const myBookingClinicsStore = useMyBookingClinicsStore()
 const moderationSubmissionsStore = useModerationSubmissionsStore()
 const moderationScreenStore = useModerationScreenStore()
 
@@ -345,6 +376,13 @@ function sidebarNavLinkClass(page: NavPage): string {
         ? `${base} border-primary text-primary-text bg-accent-bg/20`
         : `${base} border-transparent text-primary-text-muted hover:text-primary-text hover:bg-accent-bg/10`
 }
+
+const clinicLinkClass = computed(() => {
+    const collapsedLayout = props.collapsed ? ' md:justify-center md:px-1.5 md:gap-0' : ''
+    return 'flex items-center gap-2 py-2 px-3 text-sm font-medium transition-colors border-l-2 rounded-r-md'
+        + ' border-transparent text-primary-text-muted hover:text-primary-text hover:bg-accent-bg/10'
+        + collapsedLayout
+})
 
 async function loadIfLoggedIn(): Promise<void> {
     if (!authStore.isLoggedIn || authStore.isLoadingAuth) {

@@ -17,6 +17,7 @@ import {
     type MembershipRole
 } from '../booking/access.js'
 import { formSourceById, listFormSources } from '../booking/formDefinitions.js'
+import { APPOINTMENT_STATUS } from '../booking/lifecycle.js'
 import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedule.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
@@ -24,7 +25,7 @@ import { ErrorCode, Result } from '../result.js'
 
 /**
  * Clinic booking accounts: who belongs to which facility, and what the clinic
- * offers. Moderators invite anyone. An owner invites and removes staff.
+ * offers. Admins invite anyone. An owner invites and removes staff.
  */
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -62,7 +63,27 @@ export function listBookingFormTypes(): BookingFormType[] {
     }))
 }
 
-async function bookingClinicFor(facilityId: string, access: BookingAccess): Promise<BookingClinic | null> {
+/** Requested appointments per facility, in one query. A facility with none is absent. */
+async function requestedCountsFor(facilityIds: string[]): Promise<Map<string, number>> {
+    if (facilityIds.length === 0) {
+        return new Map()
+    }
+    const rows = await db.selectFrom('booking_appointments')
+        .select(['facility_id', eb => eb.fn.countAll<string>().as('count')])
+        .where('facility_id', 'in', facilityIds)
+        .where('status', '=', APPOINTMENT_STATUS.REQUESTED)
+        .groupBy('facility_id')
+        .execute()
+    return new Map(rows
+        .filter((row): row is typeof row & { facility_id: string } => row.facility_id !== null)
+        .map(row => [row.facility_id, Number(row.count)]))
+}
+
+async function bookingClinicFor(
+    facilityId: string,
+    access: BookingAccess,
+    requestedCount: number
+): Promise<BookingClinic | null> {
     if (!canReadFacility(access, facilityId)) {
         return null
     }
@@ -76,22 +97,49 @@ async function bookingClinicFor(facilityId: string, access: BookingAccess): Prom
         clinicName: target.clinicName,
         clinicSiteSlug: target.clinicSiteSlug,
         role: role === undefined ? null : roleToGql(role),
-        canManage: canManageFacility(access, facilityId)
+        canManage: canManageFacility(access, facilityId),
+        requestedCount
     }
 }
 
-export async function getBookingClinic(facilityId: string, access: BookingAccess): Promise<BookingClinic | null> {
-    return bookingClinicFor(facilityId, access)
-}
-
-/** Clinics this user is a member of. Moderators open others by id. */
-export async function listMyBookingClinics(access: BookingAccess): Promise<BookingClinic[]> {
+async function bookingClinicsFor(facilityIds: string[], access: BookingAccess): Promise<BookingClinic[]> {
+    const readable = facilityIds.filter(facilityId => canReadFacility(access, facilityId))
+    const counts = await requestedCountsFor(readable)
     const clinics = await Promise.all(
-        [...access.memberships.keys()].map(facilityId => bookingClinicFor(facilityId, access))
+        readable.map(facilityId => bookingClinicFor(facilityId, access, counts.get(facilityId) ?? 0))
     )
     return clinics
         .filter((clinic): clinic is BookingClinic => clinic !== null)
         .sort((a, b) => a.clinicName.localeCompare(b.clinicName))
+}
+
+export async function getBookingClinic(facilityId: string, access: BookingAccess): Promise<BookingClinic | null> {
+    const [clinic] = await bookingClinicsFor([facilityId], access)
+    return clinic ?? null
+}
+
+/** Clinics this user is a member of. Admins open others by id. */
+export async function listMyBookingClinics(access: BookingAccess): Promise<BookingClinic[]> {
+    return bookingClinicsFor([...access.memberships.keys()], access)
+}
+
+/**
+ * Every facility set up for booking: it has booking settings, a clinic member, or a hosted
+ * clinic site. Admins only; anyone else gets an empty list.
+ */
+export async function listAllBookingClinics(access: BookingAccess): Promise<BookingClinic[]> {
+    if (!access.readAll) {
+        return []
+    }
+    const [settings, members, sites] = await Promise.all([
+        db.selectFrom('booking_settings').select('facility_id').execute(),
+        db.selectFrom('clinic_memberships').select('facility_id').where('facility_id', 'is not', null).execute(),
+        db.selectFrom('clinic_sites').select('facility_id').where('facility_id', 'is not', null).execute()
+    ])
+    const facilityIds = [...new Set([...settings, ...members, ...sites]
+        .map(row => row.facility_id)
+        .filter((facilityId): facilityId is string => facilityId !== null))]
+    return bookingClinicsFor(facilityIds, access)
 }
 
 function memberFromRow(row: {
@@ -131,7 +179,7 @@ export async function inviteClinicMember(
     invitedBy: string | undefined
 ): Promise<Result<ClinicMember>> {
     const role = roleFromGql(input.role)
-    // Owners add staff. Only moderators create owners.
+    // Owners add staff. Only admins create owners.
     const allowed = access.manageMembersAll
         || (canManageFacility(access, input.facilityId) && role === MEMBERSHIP_ROLE.STAFF)
     if (!allowed) {

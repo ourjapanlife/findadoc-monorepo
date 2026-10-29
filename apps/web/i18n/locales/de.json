@@ -318,7 +318,8 @@
     "none": "—",
     "sections": {
       "settings": "Einstellungen",
-      "moderation": "Prüfung"
+      "moderation": "Prüfung",
+      "clinic": "Praxis"
     }
   },
   "modEditSubmissionTopNav": {
@@ -416,7 +417,11 @@
     "healthcareProfessionals": "Gesundheitsfachkräfte",
     "facilities": "Einrichtungen",
     "addHealthcareProfessional": "Gesundheitsfachkraft hinzufügen",
-    "licenseReview": "Lizenz prüfen"
+    "licenseReview": "Lizenz prüfen",
+    "openClinicDashboard": "Praxis-Dashboard öffnen",
+    "chooseClinic": "Praxis auswählen",
+    "noBookingClinics": "Noch keine Praxis nimmt Buchungen an",
+    "clinicsLoadError": "Praxen konnten nicht geladen werden"
   },
   "modFacilitySection": {
     "addresses": "Adressen",
@@ -1018,7 +1023,8 @@
       "invalid": "Zwei Blöcke am selben Tag überschneiden sich. Ändern Sie einen davon.",
       "save": "Wochenzeiten speichern",
       "doctorHelp": "Die eigene Woche dieser Ärztin bzw. dieses Arztes. Nach dem Speichern wird sie bzw. er getrennt von den Praxiszeiten und anderen Ärzten gebucht. Schließungen der ganzen Praxis gelten weiterhin."
-    }
+    },
+    "requestedCount": "Offene Anfragen: {count}"
   },
   "patientBooking": {
     "heading": "Ihre Terminanfrage",

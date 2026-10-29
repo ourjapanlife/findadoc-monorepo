@@ -89,6 +89,13 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.BookingClinic[]> =>
             clinicAccessService.listMyBookingClinics(await bookingAccessFor(context.user))),
+        // The admin clinic picker on My Page. A member opens their own clinics through myBookingClinics.
+        bookingClinics: withScope(Scope['read:bookings'], async (
+            _parent: unknown,
+            _args: unknown,
+            context: UserContext
+        ): Promise<gqlType.BookingClinic[]> =>
+            clinicAccessService.listAllBookingClinics(await bookingAccessFor(context.user))),
         bookingClinic: withAuthenticatedUser(async (
             _parent: unknown,
             args: { facilityId: string },

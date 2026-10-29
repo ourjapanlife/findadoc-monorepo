@@ -74,6 +74,7 @@
                                 aria-hidden="true"
                             />
                             <span class="max-w-40 truncate">{{ profileMenuLabel }}</span>
+                            <ClinicRequestCountBadge :count="myBookingClinicsStore.requestedCount" />
                             <SVGAccordionArrow
                                 class="h-4 w-4 fill-primary-text transition-transform"
                                 :class="profileMenuIsOpen ? 'rotate-180' : ''"
@@ -100,6 +101,21 @@
                                     aria-hidden="true"
                                 />
                                 {{ t('topNav.myPage') }}
+                            </NuxtLink>
+                            <NuxtLink
+                                v-if="myBookingClinicsStore.hasClinics"
+                                :to="localizedPath('/clinic-dashboard', localeCodeFromPath(route.path))"
+                                data-testid="top-nav-clinic-dashboard-link"
+                                class="flex h-11 items-center gap-2 rounded-lg px-3 text-primary-text
+                                   transition-colors hover:bg-primary/10"
+                                @click="closeProfileMenu"
+                            >
+                                <SVGFacilityIcon
+                                    class="h-5 w-5 text-user-icon"
+                                    aria-hidden="true"
+                                />
+                                <span class="flex-1">{{ t('clinicDashboard.heading') }}</span>
+                                <ClinicRequestCountBadge :count="myBookingClinicsStore.requestedCount" />
                             </NuxtLink>
                             <button
                                 type="button"
@@ -141,12 +157,15 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppToast } from '~/composables/useAppToast'
 import HamburgerMenu from './HamburgerMenu.vue'
+import ClinicRequestCountBadge from '~/components/booking/ClinicRequestCountBadge.vue'
 import SVGSiteLogo from '~/assets/icons/site-logo.svg'
 import SVGAccordionArrow from '~/assets/icons/accordion-arrow.svg'
 import SVGUserIcon from '~/assets/icons/user-icon.svg'
 import SVGSignOutIcon from '~/assets/icons/sign-out-icon.svg'
+import SVGFacilityIcon from '~/assets/icons/hospital-facility-icon.svg'
 import { useAuthStore } from '~/stores/authStore'
 import { useModalStore } from '~/stores/modalStore'
+import { useMyBookingClinicsStore } from '~/stores/myBookingClinicsStore'
 import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { vCloseOnOutsideClick } from '~/composables/closeOnOutsideClick'
@@ -163,6 +182,7 @@ const authStore = useAuthStore()
 const moderationScreenStore = useModerationScreenStore()
 const moderationSubmissionUnsavedStore = useModerationSubmissionUnsavedStore()
 const modalStore = useModalStore()
+const myBookingClinicsStore = useMyBookingClinicsStore()
 
 const profileMenuIsOpen = ref(false)
 const profileMenuLabel = computed(() => authStore.userId || t('topNav.myPage'))

@@ -71,7 +71,7 @@
                     >
                 </label>
                 <label
-                    v-if="props.isModerator"
+                    v-if="props.isAdmin"
                     class="flex flex-col landscape:w-40"
                 >
                     <span class="field-label">{{ t('clinicDashboard.members.role') }}</span>
@@ -106,12 +106,12 @@ import { useAppToast } from '~/composables/useAppToast'
 import { fetchClinicAdmin, inviteClinicMember, removeClinicMember } from '~/utils/booking/staffQuery'
 
 /**
- * Who may use the clinic's dashboard. An owner invites staff; a moderator may
+ * Who may use the clinic's dashboard. An owner invites staff; an admin may
  * also invite owners. Booking settings are a separate tab (ClinicSettingsPanel).
  */
 const props = defineProps<{
     facilityId: string
-    isModerator: boolean
+    isAdmin: boolean
 }>()
 
 const { t } = useI18n()
@@ -127,7 +127,7 @@ function roleLabel(role: ClinicMemberRole): string {
 }
 
 function canRemove(member: ClinicMember): boolean {
-    return props.isModerator || member.role === ClinicMemberRole.Staff
+    return props.isAdmin || member.role === ClinicMemberRole.Staff
 }
 
 async function load(): Promise<void> {
@@ -138,7 +138,7 @@ async function load(): Promise<void> {
 
 async function invite(): Promise<void> {
     inviting.value = true
-    const role = props.isModerator ? inviteRole.value : ClinicMemberRole.Staff
+    const role = props.isAdmin ? inviteRole.value : ClinicMemberRole.Staff
     const added = await inviteClinicMember(props.facilityId, inviteEmail.value, role)
     inviting.value = false
     if (added === null) {

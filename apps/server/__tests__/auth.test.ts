@@ -256,7 +256,7 @@ describe('getEffectiveScopes()', () => {
         expect(scopes.includes(Scope['create:bookings'])).toBe(true)
     })
 
-    it('strips read:bookings in production for non-admin non-moderator', () => {
+    it('strips read:bookings in production for Dev', () => {
         vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
         const devUser = {
             sub: 'dev1',
@@ -268,16 +268,36 @@ describe('getEffectiveScopes()', () => {
         expect(getEffectiveScopes(devUser).includes(Scope['read:bookings'])).toBe(false)
     })
 
-    it('keeps read:bookings in production for Moderator', () => {
-        vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
+    it.each([true, false])('never gives a Moderator the every-clinic booking scopes (production %s)', production => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(production)
         const mod = {
             sub: 'm1',
             name: 'Mod',
             email: 'm@m.com',
             roles: [Role.Moderator],
+            // Even when Auth0 puts them on the token.
+            scope: 'read:bookings write:clinic_availability write:clinic_memberships'
+        }
+        const scopes = getEffectiveScopes(mod)
+        expect(scopes.includes(Scope['read:bookings'])).toBe(false)
+        expect(scopes.includes(Scope['write:clinic_availability'])).toBe(false)
+        expect(scopes.includes(Scope['write:clinic_memberships'])).toBe(false)
+        expect(scopes.includes(Scope['create:bookings'])).toBe(true)
+    })
+
+    it('keeps the every-clinic booking scopes in production for Admin', () => {
+        vi.spyOn(envVariables, 'isProduction').mockReturnValue(true)
+        const admin = {
+            sub: 'a1',
+            name: 'Admin',
+            email: 'a@a.com',
+            roles: [Role.Admin],
             scope: ''
         }
-        expect(getEffectiveScopes(mod).includes(Scope['read:bookings'])).toBe(true)
+        const scopes = getEffectiveScopes(admin)
+        expect(scopes.includes(Scope['read:bookings'])).toBe(true)
+        expect(scopes.includes(Scope['write:clinic_availability'])).toBe(true)
+        expect(scopes.includes(Scope['write:clinic_memberships'])).toBe(true)
     })
 
     it('does not strip write scopes in production for Moderator', () => {
@@ -314,8 +334,7 @@ describe('roleScopes invariant: no accidental changes', () => {
             Scope['read:profile'], 
             Scope['write:posts'],
             Scope['read:reservations'], Scope['write:reservations'],
-            Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
-            Scope['write:clinic_memberships']
+            Scope['create:bookings']
         ],
         [Role.Dev]: [
             Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],

@@ -101,6 +101,8 @@ export type BookingClinic = {
   clinicName: Scalars['String']['output'];
   clinicSiteSlug?: Maybe<Scalars['String']['output']>;
   facilityId: Scalars['ID']['output'];
+  /** Appointments still REQUESTED, waiting for the clinic to confirm or decline. */
+  requestedCount: Scalars['Int']['output'];
   /** Null for moderators, who reach every clinic without a membership. */
   role?: Maybe<ClinicMemberRole>;
 };
@@ -1617,6 +1619,8 @@ export type Query = {
   availableBookingStarts: Array<Scalars['String']['output']>;
   /** One clinic for the dashboard header. Null when the user may not open it. */
   bookingClinic?: Maybe<BookingClinic>;
+  /** Every clinic set up for booking, for the moderation clinic picker. Moderators only. */
+  bookingClinics: Array<BookingClinic>;
   /**
    * The booking intake form for a directory facility or hosted clinic.
    * Pass a facility id, clinic site id, or slug. Unknown clinics are null.
@@ -2583,6 +2587,7 @@ export type BookingClinicResolvers<ContextType = any, ParentType extends Resolve
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  requestedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['ClinicMemberRole']>, ParentType, ContextType>;
 };
 
@@ -3084,6 +3089,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   auditLog?: Resolver<Maybe<ResolversTypes['AuditLog']>, ParentType, ContextType, Partial<QueryAuditLogArgs>>;
   availableBookingStarts?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryAvailableBookingStartsArgs, 'clinicSiteId' | 'from' | 'to'>>;
   bookingClinic?: Resolver<Maybe<ResolversTypes['BookingClinic']>, ParentType, ContextType, RequireFields<QueryBookingClinicArgs, 'facilityId'>>;
+  bookingClinics?: Resolver<Array<ResolversTypes['BookingClinic']>, ParentType, ContextType>;
   bookingForm?: Resolver<Maybe<ResolversTypes['BookingForm']>, ParentType, ContextType, RequireFields<QueryBookingFormArgs, 'clinicSiteId'>>;
   bookingFormTypes?: Resolver<Array<ResolversTypes['BookingFormType']>, ParentType, ContextType>;
   bookingSettings?: Resolver<Maybe<ResolversTypes['BookingSettings']>, ParentType, ContextType, RequireFields<QueryBookingSettingsArgs, 'facilityId'>>;
