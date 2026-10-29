@@ -1,10 +1,7 @@
 import { pathToFileURL } from 'node:url'
 import pg from 'pg'
-import { envVariables } from '../utils/environmentVariables.js'
+import { localDatabaseConfig } from '../utils/localDatabase.js'
 import { initializeLogger, logger } from './logger.js'
-
-// The local Docker database from `pnpm db:start`. kyselyClient uses the same port outside production.
-const localDatabasePort = 54322
 
 export type DatabaseCheck = {
     ok: boolean
@@ -13,16 +10,10 @@ export type DatabaseCheck = {
 }
 
 export const checkLocalDatabase = async (): Promise<DatabaseCheck> => {
-    const host = envVariables.pgHost() || '127.0.0.1'
-    const target = `${host}:${localDatabasePort}`
-    const client = new pg.Client({
-        host,
-        port: localDatabasePort,
-        database: 'postgres',
-        user: envVariables.pgUser(),
-        password: envVariables.pgPassword(),
-        connectionTimeoutMillis: 3000
-    })
+    // The local Docker database from `pnpm db:start`, on PGHOST and PGPORT like the API.
+    const database = localDatabaseConfig()
+    const target = `${database.host}:${database.port}`
+    const client = new pg.Client({ ...database, connectionTimeoutMillis: 3000 })
 
     try {
         await client.connect()

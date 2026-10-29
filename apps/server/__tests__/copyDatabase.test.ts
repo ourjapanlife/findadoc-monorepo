@@ -2,11 +2,14 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import pg from 'pg'
 import { compareDatabases, copyDatabase } from '../scripts/db/copyDatabase.js'
 import { migrate } from '../scripts/db/migrations.js'
+import { localDatabaseConfig } from '../utils/localDatabase.js'
 
 // The source is a frozen copy of the local test database. The other test files keep writing to
 // that database while this one runs, so comparing against it directly races them. The target
 // is a scratch database built from the same migrations, as RDS is before the real copy.
-const local = { host: '127.0.0.1', port: 54322, user: 'postgres', password: 'postgres' }
+// PGHOST and PGPORT choose the local database, as they do for the API.
+const { host, port, user, password } = localDatabaseConfig()
+const local = { host, port, user, password }
 const sourceName = 'findadoc_copy_test_source'
 const targetName = 'findadoc_copy_test'
 

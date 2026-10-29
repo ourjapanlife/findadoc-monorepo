@@ -1,21 +1,12 @@
-import { spawnSync } from 'node:child_process'
-import { fileURLToPath } from 'node:url'
 import pg from 'pg'
+import { isLocalHost, localDatabaseConfig } from '../../utils/localDatabase.js'
 import { migrate } from './migrations.js'
+import { startLocalDatabase } from './start.js'
 
 const remoteFlags = ['--linked', '--db-url']
-const serverRoot = fileURLToPath(new URL('../..', import.meta.url))
-const composeFile = 'docker/docker-compose-db.yml'
 
-// Always the local database. Remote connection settings in the environment are ignored.
-const localDatabase: pg.ClientConfig = {
-    host: '127.0.0.1',
-    port: 54322,
-    user: 'postgres',
-    password: 'postgres',
-    database: 'postgres',
-    connectionTimeoutMillis: 2000
-}
+// PGHOST and PGPORT choose the database, as they do for the API. Any host but this machine is refused.
+const localDatabase: pg.ClientConfig = { ...localDatabaseConfig(), connectionTimeoutMillis: 2000 }
 
 if (process.env.NODE_ENV === 'production') {
     console.error('db:reset only runs against the local database.')
@@ -26,6 +17,11 @@ const extraArgs = process.argv.slice(2)
 
 if (extraArgs.some(arg => remoteFlags.some(flag => arg === flag || arg.startsWith(`${flag}=`)))) {
     console.error('db:reset only runs against the local database.')
+    process.exit(1)
+}
+
+if (!isLocalHost(localDatabase.host ?? '')) {
+    console.error(`db:reset only runs against the local database. PGHOST is ${localDatabase.host}.`)
     process.exit(1)
 }
 
@@ -58,21 +54,16 @@ async function connectToLocalDatabase(): Promise<pg.Client> {
     }
 
     console.error('The local database is not running. Starting it with Docker.')
-    const started = spawnSync('docker', ['compose', '-f', composeFile, 'up', '-d', '--wait'], {
-        cwd: serverRoot,
-        stdio: 'inherit',
-        shell: process.platform === 'win32'
-    })
 
-    if (started.error || started.status !== 0) {
-        console.error('Docker is required to run the local database. Start Docker, then run `pnpm db:reset` again.')
+    if (!await startLocalDatabase()) {
+        console.error('Then run `pnpm db:reset` again.')
         process.exit(1)
     }
 
     const second = await tryConnect()
 
     if (!second) {
-        console.error('The local database started but did not accept a connection on 127.0.0.1:54322.')
+        console.error(`The local database started but did not accept a connection on ${localDatabase.host}:${localDatabase.port}.`)
         process.exit(1)
     }
 

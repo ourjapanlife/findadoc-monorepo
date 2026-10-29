@@ -196,7 +196,7 @@ Sign in with a plain (non-admin) account with that sub. You see only the showcas
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `pnpm db:start`: "port is already allocated" | Old Supabase stack on 54322 | Section 4 step 1 (#168) |
+| `pnpm db:start`: "Port 54322 is taken by the Docker container supabase_db_findadoc-server" | Old Supabase stack on 54322 | Section 4 step 1, or run on another port with `PGPORT` |
 | Book page: no times | No open hours in range | Check Settings → Weekly hours and closures on the calendar, or re-seed locally |
 | Clinic subdomain doesn't show the clinic page | Preview cookie missing on that host | Open `…/?preview=1` once in that window |
 | Dashboard: "This account is not linked to a clinic yet" | Plain account and no claimed membership | Use an Admin account, or the SQL above; production needs #158 |

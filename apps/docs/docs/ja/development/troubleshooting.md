@@ -85,7 +85,7 @@ pnpm db:seed
 
 ローカルデータベースが最新のマイグレーションより古いと、APIが`INTERNAL_SERVER_ERROR`を返すことがあります。リセットしてシードしてください。
 
-古いローカルSupabaseがまだ動いている場合は、ポート54322を使っています。Postgresなので `pnpm db:reset` はそのままでも動きます。新しいコンテナに切り替えるには、先にSupabaseのコンテナ（`supabase_*`）を `docker stop` で止めてから `pnpm db:reset` を実行してください。
+古いローカルSupabaseがまだ動いている場合は、ポート54322を使っています。`pnpm db:start` がそのことを表示します。リセットやシードの前に止めてください。止めないと、これらのコマンドは `findadoc-db` ではなくそのデータベースを書き換えます。[ポート54322が使われている](running-the-code.md#port-taken)を参照してください。
 
 ### ドキュメントのチェックが失敗する
 

@@ -85,7 +85,7 @@ pnpm db:seed
 
 A local database that is behind the current migrations can make the API return `INTERNAL_SERVER_ERROR`. Reset and seed it.
 
-If an old local Supabase is still running, it holds port 54322. `pnpm db:reset` works against it too, because it is Postgres. To switch to the new container, stop the Supabase containers first (`docker stop` on the `supabase_*` containers), then run `pnpm db:reset`.
+If an old local Supabase is still running, it holds port 54322, and `pnpm db:start` says so. Stop it before you reset or seed, or those commands change its database instead of `findadoc-db`. See [Port 54322 Is Taken](running-the-code.md#port-taken).
 
 ### Docs Check Fails
 
