@@ -504,6 +504,7 @@ const content = {
 }
 
 const themeStyle = clinicThemeVars(landing.theme.primary)
+const bookingClinicId = landing.facilityId ?? landing.id
 
 const sections = computed(() => [
     { id: 'doctors', label: copy.value.navDoctors },
@@ -516,7 +517,7 @@ const sections = computed(() => [
 function onBook() {
     track('Clinic landing book')
     const localeCode = String(locale.value)
-    const clinicId = landing.facilityId ?? landing.id
+    const clinicId = bookingClinicId
     if (clinicLandingHostSlug(hostname) === props.slug) {
         void navigateTo(findadocBookUrl(clinicId, {
             localeCode,

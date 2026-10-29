@@ -1,4 +1,4 @@
-import { DEFAULT_ALLOWED_DURATIONS, isAppointmentDuration } from './durations'
+import { isAppointmentDuration } from './durations'
 
 export type BookingQuery = {
     duration?: number
@@ -38,7 +38,7 @@ export function parseBookingQuery(query: Record<string, unknown>): BookingQuery 
 
 export function bookingQueryString(query: BookingQuery, preview?: '0' | '1'): string {
     const params = new URLSearchParams()
-    if (query.duration !== undefined && DEFAULT_ALLOWED_DURATIONS.includes(query.duration)) {
+    if (query.duration !== undefined && isAppointmentDuration(query.duration)) {
         params.set('duration', String(query.duration))
     }
     if (query.start) {

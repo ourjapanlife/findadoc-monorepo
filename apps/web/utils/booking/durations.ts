@@ -2,7 +2,9 @@ export const ALLOWED_APPOINTMENT_DURATIONS = [15, 30, 45, 60] as const
 export const DEFAULT_ALLOWED_DURATIONS = [...ALLOWED_APPOINTMENT_DURATIONS]
 export const DEFAULT_APPOINTMENT_DURATION_MINUTES = 30
 
-export function isAppointmentDuration(value: number): boolean {
+export type AppointmentDurationMinutes = typeof ALLOWED_APPOINTMENT_DURATIONS[number]
+
+export function isAppointmentDuration(value: number): value is AppointmentDurationMinutes {
     return ALLOWED_APPOINTMENT_DURATIONS.some(duration => duration === value)
 }
 
