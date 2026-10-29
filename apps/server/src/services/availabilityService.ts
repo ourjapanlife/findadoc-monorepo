@@ -4,6 +4,7 @@ import type {
     DeleteResult
 } from '@findadoc/graphql'
 import { randomUUID } from 'node:crypto'
+import { canWriteFacility, type BookingAccess } from '../booking/access.js'
 import { resolveBookingTarget } from '../booking/target.js'
 import { assertAvailabilityRange, snapDownToAvailability, snapUpToAvailability } from '../booking/schedule.js'
 import { db } from '../kyselyClient.js'
@@ -17,18 +18,27 @@ function validationError(field: string): Result<never> {
     }
 }
 
+/** Longest range one calendar read may ask for. A month view is about 42 days. */
+export const MAX_STAFF_CALENDAR_RANGE_MS = 62 * 24 * 60 * 60 * 1000
+
+export function isStaffCalendarRange(from: Date, to: Date): boolean {
+    return !Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime()) && to > from
+        && to.getTime() - from.getTime() <= MAX_STAFF_CALENDAR_RANGE_MS
+}
+
 export async function listClinicAvailabilityWindows(
     clinicIdOrSlug: string,
     fromIso: string,
-    toIso: string
+    toIso: string,
+    access: BookingAccess
 ): Promise<ClinicAvailabilityWindow[]> {
     const target = await resolveBookingTarget(clinicIdOrSlug)
-    if (target === undefined) {
+    if (target === undefined || !canWriteFacility(access, target.facilityId)) {
         return []
     }
     const from = new Date(fromIso)
     const to = new Date(toIso)
-    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || !(to > from)) {
+    if (!isStaffCalendarRange(from, to)) {
         return []
     }
 
@@ -60,10 +70,11 @@ export async function listClinicAvailabilityWindows(
 
 export async function createClinicAvailabilityWindow(
     input: CreateClinicAvailabilityWindowInput,
-    createdBy: string | undefined
+    createdBy: string | undefined,
+    access: BookingAccess
 ): Promise<Result<ClinicAvailabilityWindow>> {
     const target = await resolveBookingTarget(input.clinicSiteId)
-    if (target === undefined) {
+    if (target === undefined || !canWriteFacility(access, target.facilityId)) {
         return validationError('clinicSiteId')
     }
 
@@ -107,7 +118,18 @@ export async function createClinicAvailabilityWindow(
     }
 }
 
-export async function deleteClinicAvailabilityWindow(id: string): Promise<Result<DeleteResult>> {
+export async function deleteClinicAvailabilityWindow(
+    id: string,
+    access: BookingAccess
+): Promise<Result<DeleteResult>> {
+    const window = await db.selectFrom('clinic_availability_windows')
+        .select('facility_id')
+        .where('id', '=', id)
+        .executeTakeFirst()
+    if (window === undefined || !canWriteFacility(access, window.facility_id)) {
+        return { data: { isSuccessful: false }, hasErrors: false }
+    }
+
     const result = await db.deleteFrom('clinic_availability_windows')
         .where('id', '=', id)
         .executeTakeFirst()

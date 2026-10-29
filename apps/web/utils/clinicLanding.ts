@@ -238,9 +238,14 @@ export function isClinicHostBookPage(pathname: string): boolean {
     return unlocalizedPath(pathname) === '/book'
 }
 
-/** Landing or booking on a clinic hostname. Everything else redirects home. */
+/** `/dashboard` or `/{locale}/dashboard` on a clinic hostname. It redirects to the Find a Doc dashboard. */
+export function isClinicHostDashboardPage(pathname: string): boolean {
+    return unlocalizedPath(pathname) === '/dashboard'
+}
+
+/** Landing, booking, or the dashboard bounce on a clinic hostname. Everything else redirects home. */
 export function isClinicHostSurface(pathname: string): boolean {
-    return isClinicHostPage(pathname) || isClinicHostBookPage(pathname)
+    return isClinicHostPage(pathname) || isClinicHostBookPage(pathname) || isClinicHostDashboardPage(pathname)
 }
 
 /** `/book` under the locale prefix for this path. */

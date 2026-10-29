@@ -661,6 +661,7 @@ async function uploadPendingFiles(): Promise<boolean> {
         }
         const signed = await requestBookingUploadUrl({
             clinicSiteId: clinicKey.value,
+            formDefinitionId: props.form.id,
             fieldId: field.id,
             contentType: file.type || 'application/octet-stream',
             fileName: file.name,

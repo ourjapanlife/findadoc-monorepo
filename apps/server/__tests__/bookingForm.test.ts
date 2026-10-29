@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { BookingFormFieldType } from '@findadoc/graphql'
 import {
     DEFAULT_BOOKING_FORM_ID,
-    SHOWCASE_BOOKING_CLINIC_SITE_ID,
     SHOWCASE_BOOKING_FORM_ID,
     chooseFormDefinitionId,
     formSourceById,
-    formSourceForClinicSite
+    isOfferedFormId,
+    listFormSources,
+    parseFormDefinitionIds
 } from '../src/booking/formDefinitions.js'
 
 describe('booking forms', () => {
@@ -16,21 +17,40 @@ describe('booking forms', () => {
         expect(form?.fields.some(field => field.type === BookingFormFieldType.File)).toBe(false)
     })
 
-    it('asks the showcase clinic for an insurance file and a photo', () => {
-        const form = formSourceForClinicSite(SHOWCASE_BOOKING_CLINIC_SITE_ID)
+    it('asks the online consult form for an insurance file and a photo', () => {
+        const form = formSourceById(SHOWCASE_BOOKING_FORM_ID)
         const files = form?.fields.filter(field => field.type === BookingFormFieldType.File) ?? []
 
-        expect(form?.id).toBe(SHOWCASE_BOOKING_FORM_ID)
         expect(files.map(field => field.id)).toEqual(['insuranceDocument', 'selfie'])
         expect(files.every(field => field.required && field.stepKey === 'documents')).toBe(true)
         expect(files.find(field => field.id === 'insuranceDocument')?.accept).toContain('application/pdf')
         expect(files.find(field => field.id === 'selfie')?.accept).toBe('image/jpeg,image/png,image/webp')
     })
 
-    it('lets ?form= pick the default intake, not an unknown id', () => {
-        expect(chooseFormDefinitionId(SHOWCASE_BOOKING_FORM_ID, DEFAULT_BOOKING_FORM_ID))
-            .toBe(DEFAULT_BOOKING_FORM_ID)
-        expect(chooseFormDefinitionId(SHOWCASE_BOOKING_FORM_ID, 'not-a-form'))
+    it('names every form type for the clinic picker', () => {
+        expect(listFormSources().map(source => source.id)).toEqual([DEFAULT_BOOKING_FORM_ID, SHOWCASE_BOOKING_FORM_ID])
+        expect(listFormSources().every(source => source.labelKey.startsWith('bookingForms.'))).toBe(true)
+    })
+
+    it('keeps only known form ids, in order, and falls back to the default', () => {
+        const messy = [SHOWCASE_BOOKING_FORM_ID, 'nope', SHOWCASE_BOOKING_FORM_ID, DEFAULT_BOOKING_FORM_ID]
+        expect(parseFormDefinitionIds(messy))
+            .toEqual([SHOWCASE_BOOKING_FORM_ID, DEFAULT_BOOKING_FORM_ID])
+        expect(parseFormDefinitionIds(['nope'])).toEqual([DEFAULT_BOOKING_FORM_ID])
+        expect(parseFormDefinitionIds(null)).toEqual([DEFAULT_BOOKING_FORM_ID])
+    })
+
+    it('lets ?form= pick any form the clinic offers, and nothing else', () => {
+        const offered = [SHOWCASE_BOOKING_FORM_ID, DEFAULT_BOOKING_FORM_ID]
+        expect(chooseFormDefinitionId(offered, DEFAULT_BOOKING_FORM_ID)).toBe(DEFAULT_BOOKING_FORM_ID)
+        expect(chooseFormDefinitionId(offered, 'not-a-form')).toBe(SHOWCASE_BOOKING_FORM_ID)
+        expect(chooseFormDefinitionId(offered, null)).toBe(SHOWCASE_BOOKING_FORM_ID)
+        expect(chooseFormDefinitionId([SHOWCASE_BOOKING_FORM_ID], DEFAULT_BOOKING_FORM_ID))
             .toBe(SHOWCASE_BOOKING_FORM_ID)
+    })
+
+    it('accepts a submit only for a form the clinic offers', () => {
+        expect(isOfferedFormId([SHOWCASE_BOOKING_FORM_ID], SHOWCASE_BOOKING_FORM_ID)).toBe(true)
+        expect(isOfferedFormId([SHOWCASE_BOOKING_FORM_ID], DEFAULT_BOOKING_FORM_ID)).toBe(false)
     })
 })

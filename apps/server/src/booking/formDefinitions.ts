@@ -9,18 +9,22 @@ import { BOOKING_FIELD_SENSITIVITY, type BookingFieldSensitivity as StoredSensit
 import { DEFAULT_ALLOWED_DURATIONS } from './schedule.js'
 
 /**
- * Find a Doc owns the intake fields. A clinic may choose a named variant
- * (showcase online consult) through booking_settings.form_definition_id.
- * `?form=` on the Book URL may select a known id, not an arbitrary document.
+ * Find a Doc owns the intake fields. Each entry in FORMS_BY_ID is one form type.
+ * A clinic offers one or more of them through booking_settings.form_definition_ids
+ * (the first is its default). `?form=` on the Book URL picks one the clinic offers.
+ *
+ * The definitions are code today. A later clinic-authored form only has to
+ * return the same FormSource shape from formSourceById.
  */
 
 export const DEFAULT_BOOKING_FORM_ID = 'findadoc-intake-v1'
 export const SHOWCASE_BOOKING_FORM_ID = 'showcase-intake-v1'
-export const SHOWCASE_BOOKING_CLINIC_SITE_ID = 'a303a8ac-31c9-45d8-96d1-cf6630aa11bd'
 
-type FormSource = {
+export type FormSource = {
     id: string
     version: number
+    /** Site i18n key for the form type name, shown when a clinic picks its forms. */
+    labelKey: string
     fields: BookingFormField[]
 }
 
@@ -122,11 +126,13 @@ const FORMS_BY_ID: Record<string, FormSource> = {
     [DEFAULT_BOOKING_FORM_ID]: {
         id: DEFAULT_BOOKING_FORM_ID,
         version: 1,
+        labelKey: 'bookingForms.standardIntake',
         fields: contactAndVisitFields
     },
     [SHOWCASE_BOOKING_FORM_ID]: {
         id: SHOWCASE_BOOKING_FORM_ID,
         version: 1,
+        labelKey: 'bookingForms.onlineConsultIntake',
         fields: showcaseFields
     }
 }
@@ -135,29 +141,43 @@ export function formSourceById(formId: string): FormSource | undefined {
     return FORMS_BY_ID[formId]
 }
 
-export function formSourceForClinicSite(clinicSiteId: string): FormSource | undefined {
-    if (clinicSiteId === SHOWCASE_BOOKING_CLINIC_SITE_ID) {
-        return FORMS_BY_ID[SHOWCASE_BOOKING_FORM_ID]
-    }
-    return FORMS_BY_ID[DEFAULT_BOOKING_FORM_ID]
+/** Every form type a clinic may offer, in registry order. */
+export function listFormSources(): FormSource[] {
+    return Object.values(FORMS_BY_ID)
 }
 
 export function resolveFormSource(formDefinitionId: string): FormSource {
     return formSourceById(formDefinitionId) ?? FORMS_BY_ID[DEFAULT_BOOKING_FORM_ID]!
 }
 
-/** Clinic settings win. `?form=` may only pick a known id the clinic already uses, or the default. */
+/** Known ids only, without repeats, in the clinic's order. Falls back to the default form. */
+export function parseFormDefinitionIds(value: unknown): string[] {
+    const ids: string[] = []
+    if (Array.isArray(value)) {
+        for (const item of value) {
+            if (typeof item === 'string' && formSourceById(item) !== undefined && !ids.includes(item)) {
+                ids.push(item)
+            }
+        }
+    }
+    return ids.length > 0 ? ids : [DEFAULT_BOOKING_FORM_ID]
+}
+
+/** `?form=` may pick any form the clinic offers. Anything else gets the clinic default. */
 export function chooseFormDefinitionId(
-    clinicFormId: string,
+    offeredFormIds: readonly string[],
     requestedFormId?: string | null
 ): string {
-    if (requestedFormId === null || requestedFormId === undefined || requestedFormId === '') {
-        return clinicFormId
-    }
-    if (requestedFormId === clinicFormId || requestedFormId === DEFAULT_BOOKING_FORM_ID) {
+    const offered = parseFormDefinitionIds(offeredFormIds)
+    if (requestedFormId !== null && requestedFormId !== undefined && offered.includes(requestedFormId)) {
         return requestedFormId
     }
-    return clinicFormId
+    return offered[0]!
+}
+
+/** True when the clinic offers this exact form id. Submit and upload require it. */
+export function isOfferedFormId(offeredFormIds: readonly string[], formId: string): boolean {
+    return parseFormDefinitionIds(offeredFormIds).includes(formId)
 }
 
 export function assembleBookingForm(input: {

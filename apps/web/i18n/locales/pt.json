@@ -778,7 +778,6 @@
     "durationMinutes": "{n} minutos"
   },
   "bookingDashboard": {
-    "readOnly": "Pedido de reserva (somente leitura)",
     "detailHeading": "Reserva",
     "back": "Voltar às reservas",
     "loadError": "Não foi possível carregar esta reserva.",
@@ -810,6 +809,27 @@
       "standard": "Padrão",
       "identityDocument": "Identidade / seguro",
       "medical": "Médico"
+    },
+    "requestEyebrow": "Pedido de consulta",
+    "emailStatus": "E-mail de confirmação",
+    "downloadFailed": "Não foi possível abrir esse arquivo.",
+    "actionFailed": "Não foi possível atualizar esta consulta. Ela pode ter mudado; o status mais recente está sendo exibido.",
+    "reasonLabel": "Observação para o paciente (opcional, enviada ao recusar ou cancelar)",
+    "reasonShown": "Observação: {reason}",
+    "cancelledByPatient": "Cancelada pelo paciente",
+    "cancelledByClinic": "Cancelada pela clínica",
+    "appointmentStatus": {
+      "requested": "Solicitada",
+      "confirmed": "Confirmada",
+      "declined": "Recusada",
+      "cancelled": "Cancelada",
+      "completed": "Concluída"
+    },
+    "actions": {
+      "confirm": "Confirmar",
+      "decline": "Recusar",
+      "cancel": "Cancelar consulta",
+      "complete": "Marcar como concluída"
     }
   },
   "bookingAvailability": {
@@ -819,6 +839,67 @@
     "windowTitle": "Disponível",
     "createFailed": "Não foi possível salvar a disponibilidade.",
     "deleteConfirm": "Remover esta disponibilidade?",
-    "deleteFailed": "Não foi possível remover a disponibilidade."
+    "deleteFailed": "Não foi possível remover a disponibilidade.",
+    "legend": "Legenda do calendário",
+    "patient": "Paciente",
+    "loadFailed": "Não foi possível carregar este calendário.",
+    "appointmentHelp": "Clique em uma consulta para abrir o pedido."
+  },
+  "bookingForms": {
+    "standardIntake": "Pedido de consulta padrão",
+    "onlineConsultIntake": "Consulta on-line com cartão do seguro e foto"
+  },
+  "clinicDashboard": {
+    "heading": "Painel da clínica",
+    "loading": "Carregando…",
+    "loadError": "Não foi possível carregar o painel. Tente novamente.",
+    "signInHeading": "Entre no painel da sua clínica",
+    "signInBody": "Use o endereço de e-mail que recebeu o convite da clínica.",
+    "signIn": "Entrar",
+    "noClinics": "Esta conta ainda não está vinculada a uma clínica.",
+    "noClinicsHelp": "Peça ao Find a Doc, Japan para convidar o e-mail que você usa para entrar. O convite é vinculado no próximo acesso.",
+    "noAccessHeading": "Você não tem acesso a esta clínica",
+    "statusFilter": "Mostrar",
+    "allStatuses": "Todos os pedidos",
+    "saved": "Salvo",
+    "saveFailed": "Não foi possível salvar. Tente novamente.",
+    "tabs": {
+      "requests": "Pedidos",
+      "calendar": "Calendário",
+      "settings": "Configurações"
+    },
+    "roles": {
+      "owner": "Proprietário",
+      "staff": "Equipe"
+    },
+    "settings": {
+      "heading": "Configurações de agendamento",
+      "forms": "Formulários de triagem",
+      "formsHelp": "Os pacientes veem o formulário padrão, a menos que o link de agendamento indique outro formulário que você oferece.",
+      "defaultForm": "Padrão",
+      "save": "Salvar configurações"
+    },
+    "members": {
+      "heading": "Equipe da clínica",
+      "help": "As pessoas convidadas aqui podem ver os pedidos desta clínica e editar o calendário depois de entrar com esse e-mail.",
+      "active": "Conectado",
+      "pending": "Convidado",
+      "remove": "Remover",
+      "removeConfirm": "Remover {email} desta clínica?",
+      "role": "Função",
+      "invite": "Convidar",
+      "invited": "{email} convidado"
+    }
+  },
+  "patientBooking": {
+    "heading": "Seu pedido de consulta",
+    "notFound": "Não encontramos este agendamento. Abra novamente o link do e-mail de confirmação.",
+    "reasonLabel": "Motivo (opcional, compartilhado com a clínica)",
+    "cancel": "Cancelar esta consulta",
+    "confirmCancel": "Cancelar esta consulta? A clínica será avisada e o horário ficará disponível para outros pacientes.",
+    "yesCancel": "Sim, cancelar",
+    "keep": "Manter",
+    "cancelled": "Esta consulta foi cancelada.",
+    "cancelFailed": "Não foi possível cancelar. Ela pode já ter começado ou mudado; o status mais recente está sendo exibido."
   }
 }

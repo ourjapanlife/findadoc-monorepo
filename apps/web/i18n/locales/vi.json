@@ -778,7 +778,6 @@
     "durationMinutes": "{n} phút"
   },
   "bookingDashboard": {
-    "readOnly": "Yêu cầu đặt lịch (chỉ xem)",
     "detailHeading": "Đặt lịch",
     "back": "Quay lại danh sách đặt lịch",
     "loadError": "Không tải được yêu cầu này.",
@@ -810,6 +809,27 @@
       "standard": "Thường",
       "identityDocument": "Giấy tờ / bảo hiểm",
       "medical": "Y tế"
+    },
+    "requestEyebrow": "Yêu cầu đặt lịch",
+    "emailStatus": "Email xác nhận",
+    "downloadFailed": "Không thể mở tệp đó.",
+    "actionFailed": "Không thể cập nhật lịch hẹn này. Trạng thái có thể đã thay đổi; đang hiển thị trạng thái mới nhất.",
+    "reasonLabel": "Ghi chú cho bệnh nhân (không bắt buộc, gửi kèm khi từ chối hoặc hủy)",
+    "reasonShown": "Ghi chú: {reason}",
+    "cancelledByPatient": "Bệnh nhân đã hủy",
+    "cancelledByClinic": "Phòng khám đã hủy",
+    "appointmentStatus": {
+      "requested": "Đang chờ",
+      "confirmed": "Đã xác nhận",
+      "declined": "Đã từ chối",
+      "cancelled": "Đã hủy",
+      "completed": "Đã hoàn thành"
+    },
+    "actions": {
+      "confirm": "Xác nhận",
+      "decline": "Từ chối",
+      "cancel": "Hủy lịch hẹn",
+      "complete": "Đánh dấu hoàn thành"
     }
   },
   "bookingAvailability": {
@@ -819,6 +839,67 @@
     "windowTitle": "Trống",
     "createFailed": "Không lưu được khung trống.",
     "deleteConfirm": "Xóa khung trống này?",
-    "deleteFailed": "Không xóa được khung trống."
+    "deleteFailed": "Không xóa được khung trống.",
+    "legend": "Chú thích lịch",
+    "patient": "Bệnh nhân",
+    "loadFailed": "Không thể tải lịch này.",
+    "appointmentHelp": "Nhấp vào lịch hẹn để mở yêu cầu."
+  },
+  "bookingForms": {
+    "standardIntake": "Yêu cầu khám thông thường",
+    "onlineConsultIntake": "Khám trực tuyến kèm thẻ bảo hiểm và ảnh"
+  },
+  "clinicDashboard": {
+    "heading": "Bảng điều khiển phòng khám",
+    "loading": "Đang tải…",
+    "loadError": "Không thể tải bảng điều khiển. Vui lòng thử lại.",
+    "signInHeading": "Đăng nhập vào bảng điều khiển phòng khám",
+    "signInBody": "Hãy dùng địa chỉ email đã nhận lời mời của phòng khám.",
+    "signIn": "Đăng nhập",
+    "noClinics": "Tài khoản này chưa được liên kết với phòng khám nào.",
+    "noClinicsHelp": "Hãy nhờ Find a Doc, Japan mời địa chỉ email bạn dùng để đăng nhập. Lời mời sẽ được liên kết ở lần đăng nhập tiếp theo.",
+    "noAccessHeading": "Bạn không có quyền truy cập phòng khám này",
+    "statusFilter": "Hiển thị",
+    "allStatuses": "Tất cả yêu cầu",
+    "saved": "Đã lưu",
+    "saveFailed": "Không thể lưu. Vui lòng thử lại.",
+    "tabs": {
+      "requests": "Yêu cầu",
+      "calendar": "Lịch",
+      "settings": "Cài đặt"
+    },
+    "roles": {
+      "owner": "Chủ sở hữu",
+      "staff": "Nhân viên"
+    },
+    "settings": {
+      "heading": "Cài đặt đặt lịch",
+      "forms": "Mẫu thông tin khám",
+      "formsHelp": "Bệnh nhân sẽ thấy mẫu mặc định trừ khi liên kết đặt lịch chỉ định một mẫu khác mà bạn cung cấp.",
+      "defaultForm": "Mặc định",
+      "save": "Lưu cài đặt"
+    },
+    "members": {
+      "heading": "Nhóm",
+      "help": "Người được mời ở đây có thể xem yêu cầu của phòng khám và chỉnh sửa lịch sau khi đăng nhập bằng email đó.",
+      "active": "Đã đăng nhập",
+      "pending": "Đã mời",
+      "remove": "Xóa",
+      "removeConfirm": "Xóa {email} khỏi phòng khám này?",
+      "role": "Vai trò",
+      "invite": "Mời",
+      "invited": "Đã mời {email}"
+    }
+  },
+  "patientBooking": {
+    "heading": "Yêu cầu đặt lịch của bạn",
+    "notFound": "Không tìm thấy lịch hẹn này. Hãy mở lại liên kết trong email xác nhận.",
+    "reasonLabel": "Lý do (không bắt buộc, sẽ chia sẻ với phòng khám)",
+    "cancel": "Hủy lịch hẹn này",
+    "confirmCancel": "Hủy lịch hẹn này? Phòng khám sẽ được thông báo và khung giờ này sẽ dành cho bệnh nhân khác.",
+    "yesCancel": "Có, hủy",
+    "keep": "Giữ lại",
+    "cancelled": "Lịch hẹn này đã bị hủy.",
+    "cancelFailed": "Không thể hủy. Lịch hẹn có thể đã bắt đầu hoặc đã thay đổi; đang hiển thị trạng thái mới nhất."
   }
 }

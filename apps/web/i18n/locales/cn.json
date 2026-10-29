@@ -778,7 +778,6 @@
     "durationMinutes": "{n} 分钟"
   },
   "bookingDashboard": {
-    "readOnly": "预约申请（只读）",
     "detailHeading": "预约",
     "back": "返回预约列表",
     "loadError": "无法加载此预约。",
@@ -810,6 +809,27 @@
       "standard": "标准",
       "identityDocument": "身份 / 保险",
       "medical": "医疗"
+    },
+    "requestEyebrow": "预约申请",
+    "emailStatus": "确认邮件",
+    "downloadFailed": "无法打开该文件。",
+    "actionFailed": "无法更新此预约。状态可能已变化，已显示最新状态。",
+    "reasonLabel": "给患者的备注（可选，拒绝或取消时发送）",
+    "reasonShown": "备注：{reason}",
+    "cancelledByPatient": "患者已取消",
+    "cancelledByClinic": "诊所已取消",
+    "appointmentStatus": {
+      "requested": "待确认",
+      "confirmed": "已确认",
+      "declined": "已拒绝",
+      "cancelled": "已取消",
+      "completed": "已完成"
+    },
+    "actions": {
+      "confirm": "确认",
+      "decline": "拒绝",
+      "cancel": "取消预约",
+      "complete": "标记为已完成"
     }
   },
   "bookingAvailability": {
@@ -819,6 +839,67 @@
     "windowTitle": "可预约",
     "createFailed": "无法保存该可预约时段。",
     "deleteConfirm": "删除此可预约时段？",
-    "deleteFailed": "无法删除该时段。"
+    "deleteFailed": "无法删除该时段。",
+    "legend": "日历图例",
+    "patient": "患者",
+    "loadFailed": "无法加载此日历。",
+    "appointmentHelp": "点击预约可打开申请。"
+  },
+  "bookingForms": {
+    "standardIntake": "普通就诊申请",
+    "onlineConsultIntake": "在线问诊（含保险卡和照片）"
+  },
+  "clinicDashboard": {
+    "heading": "诊所管理面板",
+    "loading": "加载中…",
+    "loadError": "无法加载管理面板，请重试。",
+    "signInHeading": "登录诊所管理面板",
+    "signInBody": "请使用收到诊所邀请的邮箱登录。",
+    "signIn": "登录",
+    "noClinics": "此账户尚未关联诊所。",
+    "noClinicsHelp": "请联系 Find a Doc, Japan 邀请您登录所用的邮箱。下次登录时邀请即会生效。",
+    "noAccessHeading": "您无权访问此诊所",
+    "statusFilter": "显示",
+    "allStatuses": "全部申请",
+    "saved": "已保存",
+    "saveFailed": "无法保存，请重试。",
+    "tabs": {
+      "requests": "申请",
+      "calendar": "日历",
+      "settings": "设置"
+    },
+    "roles": {
+      "owner": "所有者",
+      "staff": "员工"
+    },
+    "settings": {
+      "heading": "预约设置",
+      "forms": "问诊表",
+      "formsHelp": "除非预约链接指定了您提供的其他表单，否则患者看到的是默认表单。",
+      "defaultForm": "默认",
+      "save": "保存设置"
+    },
+    "members": {
+      "heading": "团队",
+      "help": "受邀者使用该邮箱登录后，可以查看此诊所的申请并编辑其日历。",
+      "active": "已登录",
+      "pending": "已邀请",
+      "remove": "移除",
+      "removeConfirm": "要将 {email} 从此诊所移除吗？",
+      "role": "角色",
+      "invite": "邀请",
+      "invited": "已邀请 {email}"
+    }
+  },
+  "patientBooking": {
+    "heading": "您的预约申请",
+    "notFound": "找不到此预约。请重新打开确认邮件中的链接。",
+    "reasonLabel": "原因（可选，将告知诊所）",
+    "cancel": "取消此预约",
+    "confirmCancel": "要取消此预约吗？诊所会收到通知，该时间将开放给其他患者。",
+    "yesCancel": "是，取消",
+    "keep": "保留",
+    "cancelled": "此预约已取消。",
+    "cancelFailed": "无法取消。预约可能已开始或已变化，已显示最新状态。"
   }
 }

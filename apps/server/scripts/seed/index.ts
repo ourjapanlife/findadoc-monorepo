@@ -254,10 +254,20 @@ async function runSeed() {
 
         await client.query(
             `INSERT INTO booking_settings (
-                facility_id, clinic_site_id, form_definition_id, allowed_durations
-            ) VALUES ($1, $2, 'showcase-intake-v1', ARRAY[15, 30, 45, 60])`,
+                facility_id, clinic_site_id, form_definition_ids, allowed_durations
+            ) VALUES ($1, $2, ARRAY['showcase-intake-v1', 'findadoc-intake-v1'], ARRAY[15, 30, 45, 60])`,
             [SHOWCASE_FACILITY_ID, SHOWCASE_CLINIC_SITE_ID]
         )
+
+        // The showcase Book button needs open times. Weekdays 09:00-12:00 and 13:00-17:00 JST.
+        for (const window of showcaseAvailabilityWindows(new Date(), 14)) {
+            await client.query(
+                `INSERT INTO clinic_availability_windows (
+                    facility_id, clinic_site_id, starts_at, ends_at, created_by
+                ) VALUES ($1, $2, $3, $4, 'seed')`,
+                [SHOWCASE_FACILITY_ID, SHOWCASE_CLINIC_SITE_ID, window.startsAt, window.endsAt]
+            )
+        }
 
         await client.query('COMMIT')
 
@@ -277,6 +287,32 @@ async function runSeed() {
     } finally {
         await client.end()
     }
+}
+
+const JST_OFFSET_HOURS = 9
+const SHOWCASE_HOURS_JST = [[9, 12], [13, 17]] as const
+
+/** Weekday clinic hours (JST) from tomorrow for `days` days, as ISO UTC ranges. */
+function showcaseAvailabilityWindows(from: Date, days: number): Array<{ startsAt: string, endsAt: string }> {
+    const windows: Array<{ startsAt: string, endsAt: string }> = []
+    for (let offset = 1; offset <= days; offset++) {
+        const jstDay = new Date(from.getTime() + JST_OFFSET_HOURS * 60 * 60 * 1000)
+        jstDay.setUTCDate(jstDay.getUTCDate() + offset)
+        const weekday = jstDay.getUTCDay()
+        if (weekday === 0 || weekday === 6) {
+            continue
+        }
+        for (const [startHour, endHour] of SHOWCASE_HOURS_JST) {
+            const at = (hour: number) => new Date(Date.UTC(
+                jstDay.getUTCFullYear(),
+                jstDay.getUTCMonth(),
+                jstDay.getUTCDate(),
+                hour - JST_OFFSET_HOURS
+            )).toISOString()
+            windows.push({ startsAt: at(startHour), endsAt: at(endHour) })
+        }
+    }
+    return windows
 }
 
 async function lookupCityId(

@@ -1,5 +1,10 @@
 import { gql } from 'graphql-request'
-import type { BookingForm, BookingSubmissionResult, BookingUploadUrl } from '@findadoc/graphql'
+import type {
+    BookingForm,
+    BookingSubmissionResult,
+    BookingUploadUrl,
+    PatientBookingView
+} from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
 
 const BOOKING_FORM_FIELDS = `
@@ -91,6 +96,7 @@ export async function fetchBookingForm(clinicId: string, formId?: string): Promi
 
 export async function requestBookingUploadUrl(input: {
     clinicSiteId: string
+    formDefinitionId: string
     fieldId: string
     contentType: string
     fileName: string
@@ -169,4 +175,57 @@ export async function putBookingFile(
         body: file
     })
     return response.ok
+}
+
+const PATIENT_BOOKING_FIELDS = `
+  clinicName
+  startsAt
+  endsAt
+  status
+  canCancel
+`
+
+const patientBookingQuery = gql`
+  query PatientBooking($token: String!) {
+    patientBooking(token: $token) {
+      ${PATIENT_BOOKING_FIELDS}
+    }
+  }
+`
+
+const cancelBookingByTokenMutation = gql`
+  mutation CancelBookingByToken($input: CancelBookingByTokenInput!) {
+    cancelBookingByToken(input: $input) {
+      ${PATIENT_BOOKING_FIELDS}
+    }
+  }
+`
+
+/** The patient's own booking from the private link. Null when the token is unknown or the request failed. */
+export async function fetchPatientBooking(token: string): Promise<PatientBookingView | null> {
+    initializeGqlClient()
+    const response = await graphQLClientRequestWithRetry<{ patientBooking: PatientBookingView | null }>(
+        gqlClient.request.bind(gqlClient),
+        patientBookingQuery,
+        { token },
+        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
+    )
+    if (response.hasErrors) {
+        return null
+    }
+    return response.data.patientBooking ?? null
+}
+
+export async function cancelPatientBooking(token: string, reason: string): Promise<PatientBookingView | null> {
+    initializeGqlClient()
+    const response = await graphQLClientRequestWithRetry<{ cancelBookingByToken: PatientBookingView }>(
+        gqlClient.request.bind(gqlClient),
+        cancelBookingByTokenMutation,
+        { input: { token, reason: reason.trim() || null } },
+        { skipAuth: true, retryAmount: 0, abortAfterMs: 15000 }
+    )
+    if (response.hasErrors) {
+        return null
+    }
+    return response.data.cancelBookingByToken
 }

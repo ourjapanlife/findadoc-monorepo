@@ -778,7 +778,6 @@
     "durationMinutes": "{n} minuto"
   },
   "bookingDashboard": {
-    "readOnly": "Booking submission (basahin lang)",
     "detailHeading": "Pagpapareserba",
     "back": "Bumalik sa mga booking",
     "loadError": "Hindi ma-load ang booking na ito.",
@@ -810,6 +809,27 @@
       "standard": "Karaniwan",
       "identityDocument": "Pagkakakilanlan / insurance",
       "medical": "Pangmedikal"
+    },
+    "requestEyebrow": "Kahilingan sa appointment",
+    "emailStatus": "Email ng kumpirmasyon",
+    "downloadFailed": "Hindi mabuksan ang file na iyon.",
+    "actionFailed": "Hindi ma-update ang appointment na ito. Maaaring nagbago ito; ipinapakita ang pinakabagong katayuan.",
+    "reasonLabel": "Paalala para sa pasyente (opsyonal, ipinapadala kapag tinanggihan o kinansela)",
+    "reasonShown": "Paalala: {reason}",
+    "cancelledByPatient": "Kinansela ng pasyente",
+    "cancelledByClinic": "Kinansela ng klinika",
+    "appointmentStatus": {
+      "requested": "Hiniling",
+      "confirmed": "Kumpirmado",
+      "declined": "Tinanggihan",
+      "cancelled": "Kinansela",
+      "completed": "Tapos na"
+    },
+    "actions": {
+      "confirm": "Kumpirmahin",
+      "decline": "Tanggihan",
+      "cancel": "Kanselahin ang appointment",
+      "complete": "Markahang tapos na"
     }
   },
   "bookingAvailability": {
@@ -819,6 +839,67 @@
     "windowTitle": "Bukas",
     "createFailed": "Hindi ma-save ang availability window.",
     "deleteConfirm": "Tanggalin ang availability window na ito?",
-    "deleteFailed": "Hindi matanggal ang window."
+    "deleteFailed": "Hindi matanggal ang window.",
+    "legend": "Gabay sa kalendaryo",
+    "patient": "Pasyente",
+    "loadFailed": "Hindi ma-load ang kalendaryong ito.",
+    "appointmentHelp": "I-click ang appointment para buksan ang kahilingan."
+  },
+  "bookingForms": {
+    "standardIntake": "Karaniwang kahilingan sa pagpapatingin",
+    "onlineConsultIntake": "Online na konsultasyon na may insurance card at larawan"
+  },
+  "clinicDashboard": {
+    "heading": "Dashboard ng klinika",
+    "loading": "Naglo-load…",
+    "loadError": "Hindi ma-load ang dashboard. Subukang muli.",
+    "signInHeading": "Mag-sign in sa dashboard ng iyong klinika",
+    "signInBody": "Gamitin ang email address kung saan ipinadala ang imbitasyon ng iyong klinika.",
+    "signIn": "Mag-sign in",
+    "noClinics": "Hindi pa naka-link ang account na ito sa isang klinika.",
+    "noClinicsHelp": "Hilingin sa Find a Doc, Japan na imbitahan ang email address na ginagamit mo sa pag-sign in. Mali-link ang imbitasyon sa susunod mong pag-sign in.",
+    "noAccessHeading": "Wala kang access sa klinikang ito",
+    "statusFilter": "Ipakita",
+    "allStatuses": "Lahat ng kahilingan",
+    "saved": "Na-save",
+    "saveFailed": "Hindi ma-save. Subukang muli.",
+    "tabs": {
+      "requests": "Mga kahilingan",
+      "calendar": "Kalendaryo",
+      "settings": "Mga setting"
+    },
+    "roles": {
+      "owner": "May-ari",
+      "staff": "Kawani"
+    },
+    "settings": {
+      "heading": "Mga setting ng booking",
+      "forms": "Mga intake form",
+      "formsHelp": "Makikita ng pasyente ang default na form maliban kung ibang form na inaalok mo ang nakasaad sa Book link.",
+      "defaultForm": "Default na form",
+      "save": "I-save ang mga setting"
+    },
+    "members": {
+      "heading": "Koponan",
+      "help": "Ang mga inimbitahan dito ay makakakita ng mga kahilingan ng klinika at makakapag-edit ng kalendaryo nito pagkatapos mag-sign in gamit ang email na iyon.",
+      "active": "Naka-sign in",
+      "pending": "Inimbitahan",
+      "remove": "Alisin",
+      "removeConfirm": "Alisin si {email} sa klinikang ito?",
+      "role": "Tungkulin",
+      "invite": "Imbitahan",
+      "invited": "Inimbitahan si {email}"
+    }
+  },
+  "patientBooking": {
+    "heading": "Ang iyong kahilingan sa appointment",
+    "notFound": "Hindi namin mahanap ang booking na ito. Buksan muli ang link mula sa iyong email ng kumpirmasyon.",
+    "reasonLabel": "Dahilan (opsyonal, ibabahagi sa klinika)",
+    "cancel": "Kanselahin ang appointment na ito",
+    "confirmCancel": "Kanselahin ang appointment na ito? Aabisuhan ang klinika, at iaalok ang oras sa ibang pasyente.",
+    "yesCancel": "Oo, kanselahin",
+    "keep": "Panatilihin",
+    "cancelled": "Kinansela na ang appointment na ito.",
+    "cancelFailed": "Hindi makansela. Maaaring nagsimula na o nagbago ito; ipinapakita ang pinakabagong katayuan."
   }
 }

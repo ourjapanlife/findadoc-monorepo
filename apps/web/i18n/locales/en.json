@@ -778,7 +778,6 @@
     "durationMinutes": "{n} minutes"
   },
   "bookingDashboard": {
-    "readOnly": "Read-only booking submission",
     "detailHeading": "Booking",
     "back": "Back to bookings",
     "loadError": "Could not load this booking.",
@@ -810,6 +809,27 @@
       "standard": "Standard",
       "identityDocument": "Identity / insurance",
       "medical": "Medical"
+    },
+    "requestEyebrow": "Appointment request",
+    "emailStatus": "Confirmation email",
+    "downloadFailed": "Could not open that file.",
+    "actionFailed": "Could not update this appointment. It may have changed; the latest status is shown.",
+    "reasonLabel": "Note for the patient (optional, sent with a decline or cancel)",
+    "reasonShown": "Note: {reason}",
+    "cancelledByPatient": "Cancelled by the patient",
+    "cancelledByClinic": "Cancelled by the clinic",
+    "appointmentStatus": {
+      "requested": "Requested",
+      "confirmed": "Confirmed",
+      "declined": "Declined",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "actions": {
+      "confirm": "Confirm",
+      "decline": "Decline",
+      "cancel": "Cancel appointment",
+      "complete": "Mark completed"
     }
   },
   "bookingAvailability": {
@@ -819,6 +839,67 @@
     "windowTitle": "Available",
     "createFailed": "Could not save that availability window.",
     "deleteConfirm": "Remove this availability window?",
-    "deleteFailed": "Could not remove that window."
+    "deleteFailed": "Could not remove that window.",
+    "legend": "Calendar key",
+    "patient": "Patient",
+    "loadFailed": "Could not load this calendar.",
+    "appointmentHelp": "Click an appointment to open the request."
+  },
+  "bookingForms": {
+    "standardIntake": "Standard visit request",
+    "onlineConsultIntake": "Online consultation with insurance card and photo"
+  },
+  "clinicDashboard": {
+    "heading": "Clinic dashboard",
+    "loading": "Loading…",
+    "loadError": "Could not load the dashboard. Try again.",
+    "signInHeading": "Sign in to your clinic dashboard",
+    "signInBody": "Use the email address your clinic invitation was sent to.",
+    "signIn": "Sign in",
+    "noClinics": "This account is not linked to a clinic yet.",
+    "noClinicsHelp": "Ask Find a Doc, Japan to invite the email address you sign in with. The invitation links on your next sign-in.",
+    "noAccessHeading": "You do not have access to this clinic",
+    "statusFilter": "Show",
+    "allStatuses": "All requests",
+    "saved": "Saved",
+    "saveFailed": "Could not save. Try again.",
+    "tabs": {
+      "requests": "Requests",
+      "calendar": "Calendar",
+      "settings": "Settings"
+    },
+    "roles": {
+      "owner": "Owner",
+      "staff": "Staff"
+    },
+    "settings": {
+      "heading": "Booking settings",
+      "forms": "Intake forms",
+      "formsHelp": "Patients see the default form unless the Book link names another form you offer.",
+      "defaultForm": "Default",
+      "save": "Save settings"
+    },
+    "members": {
+      "heading": "Team",
+      "help": "People invited here can see this clinic's requests and edit its calendar after they sign in with that email.",
+      "active": "Signed in",
+      "pending": "Invited",
+      "remove": "Remove",
+      "removeConfirm": "Remove {email} from this clinic?",
+      "role": "Role",
+      "invite": "Invite",
+      "invited": "Invited {email}"
+    }
+  },
+  "patientBooking": {
+    "heading": "Your appointment request",
+    "notFound": "We could not find this booking. Open the link from your confirmation email again.",
+    "reasonLabel": "Reason (optional, shared with the clinic)",
+    "cancel": "Cancel this appointment",
+    "confirmCancel": "Cancel this appointment? The clinic will be told, and the time will be offered to other patients.",
+    "yesCancel": "Yes, cancel",
+    "keep": "Keep it",
+    "cancelled": "This appointment is cancelled.",
+    "cancelFailed": "Could not cancel. It may have already started or changed. The latest status is shown."
   }
 }

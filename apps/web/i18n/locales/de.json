@@ -778,7 +778,6 @@
     "durationMinutes": "{n} Minuten"
   },
   "bookingDashboard": {
-    "readOnly": "Buchungsanfrage (nur Lesen)",
     "detailHeading": "Buchung",
     "back": "Zurück zu Buchungen",
     "loadError": "Diese Buchung konnte nicht geladen werden.",
@@ -810,6 +809,27 @@
       "standard": "Allgemein",
       "identityDocument": "Identität / Versicherung",
       "medical": "Medizinisch"
+    },
+    "requestEyebrow": "Terminanfrage",
+    "emailStatus": "Bestätigungs-E-Mail",
+    "downloadFailed": "Die Datei konnte nicht geöffnet werden.",
+    "actionFailed": "Der Termin konnte nicht aktualisiert werden. Er hat sich möglicherweise geändert; der aktuelle Stand wird angezeigt.",
+    "reasonLabel": "Hinweis für die Patientin oder den Patienten (optional, wird bei Absage oder Stornierung gesendet)",
+    "reasonShown": "Hinweis: {reason}",
+    "cancelledByPatient": "Von der Patientin oder dem Patienten storniert",
+    "cancelledByClinic": "Von der Praxis storniert",
+    "appointmentStatus": {
+      "requested": "Angefragt",
+      "confirmed": "Bestätigt",
+      "declined": "Abgelehnt",
+      "cancelled": "Storniert",
+      "completed": "Abgeschlossen"
+    },
+    "actions": {
+      "confirm": "Bestätigen",
+      "decline": "Ablehnen",
+      "cancel": "Termin stornieren",
+      "complete": "Als abgeschlossen markieren"
     }
   },
   "bookingAvailability": {
@@ -819,6 +839,67 @@
     "windowTitle": "Verfügbar",
     "createFailed": "Verfügbarkeit konnte nicht gespeichert werden.",
     "deleteConfirm": "Diese Verfügbarkeit entfernen?",
-    "deleteFailed": "Verfügbarkeit konnte nicht entfernt werden."
+    "deleteFailed": "Verfügbarkeit konnte nicht entfernt werden.",
+    "legend": "Kalenderlegende",
+    "patient": "Patient/in",
+    "loadFailed": "Der Kalender konnte nicht geladen werden.",
+    "appointmentHelp": "Klicken Sie auf einen Termin, um die Anfrage zu öffnen."
+  },
+  "bookingForms": {
+    "standardIntake": "Normale Terminanfrage",
+    "onlineConsultIntake": "Online-Sprechstunde mit Versicherungskarte und Foto"
+  },
+  "clinicDashboard": {
+    "heading": "Praxis-Übersicht",
+    "loading": "Wird geladen…",
+    "loadError": "Die Übersicht konnte nicht geladen werden. Bitte erneut versuchen.",
+    "signInHeading": "Bei der Praxis-Übersicht anmelden",
+    "signInBody": "Verwenden Sie die E-Mail-Adresse, an die die Einladung Ihrer Praxis ging.",
+    "signIn": "Anmelden",
+    "noClinics": "Dieses Konto ist noch mit keiner Praxis verknüpft.",
+    "noClinicsHelp": "Bitten Sie Find a Doc, Japan, die E-Mail-Adresse einzuladen, mit der Sie sich anmelden. Die Einladung wird bei der nächsten Anmeldung verknüpft.",
+    "noAccessHeading": "Sie haben keinen Zugriff auf diese Praxis",
+    "statusFilter": "Anzeigen",
+    "allStatuses": "Alle Anfragen",
+    "saved": "Gespeichert",
+    "saveFailed": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "tabs": {
+      "requests": "Anfragen",
+      "calendar": "Kalender",
+      "settings": "Einstellungen"
+    },
+    "roles": {
+      "owner": "Inhaber/in",
+      "staff": "Mitarbeitende"
+    },
+    "settings": {
+      "heading": "Buchungseinstellungen",
+      "forms": "Anamnesebögen",
+      "formsHelp": "Patientinnen und Patienten sehen den Standardbogen, außer der Buchungslink nennt einen anderen Bogen, den Sie anbieten.",
+      "defaultForm": "Standard",
+      "save": "Einstellungen speichern"
+    },
+    "members": {
+      "heading": "Praxisteam",
+      "help": "Hier eingeladene Personen sehen nach der Anmeldung mit dieser E-Mail die Anfragen der Praxis und können ihren Kalender bearbeiten.",
+      "active": "Angemeldet",
+      "pending": "Eingeladen",
+      "remove": "Entfernen",
+      "removeConfirm": "{email} aus dieser Praxis entfernen?",
+      "role": "Rolle",
+      "invite": "Einladen",
+      "invited": "{email} eingeladen"
+    }
+  },
+  "patientBooking": {
+    "heading": "Ihre Terminanfrage",
+    "notFound": "Diese Buchung wurde nicht gefunden. Öffnen Sie den Link aus Ihrer Bestätigungs-E-Mail erneut.",
+    "reasonLabel": "Grund (optional, wird der Praxis mitgeteilt)",
+    "cancel": "Diesen Termin stornieren",
+    "confirmCancel": "Diesen Termin stornieren? Die Praxis wird informiert und die Zeit anderen Patientinnen und Patienten angeboten.",
+    "yesCancel": "Ja, stornieren",
+    "keep": "Behalten",
+    "cancelled": "Dieser Termin ist storniert.",
+    "cancelFailed": "Stornierung nicht möglich. Der Termin hat vielleicht schon begonnen oder sich geändert; der aktuelle Stand wird angezeigt."
   }
 }

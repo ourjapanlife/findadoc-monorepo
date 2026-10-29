@@ -6,14 +6,14 @@
         <div class="flex flex-col gap-2 landscape:flex-row landscape:items-center landscape:justify-between">
             <div>
                 <p class="text-sm text-primary-text-muted">
-                    {{ t('bookingDashboard.readOnly') }}
+                    {{ t('bookingDashboard.requestEyebrow') }}
                 </p>
                 <h1 class="text-2xl font-semibold text-primary-text">
-                    {{ detail?.clinicName ?? t('bookingDashboard.detailHeading') }}
+                    {{ patientName || detail?.clinicName || t('bookingDashboard.detailHeading') }}
                 </h1>
             </div>
             <NuxtLink
-                :to="{ path: '/my-page', query: { view: 'bookings' } }"
+                :to="props.backTo ?? { path: '/my-page', query: { view: 'bookings' } }"
                 class="btn btn-secondary"
                 data-testid="booking-detail-back"
             >
@@ -30,12 +30,79 @@
         </p>
 
         <template v-else-if="detail">
+            <section
+                v-if="detail.appointmentStatus"
+                class="flex flex-col gap-3 rounded-lg border border-accent-bg bg-secondary-bg p-4"
+                data-testid="booking-appointment-status"
+            >
+                <div class="flex flex-wrap items-baseline gap-2">
+                    <span class="text-sm text-primary-text-muted">{{ t('bookingDashboard.columns.status') }}</span>
+                    <span class="font-semibold">
+                        {{ t(appointmentStatusLabelKey(detail.appointmentStatus)) }}
+                    </span>
+                    <span
+                        v-if="detail.cancelledBy"
+                        class="text-sm text-primary-text-muted"
+                    >
+                        · {{ detail.cancelledBy === BookingCancelledBy.Patient
+                            ? t('bookingDashboard.cancelledByPatient')
+                            : t('bookingDashboard.cancelledByClinic') }}
+                    </span>
+                </div>
+                <p
+                    v-if="detail.statusReason"
+                    class="whitespace-pre-wrap break-words text-sm"
+                >
+                    {{ t('bookingDashboard.reasonShown', { reason: detail.statusReason }) }}
+                </p>
+                <template v-if="actions.length > 0">
+                    <label class="flex flex-col gap-1 text-sm">
+                        <span>{{ t('bookingDashboard.reasonLabel') }}</span>
+                        <textarea
+                            v-model="reason"
+                            class="field"
+                            rows="2"
+                            maxlength="500"
+                            data-testid="booking-status-reason"
+                        />
+                    </label>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            v-for="next in actions"
+                            :key="next"
+                            type="button"
+                            :class="next === BookingAppointmentStatus.Confirmed ? 'btn btn-primary' : 'btn btn-secondary'"
+                            :disabled="updating"
+                            :data-testid="`booking-action-${next.toLowerCase()}`"
+                            @click="changeStatus(next)"
+                        >
+                            {{ t(staffActionLabelKey(next)) }}
+                        </button>
+                    </div>
+                </template>
+                <p
+                    v-if="actionError"
+                    class="field-error"
+                    role="alert"
+                >
+                    {{ actionError }}
+                </p>
+            </section>
+
             <dl class="grid gap-3 sm:grid-cols-2">
                 <div>
                     <dt class="text-sm text-primary-text-muted">
-                        {{ t('bookingDashboard.columns.status') }}
+                        {{ t('bookingDashboard.columns.clinic') }}
                     </dt>
                     <dd class="font-medium">
+                        {{ detail.clinicName }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-primary-text-muted">
+                        {{ t('bookingDashboard.emailStatus') }}
+                    </dt>
+                    <dd>
                         {{ statusLabel(detail.status) }}
                     </dd>
                 </div>
@@ -74,7 +141,7 @@
                         class="rounded-lg border border-accent-bg bg-secondary-bg p-3"
                     >
                         <dt class="text-sm text-primary-text-muted">
-                            {{ answer.fieldId }}
+                            {{ answerLabel(answer.fieldId) }}
                         </dt>
                         <dd class="whitespace-pre-wrap break-words">
                             {{ answer.value || '—' }}
@@ -89,6 +156,13 @@
                 </h2>
                 <p class="text-sm text-primary-text-muted">
                     {{ t('bookingDashboard.uploadsRetentionNote') }}
+                </p>
+                <p
+                    v-if="downloadError"
+                    class="field-error"
+                    role="alert"
+                >
+                    {{ t('bookingDashboard.downloadFailed') }}
                 </p>
                 <ul class="flex flex-col gap-2">
                     <li
@@ -134,26 +208,83 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { RouteLocationRaw } from 'vue-router'
 import {
+    BookingAppointmentStatus,
+    BookingCancelledBy,
     BookingFieldSensitivity,
     BookingSubmissionStatus,
     type BookingSubmissionDetail as Detail
 } from '@findadoc/graphql'
 import { formatToReadableDate } from '~/utils/dateUtils'
 import {
+    actionTakesReason,
+    appointmentStatusLabelKey,
+    staffActionLabelKey,
+    staffActionsFor
+} from '~/utils/booking/appointmentStatus'
+import {
     fetchBookingSubmissionDetail,
-    requestBookingUploadDownloadUrl
+    requestBookingUploadDownloadUrl,
+    updateAppointmentStatus
 } from '~/utils/booking/staffQuery'
 
 const props = defineProps<{
     bookingId: string
+    /** Where Back goes. Moderation's bookings list when unset. */
+    backTo?: RouteLocationRaw
 }>()
 
-const { t } = useI18n()
+const emit = defineEmits<{
+    changed: []
+}>()
+
+const { t, te } = useI18n()
 const detail = ref<Detail | null>(null)
 const loadError = ref(false)
+const downloadError = ref(false)
+const reason = ref('')
+const updating = ref(false)
+const actionError = ref('')
+
+const actions = computed(() => staffActionsFor(detail.value?.appointmentStatus))
+const patientName = computed(() =>
+    detail.value?.answers.find(answer => answer.fieldId === 'fullName')?.value ?? '')
+
+function answerLabel(fieldId: string): string {
+    const key = `bookingPage.fields.${fieldId}`
+    return te(key) ? t(key) : fieldId
+}
+
+async function load(): Promise<void> {
+    detail.value = await fetchBookingSubmissionDetail(props.bookingId)
+    loadError.value = detail.value === null
+}
+
+async function changeStatus(next: BookingAppointmentStatus): Promise<void> {
+    const appointmentId = detail.value?.appointmentId
+    if (appointmentId === null || appointmentId === undefined) {
+        return
+    }
+    actionError.value = ''
+    updating.value = true
+    const updated = await updateAppointmentStatus(
+        appointmentId,
+        next,
+        actionTakesReason(next) ? reason.value : ''
+    )
+    updating.value = false
+    // Reload either way: a failure is usually someone else changing it first.
+    await load()
+    if (updated === null) {
+        actionError.value = t('bookingDashboard.actionFailed')
+        return
+    }
+    reason.value = ''
+    emit('changed')
+}
 
 function statusLabel(status: BookingSubmissionStatus): string {
     if (status === BookingSubmissionStatus.Notified) {
@@ -176,16 +307,15 @@ function sensitivityLabel(sensitivity: BookingFieldSensitivity): string {
 }
 
 async function downloadUpload(uploadId: string): Promise<void> {
+    downloadError.value = false
     const signed = await requestBookingUploadDownloadUrl(uploadId)
     if (signed === null) {
-        loadError.value = true
+        downloadError.value = true
         return
     }
     window.open(signed.downloadUrl, '_blank', 'noopener,noreferrer')
 }
 
-onMounted(async () => {
-    detail.value = await fetchBookingSubmissionDetail(props.bookingId)
-    loadError.value = detail.value === null
-})
+onMounted(load)
+watch(() => props.bookingId, load)
 </script>

@@ -778,7 +778,6 @@
     "durationMinutes": "{n} minuti"
   },
   "bookingDashboard": {
-    "readOnly": "Richiesta di prenotazione (sola lettura)",
     "detailHeading": "Prenotazione",
     "back": "Torna alle prenotazioni",
     "loadError": "Impossibile caricare questa prenotazione.",
@@ -810,6 +809,27 @@
       "standard": "Generale",
       "identityDocument": "Identità / assicurazione",
       "medical": "Medico"
+    },
+    "requestEyebrow": "Richiesta di appuntamento",
+    "emailStatus": "E-mail di conferma",
+    "downloadFailed": "Impossibile aprire il file.",
+    "actionFailed": "Impossibile aggiornare l'appuntamento. Potrebbe essere cambiato; viene mostrato lo stato più recente.",
+    "reasonLabel": "Nota per il paziente (facoltativa, inviata in caso di rifiuto o annullamento)",
+    "reasonShown": "Nota: {reason}",
+    "cancelledByPatient": "Annullato dal paziente",
+    "cancelledByClinic": "Annullato dalla clinica",
+    "appointmentStatus": {
+      "requested": "Richiesto",
+      "confirmed": "Confermato",
+      "declined": "Rifiutato",
+      "cancelled": "Annullato",
+      "completed": "Completato"
+    },
+    "actions": {
+      "confirm": "Conferma",
+      "decline": "Rifiuta",
+      "cancel": "Annulla appuntamento",
+      "complete": "Segna come completato"
     }
   },
   "bookingAvailability": {
@@ -819,6 +839,67 @@
     "windowTitle": "Disponibile",
     "createFailed": "Impossibile salvare la disponibilità.",
     "deleteConfirm": "Rimuovere questa disponibilità?",
-    "deleteFailed": "Impossibile rimuovere la disponibilità."
+    "deleteFailed": "Impossibile rimuovere la disponibilità.",
+    "legend": "Legenda del calendario",
+    "patient": "Paziente",
+    "loadFailed": "Impossibile caricare il calendario.",
+    "appointmentHelp": "Fai clic su un appuntamento per aprire la richiesta."
+  },
+  "bookingForms": {
+    "standardIntake": "Richiesta di visita standard",
+    "onlineConsultIntake": "Consulto online con tessera assicurativa e foto"
+  },
+  "clinicDashboard": {
+    "heading": "Pannello della clinica",
+    "loading": "Caricamento…",
+    "loadError": "Impossibile caricare il pannello. Riprova.",
+    "signInHeading": "Accedi al pannello della tua clinica",
+    "signInBody": "Usa l'indirizzo e-mail a cui è arrivato l'invito della clinica.",
+    "signIn": "Accedi",
+    "noClinics": "Questo account non è ancora collegato a una clinica.",
+    "noClinicsHelp": "Chiedi a Find a Doc, Japan di invitare l'indirizzo e-mail con cui accedi. L'invito verrà collegato al prossimo accesso.",
+    "noAccessHeading": "Non hai accesso a questa clinica",
+    "statusFilter": "Mostra",
+    "allStatuses": "Tutte le richieste",
+    "saved": "Salvato",
+    "saveFailed": "Impossibile salvare. Riprova.",
+    "tabs": {
+      "requests": "Richieste",
+      "calendar": "Calendario",
+      "settings": "Impostazioni"
+    },
+    "roles": {
+      "owner": "Titolare",
+      "staff": "Personale"
+    },
+    "settings": {
+      "heading": "Impostazioni di prenotazione",
+      "forms": "Moduli di accettazione",
+      "formsHelp": "I pazienti vedono il modulo predefinito, a meno che il link di prenotazione indichi un altro modulo che offri.",
+      "defaultForm": "Predefinito",
+      "save": "Salva impostazioni"
+    },
+    "members": {
+      "heading": "Squadra",
+      "help": "Le persone invitate qui possono vedere le richieste della clinica e modificarne il calendario dopo aver effettuato l'accesso con quell'e-mail.",
+      "active": "Accesso effettuato",
+      "pending": "Invitato",
+      "remove": "Rimuovi",
+      "removeConfirm": "Rimuovere {email} da questa clinica?",
+      "role": "Ruolo",
+      "invite": "Invita",
+      "invited": "{email} invitato"
+    }
+  },
+  "patientBooking": {
+    "heading": "La tua richiesta di appuntamento",
+    "notFound": "Non abbiamo trovato questa prenotazione. Riapri il link dell'e-mail di conferma.",
+    "reasonLabel": "Motivo (facoltativo, condiviso con la clinica)",
+    "cancel": "Annulla questo appuntamento",
+    "confirmCancel": "Annullare questo appuntamento? La clinica verrà avvisata e l'orario sarà offerto ad altri pazienti.",
+    "yesCancel": "Sì, annulla",
+    "keep": "Mantieni",
+    "cancelled": "Questo appuntamento è annullato.",
+    "cancelFailed": "Impossibile annullare. Potrebbe essere già iniziato o cambiato; viene mostrato lo stato più recente."
   }
 }

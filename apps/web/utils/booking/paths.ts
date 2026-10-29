@@ -50,6 +50,11 @@ export function findadocBookUrl(
     return `${origin}${prefix}/book/${clinicId}${search}`
 }
 
+/** Absolute clinic dashboard URL on the Find a Doc site. Sign-in only works on that origin. */
+export function findadocClinicDashboardUrl(facilityId: string, requestHost?: string | null): string {
+    return `${findadocOrigin(requestHost)}/clinic-dashboard/${facilityId}`
+}
+
 export function bookingQueryFromRoute(query: Record<string, unknown>): BookingQuery {
     return parseBookingQuery(query)
 }

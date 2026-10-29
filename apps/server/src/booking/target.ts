@@ -1,6 +1,6 @@
 import { db } from '../kyselyClient.js'
 import { clinicThemeFromRow } from '../services/clinicSiteService.js'
-import { DEFAULT_BOOKING_FORM_ID } from './formDefinitions.js'
+import { DEFAULT_BOOKING_FORM_ID, parseFormDefinitionIds } from './formDefinitions.js'
 import { DEFAULT_ALLOWED_DURATIONS, parseAllowedDurations } from './schedule.js'
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
@@ -13,39 +13,40 @@ export type BookingTarget = {
     clinicName: string
     themePrimary: string | null
     allowedDurations: number[]
-    formDefinitionId: string
+    /** Forms the clinic offers. The first is the default. */
+    formDefinitionIds: string[]
 }
 
 function isUuid(value: string): boolean {
     return UUID_PATTERN.test(value)
 }
 
-async function settingsForFacility(facilityId: string | null): Promise<{
+export async function settingsForFacility(facilityId: string | null): Promise<{
     allowedDurations: number[]
-    formDefinitionId: string
+    formDefinitionIds: string[]
 }> {
     if (facilityId === null) {
         return {
             allowedDurations: [...DEFAULT_ALLOWED_DURATIONS],
-            formDefinitionId: DEFAULT_BOOKING_FORM_ID
+            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
         }
     }
 
     const row = await db.selectFrom('booking_settings')
-        .select(['form_definition_id', 'allowed_durations'])
+        .select(['form_definition_ids', 'allowed_durations'])
         .where('facility_id', '=', facilityId)
         .executeTakeFirst()
 
     if (row === undefined) {
         return {
             allowedDurations: [...DEFAULT_ALLOWED_DURATIONS],
-            formDefinitionId: DEFAULT_BOOKING_FORM_ID
+            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
         }
     }
 
     return {
         allowedDurations: parseAllowedDurations(row.allowed_durations),
-        formDefinitionId: row.form_definition_id
+        formDefinitionIds: parseFormDefinitionIds(row.form_definition_ids)
     }
 }
 
@@ -86,7 +87,7 @@ async function targetFromFacility(facilityId: string): Promise<BookingTarget | u
         clinicName,
         themePrimary: theme?.primary ?? null,
         allowedDurations: settings.allowedDurations,
-        formDefinitionId: settings.formDefinitionId
+        formDefinitionIds: settings.formDefinitionIds
     }
 }
 
@@ -129,7 +130,7 @@ async function targetFromClinicSite(siteIdOrSlug: string, byId: boolean): Promis
         clinicName: site.name?.trim() || site.slug,
         themePrimary: theme.primary,
         allowedDurations: settings.allowedDurations,
-        formDefinitionId: settings.formDefinitionId
+        formDefinitionIds: settings.formDefinitionIds
     }
 }
 

@@ -778,7 +778,6 @@
     "durationMinutes": "{n} minutes"
   },
   "bookingDashboard": {
-    "readOnly": "Demande de réservation (lecture seule)",
     "detailHeading": "Réservation",
     "back": "Retour aux réservations",
     "loadError": "Impossible de charger cette réservation.",
@@ -810,6 +809,27 @@
       "standard": "Général",
       "identityDocument": "Identité / assurance",
       "medical": "Médical"
+    },
+    "requestEyebrow": "Demande de rendez-vous",
+    "emailStatus": "E-mail de confirmation",
+    "downloadFailed": "Impossible d'ouvrir ce fichier.",
+    "actionFailed": "Impossible de mettre à jour ce rendez-vous. Il a peut-être changé ; le dernier statut est affiché.",
+    "reasonLabel": "Note pour le patient (facultative, envoyée avec un refus ou une annulation)",
+    "reasonShown": "Note : {reason}",
+    "cancelledByPatient": "Annulé par le patient",
+    "cancelledByClinic": "Annulé par la clinique",
+    "appointmentStatus": {
+      "requested": "Demandé",
+      "confirmed": "Confirmé",
+      "declined": "Refusé",
+      "cancelled": "Annulé",
+      "completed": "Terminé"
+    },
+    "actions": {
+      "confirm": "Confirmer",
+      "decline": "Refuser",
+      "cancel": "Annuler le rendez-vous",
+      "complete": "Marquer comme terminé"
     }
   },
   "bookingAvailability": {
@@ -819,6 +839,67 @@
     "windowTitle": "Disponible",
     "createFailed": "Impossible d’enregistrer cette disponibilité.",
     "deleteConfirm": "Retirer cette disponibilité ?",
-    "deleteFailed": "Impossible de retirer cette disponibilité."
+    "deleteFailed": "Impossible de retirer cette disponibilité.",
+    "legend": "Légende du calendrier",
+    "patient": "Patient·e",
+    "loadFailed": "Impossible de charger ce calendrier.",
+    "appointmentHelp": "Cliquez sur un rendez-vous pour ouvrir la demande."
+  },
+  "bookingForms": {
+    "standardIntake": "Demande de consultation standard",
+    "onlineConsultIntake": "Téléconsultation avec carte d'assurance et photo"
+  },
+  "clinicDashboard": {
+    "heading": "Tableau de bord de la clinique",
+    "loading": "Chargement…",
+    "loadError": "Impossible de charger le tableau de bord. Réessayez.",
+    "signInHeading": "Connectez-vous au tableau de bord de votre clinique",
+    "signInBody": "Utilisez l'adresse e-mail qui a reçu l'invitation de votre clinique.",
+    "signIn": "Se connecter",
+    "noClinics": "Ce compte n'est encore lié à aucune clinique.",
+    "noClinicsHelp": "Demandez à Find a Doc, Japan d'inviter l'adresse e-mail avec laquelle vous vous connectez. L'invitation sera liée à votre prochaine connexion.",
+    "noAccessHeading": "Vous n'avez pas accès à cette clinique",
+    "statusFilter": "Afficher",
+    "allStatuses": "Toutes les demandes",
+    "saved": "Enregistré",
+    "saveFailed": "Impossible d'enregistrer. Réessayez.",
+    "tabs": {
+      "requests": "Demandes",
+      "calendar": "Calendrier",
+      "settings": "Paramètres"
+    },
+    "roles": {
+      "owner": "Responsable",
+      "staff": "Personnel"
+    },
+    "settings": {
+      "heading": "Paramètres de réservation",
+      "forms": "Formulaires d'admission",
+      "formsHelp": "Les patients voient le formulaire par défaut, sauf si le lien de réservation indique un autre formulaire que vous proposez.",
+      "defaultForm": "Par défaut",
+      "save": "Enregistrer les paramètres"
+    },
+    "members": {
+      "heading": "Équipe",
+      "help": "Les personnes invitées ici peuvent voir les demandes de cette clinique et modifier son calendrier après s'être connectées avec cet e-mail.",
+      "active": "Connecté",
+      "pending": "Invité",
+      "remove": "Retirer",
+      "removeConfirm": "Retirer {email} de cette clinique ?",
+      "role": "Rôle",
+      "invite": "Inviter",
+      "invited": "{email} invité"
+    }
+  },
+  "patientBooking": {
+    "heading": "Votre demande de rendez-vous",
+    "notFound": "Nous n'avons pas trouvé cette réservation. Rouvrez le lien de votre e-mail de confirmation.",
+    "reasonLabel": "Motif (facultatif, partagé avec la clinique)",
+    "cancel": "Annuler ce rendez-vous",
+    "confirmCancel": "Annuler ce rendez-vous ? La clinique sera prévenue et le créneau sera proposé à d'autres patients.",
+    "yesCancel": "Oui, annuler",
+    "keep": "Le garder",
+    "cancelled": "Ce rendez-vous est annulé.",
+    "cancelFailed": "Impossible d'annuler. Il a peut-être déjà commencé ou changé ; le dernier statut est affiché."
   }
 }

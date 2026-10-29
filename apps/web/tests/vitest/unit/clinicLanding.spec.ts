@@ -23,6 +23,7 @@ import {
     clinicSubdomainHreflang,
     clinicSubdomainUrl,
     isClinicHostBookPage,
+    isClinicHostDashboardPage,
     isClinicHostPage,
     isClinicHostSurface,
     isClinicLandingPath,
@@ -113,6 +114,10 @@ describe('clinic landings', () => {
         expect(isClinicHostPage(clean)).to.equal(false)
         expect(isClinicHostBookPage('/book')).to.equal(true)
         expect(isClinicHostBookPage('/ja-JP/book')).to.equal(true)
+        expect(isClinicHostDashboardPage('/dashboard')).to.equal(true)
+        expect(isClinicHostDashboardPage('/ja-JP/dashboard')).to.equal(true)
+        expect(isClinicHostSurface('/dashboard')).to.equal(true)
+        expect(isClinicHostDashboardPage('/dashboard/x')).to.equal(false)
         expect(isClinicHostBookPage('/book/x')).to.equal(false)
         expect(isClinicHostSurface('/book')).to.equal(true)
         expect(isClinicHostSurface('/')).to.equal(true)

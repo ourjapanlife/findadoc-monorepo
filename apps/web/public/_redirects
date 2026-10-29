@@ -24,6 +24,9 @@
 /my-page/*          /200.html   200
 /book               /200.html   200
 /book/*             /200.html   200
+/dashboard          /200.html   200
+/clinic-dashboard   /200.html   200
+/clinic-dashboard/* /200.html   200
 /:locale/search     /200.html   200
 /:locale/u/*        /200.html   200
 /:locale/login      /200.html   200
@@ -32,6 +35,9 @@
 /:locale/my-page/*  /200.html   200
 /:locale/book       /200.html   200
 /:locale/book/*     /200.html   200
+/:locale/dashboard  /200.html   200
+/:locale/clinic-dashboard   /200.html   200
+/:locale/clinic-dashboard/* /200.html   200
 
 # Directory HTML is generated for en-US and ja-JP only. These locales still
 # have static marketing pages; this rewrite covers the directory URLs generate

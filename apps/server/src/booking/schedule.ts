@@ -103,6 +103,26 @@ export function isPublicSlotRange(from: Date, to: Date): boolean {
 
 export type TimeWindow = { startsAt: Date, endsAt: Date }
 
+/**
+ * Joins windows that overlap or touch. Staff paint one window per drag, so
+ * 09:00-09:30 and 09:30-10:00 are two rows that must still hold a 60-minute visit.
+ */
+export function mergeWindows(windows: readonly TimeWindow[]): TimeWindow[] {
+    const sorted = [...windows].sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+    const merged: TimeWindow[] = []
+    for (const window of sorted) {
+        const last = merged.at(-1)
+        if (last !== undefined && window.startsAt.getTime() <= last.endsAt.getTime()) {
+            if (window.endsAt.getTime() > last.endsAt.getTime()) {
+                last.endsAt = window.endsAt
+            }
+            continue
+        }
+        merged.push({ startsAt: window.startsAt, endsAt: window.endsAt })
+    }
+    return merged
+}
+
 /** Candidate appointment starts every 15 minutes that fit duration inside windows and avoid booked ranges. */
 export function availableStarts(input: {
     windows: readonly TimeWindow[]
@@ -114,7 +134,7 @@ export function availableStarts(input: {
     const durationMs = input.durationMs ?? DEFAULT_DURATION_MS
     const starts: Date[] = []
 
-    for (const window of input.windows) {
+    for (const window of mergeWindows(input.windows)) {
         const from = Math.max(window.startsAt.getTime(), input.rangeStart.getTime())
         const to = Math.min(window.endsAt.getTime(), input.rangeEnd.getTime())
         if (!(to > from)) {

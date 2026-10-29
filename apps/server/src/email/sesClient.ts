@@ -23,7 +23,9 @@ export async function sendTransactionalEmail(message: OutboundEmail): Promise<'s
         logger.info('Booking email logged (SES not configured)', {
             bookingId: message.bookingId,
             subject: message.subject,
-            bodyLength: message.textBody.length
+            bodyLength: message.textBody.length,
+            // Local runs need the body to follow the patient cancel link. Production never logs it.
+            ...(envVariables.isProduction() ? {} : { textBody: message.textBody })
         })
         return 'logged'
     }

@@ -29,15 +29,12 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import {
-    BookingSubmissionStatus,
-    type HealthcareProfessional,
-    type Submission
-} from '@findadoc/graphql'
+import type { BookingSubmissionListItem, HealthcareProfessional, Submission } from '@findadoc/graphql'
 import { SelectedModerationListView, useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useBookingSubmissionsStore } from '~/stores/bookingSubmissionsStore'
+import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { formatToReadableDate } from '~/utils/dateUtils'
 import { isNewSubmission } from '~/utils/moderationUtils'
 import { pageSelectionState, type ModerationTableColumn, type ModerationTableRow } from '~/utils/moderationTable'
@@ -153,8 +150,10 @@ const rows = computed((): ModerationTableRow[] => {
                 ? [{ label: t('bookingDashboard.identityBadge'), className: 'bg-warning/80' }]
                 : [],
             cells: {
-                clinic: booking.clinicName,
-                status: bookingStatusLabel(booking.status),
+                clinic: booking.patientName
+                    ? `${booking.clinicName} · ${booking.patientName}`
+                    : booking.clinicName,
+                status: bookingStatusLabel(booking),
                 appointment: booking.startsAt
                     ? formatToReadableDate(booking.startsAt)
                     : t('bookingDashboard.noAppointment'),
@@ -312,14 +311,10 @@ function professionalLabel(professional: HealthcareProfessional): string {
     return [name.lastName, name.firstName, name.middleName].filter(part => part).join(' ')
 }
 
-function bookingStatusLabel(status: BookingSubmissionStatus): string {
-    if (status === BookingSubmissionStatus.Notified) {
-        return t('bookingDashboard.status.notified')
-    }
-    if (status === BookingSubmissionStatus.FailedNotify) {
-        return t('bookingDashboard.status.failedNotify')
-    }
-    return t('bookingDashboard.status.received')
+function bookingStatusLabel(booking: BookingSubmissionListItem): string {
+    return booking.appointmentStatus
+        ? t(appointmentStatusLabelKey(booking.appointmentStatus))
+        : t('bookingDashboard.noAppointment')
 }
 
 function submissionBadges(submission: Submission) {
