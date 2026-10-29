@@ -118,7 +118,7 @@
                     </dt>
                     <dd>
                         {{ detail.startsAt
-                            ? formatToReadableDate(detail.startsAt)
+                            ? formatJapanDateTime(detail.startsAt, intlLocale(locale))
                             : t('bookingDashboard.noAppointment') }}
                     </dd>
                 </div>
@@ -298,6 +298,8 @@ import {
 import { formatToReadableDate } from '~/utils/dateUtils'
 import { languageName } from '~/utils/languageName'
 import { practitionerName } from '~/utils/booking/practitioners'
+import { formatJapanDateTime } from '~/utils/booking/japanTime'
+import { intlLocale } from '~/utils/intlLocale'
 import {
     actionTakesReason,
     appointmentStatusLabelKey,

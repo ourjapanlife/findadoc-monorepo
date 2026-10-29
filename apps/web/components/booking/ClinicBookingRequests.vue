@@ -195,6 +195,7 @@ import { useI18n } from 'vue-i18n'
 import { BookingAppointmentStatus, type BookingSubmissionListItem } from '@findadoc/graphql'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { fetchBookingSubmissions } from '~/utils/booking/staffQuery'
+import { JAPAN_TIME_ZONE } from '~/utils/booking/japanTime'
 
 const PAGE_SIZE = 25
 
@@ -239,14 +240,19 @@ const filterOptions = computed(() => [
 // Site locale codes are `ja_JP`; Intl wants `ja-JP`.
 const intlLocale = computed(() => locale.value.replace('_', '-'))
 
+// Appointment times are the clinic's, so they read as Japan time in any browser zone.
+function dateFormat(options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+    return new Intl.DateTimeFormat(intlLocale.value, { ...options, timeZone: JAPAN_TIME_ZONE })
+}
+
 function formatPart(iso: string, options: Intl.DateTimeFormatOptions): string {
-    return new Intl.DateTimeFormat(intlLocale.value, options).format(new Date(iso))
+    return dateFormat(options).format(new Date(iso))
 }
 
 function formatWhen(startsAt: string, endsAt: string | null | undefined): string {
     const start = new Date(startsAt)
-    const day = new Intl.DateTimeFormat(intlLocale.value, { dateStyle: 'medium' }).format(start)
-    const time = new Intl.DateTimeFormat(intlLocale.value, { timeStyle: 'short' })
+    const day = dateFormat({ dateStyle: 'medium' }).format(start)
+    const time = dateFormat({ timeStyle: 'short' })
     if (!endsAt) {
         return `${day} · ${time.format(start)}`
     }
@@ -256,8 +262,7 @@ function formatWhen(startsAt: string, endsAt: string | null | undefined): string
 }
 
 function formatCreated(iso: string): string {
-    return new Intl.DateTimeFormat(intlLocale.value, { dateStyle: 'medium', timeStyle: 'short' })
-        .format(new Date(iso))
+    return dateFormat({ dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso))
 }
 
 function statusBadgeClass(status: BookingAppointmentStatus | null | undefined): string {

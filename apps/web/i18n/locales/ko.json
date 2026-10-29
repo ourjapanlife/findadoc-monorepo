@@ -837,6 +837,7 @@
     "previousWeek": "이전 주",
     "nextWeek": "다음 주",
     "japanTimeNote": "모든 시간은 일본 시간(JST)입니다.",
+    "yourTime": "내 시간: {time}",
     "slotEmptyWeek": "이번 주에는 빈 시간이 없습니다.",
     "slotEmptyAhead": "앞으로 몇 주 동안 빈 시간이 없습니다. 진료 시간, 의사, 언어를 바꿔 보세요.",
     "nextAvailable": "가장 빠른 빈 시간: {date}",

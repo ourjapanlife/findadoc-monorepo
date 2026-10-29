@@ -97,3 +97,38 @@ export function subtractRanges(range: TimeRange, closed: readonly TimeRange[]): 
         endsAt: new Date(part.endsAt).toISOString()
     }))
 }
+
+/** The browser's own time zone, for showing a patient their local time next to JST. */
+export function viewerTimeZone(): string {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone
+}
+
+/**
+ * The viewer's clock for one instant, or null when it reads the same as Japan's.
+ * The weekday is named when the viewer's day is not the Japan day.
+ */
+export function viewerTimeLabel(iso: string, locale: string, viewerZone: string): string | null {
+    const date = new Date(iso)
+    const time = (timeZone: string) => new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', timeZone })
+        .format(date)
+    const weekday = (timeZone: string) => new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone }).format(date)
+    const sameDay = weekday(viewerZone) === weekday(JAPAN_TIME_ZONE)
+    if (sameDay && time(viewerZone) === time(JAPAN_TIME_ZONE)) {
+        return null
+    }
+    return sameDay ? time(viewerZone) : `${weekday(viewerZone)} ${time(viewerZone)}`
+}
+
+/** An appointment time as Japan time, with the zone named, whatever the browser's zone. */
+export function formatJapanDateTime(iso: string, locale: string): string {
+    return new Intl.DateTimeFormat(locale, {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: JAPAN_TIME_ZONE,
+        timeZoneName: 'short'
+    }).format(new Date(iso))
+}

@@ -174,6 +174,13 @@
                         @click="emit('update:modelValue', start)"
                     >
                         {{ formatTime(start) }}
+                        <span
+                            v-if="viewerTime(start) !== null"
+                            class="block text-xs font-normal opacity-80"
+                            :data-testid="`booking-slot-local-${start}`"
+                        >
+                            {{ t('bookingPage.yourTime', { time: viewerTime(start) }) }}
+                        </span>
                     </button>
                 </div>
             </div>
@@ -193,13 +200,17 @@ import {
     JAPAN_TIME_ZONE,
     jstDateKey,
     jstMidnight,
+    viewerTimeLabel,
+    viewerTimeZone,
     weekStartKey
 } from '~/utils/booking/japanTime'
+import { intlLocale } from '~/utils/intlLocale'
 
 /**
  * A week at a time, Monday to Sunday in Japan time. Each day shows how many
  * starts are open, so the patient sees at once which days to look at. When a
  * week is empty, the picker offers the next day that has times.
+ * A patient whose browser is not on Japan time also sees their own time under each start.
  */
 const props = defineProps<{
     clinicId: string
@@ -261,7 +272,7 @@ const startsByDay = computed(() => {
 const dayStarts = computed(() => selectedDay.value === null ? [] : startsByDay.value.get(selectedDay.value) ?? [])
 
 function dayFormat(options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
-    return new Intl.DateTimeFormat(locale.value || 'en', { ...options, timeZone: 'UTC' })
+    return new Intl.DateTimeFormat(intlLocale(locale.value), { ...options, timeZone: 'UTC' })
 }
 
 const days = computed(() => {
@@ -310,11 +321,18 @@ function longDay(key: string): string {
 }
 
 function formatTime(iso: string): string {
-    return new Intl.DateTimeFormat(locale.value || 'en', {
+    return new Intl.DateTimeFormat(intlLocale(locale.value), {
         hour: '2-digit',
         minute: '2-digit',
         timeZone: JAPAN_TIME_ZONE
     }).format(new Date(iso))
+}
+
+// Starts only render after the client has fetched them, so this is the browser's zone.
+const viewerZone = viewerTimeZone()
+
+function viewerTime(iso: string): string | null {
+    return viewerTimeLabel(iso, intlLocale(locale.value), viewerZone)
 }
 
 function onDurationChange(event: Event): void {

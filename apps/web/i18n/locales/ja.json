@@ -837,6 +837,7 @@
     "previousWeek": "前の週",
     "nextWeek": "次の週",
     "japanTimeNote": "時刻はすべて日本時間です。",
+    "yourTime": "あなたの時間: {time}",
     "slotEmptyWeek": "この週に空きはありません。",
     "slotEmptyAhead": "今後数週間に空きがありません。診察時間の長さ、医師、言語を変えてみてください。",
     "nextAvailable": "次の空き：{date}",

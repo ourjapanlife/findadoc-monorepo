@@ -837,6 +837,7 @@
     "previousWeek": "Tuần trước",
     "nextWeek": "Tuần sau",
     "japanTimeNote": "Mọi giờ đều theo giờ Nhật Bản (JST).",
+    "yourTime": "Giờ của bạn: {time}",
     "slotEmptyWeek": "Tuần này không còn giờ trống.",
     "slotEmptyAhead": "Không còn giờ trống trong các tuần tới. Hãy thử thời lượng khám, bác sĩ hoặc ngôn ngữ khác.",
     "nextAvailable": "Giờ trống gần nhất: {date}",
