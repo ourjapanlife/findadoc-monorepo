@@ -491,6 +491,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             throw new Error(validation.errors.join('; '))
         }
 
+        // Snapshot what this request sends so edits made while it is in flight are kept
+        const sentRelations = [...facilitySectionFields.value.healthProfessionalsRelations]
+
         const updateFacilityInput: MutationUpdateFacilityArgs = {
             id: selectedFacilityId.value,
             input: updatedFields
@@ -513,12 +516,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             }
             initializeFacilitySectionValues(responseData)
             // This block prevents a race condition: clear the array only if relations haven't changed while awaiting response
-            if (
-                arraysAreEqual(
-                    facilitySectionFields.value.healthProfessionalsRelations,
-                    updatedFields.contact?.address ? facilitySectionFields.value.healthProfessionalsRelations : []
-                )
-            ) {
+            if (arraysAreEqual(facilitySectionFields.value.healthProfessionalsRelations, sentRelations)) {
                 facilitySectionFields.value.healthProfessionalsRelations = []
             }
         }
