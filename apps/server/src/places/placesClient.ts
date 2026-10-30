@@ -7,15 +7,31 @@ const AUTOCOMPLETE_FIELD_MASK = [
 ].join(',')
 const PLACE_ID_FIELD_MASK = 'id'
 const PLACE_MATCH_FIELD_MASK = 'addressComponents,formattedAddress,types'
-const PLACE_PREVIEW_FIELD_MASK = 'id,displayName,formattedAddress,primaryTypeDisplayName'
-const PLACE_SEARCH_FIELD_MASK = [
-    'places.id',
-    'places.displayName',
-    'places.formattedAddress',
-    'places.primaryTypeDisplayName'
-].join(',')
+const PLACE_DETAIL_FIELDS = [
+    'id',
+    'displayName',
+    'formattedAddress',
+    'primaryTypeDisplayName',
+    'location',
+    'addressComponents.longText',
+    'addressComponents.shortText',
+    'addressComponents.types'
+]
+const PLACE_PREVIEW_FIELD_MASK = PLACE_DETAIL_FIELDS.join(',')
+const PLACE_SEARCH_FIELD_MASK = PLACE_DETAIL_FIELDS.map(field => `places.${field}`).join(',')
 const PLACE_SEARCH_URL = 'https://places.googleapis.com/v1/places:searchText'
 const CITY_COMPONENT_TYPES = ['sublocality_level_1', 'administrative_area_level_3', 'locality'] as const
+const STREET_COMPONENT_TYPES = [
+    'sublocality_level_1',
+    'sublocality_level_2',
+    'sublocality_level_3',
+    'sublocality_level_4',
+    'sublocality_level_5',
+    'route',
+    'street_number',
+    'premise',
+    'subpremise'
+] as const
 const TWELVE_MONTHS_MS = 365 * 24 * 60 * 60 * 1000
 
 export type PlacesPrediction = {
@@ -27,12 +43,23 @@ export type PlacesPrediction = {
 
 export type PlaceIdCheck = 'confirmed' | 'missing' | 'unavailable'
 
-/** Live name and address for the submit form. Do not store this. */
+/** Live place details for an open form. Do not store this. */
 export type PlacePreview = {
     placeId: string | null
     name: string | null
     address: string | null
     category: string | null
+    postalCode: string | null
+    prefecture: string | null
+    city: string | null
+    street: string | null
+    latitude: number | null
+    longitude: number | null
+}
+
+type AddressComponent = {
+    longText: string
+    types: string[]
 }
 
 /** Text used to match a place onto a city. It is not stored. */
@@ -333,19 +360,105 @@ export function readPlacePreview(body: unknown): PlacePreview | null {
         displayName?: { text?: unknown }
         formattedAddress?: unknown
         primaryTypeDisplayName?: { text?: unknown }
+        location?: { latitude?: unknown, longitude?: unknown }
+        addressComponents?: unknown
     }
     const name = textOf(place.displayName?.text)
     const address = textOf(place.formattedAddress)
     const category = textOf(place.primaryTypeDisplayName?.text)
     const placeId = typeof place.id === 'string' ? normalizePlaceId(place.id) : null
-    if (!name && !address) { return null }
+    const parts = readAddressParts(place.addressComponents)
+    const latitude = coordinate(place.location?.latitude)
+    const longitude = coordinate(place.location?.longitude)
+    const pin = latitude !== null && longitude !== null && !(latitude === 0 && longitude === 0)
+        ? { latitude, longitude }
+        : { latitude: null, longitude: null }
+    const hasPlaceText = Boolean(name || address || parts.postalCode || parts.prefecture || parts.city || parts.street)
+    if (!hasPlaceText && pin.latitude === null) { return null }
 
     return {
         placeId,
         name: name || null,
         address: address || null,
-        category: category || null
+        category: category || null,
+        postalCode: parts.postalCode,
+        prefecture: parts.prefecture,
+        city: parts.city,
+        street: parts.street,
+        latitude: pin.latitude,
+        longitude: pin.longitude
     }
+}
+
+function readAddressParts(value: unknown): {
+    postalCode: string | null
+    prefecture: string | null
+    city: string | null
+    street: string | null
+} {
+    const components = readAddressComponents(value)
+    const prefecture = componentText(components, 'administrative_area_level_1')
+    const locality = componentByType(components, 'locality')
+    const ward = componentByType(components, 'sublocality_level_1')
+    const cityComponent = isTokyoPrefecture(prefecture) ? (ward ?? locality) : locality
+    const street = components
+        .map(component => ({
+            component,
+            rank: STREET_COMPONENT_TYPES.findIndex(type => component.types.includes(type))
+        }))
+        .filter(item => item.rank >= 0 && item.component !== cityComponent)
+        .sort((left, right) => left.rank - right.rank)
+        .map(item => item.component.longText)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+
+    return {
+        postalCode: normalizePostalCode(componentText(components, 'postal_code')),
+        prefecture,
+        city: cityComponent?.longText ?? null,
+        street: street || null
+    }
+}
+
+function readAddressComponents(value: unknown): AddressComponent[] {
+    if (!Array.isArray(value)) { return [] }
+
+    return value.flatMap(item => {
+        if (!item || typeof item !== 'object') { return [] }
+        const record = item as { longText?: unknown, shortText?: unknown, types?: unknown }
+        const longText = textOf(record.longText) || textOf(record.shortText)
+        const types = Array.isArray(record.types)
+            ? record.types.filter((type): type is string => typeof type === 'string')
+            : []
+        if (!longText || types.length === 0) { return [] }
+        return [{ longText, types }]
+    })
+}
+
+function componentByType(components: AddressComponent[], type: string): AddressComponent | null {
+    return components.find(component => component.types.includes(type)) ?? null
+}
+
+function componentText(components: AddressComponent[], type: string): string | null {
+    return componentByType(components, type)?.longText ?? null
+}
+
+function isTokyoPrefecture(name: string | null): boolean {
+    if (name === null) { return false }
+    const compact = name.replace(/\s+/g, '').toLowerCase()
+    return compact === 'tokyo' || compact === '東京都'
+}
+
+function normalizePostalCode(value: string | null): string | null {
+    if (value === null) { return null }
+    const digits = value.replace(/\D/g, '')
+    if (digits.length !== 7) { return null }
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`
+}
+
+function coordinate(value: unknown): number | null {
+    return typeof value === 'number' && Number.isFinite(value) ? value : null
 }
 
 function textOf(value: unknown): string {
