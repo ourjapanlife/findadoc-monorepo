@@ -13,6 +13,9 @@ describe('clinic site seed', () => {
         expect(site?.theme.primary).toBe('#177A80')
         expect(site?.copy['ja-JP']?.name).toBe('多言語オンラインクリニック')
         expect(site?.copy['fr-FR']?.book).not.toBe(site?.copy['en-US']?.book)
+        // One site locale per consultation language, and none the clinic does not offer.
+        expect(Object.keys(site?.copy ?? {}).map(locale => locale.split('-')[0]).sort())
+            .toEqual(site?.languages.map(language => language.code).sort())
 
         for (const copy of Object.values(site?.copy ?? {})) {
             expect(copy.doctorCopy).toHaveLength(site?.doctors.length ?? -1)

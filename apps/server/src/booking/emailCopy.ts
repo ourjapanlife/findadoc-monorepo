@@ -9,7 +9,7 @@
 
 export const SITE_LOCALES = [
     'en-US', 'ja-JP', 'zh-CN', 'vi-VN', 'ko-KR', 'tl-PH',
-    'pt-BR', 'fr-FR', 'ru-RU', 'de-DE', 'it-IT'
+    'ne-NP', 'id-ID', 'pt-BR', 'fr-FR', 'ru-RU', 'de-DE', 'it-IT'
 ] as const
 
 export type SiteLocale = typeof SITE_LOCALES[number]
@@ -174,6 +174,42 @@ const PATIENT_COPY: Record<SiteLocale, PatientCopy> = {
         declinedIntro: 'Hindi matanggap ng klinika ang kahilingang ito. Bakante na ulit ang oras; maaari kang humiling ng iba.',
         cancelledSubject: 'Kinansela ang iyong appointment',
         cancelledIntro: 'Kinansela ng klinika ang appointment na ito.'
+    },
+    'ne-NP': {
+        sentThrough: 'Find a Doc, Japan मार्फत पठाइएको।',
+        clinic: 'क्लिनिक',
+        time: 'समय',
+        length: 'जाँचको अवधि',
+        reference: 'सन्दर्भ नम्बर',
+        clinicNote: 'क्लिनिकबाट सन्देश',
+        japanTime: 'जापानको समय',
+        receivedSubject: 'तपाईंको अनुरोध प्राप्त भयो',
+        receivedIntro: 'तपाईंको अपोइन्टमेन्ट अनुरोध प्राप्त भयो। क्लिनिकले यसलाई पक्का गर्नेछ।',
+        manageLink: 'यो अनुरोध हेर्न वा रद्द गर्न, तपाईंको निजी लिंक खोल्नुहोस्:',
+        confirmedSubject: 'तपाईंको अपोइन्टमेन्ट पक्का भयो',
+        confirmedIntro: 'क्लिनिकले तपाईंको अपोइन्टमेन्ट पक्का गर्‍यो।',
+        declinedSubject: 'तपाईंको अपोइन्टमेन्ट अनुरोध अस्वीकार गरियो',
+        declinedIntro: 'क्लिनिकले यो अनुरोध लिन सकेन। त्यो समय फेरि खाली छ; तपाईं अर्को समयको अनुरोध गर्न सक्नुहुन्छ।',
+        cancelledSubject: 'तपाईंको अपोइन्टमेन्ट रद्द गरियो',
+        cancelledIntro: 'क्लिनिकले यो अपोइन्टमेन्ट रद्द गर्‍यो।'
+    },
+    'id-ID': {
+        sentThrough: 'Dikirim melalui Find a Doc, Japan.',
+        clinic: 'Klinik',
+        time: 'Waktu',
+        length: 'Durasi konsultasi',
+        reference: 'Nomor referensi',
+        clinicNote: 'Catatan dari klinik',
+        japanTime: 'waktu Jepang',
+        receivedSubject: 'Permintaan Anda sudah kami terima',
+        receivedIntro: 'Permintaan janji temu Anda sudah diterima. Klinik akan mengonfirmasinya.',
+        manageLink: 'Untuk melihat atau membatalkan permintaan ini, buka tautan pribadi Anda:',
+        confirmedSubject: 'Janji temu Anda sudah dikonfirmasi',
+        confirmedIntro: 'Klinik telah mengonfirmasi janji temu Anda.',
+        declinedSubject: 'Permintaan janji temu Anda ditolak',
+        declinedIntro: 'Klinik tidak dapat menerima permintaan ini. Waktu tersebut kembali kosong; Anda dapat mengajukan waktu lain.',
+        cancelledSubject: 'Janji temu Anda dibatalkan',
+        cancelledIntro: 'Klinik telah membatalkan janji temu ini.'
     },
     'pt-BR': {
         sentThrough: 'Enviado pelo Find a Doc, Japan.',

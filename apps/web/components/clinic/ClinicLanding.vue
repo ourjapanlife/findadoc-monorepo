@@ -11,6 +11,7 @@
             :nav-label="copy.sectionNavLabel"
             :book-label="copy.book"
             :sections="sections"
+            :locale-codes="siteLocaleCodes"
             @book="onBook"
         />
         <section class="relative overflow-hidden">
@@ -133,7 +134,7 @@
                             <li
                                 v-for="language in content.languages"
                                 :key="language.code"
-                                class="chip"
+                                class="chip h-auto min-h-8 max-w-full whitespace-normal break-words py-1"
                             >
                                 {{ language.native }}
                             </li>
@@ -426,7 +427,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ClinicSiteStatus, type ClinicSite } from '@findadoc/graphql'
-import { createError, navigateTo, useAsyncData, useHead } from '#imports'
+import { createError, navigateTo, useAsyncData, useCookie, useHead, useRoute } from '#imports'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import { useUmami } from '~/composables/useUmamiTracking'
 import {
@@ -438,7 +439,7 @@ import {
 import { bookingClinicPath, findadocBookUrl } from '~/utils/booking/paths'
 import { fetchClinicSite } from '~/utils/clinicSiteQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
-import { DEFAULT_LOCALE_CODE } from '~/utils/localePath'
+import { DEFAULT_LOCALE_CODE, localizedPath } from '~/utils/localePath'
 import { formatPageTitle } from '~/utils/site'
 import { jsonLdScript, medicalClinicJsonLd } from '~/utils/structuredData'
 
@@ -452,6 +453,10 @@ const props = defineProps<{
 }>()
 
 const { locale } = useI18n()
+const route = useRoute()
+
+/** `detectBrowserLanguage.cookieKey` in nuxt.config.ts. */
+const I18N_LOCALE_COOKIE = 'i18n_redirected'
 const { track } = useUmami()
 const { host, hostname } = useRequestHost()
 const mode = useClinicLandingMode()
@@ -475,6 +480,19 @@ async function loadLanding(): Promise<ClinicSite | null> {
 const landing = await loadLanding()
 if (landing === null) {
     throw createError({ statusCode: 404, statusMessage: 'Page not found' })
+}
+
+/**
+ * Site locales this clinic has copy for. The switcher offers only these, and a URL
+ * in any other locale goes to the English page instead of showing English copy
+ * under a foreign prefix.
+ */
+const siteLocaleCodes = landing.locales.map(item => item.locale)
+if (!siteLocaleCodes.includes(String(locale.value)) && siteLocaleCodes.includes(DEFAULT_LOCALE_CODE)) {
+    // `/` follows i18n_redirected, which this visit just set to the unsupported locale.
+    // Point it at English too, or the clinic host's `/` sends the visitor straight back.
+    useCookie(I18N_LOCALE_COOKIE, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' }).value = DEFAULT_LOCALE_CODE
+    await navigateTo(localizedPath(route.fullPath, DEFAULT_LOCALE_CODE), { replace: true, redirectCode: 302 })
 }
 
 /** Copy in the site locale, or English when that locale has no row yet. */

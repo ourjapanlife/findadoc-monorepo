@@ -77,6 +77,8 @@ describe('LocalStore', () => {
             Locale.ViVn,
             Locale.KoKr,
             Locale.TlPh,
+            Locale.NeNp,
+            Locale.IdId,
             Locale.PtBr,
             Locale.FrFr,
             Locale.RuRu,
