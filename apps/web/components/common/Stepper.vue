@@ -5,14 +5,15 @@
         data-testid="stepper"
     >
         <nav :aria-label="navLabel">
-            <ol
-                class="m-0 grid w-full list-none gap-2 p-0"
-                :style="{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }"
-            >
+            <!--
+                Below sm only the current step shows its name; the others show their
+                number. Three full labels do not fit a phone without splitting words.
+            -->
+            <ol class="m-0 flex w-full list-none gap-2 p-0">
                 <li
                     v-for="(step, index) in steps"
                     :key="step.key"
-                    class="min-w-0"
+                    :class="index === currentIndex ? 'min-w-0 flex-1' : 'shrink-0 sm:min-w-0 sm:flex-1'"
                 >
                     <button
                         type="button"
@@ -30,7 +31,10 @@
                         >
                             {{ index + 1 }}
                         </span>
-                        <span class="min-w-0 font-medium leading-tight">{{ step.label }}</span>
+                        <span
+                            class="min-w-0 font-medium leading-tight break-words"
+                            :class="index === currentIndex ? '' : 'sr-only sm:not-sr-only'"
+                        >{{ step.label }}</span>
                     </button>
                 </li>
             </ol>

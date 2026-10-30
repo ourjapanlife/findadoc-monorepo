@@ -8,7 +8,7 @@
         v-else-if="form !== null"
         class="mx-auto flex w-full max-w-xl flex-col gap-8 px-6 py-10 landscape:px-12"
     >
-        <div class="flex items-start justify-between gap-4">
+        <div class="flex flex-col-reverse gap-4 sm:flex-row sm:items-start sm:justify-between">
             <header class="flex min-w-0 flex-col gap-3">
                 <p class="eyebrow">
                     {{ t('bookingPage.eyebrow') }}
@@ -20,7 +20,7 @@
                     {{ t('bookingPage.heading', { clinic: form.clinicName }) }}
                 </h1>
             </header>
-            <LocaleSelector class="shrink-0" />
+            <LocaleSelector class="shrink-0 self-end sm:self-auto" />
         </div>
         <BookingRegionNotice
             v-if="bookingAvailable === false"
