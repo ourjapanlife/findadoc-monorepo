@@ -133,7 +133,7 @@
                             <li
                                 v-for="language in content.languages"
                                 :key="language.code"
-                                class="chip"
+                                class="chip h-auto min-h-8 max-w-full whitespace-normal break-words py-1"
                             >
                                 {{ language.native }}
                             </li>
