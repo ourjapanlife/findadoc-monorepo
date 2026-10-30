@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full overflow-y-auto p-4 md:p-6">
+    <div class="md:h-full overflow-y-auto p-4 md:p-6">
         <div class="max-w-2xl mx-auto">
             <div class="mb-6">
                 <h1 class="text-2xl md:text-3xl font-bold text-primary-text">

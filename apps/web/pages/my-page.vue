@@ -1,9 +1,10 @@
 <template>
-    <div class="h-full min-h-0 flex flex-col">
+    <div class="md:h-full md:min-h-0 flex flex-col">
         <Suspense>
             <div
                 data-testid="moderation-content"
-                class="h-full w-full flex flex-col flex-1 min-h-0 overflow-hidden font-sans text-primary-text bg-primary-bg"
+                class="w-full flex flex-col flex-1 md:h-full md:min-h-0 md:overflow-hidden
+                font-sans text-primary-text bg-primary-bg"
             >
                 <div
                     v-if="authStore.isLoadingAuth"
@@ -33,10 +34,10 @@
                 <div
                     v-if="authStore.isLoggedIn"
                     data-testid="moderation-page"
-                    class="flex flex-col md:flex-row flex-1 min-h-0 h-full overflow-hidden p-3 md:p-4 gap-3 md:gap-4"
+                    class="flex flex-col md:flex-row flex-1 md:min-h-0 md:h-full md:overflow-hidden p-3 md:p-4 gap-3 md:gap-4"
                 >
                     <ModLeftNavbar />
-                    <div class="w-full flex flex-col items-stretch gap-3 md:gap-4 min-h-0 flex-1 overflow-hidden">
+                    <div class="w-full flex flex-col items-stretch gap-3 md:gap-4 md:min-h-0 flex-1 md:overflow-hidden">
                         <div
                             v-if="!isSettingsView && !isBookingDetailView"
                             class="shrink-0 bg-secondary-bg border border-accent-bg rounded-xl
@@ -46,7 +47,7 @@
                         </div>
                         <div
                             class="bg-secondary-bg border border-accent-bg rounded-xl shadow-sm
-                            flex-1 min-h-0 overflow-hidden"
+                            flex-1 md:min-h-0 md:overflow-hidden"
                         >
                             <ModMainContent />
                         </div>

@@ -1,8 +1,8 @@
 <template>
-    <div class="h-full min-h-0 overflow-hidden flex flex-col">
+    <div class="md:h-full md:min-h-0 md:overflow-hidden flex flex-col">
         <div
             v-if="moderationScreenStore.dashboardScreenIsActive()"
-            class="h-full min-h-0 flex flex-col"
+            class="md:h-full md:min-h-0 flex flex-col"
         >
             <MyPageSettingsContent v-if="isSettingsView" />
             <ClinicAvailabilityCalendar
@@ -12,53 +12,53 @@
         </div>
         <div
             v-if="moderationScreenStore.editSubmissionScreenIsActive()"
-            class="h-full overflow-y-auto"
+            class="md:h-full overflow-y-auto"
         >
-            <form class="p-4 h-full overflow-y-auto">
+            <form class="p-4 md:h-full md:overflow-y-auto">
                 <ModEditSubmissionForm />
             </form>
         </div>
         <div
             v-if="moderationScreenStore.createFacilityScreenIsActive()"
-            class="h-full overflow-y-auto"
+            class="md:h-full overflow-y-auto"
         >
             <form
-                class="p-4 h-full overflow-y-auto"
+                class="p-4 md:h-full md:overflow-y-auto"
             >
                 <ModCreateFacilitySection />
             </form>
         </div>
         <div
             v-if="moderationScreenStore.editFacilityScreenIsActive()"
-            class="h-full overflow-y-auto"
+            class="md:h-full overflow-y-auto"
         >
-            <form class="p-4 h-full overflow-y-auto">
+            <form class="p-4 md:h-full md:overflow-y-auto">
                 <ModEditFacilitySection />
             </form>
         </div>
         <div
             v-if="moderationScreenStore.editHealthcareProfessionalScreenIsActive()"
-            class="h-full overflow-y-auto"
+            class="md:h-full overflow-y-auto"
         >
             <form
-                class="p-4 h-full overflow-y-auto"
+                class="p-4 md:h-full md:overflow-y-auto"
             >
                 <ModEditHealthcareProfessionalSection />
             </form>
         </div>
         <div
             v-if="moderationScreenStore.createHealthcareProfessionalScreenIsActive()"
-            class="h-full overflow-y-auto"
+            class="md:h-full overflow-y-auto"
         >
             <form
-                class="p-4 h-full overflow-y-auto"
+                class="p-4 md:h-full md:overflow-y-auto"
             >
                 <ModCreateHealthcareProfessionalSection />
             </form>
         </div>
         <div
             v-if="moderationScreenStore.viewBookingScreenIsActive()"
-            class="h-full overflow-y-auto"
+            class="md:h-full overflow-y-auto"
         >
             <BookingSubmissionDetail :booking-id="selectedIdFromModSubmissionList" />
         </div>
