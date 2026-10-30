@@ -13,6 +13,7 @@
         "check:db": "node --loader ts-node/esm src/dbCheck.ts",
         "test": "vitest run",
         "db:seed": "node --loader ts-node/esm scripts/seed/index.ts",
+        "e2e:clinic-owner": "node --loader ts-node/esm scripts/e2e/clinicOwner.ts",
         "db:reset": "node --loader ts-node/esm scripts/db/reset.ts",
         "test:dockerstart": "docker compose -f docker/docker-compose-test.yml up -d --build",
         "test:dockerstop": "docker compose -f docker/docker-compose-test.yml down",
