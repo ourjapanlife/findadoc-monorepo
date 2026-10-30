@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3'
 import { clinicLandingsArePublic } from '~/utils/clinicLanding'
 import { graphqlEndpoint } from '~/utils/graphqlEndpoint'
-import { hostedClinicIndex, publishedClinicPaths } from '~/utils/hostedClinicIndex'
+import { hostedClinicIndex, publishedClinicPages } from '~/utils/hostedClinicIndex'
 import { withLocaleAlternates } from '~/utils/sitemap'
 
 export default defineEventHandler(async () => {
@@ -9,6 +9,6 @@ export default defineEventHandler(async () => {
         return []
     }
 
-    const paths = publishedClinicPaths(await hostedClinicIndex(graphqlEndpoint()))
-    return withLocaleAlternates(paths.map(loc => ({ loc })))
+    const pages = publishedClinicPages(await hostedClinicIndex(graphqlEndpoint()))
+    return pages.flatMap(page => withLocaleAlternates([{ loc: page.path }], page.localeCodes))
 })

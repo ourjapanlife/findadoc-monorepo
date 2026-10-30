@@ -29,7 +29,7 @@
 | [Tailwind CSS 4](https://tailwindcss.com/) | ユーティリティファーストCSSフレームワーク |
 | [Pinia](https://pinia.vuejs.org/) | 状態管理 |
 | [graphql-request](https://github.com/jasonkuhrt/graphql-request) | 軽量GraphQLクライアント |
-| [Nuxt i18n](https://i18n.nuxtjs.org/) | 国際化（11言語） |
+| [Nuxt i18n](https://i18n.nuxtjs.org/) | 国際化（13言語） |
 | [Auth0](https://auth0.com/) | モデレーション用の認証 |
 | [Google Maps API](https://developers.google.com/maps) | 地図・位置情報サービス |
 | [Sentry](https://sentry.io/) | エラー報告 |

@@ -147,6 +147,8 @@ export const mvpLocaleDisplayOptions = [
     { code: Locale.ViVn, simpleText: 'Tiếng Việt', displayText: 'tiếng Việt (Vietnam)' },
     { code: Locale.KoKr, simpleText: '한국어', displayText: '한국어 (South Korea)' },
     { code: Locale.TlPh, simpleText: 'Tagalog', displayText: 'Tagalog (Philippines)' },
+    { code: Locale.NeNp, simpleText: 'नेपाली', displayText: 'नेपाली (नेपाल)' },
+    { code: Locale.IdId, simpleText: 'Bahasa Indonesia', displayText: 'Bahasa Indonesia (Indonesia)' },
     { code: Locale.PtBr, simpleText: 'Português', displayText: 'Português (Brasil)' },
     { code: Locale.FrFr, simpleText: 'Français', displayText: 'Français (France)' },
     { code: Locale.RuRu, simpleText: 'русский', displayText: 'Russian (Russia)' },

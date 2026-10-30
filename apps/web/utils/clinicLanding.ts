@@ -95,6 +95,19 @@ export type HostedClinicRef = {
     facilityId?: string | null
     status?: string | null
     shareImagePath?: string | null
+    /** Site locales the clinic has page copy for. Missing on an older API: every locale. */
+    localeCodes?: readonly string[] | null
+}
+
+/**
+ * Site locales a clinic page exists in, in site order. Each clinic chooses its own
+ * languages, so its generated HTML, sitemap rows, and hreflang list only these.
+ */
+export function clinicPageLocaleCodes(localeCodes: readonly string[] | null | undefined): string[] {
+    if (localeCodes === null || localeCodes === undefined) {
+        return [...LOCALE_CODES]
+    }
+    return LOCALE_CODES.filter(code => localeCodes.includes(code))
 }
 
 export type ClinicLandingMode = 'off' | 'preview' | 'public'
@@ -171,15 +184,22 @@ export function clinicSubdomainUrl(slug: string, options: ClinicSubdomainOptions
     return `${origin}${path}${options.query ?? ''}`
 }
 
-/** Alternates for a clinic hostname. English is the unprefixed root and the x-default. */
-export function clinicSubdomainHreflang(slug: string, requestHost?: string | null): Array<{
+/**
+ * Alternates for a clinic hostname, one per locale the clinic has copy for.
+ * English is the unprefixed root and the x-default.
+ */
+export function clinicSubdomainHreflang(
+    slug: string,
+    requestHost?: string | null,
+    localeCodes?: readonly string[] | null
+): Array<{
     rel: 'alternate'
     hreflang: string
     href: string
     key: string
 }> {
     const alternates = [
-        ...LOCALE_CODES.map(code => ({ hreflang: code, localeCode: code })),
+        ...clinicPageLocaleCodes(localeCodes).map(code => ({ hreflang: code, localeCode: code })),
         { hreflang: 'x-default', localeCode: DEFAULT_LOCALE_CODE }
     ]
 

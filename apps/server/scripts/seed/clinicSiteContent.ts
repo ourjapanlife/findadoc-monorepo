@@ -1,7 +1,7 @@
 /**
  * Page copy for hosted clinics. Another clinic is another entry in `clinicSiteSeeds`.
  * English is the fallback the site uses when a locale has no row yet.
- * Spoken-language codes here (ne, id) are clinic languages, not site UI locales.
+ * `languages` are the clinic's consultation languages. `COPY` has one site locale for each.
  */
 
 import {
@@ -55,6 +55,7 @@ export const showcaseClinicFacility: FacilitySeed = {
         Locale.JaJp,
         Locale.EnUs,
         Locale.ZhCn,
+        Locale.ViVn,
         Locale.TlPh,
         Locale.FrFr,
         Locale.NeNp,
@@ -511,55 +512,6 @@ COPY['vi-VN'] = withLocale(en, {
     referralNote: 'Giấy giới thiệu tính phí riêng. Hãy hỏi phòng khám về số tiền đó.'
 })
 
-COPY['ko-KR'] = withLocale(en, {
-    name: '다국어 온라인 클리닉',
-    description: '일본에 사는 외국인을 위한 온라인 클리닉입니다. 8개 언어로 진료합니다. 신용카드가 없어도 진료를 받을 수 있습니다.',
-    book: '예약하기',
-    seeFees: '비용 보기',
-    sectionNavLabel: '이 페이지에서',
-    heroBadge: '8개 언어로 받는 온라인 진료',
-    heroTitleBefore: '일본에서 진료를, ',
-    heroTitleHighlight: '당신의 언어로.',
-    heroLead: '일본에 사는 외국인을 위한 온라인 클리닉입니다. 신용카드가 없어도 의사를 만날 수 있습니다.',
-    heroNote: '예약제로만 진료합니다. 진료는 유료입니다.',
-    heroAlt: '스마트폰으로 온라인 진료를 받는 환자. 화면 속 의사가 손을 흔들고 있습니다.',
-    badgeTitle: '신용카드가 필요 없습니다',
-    badgeDetail: '결제 방법은 상의해 주세요',
-    highlights: ['8개 언어 지원', '신용카드가 필요 없습니다', '집에서 진료받을 수 있습니다'],
-    aboutEyebrow: '클리닉 소개',
-    aboutTitle: '다국어 온라인 클리닉 소개',
-    about: [
-        '일본에 사는 외국인을 돕는 온라인 클리닉입니다. 신용카드가 없어도 이용할 수 있습니다.',
-        '예약 전에 읽어 두는 짧은 안내입니다. 궁금한 점은 예약 때 함께 확인하면 됩니다.'
-    ],
-    navDoctors: '의사 소개',
-    navCases: '진료 증상',
-    navFees: '비용',
-    navFlow: '이용 순서',
-    doctorsEyebrow: '의사 소개',
-    doctorsTitle: '의사의 인사',
-    bookEyebrow: '예약',
-    bookTitle: '진료 예약',
-    bookLead: '진료는 예약으로 시작합니다. 예약 절차는 나중에 이 버튼에 연결됩니다.',
-    bookNote: '이 클리닉은 예약으로만 진료하며, 진료는 유료입니다.',
-    ctaTitle: '먼저 예약부터 시작해 보세요.',
-    ctaLead: '예약 후 진료 일시를 알려 드립니다.',
-    ctaButton: '진료 예약',
-    emergency: '응급일 때는 온라인 진료를 이용하지 말고 119로 전화해 주세요.',
-    feesLink: '비용 안내 보기',
-    feesEyebrow: '비용',
-    feesTitle: '비용 안내',
-    feesLead: '표시된 금액은 안내이며, 진료 내용에 따라 달라질 수 있습니다.',
-    rangeLabel: '비용 안내',
-    plans: [
-        { amount: '1,500엔부터', note: '약이 없는 경우' },
-        { amount: '2,600엔부터', note: '약이 있는 경우' }
-    ],
-    includedLabel: '비용에 들어갈 수 있는 항목',
-    fees: ['초진 비용', '시스템 수수료', '약값', '약 배송비'],
-    referralNote: '진료의뢰서는 별도 요금입니다. 금액은 클리닉에 물어봐 주세요.'
-})
-
 COPY['fr-FR'] = withLocale(en, {
     name: 'Clinique en ligne multilingue',
     description: 'Une clinique en ligne pour les résidents étrangers au Japon. Consultations en huit langues. Une carte de crédit n’est pas nécessaire.',
@@ -607,55 +559,6 @@ COPY['fr-FR'] = withLocale(en, {
     includedLabel: 'Ce que les frais peuvent couvrir',
     fees: ['Première consultation', 'Frais de service', 'Médicaments', 'Envoi des médicaments'],
     referralNote: 'La lettre d’orientation est facturée à part. Demandez le montant à la clinique.'
-})
-
-COPY['de-DE'] = withLocale(en, {
-    name: 'Mehrsprachige Online-Klinik',
-    description: 'Eine Online-Klinik für ausländische Einwohner in Japan. Beratung in acht Sprachen. Auch ohne Kreditkarte.',
-    book: 'Termin',
-    seeFees: 'Kosten ansehen',
-    sectionNavLabel: 'Auf dieser Seite',
-    heroBadge: 'Online-Sprechstunde in 8 Sprachen',
-    heroTitleBefore: 'Versorgung in Japan, ',
-    heroTitleHighlight: 'in Ihrer Sprache.',
-    heroLead: 'Eine Online-Klinik für ausländische Einwohner in Japan. Sie können auch ohne Kreditkarte einen Arzt sprechen.',
-    heroNote: 'Nur mit Termin. Die Beratung ist kostenpflichtig.',
-    heroAlt: 'Eine Person in der Videosprechstunde am Telefon; der Arzt auf dem Bildschirm winkt.',
-    badgeTitle: 'Keine Kreditkarte nötig',
-    badgeDetail: 'Sprechen Sie mit uns über die Zahlung',
-    highlights: ['In 8 Sprachen', 'Keine Kreditkarte nötig', 'Arztgespräch von zu Hause'],
-    aboutEyebrow: 'Über uns',
-    aboutTitle: 'Über diese mehrsprachige Online-Klinik',
-    about: [
-        'Die Klinik unterstützt ausländische Einwohner in Japan. Sie können sie ohne Kreditkarte nutzen.',
-        'Diese Seite ist ein kurzer Überblick vor dem Termin. Fragen können bis zum Gespräch warten.'
-    ],
-    navDoctors: 'Ärztinnen und Ärzte',
-    navCases: 'Beschwerden',
-    navFees: 'Kosten',
-    navFlow: 'Ablauf',
-    doctorsEyebrow: 'Unser Team',
-    doctorsTitle: 'Ein Gruß vom Team',
-    bookEyebrow: 'Termin',
-    bookTitle: 'Einen Termin vereinbaren',
-    bookLead: 'Der Besuch beginnt mit einem Termin. Der Buchungsweg kommt an diese Stelle.',
-    bookNote: 'Die Klinik behandelt nur nach Termin, und die Beratung ist kostenpflichtig.',
-    ctaTitle: 'Beginnen Sie mit einem Termin.',
-    ctaLead: 'Danach bestätigt die Klinik Datum und Uhrzeit.',
-    ctaButton: 'Termin vereinbaren',
-    emergency: 'Im Notfall keine Online-Beratung nutzen. Rufen Sie 119 für einen Krankenwagen an.',
-    feesLink: 'Kostenübersicht ansehen',
-    feesEyebrow: 'Kosten',
-    feesTitle: 'Kostenübersicht',
-    feesLead: 'Die Beträge sind Schätzungen und können je nach Beratung abweichen.',
-    rangeLabel: 'Kostenübersicht',
-    plans: [
-        { amount: 'Ab 1.500 ¥', note: 'Ohne Medikamente' },
-        { amount: 'Ab 2.600 ¥', note: 'Mit Medikamenten' }
-    ],
-    includedLabel: 'Was die Kosten umfassen können',
-    fees: ['Erstberatung', 'Systemgebühr', 'Medikamente', 'Versand der Medikamente'],
-    referralNote: 'Eine Überweisung wird getrennt berechnet. Fragen Sie die Klinik nach dem Betrag.'
 })
 
 COPY['tl-PH'] = withLocale(en, {
@@ -707,151 +610,196 @@ COPY['tl-PH'] = withLocale(en, {
     referralNote: 'May hiwalay na bayad ang referral letter. Itanong sa clinic ang halaga.'
 })
 
-COPY['pt-BR'] = withLocale(en, {
-    name: 'Clínica online multilíngue',
-    description: 'Uma clínica online para quem mora no Japão e veio de outro país. Consultas em oito idiomas. Dá para ser atendido sem cartão de crédito.',
-    book: 'Reservar',
-    seeFees: 'Ver valores',
-    sectionNavLabel: 'Nesta página',
-    heroBadge: 'Consultas online em 8 idiomas',
-    heroTitleBefore: 'Cuidado de saúde no Japão, ',
-    heroTitleHighlight: 'no idioma que você fala.',
-    heroLead: 'Uma clínica online para residentes estrangeiros no Japão. Você pode consultar um médico mesmo sem cartão de crédito.',
-    heroNote: 'Somente com hora marcada. A consulta é paga.',
-    heroAlt: 'Uma pessoa em consulta online pelo celular, com um médico sorrindo e acenando na tela.',
-    badgeTitle: 'Sem cartão de crédito',
-    badgeDetail: 'Fale conosco sobre o pagamento',
-    highlights: ['Disponível em 8 idiomas', 'Não precisa de cartão', 'Consulte de casa'],
-    aboutEyebrow: 'Sobre a clínica',
-    aboutTitle: 'Sobre esta clínica online multilíngue',
+COPY['ne-NP'] = withLocale(en, {
+    name: 'बहुभाषिक अनलाइन क्लिनिक',
+    description: 'जापानमा बस्ने विदेशीहरूका लागि अनलाइन क्लिनिक। ८ भाषामा परामर्श। क्रेडिट कार्ड नभए पनि जाँच गराउन सकिन्छ।',
+    book: 'बुक गर्नुहोस्',
+    seeFees: 'शुल्क हेर्नुहोस्',
+    sectionNavLabel: 'यस पृष्ठमा',
+    heroBadge: '८ भाषामा अनलाइन परामर्श',
+    heroTitleBefore: 'जापानमा स्वास्थ्य सेवा, ',
+    heroTitleHighlight: 'तपाईंकै भाषामा।',
+    heroLead: 'जापानमा बस्ने विदेशीहरूका लागि अनलाइन क्लिनिक। क्रेडिट कार्ड नभए पनि तपाईं डाक्टरलाई देखाउन सक्नुहुन्छ।',
+    heroNote: 'अपोइन्टमेन्टबाट मात्र। परामर्श निःशुल्क होइन।',
+    heroAlt: 'अनलाइन परामर्शका क्रममा स्मार्टफोन समातेका बिरामी, स्क्रिनमा मुस्कुराउँदै हात हल्लाइरहेका डाक्टर।',
+    badgeTitle: 'क्रेडिट कार्ड आवश्यक छैन',
+    badgeDetail: 'भुक्तानीका विकल्पबारे हामीलाई सोध्नुहोस्',
+    highlights: ['८ भाषामा उपलब्ध', 'क्रेडिट कार्ड आवश्यक छैन', 'घरबाटै डाक्टरलाई देखाउनुहोस्'],
+    aboutEyebrow: 'हाम्रो बारेमा',
+    aboutTitle: 'यो बहुभाषिक अनलाइन क्लिनिकको बारेमा',
     about: [
-        'A clínica apoia estrangeiros que moram no Japão. Dá para usar mesmo sem cartão de crédito.',
-        'Esta página é um resumo antes da consulta. As dúvidas podem esperar o horário marcado.'
+        'यो क्लिनिकले जापानमा बस्ने विदेशीहरूलाई सहयोग गर्छ। क्रेडिट कार्ड नभए पनि तपाईं यसलाई प्रयोग गर्न सक्नुहुन्छ।',
+        'यो पृष्ठ बुक गर्नुअघिको छोटो जानकारी हो। प्रश्नहरू अपोइन्टमेन्टकै बेला सोध्न सकिन्छ।'
     ],
-    navDoctors: 'Médicos',
-    navCases: 'Sintomas',
-    navFees: 'Valores',
-    navFlow: 'Como funciona',
-    doctorsEyebrow: 'Nossos médicos',
-    doctorsTitle: 'Uma mensagem dos médicos',
-    bookEyebrow: 'Reserva',
-    bookTitle: 'Marcar uma consulta',
-    bookLead: 'O atendimento começa com um horário marcado. O fluxo de reserva vai ficar neste botão.',
-    bookNote: 'A clínica atende só com hora marcada, e a consulta é paga.',
-    ctaTitle: 'Comece marcando uma consulta.',
-    ctaLead: 'Depois do pedido, a clínica confirma o dia e a hora.',
-    ctaButton: 'Marcar uma consulta',
-    emergency: 'Em uma emergência, não use a consulta online. Ligue 119 para uma ambulância.',
-    feesLink: 'Ver a tabela de valores',
-    feesEyebrow: 'Valores',
-    feesTitle: 'Valores de referência',
-    feesLead: 'Os valores são uma estimativa e podem mudar conforme a consulta.',
-    rangeLabel: 'Valores de referência',
+    navDoctors: 'डाक्टरहरू',
+    navCases: 'रोग तथा लक्षण',
+    navFees: 'शुल्क',
+    navFlow: 'प्रक्रिया',
+    doctorsEyebrow: 'हाम्रा डाक्टरहरू',
+    doctorsTitle: 'हाम्रा डाक्टरहरूको सन्देश',
+    doctorCopy: [
+        {
+            role: 'क्लिनिक निर्देशक',
+            tag: 'भाषा कहिल्यै तपाईं र उपचारको बीचमा बाधा बन्नु हुँदैन।',
+            paragraphs: [
+                'जापानमा बिरामी पर्दा चिन्ता लाग्न सक्छ, विशेष गरी आफ्ना लक्षणहरू स्पष्ट रूपमा बताउन सकिन्छ कि सकिँदैन भन्ने कुरामा।',
+                'त्यसैले हामी तपाईंकै भाषामा परामर्श दिन्छौं, र हरेक बिरामीको परिस्थिति र पृष्ठभूमि बुझ्न समय दिन्छौं।'
+            ],
+            alt: 'क्लिनिक निर्देशक डा. कान तानाकाको फोटो'
+        },
+        {
+            role: 'चिकित्सक',
+            tag: 'कुनै पनि चिन्ता सोध्नका लागि सानो हुँदैन।',
+            paragraphs: [
+                'कुनै लक्षण डाक्टरलाई देखाउनुपर्ने जत्तिको गम्भीर हो कि होइन भन्नेमा अन्योल छ भने, हामीसँग कुरा गर्ने ठीक समय त्यही हो।',
+                'हामी जीवनशैली र संस्कृतिको भिन्नतालाई सम्मान गर्छौं, र हरेक बिरामीले आफ्नो उपचार बुझून् र ढुक्क महसुस गरून् भन्ने कुरा सुनिश्चित गर्छौं।'
+            ],
+            alt: 'चिकित्सक डा. आया युमिनोको फोटो'
+        }
+    ],
+    casesEyebrow: 'रोग तथा लक्षण',
+    casesTitle: 'सामान्य रोगहरू',
+    casesLead: 'मानिसहरूले हामीसँग अनलाइन प्रायः परामर्श लिने केही लक्षणहरू।',
+    cases: [
+        { title: 'रुघाखोकी', detail: 'ज्वरो, घाँटी दुख्ने, नाक बग्ने, खोकी' },
+        { title: 'इन्फ्लुएन्जा', detail: 'अचानक उच्च ज्वरो, जोर्नी दुख्ने, पूरै शरीर थकित हुने' },
+        { title: 'दम (अस्थमा)', detail: 'खोकी, सास फेर्न गाह्रो हुने, सास फेर्दा घ्यारघ्यार आवाज आउने' },
+        { title: 'मानसिक स्वास्थ्य', detail: 'निद्रा नलाग्ने, चिन्ता, मन उदास हुने' },
+        { title: 'पेट दुखाइ', detail: 'पेट दुख्ने, पखाला, वाकवाकी' }
+    ],
+    noticeEyebrow: 'बुक गर्नुअघि',
+    noticeTitle: 'बुक गर्नुअघि कृपया पढ्नुहोस्',
+    noticeLead: 'पहिलो अपोइन्टमेन्टअघि थाहा पाउनुपर्ने चार कुरा।',
+    notices: [
+        { title: 'अपोइन्टमेन्टबाट मात्र', detail: 'यो क्लिनिकले अपोइन्टमेन्ट लिएका बिरामीहरूलाई मात्र जाँच गर्छ।' },
+        { title: 'परामर्श शुल्क लाग्छ', detail: 'यो निःशुल्क परामर्श सेवा होइन।', feesLink: true },
+        { title: 'थप खर्च लाग्न सक्छ', detail: 'परामर्शपछि औषधि वा रेफरल पत्र जस्ता थप खर्च लाग्न सक्छ।' },
+        { title: 'उपलब्ध भाषाहरू', detail: 'जापानी, अंग्रेजी, चिनियाँ, भियतनामी, तागालोग, फ्रेन्च, नेपाली र इन्डोनेसियाली' }
+    ],
+    feesLink: 'शुल्क विवरण हेर्नुहोस्',
+    feesEyebrow: 'शुल्क',
+    feesTitle: 'शुल्क विवरण',
+    feesLead: 'यी अनुमानित रकम हुन्। वास्तविक खर्च परामर्शअनुसार फरक पर्न सक्छ।',
+    rangeLabel: 'शुल्क विवरण',
     plans: [
-        { amount: 'A partir de ¥1.500', note: 'Sem remédio' },
-        { amount: 'A partir de ¥2.600', note: 'Com remédio' }
+        { amount: '¥1,500 देखि', note: 'औषधि बिना' },
+        { amount: '¥2,600 देखि', note: 'औषधि सहित' }
     ],
-    includedLabel: 'O que pode entrar no valor',
-    fees: ['Consulta inicial', 'Taxa do sistema', 'Remédio', 'Envio do remédio'],
-    referralNote: 'A carta de encaminhamento é cobrada à parte. Pergunte o valor à clínica.'
+    includedLabel: 'शुल्कमा समावेश हुन सक्ने कुराहरू',
+    fees: ['पहिलो परामर्श', 'सिस्टम शुल्क', 'औषधि', 'औषधि पठाउने खर्च'],
+    referralNote: 'रेफरल पत्रको शुल्क छुट्टै लाग्छ। त्यो रकमबारे क्लिनिकलाई सोध्नुहोस्।',
+    flowEyebrow: 'प्रक्रिया',
+    flowTitle: 'परामर्श कसरी हुन्छ',
+    steps: [
+        { title: 'अपोइन्टमेन्टको अनुरोध गर्नुहोस्', detail: 'तपाईं प्रयोग गर्न चाहनुहुने भाषा क्लिनिकलाई बताउनुहोस्।' },
+        { title: 'हामी समय पक्का गर्छौं', detail: 'क्लिनिकले तपाईंको अनुरोध हेरेर मिति र समय पठाउँछ।' },
+        { title: 'अनलाइन परामर्श', detail: 'घर वा कार्यस्थलबाटै डाक्टरसँग कुरा गर्नुहोस्।' },
+        { title: 'भुक्तानी र अर्को चरण', detail: 'क्लिनिकले भुक्तानी गर्ने तरिका, र आवश्यक परे औषधि तथा रेफरल पत्रबारे बताउँछ।' }
+    ],
+    bookEyebrow: 'बुकिङ',
+    bookTitle: 'अपोइन्टमेन्ट बुक गर्नुहोस्',
+    bookLead: 'परामर्श अपोइन्टमेन्टबाट सुरु हुन्छ। त्यो प्रक्रिया तयार नभएसम्म केही पनि पठाइँदैन।',
+    bookNote: 'यो क्लिनिकले अपोइन्टमेन्ट लिएका बिरामीहरूलाई मात्र जाँच गर्छ, र परामर्श निःशुल्क होइन।',
+    ctaTitle: 'अपोइन्टमेन्टबाट सुरु गर्नुहोस्।',
+    ctaLead: 'तपाईंले बुक गरेपछि क्लिनिकले मिति र समय पक्का गर्छ।',
+    ctaButton: 'अपोइन्टमेन्ट बुक गर्नुहोस्',
+    emergency: 'आपतकालीन अवस्थामा अनलाइन परामर्श प्रयोग नगर्नुहोस्। एम्बुलेन्सका लागि 119 मा फोन गर्नुहोस्।'
 })
 
-COPY['ru-RU'] = withLocale(en, {
-    name: 'Многоязычная онлайн-клиника',
-    description: 'Онлайн-клиника для иностранцев, живущих в Японии. Приём на восьми языках. Кредитная карта не нужна.',
-    book: 'Записаться',
-    seeFees: 'Стоимость',
-    sectionNavLabel: 'На этой странице',
-    heroBadge: 'Онлайн-приём на 8 языках',
-    heroTitleBefore: 'Медицина в Японии ',
-    heroTitleHighlight: 'на вашем языке.',
-    heroLead: 'Онлайн-клиника для иностранцев в Японии. К врачу можно попасть и без кредитной карты.',
-    heroNote: 'Только по записи. Приём платный.',
-    heroAlt: 'Человек на онлайн-консультации по телефону: врач на экране улыбается и машет рукой.',
-    badgeTitle: 'Без кредитной карты',
-    badgeDetail: 'Способ оплаты можно обсудить',
-    highlights: ['8 языков', 'Карта не нужна', 'Приём из дома'],
-    aboutEyebrow: 'О клинике',
-    aboutTitle: 'Об этой многоязычной онлайн-клинике',
+COPY['id-ID'] = withLocale(en, {
+    name: 'Klinik online multibahasa',
+    description: 'Klinik online untuk warga asing yang tinggal di Jepang. Konsultasi dalam delapan bahasa. Anda dapat berobat tanpa kartu kredit.',
+    book: 'Buat janji',
+    seeFees: 'Lihat biaya',
+    sectionNavLabel: 'Di halaman ini',
+    heroBadge: 'Konsultasi online dalam 8 bahasa',
+    heroTitleBefore: 'Layanan kesehatan di Jepang, ',
+    heroTitleHighlight: 'dalam bahasa Anda sendiri.',
+    heroLead: 'Klinik online untuk warga asing yang tinggal di Jepang. Anda tetap dapat berkonsultasi dengan dokter meskipun tidak memiliki kartu kredit.',
+    heroNote: 'Hanya dengan janji temu. Konsultasi tidak gratis.',
+    heroAlt: 'Seorang pasien memegang ponsel saat konsultasi online, dengan dokter yang tersenyum melambaikan tangan di layar.',
+    badgeTitle: 'Tidak perlu kartu kredit',
+    badgeDetail: 'Tanyakan kepada kami tentang pilihan pembayaran',
+    highlights: ['Tersedia dalam 8 bahasa', 'Tidak perlu kartu kredit', 'Berobat dari rumah'],
+    aboutEyebrow: 'Tentang kami',
+    aboutTitle: 'Tentang klinik online multibahasa ini',
     about: [
-        'Клиника помогает иностранцам, которые живут в Японии. Ею можно пользоваться без кредитной карты.',
-        'Это короткое описание перед записью. Вопросы можно оставить до самого приёма.'
+        'Klinik ini membantu warga asing yang tinggal di Jepang. Anda dapat menggunakannya meskipun tidak memiliki kartu kredit.',
+        'Halaman ini adalah gambaran singkat sebelum Anda membuat janji. Pertanyaan dapat disampaikan saat janji temu.'
     ],
-    navDoctors: 'Врачи',
-    navCases: 'Жалобы',
-    navFees: 'Стоимость',
-    navFlow: 'Как это проходит',
-    doctorsEyebrow: 'Наши врачи',
-    doctorsTitle: 'Слово от врачей',
-    bookEyebrow: 'Запись',
-    bookTitle: 'Записаться на приём',
-    bookLead: 'Визит начинается с записи. Сама запись позже откроется на этой кнопке.',
-    bookNote: 'Клиника принимает только по записи, и консультация платная.',
-    ctaTitle: 'Начните с записи на приём.',
-    ctaLead: 'После заявки клиника подтвердит дату и время.',
-    ctaButton: 'Записаться на приём',
-    emergency: 'В экстренной ситуации не пользуйтесь онлайн-приёмом. Звоните 119, чтобы вызвать скорую.',
-    feesLink: 'Смотреть ориентир по стоимости',
-    feesEyebrow: 'Стоимость',
-    feesTitle: 'Ориентир по стоимости',
-    feesLead: 'Суммы примерные и могут измениться в зависимости от консультации.',
-    rangeLabel: 'Ориентир по стоимости',
+    navDoctors: 'Dokter',
+    navCases: 'Keluhan',
+    navFees: 'Biaya',
+    navFlow: 'Alur layanan',
+    doctorsEyebrow: 'Dokter kami',
+    doctorsTitle: 'Pesan dari dokter kami',
+    doctorCopy: [
+        {
+            role: 'Direktur Klinik',
+            tag: 'Bahasa seharusnya tidak pernah menjadi penghalang antara Anda dan layanan kesehatan.',
+            paragraphs: [
+                'Jatuh sakit di Jepang bisa membuat khawatir, terutama jika Anda tidak yakin dapat menjelaskan gejala dengan jelas.',
+                'Karena itu kami menyediakan konsultasi dalam bahasa Anda sendiri, dan meluangkan waktu untuk memahami keadaan serta latar belakang setiap pasien.'
+            ],
+            alt: 'Foto dr. Kan Tanaka, Direktur Klinik'
+        },
+        {
+            role: 'Dokter',
+            tag: 'Tempat di mana tidak ada kekhawatiran yang terlalu kecil untuk ditanyakan.',
+            paragraphs: [
+                'Jika Anda ragu apakah suatu gejala cukup serius untuk diperiksakan ke dokter, justru itulah saat yang tepat untuk berbicara dengan kami.',
+                'Kami menghormati perbedaan gaya hidup dan budaya, serta memastikan setiap pasien memahami perawatannya dan merasa nyaman.'
+            ],
+            alt: 'Foto dr. Aya Yumino, Dokter'
+        }
+    ],
+    casesEyebrow: 'Keluhan',
+    casesTitle: 'Keluhan yang sering ditangani',
+    casesLead: 'Beberapa gejala yang paling sering dikonsultasikan kepada kami secara online.',
+    cases: [
+        { title: 'Pilek (selesma)', detail: 'Demam, sakit tenggorokan, hidung berair, batuk' },
+        { title: 'Influenza', detail: 'Demam tinggi mendadak, nyeri sendi, lelah di seluruh tubuh' },
+        { title: 'Asma', detail: 'Batuk, sesak napas, mengi' },
+        { title: 'Kesehatan mental', detail: 'Sulit tidur, kecemasan, suasana hati murung' },
+        { title: 'Sakit perut', detail: 'Nyeri perut, diare, mual' }
+    ],
+    noticeEyebrow: 'Sebelum membuat janji',
+    noticeTitle: 'Harap dibaca sebelum membuat janji',
+    noticeLead: 'Empat hal yang perlu Anda ketahui sebelum janji temu pertama.',
+    notices: [
+        { title: 'Hanya dengan janji temu', detail: 'Klinik hanya melayani pasien yang sudah membuat janji temu.' },
+        { title: 'Dikenakan biaya konsultasi', detail: 'Ini bukan layanan konsultasi gratis.', feesLink: true },
+        { title: 'Mungkin ada biaya tambahan', detail: 'Setelah konsultasi mungkin ada biaya lain, seperti obat atau surat rujukan.' },
+        { title: 'Bahasa yang tersedia', detail: 'Jepang, Inggris, Mandarin, Vietnam, Tagalog, Prancis, Nepal, dan Indonesia' }
+    ],
+    feesLink: 'Lihat panduan biaya',
+    feesEyebrow: 'Biaya',
+    feesTitle: 'Panduan biaya',
+    feesLead: 'Ini adalah perkiraan. Biaya sebenarnya dapat berbeda tergantung konsultasi Anda.',
+    rangeLabel: 'Panduan biaya',
     plans: [
-        { amount: 'От 1 500 иен', note: 'Без лекарств' },
-        { amount: 'От 2 600 иен', note: 'С лекарствами' }
+        { amount: 'Mulai ¥1,500', note: 'Tanpa obat' },
+        { amount: 'Mulai ¥2,600', note: 'Dengan obat' }
     ],
-    includedLabel: 'Что может входить в стоимость',
-    fees: ['Первичный приём', 'Системный сбор', 'Лекарства', 'Доставка лекарств'],
-    referralNote: 'Направление оплачивается отдельно. Сумму подскажет клиника.'
-})
-
-COPY['it-IT'] = withLocale(en, {
-    name: 'Clinica online multilingue',
-    description: 'Una clinica online per chi vive in Giappone e viene da un altro paese. Visite in otto lingue. Si può essere visitati senza carta di credito.',
-    book: 'Prenota',
-    seeFees: 'Vedi i costi',
-    sectionNavLabel: 'In questa pagina',
-    heroBadge: 'Visite online in 8 lingue',
-    heroTitleBefore: 'Cure in Giappone, ',
-    heroTitleHighlight: 'nella tua lingua.',
-    heroLead: 'Una clinica online per i residenti stranieri in Giappone. Puoi parlare con un medico anche senza carta di credito.',
-    heroNote: 'Solo su appuntamento. La visita è a pagamento.',
-    heroAlt: 'Una persona in visita online dal telefono; il medico sullo schermo sorride e saluta.',
-    badgeTitle: 'Senza carta di credito',
-    badgeDetail: 'Parliamo di come pagare',
-    highlights: ['Disponibile in 8 lingue', 'Nessuna carta di credito', 'Visita da casa'],
-    aboutEyebrow: 'Chi siamo',
-    aboutTitle: 'Su questa clinica online multilingue',
-    about: [
-        'La clinica accompagna i residenti stranieri in Giappone. Si può usare anche senza carta di credito.',
-        'Questa pagina è un breve riepilogo prima dell’appuntamento. Le domande possono aspettare la visita.'
+    includedLabel: 'Yang dapat termasuk dalam biaya',
+    fees: ['Konsultasi pertama', 'Biaya sistem', 'Obat', 'Ongkos kirim obat'],
+    referralNote: 'Surat rujukan dikenakan biaya terpisah. Tanyakan jumlahnya kepada klinik.',
+    flowEyebrow: 'Alur layanan',
+    flowTitle: 'Alur konsultasi',
+    steps: [
+        { title: 'Ajukan janji temu', detail: 'Beri tahu klinik bahasa yang ingin Anda gunakan.' },
+        { title: 'Kami mengonfirmasi waktu', detail: 'Klinik memeriksa permintaan Anda lalu mengirimkan tanggal dan jam.' },
+        { title: 'Konsultasi online', detail: 'Berbicara dengan dokter dari rumah atau tempat kerja.' },
+        { title: 'Pembayaran dan langkah selanjutnya', detail: 'Klinik menjelaskan cara pembayaran dan, bila perlu, obat serta surat rujukan.' }
     ],
-    navDoctors: 'Medici',
-    navCases: 'Disturbi',
-    navFees: 'Costi',
-    navFlow: 'Come funziona',
-    doctorsEyebrow: 'I nostri medici',
-    doctorsTitle: 'Un messaggio dai medici',
-    bookEyebrow: 'Appuntamento',
-    bookTitle: 'Prenota una visita',
-    bookLead: 'La visita inizia con un appuntamento. Il percorso di prenotazione arriverà su questo pulsante.',
-    bookNote: 'La clinica riceve solo su appuntamento e la visita è a pagamento.',
-    ctaTitle: 'Inizia prenotando una visita.',
-    ctaLead: 'Dopo la richiesta, la clinica conferma data e ora.',
-    ctaButton: 'Prenota una visita',
-    emergency: 'In caso di emergenza non usare la visita online. Chiama il 119 per un’ambulanza.',
-    feesLink: 'Vedi la guida ai costi',
-    feesEyebrow: 'Costi',
-    feesTitle: 'Guida ai costi',
-    feesLead: 'Gli importi sono indicativi e possono cambiare in base alla visita.',
-    rangeLabel: 'Guida ai costi',
-    plans: [
-        { amount: 'Da 1.500 ¥', note: 'Senza farmaci' },
-        { amount: 'Da 2.600 ¥', note: 'Con farmaci' }
-    ],
-    includedLabel: 'Cosa può comprendere il costo',
-    fees: ['Prima visita', 'Costo di sistema', 'Farmaci', 'Spedizione dei farmaci'],
-    referralNote: 'La lettera di invio si paga a parte. Chiedi l’importo alla clinica.'
+    bookEyebrow: 'Janji temu',
+    bookTitle: 'Buat janji temu',
+    bookLead: 'Konsultasi dimulai dengan janji temu. Tidak ada yang dikirim sampai alur tersebut siap.',
+    bookNote: 'Klinik hanya melayani pasien dengan janji temu, dan konsultasi tidak gratis.',
+    ctaTitle: 'Mulailah dengan membuat janji temu.',
+    ctaLead: 'Setelah Anda membuat janji, klinik akan mengonfirmasi tanggal dan jamnya.',
+    ctaButton: 'Buat janji temu',
+    emergency: 'Dalam keadaan darurat, jangan gunakan konsultasi online. Hubungi 119 untuk memanggil ambulans.'
 })
 
 export type ClinicSiteSeed = {

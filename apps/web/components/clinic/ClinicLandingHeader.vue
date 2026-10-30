@@ -46,7 +46,10 @@
                     </ul>
                 </nav>
                 <div class="flex shrink-0 items-center gap-2">
-                    <LocaleSelector on-primary />
+                    <LocaleSelector
+                        on-primary
+                        :locale-codes="localeCodes"
+                    />
                     <button
                         type="button"
                         class="btn btn-sm btn-on-primary portrait:hidden"
@@ -69,6 +72,8 @@ const props = defineProps<{
     navLabel: string
     bookLabel: string
     sections: readonly { id: string, label: string }[]
+    /** Site locales the clinic has copy for. */
+    localeCodes: readonly string[]
 }>()
 
 const emit = defineEmits<{

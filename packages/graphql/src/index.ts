@@ -596,6 +596,11 @@ export type ClinicSiteSummary = {
   __typename?: 'ClinicSiteSummary';
   facilityId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
+  /**
+   * Site locales the clinic has page copy for, sorted. The page, its generated
+   * HTML, the sitemap, and hreflang offer only these.
+   */
+  localeCodes: Array<Scalars['String']['output']>;
   shareImagePath: Scalars['String']['output'];
   slug: Scalars['String']['output'];
   status: ClinicSiteStatus;
@@ -2917,6 +2922,7 @@ export type ClinicSiteStepResolvers<ContextType = any, ParentType extends Resolv
 export type ClinicSiteSummaryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicSiteSummary'] = ResolversParentTypes['ClinicSiteSummary']> = {
   facilityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  localeCodes?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   shareImagePath?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['ClinicSiteStatus'], ParentType, ContextType>;

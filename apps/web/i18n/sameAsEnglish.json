@@ -59,5 +59,15 @@
   "vi": [
     "common.menu",
     "submitPage.previewLocation"
+  ],
+  "id": [
+    "bookingDashboard.columns.status",
+    "bookingPage.regionNotice.email",
+    "clinicPage.onlineBreadcrumb",
+    "common.menu",
+    "contactPage.emailLabel",
+    "moderationTable.status",
+    "search.email",
+    "submitPage.previewLocation"
   ]
 }
