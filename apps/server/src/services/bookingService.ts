@@ -35,11 +35,11 @@ import { retainUntilFromNow } from '../booking/retention.js'
 import {
     appointmentEndFromStart,
     availableStarts,
-    BOOKING_SLOT_STEP_MINUTES,
     expandWeeklyHours,
     isAlignedToMinutes,
     isPublicSlotRange,
-    resolveAppointmentDuration
+    resolveAppointmentDuration,
+    slotStepMinutes
 } from '../booking/schedule.js'
 import { bookingLockKey, resolvePublicBookingTarget, type BookingTarget } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
@@ -458,8 +458,10 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         return validationError('durationMinutes')
     }
 
+    // A start off the clinic's grid (9:15 when it offers only 30 and 60) is refused here,
+    // not only by the open-start check, so a hand-made request cannot leave a gap.
     const startsAt = new Date(input.startsAt)
-    if (Number.isNaN(startsAt.getTime()) || !isAlignedToMinutes(startsAt, BOOKING_SLOT_STEP_MINUTES)) {
+    if (Number.isNaN(startsAt.getTime()) || !isAlignedToMinutes(startsAt, slotStepMinutes(target.allowedDurations))) {
         return validationError('startsAt')
     }
     const endsAt = appointmentEndFromStart(startsAt, durationMinutes)
@@ -716,7 +718,8 @@ async function listAvailableStartsForTarget(
         closed: closures.map(row => ({ startsAt: new Date(row.starts_at), endsAt: new Date(row.ends_at) })),
         rangeStart: from,
         rangeEnd: to,
-        durationMs: durationMinutes * 60 * 1000
+        durationMs: durationMinutes * 60 * 1000,
+        stepMinutes: slotStepMinutes(target.allowedDurations)
     })
 }
 

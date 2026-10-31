@@ -1,7 +1,11 @@
 /**
  * Staff availability is painted in 30-minute windows.
- * Patients pick a start every 15 minutes inside those windows.
  * Visit length is one of 15, 30, 45, or 60 minutes from the clinic settings.
+ * Patients pick a start on a grid whose step follows those lengths (slotStepMinutes):
+ * every 15 minutes when the clinic offers 15 or 45, otherwise every 30.
+ * Weekly hours, painted windows, and closures all sit on 30-minute boundaries, and
+ * Japan time is a whole number of hours from UTC, so the grid counts from each
+ * doctor's start time.
  */
 
 export const AVAILABILITY_SNAP_MINUTES = 30
@@ -14,8 +18,25 @@ export const MAX_PUBLIC_SLOT_RANGE_MS = 16 * 24 * 60 * 60 * 1000
 export type AppointmentDurationMinutes = typeof ALLOWED_APPOINTMENT_DURATIONS[number]
 
 const AVAILABILITY_SNAP_MS = AVAILABILITY_SNAP_MINUTES * 60 * 1000
-const SLOT_STEP_MS = BOOKING_SLOT_STEP_MINUTES * 60 * 1000
 const DEFAULT_DURATION_MS = DEFAULT_APPOINTMENT_DURATION_MINUTES * 60 * 1000
+
+function greatestCommonDivisor(a: number, b: number): number {
+    return b === 0 ? a : greatestCommonDivisor(b, a % b)
+}
+
+/**
+ * Minutes between the starts a patient may pick: the largest step that divides both
+ * the 30-minute availability grid and every offered length. [30, 60] and [60] step
+ * by 30, so no 15-minute gap is left that no visit can fill; any set with 15 or 45
+ * steps by 15.
+ */
+export function slotStepMinutes(allowed: readonly number[] = DEFAULT_ALLOWED_DURATIONS): number {
+    const lengths = allowed.filter(isAppointmentDuration)
+    if (lengths.length === 0) {
+        return BOOKING_SLOT_STEP_MINUTES
+    }
+    return lengths.reduce(greatestCommonDivisor, AVAILABILITY_SNAP_MINUTES)
+}
 
 export function isAppointmentDuration(value: number): value is AppointmentDurationMinutes {
     return ALLOWED_APPOINTMENT_DURATIONS.some(duration => duration === value)
@@ -218,7 +239,7 @@ export function expandWeeklyHours(hours: readonly WeeklyHours[], rangeStart: Dat
     return windows
 }
 
-/** Candidate appointment starts every 15 minutes that fit duration inside windows and avoid booked ranges. */
+/** Candidate appointment starts on the step grid that fit duration inside windows and avoid booked ranges. */
 export function availableStarts(input: {
     windows: readonly TimeWindow[]
     booked: readonly TimeWindow[]
@@ -227,8 +248,11 @@ export function availableStarts(input: {
     rangeStart: Date
     rangeEnd: Date
     durationMs?: number
+    /** Minutes between starts. slotStepMinutes for the clinic's lengths. */
+    stepMinutes?: number
 }): Date[] {
     const durationMs = input.durationMs ?? DEFAULT_DURATION_MS
+    const stepMs = (input.stepMinutes ?? BOOKING_SLOT_STEP_MINUTES) * 60 * 1000
     const starts: Date[] = []
 
     for (const window of subtractWindows(input.windows, input.closed ?? [])) {
@@ -238,7 +262,7 @@ export function availableStarts(input: {
             continue
         }
 
-        let cursor = Math.ceil(from / SLOT_STEP_MS) * SLOT_STEP_MS
+        let cursor = Math.ceil(from / stepMs) * stepMs
         while (cursor + durationMs <= to) {
             const start = new Date(cursor)
             const end = new Date(cursor + durationMs)
@@ -248,7 +272,7 @@ export function availableStarts(input: {
             if (!overlapsBooked) {
                 starts.push(start)
             }
-            cursor += SLOT_STEP_MS
+            cursor += stepMs
         }
     }
 
