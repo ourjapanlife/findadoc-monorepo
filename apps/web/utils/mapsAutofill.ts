@@ -4,6 +4,7 @@ import {
     pairedPrefectureEn,
     pairedPrefectureJa
 } from '~/stores/locationsStore'
+import { matchOfficialCity, type CityOption } from '~/utils/cityOptions'
 
 export type FacilityMapsFillTarget = {
     nameEn: string
@@ -11,6 +12,9 @@ export type FacilityMapsFillTarget = {
     postalCode: string
     prefectureEn: string
     prefectureJa: string
+    cityId: string
+    cityEn: string
+    cityJa: string
     addressLine1En: string
     addressLine1Ja: string
     mapLatitude: string
@@ -20,40 +24,41 @@ export type FacilityMapsFillTarget = {
 export type MapsFillSource = {
     nameEn: string | null
     nameJa: string | null
-    addressEn: string | null
-    addressJa: string | null
+    postalCode: string | null
+    prefectureEn: string | null
+    prefectureJa: string | null
+    cityEn: string | null
+    cityJa: string | null
+    streetEn: string | null
+    streetJa: string | null
     latitude: number | null
     longitude: number | null
 }
 
-const POSTAL_CODE = /〒?\s*(\d{3})-?(\d{4})/
 const JAPANESE_SCRIPT = /[\u3040-\u30ff\u3400-\u9fff]/
 
 /**
  * Values to copy into facility fields that are still empty.
  * A field the moderator already typed is left alone.
+ * The pin is copied only when both pin fields are empty.
  */
 export function fillEmptyFacilityFields(
     current: FacilityMapsFillTarget,
     source: MapsFillSource
 ): Partial<FacilityMapsFillTarget> {
     const patch: Partial<FacilityMapsFillTarget> = {}
-    assignName(current.nameEn, source.nameEn, 'nameEn', patch)
-    assignName(current.nameJa, source.nameJa, 'nameJa', patch)
-    assignName(current.nameEn, source.nameJa, 'nameEn', patch)
-    assignName(current.nameJa, source.nameEn, 'nameJa', patch)
+    assignScripted(current.nameEn, source.nameEn, 'nameEn', patch)
+    assignScripted(current.nameJa, source.nameJa, 'nameJa', patch)
+    assignScripted(current.nameEn, source.nameJa, 'nameEn', patch)
+    assignScripted(current.nameJa, source.nameEn, 'nameJa', patch)
 
-    const addressEn = source.addressEn?.trim() ?? ''
-    const addressJa = source.addressJa?.trim() ?? ''
-    const postal = postalCodeFromAddress(addressJa) ?? postalCodeFromAddress(addressEn)
+    const postal = normalizePostalCode(source.postalCode)
     if (postal && !current.postalCode.trim()) {
         patch.postalCode = postal
     }
 
-    const prefectureJa = longestContained(addressJa, listPrefectureJapanJa)
-      ?? longestContained(addressEn, listPrefectureJapanJa)
-    const prefectureEn = longestContained(addressEn, listPrefectureJapanEn)
-      ?? longestContained(addressJa, listPrefectureJapanEn)
+    const prefectureJa = officialPrefecture(source.prefectureJa, listPrefectureJapanJa)
+    const prefectureEn = officialPrefecture(source.prefectureEn, listPrefectureJapanEn)
     if (!current.prefectureJa.trim()) {
         const nextJa = prefectureJa || pairedPrefectureJa(prefectureEn ?? '')
         if (nextJa) {
@@ -67,14 +72,17 @@ export function fillEmptyFacilityFields(
         }
     }
 
-    const lineJa = addressRemainder(addressJa, postal, patch.prefectureJa ?? prefectureJa)
-    const lineEn = addressRemainder(addressEn, postal, patch.prefectureEn ?? prefectureEn)
-    if (lineJa && !current.addressLine1Ja.trim()) {
-        patch.addressLine1Ja = lineJa
+    if (!cityIsSet(current)) {
+        assignScripted(current.cityEn, source.cityEn, 'cityEn', patch)
+        assignScripted(current.cityJa, source.cityJa, 'cityJa', patch)
+        assignScripted(current.cityEn, source.cityJa, 'cityEn', patch)
+        assignScripted(current.cityJa, source.cityEn, 'cityJa', patch)
     }
-    if (lineEn && !current.addressLine1En.trim()) {
-        patch.addressLine1En = lineEn
-    }
+
+    assignStreet(current.addressLine1En, source.streetEn, 'addressLine1En', patch)
+    assignStreet(current.addressLine1Ja, source.streetJa, 'addressLine1Ja', patch)
+    assignStreet(current.addressLine1En, source.streetJa, 'addressLine1En', patch)
+    assignStreet(current.addressLine1Ja, source.streetEn, 'addressLine1Ja', patch)
 
     if (!current.mapLatitude.trim() && !current.mapLongitude.trim() && usablePin(source)) {
         patch.mapLatitude = String(source.latitude)
@@ -84,18 +92,91 @@ export function fillEmptyFacilityFields(
     return patch
 }
 
-export function postalCodeFromAddress(address: string): string | null {
-    const match = address.match(POSTAL_CODE)
-    if (!match?.[1] || !match[2]) {
-        return null
+const SINGLE_FIELDS = [
+    'nameEn',
+    'nameJa',
+    'postalCode',
+    'prefectureEn',
+    'prefectureJa',
+    'addressLine1En',
+    'addressLine1Ja'
+] as const
+
+/**
+ * Drop patch keys the moderator filled while a lookup was in flight.
+ * City is one value, and the pin is one value, so a later edit to either side removes both keys.
+ */
+export function withoutFilledFields(
+    current: FacilityMapsFillTarget,
+    patch: Partial<FacilityMapsFillTarget>
+): Partial<FacilityMapsFillTarget> {
+    const next: Partial<FacilityMapsFillTarget> = {}
+
+    for (const key of SINGLE_FIELDS) {
+        const value = patch[key]
+        if (value !== undefined && current[key].trim() === '') {
+            next[key] = value
+        }
     }
-    return `${match[1]}-${match[2]}`
+
+    if (!cityIsSet(current)) {
+        if (patch.cityId !== undefined) next.cityId = patch.cityId
+        if (patch.cityEn !== undefined) next.cityEn = patch.cityEn
+        if (patch.cityJa !== undefined) next.cityJa = patch.cityJa
+    }
+
+    if (current.mapLatitude.trim() === '' && current.mapLongitude.trim() === '') {
+        if (patch.mapLatitude !== undefined) next.mapLatitude = patch.mapLatitude
+        if (patch.mapLongitude !== undefined) next.mapLongitude = patch.mapLongitude
+    }
+
+    return next
 }
 
-function assignName(
+/** Replace a Places city spelling with the official municipality when one row matches. */
+export function officialCityPatch(
+    current: FacilityMapsFillTarget,
+    patch: Partial<FacilityMapsFillTarget>,
+    cities: readonly CityOption[]
+): Partial<FacilityMapsFillTarget> {
+    if (cityIsSet(current) || (!patch.cityEn && !patch.cityJa)) {
+        return patch
+    }
+
+    const prefectureEn = patch.prefectureEn ?? current.prefectureEn
+    const match = matchOfficialCity(cities, prefectureEn, patch.cityEn, patch.cityJa)
+    if (!match) {
+        return patch
+    }
+
+    return {
+        ...patch,
+        cityId: match.id,
+        cityEn: match.nameEn,
+        cityJa: match.nameJa
+    }
+}
+
+/** Format a Japanese postal code as 123-4567, or null when it does not have seven digits. */
+export function normalizePostalCode(value: string | null): string | null {
+    if (value === null) {
+        return null
+    }
+    const digits = value.replace(/\D/g, '')
+    if (digits.length !== 7) {
+        return null
+    }
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`
+}
+
+function cityIsSet(current: FacilityMapsFillTarget): boolean {
+    return Boolean(current.cityId.trim() || current.cityEn.trim() || current.cityJa.trim())
+}
+
+function assignScripted(
     current: string,
     incoming: string | null,
-    key: 'nameEn' | 'nameJa',
+    key: 'nameEn' | 'nameJa' | 'cityEn' | 'cityJa',
     patch: Partial<FacilityMapsFillTarget>
 ) {
     const value = incoming?.trim() ?? ''
@@ -103,41 +184,50 @@ function assignName(
         return
     }
     const japanese = JAPANESE_SCRIPT.test(value)
-    if (key === 'nameJa' && japanese) {
-        patch.nameJa = value
+    if ((key === 'nameJa' || key === 'cityJa') && japanese) {
+        patch[key] = value
+        return
     }
-    if (key === 'nameEn' && !japanese && /[A-Za-z]/.test(value)) {
-        patch.nameEn = value
+    if ((key === 'nameEn' || key === 'cityEn') && !japanese && /[A-Za-z]/.test(value)) {
+        patch[key] = value
     }
+}
+
+function assignStreet(
+    current: string,
+    incoming: string | null,
+    key: 'addressLine1En' | 'addressLine1Ja',
+    patch: Partial<FacilityMapsFillTarget>
+) {
+    const value = incoming?.trim() ?? ''
+    if (!value || current.trim() || patch[key]) {
+        return
+    }
+    const japanese = JAPANESE_SCRIPT.test(value)
+    if (key === 'addressLine1Ja' && (japanese || !/[A-Za-z]/.test(value))) {
+        patch.addressLine1Ja = value
+        return
+    }
+    if (key === 'addressLine1En' && !japanese) {
+        patch.addressLine1En = value
+    }
+}
+
+function officialPrefecture(value: string | null, names: readonly string[]): string | null {
+    const text = value?.trim() ?? ''
+    if (!text) {
+        return null
+    }
+    if (names.includes(text)) {
+        return text
+    }
+    return longestContained(text, names)
 }
 
 function longestContained(address: string, names: readonly string[]): string | null {
-    if (!address) {
-        return null
-    }
     const hits = names.filter(name => address.includes(name))
     hits.sort((left, right) => right.length - left.length)
     return hits[0] ?? null
-}
-
-function addressRemainder(
-    address: string,
-    postal: string | null,
-    prefecture: string | null | undefined
-): string | null {
-    if (!address) {
-        return null
-    }
-    let line = address
-    if (postal) {
-        line = line.replaceAll(postal, ' ')
-    }
-    line = line.replaceAll('〒', ' ')
-    if (prefecture) {
-        line = line.replaceAll(prefecture, ' ')
-    }
-    line = line.replace(/[,、]/g, ' ').replace(/\s+/g, ' ').trim()
-    return line.length >= 4 ? line : null
 }
 
 function usablePin(source: MapsFillSource): source is MapsFillSource & { latitude: number, longitude: number } {

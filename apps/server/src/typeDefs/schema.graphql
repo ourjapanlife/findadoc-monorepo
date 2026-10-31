@@ -980,7 +980,8 @@ type FacilityPlaceCandidate {
 }
 
 """
-Live place details for the submit form. Do not store the name, address, or category.
+Live place details for an open form. Do not store this response.
+A moderator may copy these values into empty facility fields.
 """
 type MapsPlacePreview {
   placeId: String
@@ -988,6 +989,13 @@ type MapsPlacePreview {
   address: String
   """Short place type, such as Medical clinic."""
   category: String
+  postalCode: String
+  prefecture: String
+  city: String
+  """Street line only. The postal code, prefecture, and city stay in their own fields."""
+  street: String
+  latitude: Float
+  longitude: Float
 }
 
 """
@@ -1750,7 +1758,7 @@ type Query {
   facilitiesTotalCount(filters: FacilitySearchFilters!): Int!
 
   """
-  Live name, address, and category for a Maps link on the submit form.
+  Live place details for a Maps link on an open form.
   Nothing in this response is saved.
   """
   mapsPlacePreview(url: String!, languageCode: String): MapsPlacePreview
