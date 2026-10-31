@@ -17,7 +17,7 @@
                 >
                     <button
                         type="button"
-                        class="flex h-full w-full items-center justify-start gap-1.5 rounded-full border px-2 py-1
+                        class="flex size-full min-h-10 items-center justify-start gap-1.5 rounded-full border px-2 py-1
                             text-left text-sm transition-colors disabled:cursor-default"
                         :class="stepClass(index)"
                         :aria-current="index === currentIndex ? 'step' : undefined"
@@ -26,13 +26,13 @@
                         @click="onStepClick(index)"
                     >
                         <span
-                            class="grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold"
+                            class="grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold"
                             :class="badgeClass(index)"
                         >
                             {{ index + 1 }}
                         </span>
                         <span
-                            class="min-w-0 font-medium leading-tight break-words"
+                            class="min-w-0 font-medium leading-tight wrap-anywhere"
                             :class="index === currentIndex ? '' : 'sr-only sm:not-sr-only'"
                         >{{ step.label }}</span>
                     </button>

@@ -71,7 +71,7 @@
                             class="absolute bottom-4 left-4 max-w-[16rem] rounded-xl border
                                 border-accent-bg bg-secondary-bg/95 p-3 shadow-raised backdrop-blur-sm"
                         >
-                            <p class="m-0 text-sm leading-snug">
+                            <p class="m-0 text-sm/snug">
                                 <span class="block font-semibold text-primary-text">{{ copy.badgeTitle }}</span>
                                 <span class="text-primary-text-muted">{{ copy.badgeDetail }}</span>
                             </p>
@@ -82,7 +82,7 @@
                     <li
                         v-for="item in copy.highlights"
                         :key="item"
-                        class="card flex items-center px-4 py-4 text-sm font-semibold"
+                        class="card flex items-center p-4 text-sm font-semibold"
                     >
                         {{ item }}
                     </li>
@@ -134,7 +134,7 @@
                             <li
                                 v-for="language in content.languages"
                                 :key="language.code"
-                                class="chip h-auto min-h-8 max-w-full whitespace-normal break-words py-1"
+                                class="chip h-auto min-h-8 max-w-full whitespace-normal wrap-anywhere py-1"
                             >
                                 {{ language.native }}
                             </li>
@@ -358,7 +358,7 @@
                             class="card p-5"
                         >
                             <span
-                                class="grid h-8 w-8 place-items-center rounded-lg bg-primary
+                                class="grid size-8 place-items-center rounded-lg bg-primary
                                     text-sm font-bold text-primary-text-inverted"
                             >
                                 {{ index + 1 }}
@@ -392,7 +392,7 @@
                             {{ copy.bookLead }}
                         </p>
                     </header>
-                    <p class="rounded-xl bg-primary/10 px-4 py-4 text-sm text-primary">
+                    <p class="rounded-xl bg-primary/10 p-4 text-sm text-primary">
                         {{ copy.bookNote }}
                     </p>
                     <div class="rounded-2xl bg-primary px-6 py-10 text-center text-primary-text-inverted">
@@ -412,7 +412,7 @@
                         </button>
                     </div>
                     <p
-                        class="rounded-xl border border-error/30 bg-error/10 px-4 py-4 text-sm text-primary-text"
+                        class="rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-primary-text"
                         data-testid="clinic-landing-emergency"
                     >
                         {{ copy.emergency }}
