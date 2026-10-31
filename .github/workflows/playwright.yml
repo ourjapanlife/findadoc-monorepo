@@ -21,16 +21,24 @@ env:
 
 permissions:
   contents: read
-  pull-requests: write
+
+# One group for every shard, so a new push cancels all of them.
+concurrency:
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  playwright-e2e:
-    name: Playwright e2e
+  # Each shard starts its own database, API, and site, so the booking specs that
+  # hold real times never share a database with another shard.
+  playwright-e2e-shard:
+    name: Playwright e2e (${{ matrix.shard-index }}/${{ matrix.shard-total }})
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    concurrency:
-      group: playwright-${{ github.ref }}
-      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        shard-index: [1, 2, 3, 4]
+        shard-total: [4]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -87,15 +95,60 @@ jobs:
         working-directory: apps/web
         run: pnpm exec playwright install --with-deps chromium firefox webkit
 
+      # Blob reports from every shard are merged into one HTML and JSON report below.
       - name: Run Playwright e2e tests
         working-directory: apps/web
-        run: pnpm test:e2e:headless
+        run: pnpm test:e2e:headless --shard=${{ matrix.shard-index }}/${{ matrix.shard-total }} --reporter=list,blob
         env:
           NODE_ENV: development
           PLAYWRIGHT_BASE_URL: http://localhost:4242
 
+      - name: Upload blob report
+        if: always() && hashFiles('apps/web/blob-report/*.zip') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: blob-report-${{ matrix.shard-index }}
+          path: apps/web/blob-report/
+          retention-days: 1
+
+      - name: Stop the local database
+        if: always()
+        working-directory: apps/server
+        run: pnpm db:stop
+
+  # Keeps the "Playwright e2e" check name, and fails when any shard failed.
+  playwright-e2e:
+    name: Playwright e2e
+    if: ${{ !cancelled() }}
+    needs: playwright-e2e-shard
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Download blob reports
+        uses: actions/download-artifact@v8
+        with:
+          path: apps/web/all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge reports
+        if: hashFiles('apps/web/all-blob-reports/*.zip') != ''
+        working-directory: apps/web
+        run: pnpm exec playwright merge-reports --reporter=json,html ./all-blob-reports
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: results.json
+
       - name: Playwright report comment
-        if: always() && github.event_name == 'pull_request' && hashFiles('apps/web/results.json') != ''
+        if: github.event_name == 'pull_request' && hashFiles('apps/web/results.json') != ''
         uses: daun/playwright-report-summary@v4
         with:
           report-file: apps/web/results.json
@@ -103,14 +156,15 @@ jobs:
 
       # Always kept: the clinic dashboard spec attaches a screenshot of each tab.
       - name: Upload Playwright report
-        if: always() && hashFiles('apps/web/playwright-report/index.html') != ''
+        if: hashFiles('apps/web/playwright-report/index.html') != ''
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: apps/web/playwright-report/
           retention-days: 7
 
-      - name: Stop the local database
-        if: always()
-        working-directory: apps/server
-        run: pnpm db:stop
+      - name: Fail when a shard failed
+        if: needs.playwright-e2e-shard.result != 'success'
+        run: |
+          echo "A Playwright shard finished as ${{ needs.playwright-e2e-shard.result }}."
+          exit 1
