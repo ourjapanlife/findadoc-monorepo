@@ -346,7 +346,7 @@
     "submissionConfirmationAcceptanceButton": "送信する",
     "submissionConfirmationMessage": "このフォームを送信しますか？",
     "errorMessageFacilityId": "医療機関を更新するには ID が必要です",
-    "facilitySuccessfullyRejected": "医療機関を却下しました",
+    "submissionRejected": "申請を却下しました",
     "rejectSubmissionConfirmationMessage": "この投稿を却下しますか？",
     "rejectSubmissionConfirmationButton": "却下する",
     "searchExistingFacilities": "既存の医療機関を検索",
@@ -493,7 +493,10 @@
     "fieldTooShort": "短すぎる項目があります。",
     "negativeNumber": "負の数は使えません。",
     "nothingToSave": "保存する新しい内容がありません。",
-    "notAllowed": "この操作を行う権限がありません。もう一度ログインするか、管理者に権限を依頼してください。"
+    "notAllowed": "この操作を行う権限がありません。もう一度ログインするか、管理者に権限を依頼してください。",
+    "network": "リクエストが完了しませんでした。接続を確認して、もう一度お試しください。",
+    "prefectureMismatch": "英語と日本語の都道府県名が一致している必要があります。",
+    "prefectureRequired": "英語と日本語の都道府県を入力してください。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "対応言語",
@@ -1079,5 +1082,14 @@
     "accept": "同意する",
     "decline": "拒否する",
     "settings": "Cookie設定"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "この申請は開いていないため、承認できません。",
+    "unableToReject": "この申請は開いていないため、却下できません。"
+  },
+  "moderationListErrors": {
+    "submissions": "申請を読み込めませんでした。もう一度お試しください。",
+    "facilities": "医療機関を読み込めませんでした。もう一度お試しください。",
+    "professionals": "医療従事者を読み込めませんでした。もう一度お試しください。"
   }
 }

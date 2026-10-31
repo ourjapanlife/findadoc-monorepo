@@ -339,7 +339,7 @@
     "submissionConfirmationAcceptanceButton": "Sim, enviar",
     "submissionConfirmationMessage": "Enviar este formulário?",
     "errorMessageFacilityId": "O ID é necessário para atualizar a unidade",
-    "facilitySuccessfullyRejected": "Unidade rejeitada",
+    "submissionRejected": "Envio rejeitado",
     "rejectSubmissionConfirmationMessage": "Rejeitar este envio?",
     "rejectSubmissionConfirmationButton": "Sim, rejeitar",
     "searchExistingFacilities": "Pesquisar unidade existente",
@@ -493,7 +493,10 @@
     "fieldTooShort": "Um dos campos é curto demais.",
     "negativeNumber": "Um número não pode ser negativo.",
     "nothingToSave": "Não há nada novo para salvar.",
-    "notAllowed": "Você não tem permissão para fazer isso. Entre novamente ou peça acesso a um administrador."
+    "notAllowed": "Você não tem permissão para fazer isso. Entre novamente ou peça acesso a um administrador.",
+    "network": "A solicitação não foi concluída. Verifique a conexão e tente novamente.",
+    "prefectureMismatch": "O nome da prefeitura em inglês e em japonês precisa ser o mesmo.",
+    "prefectureRequired": "Informe a prefeitura em inglês e em japonês."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Idiomas falados",
@@ -1079,5 +1082,14 @@
     "accept": "Aceitar",
     "decline": "Recusar",
     "settings": "Configurações de cookies"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Este envio não pode ser aprovado porque não está aberto.",
+    "unableToReject": "Este envio não pode ser rejeitado porque não está aberto."
+  },
+  "moderationListErrors": {
+    "submissions": "Não foi possível carregar os envios. Tente novamente.",
+    "facilities": "Não foi possível carregar as clínicas. Tente novamente.",
+    "professionals": "Não foi possível carregar os profissionais de saúde. Tente novamente."
   }
 }

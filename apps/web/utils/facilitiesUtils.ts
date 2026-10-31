@@ -1,10 +1,35 @@
 import { prefectureLanguageMatch } from '~/stores/locationsStore'
 import type { CreateFacilityInput, UpdateFacilityInput, PhysicalAddressInput } from '@findadoc/graphql'
 import type { FacilitySectionFields } from '~/stores/facilitiesStore'
+import { translatedFormError } from '~/utils/formErrorMessage'
+
+const REQUIRED_FIELD = 'serverErrorMessages.requiredFieldEmpty'
+const PREFECTURE_MISMATCH = 'serverErrorMessages.prefectureMismatch'
+const PREFECTURE_REQUIRED = 'serverErrorMessages.prefectureRequired'
 
 export interface FacilityValidationResult {
     valid: boolean
     errors: string[]
+}
+
+/** Client-side facility checks. `messageKeys` are i18n keys, one per problem. */
+export class FacilityFieldError extends Error {
+    readonly messageKeys: readonly string[]
+
+    constructor(messageKeys: readonly string[]) {
+        const unique = [...new Set(messageKeys)]
+        super(unique.join('; '))
+        this.name = 'FacilityFieldError'
+        this.messageKeys = unique
+    }
+}
+
+export function facilityFieldErrorText(
+    t: (key: string) => string | undefined,
+    messageKeys: readonly string[]
+): string {
+    const lines = [...new Set(messageKeys)].map(key => translatedFormError(t, key))
+    return [...new Set(lines)].join(' ')
 }
 
 /**
@@ -34,7 +59,7 @@ function validateAddress(address?: PhysicalAddressInput | null): FacilityValidat
 
     const { prefectureEn, prefectureJa } = address
     if (!validatePrefectureMatch(prefectureEn, prefectureJa)) {
-        errors.push('Prefecture mismatch: English and Japanese names must match.')
+        errors.push(PREFECTURE_MISMATCH)
     }
 
     return { valid: errors.length === 0, errors }
@@ -46,9 +71,9 @@ function hasNonEmptyNameAndPhone(input: {
     phone?: string | null
 }): string[] {
     const errors: string[] = []
-    if (!input.nameEn?.trim()) errors.push('Required fields cannot be empty.')
-    if (!input.nameJa?.trim()) errors.push('Required fields cannot be empty.')
-    if (!input.phone?.trim()) errors.push('Required fields cannot be empty.')
+    if (!input.nameEn?.trim()) errors.push(REQUIRED_FIELD)
+    if (!input.nameJa?.trim()) errors.push(REQUIRED_FIELD)
+    if (!input.phone?.trim()) errors.push(REQUIRED_FIELD)
     return errors
 }
 
@@ -73,18 +98,18 @@ export function validateCreateFacility(input: CreateFacilityInput): FacilityVali
     const prefectureEn = input.contact?.address?.prefectureEn
     const prefectureJa = input.contact?.address?.prefectureJa
     if (!prefectureEn || !prefectureJa) {
-        errors.push('Please add a prefecture for both Japanese and English.')
+        errors.push(PREFECTURE_REQUIRED)
     }
 
     if (!(input.contact?.googleMapsUrl ?? '').trim()) {
-        errors.push('Required fields cannot be empty.')
+        errors.push(REQUIRED_FIELD)
     }
 
     if (input.mapLatitude === undefined || input.mapLatitude === null || input.mapLatitude === 0) {
-        errors.push('Required fields cannot be empty.')
+        errors.push(REQUIRED_FIELD)
     }
     if (input.mapLongitude === undefined || input.mapLongitude === null || input.mapLongitude === 0) {
-        errors.push('Required fields cannot be empty.')
+        errors.push(REQUIRED_FIELD)
     }
 
     return { valid: errors.length === 0, errors }
@@ -133,14 +158,14 @@ export function validateUpdateFacility(
     for (const key of keysToValidate) {
         const value = fields[key]
         if (typeof value === 'string' && !value.trim()) {
-            errors.push('Required fields cannot be empty.')
+            errors.push(REQUIRED_FIELD)
         }
     }
 
     if (fields.online !== true) {
         if (isZeroCoordinatePlaceholder(fields.mapLatitude)
           || isZeroCoordinatePlaceholder(fields.mapLongitude)) {
-            errors.push('Required fields cannot be empty.')
+            errors.push(REQUIRED_FIELD)
         }
     }
 

@@ -132,7 +132,10 @@
     "fieldTooShort": "Salah satu kolom terlalu pendek.",
     "negativeNumber": "Angka tidak boleh negatif.",
     "nothingToSave": "Tidak ada perubahan baru untuk disimpan.",
-    "notAllowed": "Anda tidak memiliki izin untuk melakukan itu. Masuk kembali, atau minta akses kepada administrator."
+    "notAllowed": "Anda tidak memiliki izin untuk melakukan itu. Masuk kembali, atau minta akses kepada administrator.",
+    "network": "Permintaan tidak selesai. Periksa koneksi Anda, lalu coba lagi.",
+    "prefectureMismatch": "Nama prefektur dalam bahasa Inggris dan bahasa Jepang harus sama.",
+    "prefectureRequired": "Tambahkan prefektur dalam bahasa Inggris dan bahasa Jepang."
   },
   "footer": {
     "poweredBy": "Didukung oleh {name}",
@@ -568,7 +571,6 @@
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",
-    "facilitySuccessfullyRejected": "Fasilitas berhasil ditolak",
     "healthcareProfessionalId": "ID Tenaga Kesehatan",
     "labelHealthcareProfessionalFirstName": "Nama Depan",
     "labelHealthcareProfessionalLastName": "Nama Belakang",
@@ -584,7 +586,8 @@
     "rejectSubmissionConfirmationMessage": "Apakah Anda yakin ingin menolak pengajuan ini?",
     "rejectSubmissionConfirmationButton": "Ya, tolak pengajuan ini",
     "successMessageUpdated": "Pengajuan berhasil diperbarui",
-    "successMessageApproved": "Pengajuan berhasil disetujui"
+    "successMessageApproved": "Pengajuan berhasil disetujui",
+    "submissionRejected": "Pengajuan ditolak"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Bahasa yang digunakan",
@@ -1079,5 +1082,14 @@
     "accept": "Terima",
     "decline": "Tolak",
     "settings": "Pengaturan cookie"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Pengajuan ini tidak dapat disetujui karena tidak lagi terbuka.",
+    "unableToReject": "Pengajuan ini tidak dapat ditolak karena tidak lagi terbuka."
+  },
+  "moderationListErrors": {
+    "submissions": "Pengajuan tidak dapat dimuat. Coba lagi.",
+    "facilities": "Klinik tidak dapat dimuat. Coba lagi.",
+    "professionals": "Tenaga kesehatan tidak dapat dimuat. Coba lagi."
   }
 }
