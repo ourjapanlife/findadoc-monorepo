@@ -20,6 +20,7 @@ import {
 } from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
 import { clinicRequestEmail, isSiteLocale, patientRequestEmail } from '../booking/emailCopy.js'
+import { offersInterpretation } from '../booking/interpretation.js'
 import { BOOKING_UPLOAD_MAX_BYTES } from '../booking/limits.js'
 import { clinicDashboardUrl, newPatientToken, patientBookingUrl } from '../booking/links.js'
 import { noticeClinic, sendBookingNotice } from '../booking/notifications.js'
@@ -84,14 +85,16 @@ export async function getBookingForm(
     if (target === undefined) {
         return null
     }
-    const [practitioners, facilityLanguages] = await Promise.all([
+    const [practitioners, facilityLanguages, interpretation] = await Promise.all([
         listFacilityPractitioners(target.facilityId),
-        facilityLanguagesFor(target.facilityId)
+        facilityLanguagesFor(target.facilityId),
+        offersInterpretation(target.facilityId)
     ])
     return {
         ...bookingFormForTarget(target, chooseFormDefinitionId(target.formDefinitionIds, formId)),
         practitioners,
-        languages: clinicLanguages(practitioners, facilityLanguages)
+        languages: clinicLanguages(practitioners, facilityLanguages),
+        offersInterpretation: interpretation
     }
 }
 
@@ -106,11 +109,18 @@ async function lanesForChoice(
         return undefined
     }
     const practitionerId = practitionerIdInput?.trim() || null
-    const [practitioners, facilityLanguages] = await Promise.all([
+    const [practitioners, facilityLanguages, interpretation] = await Promise.all([
         listFacilityPractitioners(target.facilityId),
-        facilityLanguagesFor(target.facilityId)
+        facilityLanguagesFor(target.facilityId),
+        offersInterpretation(target.facilityId)
     ])
-    const lanes = scheduleLanes({ practitioners, facilityLanguages, practitionerId, languages })
+    const lanes = scheduleLanes({
+        practitioners,
+        facilityLanguages,
+        practitionerId,
+        languages,
+        offersInterpretation: interpretation
+    })
     return lanes === undefined ? undefined : { lanes, languages }
 }
 
@@ -361,6 +371,7 @@ async function notifyBookingParties(input: {
     durationMinutes: number
     locale: string
     patientToken: string
+    languages: readonly string[]
 }): Promise<BookingSubmissionStatus> {
     const requester = requesterEmail(input.storedAnswers)
     const clinicName = input.target.clinicName
@@ -391,6 +402,7 @@ async function notifyBookingParties(input: {
             bookingId: input.bookingId,
             patientName: input.storedAnswers.fullName ?? '',
             patientEmail: requester ?? '',
+            languages: input.languages,
             dashboardUrl: input.target.facilityId === null ? null : clinicDashboardUrl(input.target.facilityId)
         })
     })
@@ -600,7 +612,8 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         startsAt,
         durationMinutes,
         locale: input.locale,
-        patientToken: patientToken.token
+        patientToken: patientToken.token,
+        languages: choice.languages
     })
 
     return {

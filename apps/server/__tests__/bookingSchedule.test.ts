@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { Locale, type BookingPractitioner } from '@findadoc/graphql'
-import { clinicLanguages, parseRequestedLanguages, scheduleLanes } from '../src/booking/practitioners.js'
+import {
+    clinicLanguages,
+    interpretationCovers,
+    parseRequestedLanguages,
+    scheduleLanes
+} from '../src/booking/practitioners.js'
 import { DEFAULT_BOOKING_FORM_ID, staffAnswers } from '../src/booking/formDefinitions.js'
 import { contentDisposition } from '../src/storage/objectStorage.js'
 import {
@@ -238,33 +243,77 @@ describe('schedule lanes', () => {
         doctor('c', [Locale.KoKr], false)
     ]
 
+    // Every case before the interpretation block is a clinic without it.
+    const lanes = (input: Omit<Parameters<typeof scheduleLanes>[0], 'offersInterpretation'>) =>
+        scheduleLanes({ ...input, offersInterpretation: false })
+
     it('searches every doctor schedule, then clinic time, when no one is chosen', () => {
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [] }))
             .toEqual([{ practitionerId: 'a' }, { practitionerId: 'b' }, { practitionerId: null }])
     })
 
     it('keeps only doctors who speak every requested language', () => {
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.EnUs] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.EnUs] }))
             .toEqual([{ practitionerId: 'a' }])
     })
 
     it('keeps clinic time when the clinic or a doctor on clinic time covers the language', () => {
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.KoKr] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.KoKr] }))
             .toEqual([{ practitionerId: null }])
-        expect(scheduleLanes({
+        expect(lanes({
             practitioners, facilityLanguages: [Locale.ViVn], practitionerId: null, languages: [Locale.ViVn]
         })).toEqual([{ practitionerId: null }])
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.ViVn] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.ViVn] }))
             .toEqual([])
     })
 
     it('books a chosen doctor on their own schedule, or on clinic time when they have none', () => {
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'b', languages: [] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: 'b', languages: [] }))
             .toEqual([{ practitionerId: 'b' }])
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'c', languages: [] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: 'c', languages: [] }))
             .toEqual([{ practitionerId: null }])
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'z', languages: [] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: 'z', languages: [] }))
             .toBeUndefined()
+    })
+
+    describe('when the clinic offers interpretation (#205)', () => {
+        const interpreted = [doctor('ja', [Locale.JaJp], true), doctor('clinic', [Locale.JaJp], false)]
+
+        it('keeps a Japanese-only doctor and clinic time for a Nepali request', () => {
+            expect(scheduleLanes({
+                practitioners: interpreted,
+                facilityLanguages: [Locale.NeNp],
+                practitionerId: null,
+                languages: [Locale.NeNp],
+                offersInterpretation: true
+            })).toEqual([{ practitionerId: 'ja' }, { practitionerId: null }])
+        })
+
+        it('narrows the doctors as usual for a language the clinic does not list', () => {
+            expect(scheduleLanes({
+                practitioners: interpreted,
+                facilityLanguages: [Locale.NeNp],
+                practitionerId: null,
+                languages: [Locale.KoKr],
+                offersInterpretation: true
+            })).toEqual([])
+        })
+
+        it('narrows the doctors when the clinic does not offer it', () => {
+            expect(scheduleLanes({
+                practitioners: interpreted,
+                facilityLanguages: [],
+                practitionerId: null,
+                languages: [Locale.NeNp],
+                offersInterpretation: false
+            })).toEqual([])
+            expect(interpretationCovers({
+                practitioners: interpreted,
+                facilityLanguages: [Locale.NeNp],
+                languages: [Locale.NeNp],
+                offersInterpretation: false
+            })).toBe(false)
+        })
     })
 
     it('accepts known languages only and lists the clinic languages once', () => {

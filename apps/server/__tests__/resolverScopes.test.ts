@@ -42,7 +42,8 @@ const clinicFields = new Set([
     'updateBookingAppointmentStatus',
     'inviteClinicMember',
     'removeClinicMember',
-    'updateBookingSettings'
+    'updateBookingSettings',
+    'setBookingInterpretation'
 ])
 const membershipFields = new Set([...signedInFields, ...clinicFields])
 

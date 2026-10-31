@@ -842,6 +842,7 @@
     "manageLink": "Tingnan o kanselahin ang kahilingang ito",
     "languageLabel": "Mga wikang kailangan mo",
     "languageHelp": "Piliin ang mahalaga sa iyo. Ang mga doktor lang na nagsasalita ng lahat ng ito ang ipinapakita.",
+    "languageInterpretationHelp": "Piliin ang mga wikang mahalaga sa iyo. May interpreter ang klinikang ito, kaya kahit sinong doktor ay makakakita sa iyo sa mga wikang ito.",
     "doctorLabel": "Doktor",
     "anyDoctor": "Kahit sinong bakanteng doktor",
     "anyDoctorHelp": "Titingnan ka ng sinumang bakante sa oras na pipiliin mo.",
@@ -1036,7 +1037,10 @@
       "formsHelp": "Makikita ng pasyente ang default na form maliban kung ibang form na inaalok mo ang nakasaad sa Book link.",
       "defaultDuration": "Default na haba",
       "defaultForm": "Default na form",
-      "save": "I-save ang mga setting"
+      "save": "I-save ang mga setting",
+      "interpretation": "Nag-aalok kami ng interpretasyon/pagsasalin: kahit sinong doktor ay makakakita ng pasyente sa bawat wikang inaalok namin",
+      "interpretationHelp": "Makikita ng mga pasyenteng pipili ng isa sa inyong mga wika ang lahat ng doktor at lahat ng bakanteng oras. Makikita sa request ang mga wikang pinili nila.",
+      "interpretationLocked": "Ang Find a Doc ang nag-o-on nito para sa inyong klinika. Makipag-ugnayan sa amin para baguhin ito."
     },
     "members": {
       "heading": "Koponan",

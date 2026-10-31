@@ -687,6 +687,21 @@ const resolvers = {
             )
             convertErrorsToGqlErrors(result)
             return result.data
+        }),
+
+        // CLINIC_SETTINGS_SCOPES lets an owner reach the service, which refuses anyone
+        // canChangeInterpretation does not allow (#205).
+        setBookingInterpretation: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+            _parent: unknown,
+            args: { input: gqlType.SetBookingInterpretationInput },
+            context: UserContext
+        ): Promise<gqlType.BookingSettings> => {
+            const result = await clinicAccessService.setBookingInterpretation(
+                args.input,
+                await bookingAccessForContext(context)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
         })
     }
 }

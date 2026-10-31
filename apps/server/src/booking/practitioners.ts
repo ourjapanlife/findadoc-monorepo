@@ -40,13 +40,15 @@ function speaksAll(spoken: readonly string[], requested: readonly string[]): boo
  * With no doctor chosen: every doctor with their own schedule who speaks every
  * requested language, then the clinic schedule when the clinic covers those
  * languages, either itself (facilities.supported_languages) or through one doctor
- * on the clinic schedule who speaks them all.
+ * on the clinic schedule who speaks them all. When the clinic's interpretation
+ * covers the request, every doctor and the clinic schedule stay bookable.
  */
 export function scheduleLanes(input: {
     practitioners: readonly BookingPractitioner[]
     facilityLanguages: readonly string[]
     practitionerId: string | null
     languages: readonly string[]
+    offersInterpretation: boolean
 }): ScheduleLane[] | undefined {
     if (input.practitionerId !== null) {
         const chosen = input.practitioners.find(practitioner => practitioner.id === input.practitionerId)
@@ -56,18 +58,39 @@ export function scheduleLanes(input: {
         return [{ practitionerId: chosen.hasOwnSchedule ? chosen.id : null }]
     }
 
+    const languages = interpretationCovers(input) ? [] : input.languages
     const lanes: ScheduleLane[] = input.practitioners
-        .filter(practitioner => practitioner.hasOwnSchedule && speaksAll(practitioner.spokenLanguages, input.languages))
+        .filter(practitioner => practitioner.hasOwnSchedule && speaksAll(practitioner.spokenLanguages, languages))
         .map(practitioner => ({ practitionerId: practitioner.id }))
 
-    const clinicCovers = input.languages.length === 0
-        || speaksAll(input.facilityLanguages, input.languages)
+    const clinicCovers = languages.length === 0
+        || speaksAll(input.facilityLanguages, languages)
         || input.practitioners.some(practitioner =>
-            !practitioner.hasOwnSchedule && speaksAll(practitioner.spokenLanguages, input.languages))
+            !practitioner.hasOwnSchedule && speaksAll(practitioner.spokenLanguages, languages))
     if (clinicCovers) {
         lanes.push({ practitionerId: null })
     }
     return lanes
+}
+
+/**
+ * True when the clinic offers interpretation and lists every requested language,
+ * so any doctor can see the patient in them (#205). A language the clinic does not
+ * list still narrows the doctors as usual. Interpretation covers every listed
+ * language at every open time today; per-language interpreter hours would be
+ * checked here.
+ */
+export function interpretationCovers(input: {
+    practitioners: readonly BookingPractitioner[]
+    facilityLanguages: readonly string[]
+    languages: readonly string[]
+    offersInterpretation: boolean
+}): boolean {
+    if (!input.offersInterpretation) {
+        return false
+    }
+    const offered: readonly string[] = clinicLanguages(input.practitioners, input.facilityLanguages)
+    return speaksAll(offered, input.languages)
 }
 
 /** Languages the clinic can offer: its own list, then each doctor's. */

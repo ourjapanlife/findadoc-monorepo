@@ -842,6 +842,7 @@
     "manageLink": "Anfrage ansehen oder stornieren",
     "languageLabel": "Sprachen, die Sie brauchen",
     "languageHelp": "Wählen Sie, was Ihnen wichtig ist. Es werden nur Ärzte gezeigt, die alle gewählten Sprachen sprechen.",
+    "languageInterpretationHelp": "Wählen Sie die Sprachen, die Ihnen wichtig sind. Diese Praxis bietet Dolmetschen an, daher kann Sie jede Ärztin und jeder Arzt in diesen Sprachen behandeln.",
     "doctorLabel": "Arzt oder Ärztin",
     "anyDoctor": "Beliebige verfügbare Ärztin oder beliebiger Arzt",
     "anyDoctorHelp": "Sie werden von der Person behandelt, die zur gewählten Zeit frei ist.",
@@ -1036,7 +1037,10 @@
       "formsHelp": "Patientinnen und Patienten sehen den Standardbogen, außer der Buchungslink nennt einen anderen Bogen, den Sie anbieten.",
       "defaultDuration": "Standarddauer",
       "defaultForm": "Standard",
-      "save": "Einstellungen speichern"
+      "save": "Einstellungen speichern",
+      "interpretation": "Wir bieten Dolmetschen/Übersetzen an: Alle Ärztinnen und Ärzte können Patienten in jeder unserer Sprachen behandeln",
+      "interpretationHelp": "Patienten, die eine Ihrer Sprachen wählen, sehen alle Ärztinnen und Ärzte und alle freien Zeiten. Die Anfrage zeigt die gewählten Sprachen.",
+      "interpretationLocked": "Find a Doc schaltet dies für Ihre Praxis ein. Kontaktieren Sie uns, um es zu ändern."
     },
     "members": {
       "heading": "Praxisteam",

@@ -139,6 +139,11 @@ export type BookingForm = {
   id: Scalars['ID']['output'];
   /** Languages the clinic or one of its doctors speaks, for the patient's language filter. */
   languages: Array<Locale>;
+  /**
+   * The clinic offers interpretation (#205): any doctor sees patients in every language in
+   * languages, so choosing one does not narrow the doctors.
+   */
+  offersInterpretation: Scalars['Boolean']['output'];
   /** Doctors at this clinic the patient may choose. */
   practitioners: Array<BookingPractitioner>;
   themePrimary?: Maybe<Scalars['String']['output']>;
@@ -234,11 +239,15 @@ export type BookingSettings = {
   __typename?: 'BookingSettings';
   /** Visit lengths in minutes. Each value is 15, 30, 45, or 60. */
   allowedDurations: Array<Scalars['Int']['output']>;
+  /** True when this user may turn offersInterpretation on or off. Clinic members may not. */
+  canChangeInterpretation: Scalars['Boolean']['output'];
   /** The offered length the Book page preselects. */
   defaultDuration: Scalars['Int']['output'];
   facilityId: Scalars['ID']['output'];
   /** Intake forms the clinic offers. The first is the default. */
   formDefinitionIds: Array<Scalars['String']['output']>;
+  /** Any doctor sees patients in every language the clinic lists, through an interpreter (#205). */
+  offersInterpretation: Scalars['Boolean']['output'];
 };
 
 /** Read-only staff detail. Scalar answers only; files are separate download links. */
@@ -1344,6 +1353,8 @@ export type Mutation = {
   recordCityPlaceId: City;
   /** Remove a clinic member. Admins remove anyone; an owner removes staff. */
   removeClinicMember: DeleteResult;
+  /** Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on. */
+  setBookingInterpretation: BookingSettings;
   /** Replace the clinic's usual week. Members and moderators. */
   setClinicWeeklyHours: Array<ClinicWeeklyHours>;
   /**
@@ -1463,6 +1474,11 @@ export type MutationRecordCityPlaceIdArgs = {
 
 export type MutationRemoveClinicMemberArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationSetBookingInterpretationArgs = {
+  input: SetBookingInterpretationInput;
 };
 
 
@@ -1995,6 +2011,11 @@ export enum SchemaVersion {
   V1 = 'V1'
 }
 
+export type SetBookingInterpretationInput = {
+  facilityId: Scalars['ID']['input'];
+  offersInterpretation: Scalars['Boolean']['input'];
+};
+
 export type SetClinicWeeklyHoursInput = {
   /** Facility id, clinic site id, or clinic site slug. */
   facilityId: Scalars['ID']['input'];
@@ -2488,6 +2509,7 @@ export type ResolversTypes = {
   Reservation: ResolverTypeWrapper<Reservation>;
   ReservationStatus: ReservationStatus;
   SchemaVersion: SchemaVersion;
+  SetBookingInterpretationInput: SetBookingInterpretationInput;
   SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   Specialty: Specialty;
   SpecialtyCategory: SpecialtyCategory;
@@ -2585,6 +2607,7 @@ export type ResolversParentTypes = {
   Query: Record<PropertyKey, never>;
   Relationship: Relationship;
   Reservation: Reservation;
+  SetBookingInterpretationInput: SetBookingInterpretationInput;
   SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   String: Scalars['String']['output'];
   Submission: Submission;
@@ -2647,6 +2670,7 @@ export type BookingFormResolvers<ContextType = any, ParentType extends Resolvers
   fields?: Resolver<Array<ResolversTypes['BookingFormField']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   languages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
+  offersInterpretation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   practitioners?: Resolver<Array<ResolversTypes['BookingPractitioner']>, ParentType, ContextType>;
   themePrimary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2698,9 +2722,11 @@ export type BookingPractitionerResolvers<ContextType = any, ParentType extends R
 
 export type BookingSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingSettings'] = ResolversParentTypes['BookingSettings']> = {
   allowedDurations?: Resolver<Array<ResolversTypes['Int']>, ParentType, ContextType>;
+  canChangeInterpretation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   defaultDuration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   formDefinitionIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  offersInterpretation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
 export type BookingSubmissionDetailResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingSubmissionDetail'] = ResolversParentTypes['BookingSubmissionDetail']> = {
@@ -3102,6 +3128,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   inviteClinicMember?: Resolver<ResolversTypes['ClinicMember'], ParentType, ContextType, RequireFields<MutationInviteClinicMemberArgs, 'input'>>;
   recordCityPlaceId?: Resolver<ResolversTypes['City'], ParentType, ContextType, RequireFields<MutationRecordCityPlaceIdArgs, 'cityId' | 'placeId'>>;
   removeClinicMember?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationRemoveClinicMemberArgs, 'id'>>;
+  setBookingInterpretation?: Resolver<ResolversTypes['BookingSettings'], ParentType, ContextType, RequireFields<MutationSetBookingInterpretationArgs, 'input'>>;
   setClinicWeeklyHours?: Resolver<Array<ResolversTypes['ClinicWeeklyHours']>, ParentType, ContextType, RequireFields<MutationSetClinicWeeklyHoursArgs, 'input'>>;
   submitBooking?: Resolver<ResolversTypes['BookingSubmissionResult'], ParentType, ContextType, RequireFields<MutationSubmitBookingArgs, 'input'>>;
   updateBookingAppointmentStatus?: Resolver<ResolversTypes['BookingAppointment'], ParentType, ContextType, RequireFields<MutationUpdateBookingAppointmentStatusArgs, 'input'>>;

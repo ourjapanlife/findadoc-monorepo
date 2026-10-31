@@ -842,6 +842,7 @@
     "manageLink": "이 요청 확인 또는 취소",
     "languageLabel": "필요한 언어",
     "languageHelp": "필요한 언어를 고르세요. 고른 언어를 모두 하는 의사만 보입니다.",
+    "languageInterpretationHelp": "중요한 언어를 선택하세요. 이 클리닉은 통역을 제공하므로 모든 의사가 이 언어로 진료할 수 있습니다.",
     "doctorLabel": "의사",
     "anyDoctor": "가능한 의사 누구나",
     "anyDoctorHelp": "고른 시간에 비어 있는 의사가 진료합니다.",
@@ -1036,7 +1037,10 @@
       "formsHelp": "예약 링크에서 다른 양식을 지정하지 않으면 환자에게 기본 양식이 표시됩니다.",
       "defaultDuration": "기본 시간",
       "defaultForm": "기본",
-      "save": "설정 저장"
+      "save": "설정 저장",
+      "interpretation": "통역/번역을 제공합니다: 모든 의사가 저희가 제공하는 모든 언어로 환자를 진료할 수 있습니다",
+      "interpretationHelp": "클리닉의 언어 중 하나를 선택한 환자에게는 모든 의사와 모든 빈 시간이 표시됩니다. 요청에는 환자가 선택한 언어가 표시됩니다.",
+      "interpretationLocked": "이 설정은 Find a Doc이 클리닉에 켜 드립니다. 변경하려면 문의해 주세요."
     },
     "members": {
       "heading": "팀",

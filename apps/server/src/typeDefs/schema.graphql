@@ -1265,6 +1265,11 @@ type BookingForm {
   practitioners: [BookingPractitioner!]!
   """Languages the clinic or one of its doctors speaks, for the patient's language filter."""
   languages: [Locale!]!
+  """
+  The clinic offers interpretation (#205): any doctor sees patients in every language in
+  languages, so choosing one does not narrow the doctors.
+  """
+  offersInterpretation: Boolean!
 }
 
 """A doctor at a booking clinic."""
@@ -1395,6 +1400,10 @@ type BookingSettings {
   defaultDuration: Int!
   """Intake forms the clinic offers. The first is the default."""
   formDefinitionIds: [String!]!
+  """Any doctor sees patients in every language the clinic lists, through an interpreter (#205)."""
+  offersInterpretation: Boolean!
+  """True when this user may turn offersInterpretation on or off. Clinic members may not."""
+  canChangeInterpretation: Boolean!
 }
 
 """What the patient sees on the private cancel page. No answers are returned."""
@@ -1616,6 +1625,11 @@ input UpdateBookingSettingsInput {
   defaultDuration: Int
   """Known form ids. The first is the default."""
   formDefinitionIds: [String!]!
+}
+
+input SetBookingInterpretationInput {
+  facilityId: ID!
+  offersInterpretation: Boolean!
 }
 
 input SubmitBookingInput {
@@ -2011,4 +2025,7 @@ type Mutation {
 
   """Change visit lengths and offered forms. Owners and admins."""
   updateBookingSettings(input: UpdateBookingSettingsInput!): BookingSettings!
+
+  """Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on."""
+  setBookingInterpretation(input: SetBookingInterpretationInput!): BookingSettings!
 }

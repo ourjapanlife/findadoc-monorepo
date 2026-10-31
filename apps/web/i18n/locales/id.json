@@ -842,6 +842,7 @@
     "manageLink": "Lihat atau batalkan permintaan ini",
     "languageLabel": "Bahasa yang Anda butuhkan",
     "languageHelp": "Pilih bahasa yang penting bagi Anda. Hanya dokter yang menguasai semua bahasa tersebut yang ditampilkan.",
+    "languageInterpretationHelp": "Pilih bahasa yang penting bagi Anda. Klinik ini menyediakan juru bahasa, jadi setiap dokter dapat melayani Anda dalam bahasa-bahasa ini.",
     "doctorLabel": "Dokter",
     "anyDoctor": "Dokter mana saja yang tersedia",
     "anyDoctorHelp": "Klinik akan menangani Anda dengan dokter yang sedang luang pada waktu yang Anda pilih.",
@@ -1036,7 +1037,10 @@
       "formsHelp": "Pasien melihat formulir bawaan, kecuali tautan Reservasi menyebutkan formulir lain yang Anda sediakan.",
       "defaultDuration": "Durasi bawaan",
       "defaultForm": "Bawaan",
-      "save": "Simpan pengaturan"
+      "save": "Simpan pengaturan",
+      "interpretation": "Kami menyediakan juru bahasa/penerjemah: setiap dokter dapat melayani pasien dalam semua bahasa yang kami tawarkan",
+      "interpretationHelp": "Pasien yang memilih salah satu bahasa Anda melihat semua dokter dan semua waktu kosong Anda. Permintaan menampilkan bahasa yang mereka pilih.",
+      "interpretationLocked": "Find a Doc mengaktifkan ini untuk klinik Anda. Hubungi kami untuk mengubahnya."
     },
     "members": {
       "heading": "Tim",

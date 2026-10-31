@@ -77,6 +77,7 @@ describe('booking flow', () => {
         await db.deleteFrom('clinic_availability_closures').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('clinic_memberships').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_interpretation').where('facility_id', '=', facilityId).execute()
         if (createdPractitionerIds.length > 0) {
             await db.deleteFrom('hps_facilities').where('hps_id', 'in', createdPractitionerIds).execute()
             await db.deleteFrom('hps').where('id', 'in', createdPractitionerIds).execute()
@@ -478,6 +479,108 @@ describe('booking flow', () => {
         )
         expect(await starts(japanese)).toEqual([])
         await availabilityService.deleteClinicAvailabilityClosure(closure.data.id, admin)
+    })
+
+    it('keeps every doctor bookable for a clinic language when the clinic offers interpretation', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        // Three days on, 10:00-11:00 JST. The Japanese-only doctor is open then. The Nepali
+        // speaker lists Nepali for the clinic but works another weekday, so before
+        // interpretation a Nepali request has no start at that hour.
+        const later = (minutes: number) => iso(3 * 24 * 60 + minutes)
+        const jstWeekday = new Date(new Date(later(0)).getTime() + 9 * 60 * 60 * 1000).getUTCDay() || 7
+        const japaneseOnly = await addDoctor(facilityId, 'Interpreted', [Locale.JaJp])
+        const nepaliSpeaker = await addDoctor(facilityId, 'Nepali', [Locale.NeNp])
+        await availabilityService.setClinicWeeklyHours({
+            facilityId,
+            practitionerId: japaneseOnly,
+            hours: [{ weekday: jstWeekday, startMinute: 600, endMinute: 660 }]
+        }, 'test|staff', admin)
+        await availabilityService.setClinicWeeklyHours({
+            facilityId,
+            practitionerId: nepaliSpeaker,
+            hours: [{ weekday: jstWeekday % 7 + 1, startMinute: 600, endMinute: 660 }]
+        }, 'test|staff', admin)
+
+        // The facility's own list is fake data; empty keeps clinic time out of the Nepali check.
+        const original = await db.selectFrom('facilities')
+            .select('supported_languages')
+            .where('id', '=', facilityId)
+            .executeTakeFirstOrThrow()
+        await db.updateTable('facilities').set({ supported_languages: '[]' }).where('id', '=', facilityId).execute()
+
+        const nepali = () => bookingService.getAvailableBookingStarts(
+            facilityId, later(-60), later(120), 60, undefined, [Locale.NeNp]
+        )
+        try {
+            expect(await nepali()).toEqual([])
+
+            const turnedOn = await clinicAccessService.setBookingInterpretation(
+                { facilityId, offersInterpretation: true },
+                admin
+            )
+            expect(turnedOn.data.offersInterpretation).toBe(true)
+            expect((await bookingService.getBookingForm(facilityId))?.offersInterpretation).toBe(true)
+            expect(await nepali()).toEqual([later(0)])
+            // Interpretation covers only languages the clinic lists.
+            expect(await bookingService.getAvailableBookingStarts(
+                facilityId, later(-60), later(120), 60, undefined, [Locale.RuRu]
+            )).toEqual([])
+
+            const booked = await submit(facilityId, later(0), 'nepali@example.com', { spokenLanguages: [Locale.NeNp] })
+            expect(booked.hasErrors).toBe(false)
+            createdSubmissionIds.push(booked.data.id)
+            const detail = await staffBookingService.getBookingSubmissionDetail(booked.data.id, admin)
+            expect(detail?.practitionerId).toBe(japaneseOnly)
+            expect(detail?.spokenLanguages).toEqual([Locale.NeNp])
+        } finally {
+            await clinicAccessService.setBookingInterpretation({ facilityId, offersInterpretation: false }, admin)
+            await db.updateTable('facilities')
+                .set({
+                    supported_languages: typeof original.supported_languages === 'string'
+                        ? original.supported_languages
+                        : JSON.stringify(original.supported_languages)
+                })
+                .where('id', '=', facilityId)
+                .execute()
+        }
+    })
+
+    it('lets only an admin turn interpretation on or off', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const owner: BookingAccess = {
+            readAll: false,
+            writeAll: false,
+            manageMembersAll: false,
+            memberships: new Map([[facilityId, MEMBERSHIP_ROLE.OWNER]])
+        }
+
+        const refused = await clinicAccessService.setBookingInterpretation(
+            { facilityId, offersInterpretation: true },
+            owner
+        )
+        expect(refused.hasErrors).toBe(true)
+        expect(refused.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+        const ownerView = await clinicAccessService.getBookingSettings(facilityId, owner)
+        expect(ownerView?.offersInterpretation).toBe(false)
+        expect(ownerView?.canChangeInterpretation).toBe(false)
+
+        const allowed = await clinicAccessService.setBookingInterpretation(
+            { facilityId, offersInterpretation: true },
+            admin
+        )
+        expect(allowed.hasErrors).toBe(false)
+        expect(allowed.data.canChangeInterpretation).toBe(true)
+        expect((await clinicAccessService.getBookingSettings(facilityId, owner))?.offersInterpretation).toBe(true)
+
+        const ownerOff = await clinicAccessService.setBookingInterpretation(
+            { facilityId, offersInterpretation: false },
+            owner
+        )
+        expect(ownerOff.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+        expect((await clinicAccessService.setBookingInterpretation(
+            { facilityId, offersInterpretation: false },
+            admin
+        )).data.offersInterpretation).toBe(false)
     })
 
     it('lets an owner invite staff but not another owner', async () => {

@@ -231,6 +231,17 @@ export interface BookingSettingsTable {
     updated_date: Generated<string>
 }
 
+/**
+ * A facility that offers interpretation (#205). A row means every clinic language
+ * is available with every doctor. source is who turned it on.
+ */
+export interface BookingInterpretationTable {
+    facility_id: string
+    source: 'pilot' | 'admin'
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
 /** Patient booking intake. answers is the scalar map; files are booking_uploads rows. */
 export interface BookingSubmissionsTable {
     id: Generated<string>
@@ -352,6 +363,7 @@ export interface Database {
     clinic_site_doctors: ClinicSiteDoctorsTable
     clinic_site_locales: ClinicSiteLocalesTable
     booking_settings: BookingSettingsTable
+    booking_interpretation: BookingInterpretationTable
     booking_submissions: BookingSubmissionsTable
     booking_uploads: BookingUploadsTable
     clinic_availability_windows: ClinicAvailabilityWindowsTable

@@ -842,6 +842,7 @@
     "manageLink": "Xem hoặc hủy yêu cầu này",
     "languageLabel": "Ngôn ngữ bạn cần",
     "languageHelp": "Chọn các ngôn ngữ quan trọng với bạn. Chỉ hiển thị bác sĩ nói được tất cả các ngôn ngữ đó.",
+    "languageInterpretationHelp": "Chọn những ngôn ngữ quan trọng với bạn. Phòng khám này có phiên dịch, vì vậy bác sĩ nào cũng có thể khám cho bạn bằng các ngôn ngữ này.",
     "doctorLabel": "Bác sĩ",
     "anyDoctor": "Bất kỳ bác sĩ nào còn trống",
     "anyDoctorHelp": "Bác sĩ nào rảnh vào giờ bạn chọn sẽ khám cho bạn.",
@@ -1036,7 +1037,10 @@
       "formsHelp": "Bệnh nhân sẽ thấy mẫu mặc định trừ khi liên kết đặt lịch chỉ định một mẫu khác mà bạn cung cấp.",
       "defaultDuration": "Thời lượng mặc định",
       "defaultForm": "Mặc định",
-      "save": "Lưu cài đặt"
+      "save": "Lưu cài đặt",
+      "interpretation": "Chúng tôi có phiên dịch/biên dịch: bác sĩ nào cũng có thể khám cho bệnh nhân bằng mọi ngôn ngữ chúng tôi cung cấp",
+      "interpretationHelp": "Bệnh nhân chọn một trong các ngôn ngữ của bạn sẽ thấy mọi bác sĩ và mọi giờ trống. Yêu cầu hiển thị các ngôn ngữ họ đã chọn.",
+      "interpretationLocked": "Find a Doc bật tính năng này cho phòng khám của bạn. Hãy liên hệ với chúng tôi để thay đổi."
     },
     "members": {
       "heading": "Nhóm",

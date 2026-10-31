@@ -842,6 +842,7 @@
     "manageLink": "Vedi o annulla questa richiesta",
     "languageLabel": "Lingue di cui hai bisogno",
     "languageHelp": "Scegli quelle che ti interessano. Vengono mostrati solo i medici che le parlano tutte.",
+    "languageInterpretationHelp": "Scegli le lingue importanti per te. Questa clinica offre un servizio di interpretariato, quindi ogni medico può visitarti in queste lingue.",
     "doctorLabel": "Medico",
     "anyDoctor": "Qualsiasi medico disponibile",
     "anyDoctorHelp": "Ti visiterà il medico libero all'ora che scegli.",
@@ -1036,7 +1037,10 @@
       "formsHelp": "I pazienti vedono il modulo predefinito, a meno che il link di prenotazione indichi un altro modulo che offri.",
       "defaultDuration": "Durata predefinita",
       "defaultForm": "Predefinito",
-      "save": "Salva impostazioni"
+      "save": "Salva impostazioni",
+      "interpretation": "Offriamo interpretariato/traduzione: ogni medico può visitare i pazienti in tutte le lingue che offriamo",
+      "interpretationHelp": "I pazienti che scelgono una delle vostre lingue vedono tutti i medici e tutti gli orari liberi. La richiesta mostra le lingue scelte.",
+      "interpretationLocked": "Find a Doc attiva questa opzione per la vostra clinica. Contattateci per modificarla."
     },
     "members": {
       "heading": "Squadra",

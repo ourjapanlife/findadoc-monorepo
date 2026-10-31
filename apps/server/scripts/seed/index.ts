@@ -35,6 +35,7 @@ async function runSeed() {
         await client.query('DELETE FROM clinic_availability_closures')
         await client.query('DELETE FROM clinic_weekly_hours')
         await client.query('DELETE FROM booking_settings')
+        await client.query('DELETE FROM booking_interpretation')
         await client.query('DELETE FROM clinic_memberships')
         await client.query('DELETE FROM clinic_site_locales')
         await client.query('DELETE FROM clinic_site_doctors')
@@ -264,6 +265,12 @@ async function runSeed() {
                 facility_id, clinic_site_id, form_definition_ids, allowed_durations
             ) VALUES ($1, $2, ARRAY['showcase-intake-v1', 'findadoc-intake-v1'], ARRAY[15, 30, 45, 60])`,
             [SHOWCASE_FACILITY_ID, SHOWCASE_CLINIC_SITE_ID]
+        )
+
+        // The showcase clinic is the interpretation pilot (#205), as on production.
+        await client.query(
+            `INSERT INTO booking_interpretation (facility_id, source) VALUES ($1, 'pilot')`,
+            [SHOWCASE_FACILITY_ID]
         )
 
         // The showcase Book button needs open times: weekly hours, Monday to Friday, in JST.

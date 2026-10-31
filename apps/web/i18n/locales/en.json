@@ -842,6 +842,7 @@
     "manageLink": "View or cancel this request",
     "languageLabel": "Languages you need",
     "languageHelp": "Choose any that matter to you. Only doctors who speak all of them are shown.",
+    "languageInterpretationHelp": "Choose any that matter to you. This clinic offers interpretation, so every doctor can see you in these languages.",
     "doctorLabel": "Doctor",
     "anyDoctor": "Any available doctor",
     "anyDoctorHelp": "The clinic sees you with whoever is free at the time you choose.",
@@ -1036,7 +1037,10 @@
       "formsHelp": "Patients see the default form unless the Book link names another form you offer.",
       "defaultDuration": "Default length",
       "defaultForm": "Default",
-      "save": "Save settings"
+      "save": "Save settings",
+      "interpretation": "We offer interpretation/translation: any doctor can see patients in every language we offer",
+      "interpretationHelp": "Patients who choose one of your languages see every doctor and all your open times. The request shows the languages they chose.",
+      "interpretationLocked": "Find a Doc turns this on for your clinic. Contact us to change it."
     },
     "members": {
       "heading": "Team",

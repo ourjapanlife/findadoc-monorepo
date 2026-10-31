@@ -6,6 +6,7 @@ import {
     type ClinicMember,
     type DeleteResult,
     type InviteClinicMemberInput,
+    type SetBookingInterpretationInput,
     type UpdateBookingSettingsInput
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
@@ -17,6 +18,7 @@ import {
     type MembershipRole
 } from '../booking/access.js'
 import { formSourceById, listFormSources } from '../booking/formDefinitions.js'
+import { canChangeInterpretation, offersInterpretation, setInterpretation } from '../booking/interpretation.js'
 import { APPOINTMENT_STATUS } from '../booking/lifecycle.js'
 import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedule.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
@@ -259,13 +261,45 @@ export async function getBookingSettings(facilityId: string, access: BookingAcce
     if (!canReadFacility(access, facilityId)) {
         return null
     }
-    const settings = await settingsForFacility(facilityId)
+    return bookingSettingsFor(facilityId, access)
+}
+
+async function bookingSettingsFor(facilityId: string, access: BookingAccess): Promise<BookingSettings> {
+    const [settings, interpretation] = await Promise.all([
+        settingsForFacility(facilityId),
+        offersInterpretation(facilityId)
+    ])
     return {
         facilityId,
         allowedDurations: settings.allowedDurations,
         defaultDuration: settings.defaultDuration,
-        formDefinitionIds: settings.formDefinitionIds
+        formDefinitionIds: settings.formDefinitionIds,
+        offersInterpretation: interpretation,
+        canChangeInterpretation: canChangeInterpretation(access)
     }
+}
+
+/**
+ * Turns interpretation on or off for one clinic (#205). Only canChangeInterpretation
+ * may, so an owner cannot give their clinic a paid add-on. It does not open booking:
+ * that still waits for the clinic's own settings.
+ */
+export async function setBookingInterpretation(
+    input: SetBookingInterpretationInput,
+    access: BookingAccess
+): Promise<Result<BookingSettings>> {
+    if (!canChangeInterpretation(access)) {
+        return forbidden('offersInterpretation')
+    }
+    const facility = await db.selectFrom('facilities')
+        .select('id')
+        .where('id', '=', input.facilityId)
+        .executeTakeFirst()
+    if (facility === undefined) {
+        return invalid('facilityId')
+    }
+    await setInterpretation(input.facilityId, input.offersInterpretation)
+    return { data: await bookingSettingsFor(input.facilityId, access), hasErrors: false }
 }
 
 export async function updateBookingSettings(
@@ -324,7 +358,9 @@ export async function updateBookingSettings(
             facilityId: input.facilityId,
             allowedDurations: durations,
             defaultDuration,
-            formDefinitionIds: formIds
+            formDefinitionIds: formIds,
+            offersInterpretation: await offersInterpretation(input.facilityId),
+            canChangeInterpretation: canChangeInterpretation(access)
         },
         hasErrors: false
     }

@@ -19,6 +19,7 @@ import type {
     CreateClinicAvailabilityClosureInput,
     CreateClinicAvailabilityWindowInput,
     DeleteResult,
+    SetBookingInterpretationInput,
     SetClinicWeeklyHoursInput,
     UpdateBookingSettingsInput
 } from '@findadoc/graphql'
@@ -111,6 +112,8 @@ const SETTINGS_FIELDS = `
   allowedDurations
   defaultDuration
   formDefinitionIds
+  offersInterpretation
+  canChangeInterpretation
 `
 
 const WINDOW_FIELDS = `
@@ -544,4 +547,22 @@ export async function removeClinicMember(id: string): Promise<boolean> {
 export async function updateBookingSettings(input: UpdateBookingSettingsInput): Promise<BookingSettings | null> {
     const data = await request<{ updateBookingSettings: BookingSettings }>(updateSettingsMutation, { input }, WRITE)
     return data?.updateBookingSettings ?? null
+}
+
+const setInterpretationMutation = gql`
+  mutation SetBookingInterpretation($input: SetBookingInterpretationInput!) {
+    setBookingInterpretation(input: $input) {
+      ${SETTINGS_FIELDS}
+    }
+  }
+`
+
+/** Admins only (#205). The API refuses a clinic member. */
+export async function setBookingInterpretation(input: SetBookingInterpretationInput): Promise<BookingSettings | null> {
+    const data = await request<{ setBookingInterpretation: BookingSettings }>(
+        setInterpretationMutation,
+        { input },
+        WRITE
+    )
+    return data?.setBookingInterpretation ?? null
 }

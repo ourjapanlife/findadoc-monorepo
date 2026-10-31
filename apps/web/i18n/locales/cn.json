@@ -842,6 +842,7 @@
     "manageLink": "查看或取消此申请",
     "languageLabel": "您需要的语言",
     "languageHelp": "请选择对您重要的语言。只会显示能说全部所选语言的医生。",
+    "languageInterpretationHelp": "选择对您重要的语言。本诊所提供口译服务，因此每位医生都可以用这些语言为您看诊。",
     "doctorLabel": "医生",
     "anyDoctor": "任何有空的医生",
     "anyDoctorHelp": "由您所选时间有空的医生为您看诊。",
@@ -1036,7 +1037,10 @@
       "formsHelp": "除非预约链接指定了您提供的其他表单，否则患者看到的是默认表单。",
       "defaultDuration": "默认时长",
       "defaultForm": "默认",
-      "save": "保存设置"
+      "save": "保存设置",
+      "interpretation": "我们提供口译/翻译服务：任何医生都可以用我们提供的每种语言为患者看诊",
+      "interpretationHelp": "选择您诊所语言之一的患者可以看到所有医生和所有空闲时间。预约请求会显示患者选择的语言。",
+      "interpretationLocked": "此功能由 Find a Doc 为您的诊所开启。如需更改，请联系我们。"
     },
     "members": {
       "heading": "团队",

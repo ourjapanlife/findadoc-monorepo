@@ -842,6 +842,7 @@
     "manageLink": "Ver ou cancelar este pedido",
     "languageLabel": "Idiomas de que você precisa",
     "languageHelp": "Escolha os que importam para você. Só aparecem médicos que falam todos eles.",
+    "languageInterpretationHelp": "Escolha os idiomas importantes para você. Esta clínica oferece interpretação, então todos os médicos podem atendê-lo nesses idiomas.",
     "doctorLabel": "Médico",
     "anyDoctor": "Qualquer médico disponível",
     "anyDoctorHelp": "Você será atendido por quem estiver livre no horário escolhido.",
@@ -1036,7 +1037,10 @@
       "formsHelp": "Os pacientes veem o formulário padrão, a menos que o link de agendamento indique outro formulário que você oferece.",
       "defaultDuration": "Duração padrão",
       "defaultForm": "Padrão",
-      "save": "Salvar configurações"
+      "save": "Salvar configurações",
+      "interpretation": "Oferecemos interpretação/tradução: qualquer médico pode atender pacientes em todos os idiomas que oferecemos",
+      "interpretationHelp": "Pacientes que escolhem um dos seus idiomas veem todos os médicos e todos os horários livres. A solicitação mostra os idiomas escolhidos.",
+      "interpretationLocked": "O Find a Doc ativa isso para a sua clínica. Entre em contato conosco para alterar."
     },
     "members": {
       "heading": "Equipe da clínica",
