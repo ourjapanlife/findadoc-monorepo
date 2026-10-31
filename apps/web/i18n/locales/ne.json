@@ -132,7 +132,10 @@
     "fieldTooShort": "एउटा फिल्ड धेरै छोटो छ।",
     "negativeNumber": "संख्या ऋणात्मक हुन सक्दैन।",
     "nothingToSave": "सेभ गर्नुपर्ने नयाँ केही छैन।",
-    "notAllowed": "तपाईंलाई यो गर्ने अनुमति छैन। फेरि साइन इन गर्नुहोस्, वा प्रशासकसँग पहुँच माग्नुहोस्।"
+    "notAllowed": "तपाईंलाई यो गर्ने अनुमति छैन। फेरि साइन इन गर्नुहोस्, वा प्रशासकसँग पहुँच माग्नुहोस्।",
+    "network": "अनुरोध पूरा भएन। आफ्नो इन्टरनेट जडान जाँच गरेर फेरि प्रयास गर्नुहोस्।",
+    "prefectureMismatch": "अंग्रेजी र जापानी प्रिफेक्चरको नाम मिल्नुपर्छ।",
+    "prefectureRequired": "प्रिफेक्चर अंग्रेजी र जापानी दुवैमा थप्नुहोस्।"
   },
   "footer": {
     "poweredBy": "{name} द्वारा सञ्चालित",
@@ -568,7 +571,6 @@
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "संस्था अद्यावधिक गर्न संस्थाको ID आवश्यक छ",
-    "facilitySuccessfullyRejected": "संस्था सफलतापूर्वक अस्वीकार गरियो",
     "healthcareProfessionalId": "स्वास्थ्यकर्मीका ID हरू",
     "labelHealthcareProfessionalFirstName": "नाम",
     "labelHealthcareProfessionalLastName": "थर",
@@ -584,7 +586,8 @@
     "rejectSubmissionConfirmationMessage": "के तपाईं यो विवरण अस्वीकार गर्न निश्चित हुनुहुन्छ?",
     "rejectSubmissionConfirmationButton": "हो, विवरण अस्वीकार गर्नुहोस्",
     "successMessageUpdated": "विवरण सफलतापूर्वक अद्यावधिक गरियो",
-    "successMessageApproved": "विवरण सफलतापूर्वक स्वीकृत गरियो"
+    "successMessageApproved": "विवरण सफलतापूर्वक स्वीकृत गरियो",
+    "submissionRejected": "आवेदन अस्वीकार गरियो"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "बोल्ने भाषाहरू",
@@ -1079,5 +1082,14 @@
     "accept": "स्वीकार गर्नुहोस्",
     "decline": "अस्वीकार गर्नुहोस्",
     "settings": "कुकी सेटिङ"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "यो आवेदन खुला नभएकाले स्वीकृत गर्न सकिँदैन।",
+    "unableToReject": "यो आवेदन खुला नभएकाले अस्वीकार गर्न सकिँदैन।"
+  },
+  "moderationListErrors": {
+    "submissions": "आवेदनहरू लोड हुन सकेनन्। फेरि प्रयास गर्नुहोस्।",
+    "facilities": "क्लिनिकहरू लोड हुन सकेनन्। फेरि प्रयास गर्नुहोस्।",
+    "professionals": "स्वास्थ्यकर्मीहरू लोड हुन सकेनन्। फेरि प्रयास गर्नुहोस्।"
   }
 }
