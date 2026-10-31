@@ -420,6 +420,7 @@
     "deleteConfirmationFacility": "의료기관 {facility}(ID: {id})을(를) 삭제하시겠습니까?",
     "deleteConfirmationHealthcareProfessional": "의료인 {healthcareProfessional}(ID: {id})을(를) 삭제하시겠습니까?",
     "facilityDeletedSuccessfully": "의료기관이 삭제되었습니다",
+    "facilityHasBookings": "이 병원에는 예약({count}건)이 있어 삭제할 수 없습니다. 예약 기록은 환자를 위해 보관됩니다.",
     "facilityUpdatedSuccessfully": "의료기관이 업데이트되었습니다",
     "healthcareProfessionalDeletedSuccessfully": "의료인이 삭제되었습니다",
     "healthcareProfessionalUpdatedSuccessfully": "의료인이 업데이트되었습니다",

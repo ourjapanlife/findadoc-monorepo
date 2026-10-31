@@ -5,7 +5,8 @@ import 'dotenv/config'
 
 import { consentDeniedCookie, shouldRunModerationTests } from './tests/e2e/fixtures'
 
-const moderationSpecGlob = '**/moderation*.spec.ts'
+// Specs that need the Auth0 test user: moderation, and the clinic dashboard it owns in the local seed.
+const signedInSpecGlobs = ['**/moderation*.spec.ts', '**/clinicDashboard.spec.ts']
 const moderationSetupGlob = '**/moderation-auth.setup.ts'
 
 /** CI always runs moderation (expects secrets); locally only when Auth0 env is complete. */
@@ -36,7 +37,7 @@ function buildProjects(ciBrowsers: boolean) {
         return browserDefs.map(({ name, device }) => ({
             name,
             use: { ...device, storageState: consentDecided },
-            testIgnore: [moderationSetupGlob, moderationSpecGlob]
+            testIgnore: [moderationSetupGlob, ...signedInSpecGlobs]
         }))
     }
 
@@ -49,12 +50,12 @@ function buildProjects(ciBrowsers: boolean) {
         ...browserDefs.map(({ name, device }) => ({
             name,
             use: { ...device, storageState: consentDecided },
-            testIgnore: [moderationSpecGlob, moderationSetupGlob]
+            testIgnore: [...signedInSpecGlobs, moderationSetupGlob]
         })),
         {
             name: 'chromium-moderation',
             dependencies: ['setup-moderation'],
-            testMatch: moderationSpecGlob,
+            testMatch: signedInSpecGlobs,
             testIgnore: [moderationSetupGlob],
             use: {
                 ...devices['Desktop Chrome'],

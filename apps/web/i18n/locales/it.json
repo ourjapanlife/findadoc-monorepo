@@ -327,6 +327,7 @@
     "update": "Aggiorna",
     "updateAndExit": "Aggiorna & Esci",
     "facilityDeletedSuccessfully": "Struttura eliminata con successo",
+    "facilityHasBookings": "Questa clinica non può essere eliminata finché ha prenotazioni ({count}). I dati delle prenotazioni vengono conservati per i pazienti.",
     "facilityUpdatedSuccessfully": "Struttura aggiornata con successo",
     "healthcareProfessionalDeletedSuccessfully": "Professionista sanitario eliminato con successo",
     "healthcareProfessionalUpdatedSuccessfully": "Professionista sanitario aggiornato con successo",

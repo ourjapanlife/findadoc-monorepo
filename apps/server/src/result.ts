@@ -8,6 +8,8 @@ export type Error = {
     field: string,
     errorCode: ErrorCode,
     httpStatus?: number,
+    /** How many rows the error is about, such as the bookings that keep a facility from being deleted. */
+    count?: number,
 }
 
 export enum ErrorCode {
@@ -40,5 +42,6 @@ export enum ErrorCode {
     INVALID_INPUT = 'INVALID_INPUT',
     FORBIDDEN = 'FORBIDDEN',
     TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS',
-    OPEN_REQUEST_LIMIT = 'OPEN_REQUEST_LIMIT'
+    OPEN_REQUEST_LIMIT = 'OPEN_REQUEST_LIMIT',
+    FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS'
 }

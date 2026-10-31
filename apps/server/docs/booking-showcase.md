@@ -145,6 +145,8 @@ Replace `localhost:3000` with `www.findadoc.jp` (and `.localhost:3000` with `.fi
 
 Run these before the demo. Expected results assume the local seed.
 
+Playwright runs 1, 5, 6, 7, 8, 10, and 12 on every pull request against the seeded showcase: `apps/web/tests/e2e/bookingFlow.spec.ts` as a signed-out patient, and `clinicDashboard.spec.ts` as the Auth0 test user, which it makes an owner of the showcase first (`pnpm --filter @findadoc/server e2e:clinic-owner`). The run's report has a screenshot of each dashboard tab.
+
 | # | Test | Steps | Expected |
 |---|---|---|---|
 | 1 | Subdomain Book | Clinic page → Book (header and the Book section) | Lands on `/book/c32c316a-…` with the clinic's name and colour |
@@ -188,7 +190,7 @@ Sign in with a plain (non-admin) account with that sub. You see only the showcas
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `pnpm db:start`: "port is already allocated" | Old Supabase stack on 54322 | Section 4 step 1 (#168) |
+| `pnpm db:start`: "Port 54322 is taken by the Docker container supabase_db_findadoc-server" | Old Supabase stack on 54322 | Section 4 step 1, or run on another port with `PGPORT` |
 | Book page: no times | No open hours in range | Check Settings → Weekly hours and closures on the calendar, or re-seed locally |
 | Clinic subdomain doesn't show the clinic page | Preview cookie missing on that host | Open `…/?preview=1` once in that window |
 | Dashboard: "This account is not linked to a clinic yet" | Plain account and no claimed membership | Use an Admin account, or the SQL above; production needs #158 |

@@ -11,13 +11,13 @@ import { ApolloServer, GraphQLRequestContext } from '@apollo/server'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { envVariables } from '../utils/environmentVariables.js'
 import { isAllowedApiOrigin } from './apiCors.js'
+import { apiRateLimitOptions } from './apiRateLimit.js'
 import { buildUserContext, initializeAuth } from './auth.js'
 import { createLoaders, type ApiContext } from './loaders.js'
 import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
 import { logger } from './logger.js'
 import { isServerError, requestErrorFields } from './requestErrors.js'
-import { clientIpFrom } from '@findadoc/utils'
 import { BOOKING_UPLOAD_MAX_BYTES } from './booking/limits.js'
 import {
     contentDisposition,
@@ -54,12 +54,10 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
     })
 
     //add rate limiting to prevent abuse
-    await fastify.register(rateLimitPlugin, {
-        max: 100,
-        timeWindow: '1 minute',
-        // per person, not per CloudFront edge (see clientIp.ts)
-        keyGenerator: request => clientIpFrom(request, envVariables.edgeSharedSecret())
-    })
+    await fastify.register(rateLimitPlugin, apiRateLimitOptions({
+        edgeSecret: envVariables.edgeSharedSecret(),
+        isProduction: envVariables.isProduction()
+    }))
 
     //add compression to reduce the size of the requests/responses (makes the api faster)
     await fastify.register(compressionPlugin)

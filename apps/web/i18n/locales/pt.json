@@ -462,6 +462,7 @@
     "facilityUpdatedSuccessfully": "Unidade atualizada",
     "deleteButtonText": "EXCLUIR PARA SEMPRE",
     "facilityDeletedSuccessfully": "Unidade excluída",
+    "facilityHasBookings": "Esta clínica não pode ser excluída enquanto tiver reservas ({count}). Os registros de reserva são mantidos para os pacientes.",
     "healthcareProfessionalDeletedSuccessfully": "Profissional de saúde excluído",
     "healthcareProfessionalUpdatedSuccessfully": "Profissional de saúde atualizado",
     "back": "Voltar",

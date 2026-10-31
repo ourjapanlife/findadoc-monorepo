@@ -1181,9 +1181,35 @@ async function processHealthcareProfessionalRelationshipChanges(
     return finalRelations.map((r: any) => r.hps_id)
 }
 
+/** Thrown inside the delete transaction so it rolls back. */
+class FacilityHasBookingsError extends Error {
+    constructor(readonly bookingCount: number) {
+        super(`Facility has ${bookingCount} bookings`)
+    }
+}
+
+/**
+ * Patient records that keep a facility from being deleted: every booking request,
+ * and any upload or appointment not attached to one. The booking tables reference
+ * facilities with ON DELETE RESTRICT so these are never deleted with a clinic.
+ */
+async function countFacilityBookings(transaction: Transaction<Database>, facilityId: string): Promise<number> {
+    const { rows: [row] } = await sql<{ count: number }>`
+        SELECT
+            (SELECT count(*) FROM booking_submissions WHERE facility_id = ${facilityId})
+          + (SELECT count(*) FROM booking_uploads WHERE facility_id = ${facilityId} AND booking_submission_id IS NULL)
+          + (SELECT count(*) FROM booking_appointments WHERE facility_id = ${facilityId} AND booking_submission_id IS NULL)
+          AS count
+    `.execute(transaction)
+
+    return Number(row?.count ?? 0)
+}
+
 /**
  * This deletes a Facility from the database.
  * If the Facility doesn't exist, it will return a validation error.
+ * A facility with bookings is refused with FACILITY_HAS_BOOKINGS and the number of bookings.
+ * Without bookings, its booking settings and extra open times are deleted with it.
  * @param id The ID of the facility in the database to delete.
  */
 export async function deleteFacility(
@@ -1227,6 +1253,16 @@ export async function deleteFacility(
 
             const hpIds = relations.map(r => r.hps_id)
 
+            const bookingCount = await countFacilityBookings(transaction, id)
+
+            if (bookingCount > 0) {
+                throw new FacilityHasBookingsError(bookingCount)
+            }
+
+            // Clinic setup with no patient data. Weekly hours, closures, and members cascade.
+            await transaction.deleteFrom('booking_settings').where('facility_id', '=', id).execute()
+            await transaction.deleteFrom('clinic_availability_windows').where('facility_id', '=', id).execute()
+
             // Delete the facility
             // ON DELETE CASCADE will automatically delete rows in hps_facilities
             await transaction
@@ -1255,7 +1291,21 @@ export async function deleteFacility(
     } catch (error) {
         // If we reach here, the transaction was automatically rolled back
         // The facility still exists in the database no manual cleanup needed
-        
+
+        if (error instanceof FacilityHasBookingsError) {
+            logger.warn(`deleteFacility: facility ${id} has ${error.bookingCount} bookings`)
+            return {
+                data: { isSuccessful: false },
+                hasErrors: true,
+                errors: [{
+                    field: 'deleteFacility',
+                    errorCode: ErrorCode.FACILITY_HAS_BOOKINGS,
+                    httpStatus: 409,
+                    count: error.bookingCount
+                }]
+            }
+        }
+
         // Check if it's a "not found" error vs other database errors
         const errorMessage = (error as Error).message
 

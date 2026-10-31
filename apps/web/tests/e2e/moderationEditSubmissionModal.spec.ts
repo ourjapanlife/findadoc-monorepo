@@ -50,7 +50,7 @@ test.describe('Moderation edit submission topbar modals', () => {
         await failUpdateSubmission(page, 'network')
         await page.getByTestId('submission-topNav-update').click()
 
-        await expect(page.getByText(enUS.serverErrorMessages.network)).toBeVisible()
+        await expect(toastWithText(page, enUS.serverErrorMessages.network)).toBeVisible()
         await expect(page.getByText(enUS.modSubmissionForm.successMessageUpdated)).toHaveCount(0)
         await expect(facilityName).toHaveValue(keptName)
         await expect(page).toHaveURL(/\/my-page\/edit-submission\//)
@@ -63,12 +63,17 @@ test.describe('Moderation edit submission topbar modals', () => {
         await page.getByTestId('mod-edit-submission-reject-button').click()
         await page.getByRole('button', { name: enUS.modSubmissionForm.rejectSubmissionConfirmationButton }).click()
 
-        await expect(page.getByText(enUS.serverErrorMessages.serverUnavailable)).toBeVisible()
+        await expect(toastWithText(page, enUS.serverErrorMessages.serverUnavailable)).toBeVisible()
         await expect(page.getByText(enUS.modSubmissionForm.submissionRejected)).toHaveCount(0)
         await expect(page.getByTestId('mod-edit-submission-approve-button')).toBeVisible()
         await expect(page).toHaveURL(/\/my-page\/edit-submission\//)
     })
 })
+
+// The toast's live region repeats its text in a hidden span, so a bare getByText matches twice.
+function toastWithText(page: Page, text: string) {
+    return page.locator('li[data-status]').filter({ hasText: text })
+}
 
 function isApiRequest(url: URL): boolean {
     return (url.hostname === '127.0.0.1' && url.port === '4000')

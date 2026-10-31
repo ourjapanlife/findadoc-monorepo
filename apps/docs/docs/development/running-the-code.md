@@ -120,6 +120,25 @@ pnpm db:seed             # load the seed data
 pnpm dev:server          # start the API
 ```
 
+`PGHOST` and `PGPORT` choose the database for all of these, the API, and the API tests. They default to `127.0.0.1` and `54322`. `pnpm db:reset` and `pnpm db:seed` refuse any host that is not this machine.
+
+### Port 54322 Is Taken { #port-taken }
+
+`pnpm db:start` names what holds the port. Usually it is the old local Supabase stack (`supabase_db_findadoc-server`). Stop it before you reset or seed, or those commands change its database instead of `findadoc-db`. Its data is kept.
+
+```bash
+supabase stop                                              # in the old Supabase project, or
+docker stop $(docker ps -q --filter "name=_findadoc-server")  # stops every supabase_*_findadoc-server container
+pnpm db:start
+```
+
+To keep the other database running, use another port, and set the same `PGPORT` for every command and the API:
+
+```bash
+PGPORT=54333 pnpm db:start
+PGPORT=54333 pnpm db:reset
+```
+
 ### Debugging
 
 You can debug the API with VS Code: open the **Run and Debug** tab, choose **JavaScript Debug Terminal**, then run `pnpm dev:server` in that terminal. The debugger connects automatically. Add breakpoints by clicking on line numbers.

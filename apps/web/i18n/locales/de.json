@@ -510,6 +510,7 @@
     "facilityUpdatedSuccessfully": "Einrichtung aktualisiert",
     "deleteButtonText": "ENDGÜLTIG LÖSCHEN",
     "facilityDeletedSuccessfully": "Einrichtung gelöscht",
+    "facilityHasBookings": "Diese Klinik kann nicht gelöscht werden, solange sie Buchungen hat ({count}). Buchungsdaten werden für die Patientinnen und Patienten aufbewahrt.",
     "healthcareProfessionalDeletedSuccessfully": "Gesundheitsfachkraft gelöscht",
     "healthcareProfessionalUpdatedSuccessfully": "Gesundheitsfachkraft aktualisiert",
     "back": "Zurück",

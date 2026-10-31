@@ -420,6 +420,7 @@
     "deleteConfirmationFacility": "Apakah Anda yakin ingin menghapus Fasilitas: {facility}, dengan ID: {id}?",
     "deleteConfirmationHealthcareProfessional": "Apakah Anda yakin ingin menghapus Tenaga Kesehatan: {healthcareProfessional}, dengan ID: {id}?",
     "facilityDeletedSuccessfully": "Fasilitas berhasil dihapus",
+    "facilityHasBookings": "Klinik ini tidak dapat dihapus selama masih memiliki reservasi ({count}). Catatan reservasi disimpan untuk pasien.",
     "facilityUpdatedSuccessfully": "Fasilitas berhasil diperbarui",
     "healthcareProfessionalDeletedSuccessfully": "Tenaga Kesehatan berhasil dihapus",
     "healthcareProfessionalUpdatedSuccessfully": "Tenaga Kesehatan berhasil diperbarui",

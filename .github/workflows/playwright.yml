@@ -101,8 +101,9 @@ jobs:
           report-file: apps/web/results.json
           comment-title: "Playwright e2e test results"
 
+      # Always kept: the clinic dashboard spec attaches a screenshot of each tab.
       - name: Upload Playwright report
-        if: failure()
+        if: always() && hashFiles('apps/web/playwright-report/index.html') != ''
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report

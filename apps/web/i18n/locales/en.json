@@ -420,6 +420,7 @@
     "deleteConfirmationFacility": "Are you sure you want to delete the Facility: {facility}, with ID: {id}?",
     "deleteConfirmationHealthcareProfessional": "Are you sure you want to delete the Healthcare Professional: {healthcareProfessional}, with ID: {id}?",
     "facilityDeletedSuccessfully": "Facility deleted successfully",
+    "facilityHasBookings": "This clinic cannot be deleted while it has bookings ({count}). Booking records are kept for patients.",
     "facilityUpdatedSuccessfully": "Facility updated successfully",
     "healthcareProfessionalDeletedSuccessfully": "Healthcare Professional deleted successfully",
     "healthcareProfessionalUpdatedSuccessfully": "Healthcare Professional updated successfully",

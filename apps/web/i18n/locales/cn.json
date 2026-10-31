@@ -462,6 +462,7 @@
     "facilityUpdatedSuccessfully": "医疗机构已更新",
     "deleteButtonText": "永久删除",
     "facilityDeletedSuccessfully": "医疗机构已删除",
+    "facilityHasBookings": "该诊所有预约（{count} 条），因此无法删除。预约记录会为患者保留。",
     "healthcareProfessionalDeletedSuccessfully": "医疗人员已删除",
     "healthcareProfessionalUpdatedSuccessfully": "医疗人员已更新",
     "back": "返回",

@@ -1,4 +1,5 @@
 import pg from 'pg'
+import { isLocalHost, localDatabaseConfig } from '../../utils/localDatabase.js'
 import { seedData } from './data.js'
 import { clinicSiteSeeds, SHOWCASE_CLINIC_SITE_ID, SHOWCASE_FACILITY_ID } from './clinicSiteContent.js'
 import type {
@@ -11,13 +12,17 @@ import type {
 const { Client } = pg
 
 async function runSeed() {
-    const client = new Client({
-        host: '127.0.0.1',
-        port: 54322,
-        user: 'postgres',
-        password: 'postgres',
-        database: 'postgres'
-    })
+    // PGHOST and PGPORT choose the database, as they do for the API. The seed clears tables first,
+    // so any host but this machine is refused.
+    const database = localDatabaseConfig()
+
+    if (!isLocalHost(database.host)) {
+        console.error(`db:seed only runs against the local database. PGHOST is ${database.host}.`)
+        process.exitCode = 1
+        return
+    }
+
+    const client = new Client(database)
 
     await client.connect()
 

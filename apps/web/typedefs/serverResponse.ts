@@ -11,6 +11,8 @@ export type ServerError = {
     code: ErrorCode
     /** The input field the server refused, such as `email`. Only validation errors name one. */
     field: string | undefined
+    /** How many rows the error is about, such as the bookings that keep a clinic from being deleted. */
+    count?: number
 }
 
 export type ServerErrorResponse = {
@@ -53,6 +55,7 @@ export enum ErrorCode {
     TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS',
     OPEN_REQUEST_LIMIT = 'OPEN_REQUEST_LIMIT',
     BOOKING_REGION_UNAVAILABLE = 'BOOKING_REGION_UNAVAILABLE',
+    FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS',
     /** The request never produced GraphQL errors: a timeout, a dropped connection, or an empty failure. */
     NETWORK = 'NETWORK'
 }

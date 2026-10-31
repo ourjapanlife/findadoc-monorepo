@@ -420,6 +420,7 @@
     "deleteConfirmationFacility": "के तपाईं संस्था: {facility}, ID: {id} मेटाउन निश्चित हुनुहुन्छ?",
     "deleteConfirmationHealthcareProfessional": "के तपाईं स्वास्थ्यकर्मी: {healthcareProfessional}, ID: {id} मेटाउन निश्चित हुनुहुन्छ?",
     "facilityDeletedSuccessfully": "संस्था सफलतापूर्वक मेटाइयो",
+    "facilityHasBookings": "बुकिङ ({count}) भएसम्म यो क्लिनिक मेटाउन सकिँदैन। बुकिङका अभिलेखहरू बिरामीहरूका लागि राखिन्छन्।",
     "facilityUpdatedSuccessfully": "संस्था सफलतापूर्वक अद्यावधिक गरियो",
     "healthcareProfessionalDeletedSuccessfully": "स्वास्थ्यकर्मी सफलतापूर्वक मेटाइयो",
     "healthcareProfessionalUpdatedSuccessfully": "स्वास्थ्यकर्मी सफलतापूर्वक अद्यावधिक गरियो",

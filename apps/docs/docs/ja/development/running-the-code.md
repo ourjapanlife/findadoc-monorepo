@@ -120,6 +120,25 @@ pnpm db:seed             # シードデータを投入
 pnpm dev:server          # APIを起動
 ```
 
+これらのコマンド、API、APIのテストはすべて `PGHOST` と `PGPORT` で接続先のデータベースを決めます。既定値は `127.0.0.1` と `54322` です。`pnpm db:reset` と `pnpm db:seed` は、このマシン以外のホストを拒否します。
+
+### ポート54322が使われている { #port-taken }
+
+`pnpm db:start` は、そのポートを使っているものを表示します。たいていは古いローカルSupabase（`supabase_db_findadoc-server`）です。リセットやシードの前に止めてください。止めないと、これらのコマンドは `findadoc-db` ではなくそのデータベースを書き換えます。データは消えません。
+
+```bash
+supabase stop                                              # 古いSupabaseプロジェクトで実行、または
+docker stop $(docker ps -q --filter "name=_findadoc-server")  # supabase_*_findadoc-server のコンテナをすべて停止
+pnpm db:start
+```
+
+もう一方のデータベースを動かしたままにする場合は、別のポートを使い、すべてのコマンドとAPIに同じ `PGPORT` を設定してください。
+
+```bash
+PGPORT=54333 pnpm db:start
+PGPORT=54333 pnpm db:reset
+```
+
 ### デバッグ
 
 VS CodeでAPIをデバッグできます：**Run and Debug**タブを開き、**JavaScript Debug Terminal**を選択し、そのターミナルで`pnpm dev:server`を実行してください。デバッガーが自動的に接続されます。行番号をクリックしてブレークポイントを追加してください。
