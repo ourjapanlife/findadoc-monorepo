@@ -27,7 +27,7 @@
 
                 <!-- Explore -->
                 <nav :aria-label="t('footer.exploreHeading')">
-                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+                    <h3 class="mb-3 text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                         {{ t('footer.exploreHeading') }}
                     </h3>
                     <ul class="m-0 flex list-none flex-col gap-2 p-0">
@@ -54,7 +54,7 @@
 
                 <!-- Community -->
                 <nav :aria-label="t('footer.communityHeading')">
-                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+                    <h3 class="mb-3 text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                         {{ t('footer.communityHeading') }}
                     </h3>
                     <ul class="m-0 flex list-none flex-col gap-2 p-0">
@@ -95,7 +95,7 @@
 
                 <!-- Legal -->
                 <nav :aria-label="t('footer.legalHeading')">
-                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+                    <h3 class="mb-3 text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                         {{ t('footer.legalHeading') }}
                     </h3>
                     <ul class="m-0 flex list-none flex-col gap-2 p-0">

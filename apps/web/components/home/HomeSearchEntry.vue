@@ -13,7 +13,7 @@
         class="card flex w-full max-w-xl flex-col gap-3 p-5"
         @submit.prevent="submitSearch"
     >
-        <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+        <div class="flex min-w-0 flex-1 flex-col gap-1.5">
             <label
                 for="home-specialty"
                 class="field-label mb-0"
@@ -37,7 +37,7 @@
             </select>
         </div>
 
-        <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+        <div class="flex min-w-0 flex-1 flex-col gap-1.5">
             <label
                 for="home-language"
                 class="field-label mb-0"
@@ -61,7 +61,7 @@
             </select>
         </div>
 
-        <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+        <div class="flex min-w-0 flex-1 flex-col gap-1.5">
             <label
                 for="home-area"
                 class="field-label mb-0"

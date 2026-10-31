@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex md:h-full md:min-h-0 flex-col gap-3 p-3"
+        class="flex flex-col gap-3 p-3 md:h-full md:min-h-0"
         data-testid="clinic-availability-calendar"
     >
         <div class="flex flex-col gap-2 landscape:flex-row landscape:items-end landscape:justify-between">
@@ -96,7 +96,7 @@
             {{ t('bookingPage.japanTimeNote') }}
         </p>
         <ClientOnly>
-            <div class="clinic-calendar card h-[50dvh] flex-none md:h-auto md:min-h-0 md:flex-1 overflow-auto p-3 shadow-card">
+            <div class="card clinic-calendar h-[50dvh] flex-none overflow-auto p-3 shadow-card md:h-auto md:min-h-0 md:flex-1">
                 <FullCalendar
                     v-if="calendarReady"
                     :options="calendarOptions"

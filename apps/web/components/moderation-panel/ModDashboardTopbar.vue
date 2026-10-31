@@ -1,20 +1,20 @@
 <template>
     <div class="flex flex-col gap-3">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <h1
-                class="displayed-section-header font-semibold text-xl md:text-2xl text-primary-text"
+                class="displayed-section-header text-xl font-semibold text-primary-text md:text-2xl"
             >
                 {{ updateTextForModerationDashboard(moderationSubmissionsStore.selectedModerationListViewChosen) }}
             </h1>
             <div
-                class="flex w-full min-w-0 max-w-full flex-col gap-2
+                class="flex w-full max-w-full min-w-0 flex-col gap-2
                 landscape:flex-row landscape:flex-wrap landscape:justify-end"
             >
                 <NuxtLink
                     v-if="showAddHpButton"
                     to="/my-page/create-healthcare-professional"
                     data-testid="add-hp-button"
-                    class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center
+                    class="inline-flex min-h-11 w-full max-w-full min-w-0 items-center justify-center
                     rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2 text-center text-sm/tight
                     font-semibold wrap-break-word whitespace-normal
                     text-primary-text hover:bg-accent-bg/20 landscape:w-auto"
@@ -25,7 +25,7 @@
                     v-if="showAddFacilityButton"
                     to="/my-page/create-facility"
                     data-testid="add-facility-button"
-                    class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center
+                    class="inline-flex min-h-11 w-full max-w-full min-w-0 items-center justify-center
                     rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2 text-center text-sm/tight
                     font-semibold wrap-break-word whitespace-normal
                     text-primary-text hover:bg-accent-bg/20 landscape:w-auto"
@@ -70,8 +70,8 @@
         <div
             v-if="showLicenseReviewFilter"
             class="grid w-full min-w-0 grid-cols-2 border-b border-accent-bg
-            portrait:[&>*:last-child:nth-child(odd)]:col-span-2
-            landscape:flex landscape:flex-wrap landscape:items-end"
+            landscape:flex
+            landscape:flex-wrap landscape:items-end portrait:[&>*:last-child:nth-child(odd)]:col-span-2"
         >
             <button
                 type="button"
@@ -85,8 +85,8 @@
         <div
             v-if="moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.Submissions"
             class="grid w-full min-w-0 grid-cols-2 border-b border-accent-bg
-            portrait:[&>*:last-child:nth-child(odd)]:col-span-2
-            landscape:flex landscape:flex-wrap landscape:items-end"
+            landscape:flex
+            landscape:flex-wrap landscape:items-end portrait:[&>*:last-child:nth-child(odd)]:col-span-2"
         >
             <button
                 type="button"

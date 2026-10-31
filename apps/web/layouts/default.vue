@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-dvh w-full font-sans text-primary-text bg-primary-bg flex flex-col">
+    <div class="flex min-h-dvh w-full flex-col bg-primary-bg font-sans text-primary-text">
         <!--
             Normal document flow: the page itself scrolls, and the footer sits after the
             content rather than being pinned above it.

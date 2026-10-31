@@ -14,14 +14,14 @@
             </header>
 
             <!-- Entity identity -->
-            <dl class="flex flex-col gap-5 m-0">
+            <dl class="m-0 flex flex-col gap-5">
                 <div class="flex flex-col gap-1">
                     <dt class="text-sm font-semibold text-primary-text-muted">
                         {{ t('npoPage.entityLabel') }}
                     </dt>
                     <dd
                         data-testid="npo-entity-name"
-                        class="m-0 text-primary-text text-lg font-semibold"
+                        class="m-0 text-lg font-semibold text-primary-text"
                     >
                         {{ t('footer.copyright') }}
                     </dd>
@@ -32,7 +32,7 @@
                     </dt>
                     <dd
                         data-testid="npo-registration-number"
-                        class="m-0 text-primary-text text-lg font-mono tabular-nums"
+                        class="m-0 font-mono text-lg text-primary-text tabular-nums"
                     >
                         {{ NPO_REGISTRATION_NUMBER }}
                     </dd>
@@ -71,7 +71,7 @@
                 <h2 class="text-xl font-bold text-primary-text">
                     {{ t('npoPage.documentsHeading') }}
                 </h2>
-                <ul class="flex flex-col gap-3 list-none p-0 m-0">
+                <ul class="m-0 flex list-none flex-col gap-3 p-0">
                     <li
                         v-for="document in documents"
                         :key="document.key"
@@ -82,7 +82,7 @@
                             target="_blank"
                             rel="noopener"
                             :data-testid="`npo-document-${document.key}`"
-                            class="link inline-flex min-h-11 items-center w-fit"
+                            class="link inline-flex min-h-11 w-fit items-center"
                         >
                             {{ document.label }}
                         </NuxtLink>

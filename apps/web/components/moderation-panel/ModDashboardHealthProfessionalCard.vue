@@ -101,8 +101,8 @@
                     v-if="isEditOrCreateFacility
                         && !isHealthcareProfessionalReadyForRemoval(healthcareProfessional?.id)"
                     id="remove-related-healthcare-professional-to-facility"
-                    class="mod-edit-only flex w-8 shrink-0 items-center justify-center cursor-pointer
-                        font-bold text-secondary text-sm p-1"
+                    class="mod-edit-only flex w-8 shrink-0 cursor-pointer items-center justify-center
+                        p-1 text-sm font-bold text-secondary"
                     role="button"
                     tabindex="0"
                     aria-label="Remove healthcare professional from facility"
@@ -117,8 +117,8 @@
                     v-if="isEditOrCreateFacility
                         && isHealthcareProfessionalReadyForRemoval(healthcareProfessional?.id)"
                     id="undo-remove-related-healthcare-professional-to-facility"
-                    class="mod-edit-only flex w-8 shrink-0 items-center justify-center cursor-pointer
-                        font-bold text-secondary text-sm p-1"
+                    class="mod-edit-only flex w-8 shrink-0 cursor-pointer items-center justify-center
+                        p-1 text-sm font-bold text-secondary"
                     role="button"
                     tabindex="0"
                     aria-label="Undo removal of healthcare professional from facility"
@@ -126,12 +126,12 @@
                     @keydown.enter="() => undoRemovalOfHealthcareProfessional(healthcareProfessional?.id)"
                     @keydown.space.prevent="() => undoRemovalOfHealthcareProfessional(healthcareProfessional?.id)"
                 >
-                    <SVGUndoIcon class="flex items-center justify-center size-6" />
+                    <SVGUndoIcon class="flex size-6 items-center justify-center" />
                 </div>
                 <div
                     v-if="isEditOrCreateHealthcareProfessional || isEditSubmission"
-                    class="mod-edit-only flex w-8 shrink-0 items-center justify-center
-                        cursor-pointer font-bold text-primary-text text-sm p-1"
+                    class="mod-edit-only flex w-8 shrink-0 cursor-pointer items-center
+                        justify-center p-1 text-sm font-bold text-primary-text"
                 >
                     <div id="edit-healthcare-professional-button-container">
                         <!-- If the chosen index is not 0 we want them to be able to click the pencil to reorder
@@ -140,7 +140,7 @@
                             v-if="!isEditable || chosenLocaleIndex !== 0"
                             id="edit-healthcare-professional-professional-locale-name"
                             type="button"
-                            class="flex items-center justify-center size-6 rounded-sm hover:text-primary"
+                            class="flex size-6 items-center justify-center rounded-sm hover:text-primary"
                             :aria-label="t('modDashboardHealthcareProfessionalCard.editName')"
                             @click="() => setChangeToEditable()"
                         >
@@ -153,7 +153,7 @@
                         <button
                             v-if="isEditable && chosenLocaleIndex === 0"
                             id="close-edit-healthcare-professional-locale-name"
-                            class="flex items-center justify-center size-6 rounded-sm hover:text-primary"
+                            class="flex size-6 items-center justify-center rounded-sm hover:text-primary"
                             type="button"
                             :aria-label="t('modDashboardHealthcareProfessionalCard.closeEditName')"
                             @click="() => setToUneditable()"

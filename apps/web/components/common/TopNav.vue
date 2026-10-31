@@ -20,7 +20,7 @@
                     />
                     <span
                         aria-hidden="true"
-                        class="text-base font-semibold leading-none text-primary
+                        class="text-base leading-none font-semibold text-primary
                            transition-colors group-hover:text-primary-hover"
                     >
                         {{ t('common.siteName') }}

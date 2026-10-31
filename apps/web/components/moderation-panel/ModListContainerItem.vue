@@ -1,6 +1,6 @@
 <template>
     <tr
-        class="border-b border-accent-bg cursor-pointer"
+        class="cursor-pointer border-b border-accent-bg"
         :class="selected ? 'bg-primary/10' : 'hover:bg-accent-bg/30'"
         @click="openRow"
     >
@@ -23,7 +23,7 @@
         <td
             v-for="column in columns"
             :key="column.id"
-            class="px-3 py-2 text-primary-text align-top"
+            class="px-3 py-2 align-top text-primary-text"
         >
             <NuxtLink
                 v-if="column.id === row.linkColumn"
@@ -41,7 +41,7 @@
                 <span
                     v-for="badge in row.badges"
                     :key="badge.label"
-                    class="text-xs px-2 py-0.5 rounded-full text-primary-inverted"
+                    class="rounded-full px-2 py-0.5 text-xs text-primary-inverted"
                     :class="badge.className"
                 >
                     {{ badge.label }}

@@ -1,7 +1,7 @@
 <template>
     <div
         data-testid="my-page-app"
-        class="min-h-dvh md:h-dvh w-full font-sans text-primary-text bg-primary-bg flex flex-col"
+        class="flex min-h-dvh w-full flex-col bg-primary-bg font-sans text-primary-text md:h-dvh"
     >
         <!--
             Desktop (md+): viewport-locked app shell with an internally scrolling main —
@@ -13,7 +13,7 @@
             rides the document scroll.
         -->
         <TopNav class="shrink-0" />
-        <main class="flex-1 md:min-h-0 md:overflow-hidden flex flex-col">
+        <main class="flex flex-1 flex-col md:min-h-0 md:overflow-hidden">
             <slot />
         </main>
     </div>

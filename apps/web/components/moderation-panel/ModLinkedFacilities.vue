@@ -25,12 +25,12 @@
                     aria-hidden="true"
                 />
                 <div class="flex min-w-0 flex-1 flex-col">
-                    <span class="wrap-break-word font-semibold text-primary-text">
+                    <span class="font-semibold wrap-break-word text-primary-text">
                         {{ facility.nameEn || facility.nameJa || facility.id }}
                     </span>
                     <span
                         v-if="facility.nameEn && facility.nameJa"
-                        class="wrap-break-word text-sm text-primary-text-muted"
+                        class="text-sm wrap-break-word text-primary-text-muted"
                     >
                         {{ facility.nameJa }}
                     </span>

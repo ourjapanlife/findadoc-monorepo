@@ -54,7 +54,7 @@
                 id="search-filters"
                 data-testid="search-filters"
                 :class="filtersOpen ? 'grid' : 'hidden landscape:grid'"
-                class="grid-cols-1 gap-3 landscape:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] landscape:items-end"
+                class="grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] landscape:grid-cols-2 landscape:items-end"
                 @submit.prevent
             >
                 <div class="min-w-0">

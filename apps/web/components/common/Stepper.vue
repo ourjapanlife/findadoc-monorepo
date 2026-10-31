@@ -32,7 +32,7 @@
                             {{ index + 1 }}
                         </span>
                         <span
-                            class="min-w-0 font-medium leading-tight wrap-anywhere"
+                            class="min-w-0 leading-tight font-medium wrap-anywhere"
                             :class="index === currentIndex ? '' : 'sr-only sm:not-sr-only'"
                         >{{ step.label }}</span>
                     </button>

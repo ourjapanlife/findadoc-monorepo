@@ -134,7 +134,7 @@
                             <li
                                 v-for="language in content.languages"
                                 :key="language.code"
-                                class="chip h-auto min-h-8 max-w-full whitespace-normal wrap-anywhere py-1"
+                                class="chip h-auto min-h-8 max-w-full py-1 wrap-anywhere whitespace-normal"
                             >
                                 {{ language.native }}
                             </li>
@@ -296,7 +296,7 @@
                     </header>
                     <div class="grid gap-4 landscape:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                         <div class="rounded-2xl bg-primary p-6 text-primary-text-inverted shadow-raised landscape:p-8">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-primary-text-inverted/80">
+                            <p class="text-xs font-semibold tracking-wide text-primary-text-inverted/80 uppercase">
                                 {{ copy.rangeLabel }}
                             </p>
                             <div
@@ -316,7 +316,7 @@
                             </div>
                         </div>
                         <div class="card overflow-hidden">
-                            <p class="bg-primary/10 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-primary">
+                            <p class="bg-primary/10 px-5 py-3 text-xs font-semibold tracking-wide text-primary uppercase">
                                 {{ copy.includedLabel }}
                             </p>
                             <ul class="m-0 list-none p-0">

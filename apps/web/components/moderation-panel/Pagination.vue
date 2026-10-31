@@ -1,12 +1,12 @@
 <template>
     <div
         ref="root"
-        class="flex flex-wrap items-center justify-center gap-1 sm:gap-2 py-1"
+        class="flex flex-wrap items-center justify-center gap-1 py-1 sm:gap-2"
     >
         <button
             :disabled="!hasPrev"
-            class="size-9 sm:size-10 flex items-center justify-center rounded-sm text-primary
-            disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"
+            class="flex size-9 items-center justify-center rounded-sm text-primary transition-colors
+            hover:bg-accent-bg disabled:cursor-not-allowed disabled:opacity-30 sm:size-10"
             @click="goToFirstPage"
         >
             <SVGFirstPage class="size-4 text-primary" />
@@ -14,8 +14,8 @@
 
         <button
             :disabled="!hasPrev"
-            class="size-9 sm:size-10 flex items-center justify-center rounded-sm text-primary
-            disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"
+            class="flex size-9 items-center justify-center rounded-sm text-primary transition-colors
+            hover:bg-accent-bg disabled:cursor-not-allowed disabled:opacity-30 sm:size-10"
             @click="goToPrev"
         >
             <SVGLeftArrow class="size-4 text-primary" />
@@ -33,7 +33,7 @@
                 <button
                     v-else
                     type="button"
-                    class="min-w-9 h-9 px-2 rounded-sm text-sm"
+                    class="h-9 min-w-9 rounded-sm px-2 text-sm"
                     :class="item === currentPage
                         ? 'bg-primary text-primary-inverted'
                         : 'text-primary hover:bg-accent-bg'"
@@ -47,8 +47,8 @@
         </template>
 
         <span
-            class="order-3 w-full sm:order-0 sm:w-auto text-center text-xs sm:text-sm text-primary-text-muted
-            px-2 sm:px-4 h-8 sm:h-10 flex items-center justify-center"
+            class="order-3 flex h-8 w-full items-center justify-center px-2 text-center
+            text-xs text-primary-text-muted sm:order-0 sm:h-10 sm:w-auto sm:px-4 sm:text-sm"
         >
             {{ startIndex }}-{{ endIndex }} {{ $t('pagination.of') }} {{ totalItems }} {{ $t('pagination.results') }}
         </span>
@@ -57,8 +57,8 @@
             type="button"
             data-testid="mod-pagination-next"
             :disabled="!hasNext"
-            class="size-9 sm:size-10 flex items-center justify-center rounded-sm text-primary
-            disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"
+            class="flex size-9 items-center justify-center rounded-sm text-primary transition-colors
+            hover:bg-accent-bg disabled:cursor-not-allowed disabled:opacity-30 sm:size-10"
             @click="goToNext"
         >
             <SVGRightArrow class="size-4 text-primary" />
@@ -66,8 +66,8 @@
 
         <button
             :disabled="!hasNext"
-            class="size-9 sm:size-10 flex items-center justify-center rounded-sm text-primary
-            disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"
+            class="flex size-9 items-center justify-center rounded-sm text-primary transition-colors
+            hover:bg-accent-bg disabled:cursor-not-allowed disabled:opacity-30 sm:size-10"
             @click="goToLastPage"
         >
             <SVGLastPage class="size-4 text-primary" />

@@ -98,7 +98,7 @@
                         aria-hidden="true"
                     >
                         <template v-if="row.startsAt">
-                            <span class="text-xs font-semibold uppercase tracking-wide">
+                            <span class="text-xs font-semibold tracking-wide uppercase">
                                 {{ formatPart(row.startsAt, { month: 'short' }) }}
                             </span>
                             <span class="text-2xl leading-none font-bold">

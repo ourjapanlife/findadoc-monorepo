@@ -1,15 +1,15 @@
 <template>
-    <div class="md:h-full md:min-h-0 flex flex-col">
+    <div class="flex flex-col md:h-full md:min-h-0">
         <Suspense>
             <div
                 data-testid="moderation-content"
-                class="w-full flex flex-col flex-1 md:h-full md:min-h-0 md:overflow-hidden
-                font-sans text-primary-text bg-primary-bg"
+                class="flex w-full flex-1 flex-col bg-primary-bg font-sans text-primary-text
+                md:h-full md:min-h-0 md:overflow-hidden"
             >
                 <div
                     v-if="authStore.isLoadingAuth"
-                    class="size-full my-16 text-primary-text text-2xl font-bold
-                flex self-center justify-items-center justify-center text-center"
+                    class="my-16 flex size-full justify-center justify-items-center
+                self-center text-center text-2xl font-bold text-primary-text"
                 >
                     {{ t('login.checkingauth') }}
                 </div>
@@ -18,8 +18,8 @@
                     data-testid="unauthorized-message"
                 >
                     <div
-                        class="flex flex-col size-full my-16 text-primary-text text-2xl font-bold
-                    self-center justify-items-center justify-center text-center"
+                        class="my-16 flex size-full flex-col justify-center justify-items-center self-center
+                    text-center text-2xl font-bold text-primary-text"
                     >
                         <span>{{ t('login.unauthorizedline1') }}</span>
                         <span>{{ t('login.unauthorizedline2') }}</span>
@@ -34,20 +34,20 @@
                 <div
                     v-if="authStore.isLoggedIn"
                     data-testid="moderation-page"
-                    class="flex flex-col md:flex-row flex-1 md:min-h-0 md:h-full md:overflow-hidden p-3 md:p-4 gap-3 md:gap-4"
+                    class="flex flex-1 flex-col gap-3 p-3 md:h-full md:min-h-0 md:flex-row md:gap-4 md:overflow-hidden md:p-4"
                 >
                     <ModLeftNavbar />
-                    <div class="w-full flex flex-col items-stretch gap-3 md:gap-4 md:min-h-0 flex-1 md:overflow-hidden">
+                    <div class="flex w-full flex-1 flex-col items-stretch gap-3 md:min-h-0 md:gap-4 md:overflow-hidden">
                         <div
                             v-if="!isSettingsView && !isBookingDetailView"
-                            class="shrink-0 bg-secondary-bg border border-accent-bg rounded-xl
-                            shadow-sm p-3 md:px-5 md:py-4"
+                            class="shrink-0 rounded-xl border border-accent-bg bg-secondary-bg
+                            p-3 shadow-sm md:px-5 md:py-4"
                         >
                             <ModTopbar />
                         </div>
                         <div
-                            class="bg-secondary-bg border border-accent-bg rounded-xl shadow-sm
-                            flex-1 md:min-h-0 md:overflow-hidden"
+                            class="flex-1 rounded-xl border border-accent-bg bg-secondary-bg
+                            shadow-sm md:min-h-0 md:overflow-hidden"
                         >
                             <ModMainContent />
                         </div>
@@ -56,8 +56,8 @@
             </div>
             <template #fallback>
                 <div
-                    class="size-full my-16 text-primary-text text-2xl font-bold
-                flex self-center justify-items-center justify-center text-center"
+                    class="my-16 flex size-full justify-center justify-items-center
+                self-center text-center text-2xl font-bold text-primary-text"
                 >
                     {{ t('login.checkingauth') }}
                 </div>

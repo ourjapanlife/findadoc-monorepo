@@ -166,7 +166,7 @@ pnpm test:server         # APIのテスト（ローカルデータベースが�
 pnpm test:e2e            # ウェブサイトのPlaywright
 ```
 
-ウェブサイトのリントは、`eslint-plugin-better-tailwindcss` で Tailwind のクラスを `apps/web/assets/css/tailwind.css` と照合します。Tailwind v4 の正規の書き方があるクラス（`h-5 w-5` は `size-5`）、非推奨や不明なクラス、矛盾・重複するクラス、余分な空白があると失敗します。ほとんどは `pnpm lint:fix` で直ります。Tailwind ではないフック用のクラスは、`apps/web/eslint.config.js` のルールの `ignore` に加えます。
+ウェブサイトのリントは、`eslint-plugin-better-tailwindcss` で Tailwind のクラスを `apps/web/assets/css/tailwind.css` と照合します。Tailwind v4 の正規の書き方があるクラス（`h-5 w-5` は `size-5`）、非推奨や不明なクラス、矛盾・重複するクラス、余分な空白、Tailwind の順序に沿わないクラス（`btn` などのコンポーネントクラスが先頭）があると失敗します。ほとんどは `pnpm lint:fix` で直ります。Tailwind ではないフック用のクラスは、`apps/web/eslint.config.js` のルールの `ignore` に加えます。
 
 1つのパッケージのタスクだけを実行するには `--filter` を使います：
 

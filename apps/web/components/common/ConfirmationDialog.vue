@@ -28,7 +28,7 @@
             </h2>
             <p
                 :id="messageId"
-                class="mt-2 whitespace-pre-line leading-relaxed text-primary-text"
+                class="mt-2 leading-relaxed whitespace-pre-line text-primary-text"
             >
                 {{ message }}
             </p>

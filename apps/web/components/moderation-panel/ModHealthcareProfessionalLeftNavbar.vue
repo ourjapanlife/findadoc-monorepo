@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col">
-        <h1 class="font-bold text-lg p-1 mb-2 text-ellipsis">
+        <h1 class="mb-2 p-1 text-lg font-bold text-ellipsis">
             {{ moderationSubmissionsStore.selectedSubmissionData?.facility?.nameEn
                 || t("modPanelSubmissionLeftNavbar.facilityNameUnknown") }}
         </h1>

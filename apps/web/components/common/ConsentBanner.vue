@@ -2,7 +2,7 @@
     <section
         v-if="isOpen"
         class="fixed inset-x-0 bottom-0 z-50 max-h-dvh overflow-y-auto border-t border-accent-bg bg-secondary-bg
-        p-4 shadow-lg pb-[max(1rem,env(safe-area-inset-bottom))]"
+        p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg"
         :aria-label="t('consent.title')"
         data-testid="consent-banner"
     >

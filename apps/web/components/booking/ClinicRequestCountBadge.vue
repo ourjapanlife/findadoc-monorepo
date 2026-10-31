@@ -2,7 +2,7 @@
     <span
         v-if="count > 0"
         class="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5
-        text-xs font-semibold leading-none text-primary-text-inverted"
+        text-xs leading-none font-semibold text-primary-text-inverted"
         :title="label"
         data-testid="clinic-request-count"
     >

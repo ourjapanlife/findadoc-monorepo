@@ -116,7 +116,7 @@
                     :data-testid="`booking-day-${day.key}`"
                     @click="selectedDay = day.key"
                 >
-                    <span class="text-[0.7rem] font-medium uppercase tracking-wide">{{ day.weekday }}</span>
+                    <span class="text-[0.7rem] font-medium tracking-wide uppercase">{{ day.weekday }}</span>
                     <span class="text-lg/tight font-bold">{{ day.date }}</span>
                     <span
                         class="min-w-6 rounded-full px-1.5 text-center text-[0.7rem]/5 font-semibold"
