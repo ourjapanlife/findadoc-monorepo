@@ -27,6 +27,7 @@ describe('published language allowlist', () => {
         expect(PUBLISHED_LOCALES[0]).toBe('en_US')
         expect(PUBLISHED_LOCALES[1]).toBe('ja_JP')
         expect(PUBLISHED_LOCALES).toContain('ru_RU')
+        expect(PUBLISHED_LOCALES).toContain('vi_VN')
         expect(isPublishedLocale('ak_GH')).toBe(false)
         expect(isPublishedLocale(Locale.EnUs)).toBe(true)
         expect(isPublishedLocale(Locale.JaJp)).toBe(true)

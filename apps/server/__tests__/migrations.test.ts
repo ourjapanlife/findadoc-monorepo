@@ -22,6 +22,18 @@ function localeRowsInSql(sql: string): Map<string, { name: string, description: 
     return rows
 }
 
+/** The newest migration that rewrites the showcase clinic's locale rows. */
+async function showcaseLocalesMigrationSql(): Promise<string> {
+    const files = await readMigrationFiles()
+    for (const file of [...files].reverse()) {
+        const sql = await readFile(file.file, 'utf8')
+        if (sql.includes('INSERT INTO clinic_site_locales') && sql.includes(`'${SHOWCASE_CLINIC_SITE_ID}'::uuid`)) {
+            return sql
+        }
+    }
+    throw new Error('no migration writes the showcase clinic locales')
+}
+
 async function showcaseMigrationSql(): Promise<string> {
     const files = await readMigrationFiles()
     const showcase = files.find(file => file.name === 'showcase_clinic_site')
@@ -81,7 +93,7 @@ describe('migration files', () => {
             )
         }
 
-        const rows = localeRowsInSql(sql)
+        const rows = localeRowsInSql(await showcaseLocalesMigrationSql())
         expect([...rows.keys()].sort()).toEqual(Object.keys(seed.copy).sort())
         for (const [locale, copy] of Object.entries(seed.copy)) {
             const row = rows.get(locale)

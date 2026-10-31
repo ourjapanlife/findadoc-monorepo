@@ -4,7 +4,7 @@
 
 The site lists clinics and doctors so a person in Japan can find care in a language they speak. It does not give medical advice, diagnoses, or appointments. To get care, open a clinic or doctor page and contact that clinic directly.
 
-English pages have no locale prefix. Other languages use the locale code: `/ja-JP/about`, `/zh-CN/about`, and the same pattern for vi-VN, ko-KR, tl-PH, pt-BR, fr-FR, ru-RU, de-DE, and it-IT. Clinic and doctor slugs stay romanised in every language. The id is the suffix after `--`.
+English pages have no locale prefix. Other languages use the locale code: `/ja-JP/about`, `/zh-CN/about`, and the same pattern for vi-VN, ko-KR, tl-PH, ne-NP, id-ID, pt-BR, fr-FR, ru-RU, de-DE, and it-IT. Clinic and doctor slugs stay romanised in every language. The id is the suffix after `--`.
 
 Pages that have a markdown twin answer `Accept: text/markdown` on the production site. The same text is always available at the `.md` URL below, with no content negotiation.
 

@@ -21,6 +21,8 @@ describe('site UI locales', () => {
             'vi-VN',
             'ko-KR',
             'tl-PH',
+            'ne-NP',
+            'id-ID',
             'pt-BR',
             'fr-FR',
             'ru-RU',

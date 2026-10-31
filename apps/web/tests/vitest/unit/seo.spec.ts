@@ -46,7 +46,7 @@ describe('hreflangAlternates', () => {
         expect(byLang['en-US']).to.equal(`${SITE_ORIGIN}/about`)
         expect(byLang['ja-JP']).to.equal(`${SITE_ORIGIN}/ja-JP/about`)
         expect(byLang['x-default']).to.equal(`${SITE_ORIGIN}/about`)
-        expect(alternates).to.have.length(12)
+        expect(alternates).to.have.length(14)
     })
 
     it('lists only the generated directory locales', () => {

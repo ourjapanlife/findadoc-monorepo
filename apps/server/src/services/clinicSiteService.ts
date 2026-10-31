@@ -249,7 +249,10 @@ export function assembleClinicSite(input: {
     }
 }
 
-export function summarizeClinicSite(site: SiteSummaryRow): ClinicSiteSummary | undefined {
+export function summarizeClinicSite(
+    site: SiteSummaryRow,
+    localeCodes: readonly string[] = []
+): ClinicSiteSummary | undefined {
     const status = publicStatus(site.status)
     if (status === undefined) {
         return undefined
@@ -260,7 +263,8 @@ export function summarizeClinicSite(site: SiteSummaryRow): ClinicSiteSummary | u
         slug: site.slug,
         facilityId: site.facility_id,
         status,
-        shareImagePath: site.share_image_path
+        shareImagePath: site.share_image_path,
+        localeCodes: [...localeCodes].sort()
     }
 }
 
@@ -311,9 +315,23 @@ export async function listPublicClinicSites(): Promise<ClinicSiteSummary[]> {
         .where('status', '!=', 'draft')
         .orderBy('slug')
         .execute()
+    if (rows.length === 0) {
+        return []
+    }
+
+    const localeRows = await db.selectFrom('clinic_site_locales')
+        .select(['clinic_site_id', 'locale'])
+        .where('clinic_site_id', 'in', rows.map(row => row.id))
+        .execute()
+    const localesBySite = new Map<string, string[]>()
+    for (const localeRow of localeRows) {
+        const codes = localesBySite.get(localeRow.clinic_site_id) ?? []
+        codes.push(localeRow.locale)
+        localesBySite.set(localeRow.clinic_site_id, codes)
+    }
 
     return rows.flatMap(row => {
-        const summary = summarizeClinicSite(row)
+        const summary = summarizeClinicSite(row, localesBySite.get(row.id))
         return summary === undefined ? [] : [summary]
     })
 }

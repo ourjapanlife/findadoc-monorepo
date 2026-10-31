@@ -5,6 +5,22 @@
  */
 const displayNamesCache = new Map<string, Intl.DisplayNames>()
 
+/**
+ * Endonyms for languages the browser's ICU data may not name. Chromium has no
+ * Nepali names, so a Nepali page would otherwise list every language in English.
+ */
+const ENDONYMS: Record<string, string> = {
+    ne: 'नेपाली'
+}
+
+function hasLocaleData(uiLocale: string): boolean {
+    try {
+        return Intl.DisplayNames.supportedLocalesOf([uiLocale]).length > 0
+    } catch {
+        return false
+    }
+}
+
 function displayNames(uiLocale: string): Intl.DisplayNames | undefined {
     const key = uiLocale.replace('_', '-') || 'en'
     const cached = displayNamesCache.get(key)
@@ -28,8 +44,15 @@ export function languageName(code: string, uiLocale: string): string {
     if (subtag === '' || subtag === 'und') {
         return code
     }
+    // A reader whose language the browser cannot name in sees each language in its own
+    // name ("中文", "Tiếng Việt") rather than in English.
+    const readerLocale = uiLocale.replace('_', '-') || 'en'
+    const namingLocale = hasLocaleData(readerLocale) ? readerLocale : subtag
+    if (namingLocale === subtag && ENDONYMS[subtag] !== undefined) {
+        return ENDONYMS[subtag]
+    }
     try {
-        return displayNames(uiLocale)?.of(subtag) ?? code
+        return displayNames(namingLocale)?.of(subtag) ?? code
     } catch {
         return code
     }

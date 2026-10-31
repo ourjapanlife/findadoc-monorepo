@@ -28,7 +28,7 @@ const BACK_FROM = ['clinic', 'doctor'] as const
 const RELATED_KIND = ['specialty', 'language'] as const
 const RELATED_FROM = ['clinic', 'doctor'] as const
 const CRUMB_LEVEL = ['home', 'prefecture', 'city'] as const
-const SITE_LANGUAGES = ['en', 'ja', 'zh', 'vi', 'ko', 'tl', 'pt', 'fr', 'ru', 'de', 'it'] as const
+const SITE_LANGUAGES = ['en', 'ja', 'zh', 'vi', 'ko', 'tl', 'ne', 'id', 'pt', 'fr', 'ru', 'de', 'it'] as const
 const NOT_FOUND_AREA = ['clinic', 'doctor', 'area', 'other'] as const
 const NOT_FOUND_TO = ['home', 'search'] as const
 const SUBMIT_REASON = ['validation', 'server'] as const
@@ -223,6 +223,8 @@ const LOCALE_TO_SITE_LANGUAGE = {
     vi_VN: 'vi',
     ko_KR: 'ko',
     tl_PH: 'tl',
+    ne_NP: 'ne',
+    id_ID: 'id',
     pt_BR: 'pt',
     fr_FR: 'fr',
     ru_RU: 'ru',

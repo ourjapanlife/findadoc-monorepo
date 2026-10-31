@@ -10,6 +10,7 @@ export const PUBLISHED_LOCALES = [
     'zh_CN',
     'ko_KR',
     'tl_PH',
+    'vi_VN',
     'ne_NP',
     'id_ID',
     'zh_HK',

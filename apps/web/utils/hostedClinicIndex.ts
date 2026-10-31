@@ -1,5 +1,5 @@
 import { graphqlEndpoint } from './graphqlEndpoint.ts'
-import { clinicLandingPath, type HostedClinicRef } from './clinicLanding.ts'
+import { clinicLandingPath, clinicPageLocaleCodes, type HostedClinicRef } from './clinicLanding.ts'
 
 const INDEX_QUERY = `query ClinicSites {
   clinicSites {
@@ -7,6 +7,7 @@ const INDEX_QUERY = `query ClinicSites {
     facilityId
     status
     shareImagePath
+    localeCodes
   }
 }`
 
@@ -61,8 +62,9 @@ export async function hostedClinicIndex(endpoint = graphqlEndpoint()): Promise<H
     return refreshHostedClinicIndex(endpoint, now)
 }
 
-export function publishedClinicPaths(sites: readonly HostedClinicRef[]): string[] {
+/** Published clinic pages with the site locales each one exists in. */
+export function publishedClinicPages(sites: readonly HostedClinicRef[]): Array<{ path: string, localeCodes: string[] }> {
     return sites
         .filter(site => site.status === 'PUBLISHED')
-        .map(site => clinicLandingPath(site.slug))
+        .map(site => ({ path: clinicLandingPath(site.slug), localeCodes: clinicPageLocaleCodes(site.localeCodes) }))
 }

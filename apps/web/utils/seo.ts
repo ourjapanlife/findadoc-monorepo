@@ -70,8 +70,11 @@ export function indexableLocaleCodes(path: string): readonly string[] {
  * One alternate per indexable locale, plus `x-default` on the unprefixed English URL.
  * Href is absolute so it matches `canonicalUrl` for that locale.
  */
-export function hreflangAlternates(path: string): HreflangAlternate[] {
-    const alternates: HreflangAlternate[] = indexableLocaleCodes(path).map(code => ({
+export function hreflangAlternates(
+    path: string,
+    localeCodes: readonly string[] = indexableLocaleCodes(path)
+): HreflangAlternate[] {
+    const alternates: HreflangAlternate[] = localeCodes.map(code => ({
         hreflang: code,
         href: canonicalUrl(localizedPath(path, code))
     }))

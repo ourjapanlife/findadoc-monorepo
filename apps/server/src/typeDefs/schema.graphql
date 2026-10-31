@@ -1157,6 +1157,11 @@ type ClinicSiteSummary {
   facilityId: ID
   status: ClinicSiteStatus!
   shareImagePath: String!
+  """
+  Site locales the clinic has page copy for, sorted. The page, its generated
+  HTML, the sitemap, and hreflang offer only these.
+  """
+  localeCodes: [String!]!
 }
 
 """

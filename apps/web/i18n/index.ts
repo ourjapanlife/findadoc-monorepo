@@ -25,6 +25,8 @@ const Locale = {
     ViVn: 'vi-VN',
     KoKr: 'ko-KR',
     TlPh: 'tl-PH',
+    NeNp: 'ne-NP',
+    IdId: 'id-ID',
     PtBr: 'pt-BR',
     FrFr: 'fr-FR',
     RuRu: 'ru-RU',
@@ -36,7 +38,7 @@ const Locale = {
  * Site UI locales. English is first because it is the default. Japanese is next as
  * the host-country language. Remaining locales follow foreign-resident population
  * in Japan (Immigration Services Agency, end of 2025): Chinese, Vietnamese, Korean,
- * Tagalog, Portuguese, then smaller European communities.
+ * Tagalog, Nepali, Indonesian, Portuguese, then smaller European communities.
  */
 const i18n: LocaleObject[] = [
     {
@@ -68,6 +70,16 @@ const i18n: LocaleObject[] = [
         code: Locale.TlPh,
         language: Locale.TlPh,
         file: 'tl.json'
+    },
+    {
+        code: Locale.NeNp,
+        language: Locale.NeNp,
+        file: 'ne.json'
+    },
+    {
+        code: Locale.IdId,
+        language: Locale.IdId,
+        file: 'id.json'
     },
     {
         code: Locale.PtBr,

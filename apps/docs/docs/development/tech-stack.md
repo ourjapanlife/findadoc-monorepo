@@ -29,7 +29,7 @@ One `renovate.json` at the repository root covers the workspace. Renovate opens 
 | [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first CSS framework |
 | [Pinia](https://pinia.vuejs.org/) | State management |
 | [graphql-request](https://github.com/jasonkuhrt/graphql-request) | Lightweight GraphQL client |
-| [Nuxt i18n](https://i18n.nuxtjs.org/) | Internationalization (11 languages) |
+| [Nuxt i18n](https://i18n.nuxtjs.org/) | Internationalization (13 languages) |
 | [Auth0](https://auth0.com/) | Authentication for moderation |
 | [Google Maps API](https://developers.google.com/maps) | Map and location services |
 | [Sentry](https://sentry.io/) | Error reporting |
