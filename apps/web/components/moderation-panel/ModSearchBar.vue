@@ -38,7 +38,7 @@
                 <SVGLookingGlass
                     role="img"
                     title="searching icon"
-                    class="h-5 w-5 shrink-0 text-primary-text-muted"
+                    class="size-5 shrink-0 text-primary-text-muted"
                 />
             </button>
         </div>

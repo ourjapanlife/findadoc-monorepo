@@ -4,7 +4,7 @@
         class="card flex flex-col items-center gap-4 p-8 text-center"
     >
         <SvgHeartIcon
-            class="h-20 w-20 text-primary"
+            class="size-20 text-primary"
             aria-hidden="true"
         />
         <h1 class="page-title-sm">

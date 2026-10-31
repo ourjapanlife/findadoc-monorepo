@@ -117,7 +117,7 @@
                         class="flex flex-col gap-2"
                     >
                         <span
-                            class="flex h-9 w-9 items-center justify-center rounded-full bg-primary
+                            class="flex size-9 items-center justify-center rounded-full bg-primary
                                    font-bold text-primary-text-inverted"
                             aria-hidden="true"
                         >{{ step.number }}</span>

@@ -6,14 +6,14 @@
         <div
             v-if="!accessStore.isLoaded && !accessStore.loadError"
             class="text-primary-text-muted"
-            :class="collapsed ? 'md:break-words md:text-center md:text-xs' : ''"
+            :class="collapsed ? 'md:wrap-break-word md:text-center md:text-xs' : ''"
         >
             {{ t('accessPanel.loading') }}
         </div>
         <div
             v-else-if="accessStore.loadError"
             class="text-error"
-            :class="collapsed ? 'md:break-words md:text-center md:text-xs' : ''"
+            :class="collapsed ? 'md:wrap-break-word md:text-center md:text-xs' : ''"
         >
             {{ t('accessPanel.loadError') }}
         </div>
@@ -60,7 +60,7 @@
                     >
                         <span class="font-bold text-primary-text">{{ t('accessPanel.sections.settings') }}</span>
                         <SVGAccordionArrow
-                            class="w-4 h-4 fill-primary-text transition-transform"
+                            class="size-4 fill-primary-text transition-transform"
                             :class="settingsExpanded ? 'rotate-180' : ''"
                             aria-hidden="true"
                         />
@@ -85,7 +85,7 @@
                             >
                                 <component
                                     :is="page.icon"
-                                    class="h-5 w-5 shrink-0"
+                                    class="size-5 shrink-0"
                                     :class="page.iconClass"
                                     aria-hidden="true"
                                 />
@@ -124,7 +124,7 @@
                     >
                         <span class="font-bold text-primary-text">{{ t('accessPanel.sections.moderation') }}</span>
                         <SVGAccordionArrow
-                            class="w-4 h-4 fill-primary-text transition-transform"
+                            class="size-4 fill-primary-text transition-transform"
                             :class="moderationExpanded ? 'rotate-180' : ''"
                             aria-hidden="true"
                         />
@@ -149,7 +149,7 @@
                             >
                                 <component
                                     :is="page.icon"
-                                    class="h-5 w-5 shrink-0"
+                                    class="size-5 shrink-0"
                                     :class="page.iconClass"
                                     aria-hidden="true"
                                 />
@@ -194,7 +194,7 @@
                         data-testid="access-page-link-clinic-dashboard"
                     >
                         <SVGFacilityIcon
-                            class="h-5 w-5 shrink-0"
+                            class="size-5 shrink-0"
                             aria-hidden="true"
                         />
                         <span

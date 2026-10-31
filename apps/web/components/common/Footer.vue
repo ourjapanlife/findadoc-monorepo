@@ -15,7 +15,7 @@
                         class="flex w-fit items-center gap-2 font-semibold text-primary"
                     >
                         <SVGSiteLogo
-                            class="h-8 w-8 fill-primary"
+                            class="size-8 fill-primary"
                             aria-hidden="true"
                         />
                         <span>{{ t('common.siteName') }}</span>

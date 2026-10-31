@@ -5,20 +5,20 @@
     >
         <button
             :disabled="!hasPrev"
-            class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded text-primary
+            class="size-9 sm:size-10 flex items-center justify-center rounded-sm text-primary
             disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"
             @click="goToFirstPage"
         >
-            <SVGFirstPage class="w-4 h-4 text-primary" />
+            <SVGFirstPage class="size-4 text-primary" />
         </button>
 
         <button
             :disabled="!hasPrev"
-            class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded text-primary
+            class="size-9 sm:size-10 flex items-center justify-center rounded-sm text-primary
             disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"
             @click="goToPrev"
         >
-            <SVGLeftArrow class="w-4 h-4 text-primary" />
+            <SVGLeftArrow class="size-4 text-primary" />
         </button>
 
         <template v-if="!compact">
@@ -33,7 +33,7 @@
                 <button
                     v-else
                     type="button"
-                    class="min-w-9 h-9 px-2 rounded text-sm"
+                    class="min-w-9 h-9 px-2 rounded-sm text-sm"
                     :class="item === currentPage
                         ? 'bg-primary text-primary-inverted'
                         : 'text-primary hover:bg-accent-bg'"
@@ -47,7 +47,7 @@
         </template>
 
         <span
-            class="order-3 w-full sm:order-none sm:w-auto text-center text-xs sm:text-sm text-primary-text-muted
+            class="order-3 w-full sm:order-0 sm:w-auto text-center text-xs sm:text-sm text-primary-text-muted
             px-2 sm:px-4 h-8 sm:h-10 flex items-center justify-center"
         >
             {{ startIndex }}-{{ endIndex }} {{ $t('pagination.of') }} {{ totalItems }} {{ $t('pagination.results') }}
@@ -57,20 +57,20 @@
             type="button"
             data-testid="mod-pagination-next"
             :disabled="!hasNext"
-            class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded text-primary
+            class="size-9 sm:size-10 flex items-center justify-center rounded-sm text-primary
             disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"
             @click="goToNext"
         >
-            <SVGRightArrow class="w-4 h-4 text-primary" />
+            <SVGRightArrow class="size-4 text-primary" />
         </button>
 
         <button
             :disabled="!hasNext"
-            class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded text-primary
+            class="size-9 sm:size-10 flex items-center justify-center rounded-sm text-primary
             disabled:opacity-30 disabled:cursor-not-allowed hover:bg-accent-bg transition-colors"
             @click="goToLastPage"
         >
-            <SVGLastPage class="w-4 h-4 text-primary" />
+            <SVGLastPage class="size-4 text-primary" />
         </button>
     </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
     <svg
-        class="h-5 w-5 shrink-0 animate-spin"
+        class="size-5 shrink-0 animate-spin"
         viewBox="0 0 24 24"
         fill="none"
         aria-hidden="true"

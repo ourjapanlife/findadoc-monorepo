@@ -30,7 +30,7 @@
                     class="flex flex-wrap items-center gap-3 p-3"
                 >
                     <span
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10
+                        class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10
                         font-semibold text-primary uppercase"
                         aria-hidden="true"
                     >

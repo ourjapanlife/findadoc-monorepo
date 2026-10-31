@@ -1,5 +1,5 @@
 <template>
-    <div class="mod-create-facility-hp-topbar flex h-full w-full min-w-0 justify-end">
+    <div class="mod-create-facility-hp-topbar flex size-full min-w-0 justify-end">
         <div
             class="facility-hp-topbar-actions flex w-full min-w-0 max-w-full flex-wrap justify-end gap-2 p-2 font-bold"
         >

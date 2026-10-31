@@ -26,7 +26,7 @@
             </option>
         </select>
         <svg
-            class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2"
+            class="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2"
             :class="onPrimary ? 'stroke-primary' : 'stroke-primary-text-muted'"
             viewBox="0 0 24 24"
             fill="none"

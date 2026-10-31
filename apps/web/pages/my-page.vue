@@ -8,7 +8,7 @@
             >
                 <div
                     v-if="authStore.isLoadingAuth"
-                    class="w-full h-full mt-16 mb-16 text-primary-text text-2xl font-bold
+                    class="size-full my-16 text-primary-text text-2xl font-bold
                 flex self-center justify-items-center justify-center text-center"
                 >
                     {{ t('login.checkingauth') }}
@@ -18,7 +18,7 @@
                     data-testid="unauthorized-message"
                 >
                     <div
-                        class="flex flex-col w-full h-full mt-16 mb-16 text-primary-text text-2xl font-bold
+                        class="flex flex-col size-full my-16 text-primary-text text-2xl font-bold
                     self-center justify-items-center justify-center text-center"
                     >
                         <span>{{ t('login.unauthorizedline1') }}</span>
@@ -41,7 +41,7 @@
                         <div
                             v-if="!isSettingsView && !isBookingDetailView"
                             class="shrink-0 bg-secondary-bg border border-accent-bg rounded-xl
-                            shadow-sm px-3 md:px-5 py-3 md:py-4"
+                            shadow-sm p-3 md:px-5 md:py-4"
                         >
                             <ModTopbar />
                         </div>
@@ -56,7 +56,7 @@
             </div>
             <template #fallback>
                 <div
-                    class="w-full h-full mt-16 mb-16 text-primary-text text-2xl font-bold
+                    class="size-full my-16 text-primary-text text-2xl font-bold
                 flex self-center justify-items-center justify-center text-center"
                 >
                     {{ t('login.checkingauth') }}

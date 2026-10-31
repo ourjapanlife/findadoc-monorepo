@@ -1,7 +1,7 @@
 <template>
     <aside
         class="w-full shrink-0 md:self-stretch md:max-h-full md:overflow-y-auto
-        px-4 py-4 md:py-6 min-w-0
+        p-4 md:py-6 min-w-0
         border border-accent-bg bg-secondary-bg rounded-xl shadow-sm
         transition-[width,padding] duration-200 ease-out"
         :class="collapsed ? 'md:w-16 md:px-2' : 'md:w-80'"
@@ -19,7 +19,7 @@
             </h2>
             <button
                 type="button"
-                class="hidden md:inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg
+                class="hidden md:inline-flex size-9 shrink-0 items-center justify-center rounded-lg
                 text-primary-text hover:bg-accent-bg/40"
                 :aria-expanded="!collapsed"
                 :aria-label="collapsed ? t('modDashboardLeftNav.expand') : t('modDashboardLeftNav.collapse')"
@@ -27,7 +27,7 @@
                 @click="collapsed = !collapsed"
             >
                 <SVGDockToRight
-                    class="h-6 w-6"
+                    class="size-6"
                     aria-hidden="true"
                 />
             </button>

@@ -20,7 +20,7 @@
                     class="flex min-w-0 items-center gap-2 font-semibold"
                 >
                     <span
-                        class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary-text-inverted/15 text-sm"
+                        class="grid size-9 shrink-0 place-items-center rounded-lg bg-primary-text-inverted/15 text-sm"
                         aria-hidden="true"
                     >{{ mark }}</span>
                     <span class="truncate">{{ name }}</span>

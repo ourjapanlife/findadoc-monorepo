@@ -7,7 +7,7 @@
         <BreadcrumbNav :items="crumbs" />
 
         <header class="flex flex-col gap-2">
-            <h1 class="text-2xl font-bold leading-tight text-primary-text">
+            <h1 class="text-2xl/tight font-bold text-primary-text">
                 {{ heading }}
             </h1>
             <p class="m-0 text-sm text-primary-text-muted">
@@ -42,7 +42,7 @@
         <BreadcrumbNav :items="crumbs" />
 
         <header class="flex flex-col gap-2">
-            <h1 class="text-2xl font-bold leading-tight text-primary-text">
+            <h1 class="text-2xl/tight font-bold text-primary-text">
                 {{ heading }}
             </h1>
             <p class="m-0 text-sm text-primary-text-muted">

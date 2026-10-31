@@ -34,8 +34,8 @@
                         v-for="minutes in ALLOWED_APPOINTMENT_DURATIONS"
                         :key="minutes"
                         class="relative inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border px-4
-                        text-sm font-semibold transition-colors has-[:focus-visible]:outline-2
-                        has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary-text"
+                        text-sm font-semibold transition-colors has-focus-visible:outline-2
+                        has-focus-visible:outline-offset-2 has-focus-visible:outline-primary-text"
                         :class="durations.includes(minutes)
                             ? 'border-primary bg-primary text-primary-text-inverted hover:bg-primary-hover'
                             : 'border-border-strong bg-secondary-bg text-primary-text hover:border-primary'"
@@ -48,7 +48,7 @@
                         >
                         <svg
                             v-if="durations.includes(minutes)"
-                            class="h-4 w-4"
+                            class="size-4"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -90,7 +90,7 @@
                             v-model="defaultDuration"
                             type="radio"
                             name="default-duration"
-                            class="h-4 w-4 accent-primary"
+                            class="size-4 accent-primary"
                             :value="minutes"
                             data-testid="clinic-settings-default-duration"
                         >
@@ -119,7 +119,7 @@
                             <input
                                 v-model="formIds"
                                 type="checkbox"
-                                class="mt-0.5 h-5 w-5 shrink-0 accent-primary"
+                                class="mt-0.5 size-5 shrink-0 accent-primary"
                                 :value="formType.id"
                             >
                             <span class="font-semibold text-primary-text">{{ t(formType.labelKey) }}</span>
@@ -133,7 +133,7 @@
                                 v-model="defaultFormId"
                                 type="radio"
                                 name="default-form"
-                                class="h-4 w-4 accent-primary"
+                                class="size-4 accent-primary"
                                 :value="formType.id"
                             >
                             {{ t('clinicDashboard.settings.defaultForm') }}

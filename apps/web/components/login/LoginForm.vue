@@ -2,7 +2,7 @@
     <div class="card flex flex-col items-center gap-4 p-8 text-center max-w-md w-full">
         <SVGLoadingIcon
             aria-hidden="true"
-            class="h-10 w-10 text-primary"
+            class="size-10 text-primary"
         />
         <h1
             data-testid="login-heading"

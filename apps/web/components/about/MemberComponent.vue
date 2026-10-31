@@ -8,7 +8,7 @@
             decoding="async"
             width="96"
             height="96"
-            class="h-24 w-24 rounded-full bg-accent-bg object-cover"
+            class="size-24 rounded-full bg-accent-bg object-cover"
         >
         <div
             data-testid="member-name"
@@ -37,11 +37,11 @@
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
                 title="LinkedIn"
-                class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-primary-text-muted
+                class="inline-flex size-11 items-center justify-center rounded-lg text-primary-text-muted
                        transition-colors hover:bg-accent-bg/60 hover:text-primary"
             >
                 <SVGLinkedinIcon
-                    class="h-5 w-5 [&_path:first-child]:fill-current [&_path:last-child]:fill-secondary-bg"
+                    class="size-5 [&_path:first-child]:fill-current [&_path:last-child]:fill-secondary-bg"
                     aria-hidden="true"
                 />
             </a>
@@ -53,11 +53,11 @@
                 rel="noopener noreferrer"
                 aria-label="GitHub"
                 title="GitHub"
-                class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-primary-text-muted
+                class="inline-flex size-11 items-center justify-center rounded-lg text-primary-text-muted
                        transition-colors hover:bg-accent-bg/60 hover:text-primary"
             >
                 <SVGGithubIcon
-                    class="h-5 w-5 [&_path:first-child]:fill-current"
+                    class="size-5 [&_path:first-child]:fill-current"
                     aria-hidden="true"
                 />
             </a>

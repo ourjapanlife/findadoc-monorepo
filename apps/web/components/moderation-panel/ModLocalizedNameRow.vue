@@ -50,7 +50,7 @@
         <button
             v-if="removable"
             type="button"
-            class="inline-flex h-10 w-10 items-center justify-center self-end rounded-full
+            class="inline-flex size-10 items-center justify-center self-end rounded-full
                 text-lg leading-none text-primary-text hover:bg-accent-bg"
             :aria-label="t('modHealthcareProfessionalSection.removeName')"
             data-testid="mod-healthcare-professional-section-remove-name-row"
