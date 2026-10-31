@@ -15,8 +15,6 @@ yarn-error.log
 
 #playwright
 playwright-report
-blob-report
-all-blob-reports
 playwright/.auth/
 results.json
 test-results

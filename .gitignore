@@ -23,8 +23,6 @@ apps/mcp/.env
 !apps/mcp/.env.example
 
 playwright-report
-blob-report
-all-blob-reports
 playwright/.auth
 test-results
 results.json
