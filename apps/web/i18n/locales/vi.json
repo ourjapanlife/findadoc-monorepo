@@ -786,6 +786,9 @@
       "phone": "Số điện thoại",
       "fullName": "Họ và tên",
       "age": "Tuổi",
+      "dateOfBirth": "Ngày sinh",
+      "gender": "Giới tính",
+      "genderSelfDescribed": "Giới tính của bạn (tự mô tả)",
       "reason": "Lý do khám",
       "insuranceDocument": "Giấy tờ bảo hiểm",
       "selfie": "Ảnh của bạn",
@@ -803,6 +806,7 @@
       "email": "Nhập email hợp lệ",
       "phone": "Nhập số điện thoại hợp lệ",
       "number": "Nhập một số",
+      "date": "Hãy nhập ngày hợp lệ",
       "fileTooLarge": "Tệp quá lớn",
       "uploadFailed": "Tải lên thất bại. Thử lại.",
       "form": "Kiểm tra các trường được tô sáng",
@@ -854,7 +858,17 @@
         "insuranceCard": "Thẻ bảo hiểm y tế (保険証)",
         "eligibilityCertificate": "Giấy xác nhận tư cách (資格確認書)",
         "mynaInsurance": "Thẻ My Number đã đăng ký làm thẻ bảo hiểm (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Nữ",
+        "male": "Nam",
+        "selfDescribe": "Tự mô tả",
+        "preferNotToSay": "Không muốn trả lời"
       }
+    },
+    "hints": {
+      "dateOfBirth": "Phòng khám dùng thông tin này để xác minh danh tính và đối chiếu với thẻ bảo hiểm của bạn.",
+      "gender": "Thông tin này có thể liên quan đến việc khám chữa bệnh. Bạn có thể chọn không trả lời."
     },
     "insuranceUpload": {
       "insuranceCard": "Ảnh thẻ bảo hiểm y tế",

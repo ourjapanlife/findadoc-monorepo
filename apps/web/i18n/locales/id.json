@@ -786,6 +786,9 @@
       "phone": "Nomor telepon",
       "fullName": "Nama lengkap",
       "age": "Usia",
+      "dateOfBirth": "Tanggal lahir",
+      "gender": "Jenis kelamin",
+      "genderSelfDescribed": "Jenis kelamin Anda, dengan kata-kata Anda sendiri",
       "reason": "Alasan kunjungan",
       "insuranceDocument": "Bukti asuransi",
       "selfie": "Foto diri Anda",
@@ -803,6 +806,7 @@
       "email": "Masukkan email yang valid",
       "phone": "Masukkan nomor telepon yang valid",
       "number": "Masukkan angka",
+      "date": "Masukkan tanggal yang valid",
       "fileTooLarge": "Ukuran file terlalu besar",
       "uploadFailed": "Gagal mengunggah. Silakan coba lagi.",
       "form": "Periksa kolom yang ditandai",
@@ -854,7 +858,17 @@
         "insuranceCard": "Kartu asuransi kesehatan (保険証)",
         "eligibilityCertificate": "Sertifikat konfirmasi kelayakan (資格確認書)",
         "mynaInsurance": "Kartu My Number sebagai kartu asuransi (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Perempuan",
+        "male": "Laki-laki",
+        "selfDescribe": "Saya ingin menjelaskan sendiri",
+        "preferNotToSay": "Memilih tidak menjawab"
       }
+    },
+    "hints": {
+      "dateOfBirth": "Klinik menggunakan ini untuk memastikan identitas Anda dan mencocokkannya dengan kartu asuransi Anda.",
+      "gender": "Ini bisa berkaitan dengan perawatan Anda. Anda boleh memilih tidak menjawab."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto kartu asuransi kesehatan Anda",

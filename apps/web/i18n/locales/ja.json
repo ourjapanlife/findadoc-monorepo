@@ -786,6 +786,9 @@
       "phone": "電話番号",
       "fullName": "氏名",
       "age": "年齢",
+      "dateOfBirth": "生年月日",
+      "gender": "性別",
+      "genderSelfDescribed": "性別（ご自身の言葉で）",
       "reason": "受診理由",
       "insuranceDocument": "保険の確認書類",
       "selfie": "顔写真",
@@ -803,6 +806,7 @@
       "email": "有効なメールアドレスを入力してください",
       "phone": "有効な電話番号を入力してください",
       "number": "数字を入力してください",
+      "date": "正しい日付を入力してください",
       "fileTooLarge": "ファイルが大きすぎます",
       "uploadFailed": "アップロードに失敗しました。もう一度お試しください。",
       "form": "赤字の項目を確認してください",
@@ -854,7 +858,17 @@
         "insuranceCard": "健康保険証",
         "eligibilityCertificate": "資格確認書",
         "mynaInsurance": "マイナ保険証（保険証として登録したマイナンバーカード）"
+      },
+      "gender": {
+        "female": "女性",
+        "male": "男性",
+        "selfDescribe": "自分で記入する",
+        "preferNotToSay": "回答しない"
       }
+    },
+    "hints": {
+      "dateOfBirth": "本人確認と保険証の照合に使います。",
+      "gender": "診療に関わることがあります。回答しないこともできます。"
     },
     "insuranceUpload": {
       "insuranceCard": "健康保険証の写真",

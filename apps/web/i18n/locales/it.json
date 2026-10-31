@@ -786,6 +786,9 @@
       "phone": "Numero di telefono",
       "fullName": "Nome completo",
       "age": "Età",
+      "dateOfBirth": "Data di nascita",
+      "gender": "Genere",
+      "genderSelfDescribed": "Il tuo genere, con parole tue",
       "reason": "Motivo della visita",
       "insuranceDocument": "Prova dell'assicurazione",
       "selfie": "Foto del viso",
@@ -803,6 +806,7 @@
       "email": "Inserisci un’email valida",
       "phone": "Inserisci un numero valido",
       "number": "Inserisci un numero",
+      "date": "Inserisci una data valida",
       "fileTooLarge": "File troppo grande",
       "uploadFailed": "Caricamento non riuscito. Riprova.",
       "form": "Controlla i campi evidenziati",
@@ -854,7 +858,17 @@
         "insuranceCard": "Tessera dell'assicurazione sanitaria (保険証)",
         "eligibilityCertificate": "Certificato di idoneità (資格確認書)",
         "mynaInsurance": "Carta My Number registrata come tessera sanitaria (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Femmina",
+        "male": "Maschio",
+        "selfDescribe": "Preferisco descriverlo",
+        "preferNotToSay": "Preferisco non dirlo"
       }
+    },
+    "hints": {
+      "dateOfBirth": "La clinica lo usa per identificarti e confrontarlo con la tua tessera assicurativa.",
+      "gender": "Può essere importante per le tue cure. Puoi scegliere di non rispondere."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto della tessera sanitaria",

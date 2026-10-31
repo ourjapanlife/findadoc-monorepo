@@ -6,7 +6,12 @@ import {
 } from '@findadoc/graphql'
 import { BOOKING_UPLOAD_MAX_BYTES } from './limits.js'
 import { BOOKING_FIELD_SENSITIVITY, type BookingFieldSensitivity as StoredSensitivity } from './retention.js'
-import { DEFAULT_ALLOWED_DURATIONS, DEFAULT_APPOINTMENT_DURATION_MINUTES, resolveDefaultDuration } from './schedule.js'
+import {
+    DEFAULT_ALLOWED_DURATIONS,
+    DEFAULT_APPOINTMENT_DURATION_MINUTES,
+    JST_OFFSET_MS,
+    resolveDefaultDuration
+} from './schedule.js'
 
 /**
  * Find a Doc owns the intake fields. Each entry in FORMS_BY_ID is one form type.
@@ -29,23 +34,39 @@ export type FormSource = {
 }
 
 function field(
-    partial: Omit<BookingFormField, 'sensitivity' | 'label' | 'placeholderKey' | 'accept' | 'maxLength' | 'maxBytes' | 'min' | 'max' | 'options'>
+    partial: Omit<
+        BookingFormField,
+        'sensitivity' | 'label' | 'placeholderKey' | 'hintKey' | 'accept' | 'maxLength' | 'maxBytes' | 'min' | 'max'
+        | 'options' | 'showWhen'
+    >
     & Partial<BookingFormField>
     & { sensitivity?: BookingFormField['sensitivity'] }
 ): BookingFormField {
     return {
         label: null,
         placeholderKey: null,
+        hintKey: null,
         accept: null,
         maxLength: null,
         maxBytes: null,
         min: null,
         max: null,
         options: null,
+        showWhen: null,
         sensitivity: BookingFieldSensitivity.Standard,
         ...partial
     }
 }
+
+/**
+ * Gender choices. `selfDescribe` shows a text field for the patient's own words.
+ * Under the APPI this is ordinary personal information, not special care-required data;
+ * the hint on the form says why it is asked, and `preferNotToSay` keeps it optional in effect.
+ */
+export const GENDER_OPTIONS = ['female', 'male', 'selfDescribe', 'preferNotToSay'] as const
+
+/** Oldest date of birth the form accepts: 120 years back, in days. */
+export const OLDEST_BIRTH_DATE_DAYS = -Math.round(120 * 365.2425)
 
 /** Proof of insurance a patient may send. `mynaInsurance` is a My Number card registered as insurance. */
 export const INSURANCE_TYPES = ['insuranceCard', 'eligibilityCertificate', 'mynaInsurance'] as const
@@ -92,15 +113,39 @@ const contactAndVisitFields: BookingFormField[] = [
 
 const showcaseFields: BookingFormField[] = [
     ...contactAndVisitFields.slice(0, 3),
+    // Date of birth, not age: it identifies the patient, matches the insurance card, and
+    // does not go stale. Version 2 requests still carry `age` and staff still see it.
     field({
-        id: 'age',
+        id: 'dateOfBirth',
         stepKey: 'contact',
-        type: BookingFormFieldType.Number,
+        type: BookingFormFieldType.Date,
         required: true,
-        labelKey: 'bookingPage.fields.age',
-        placeholderKey: 'bookingPage.placeholders.age',
-        min: 0,
-        max: 120
+        labelKey: 'bookingPage.fields.dateOfBirth',
+        hintKey: 'bookingPage.hints.dateOfBirth',
+        min: OLDEST_BIRTH_DATE_DAYS,
+        max: 0
+    }),
+    field({
+        id: 'gender',
+        stepKey: 'contact',
+        type: BookingFormFieldType.Select,
+        required: true,
+        labelKey: 'bookingPage.fields.gender',
+        hintKey: 'bookingPage.hints.gender',
+        options: GENDER_OPTIONS.map(value => ({
+            value,
+            labelKey: `bookingPage.options.gender.${value}`,
+            label: null
+        }))
+    }),
+    field({
+        id: 'genderSelfDescribed',
+        stepKey: 'contact',
+        type: BookingFormFieldType.Text,
+        required: true,
+        labelKey: 'bookingPage.fields.genderSelfDescribed',
+        maxLength: 60,
+        showWhen: { fieldId: 'gender', equals: 'selfDescribe' }
     }),
     contactAndVisitFields[3]!,
     // Which proof of insurance the patient has. The Book page shows a guide for each;
@@ -149,10 +194,59 @@ const FORMS_BY_ID: Record<string, FormSource> = {
     [SHOWCASE_BOOKING_FORM_ID]: {
         id: SHOWCASE_BOOKING_FORM_ID,
         // 2 asks which proof of insurance the patient has.
-        version: 2,
+        // 3 asks date of birth and gender instead of age.
+        version: 3,
         labelKey: 'bookingForms.onlineConsultIntake',
         fields: showcaseFields
     }
+}
+
+/**
+ * Whether a field is shown for these answers. A field with `showWhen` is shown only
+ * while that other field's trimmed answer equals the value; otherwise it is not
+ * required and its answer is dropped.
+ */
+export function fieldIsShown(formField: BookingFormField, answerFor: (fieldId: string) => string): boolean {
+    const condition = formField.showWhen
+    if (condition === null || condition === undefined) {
+        return true
+    }
+    return answerFor(condition.fieldId) === condition.equals
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000
+const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/
+
+/**
+ * A DATE answer is a real calendar day, YYYY-MM-DD, inside the field's range.
+ * `min` and `max` count days from today in Japan time, so a date of birth uses
+ * a negative `min` and `max: 0` (not in the future).
+ */
+export function dateAnswerIsValid(
+    raw: string,
+    range: { min?: number | null, max?: number | null },
+    now: Date = new Date()
+): boolean {
+    const match = ISO_DATE_PATTERN.exec(raw)
+    if (match === null) {
+        return false
+    }
+    const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])]
+    const answered = Date.UTC(year, month - 1, day)
+    const parsed = new Date(answered)
+    if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() !== month - 1 || parsed.getUTCDate() !== day) {
+        return false
+    }
+    const japanToday = new Date(now.getTime() + JST_OFFSET_MS)
+    const today = Date.UTC(japanToday.getUTCFullYear(), japanToday.getUTCMonth(), japanToday.getUTCDate())
+    const offsetDays = Math.round((answered - today) / DAY_MS)
+    if (range.min !== null && range.min !== undefined && offsetDays < range.min) {
+        return false
+    }
+    if (range.max !== null && range.max !== undefined && offsetDays > range.max) {
+        return false
+    }
+    return true
 }
 
 export function formSourceById(formId: string): FormSource | undefined {

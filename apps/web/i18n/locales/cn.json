@@ -786,6 +786,9 @@
       "phone": "电话号码",
       "fullName": "全名",
       "age": "年龄",
+      "dateOfBirth": "出生日期",
+      "gender": "性别",
+      "genderSelfDescribed": "性别（请用您自己的话填写）",
       "reason": "就诊原因",
       "insuranceDocument": "保险证明",
       "selfie": "本人照片",
@@ -803,6 +806,7 @@
       "email": "请输入有效邮箱",
       "phone": "请输入有效电话号码",
       "number": "请输入数字",
+      "date": "请输入有效的日期",
       "fileTooLarge": "文件过大",
       "uploadFailed": "上传失败，请重试。",
       "form": "请检查标出的字段",
@@ -854,7 +858,17 @@
         "insuranceCard": "健康保险证（保険証）",
         "eligibilityCertificate": "资格确认书（資格確認書）",
         "mynaInsurance": "已登记为保险证的个人编号卡（マイナ保険証）"
+      },
+      "gender": {
+        "female": "女",
+        "male": "男",
+        "selfDescribe": "自行填写",
+        "preferNotToSay": "不愿透露"
       }
+    },
+    "hints": {
+      "dateOfBirth": "诊所用于核实您的身份并核对您的保险证。",
+      "gender": "这可能与您的诊疗有关。您可以选择不回答。"
     },
     "insuranceUpload": {
       "insuranceCard": "健康保险证的照片",

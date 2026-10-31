@@ -786,6 +786,9 @@
       "phone": "Phone number",
       "fullName": "Full name",
       "age": "Age",
+      "dateOfBirth": "Date of birth",
+      "gender": "Gender",
+      "genderSelfDescribed": "Your gender, in your own words",
       "reason": "Reason for visit",
       "insuranceDocument": "Proof of insurance",
       "selfie": "Photo of you",
@@ -803,6 +806,7 @@
       "email": "Enter a valid email",
       "phone": "Enter a valid phone number",
       "number": "Enter a number",
+      "date": "Enter a valid date",
       "fileTooLarge": "That file is too large",
       "uploadFailed": "Upload failed. Try again.",
       "form": "Check the highlighted fields",
@@ -854,7 +858,17 @@
         "insuranceCard": "Health insurance card (保険証)",
         "eligibilityCertificate": "Eligibility certificate (資格確認書)",
         "mynaInsurance": "My Number insurance card (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Female",
+        "male": "Male",
+        "selfDescribe": "Prefer to self-describe",
+        "preferNotToSay": "Prefer not to say"
       }
+    },
+    "hints": {
+      "dateOfBirth": "The clinic uses this to identify you and to match your insurance card.",
+      "gender": "This can matter for your care. You can choose not to say."
     },
     "insuranceUpload": {
       "insuranceCard": "Photo of your health insurance card",

@@ -786,6 +786,9 @@
       "phone": "전화번호",
       "fullName": "성명",
       "age": "나이",
+      "dateOfBirth": "생년월일",
+      "gender": "성별",
+      "genderSelfDescribed": "성별 (직접 입력)",
       "reason": "방문 사유",
       "insuranceDocument": "보험 증빙",
       "selfie": "본인 사진",
@@ -803,6 +806,7 @@
       "email": "올바른 이메일을 입력하세요",
       "phone": "올바른 전화번호를 입력하세요",
       "number": "숫자를 입력하세요",
+      "date": "올바른 날짜를 입력하세요",
       "fileTooLarge": "파일이 너무 큽니다",
       "uploadFailed": "업로드에 실패했습니다. 다시 시도하세요.",
       "form": "표시된 항목을 확인하세요",
@@ -854,7 +858,17 @@
         "insuranceCard": "건강보험증 (保険証)",
         "eligibilityCertificate": "자격확인서 (資格確認書)",
         "mynaInsurance": "보험증으로 등록한 마이넘버 카드 (マイナ保険証)"
+      },
+      "gender": {
+        "female": "여성",
+        "male": "남성",
+        "selfDescribe": "직접 입력",
+        "preferNotToSay": "답하지 않음"
       }
+    },
+    "hints": {
+      "dateOfBirth": "본인 확인과 건강보험증 대조에 사용됩니다.",
+      "gender": "진료와 관련될 수 있습니다. 답하지 않아도 됩니다."
     },
     "insuranceUpload": {
       "insuranceCard": "건강보험증 사진",
