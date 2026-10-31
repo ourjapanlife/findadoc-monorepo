@@ -2,13 +2,17 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import pg from 'pg'
 import { compareDatabases, copyDatabase } from '../scripts/db/copyDatabase.js'
 import { migrate } from '../scripts/db/migrations.js'
-import { localDatabaseConfig } from '../utils/localDatabase.js'
+import { isLocalHost, localDatabaseConfig } from '../utils/localDatabase.js'
 
 // The source is a frozen copy of the local test database. The other test files keep writing to
 // that database while this one runs, so comparing against it directly races them. The target
 // is a scratch database built from the same migrations, as RDS is before the real copy.
 // PGHOST and PGPORT choose the local database, as they do for the API.
+// Setup drops and recreates two databases, so it never runs against another machine.
 const { host, port, user, password } = localDatabaseConfig()
+if (!isLocalHost(host)) {
+    throw new Error(`copyDatabase.test only runs against the local database. PGHOST is ${host}.`)
+}
 const local = { host, port, user, password }
 const sourceName = 'findadoc_copy_test_source'
 const targetName = 'findadoc_copy_test'
@@ -118,7 +122,9 @@ describe('copy Lambda handler', () => {
         })
 
         // The handler targets the "postgres" database, so point the source at the scratch one.
-        const sourceDatabaseUrl = `postgresql://${local.user}:${local.password}@${local.host}:${local.port}/${targetName}?sslmode=disable`
+        const urlHost = local.host.includes(':') ? `[${local.host}]` : local.host
+        const credentials = `${encodeURIComponent(local.user)}:${encodeURIComponent(local.password)}`
+        const sourceDatabaseUrl = `postgresql://${credentials}@${urlHost}:${local.port}/${targetName}?sslmode=disable`
         const compared = await handler({ sourceDatabaseUrl })
 
         expect(compared.dryRun).toBe(true)
