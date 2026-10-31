@@ -1176,6 +1176,8 @@ enum BookingFormFieldType {
   TEXTAREA
   FILE
   SELECT
+  """A calendar date, sent as YYYY-MM-DD. min and max are whole calendar years from today in Japan time."""
+  DATE
 }
 
 """
@@ -1196,6 +1198,12 @@ type BookingFormFieldOption {
   label: String
 }
 
+"""Shows a field only while another field's answer equals a value."""
+type BookingFormFieldCondition {
+  fieldId: ID!
+  equals: String!
+}
+
 """
 One input on a clinic booking form.
 labelKey is the site i18n key when label is null. A CRM may set label per locale.
@@ -1203,19 +1211,26 @@ labelKey is the site i18n key when label is null. A CRM may set label per locale
 type BookingFormField {
   id: ID!
   type: BookingFormFieldType!
+  """Required while the field is shown. A field hidden by showWhen is never required."""
   required: Boolean!
   labelKey: String!
   label: String
   placeholderKey: String
+  """Site i18n key for a line under the field, such as why it is asked."""
+  hintKey: String
   accept: String
   maxLength: Int
   maxBytes: Int
+  """NUMBER: the lowest value. DATE: the earliest date, in calendar years from today in Japan time."""
   min: Float
+  """NUMBER: the highest value. DATE: the latest date, in calendar years from today in Japan time."""
   max: Float
   sensitivity: BookingFieldSensitivity!
   """Groups fields into one step of the intake form. The site renders steps in first-seen order."""
   stepKey: String!
   options: [BookingFormFieldOption!]
+  """The field is shown, and its answer kept, only while this condition holds."""
+  showWhen: BookingFormFieldCondition
 }
 
 """

@@ -50,6 +50,11 @@
             />
         </div>
 
+        <!--
+            The step buttons do not take focus on mouse down. Otherwise the field being
+            left blurs first, its error line clears, the button moves up, and the click
+            lands outside it, so Next needs a second press.
+        -->
         <div class="flex flex-col gap-3 landscape:flex-row landscape:items-center">
             <button
                 v-if="!isFirst"
@@ -57,6 +62,7 @@
                 class="btn btn-secondary"
                 data-testid="stepper-previous"
                 :disabled="blocked"
+                @mousedown.prevent
                 @click="goTo(currentIndex - 1)"
             >
                 {{ previousLabel }}
@@ -69,6 +75,7 @@
                     class="btn btn-primary"
                     data-testid="stepper-next"
                     :disabled="blocked"
+                    @mousedown.prevent
                     @click="goTo(currentIndex + 1)"
                 >
                     {{ nextLabel }}

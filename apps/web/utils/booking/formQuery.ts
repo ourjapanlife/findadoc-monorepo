@@ -65,6 +65,7 @@ const BOOKING_FORM_FIELDS = `
     labelKey
     label
     placeholderKey
+    hintKey
     accept
     maxLength
     maxBytes
@@ -72,6 +73,7 @@ const BOOKING_FORM_FIELDS = `
     max
     sensitivity
     options { value labelKey label }
+    showWhen { fieldId equals }
   }
   practitioners {
     id

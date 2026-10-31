@@ -103,7 +103,7 @@
         "heading": "2. Informations que nous collectons",
         "p1": "Recherche dans l'annuaire : vous pouvez chercher sans compte. Nous recevons vos termes de recherche, vos filtres et votre langue. Votre langue, votre thème et vos filtres récents sont enregistrés dans votre propre navigateur.",
         "p2": "Suggestion d'une clinique ou d'un médecin : nous recevons ce que vous saisissez, par exemple un lien Google Maps, des noms, les langues parlées et des remarques. N'y mettez pas d'informations sur votre propre santé.",
-        "p3": "Prise de rendez-vous : lorsqu'une clinique reçoit des demandes de rendez-vous via Find a Doc, Japan, nous collectons ce que son formulaire demande. Cela peut inclure votre nom, votre adresse e-mail, votre numéro de téléphone, votre âge, le motif de consultation, l'horaire choisi et des fichiers comme une photo de vous et de votre carte d'assurance maladie ou de votre certificat d'éligibilité. La prise de rendez-vous n'est proposée qu'aux personnes qui se trouvent au Japon au moment de l'envoi de la demande.",
+        "p3": "Prise de rendez-vous : lorsqu'une clinique reçoit des demandes de rendez-vous via Find a Doc, Japan, nous collectons ce que son formulaire demande. Cela peut inclure votre nom, votre adresse e-mail, votre numéro de téléphone, votre date de naissance, votre genre, le motif de consultation, l'horaire choisi et des fichiers comme une photo de vous et de votre carte d'assurance maladie ou de votre certificat d'éligibilité. La prise de rendez-vous n'est proposée qu'aux personnes qui se trouvent au Japon au moment de l'envoi de la demande.",
         "p4": "Le motif de consultation est une information de santé, que l'APPI considère comme une information personnelle nécessitant une attention particulière. Nous ne la collectons que lorsque vous envoyez vous-même le formulaire, après avoir coché une case par laquelle vous consentez à ce que nous la collections et la transmettions à la clinique choisie. Nous enregistrons la date et l'heure de ce consentement.",
         "p5": "Comptes et informations techniques : les modérateurs et le personnel des cliniques se connectent via Auth0, qui nous transmet leur nom, leur adresse e-mail et un identifiant de compte. Nos serveurs enregistrent les adresses IP et le détail des requêtes pour assurer le fonctionnement du service et prévenir les abus."
       },
@@ -786,6 +786,9 @@
       "phone": "Numéro de téléphone",
       "fullName": "Nom complet",
       "age": "Âge",
+      "dateOfBirth": "Date de naissance",
+      "gender": "Genre",
+      "genderSelfDescribed": "Votre genre, avec vos propres mots",
       "reason": "Motif de la visite",
       "insuranceDocument": "Justificatif d'assurance",
       "selfie": "Photo de vous",
@@ -803,6 +806,7 @@
       "email": "Saisissez un e-mail valide",
       "phone": "Saisissez un numéro valide",
       "number": "Saisissez un nombre",
+      "date": "Saisissez une date valide",
       "fileTooLarge": "Ce fichier est trop volumineux",
       "uploadFailed": "Échec du téléversement. Réessayez.",
       "form": "Vérifiez les champs surlignés",
@@ -854,7 +858,17 @@
         "insuranceCard": "Carte d'assurance maladie (保険証)",
         "eligibilityCertificate": "Certificat d'éligibilité (資格確認書)",
         "mynaInsurance": "Carte My Number enregistrée comme carte d'assurance (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Femme",
+        "male": "Homme",
+        "selfDescribe": "Je préfère le décrire",
+        "preferNotToSay": "Je préfère ne pas répondre"
       }
+    },
+    "hints": {
+      "dateOfBirth": "La clinique l'utilise pour vous identifier et le comparer à votre carte d'assurance.",
+      "gender": "Cela peut compter pour vos soins. Vous pouvez choisir de ne pas répondre."
     },
     "insuranceUpload": {
       "insuranceCard": "Photo de votre carte d'assurance maladie",

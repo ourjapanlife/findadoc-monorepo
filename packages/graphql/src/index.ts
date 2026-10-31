@@ -152,20 +152,34 @@ export type BookingForm = {
 export type BookingFormField = {
   __typename?: 'BookingFormField';
   accept?: Maybe<Scalars['String']['output']>;
+  /** Site i18n key for a line under the field, such as why it is asked. */
+  hintKey?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
   labelKey: Scalars['String']['output'];
+  /** NUMBER: the highest value. DATE: the latest date, in calendar years from today in Japan time. */
   max?: Maybe<Scalars['Float']['output']>;
   maxBytes?: Maybe<Scalars['Int']['output']>;
   maxLength?: Maybe<Scalars['Int']['output']>;
+  /** NUMBER: the lowest value. DATE: the earliest date, in calendar years from today in Japan time. */
   min?: Maybe<Scalars['Float']['output']>;
   options?: Maybe<Array<BookingFormFieldOption>>;
   placeholderKey?: Maybe<Scalars['String']['output']>;
+  /** Required while the field is shown. A field hidden by showWhen is never required. */
   required: Scalars['Boolean']['output'];
   sensitivity: BookingFieldSensitivity;
+  /** The field is shown, and its answer kept, only while this condition holds. */
+  showWhen?: Maybe<BookingFormFieldCondition>;
   /** Groups fields into one step of the intake form. The site renders steps in first-seen order. */
   stepKey: Scalars['String']['output'];
   type: BookingFormFieldType;
+};
+
+/** Shows a field only while another field's answer equals a value. */
+export type BookingFormFieldCondition = {
+  __typename?: 'BookingFormFieldCondition';
+  equals: Scalars['String']['output'];
+  fieldId: Scalars['ID']['output'];
 };
 
 /** One choice on a SELECT booking field. */
@@ -181,6 +195,8 @@ export type BookingFormFieldOption = {
  * A later CRM picks the fields; the web renderer stays generic.
  */
 export enum BookingFormFieldType {
+  /** A calendar date, sent as YYYY-MM-DD. min and max are whole calendar years from today in Japan time. */
+  Date = 'DATE',
   Email = 'EMAIL',
   File = 'FILE',
   Number = 'NUMBER',
@@ -2372,6 +2388,7 @@ export type ResolversTypes = {
   BookingFieldSensitivity: BookingFieldSensitivity;
   BookingForm: ResolverTypeWrapper<BookingForm>;
   BookingFormField: ResolverTypeWrapper<BookingFormField>;
+  BookingFormFieldCondition: ResolverTypeWrapper<BookingFormFieldCondition>;
   BookingFormFieldOption: ResolverTypeWrapper<BookingFormFieldOption>;
   BookingFormFieldType: BookingFormFieldType;
   BookingFormType: ResolverTypeWrapper<BookingFormType>;
@@ -2487,6 +2504,7 @@ export type ResolversParentTypes = {
   BookingClinic: BookingClinic;
   BookingForm: BookingForm;
   BookingFormField: BookingFormField;
+  BookingFormFieldCondition: BookingFormFieldCondition;
   BookingFormFieldOption: BookingFormFieldOption;
   BookingFormType: BookingFormType;
   BookingPractitioner: BookingPractitioner;
@@ -2626,6 +2644,7 @@ export type BookingFormResolvers<ContextType = any, ParentType extends Resolvers
 
 export type BookingFormFieldResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingFormField'] = ResolversParentTypes['BookingFormField']> = {
   accept?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hintKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   labelKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2637,8 +2656,14 @@ export type BookingFormFieldResolvers<ContextType = any, ParentType extends Reso
   placeholderKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   required?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   sensitivity?: Resolver<ResolversTypes['BookingFieldSensitivity'], ParentType, ContextType>;
+  showWhen?: Resolver<Maybe<ResolversTypes['BookingFormFieldCondition']>, ParentType, ContextType>;
   stepKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['BookingFormFieldType'], ParentType, ContextType>;
+};
+
+export type BookingFormFieldConditionResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingFormFieldCondition'] = ResolversParentTypes['BookingFormFieldCondition']> = {
+  equals?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fieldId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
 export type BookingFormFieldOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingFormFieldOption'] = ResolversParentTypes['BookingFormFieldOption']> = {
@@ -3187,6 +3212,7 @@ export type Resolvers<ContextType = any> = {
   BookingClinic?: BookingClinicResolvers<ContextType>;
   BookingForm?: BookingFormResolvers<ContextType>;
   BookingFormField?: BookingFormFieldResolvers<ContextType>;
+  BookingFormFieldCondition?: BookingFormFieldConditionResolvers<ContextType>;
   BookingFormFieldOption?: BookingFormFieldOptionResolvers<ContextType>;
   BookingFormType?: BookingFormTypeResolvers<ContextType>;
   BookingPractitioner?: BookingPractitionerResolvers<ContextType>;

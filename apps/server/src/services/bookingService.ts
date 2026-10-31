@@ -11,8 +11,10 @@ import { sql } from 'kysely'
 import {
     assembleBookingForm,
     chooseFormDefinitionId,
+    dateAnswerIsValid,
     type AssembledBookingForm,
     fieldById,
+    fieldIsShown,
     isOfferedFormId,
     storedSensitivity
 } from '../booking/formDefinitions.js'
@@ -244,18 +246,28 @@ function scalarAnswerIsValid(
         const options = field.options ?? []
         return options.some(option => option.value === raw)
     }
+    if (field.type === BookingFormFieldType.Date) {
+        return dateAnswerIsValid(raw, field)
+    }
     return true
 }
 
-function collectAnswers(
-    form: AssembledBookingForm,
+/** Validated answers to store, and the uploads they name. Exported for tests. */
+export function collectAnswers(
+    form: Pick<AssembledBookingForm, 'fields'>,
     answers: SubmitBookingInput['answers']
 ): Result<{ storedAnswers: Record<string, string>, uploads: AnswerUpload[] }> {
     const answersByField = asAnswerMap(answers)
     const storedAnswers: Record<string, string> = {}
     const uploads: AnswerUpload[] = []
 
+    const answerFor = (fieldId: string) => answersByField.get(fieldId)?.value?.trim() ?? ''
+
     for (const field of form.fields) {
+        // A field hidden by its condition is not required, and anything sent for it is dropped.
+        if (!fieldIsShown(field, answerFor)) {
+            continue
+        }
         const answer = answersByField.get(field.id)
 
         if (field.type === BookingFormFieldType.File) {

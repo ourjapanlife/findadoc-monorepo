@@ -137,6 +137,21 @@
                         >
 
                         <input
+                            v-else-if="field.type === BookingFormFieldType.Date"
+                            :id="`booking-${field.id}`"
+                            v-model="values[field.id]"
+                            class="field"
+                            type="date"
+                            :required="field.required"
+                            :min="japanDateYearsFromToday(field.min)"
+                            :max="japanDateYearsFromToday(field.max)"
+                            :autocomplete="autocompleteFor(field)"
+                            :aria-describedby="fieldHint(field) ? `booking-${field.id}-hint` : undefined"
+                            :data-testid="`clinic-booking-field-${field.id}`"
+                            @blur="touch(field.id)"
+                        >
+
+                        <input
                             v-else-if="isTextLike(field.type)"
                             :id="`booking-${field.id}`"
                             v-model="values[field.id]"
@@ -199,6 +214,8 @@
                             v-model="values[field.id]"
                             class="field"
                             :required="field.required"
+                            :autocomplete="autocompleteFor(field)"
+                            :aria-describedby="fieldHint(field) ? `booking-${field.id}-hint` : undefined"
                             :data-testid="`clinic-booking-field-${field.id}`"
                             @blur="touch(field.id)"
                         >
@@ -219,6 +236,14 @@
                             class="mt-3"
                             :type="fieldText(values.insuranceType)"
                         />
+
+                        <p
+                            v-if="fieldHint(field)"
+                            :id="`booking-${field.id}-hint`"
+                            class="field-hint mt-1.5"
+                        >
+                            {{ fieldHint(field) }}
+                        </p>
 
                         <p
                             v-if="visibleError(field.id)"
@@ -328,6 +353,7 @@ import {
 } from '~/utils/booking/draftMemory'
 import { localizedPath } from '~/utils/localePath'
 import { resolveDuration } from '~/utils/booking/durations'
+import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday } from '~/utils/booking/formFields'
 import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
 import Stepper from '~/components/common/Stepper.vue'
@@ -389,7 +415,12 @@ const formSteps = computed(() => {
 
 const currentStepKey = computed(() => formSteps.value[stepIndex.value]?.key ?? '')
 const visibleFields = computed(() =>
-    props.form.fields.filter(field => field.stepKey === currentStepKey.value))
+    props.form.fields.filter(field => field.stepKey === currentStepKey.value && isShown(field)))
+
+/** Self-described gender appears only after "Prefer to self-describe" (#202). */
+function isShown(field: BookingFormField): boolean {
+    return fieldIsShown(field, fieldId => fieldText(values[fieldId]))
+}
 const isLastStep = computed(() => stepIndex.value >= formSteps.value.length - 1)
 const showSlot = computed(() => {
     if (formSteps.value.some(step => step.key === 'visit')) {
@@ -597,6 +628,14 @@ function fieldPlaceholder(field: BookingFormField): string {
     return te(field.placeholderKey) ? t(field.placeholderKey) : ''
 }
 
+/** Why the field is asked, such as the purpose notice on date of birth and gender. */
+function fieldHint(field: BookingFormField): string {
+    if (!field.hintKey) {
+        return ''
+    }
+    return te(field.hintKey) ? t(field.hintKey) : ''
+}
+
 function isTextLike(type: BookingFormFieldType): boolean {
     return type === BookingFormFieldType.Email
       || type === BookingFormFieldType.Phone
@@ -626,6 +665,12 @@ function autocompleteFor(field: BookingFormField): string {
     }
     if (field.id === 'fullName') {
         return 'name'
+    }
+    if (field.id === 'dateOfBirth') {
+        return 'bday'
+    }
+    if (field.id === 'gender') {
+        return 'sex'
     }
     return 'off'
 }
@@ -659,6 +704,10 @@ function validateField(fieldId: string): boolean {
     if (field === undefined) {
         return true
     }
+    if (!isShown(field)) {
+        fieldErrors[field.id] = ''
+        return true
+    }
 
     if (field.type === BookingFormFieldType.File) {
         const hasFile = Boolean(uploadIds[field.id] || pendingFiles[field.id])
@@ -686,6 +735,10 @@ function validateField(fieldId: string): boolean {
     }
     if (field.type === BookingFormFieldType.Phone && raw.replace(/\D/g, '').length < 8) {
         fieldErrors[field.id] = t('bookingPage.errors.phone')
+        return false
+    }
+    if (field.type === BookingFormFieldType.Date && !dateAnswerIsValid(raw, field)) {
+        fieldErrors[field.id] = t('bookingPage.errors.date')
         return false
     }
     if (field.type === BookingFormFieldType.Number) {
@@ -841,7 +894,8 @@ async function onSubmit() {
             if (field.type === BookingFormFieldType.File) {
                 return { fieldId: field.id, uploadId: uploadIds[field.id] ?? null, value: null }
             }
-            return { fieldId: field.id, value: fieldText(values[field.id]), uploadId: null }
+            // A hidden field sends nothing, so an answer left from an earlier choice is not kept.
+            return { fieldId: field.id, value: isShown(field) ? fieldText(values[field.id]) : '', uploadId: null }
         })
 
         if (selectedStart.value === null) {

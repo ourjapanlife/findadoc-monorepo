@@ -103,7 +103,7 @@
         "heading": "2. Informações que coletamos",
         "p1": "Busca no diretório: você pode buscar sem conta. Recebemos seus termos de busca, filtros e idioma. Seu idioma, tema e filtros recentes ficam salvos no seu próprio navegador.",
         "p2": "Sugestão de clínica ou médico: recebemos o que você informa, como um link do Google Maps, nomes, idiomas falados e observações. Não inclua informações sobre a sua própria saúde.",
-        "p3": "Agendamento de consulta: quando uma clínica recebe pedidos de agendamento pelo Find a Doc, Japan, coletamos o que o formulário dela pede. Isso pode incluir seu nome, e-mail, telefone, idade, o motivo da consulta, o horário escolhido e arquivos como uma foto sua e do seu cartão do seguro de saúde ou certificado de elegibilidade. O agendamento é oferecido apenas a quem está no Japão no momento do envio do pedido.",
+        "p3": "Agendamento de consulta: quando uma clínica recebe pedidos de agendamento pelo Find a Doc, Japan, coletamos o que o formulário dela pede. Isso pode incluir seu nome, e-mail, telefone, data de nascimento, gênero, o motivo da consulta, o horário escolhido e arquivos como uma foto sua e do seu cartão do seguro de saúde ou certificado de elegibilidade. O agendamento é oferecido apenas a quem está no Japão no momento do envio do pedido.",
         "p4": "O motivo da consulta é uma informação de saúde, que a APPI trata como informação pessoal que exige cuidado especial. Só a coletamos quando você mesmo envia o formulário, depois de marcar uma caixa consentindo que a coletemos e a repassemos à clínica escolhida. Registramos quando você deu esse consentimento.",
         "p5": "Contas e informações técnicas: moderadores e equipe das clínicas entram pelo Auth0, que nos fornece nome, e-mail e um identificador de conta. Nossos servidores registram endereços IP e detalhes das requisições para manter o serviço funcionando e evitar abusos."
       },
@@ -786,6 +786,9 @@
       "phone": "Número de telefone",
       "fullName": "Nome completo",
       "age": "Idade",
+      "dateOfBirth": "Data de nascimento",
+      "gender": "Gênero",
+      "genderSelfDescribed": "Seu gênero, com suas palavras",
       "reason": "Motivo da visita",
       "insuranceDocument": "Comprovante do seguro",
       "selfie": "Foto do rosto",
@@ -803,6 +806,7 @@
       "email": "Introduza um e-mail válido",
       "phone": "Introduza um telefone válido",
       "number": "Introduza um número",
+      "date": "Informe uma data válida",
       "fileTooLarge": "O ficheiro é demasiado grande",
       "uploadFailed": "O envio falhou. Tente novamente.",
       "form": "Verifique os campos assinalados",
@@ -854,7 +858,17 @@
         "insuranceCard": "Cartão do seguro de saúde (保険証)",
         "eligibilityCertificate": "Certificado de elegibilidade (資格確認書)",
         "mynaInsurance": "Cartão My Number registrado como seguro (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Feminino",
+        "male": "Masculino",
+        "selfDescribe": "Prefiro descrever",
+        "preferNotToSay": "Prefiro não dizer"
       }
+    },
+    "hints": {
+      "dateOfBirth": "A clínica usa isso para identificar você e conferir com seu cartão do seguro.",
+      "gender": "Isso pode ser importante para o seu atendimento. Você pode preferir não dizer."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto do cartão do seguro de saúde",
