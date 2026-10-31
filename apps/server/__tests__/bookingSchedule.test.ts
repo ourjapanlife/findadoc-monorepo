@@ -13,6 +13,7 @@ import {
     normalizeWeeklyHours,
     resolveAppointmentDuration,
     resolveDefaultDuration,
+    slotStepMinutes,
     subtractWindows,
     snapDownToAvailability,
     snapUpToAvailability
@@ -54,6 +55,56 @@ describe('booking schedule', () => {
         ])
         expect(isAlignedToMinutes(starts[0]!, 15)).toBe(true)
         expect(appointmentEndFromStart(starts[0]!).toISOString()).toBe('2026-11-05T01:30:00.000Z')
+    })
+
+    it('steps by 30 unless the clinic offers a 15- or 45-minute visit', () => {
+        expect(slotStepMinutes([30, 60])).toBe(30)
+        expect(slotStepMinutes([60])).toBe(30)
+        expect(slotStepMinutes([30])).toBe(30)
+        expect(slotStepMinutes([15, 30, 45, 60])).toBe(15)
+        expect(slotStepMinutes([30, 45])).toBe(15)
+        expect(slotStepMinutes([45])).toBe(15)
+        expect(slotStepMinutes([15])).toBe(15)
+        expect(slotStepMinutes([])).toBe(15)
+    })
+
+    it('offers only half-hour starts from the doctor\'s start time when the clinic has no 15 or 45', () => {
+        // 09:00 to 12:00 in Japan.
+        const window = { startsAt: new Date('2026-11-05T00:00:00.000Z'), endsAt: new Date('2026-11-05T03:00:00.000Z') }
+        const starts = availableStarts({
+            windows: [window],
+            booked: [],
+            rangeStart: new Date('2026-11-04T23:00:00.000Z'),
+            rangeEnd: new Date('2026-11-05T04:00:00.000Z'),
+            durationMs: 30 * 60 * 1000,
+            stepMinutes: slotStepMinutes([30, 60])
+        })
+        expect(starts.map(start => start.toISOString())).toEqual([
+            '2026-11-05T00:00:00.000Z',
+            '2026-11-05T00:30:00.000Z',
+            '2026-11-05T01:00:00.000Z',
+            '2026-11-05T01:30:00.000Z',
+            '2026-11-05T02:00:00.000Z',
+            '2026-11-05T02:30:00.000Z'
+        ])
+    })
+
+    it('keeps the half-hour grid when the range starts mid-window or an older 15-minute visit is booked', () => {
+        const window = { startsAt: new Date('2026-11-05T00:00:00.000Z'), endsAt: new Date('2026-11-05T02:00:00.000Z') }
+        const starts = availableStarts({
+            windows: [window],
+            // Booked while the clinic still offered 15 minutes: 09:00 to 09:15.
+            booked: [{ startsAt: new Date('2026-11-05T00:00:00.000Z'), endsAt: new Date('2026-11-05T00:15:00.000Z') }],
+            // The page asked from 09:10.
+            rangeStart: new Date('2026-11-05T00:10:00.000Z'),
+            rangeEnd: new Date('2026-11-05T03:00:00.000Z'),
+            durationMs: 60 * 60 * 1000,
+            stepMinutes: 30
+        })
+        expect(starts.map(start => start.toISOString())).toEqual([
+            '2026-11-05T00:30:00.000Z',
+            '2026-11-05T01:00:00.000Z'
+        ])
     })
 
     it('fits a 60-minute visit into a two-hour window', () => {

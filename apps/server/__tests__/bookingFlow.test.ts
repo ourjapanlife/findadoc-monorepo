@@ -146,6 +146,42 @@ describe('booking flow', () => {
         expect(rejected.hasErrors).toBe(true)
     })
 
+    it('offers and accepts only half-hour starts when the clinic has no 15- or 45-minute visit', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const at = (minutes: number) => iso(5 * 24 * 60 + minutes)
+        const halfHourOnly = await clinicAccessService.updateBookingSettings({
+            facilityId,
+            allowedDurations: [30, 60],
+            formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
+        }, admin)
+        expect(halfHourOnly.hasErrors).toBe(false)
+        try {
+            const window = await availabilityService.createClinicAvailabilityWindow(
+                { clinicSiteId: facilityId, startsAt: at(0), endsAt: at(120) },
+                'test|staff',
+                admin
+            )
+            expect(window.hasErrors).toBe(false)
+
+            expect(await bookingService.getAvailableBookingStarts(facilityId, at(-60), at(180), 60))
+                .toEqual([at(0), at(30), at(60)])
+
+            const offGrid = await submit(facilityId, at(15), 'off-grid@example.com')
+            expect(offGrid.hasErrors).toBe(true)
+            expect(offGrid.errors?.[0]?.field).toBe('startsAt')
+
+            const onGrid = await submit(facilityId, at(30), 'on-grid@example.com')
+            expect(onGrid.hasErrors).toBe(false)
+            createdSubmissionIds.push(onGrid.data.id)
+        } finally {
+            await clinicAccessService.updateBookingSettings({
+                facilityId,
+                allowedDurations: [15, 30, 45, 60],
+                formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
+            }, admin)
+        }
+    })
+
     it('holds a requested slot, confirms it, and frees it when the patient cancels', async () => {
         const facilityId = sharedFacilityIds[0]!
 
