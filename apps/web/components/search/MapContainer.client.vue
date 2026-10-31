@@ -60,7 +60,7 @@
                         <img
                             :src="renderMarkerIcon(location.id)"
                             alt=""
-                            class="h-16 w-18 block gmp-clickable"
+                            class="gmp-clickable block h-16 w-18"
                         >
                     </template>
                 </AdvancedMarker>

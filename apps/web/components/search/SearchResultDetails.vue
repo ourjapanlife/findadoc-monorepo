@@ -113,7 +113,7 @@
         </header>
 
         <section class="flex flex-col gap-3">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+            <h3 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ professionalsCountText }}
             </h3>
             <ul class="m-0 flex list-none flex-col gap-3 p-0">
@@ -148,7 +148,7 @@
                         v-if="professional.languages.length"
                         class="flex flex-col gap-1.5"
                     >
-                        <span class="text-xs font-semibold uppercase tracking-wide text-primary-text-muted">
+                        <span class="text-xs font-semibold tracking-wide text-primary-text-muted uppercase">
                             {{ t('searchResultsDetails.speaks') }}
                         </span>
                         <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
@@ -163,7 +163,7 @@
                     </div>
                     <p
                         v-if="professional.additionalInfo"
-                        class="m-0 whitespace-pre-line text-sm text-primary-text-muted"
+                        class="m-0 text-sm whitespace-pre-line text-primary-text-muted"
                     >
                         {{ professional.additionalInfo }}
                     </p>

@@ -31,7 +31,7 @@
             v-if="specialtyItems.length"
             class="flex flex-col gap-3"
         >
-            <h2 class="text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+            <h2 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ t('doctorPage.specialties') }}
             </h2>
             <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
@@ -55,7 +55,7 @@
             v-if="languageItems.length"
             class="flex flex-col gap-3"
         >
-            <h2 class="text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+            <h2 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ t('doctorPage.languages') }}
             </h2>
             <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
@@ -79,7 +79,7 @@
             v-if="insurance.length"
             class="flex flex-col gap-3"
         >
-            <h2 class="text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+            <h2 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ t('doctorPage.insurance') }}
             </h2>
             <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
@@ -100,7 +100,7 @@
             v-if="additionalInfo"
             class="flex flex-col gap-3"
         >
-            <h2 class="text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+            <h2 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ t('doctorPage.additionalInfo') }}
             </h2>
             <p class="m-0 whitespace-pre-line text-primary-text">
@@ -112,7 +112,7 @@
             v-if="facilities.length"
             class="flex flex-col gap-3"
         >
-            <h2 class="text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+            <h2 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ t('doctorPage.facilities') }}
             </h2>
             <ul class="m-0 flex list-none flex-col gap-3 p-0">

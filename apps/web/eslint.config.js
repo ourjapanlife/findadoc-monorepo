@@ -26,8 +26,8 @@ export default withNuxt(
     // Tailwind class checks. They read the v4 theme from the CSS entry point, so they
     // flag what the editor's Tailwind extension flags: a class with a canonical v4
     // name (`break-words` is `wrap-break-word`), a deprecated or unknown class, and
-    // classes that conflict or repeat, and stray spaces. Class order and line wrapping
-    // are left alone.
+    // classes that conflict or repeat, stray spaces, and class order. Line wrapping
+    // is left alone.
     {
         files: ['**/*.vue', '**/*.{ts,js}'],
         plugins: {
@@ -56,7 +56,10 @@ export default withNuxt(
             }],
             'better-tailwindcss/no-conflicting-classes': 'error',
             'better-tailwindcss/no-duplicate-classes': 'error',
-            'better-tailwindcss/no-unnecessary-whitespace': 'error'
+            'better-tailwindcss/no-unnecessary-whitespace': 'error',
+            // Tailwind's own order (the one prettier-plugin-tailwindcss uses), with
+            // component classes such as `btn` and `chip` first. Order never changes the CSS.
+            'better-tailwindcss/enforce-consistent-class-order': 'error'
         }
     },
     // TypeScript files linting

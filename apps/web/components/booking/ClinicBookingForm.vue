@@ -165,7 +165,7 @@
                         <label
                             v-else-if="field.type === BookingFormFieldType.File"
                             class="flex h-12 w-full cursor-pointer items-center justify-between gap-3
-                                rounded-lg border border-border-strong bg-secondary-bg pl-3 pr-1.5
+                                rounded-lg border border-border-strong bg-secondary-bg pr-1.5 pl-3
                                 text-sm hover:border-primary"
                         >
                             <input

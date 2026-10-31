@@ -10,7 +10,7 @@
         <select
             :id="selectId"
             v-model="selectedLocale"
-            class="h-10 appearance-none rounded-lg border bg-secondary-bg pl-3 pr-8
+            class="h-10 appearance-none rounded-lg border bg-secondary-bg pr-8 pl-3
                    text-sm font-medium transition-colors"
             :class="onPrimary
                 ? 'border-transparent text-primary-text hover:bg-primary-bg'
@@ -26,7 +26,7 @@
             </option>
         </select>
         <svg
-            class="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2"
+            class="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2"
             :class="onPrimary ? 'stroke-primary-text' : 'stroke-primary-text-muted'"
             viewBox="0 0 24 24"
             fill="none"

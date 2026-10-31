@@ -1,22 +1,22 @@
 <template>
     <div>
-        <span class="mb-3.5 text-center text-primary-text text-2xl/normal font-bold font-sans">
+        <span class="mb-3.5 text-center font-sans text-2xl/normal font-bold text-primary-text">
             {{ t('modSubmissionForm.healthcareProfessionalId') }}
         </span>
-        <div class="flex flex-col mt-4">
-            <div class="justify-start items-start flex">
+        <div class="mt-4 flex flex-col">
+            <div class="flex items-start justify-start">
                 <input
                     v-model="searchValue"
                     type="text"
                     :placeholder="t('modSubmissionForm.placeholderTextHealthcareProfessionalSearchbar')"
-                    class="px-3 py-3.5 w-96 h-12 bg-secondary-bg rounded-lg border border-primary-text-muted
-                    text-primary-text text-sm font-normal font-sans placeholder-primary-text-muted"
+                    class="h-12 w-96 rounded-lg border border-primary-text-muted bg-secondary-bg px-3 py-3.5
+                    font-sans text-sm font-normal text-primary-text placeholder-primary-text-muted"
                     @input="searchHealthcareProfessionalByIdOrName"
                 >
                 <SVGLookingGlass
                     role="img"
                     title="searching icon"
-                    class="relative right-8 top-3 size-6"
+                    class="relative top-3 right-8 size-6"
                 />
             </div>
             <div class="relative">

@@ -1,19 +1,19 @@
 <template>
     <div
         data-testid="mod-access-panel"
-        class="mb-6 pb-5 border-b border-accent-bg text-base"
+        class="mb-6 border-b border-accent-bg pb-5 text-base"
     >
         <div
             v-if="!accessStore.isLoaded && !accessStore.loadError"
             class="text-primary-text-muted"
-            :class="collapsed ? 'md:wrap-break-word md:text-center md:text-xs' : ''"
+            :class="collapsed ? 'md:text-center md:text-xs md:wrap-break-word' : ''"
         >
             {{ t('accessPanel.loading') }}
         </div>
         <div
             v-else-if="accessStore.loadError"
             class="text-error"
-            :class="collapsed ? 'md:wrap-break-word md:text-center md:text-xs' : ''"
+            :class="collapsed ? 'md:text-center md:text-xs md:wrap-break-word' : ''"
         >
             {{ t('accessPanel.loadError') }}
         </div>
@@ -22,20 +22,20 @@
                 class="mb-3"
                 :class="collapsed ? 'md:hidden' : ''"
             >
-                <span class="font-medium text-primary-text block mb-1">{{ t('accessPanel.signedInAs') }}</span>
+                <span class="mb-1 block font-medium text-primary-text">{{ t('accessPanel.signedInAs') }}</span>
                 <span class="text-primary-text-muted">{{ authStore.userId }}</span>
             </div>
             <div
                 class="mb-3"
                 :class="collapsed ? 'md:hidden' : ''"
             >
-                <span class="font-medium text-primary-text block mb-2">{{ t('accessPanel.roles') }}</span>
+                <span class="mb-2 block font-medium text-primary-text">{{ t('accessPanel.roles') }}</span>
                 <div class="flex flex-wrap gap-2">
                     <span
                         v-for="role in accessRoles"
                         :key="role"
-                        class="inline-flex items-center px-3 py-1.5 rounded-full
-                        text-sm font-semibold bg-accent-bg/40 text-primary-text"
+                        class="inline-flex items-center rounded-full bg-accent-bg/40 px-3
+                        py-1.5 text-sm font-semibold text-primary-text"
                     >
                         {{ role }}
                     </span>
@@ -55,7 +55,7 @@
                 >
                     <button
                         type="button"
-                        class="md:hidden flex items-center justify-between py-1 text-left"
+                        class="flex items-center justify-between py-1 text-left md:hidden"
                         @click="settingsExpanded = !settingsExpanded"
                     >
                         <span class="font-bold text-primary-text">{{ t('accessPanel.sections.settings') }}</span>
@@ -71,7 +71,7 @@
                     >
                         {{ t('accessPanel.sections.settings') }}
                     </span>
-                    <ul class="hidden md:flex md:flex-col md:gap-1 pl-0 list-none">
+                    <ul class="hidden list-none pl-0 md:flex md:flex-col md:gap-1">
                         <li
                             v-for="page in settingsPages"
                             :key="page.id"
@@ -95,7 +95,7 @@
                     </ul>
                     <ul
                         v-show="settingsExpanded"
-                        class="md:hidden flex flex-col gap-1 pl-0 list-none"
+                        class="flex list-none flex-col gap-1 pl-0 md:hidden"
                     >
                         <li
                             v-for="page in settingsPages"
@@ -119,7 +119,7 @@
                 >
                     <button
                         type="button"
-                        class="md:hidden flex items-center justify-between py-1 text-left"
+                        class="flex items-center justify-between py-1 text-left md:hidden"
                         @click="moderationExpanded = !moderationExpanded"
                     >
                         <span class="font-bold text-primary-text">{{ t('accessPanel.sections.moderation') }}</span>
@@ -135,7 +135,7 @@
                     >
                         {{ t('accessPanel.sections.moderation') }}
                     </span>
-                    <ul class="hidden md:flex md:flex-col md:gap-1 pl-0 list-none">
+                    <ul class="hidden list-none pl-0 md:flex md:flex-col md:gap-1">
                         <li
                             v-for="page in moderationPages"
                             :key="page.id"
@@ -159,7 +159,7 @@
                     </ul>
                     <ul
                         v-show="moderationExpanded"
-                        class="md:hidden flex flex-col gap-1 pl-0 list-none"
+                        class="flex list-none flex-col gap-1 pl-0 md:hidden"
                     >
                         <li
                             v-for="page in moderationPages"
@@ -207,7 +207,7 @@
 
                 <div
                     v-if="settingsPages.length === 0 && moderationPages.length === 0 && !myBookingClinicsStore.hasClinics"
-                    class="text-primary-text-muted py-1 px-2"
+                    class="px-2 py-1 text-primary-text-muted"
                 >
                     {{ t('accessPanel.none') }}
                 </div>

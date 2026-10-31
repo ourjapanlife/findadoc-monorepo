@@ -51,7 +51,7 @@
                 </div>
                 <p
                     v-if="detail.statusReason"
-                    class="whitespace-pre-wrap wrap-break-word text-sm"
+                    class="text-sm wrap-break-word whitespace-pre-wrap"
                 >
                     {{ t('bookingDashboard.reasonShown', { reason: detail.statusReason }) }}
                 </p>
@@ -159,7 +159,7 @@
                         <dt class="text-sm text-primary-text-muted">
                             {{ answerLabel(answer.fieldId) }}
                         </dt>
-                        <dd class="whitespace-pre-wrap wrap-break-word">
+                        <dd class="wrap-break-word whitespace-pre-wrap">
                             {{ answerValue(answer.fieldId, answer.value) }}
                         </dd>
                     </div>
@@ -249,7 +249,7 @@
                             </div>
                             <p
                                 v-if="upload.fileName !== ''"
-                                class="break-all text-xs text-primary-text-muted"
+                                class="text-xs break-all text-primary-text-muted"
                             >
                                 {{ upload.fileName }}
                             </p>

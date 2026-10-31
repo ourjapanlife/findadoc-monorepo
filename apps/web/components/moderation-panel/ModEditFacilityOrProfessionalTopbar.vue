@@ -13,8 +13,8 @@
         </button>
         <div
             class="grid w-full min-w-0 grid-cols-2 gap-2
-            portrait:[&>*:last-child:nth-child(odd)]:col-span-2
-            landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end"
+            landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end
+            portrait:[&>*:last-child:nth-child(odd)]:col-span-2"
         >
             <button
                 type="button"

@@ -1,8 +1,8 @@
 <template>
-    <div class="md:h-full md:min-h-0 md:overflow-hidden flex flex-col">
+    <div class="flex flex-col md:h-full md:min-h-0 md:overflow-hidden">
         <div
             v-if="moderationScreenStore.dashboardScreenIsActive()"
-            class="md:h-full md:min-h-0 flex flex-col"
+            class="flex flex-col md:h-full md:min-h-0"
         >
             <MyPageSettingsContent v-if="isSettingsView" />
             <ClinicAvailabilityCalendar
@@ -12,7 +12,7 @@
         </div>
         <div
             v-if="moderationScreenStore.editSubmissionScreenIsActive()"
-            class="md:h-full overflow-y-auto"
+            class="overflow-y-auto md:h-full"
         >
             <form class="p-4 md:h-full md:overflow-y-auto">
                 <ModEditSubmissionForm />
@@ -20,7 +20,7 @@
         </div>
         <div
             v-if="moderationScreenStore.createFacilityScreenIsActive()"
-            class="md:h-full overflow-y-auto"
+            class="overflow-y-auto md:h-full"
         >
             <form
                 class="p-4 md:h-full md:overflow-y-auto"
@@ -30,7 +30,7 @@
         </div>
         <div
             v-if="moderationScreenStore.editFacilityScreenIsActive()"
-            class="md:h-full overflow-y-auto"
+            class="overflow-y-auto md:h-full"
         >
             <form class="p-4 md:h-full md:overflow-y-auto">
                 <ModEditFacilitySection />
@@ -38,7 +38,7 @@
         </div>
         <div
             v-if="moderationScreenStore.editHealthcareProfessionalScreenIsActive()"
-            class="md:h-full overflow-y-auto"
+            class="overflow-y-auto md:h-full"
         >
             <form
                 class="p-4 md:h-full md:overflow-y-auto"
@@ -48,7 +48,7 @@
         </div>
         <div
             v-if="moderationScreenStore.createHealthcareProfessionalScreenIsActive()"
-            class="md:h-full overflow-y-auto"
+            class="overflow-y-auto md:h-full"
         >
             <form
                 class="p-4 md:h-full md:overflow-y-auto"
@@ -58,7 +58,7 @@
         </div>
         <div
             v-if="moderationScreenStore.viewBookingScreenIsActive()"
-            class="md:h-full overflow-y-auto"
+            class="overflow-y-auto md:h-full"
         >
             <BookingSubmissionDetail :booking-id="selectedIdFromModSubmissionList" />
         </div>

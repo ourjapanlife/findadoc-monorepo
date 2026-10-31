@@ -96,7 +96,7 @@
                         <span
                             v-for="language in practitioner.spokenLanguages"
                             :key="language"
-                            class="chip h-auto min-h-6 max-w-full whitespace-normal wrap-anywhere px-2 py-0.5 text-xs"
+                            class="chip h-auto min-h-6 max-w-full px-2 py-0.5 text-xs wrap-anywhere whitespace-normal"
                             :class="spokenLanguages.includes(language) ? 'border-primary text-primary' : ''"
                         >
                             {{ languageName(language, locale) }}

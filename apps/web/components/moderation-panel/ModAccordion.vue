@@ -33,7 +33,7 @@
                 />
             </svg>
         </summary>
-        <div class="px-4 pb-4 pt-3 md:px-5">
+        <div class="px-4 pt-3 pb-4 md:px-5">
             <slot />
         </div>
     </details>

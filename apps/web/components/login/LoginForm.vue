@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex flex-col items-center gap-4 p-8 text-center max-w-md w-full">
+    <div class="card flex w-full max-w-md flex-col items-center gap-4 p-8 text-center">
         <SVGLoadingIcon
             aria-hidden="true"
             class="size-10 text-primary"

@@ -36,7 +36,7 @@
                     >
                         {{ (member.email ?? '?').charAt(0) }}
                     </span>
-                    <span class="min-w-0 flex-1 break-all font-medium text-primary-text">{{ member.email }}</span>
+                    <span class="min-w-0 flex-1 font-medium break-all text-primary-text">{{ member.email }}</span>
                     <span class="chip h-7 text-xs">{{ roleLabel(member.role) }}</span>
                     <span
                         class="chip h-7 text-xs"
