@@ -39,7 +39,13 @@ function previewFromMapsTarget(target: MapsPreviewTarget): PlacePreview | null {
         placeId: target.placeId,
         name: target.name,
         address: null,
-        category: null
+        category: null,
+        postalCode: null,
+        prefecture: null,
+        city: null,
+        street: null,
+        latitude: null,
+        longitude: null
     }
 }
 
