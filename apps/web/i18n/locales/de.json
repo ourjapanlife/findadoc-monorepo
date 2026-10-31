@@ -868,7 +868,7 @@
     },
     "hints": {
       "dateOfBirth": "Die Klinik nutzt das, um Sie zu identifizieren und mit Ihrer Versicherungskarte abzugleichen.",
-      "gender": "Das kann für Ihre Behandlung wichtig sein. Sie können es auch offenlassen."
+      "gender": "Das kann für Ihre Behandlung wichtig sein. Sie können „Keine Angabe“ wählen."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto Ihrer Krankenversicherungskarte",

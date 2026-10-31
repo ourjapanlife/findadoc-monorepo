@@ -143,8 +143,8 @@
                             class="field"
                             type="date"
                             :required="field.required"
-                            :min="japanDateFromToday(field.min)"
-                            :max="japanDateFromToday(field.max)"
+                            :min="japanDateYearsFromToday(field.min)"
+                            :max="japanDateYearsFromToday(field.max)"
                             :autocomplete="autocompleteFor(field)"
                             :aria-describedby="fieldHint(field) ? `booking-${field.id}-hint` : undefined"
                             :data-testid="`clinic-booking-field-${field.id}`"
@@ -353,7 +353,7 @@ import {
 } from '~/utils/booking/draftMemory'
 import { localizedPath } from '~/utils/localePath'
 import { resolveDuration } from '~/utils/booking/durations'
-import { dateAnswerIsValid, fieldIsShown, japanDateFromToday } from '~/utils/booking/formFields'
+import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday } from '~/utils/booking/formFields'
 import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
 import Stepper from '~/components/common/Stepper.vue'

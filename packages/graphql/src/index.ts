@@ -157,11 +157,11 @@ export type BookingFormField = {
   id: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
   labelKey: Scalars['String']['output'];
-  /** NUMBER: the highest value. DATE: the latest date, in days from today in Japan time. */
+  /** NUMBER: the highest value. DATE: the latest date, in calendar years from today in Japan time. */
   max?: Maybe<Scalars['Float']['output']>;
   maxBytes?: Maybe<Scalars['Int']['output']>;
   maxLength?: Maybe<Scalars['Int']['output']>;
-  /** NUMBER: the lowest value. DATE: the earliest date, in days from today in Japan time. */
+  /** NUMBER: the lowest value. DATE: the earliest date, in calendar years from today in Japan time. */
   min?: Maybe<Scalars['Float']['output']>;
   options?: Maybe<Array<BookingFormFieldOption>>;
   placeholderKey?: Maybe<Scalars['String']['output']>;
@@ -195,7 +195,7 @@ export type BookingFormFieldOption = {
  * A later CRM picks the fields; the web renderer stays generic.
  */
 export enum BookingFormFieldType {
-  /** A calendar date, sent as YYYY-MM-DD. min and max are days from today in Japan time. */
+  /** A calendar date, sent as YYYY-MM-DD. min and max are whole calendar years from today in Japan time. */
   Date = 'DATE',
   Email = 'EMAIL',
   File = 'FILE',

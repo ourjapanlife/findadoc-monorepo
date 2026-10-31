@@ -65,8 +65,8 @@ function field(
  */
 export const GENDER_OPTIONS = ['female', 'male', 'selfDescribe', 'preferNotToSay'] as const
 
-/** Oldest date of birth the form accepts: 120 years back, in days. */
-export const OLDEST_BIRTH_DATE_DAYS = -Math.round(120 * 365.2425)
+/** Oldest date of birth the form accepts, in calendar years before today. */
+export const OLDEST_BIRTH_DATE_YEARS = -120
 
 /** Proof of insurance a patient may send. `mynaInsurance` is a My Number card registered as insurance. */
 export const INSURANCE_TYPES = ['insuranceCard', 'eligibilityCertificate', 'mynaInsurance'] as const
@@ -122,7 +122,7 @@ const showcaseFields: BookingFormField[] = [
         required: true,
         labelKey: 'bookingPage.fields.dateOfBirth',
         hintKey: 'bookingPage.hints.dateOfBirth',
-        min: OLDEST_BIRTH_DATE_DAYS,
+        min: OLDEST_BIRTH_DATE_YEARS,
         max: 0
     }),
     field({
@@ -214,13 +214,28 @@ export function fieldIsShown(formField: BookingFormField, answerFor: (fieldId: s
     return answerFor(condition.fieldId) === condition.equals
 }
 
-const DAY_MS = 24 * 60 * 60 * 1000
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/
+
+function isoDate(year: number, monthIndex: number, day: number): string {
+    return `${String(year).padStart(4, '0')}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
+
+/**
+ * Today in Japan moved by whole calendar years, as `YYYY-MM-DD`. 29 February in a
+ * year without one becomes 28 February, so a birthday is never pushed into March.
+ */
+export function japanDateYearsFromToday(years: number, now: Date = new Date()): string {
+    const japanNow = new Date(now.getTime() + JST_OFFSET_MS)
+    const year = japanNow.getUTCFullYear() + Math.trunc(years)
+    const monthIndex = japanNow.getUTCMonth()
+    const lastDay = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate()
+    return isoDate(year, monthIndex, Math.min(japanNow.getUTCDate(), lastDay))
+}
 
 /**
  * A DATE answer is a real calendar day, YYYY-MM-DD, inside the field's range.
- * `min` and `max` count days from today in Japan time, so a date of birth uses
- * a negative `min` and `max: 0` (not in the future).
+ * `min` and `max` are whole calendar years from today in Japan time, so a date of
+ * birth uses `min: -120` (the 120th birthday today still counts) and `max: 0`.
  */
 export function dateAnswerIsValid(
     raw: string,
@@ -232,18 +247,15 @@ export function dateAnswerIsValid(
         return false
     }
     const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])]
-    const answered = Date.UTC(year, month - 1, day)
-    const parsed = new Date(answered)
+    const parsed = new Date(Date.UTC(year, month - 1, day))
     if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() !== month - 1 || parsed.getUTCDate() !== day) {
         return false
     }
-    const japanToday = new Date(now.getTime() + JST_OFFSET_MS)
-    const today = Date.UTC(japanToday.getUTCFullYear(), japanToday.getUTCMonth(), japanToday.getUTCDate())
-    const offsetDays = Math.round((answered - today) / DAY_MS)
-    if (range.min !== null && range.min !== undefined && offsetDays < range.min) {
+    // Same-width ISO dates compare in calendar order.
+    if (range.min !== null && range.min !== undefined && raw < japanDateYearsFromToday(range.min, now)) {
         return false
     }
-    if (range.max !== null && range.max !== undefined && offsetDays > range.max) {
+    if (range.max !== null && range.max !== undefined && raw > japanDateYearsFromToday(range.max, now)) {
         return false
     }
     return true

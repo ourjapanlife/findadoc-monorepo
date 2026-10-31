@@ -1176,7 +1176,7 @@ enum BookingFormFieldType {
   TEXTAREA
   FILE
   SELECT
-  """A calendar date, sent as YYYY-MM-DD. min and max are days from today in Japan time."""
+  """A calendar date, sent as YYYY-MM-DD. min and max are whole calendar years from today in Japan time."""
   DATE
 }
 
@@ -1221,9 +1221,9 @@ type BookingFormField {
   accept: String
   maxLength: Int
   maxBytes: Int
-  """NUMBER: the lowest value. DATE: the earliest date, in days from today in Japan time."""
+  """NUMBER: the lowest value. DATE: the earliest date, in calendar years from today in Japan time."""
   min: Float
-  """NUMBER: the highest value. DATE: the latest date, in days from today in Japan time."""
+  """NUMBER: the highest value. DATE: the latest date, in calendar years from today in Japan time."""
   max: Float
   sensitivity: BookingFieldSensitivity!
   """Groups fields into one step of the intake form. The site renders steps in first-seen order."""

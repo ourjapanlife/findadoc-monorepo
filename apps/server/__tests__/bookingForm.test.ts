@@ -7,7 +7,8 @@ import {
     dateAnswerIsValid,
     fieldIsShown,
     formSourceById,
-    OLDEST_BIRTH_DATE_DAYS,
+    japanDateYearsFromToday,
+    OLDEST_BIRTH_DATE_YEARS,
     isOfferedFormId,
     listFormSources,
     parseFormDefinitionIds
@@ -80,15 +81,23 @@ describe('booking forms', () => {
     it('accepts a real date of birth that is not in the future, in Japan time', () => {
         // 00:30 on 31 October in Japan, still 30 October in UTC.
         const now = new Date('2026-10-30T15:30:00Z')
-        const birth = { min: OLDEST_BIRTH_DATE_DAYS, max: 0 }
+        const birth = { min: OLDEST_BIRTH_DATE_YEARS, max: 0 }
 
         expect(dateAnswerIsValid('1990-04-15', birth, now)).toBe(true)
         expect(dateAnswerIsValid('2026-10-31', birth, now)).toBe(true)
         expect(dateAnswerIsValid('2026-11-01', birth, now)).toBe(false)
-        expect(dateAnswerIsValid('1900-01-01', birth, now)).toBe(false)
+        // Exactly 120 today in Japan still counts; one day older does not.
+        expect(dateAnswerIsValid('1906-10-31', birth, now)).toBe(true)
+        expect(dateAnswerIsValid('1906-10-30', birth, now)).toBe(false)
         expect(dateAnswerIsValid('1990-02-30', birth, now)).toBe(false)
         expect(dateAnswerIsValid('1990-4-15', birth, now)).toBe(false)
         expect(dateAnswerIsValid('15/04/1990', birth, now)).toBe(false)
+    })
+
+    it('moves today by calendar years, keeping a leap-day birthday in February', () => {
+        expect(japanDateYearsFromToday(-120, new Date('2026-10-30T15:30:00Z'))).toBe('1906-10-31')
+        expect(japanDateYearsFromToday(-1, new Date('2028-02-29T03:00:00Z'))).toBe('2027-02-28')
+        expect(japanDateYearsFromToday(0, new Date('2026-10-30T14:59:00Z'))).toBe('2026-10-30')
     })
 
     it('names every form type for the clinic picker', () => {
