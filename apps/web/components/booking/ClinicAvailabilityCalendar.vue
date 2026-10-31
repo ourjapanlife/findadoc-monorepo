@@ -29,7 +29,7 @@
             />
             <p class="flex items-start gap-2 rounded-lg bg-primary/5 px-3 py-2 text-sm text-primary-text">
                 <svg
-                    class="mt-0.5 h-4 w-4 shrink-0 text-primary"
+                    class="mt-0.5 size-4 shrink-0 text-primary"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -82,7 +82,7 @@
                 class="chip h-7 gap-2 text-xs"
             >
                 <span
-                    class="inline-block h-2.5 w-2.5 rounded-full border"
+                    class="inline-block size-2.5 rounded-full border"
                     :style="{ backgroundColor: item.color, borderColor: item.border }"
                     aria-hidden="true"
                 />

@@ -43,7 +43,7 @@
             <div class="flex items-center justify-between gap-2">
                 <button
                     type="button"
-                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent-bg
+                    class="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-accent-bg
                     bg-secondary-bg text-primary transition-colors enabled:hover:border-primary
                     disabled:cursor-not-allowed disabled:text-primary-text-muted disabled:opacity-40"
                     :disabled="!canGoBack || loading"
@@ -52,7 +52,7 @@
                     @click="showWeek(addDaysToKey(weekStart, -7))"
                 >
                     <svg
-                        class="h-5 w-5"
+                        class="size-5"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -73,7 +73,7 @@
                 </p>
                 <button
                     type="button"
-                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent-bg
+                    class="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-accent-bg
                     bg-secondary-bg text-primary transition-colors enabled:hover:border-primary
                     disabled:cursor-not-allowed disabled:text-primary-text-muted disabled:opacity-40"
                     :disabled="!canGoForward || loading"
@@ -82,7 +82,7 @@
                     @click="showWeek(addDaysToKey(weekStart, 7))"
                 >
                     <svg
-                        class="h-5 w-5"
+                        class="size-5"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -117,9 +117,9 @@
                     @click="selectedDay = day.key"
                 >
                     <span class="text-[0.7rem] font-medium uppercase tracking-wide">{{ day.weekday }}</span>
-                    <span class="text-lg font-bold leading-tight">{{ day.date }}</span>
+                    <span class="text-lg/tight font-bold">{{ day.date }}</span>
                     <span
-                        class="min-w-6 rounded-full px-1.5 text-center text-[0.7rem] font-semibold leading-5"
+                        class="min-w-6 rounded-full px-1.5 text-center text-[0.7rem]/5 font-semibold"
                         :class="countClass(day)"
                         aria-hidden="true"
                     >{{ day.count > 0 ? day.count : '–' }}</span>

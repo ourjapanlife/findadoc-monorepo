@@ -19,7 +19,7 @@
                 </span>
             </span>
             <svg
-                class="h-4 w-4 shrink-0 text-primary-text-muted transition-transform group-open:rotate-180"
+                class="size-4 shrink-0 text-primary-text-muted transition-transform group-open:rotate-180"
                 viewBox="0 0 20 20"
                 fill="none"
                 stroke="currentColor"

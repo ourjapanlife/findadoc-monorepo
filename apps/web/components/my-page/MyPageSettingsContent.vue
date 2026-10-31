@@ -15,7 +15,7 @@
                     </h2>
                     <div class="flex items-center gap-6">
                         <div
-                            class="w-20 h-20 rounded-full border-2 border-accent-bg overflow-hidden
+                            class="size-20 rounded-full border-2 border-accent-bg overflow-hidden
                             flex items-center justify-center"
                         >
                             <img
@@ -25,7 +25,7 @@
                                 height="1024"
                                 loading="lazy"
                                 decoding="async"
-                                class="w-16 h-16 stroke-primary"
+                                class="size-16 stroke-primary"
                             >
                         </div>
                     </div>

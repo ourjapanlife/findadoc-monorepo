@@ -37,7 +37,7 @@
             role="note"
         >
             <svg
-                class="mt-0.5 h-4 w-4 shrink-0 text-warning"
+                class="mt-0.5 size-4 shrink-0 text-warning"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

@@ -17,7 +17,7 @@
                 Copy is hardcoded English for now. Extracting it into the ten locales is a
                 separate job; the structure below is what that job should translate.
             -->
-            <div class="prose-legal [&>:first-child]:mt-0">
+            <div class="prose-legal *:first:mt-0">
                 <h2>1. Acceptance of Terms</h2>
                 <p>
                     By accessing or using Find a Doc, Japan, you agree to comply with and be bound by these

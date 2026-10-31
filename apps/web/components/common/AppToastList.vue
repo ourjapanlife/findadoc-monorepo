@@ -1,6 +1,6 @@
 <template>
     <ToastViewport
-        class="fixed top-4 left-1/2 z-[60] m-0 flex w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 list-none flex-col gap-3 p-0"
+        class="fixed top-4 left-1/2 z-60 m-0 flex w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 list-none flex-col gap-3 p-0"
         :label="viewportLabel"
     />
     <ToastRoot

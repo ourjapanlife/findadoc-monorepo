@@ -15,7 +15,7 @@
                 <SVGLookingGlass
                     role="img"
                     title="searching icon"
-                    class="absolute left-3 top-3 w-4 h-4 text-primary-text-muted"
+                    class="absolute left-3 top-3 size-4 text-primary-text-muted"
                 />
             </div>
         </div>
@@ -176,7 +176,7 @@
                     <select
                         id="items-per-page-select"
                         :value="pageSize"
-                        class="border border-accent-bg rounded px-2 py-1 text-sm bg-secondary-bg
+                        class="border border-accent-bg rounded-sm px-2 py-1 text-sm bg-secondary-bg
                         text-primary-text focus:ring-primary focus:border-primary"
                         @change="onPageSizeChange"
                     >

@@ -37,7 +37,7 @@
                     side="top"
                     :side-offset="6"
                     class="z-70 max-w-[min(20rem,calc(100vw-2rem))] rounded-lg border border-accent-bg
-                    bg-secondary-bg px-3 py-2 text-sm leading-snug text-primary-text shadow-overlay"
+                    bg-secondary-bg px-3 py-2 text-sm/snug text-primary-text shadow-overlay"
                 >
                     {{ label }}
                     <TooltipArrow class="fill-secondary-bg" />

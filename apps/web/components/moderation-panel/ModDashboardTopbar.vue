@@ -15,8 +15,8 @@
                     to="/my-page/create-healthcare-professional"
                     data-testid="add-hp-button"
                     class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center
-                    rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2 text-center text-sm
-                    font-semibold leading-tight break-words whitespace-normal
+                    rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2 text-center text-sm/tight
+                    font-semibold wrap-break-word whitespace-normal
                     text-primary-text hover:bg-accent-bg/20 landscape:w-auto"
                 >
                     {{ t('modDashboardTopbar.addHealthcareProfessional') }}
@@ -26,8 +26,8 @@
                     to="/my-page/create-facility"
                     data-testid="add-facility-button"
                     class="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-center
-                    rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2 text-center text-sm
-                    font-semibold leading-tight break-words whitespace-normal
+                    rounded-lg border border-accent-bg bg-secondary-bg px-3 py-2 text-center text-sm/tight
+                    font-semibold wrap-break-word whitespace-normal
                     text-primary-text hover:bg-accent-bg/20 landscape:w-auto"
                 >
                     {{ t('modDashboardTopbar.addFacility') }}
