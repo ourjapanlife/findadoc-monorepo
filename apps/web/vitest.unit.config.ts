@@ -12,7 +12,7 @@ export default defineVitestConfig({
         exclude: ['node_modules'],
         coverage: {
             provider: 'v8',
-            reporter: ['text', 'json-summary', 'html'],
+            reporter: ['text', 'json-summary', 'json', 'html'],
             reportsDirectory: './coverage',
             // Unit surface: helpers, composables, and Pinia stores.
             include: [
