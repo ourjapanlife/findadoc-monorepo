@@ -28,7 +28,7 @@ corepack prepare pnpm@10.27.0 --activate
 pnpm install
 ```
 
-`pnpm install`はHuskyも設定し、コミット前にリンティングが実行されます。
+`pnpm install`はHuskyも設定し、プッシュ前に `pnpm exec turbo lint typecheck` が実行されます。
 
 リポジトリがOneDrive内にある場合、pnpmのファイルリンクが失敗することがあります。その場合はコピーでインストールしてください：
 
@@ -180,15 +180,20 @@ pnpm --filter @findadoc/graphql build
 pnpm lint                # すべてのパッケージ
 pnpm lint:fix
 pnpm typecheck           # ロケールキーのチェックを含む
-pnpm test                # web、MCP、utilsのユニットテスト
-pnpm test:server         # APIのテスト（ローカルデータベースが必要）
+pnpm test                # web、MCP、utilsのユニットテスト（カバレッジ付き）
+pnpm test:server         # APIのテスト（カバレッジ付き、ローカルデータベースが必要）
 pnpm test:e2e            # ウェブサイトのPlaywright
 ```
+
+ウェブサイトのリントは、`eslint-plugin-better-tailwindcss` で Tailwind のクラスを `apps/web/assets/css/tailwind.css` と照合します。Tailwind v4 の正規の書き方があるクラス（`h-5 w-5` は `size-5`）、非推奨や不明なクラス、矛盾・重複するクラス、余分な空白、Tailwind の順序に沿わないクラス（`btn` などのコンポーネントクラスが先頭）があると失敗します。ほとんどは `pnpm lint:fix` で直ります。Tailwind ではないフック用のクラスは、`apps/web/eslint.config.js` のルールの `ignore` に加えます。
+
+ユニットテストはカバレッジ報告を出し、パッケージの Vitest しきい値を下回ると失敗します。API と MCP のしきい値はウェブサイトより高く、`@findadoc/utils` も対象です。
 
 1つのパッケージのタスクだけを実行するには `--filter` を使います：
 
 ```bash
 pnpm --filter @findadoc/web test:unit
+pnpm --filter @findadoc/utils test:coverage
 ```
 
 ## ドキュメントサイト（`apps/docs`）

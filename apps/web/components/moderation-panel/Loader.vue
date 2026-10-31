@@ -1,10 +1,10 @@
 <template>
     <div
         v-show="loadingStore.isLoading"
-        class="h-full w-full bg-primary-bg/70 z-10 absolute"
+        class="absolute z-10 size-full bg-primary-bg/70"
     >
-        <div class="flex justify-center align-middle mt-12">
-            <div class="flex text-primary self-center text-4xl">
+        <div class="mt-12 flex justify-center align-middle">
+            <div class="flex self-center text-4xl text-primary">
                 {{ t('common.loading') }}
             </div>
             <SVGLoadingIcon

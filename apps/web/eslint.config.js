@@ -1,6 +1,7 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 // import storybook from 'eslint-plugin-storybook'
 
+import { fileURLToPath } from 'node:url'
 import globals from 'globals'
 import eslintJsPlugin from '@eslint/js'
 import tseslint from 'typescript-eslint'
@@ -8,6 +9,7 @@ import stylistic from '@stylistic/eslint-plugin'
 import pluginVitest from '@vitest/eslint-plugin'
 import pluginVue from 'eslint-plugin-vue'
 import vuejsAccessibility from 'eslint-plugin-vuejs-accessibility'
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss'
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt(
@@ -20,6 +22,45 @@ export default withNuxt(
             'coverage/*',
             '.yarn/*'
         ]
+    },
+    // Tailwind class checks. They read the v4 theme from the CSS entry point, so they
+    // flag what the editor's Tailwind extension flags: a class with a canonical v4
+    // name (`break-words` is `wrap-break-word`), a deprecated or unknown class, and
+    // classes that conflict or repeat, stray spaces, and class order. Line wrapping
+    // is left alone.
+    {
+        files: ['**/*.vue', '**/*.{ts,js}'],
+        plugins: {
+            'better-tailwindcss': betterTailwindcss
+        },
+        settings: {
+            'better-tailwindcss': {
+                entryPoint: fileURLToPath(new URL('./assets/css/tailwind.css', import.meta.url)),
+                // `.btn`, `.card`, `.chip` and the rest of `@layer components` are classes too.
+                detectComponentClasses: true
+            }
+        },
+        rules: {
+            'better-tailwindcss/enforce-canonical-classes': 'error',
+            'better-tailwindcss/no-deprecated-classes': 'error',
+            'better-tailwindcss/no-unknown-classes': ['error', {
+                // Hook classes with no Tailwind meaning: scoped-style and selector hooks,
+                // and `gmp-clickable`, which the Google Maps marker API reads.
+                ignore: [
+                    '^mod-',
+                    '^clinic-(calendar|theme)$',
+                    '^gmp-clickable$',
+                    '^(displayed-section-header|facility-hp-topbar-actions|google-maps-section)$',
+                    '^(input-fields|link-hover|name-locale-input-fields|profile-icon)$'
+                ]
+            }],
+            'better-tailwindcss/no-conflicting-classes': 'error',
+            'better-tailwindcss/no-duplicate-classes': 'error',
+            'better-tailwindcss/no-unnecessary-whitespace': 'error',
+            // Tailwind's own order (the one prettier-plugin-tailwindcss uses), with
+            // component classes such as `btn` and `chip` first. Order never changes the CSS.
+            'better-tailwindcss/enforce-consistent-class-order': 'error'
+        }
     },
     // TypeScript files linting
     {

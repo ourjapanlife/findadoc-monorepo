@@ -9,12 +9,12 @@
             :aria-label="t('common.menu')"
             :aria-expanded="isMenuOpen"
             aria-controls="hamburger-menu-panel"
-            class="inline-flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-accent-bg/60"
+            class="inline-flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-accent-bg/60"
             data-testid="hamburger-menu-icon"
             @click="openMenu"
         >
             <SVGHamburgerMenuIcon
-                class="h-7 w-7 fill-primary"
+                class="size-7 fill-primary"
                 aria-hidden="true"
             />
         </button>
@@ -67,12 +67,12 @@
                             type="button"
                             data-testid="hamburger-menu-close-button"
                             :aria-label="t('common.close')"
-                            class="inline-flex h-11 w-11 items-center justify-center rounded-lg
+                            class="inline-flex size-11 items-center justify-center rounded-lg
                                    transition-colors hover:bg-accent-bg/60"
                             @click="closeMenu"
                         >
                             <svg
-                                class="h-5 w-5 stroke-primary"
+                                class="size-5 stroke-primary"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke-width="2.5"
@@ -121,11 +121,11 @@
                                         v-if="authStore.userProfileImage"
                                         :src="authStore.userProfileImage"
                                         alt=""
-                                        class="h-7 w-7 rounded-full object-cover"
+                                        class="size-7 rounded-full object-cover"
                                     >
                                     <SVGUserIcon
                                         v-else
-                                        class="h-6 w-6 text-user-icon"
+                                        class="size-6 text-user-icon"
                                         aria-hidden="true"
                                     />
                                     <span class="truncate font-semibold">{{ authStore.userId }}</span>
@@ -171,7 +171,7 @@
                     <!-- Footer -->
                     <div
                         data-testid="hamburger-menu-footer-section"
-                        class="shrink-0 border-t border-accent-bg px-4 py-4"
+                        class="shrink-0 border-t border-accent-bg p-4"
                     >
                         <ThemeManager class="mb-4" />
 
@@ -211,7 +211,7 @@
                                 <!-- The mark carries a hardcoded dark fill, invisible on the dark ground. -->
                                 <SVGGithubIcon
                                     data-testid="hamburger-menu-github-icon"
-                                    class="h-5 w-5 [&_path]:fill-current"
+                                    class="size-5 [&_path]:fill-current"
                                     aria-hidden="true"
                                 />
                             </NuxtLink>

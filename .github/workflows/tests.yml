@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   unit:
@@ -34,6 +35,43 @@ jobs:
       - name: Unit tests
         run: pnpm exec turbo test $AFFECTED --filter=@findadoc/web --filter=@findadoc/mcp --filter=@findadoc/utils
 
+      # Coverage comments only for a package whose own files changed. A package that ran
+      # only because a dependency changed keeps its threshold gate but gets no comment.
+      - name: Changed packages
+        id: changes
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            web:
+              - 'apps/web/**'
+            mcp:
+              - 'apps/mcp/**'
+            utils:
+              - 'packages/utils/**'
+
+      - name: Web coverage comment
+        if: ${{ !cancelled() && steps.changes.outputs.web == 'true' && hashFiles('apps/web/coverage/coverage-summary.json') != '' }}
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: '@findadoc/web'
+          working-directory: apps/web
+          vite-config-path: vitest.unit.config.ts
+
+      - name: MCP coverage comment
+        if: ${{ !cancelled() && steps.changes.outputs.mcp == 'true' && hashFiles('apps/mcp/coverage/coverage-summary.json') != '' }}
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: '@findadoc/mcp'
+          working-directory: apps/mcp
+
+      - name: Utils coverage comment
+        if: ${{ !cancelled() && steps.changes.outputs.utils == 'true' && hashFiles('packages/utils/coverage/coverage-summary.json') != '' }}
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: '@findadoc/utils'
+          working-directory: packages/utils
+
   server:
     name: Server tests
     runs-on: ubuntu-latest
@@ -60,6 +98,22 @@ jobs:
 
       - name: Run server tests
         run: pnpm exec turbo test --filter=@findadoc/server
+
+      - name: Changed server files
+        id: changes
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            server:
+              - 'apps/server/**'
+
+      - name: Server coverage comment
+        if: ${{ !cancelled() && steps.changes.outputs.server == 'true' && hashFiles('apps/server/coverage/coverage-summary.json') != '' }}
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: '@findadoc/server'
+          working-directory: apps/server
 
       - name: Show logs on failure
         if: failure()

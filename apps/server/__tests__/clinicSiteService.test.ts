@@ -66,6 +66,13 @@ describe('assembleClinicSite', () => {
         expect(site?.locales.find(locale => locale.locale === 'ja-JP')?.name).toBe(showcase.copy['ja-JP']?.name)
     })
 
+    it('lists the site locales a clinic has copy for in its summary', () => {
+        const summary = summarizeClinicSite(showcaseRows().site, ['ja-JP', 'en-US', 'ne-NP'])
+
+        expect(summary?.localeCodes).toEqual(['en-US', 'ja-JP', 'ne-NP'])
+        expect(summarizeClinicSite(showcaseRows().site)?.localeCodes).toEqual([])
+    })
+
     it('hides a draft and an unknown status', () => {
         expect(assembleClinicSite(showcaseRows('draft'))).toBeUndefined()
         expect(assembleClinicSite(showcaseRows('archived'))).toBeUndefined()

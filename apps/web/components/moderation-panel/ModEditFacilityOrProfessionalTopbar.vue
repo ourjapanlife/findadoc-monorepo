@@ -13,8 +13,8 @@
         </button>
         <div
             class="grid w-full min-w-0 grid-cols-2 gap-2
-            portrait:[&>*:last-child:nth-child(odd)]:col-span-2
-            landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end"
+            landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end
+            portrait:[&>*:last-child:nth-child(odd)]:col-span-2"
         >
             <button
                 type="button"
@@ -58,8 +58,8 @@ import { useModerationScreenStore, ModerationScreen } from '~/stores/moderationS
 import { useModalStore } from '~/stores/modalStore'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
-import { formErrorKey, GENERIC_FORM_ERROR_KEY, translatedFormError } from '~/utils/formErrorMessage'
-import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
+import { formErrorKey } from '~/utils/formErrorMessage'
+import { handleModerationResponseErrors, toastUnexpectedModerationError } from '~/composables/useModerationResponseHandling'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import { ErrorCode } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
@@ -131,7 +131,7 @@ const hasPendingChanges = computed(() => hasPendingFormChanges())
 
 const toast = useAppToast()
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 const buttonBaseClass = 'inline-flex min-h-11 min-w-0 max-w-full items-center justify-center rounded-full border-2'
   + ' break-words text-center text-sm font-bold leading-tight landscape:text-base'
@@ -226,13 +226,12 @@ const saveChanges = async () => {
         let response
         try {
             response = await facilitiesStore.updateFacility()
-        } catch (e: unknown) {
-            console.error(e)
-            toast.error(translatedFormError(t, GENERIC_FORM_ERROR_KEY))
+        } catch (error: unknown) {
+            toastUnexpectedModerationError(error, toast, t)
             return
         }
 
-        if (handleModerationResponseErrors(response, toast, t)) {
+        if (handleModerationResponseErrors(response, toast, t, te)) {
             return response
         }
 
@@ -275,7 +274,7 @@ const saveChanges = async () => {
 
         const response = await healthcareProfessionalsStore.updateHealthcareProfessional()
 
-        if (handleModerationResponseErrors(response, toast, t)) {
+        if (handleModerationResponseErrors(response, toast, t, te)) {
             return response
         }
 
@@ -357,7 +356,7 @@ const deleteFacilityOrHealthcareProfessional = async () => {
             return response
         }
 
-        if (handleModerationResponseErrors(response, toast, t)) {
+        if (handleModerationResponseErrors(response, toast, t, te)) {
             return response
         }
         returnWithSuccessToast(
@@ -378,7 +377,7 @@ const deleteFacilityOrHealthcareProfessional = async () => {
 
         const response = await healthcareProfessionalsStore.deleteHealthcareProfessional(deleteHealthcareProfessionalArgs)
 
-        if (handleModerationResponseErrors(response, toast, t)) {
+        if (handleModerationResponseErrors(response, toast, t, te)) {
             return response
         }
 

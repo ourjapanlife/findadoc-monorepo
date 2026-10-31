@@ -10,14 +10,14 @@
         <select
             :id="selectId"
             v-model="selectedLocale"
-            class="h-10 appearance-none rounded-lg border bg-secondary-bg pl-3 pr-8
+            class="h-10 appearance-none rounded-lg border bg-secondary-bg pr-8 pl-3
                    text-sm font-medium transition-colors"
             :class="onPrimary
-                ? 'border-transparent text-primary hover:bg-primary-bg'
+                ? 'border-transparent text-primary-text hover:bg-primary-bg'
                 : 'border-border-strong text-primary-text hover:border-primary'"
         >
             <option
-                v-for="localeOption in localeStore.mvpLocaleDisplayOptions"
+                v-for="localeOption in localeOptions"
                 :key="localeOption.code"
                 :data-testid="`locale-option-${localeOption.code}`"
                 :value="localeOption.code"
@@ -26,8 +26,8 @@
             </option>
         </select>
         <svg
-            class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2"
-            :class="onPrimary ? 'stroke-primary' : 'stroke-primary-text-muted'"
+            class="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2"
+            :class="onPrimary ? 'stroke-primary-text' : 'stroke-primary-text-muted'"
             viewBox="0 0 24 24"
             fill="none"
             stroke-width="2"
@@ -44,21 +44,31 @@
 // Nuxt vue-i18n documentation:
 // https://i18n.nuxtjs.org/docs/v8/api/vue-i18n
 
-import { ref, useId, watch } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
 import type { Locale } from '#i18n'
 import type { Locale as GqlLocale } from '@findadoc/graphql'
 import { useLocaleStore } from '~/stores/localeStore'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { siteLanguage } from '~/utils/analyticsEvents'
 
-defineProps<{
+const props = defineProps<{
     onPrimary?: boolean
+    /** vue-i18n codes to offer. A hosted clinic passes the locales it has copy for. Omit for every site locale. */
+    localeCodes?: readonly string[]
 }>()
 
 const { t, locale, setLocale } = useI18n()
 const localeStore = useLocaleStore()
 const { track } = useUmami()
 const selectId = useId()
+
+const localeOptions = computed(() => {
+    const codes = props.localeCodes
+    if (codes === undefined) {
+        return localeStore.mvpLocaleDisplayOptions
+    }
+    return localeStore.mvpLocaleDisplayOptions.filter(option => codes.includes(toI18nCode(option.code)))
+})
 
 function toGqlCode(code: string): string {
     return code.replace('-', '_')

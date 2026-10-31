@@ -103,7 +103,7 @@
         "heading": "2. Impormasyong kinokolekta namin",
         "p1": "Paghahanap sa direktoryo: makakapaghanap ka nang walang account. Natatanggap namin ang iyong mga hinahanap, filter, at wika. Nakatago sa sarili mong browser ang iyong wika, tema, at mga kamakailang filter.",
         "p2": "Pagmumungkahi ng klinika o doktor: natatanggap namin ang inilagay mo, gaya ng link ng Google Maps, mga pangalan, mga wikang sinasalita, at mga tala. Huwag isama ang sarili mong impormasyong pangkalusugan.",
-        "p3": "Pag-book ng appointment: kapag tumatanggap ang isang klinika ng mga kahilingan sa booking sa pamamagitan ng Find a Doc, Japan, kinokolekta namin ang hinihingi ng form nito. Maaaring kasama rito ang iyong pangalan, email address, numero ng telepono, edad, dahilan ng pagpapatingin, oras na pinili mo, at mga file gaya ng larawan mo at ng iyong health insurance card o eligibility certificate. Para lang sa mga nasa Japan sa oras ng pagpapadala ng kahilingan ang booking.",
+        "p3": "Pag-book ng appointment: kapag tumatanggap ang isang klinika ng mga kahilingan sa booking sa pamamagitan ng Find a Doc, Japan, kinokolekta namin ang hinihingi ng form nito. Maaaring kasama rito ang iyong pangalan, email address, numero ng telepono, petsa ng kapanganakan, kasarian, dahilan ng pagpapatingin, oras na pinili mo, at mga file gaya ng larawan mo at ng iyong health insurance card o eligibility certificate. Para lang sa mga nasa Japan sa oras ng pagpapadala ng kahilingan ang booking.",
         "p4": "Ang dahilan ng pagpapatingin ay impormasyong pangkalusugan, na itinuturing ng APPI na special care-required personal information. Kinokolekta lang namin ito kapag ikaw mismo ang nagpasa ng form, matapos mong lagyan ng tsek ang kahong pumapayag kang kolektahin namin ito at ipasa sa klinikang pinili mo. Itinatala namin kung kailan ka pumayag.",
         "p5": "Mga account at teknikal na impormasyon: nagsa-sign in ang mga moderator at kawani ng klinika sa pamamagitan ng Auth0, na nagbibigay sa amin ng kanilang pangalan, email address, at account identifier. Itinatala ng aming mga server ang mga IP address at detalye ng request para mapanatiling gumagana ang serbisyo at maiwasan ang pang-aabuso."
       },
@@ -405,7 +405,7 @@
     "placeholderTextHealthcareProfessionalSearchbar": "Hanapin ayon sa pangalan o ID upang magdagdag ng doktor",
     "submissionConfirmationAcceptanceButton": "Oo, Isumite",
     "submissionConfirmationMessage": "Nais mo bang isumite ang form na ito?",
-    "facilitySuccessfullyRejected": "Matagumpay na hindi na-apprubahan ang pasilidad",
+    "submissionRejected": "Tinanggihan ang pagsusumite",
     "rejectSubmissionConfirmationMessage": "Tanggihan ang pagsusumiteng ito?",
     "rejectSubmissionConfirmationButton": "Oo, tanggihan",
     "searchExistingFacilities": "Hanapin ang kasalukuyang pasilidad",
@@ -440,7 +440,10 @@
     "fieldTooShort": "Masyadong maikli ang isa sa mga field.",
     "negativeNumber": "Hindi puwedeng negatibo ang numero.",
     "nothingToSave": "Walang bago na ise-save.",
-    "notAllowed": "Wala kang pahintulot na gawin ito. Mag-sign in muli, o humingi ng access sa isang administrator."
+    "notAllowed": "Wala kang pahintulot na gawin ito. Mag-sign in muli, o humingi ng access sa isang administrator.",
+    "network": "Hindi natapos ang request. Suriin ang koneksyon at subukan muli.",
+    "prefectureMismatch": "Dapat magkatugma ang Ingles at Japanese na pangalan ng prepektura.",
+    "prefectureRequired": "Ilagay ang prepektura sa Ingles at sa Japanese."
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
@@ -787,6 +790,9 @@
       "phone": "Numero ng telepono",
       "fullName": "Buong pangalan",
       "age": "Edad",
+      "dateOfBirth": "Petsa ng kapanganakan",
+      "gender": "Kasarian",
+      "genderSelfDescribed": "Ang iyong kasarian, sa sarili mong salita",
       "reason": "Dahilan ng pagbisita",
       "insuranceDocument": "Patunay ng insurance",
       "selfie": "Larawan ng mukha",
@@ -804,6 +810,7 @@
       "email": "Maglagay ng wastong email",
       "phone": "Maglagay ng wastong numero",
       "number": "Maglagay ng numero",
+      "date": "Maglagay ng tamang petsa",
       "fileTooLarge": "Masyadong malaki ang file",
       "uploadFailed": "Hindi na-upload. Subukan ulit.",
       "form": "Suriin ang mga naka-highlight na field",
@@ -855,7 +862,17 @@
         "insuranceCard": "Kard ng health insurance (保険証)",
         "eligibilityCertificate": "Sertipiko ng pagiging kwalipikado (資格確認書)",
         "mynaInsurance": "My Number card na nakarehistro bilang insurance (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Babae",
+        "male": "Lalaki",
+        "selfDescribe": "Ilalarawan ko mismo",
+        "preferNotToSay": "Mas gusto kong hindi sabihin"
       }
+    },
+    "hints": {
+      "dateOfBirth": "Ginagamit ito ng klinika para makilala ka at itugma sa iyong insurance card.",
+      "gender": "Maaaring mahalaga ito sa iyong pangangalaga. Puwede kang hindi sumagot."
     },
     "insuranceUpload": {
       "insuranceCard": "Larawan ng iyong health insurance card",
@@ -1066,5 +1083,14 @@
     "accept": "Tanggapin",
     "decline": "Tanggihan",
     "settings": "Mga setting ng cookie"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Hindi maaaprubahan ang pagsusumiteng ito dahil hindi ito bukas.",
+    "unableToReject": "Hindi matatanggihan ang pagsusumiteng ito dahil hindi ito bukas."
+  },
+  "moderationListErrors": {
+    "submissions": "Hindi ma-load ang mga pagsusumite. Subukan muli.",
+    "facilities": "Hindi ma-load ang mga klinika. Subukan muli.",
+    "professionals": "Hindi ma-load ang mga propesyonal sa kalusugan. Subukan muli."
   }
 }

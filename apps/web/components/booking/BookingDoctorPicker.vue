@@ -5,7 +5,7 @@
     >
         <fieldset
             v-if="languages.length > 1"
-            class="flex flex-col gap-2"
+            class="flex min-w-0 flex-col gap-2"
         >
             <legend class="field-label">
                 {{ t('bookingPage.languageLabel') }}
@@ -18,8 +18,8 @@
                     v-for="language in sortedLanguages"
                     :key="language"
                     type="button"
-                    class="inline-flex h-10 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold
-                    transition-colors"
+                    class="inline-flex min-h-10 max-w-full items-center gap-1.5 rounded-full border px-3 py-1
+                    text-left text-xs/tight font-semibold wrap-anywhere transition-colors sm:px-4 sm:text-sm/tight"
                     :class="spokenLanguages.includes(language)
                         ? 'border-primary bg-primary text-primary-text-inverted hover:bg-primary-hover'
                         : 'border-border-strong bg-secondary-bg text-primary-text hover:border-primary'"
@@ -29,7 +29,7 @@
                 >
                     <svg
                         v-if="spokenLanguages.includes(language)"
-                        class="h-4 w-4"
+                        class="size-4 shrink-0"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -47,7 +47,7 @@
 
         <fieldset
             v-if="practitioners.length > 0"
-            class="flex flex-col gap-2"
+            class="flex min-w-0 flex-col gap-2"
         >
             <legend class="field-label">
                 {{ t('bookingPage.doctorLabel') }}
@@ -96,7 +96,7 @@
                         <span
                             v-for="language in practitioner.spokenLanguages"
                             :key="language"
-                            class="chip h-6 px-2 text-xs"
+                            class="chip h-auto min-h-6 max-w-full px-2 py-0.5 text-xs wrap-anywhere whitespace-normal"
                             :class="spokenLanguages.includes(language) ? 'border-primary text-primary' : ''"
                         >
                             {{ languageName(language, locale) }}

@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full flex flex-col gap-3">
+    <div class="flex w-full flex-col gap-3">
         <div v-if="moderationScreenStore.dashboardScreenIsActive() && !isSettingsView">
             <ModDashboardTopbar />
         </div>

@@ -132,7 +132,10 @@
     "fieldTooShort": "One of the fields is too short.",
     "negativeNumber": "A number cannot be negative.",
     "nothingToSave": "There is nothing new to save.",
-    "notAllowed": "You do not have permission to do that. Sign in again, or ask an administrator for access."
+    "notAllowed": "You do not have permission to do that. Sign in again, or ask an administrator for access.",
+    "network": "The request did not finish. Check your connection and try again.",
+    "prefectureMismatch": "The English and Japanese prefecture names have to match.",
+    "prefectureRequired": "Add a prefecture in English and in Japanese."
   },
   "footer": {
     "poweredBy": "Powered by {name}",
@@ -172,7 +175,7 @@
         "heading": "2. Information we collect",
         "p1": "Searching the directory: you can search without an account. We receive your search terms, filters, and language. Your language, theme, and recent filters are saved in your own browser.",
         "p2": "Suggesting a clinic or doctor: we receive what you enter, such as a Google Maps link, names, languages spoken, and notes. Please do not include your own health information.",
-        "p3": "Booking an appointment: when a clinic takes booking requests through Find a Doc, Japan, we collect what its form asks for. This can include your name, email address, phone number, age, the reason for your visit, the time you choose, and files such as a photo of you and of your health insurance card or eligibility certificate. Booking is offered only to people who are in Japan when they send the request.",
+        "p3": "Booking an appointment: when a clinic takes booking requests through Find a Doc, Japan, we collect what its form asks for. This can include your name, email address, phone number, date of birth, gender, the reason for your visit, the time you choose, and files such as a photo of you and of your health insurance card or eligibility certificate. Booking is offered only to people who are in Japan when they send the request.",
         "p4": "The reason for your visit is health information, which the APPI treats as special care-required personal information. We collect it only when you submit the form yourself, after you tick a box consenting to us collecting it and passing it to the clinic you chose. We record when you gave that consent.",
         "p5": "Accounts and technical information: moderators and clinic staff sign in through Auth0, which gives us their name, email address, and an account identifier. Our servers record IP addresses and request details to keep the service running and to prevent abuse."
       },
@@ -569,7 +572,7 @@
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",
-    "facilitySuccessfullyRejected": "Facility rejected successfully",
+    "submissionRejected": "Submission rejected",
     "healthcareProfessionalId": "Healthcare Professional IDs",
     "labelHealthcareProfessionalFirstName": "First Name",
     "labelHealthcareProfessionalLastName": "Last Name",
@@ -787,6 +790,9 @@
       "phone": "Phone number",
       "fullName": "Full name",
       "age": "Age",
+      "dateOfBirth": "Date of birth",
+      "gender": "Gender",
+      "genderSelfDescribed": "Your gender, in your own words",
       "reason": "Reason for visit",
       "insuranceDocument": "Proof of insurance",
       "selfie": "Photo of you",
@@ -804,6 +810,7 @@
       "email": "Enter a valid email",
       "phone": "Enter a valid phone number",
       "number": "Enter a number",
+      "date": "Enter a valid date",
       "fileTooLarge": "That file is too large",
       "uploadFailed": "Upload failed. Try again.",
       "form": "Check the highlighted fields",
@@ -855,7 +862,17 @@
         "insuranceCard": "Health insurance card (保険証)",
         "eligibilityCertificate": "Eligibility certificate (資格確認書)",
         "mynaInsurance": "My Number insurance card (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Female",
+        "male": "Male",
+        "selfDescribe": "Prefer to self-describe",
+        "preferNotToSay": "Prefer not to say"
       }
+    },
+    "hints": {
+      "dateOfBirth": "The clinic uses this to identify you and to match your insurance card.",
+      "gender": "This can matter for your care. You can choose not to say."
     },
     "insuranceUpload": {
       "insuranceCard": "Photo of your health insurance card",
@@ -1066,5 +1083,14 @@
     "accept": "Accept",
     "decline": "Decline",
     "settings": "Cookie settings"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "This submission cannot be approved because it is not open.",
+    "unableToReject": "This submission cannot be rejected because it is not open."
+  },
+  "moderationListErrors": {
+    "submissions": "Submissions could not be loaded. Try again.",
+    "facilities": "Clinics could not be loaded. Try again.",
+    "professionals": "Healthcare professionals could not be loaded. Try again."
   }
 }

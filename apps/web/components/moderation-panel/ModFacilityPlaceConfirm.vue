@@ -9,7 +9,7 @@
         </p>
         <p
             v-if="currentPlaceId"
-            class="break-all text-sm text-primary-text-muted"
+            class="text-sm break-all text-primary-text-muted"
         >
             {{ t('modFacilitySection.placeMatchCurrent') }}: {{ currentPlaceId }}
         </p>

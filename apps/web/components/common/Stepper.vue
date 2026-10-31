@@ -5,18 +5,19 @@
         data-testid="stepper"
     >
         <nav :aria-label="navLabel">
-            <ol
-                class="m-0 grid w-full list-none gap-2 p-0"
-                :style="{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }"
-            >
+            <!--
+                Below sm only the current step shows its name; the others show their
+                number. Three full labels do not fit a phone without splitting words.
+            -->
+            <ol class="m-0 flex w-full list-none gap-2 p-0">
                 <li
                     v-for="(step, index) in steps"
                     :key="step.key"
-                    class="min-w-0"
+                    :class="index === currentIndex ? 'min-w-0 flex-1' : 'shrink-0 sm:min-w-0 sm:flex-1'"
                 >
                     <button
                         type="button"
-                        class="flex h-full w-full items-center justify-start gap-1.5 rounded-full border px-2 py-1
+                        class="flex size-full min-h-10 items-center justify-start gap-1.5 rounded-full border px-2 py-1
                             text-left text-sm transition-colors disabled:cursor-default"
                         :class="stepClass(index)"
                         :aria-current="index === currentIndex ? 'step' : undefined"
@@ -25,12 +26,15 @@
                         @click="onStepClick(index)"
                     >
                         <span
-                            class="grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold"
+                            class="grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold"
                             :class="badgeClass(index)"
                         >
                             {{ index + 1 }}
                         </span>
-                        <span class="min-w-0 font-medium leading-tight">{{ step.label }}</span>
+                        <span
+                            class="min-w-0 leading-tight font-medium wrap-anywhere"
+                            :class="index === currentIndex ? '' : 'sr-only sm:not-sr-only'"
+                        >{{ step.label }}</span>
                     </button>
                 </li>
             </ol>
@@ -46,6 +50,11 @@
             />
         </div>
 
+        <!--
+            The step buttons do not take focus on mouse down. Otherwise the field being
+            left blurs first, its error line clears, the button moves up, and the click
+            lands outside it, so Next needs a second press.
+        -->
         <div class="flex flex-col gap-3 landscape:flex-row landscape:items-center">
             <button
                 v-if="!isFirst"
@@ -53,6 +62,7 @@
                 class="btn btn-secondary"
                 data-testid="stepper-previous"
                 :disabled="blocked"
+                @mousedown.prevent
                 @click="goTo(currentIndex - 1)"
             >
                 {{ previousLabel }}
@@ -65,6 +75,7 @@
                     class="btn btn-primary"
                     data-testid="stepper-next"
                     :disabled="blocked"
+                    @mousedown.prevent
                     @click="goTo(currentIndex + 1)"
                 >
                     {{ nextLabel }}

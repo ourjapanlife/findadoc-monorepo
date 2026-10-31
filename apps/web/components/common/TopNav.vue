@@ -16,11 +16,11 @@
                     <SVGSiteLogo
                         role="img"
                         :aria-label="t('common.siteName')"
-                        class="h-9 w-9 shrink-0 fill-primary transition-colors group-hover:fill-primary-hover"
+                        class="size-9 shrink-0 fill-primary transition-colors group-hover:fill-primary-hover"
                     />
                     <span
                         aria-hidden="true"
-                        class="text-base font-semibold leading-none text-primary
+                        class="text-base leading-none font-semibold text-primary
                            transition-colors group-hover:text-primary-hover"
                     >
                         {{ t('common.siteName') }}
@@ -66,17 +66,17 @@
                                 v-if="authStore.userProfileImage"
                                 :src="authStore.userProfileImage"
                                 alt=""
-                                class="h-7 w-7 rounded-full object-cover"
+                                class="size-7 rounded-full object-cover"
                             >
                             <SVGUserIcon
                                 v-else
-                                class="h-6 w-6 text-user-icon"
+                                class="size-6 text-user-icon"
                                 aria-hidden="true"
                             />
                             <span class="max-w-40 truncate">{{ profileMenuLabel }}</span>
                             <ClinicRequestCountBadge :count="myBookingClinicsStore.requestedCount" />
                             <SVGAccordionArrow
-                                class="h-4 w-4 fill-primary-text transition-transform"
+                                class="size-4 fill-primary-text transition-transform"
                                 :class="profileMenuIsOpen ? 'rotate-180' : ''"
                                 aria-hidden="true"
                             />
@@ -97,7 +97,7 @@
                                 @click="closeProfileMenu"
                             >
                                 <SVGUserIcon
-                                    class="h-5 w-5 text-user-icon"
+                                    class="size-5 text-user-icon"
                                     aria-hidden="true"
                                 />
                                 {{ t('topNav.myPage') }}
@@ -111,7 +111,7 @@
                                 @click="closeProfileMenu"
                             >
                                 <SVGFacilityIcon
-                                    class="h-5 w-5 text-user-icon"
+                                    class="size-5 text-user-icon"
                                     aria-hidden="true"
                                 />
                                 <span class="flex-1">{{ t('clinicDashboard.heading') }}</span>
@@ -124,7 +124,7 @@
                                 @click="logout"
                             >
                                 <SVGSignOutIcon
-                                    class="h-5 w-5 fill-current"
+                                    class="size-5 fill-current"
                                     aria-hidden="true"
                                 />
                                 {{ t('topNav.logout') }}

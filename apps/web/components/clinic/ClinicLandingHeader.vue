@@ -20,7 +20,7 @@
                     class="flex min-w-0 items-center gap-2 font-semibold"
                 >
                     <span
-                        class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary-text-inverted/15 text-sm"
+                        class="grid size-9 shrink-0 place-items-center rounded-lg bg-primary-text-inverted/15 text-sm"
                         aria-hidden="true"
                     >{{ mark }}</span>
                     <span class="truncate">{{ name }}</span>
@@ -36,7 +36,7 @@
                         >
                             <a
                                 :href="`#${section.id}`"
-                                class="inline-flex h-10 items-center whitespace-nowrap rounded-lg px-3 text-sm font-medium"
+                                class="inline-flex h-10 items-center rounded-lg px-3 text-sm font-medium whitespace-nowrap"
                                 :class="activeId === section.id
                                     ? 'bg-primary-text-inverted/20'
                                     : 'hover:bg-primary-text-inverted/10'"
@@ -46,7 +46,10 @@
                     </ul>
                 </nav>
                 <div class="flex shrink-0 items-center gap-2">
-                    <LocaleSelector on-primary />
+                    <LocaleSelector
+                        on-primary
+                        :locale-codes="localeCodes"
+                    />
                     <button
                         type="button"
                         class="btn btn-sm btn-on-primary portrait:hidden"
@@ -69,6 +72,8 @@ const props = defineProps<{
     navLabel: string
     bookLabel: string
     sections: readonly { id: string, label: string }[]
+    /** Site locales the clinic has copy for. */
+    localeCodes: readonly string[]
 }>()
 
 const emit = defineEmits<{

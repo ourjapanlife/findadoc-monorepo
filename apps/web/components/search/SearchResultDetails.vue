@@ -8,7 +8,7 @@
                 <component
                     :is="heading"
                     id="search-details-title"
-                    class="text-2xl font-bold leading-tight text-primary-text"
+                    class="text-2xl/tight font-bold text-primary-text"
                 >
                     {{ facilityName }}
                 </component>
@@ -36,7 +36,7 @@
                     @click="trackContact('Call clicked')"
                 >
                     <SVGPhoneIcon
-                        class="h-4 w-4 stroke-current"
+                        class="size-4 stroke-current"
                         aria-hidden="true"
                     />
                     {{ t('searchResultsDetails.callNow') }}
@@ -50,7 +50,7 @@
                     @click="trackContact('Website clicked')"
                 >
                     <SVGGlobeIcon
-                        class="h-4 w-4 stroke-current"
+                        class="size-4 stroke-current"
                         aria-hidden="true"
                     />
                     {{ t('search.website') }}
@@ -64,7 +64,7 @@
                     @click="trackContact('Maps clicked')"
                 >
                     <SVGMapPinIcon
-                        class="h-4 w-4 stroke-current"
+                        class="size-4 stroke-current"
                         aria-hidden="true"
                     />
                     {{ t('search.openInMaps') }}
@@ -76,7 +76,7 @@
                     @click="trackContact('Email clicked')"
                 >
                     <SVGEmailIcon
-                        class="h-4 w-4 stroke-current"
+                        class="size-4 stroke-current"
                         aria-hidden="true"
                     />
                     {{ t('search.email') }}
@@ -113,7 +113,7 @@
         </header>
 
         <section class="flex flex-col gap-3">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-text-muted">
+            <h3 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ professionalsCountText }}
             </h3>
             <ul class="m-0 flex list-none flex-col gap-3 p-0">
@@ -126,7 +126,7 @@
                     <div class="flex flex-col">
                         <NuxtLink
                             :to="professional.path"
-                            class="text-lg font-semibold leading-snug text-primary hover:underline"
+                            class="text-lg/snug font-semibold text-primary hover:underline"
                             @click="track('Doctor opened', { from: surface })"
                         >
                             {{ professional.name }}
@@ -148,7 +148,7 @@
                         v-if="professional.languages.length"
                         class="flex flex-col gap-1.5"
                     >
-                        <span class="text-xs font-semibold uppercase tracking-wide text-primary-text-muted">
+                        <span class="text-xs font-semibold tracking-wide text-primary-text-muted uppercase">
                             {{ t('searchResultsDetails.speaks') }}
                         </span>
                         <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
@@ -163,7 +163,7 @@
                     </div>
                     <p
                         v-if="professional.additionalInfo"
-                        class="m-0 whitespace-pre-line text-sm text-primary-text-muted"
+                        class="m-0 text-sm whitespace-pre-line text-primary-text-muted"
                     >
                         {{ professional.additionalInfo }}
                     </p>

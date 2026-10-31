@@ -1,22 +1,22 @@
 <template>
-    <div class="h-full overflow-y-auto p-4 md:p-6">
-        <div class="max-w-2xl mx-auto">
+    <div class="overflow-y-auto p-4 md:h-full md:p-6">
+        <div class="mx-auto max-w-2xl">
             <div class="mb-6">
-                <h1 class="text-2xl md:text-3xl font-bold text-primary-text">
+                <h1 class="text-2xl font-bold text-primary-text md:text-3xl">
                     {{ t('settingsPage.heading') }}
                 </h1>
                 <span class="text-primary-text-muted">{{ t('settingsPage.subheading') }}</span>
             </div>
 
-            <div class="bg-secondary-bg rounded-lg border border-accent-bg p-6 mb-6">
+            <div class="mb-6 rounded-lg border border-accent-bg bg-secondary-bg p-6">
                 <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-primary-text mb-3">
+                    <h2 class="mb-3 text-xl font-semibold text-primary-text">
                         {{ t('settingsPage.healthcareProfessionalName') }}
                     </h2>
                     <div class="flex items-center gap-6">
                         <div
-                            class="w-20 h-20 rounded-full border-2 border-accent-bg overflow-hidden
-                            flex items-center justify-center"
+                            class="flex size-20 items-center justify-center overflow-hidden
+                            rounded-full border-2 border-accent-bg"
                         >
                             <img
                                 :src="mascotIllustration"
@@ -25,26 +25,26 @@
                                 height="1024"
                                 loading="lazy"
                                 decoding="async"
-                                class="w-16 h-16 stroke-primary"
+                                class="size-16 stroke-primary"
                             >
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-6">
-                    <h2 class="text-xl font-semibold text-primary-text mb-3">
+                    <h2 class="mb-3 text-xl font-semibold text-primary-text">
                         {{ t('settingsPage.displayName') }}
                     </h2>
                     <input
                         v-model="displayName"
                         type="text"
-                        class="w-full px-4 py-3 border border-accent-bg rounded-lg
-                        bg-secondary-bg text-primary-text placeholder-primary-text-muted"
+                        class="w-full rounded-lg border border-accent-bg bg-secondary-bg px-4
+                        py-3 text-primary-text placeholder-primary-text-muted"
                     >
                 </div>
 
                 <div class="flex justify-end">
-                    <button class="px-6 py-3 bg-primary text-primary-text-inverted rounded-lg font-medium">
+                    <button class="rounded-lg bg-primary px-6 py-3 font-medium text-primary-text-inverted">
                         {{ t('settingsPage.updateButton') }}
                     </button>
                 </div>

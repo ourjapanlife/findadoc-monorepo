@@ -63,7 +63,7 @@
                 />
                 <div
                     v-else-if="tab === 'calendar'"
-                    class="h-[75vh] min-h-[32rem]"
+                    class="md:h-[75vh] md:min-h-128"
                 >
                     <ClinicAvailabilityCalendar
                         :facility-id="facilityId"

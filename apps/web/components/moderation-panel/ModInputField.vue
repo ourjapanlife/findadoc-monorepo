@@ -4,7 +4,7 @@
             {{ label }}
             <span
                 v-if="!required"
-                class="text-primary-text-muted ml-1 font-normal"
+                class="ml-1 font-normal text-primary-text-muted"
             >
                 ({{ t('modInputField.optional') }})
             </span>
@@ -16,7 +16,7 @@
             :required="required"
             :readonly="!isEditing"
             :tabindex="isEditing ? undefined : -1"
-            class="mod-input-field field"
+            class="field mod-input-field"
             @blur="initialValidationCheck"
         >
         <p

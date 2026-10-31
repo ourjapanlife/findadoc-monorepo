@@ -328,7 +328,7 @@ import { useUmami } from '~/composables/useUmamiTracking'
 import { fetchMapsPlaceDetails } from '~/utils/mapsPlaceDetails'
 
 const toast = useAppToast()
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 const { track } = useUmami()
 
 const submissionStore = useSubmissionStore()
@@ -456,7 +456,7 @@ async function submitNewSubmission() {
         const response = await submissionStore.createNewSubmission(newSubmission)
         // This is used in the component and not graphQL call as it is user messaging and needs the mounted toast library
         if (response?.hasErrors || response?.errors?.length) {
-            handleServerErrorMessaging(response.errors ?? [], toast, t)
+            handleServerErrorMessaging(response.errors ?? [], toast, t, te)
             track('Submit rejected', { reason: 'server' })
             return
         }

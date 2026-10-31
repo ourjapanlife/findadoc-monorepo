@@ -55,5 +55,7 @@ export enum ErrorCode {
     TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS',
     OPEN_REQUEST_LIMIT = 'OPEN_REQUEST_LIMIT',
     BOOKING_REGION_UNAVAILABLE = 'BOOKING_REGION_UNAVAILABLE',
-    FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS'
+    FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS',
+    /** The request never produced GraphQL errors: a timeout, a dropped connection, or an empty failure. */
+    NETWORK = 'NETWORK'
 }

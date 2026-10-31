@@ -103,7 +103,7 @@
         "heading": "2. 収集する情報",
         "p1": "ディレクトリの検索：アカウントなしで検索できます。当法人は検索語句、絞り込み条件、言語を受け取ります。言語、表示テーマ、最近の絞り込み条件はお使いのブラウザに保存されます。",
         "p2": "クリニック・医師の提案：Google マップのリンク、名前、対応言語、メモなど、入力された内容を受け取ります。ご自身の健康に関する情報は含めないでください。",
-        "p3": "予約の申し込み：クリニックが Find a Doc, Japan を通じて予約を受け付けている場合、そのフォームで求められる情報を収集します。氏名、メールアドレス、電話番号、年齢、受診理由、選択した日時、ご本人の写真や健康保険証・資格確認書の写真などのファイルが含まれることがあります。予約は、リクエストを送信する時点で日本国内にいる方にのみ提供しています。",
+        "p3": "予約の申し込み：クリニックが Find a Doc, Japan を通じて予約を受け付けている場合、そのフォームで求められる情報を収集します。氏名、メールアドレス、電話番号、生年月日、性別、受診理由、選択した日時、ご本人の写真や健康保険証・資格確認書の写真などのファイルが含まれることがあります。予約は、リクエストを送信する時点で日本国内にいる方にのみ提供しています。",
         "p4": "受診理由は健康に関する情報であり、個人情報保護法上の要配慮個人情報にあたります。当法人がこれを取得するのは、当法人による取得と選択したクリニックへの提供に同意するチェックボックスにご本人がチェックを入れ、フォームを送信した場合に限ります。同意した日時は記録します。",
         "p5": "アカウントと技術情報：モデレーターとクリニックのスタッフは Auth0 でログインし、当法人は氏名、メールアドレス、アカウント識別子を受け取ります。サービスの運用と不正利用の防止のため、サーバーは IP アドレスとリクエストの詳細を記録します。"
       },
@@ -346,7 +346,7 @@
     "submissionConfirmationAcceptanceButton": "送信する",
     "submissionConfirmationMessage": "このフォームを送信しますか？",
     "errorMessageFacilityId": "医療機関を更新するには ID が必要です",
-    "facilitySuccessfullyRejected": "医療機関を却下しました",
+    "submissionRejected": "申請を却下しました",
     "rejectSubmissionConfirmationMessage": "この投稿を却下しますか？",
     "rejectSubmissionConfirmationButton": "却下する",
     "searchExistingFacilities": "既存の医療機関を検索",
@@ -494,7 +494,10 @@
     "fieldTooShort": "短すぎる項目があります。",
     "negativeNumber": "負の数は使えません。",
     "nothingToSave": "保存する新しい内容がありません。",
-    "notAllowed": "この操作を行う権限がありません。もう一度ログインするか、管理者に権限を依頼してください。"
+    "notAllowed": "この操作を行う権限がありません。もう一度ログインするか、管理者に権限を依頼してください。",
+    "network": "リクエストが完了しませんでした。接続を確認して、もう一度お試しください。",
+    "prefectureMismatch": "英語と日本語の都道府県名が一致している必要があります。",
+    "prefectureRequired": "英語と日本語の都道府県を入力してください。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "対応言語",
@@ -787,6 +790,9 @@
       "phone": "電話番号",
       "fullName": "氏名",
       "age": "年齢",
+      "dateOfBirth": "生年月日",
+      "gender": "性別",
+      "genderSelfDescribed": "性別（ご自身の言葉で）",
       "reason": "受診理由",
       "insuranceDocument": "保険の確認書類",
       "selfie": "顔写真",
@@ -804,6 +810,7 @@
       "email": "有効なメールアドレスを入力してください",
       "phone": "有効な電話番号を入力してください",
       "number": "数字を入力してください",
+      "date": "正しい日付を入力してください",
       "fileTooLarge": "ファイルが大きすぎます",
       "uploadFailed": "アップロードに失敗しました。もう一度お試しください。",
       "form": "赤字の項目を確認してください",
@@ -855,7 +862,17 @@
         "insuranceCard": "健康保険証",
         "eligibilityCertificate": "資格確認書",
         "mynaInsurance": "マイナ保険証（保険証として登録したマイナンバーカード）"
+      },
+      "gender": {
+        "female": "女性",
+        "male": "男性",
+        "selfDescribe": "自分で記入する",
+        "preferNotToSay": "回答しない"
       }
+    },
+    "hints": {
+      "dateOfBirth": "本人確認と保険証の照合に使います。",
+      "gender": "診療に関わることがあります。回答しないこともできます。"
     },
     "insuranceUpload": {
       "insuranceCard": "健康保険証の写真",
@@ -1066,5 +1083,14 @@
     "accept": "同意する",
     "decline": "拒否する",
     "settings": "Cookie設定"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "この申請は開いていないため、承認できません。",
+    "unableToReject": "この申請は開いていないため、却下できません。"
+  },
+  "moderationListErrors": {
+    "submissions": "申請を読み込めませんでした。もう一度お試しください。",
+    "facilities": "医療機関を読み込めませんでした。もう一度お試しください。",
+    "professionals": "医療従事者を読み込めませんでした。もう一度お試しください。"
   }
 }

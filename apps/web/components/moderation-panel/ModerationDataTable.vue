@@ -1,13 +1,13 @@
 <template>
-    <div class="relative flex flex-col h-full w-full min-h-0">
+    <div class="relative flex w-full flex-col md:h-full md:min-h-0">
         <div class="shrink-0 px-3 pt-3 pb-2">
             <div class="relative w-full sm:max-w-sm">
                 <input
                     :value="search"
                     type="text"
                     :placeholder="t('modDashboardTopbar.placeholderText')"
-                    class="pl-10 pr-3 py-2.5 w-full rounded-lg border border-accent-bg
-                    bg-secondary-bg text-primary-text text-sm font-normal font-sans
+                    class="w-full rounded-lg border border-accent-bg bg-secondary-bg py-2.5 pr-3
+                    pl-10 font-sans text-sm font-normal text-primary-text
                     placeholder-primary-text-muted"
                     data-testid="mod-submission-search-input"
                     @input="onSearchInput"
@@ -15,13 +15,13 @@
                 <SVGLookingGlass
                     role="img"
                     title="searching icon"
-                    class="absolute left-3 top-3 w-4 h-4 text-primary-text-muted"
+                    class="absolute top-3 left-3 size-4 text-primary-text-muted"
                 />
             </div>
         </div>
 
-        <div class="relative z-10 flex-1 min-h-0 overflow-auto">
-            <table class="w-full text-sm border-collapse">
+        <div class="relative z-10 overflow-x-auto md:min-h-0 md:flex-1 md:overflow-auto">
+            <table class="w-full border-collapse text-sm">
                 <thead class="sticky top-0 z-10 bg-secondary-bg">
                     <tr class="border-b border-accent-bg text-left">
                         <th
@@ -110,7 +110,7 @@
         <div class="relative z-10 shrink-0 border-t border-accent-bg bg-secondary-bg">
             <div
                 v-if="selectable && (selectedNames.length > 0 || results.length > 0)"
-                class="px-3 py-2 flex flex-col gap-2 border-b border-accent-bg"
+                class="flex flex-col gap-2 border-b border-accent-bg px-3 py-2"
                 data-testid="mod-table-bulk-footer"
             >
                 <p
@@ -159,8 +159,8 @@
                     </li>
                 </ul>
             </div>
-            <div class="px-3 py-2 flex flex-col md:flex-row md:items-center gap-2">
-                <div class="w-full md:flex-1 flex justify-center">
+            <div class="flex flex-col gap-2 px-3 py-2 md:flex-row md:items-center">
+                <div class="flex w-full justify-center md:flex-1">
                     <Pagination
                         :current-offset="offset"
                         :total-items="totalItems"
@@ -168,16 +168,16 @@
                         @update:offset="emit('update:offset', $event)"
                     />
                 </div>
-                <div class="w-full md:w-auto flex items-center justify-center md:justify-end gap-2">
+                <div class="flex w-full items-center justify-center gap-2 md:w-auto md:justify-end">
                     <label
                         for="items-per-page-select"
-                        class="text-xs sm:text-sm text-primary-text-muted"
+                        class="text-xs text-primary-text-muted sm:text-sm"
                     >{{ t('modListContainer.resultsPerPage') }}</label>
                     <select
                         id="items-per-page-select"
                         :value="pageSize"
-                        class="border border-accent-bg rounded px-2 py-1 text-sm bg-secondary-bg
-                        text-primary-text focus:ring-primary focus:border-primary"
+                        class="rounded-sm border border-accent-bg bg-secondary-bg px-2 py-1 text-sm
+                        text-primary-text focus:border-primary focus:ring-primary"
                         @change="onPageSizeChange"
                     >
                         <option

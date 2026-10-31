@@ -22,6 +22,7 @@ const LANGUAGE_CODES: Record<string, PublishedLocale> = {
     AR: 'ar_AE',
     ID: 'id_ID',
     TL: 'tl_PH',
+    VI: 'vi_VN',
     NE: 'ne_NP',
     NL: 'nl_BE',
     SW: 'sw_KE'

@@ -21,23 +21,23 @@
                 class="flex min-w-0 items-center gap-3 rounded-lg border border-primary/40 bg-primary/5 px-3 py-2.5"
             >
                 <SVGCheckMark
-                    class="h-4 w-4 shrink-0 text-primary"
+                    class="size-4 shrink-0 text-primary"
                     aria-hidden="true"
                 />
                 <div class="flex min-w-0 flex-1 flex-col">
-                    <span class="wrap-break-word font-semibold text-primary-text">
+                    <span class="font-semibold wrap-break-word text-primary-text">
                         {{ facility.nameEn || facility.nameJa || facility.id }}
                     </span>
                     <span
                         v-if="facility.nameEn && facility.nameJa"
-                        class="wrap-break-word text-sm text-primary-text-muted"
+                        class="text-sm wrap-break-word text-primary-text-muted"
                     >
                         {{ facility.nameJa }}
                     </span>
                 </div>
                 <button
                     type="button"
-                    class="mod-edit-only inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full
+                    class="mod-edit-only inline-flex size-8 shrink-0 items-center justify-center rounded-full
                         text-lg leading-none text-primary-text hover:bg-accent-bg"
                     :aria-label="removeLabel(facilityLinkLabel(facility))"
                     data-testid="linked-facility-remove"

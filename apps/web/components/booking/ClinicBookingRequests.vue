@@ -32,10 +32,10 @@
                 :key="n"
                 class="card flex animate-pulse items-center gap-4 p-4"
             >
-                <span class="h-16 w-16 shrink-0 rounded-lg bg-accent-bg" />
+                <span class="size-16 shrink-0 rounded-lg bg-accent-bg" />
                 <span class="flex flex-1 flex-col gap-2">
-                    <span class="h-4 w-1/3 rounded bg-accent-bg" />
-                    <span class="h-3 w-1/2 rounded bg-accent-bg" />
+                    <span class="h-4 w-1/3 rounded-sm bg-accent-bg" />
+                    <span class="h-3 w-1/2 rounded-sm bg-accent-bg" />
                 </span>
             </li>
         </ul>
@@ -51,11 +51,11 @@
             class="card flex flex-col items-center gap-2 px-6 py-12 text-center"
         >
             <span
-                class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary"
+                class="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary"
                 aria-hidden="true"
             >
                 <svg
-                    class="h-6 w-6"
+                    class="size-6"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -93,12 +93,12 @@
                     @click="emit('open-booking', row.id)"
                 >
                     <span
-                        class="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-lg
+                        class="flex size-16 shrink-0 flex-col items-center justify-center rounded-lg
                         bg-primary/10 text-primary"
                         aria-hidden="true"
                     >
                         <template v-if="row.startsAt">
-                            <span class="text-xs font-semibold uppercase tracking-wide">
+                            <span class="text-xs font-semibold tracking-wide uppercase">
                                 {{ formatPart(row.startsAt, { month: 'short' }) }}
                             </span>
                             <span class="text-2xl leading-none font-bold">
@@ -146,7 +146,7 @@
                             : t('bookingDashboard.noAppointment') }}
                     </span>
                     <svg
-                        class="hidden h-5 w-5 shrink-0 text-primary-text-muted group-hover:text-primary
+                        class="hidden size-5 shrink-0 text-primary-text-muted group-hover:text-primary
                         landscape:block"
                         viewBox="0 0 24 24"
                         fill="none"

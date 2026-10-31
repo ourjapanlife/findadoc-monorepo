@@ -5,7 +5,7 @@ export const DEFAULT_LOCALE_CODE = 'en-US'
 
 /**
  * Locales whose clinic, doctor, hub, and facet HTML is written at generate time.
- * Production is about 1,100 of those pages. All 11 locales is about 12,000 renders
+ * Production is about 1,100 of those pages. All 13 locales is about 14,000 renders
  * and the generate step stays under Amplify's time limit. English is the default URL.
  * Japanese is the host-country language. Marketing pages still generate for
  * every locale. Other directory URLs render in the browser. See `public/_redirects`.
@@ -80,7 +80,7 @@ export function localizedPath(path: string, localeCode: string): string {
     return `${prefixed}${query}${hash}`
 }
 
-function withLocales(paths: readonly string[], codes: readonly string[]): string[] {
+export function withLocales(paths: readonly string[], codes: readonly string[]): string[] {
     return paths.flatMap(path => codes.map(code => localizedPath(path, code)))
 }
 

@@ -40,7 +40,7 @@
                         @click="emit('close')"
                     >
                         <svg
-                            class="h-5 w-5 stroke-current"
+                            class="size-5 stroke-current"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke-width="2"

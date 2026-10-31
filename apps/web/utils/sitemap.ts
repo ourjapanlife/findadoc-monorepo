@@ -25,11 +25,14 @@ export type SitemapLocaleEntry = {
  * locale. `autoI18n` stays off so this remains a single `/sitemap.xml`.
  */
 export function withLocaleAlternates<T extends { loc: string, lastmod?: string }>(
-    entries: readonly T[]
+    entries: readonly T[],
+    /** A hosted clinic passes the locales it has copy for. Otherwise the path decides. */
+    localeCodes?: readonly string[]
 ): Array<Omit<T, 'loc'> & SitemapLocaleEntry> {
     return entries.flatMap(entry => {
-        const alternatives = hreflangAlternates(entry.loc)
-        return indexableLocaleCodes(entry.loc).map(code => ({
+        const codes = localeCodes ?? indexableLocaleCodes(entry.loc)
+        const alternatives = hreflangAlternates(entry.loc, codes)
+        return codes.map(code => ({
             ...entry,
             loc: localizedPath(entry.loc, code),
             alternatives

@@ -62,7 +62,7 @@ Clinic notices go to the clinic's members only (#161). A clinic with no members 
 | | Local laptop | Production (`findadoc.jp`) |
 |---|---|---|
 | Works today | Yes, on this branch | Only after #153 is merged and deployed |
-| Open times | Weekly hours: weekdays 09:00–12:00, 13:00–17:00 JST (seed) | The same weekly hours (migration `20261030090000_booking_weekly_hours.sql`) |
+| Open times | Weekly hours: weekdays 09:00–12:00, 13:00–17:00 JST (seed) | None until a clinic sets them. `20261031090000_clear_booking_requests.sql` removed the showcase hours |
 | Emails | Printed in the API terminal | Real; use internal addresses only |
 | Sign-in | Real Auth0, **Admin account** | Same |
 | Risk | Laptop has to run the stack | Real data; demo bookings stay in the database unless cancelled |
@@ -96,7 +96,7 @@ From the repo root, on this branch.
 ## 5. Night-before setup: production (only if #153 is deployed)
 
 1. `pnpm db:push` has applied `20261029150000_booking_access_lifecycle.sql`.
-2. As an admin, open `https://www.findadoc.jp/clinic-dashboard/c32c316a-a368-499b-abaf-c5c973cb67e5` → **Settings → Weekly hours** and check the week. The migration sets weekdays 09:00–12:00 and 13:00–17:00 JST. Close any day you don't want offered on the **Calendar**.
+2. As an admin, open `https://www.findadoc.jp/clinic-dashboard/c32c316a-a368-499b-abaf-c5c973cb67e5` → **Settings**. Save visit lengths and the intake form (the defaults are filled in), then set **Weekly hours**. Production has no settings and no open times until you do. Close any day you don't want offered on the **Calendar**.
 3. **Team**: invite your own email (role Owner). Notices for the showcase then go to you.
 4. Use an internal address for the demo patient (section 2).
 5. Open `https://multilingual-online-clinic.findadoc.jp/?preview=1` in both windows.
@@ -104,15 +104,7 @@ From the repo root, on this branch.
 
 ## Demo requests
 
-So the Requests list and Calendar have something in them before anyone books, migration `20261029170000_showcase_demo_bookings.sql` adds one request in each status: requested on 23 December 10:00 JST and 2 November, confirmed, declined with a note, cancelled by the patient, and completed. It also paints open hours for 21–25 December. `pnpm db:push` applies it on production like any migration.
-
-The rows are temporary. Every id starts `de300000-0000-4000-`, and a follow-up migration deletes only those rows about a week after the demo. They have no uploads and no manage link.
-
-Locally the migration does nothing on a fresh reset (the showcase facility is seeded after migrations, and the seed clears booking rows). To rehearse with them, run the file by hand after `pnpm dev:seeded`:
-
-```bash
-docker exec -i findadoc-db psql -U postgres < apps/server/supabase/migrations/20261029170000_showcase_demo_bookings.sql
-```
+There are none. Migration `20261029170000_showcase_demo_bookings.sql` added one request in each status and open hours for 21–25 December for the production demo. `20261031090000_clear_booking_requests.sql` then reset booking to an empty slate: every request, appointment, painted hour, closure, weekly hour, and booking setting. Upload files not yet purged were marked due, so the daily purge deleted them; their rows stay as the record of the purge. Clinic members and clinic sites stay. To see requests on the dashboard, save settings and hours, then book through the clinic site (section 6).
 
 ## 6. Demo script (about 10 minutes)
 
@@ -192,7 +184,7 @@ INSERT INTO clinic_memberships (facility_id, invited_email, auth0_sub, claimed_a
 VALUES ('c32c316a-a368-499b-abaf-c5c973cb67e5', 'you@example.com', '<your Auth0 sub, e.g. google-oauth2|123>', now(), 'owner');
 ```
 
-Sign in with a plain (non-admin) account with that sub. You see only the showcase clinic. Any other `/clinic-dashboard/{id}` says you don't have access.
+Sign in with a plain (non-admin) account with that sub. You see only the showcase clinic. Any other `/clinic-dashboard/{id}` says you don't have access. My Page → Access lists `FacilityOwner` (or `FacilityStaff` for a staff row). The API adds that role from the row on each request, so deleting the row removes it on the next request.
 
 ## 8. Troubleshooting
 

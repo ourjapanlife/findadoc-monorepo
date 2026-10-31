@@ -1,6 +1,6 @@
 import { GraphQLClient, type RequestDocument } from 'graphql-request'
 import { useRuntimeConfig } from '#imports'
-import type { ServerErrorResponse, ServerResponse } from '~/typedefs/serverResponse'
+import { ErrorCode, type ServerErrorResponse, type ServerResponse } from '~/typedefs/serverResponse'
 import { serverErrorsFromGraphQL } from '~/utils/formErrorMessage'
 import { graphqlEndpoint } from './graphqlEndpoint'
 
@@ -40,6 +40,29 @@ async function withTimeout<T>(request: Promise<T>, abortAfterMs?: number): Promi
     }
 }
 
+/**
+ * A mutation that timed out may already have been applied. Retrying it can run
+ * the write twice, or turn a finished approve into "already approved".
+ * Queries keep the default of three retries. A caller can still pass `retryAmount`.
+ */
+function isGraphQLMutation(document: RequestDocument): boolean {
+    if (typeof document === 'string') {
+        return /^\s*(?:#[^\n]*\n\s*)*mutation\b/i.test(document)
+    }
+
+    const operation = document as {
+        definitions?: readonly { kind?: string, operation?: string }[]
+        loc?: { source?: { body?: string } }
+    }
+    if (operation.definitions?.some(definition =>
+        definition.kind === 'OperationDefinition' && definition.operation === 'mutation')) {
+        return true
+    }
+
+    const body = operation.loc?.source?.body
+    return typeof body === 'string' && /^\s*(?:#[^\n]*\n\s*)*mutation\b/i.test(body)
+}
+
 export const graphQLClientRequestWithRetry = async <T>(
     gqlClientRequestFunction: (
         queryOrMutation: RequestDocument,
@@ -51,7 +74,7 @@ export const graphQLClientRequestWithRetry = async <T>(
     retryOptions?: graphQLClientRequestWithRetryOptions
 ): Promise<ServerResponse<T>> => {
     let attempts = 0
-    const retryAmount = retryOptions?.retryAmount ?? 3
+    const retryAmount = retryOptions?.retryAmount ?? (isGraphQLMutation(queryOrMutation) ? 0 : 3)
     const requestTimeoutInMilliseconds = retryOptions?.requestTimeoutInMilliseconds || 5000
 
     const executeGQLClientRequest = async (): Promise<ServerResponse<T>> => {
@@ -101,6 +124,13 @@ export const graphQLClientRequestWithRetry = async <T>(
             const serverErrorResponse = error as ServerErrorResponse
             // This map transforms errors if they exist
             const errors = serverErrorsFromGraphQL(serverErrorResponse.response?.errors)
+            if (errors.length === 0) {
+                errors.push({
+                    message: error instanceof Error ? error.message : 'Request failed',
+                    code: ErrorCode.NETWORK,
+                    field: undefined
+                })
+            }
 
             return { data: {} as T, errors, hasErrors: true }
         }

@@ -51,7 +51,7 @@
                 </div>
                 <p
                     v-if="detail.statusReason"
-                    class="whitespace-pre-wrap wrap-break-word text-sm"
+                    class="text-sm wrap-break-word whitespace-pre-wrap"
                 >
                     {{ t('bookingDashboard.reasonShown', { reason: detail.statusReason }) }}
                 </p>
@@ -159,7 +159,7 @@
                         <dt class="text-sm text-primary-text-muted">
                             {{ answerLabel(answer.fieldId) }}
                         </dt>
-                        <dd class="whitespace-pre-wrap wrap-break-word">
+                        <dd class="wrap-break-word whitespace-pre-wrap">
                             {{ answerValue(answer.fieldId, answer.value) }}
                         </dd>
                     </div>
@@ -223,7 +223,7 @@
                                 <img
                                     :src="previewUrls[upload.id]"
                                     :alt="answerLabel(upload.fieldId)"
-                                    class="block h-auto max-h-80 w-auto max-w-full object-contain"
+                                    class="block size-auto max-h-80 max-w-full object-contain"
                                     :data-testid="`booking-upload-preview-${upload.id}`"
                                 >
                             </button>
@@ -233,7 +233,7 @@
                                 px-4 py-3 text-sm font-semibold text-primary-text"
                             >
                                 <svg
-                                    class="h-5 w-5 text-primary"
+                                    class="size-5 text-primary"
                                     viewBox="0 0 24 24"
                                     fill="none"
                                     stroke="currentColor"
@@ -249,7 +249,7 @@
                             </div>
                             <p
                                 v-if="upload.fileName !== ''"
-                                class="break-all text-xs text-primary-text-muted"
+                                class="text-xs break-all text-primary-text-muted"
                             >
                                 {{ upload.fileName }}
                             </p>

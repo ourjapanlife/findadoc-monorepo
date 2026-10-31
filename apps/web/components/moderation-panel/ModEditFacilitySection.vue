@@ -363,6 +363,7 @@ import { listPrefectureJapanEn, listPrefectureJapanJa, pairedPrefectureEn, paire
 import { checkPrefectureNameMatch } from '~/utils/facilitiesUtils'
 import { stableStringify } from '~/utils/stableStringify'
 import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
+import { fetchHealthcareProfessionalsWithCount } from '~/utils/graphqlHelpers'
 import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { provideModerationFormEditing, useModerationFormEditing } from '~/composables/useModerationFormMode'
@@ -402,6 +403,9 @@ const mapsFillCurrent = computed<FacilityMapsFillTarget>(() => ({
     postalCode: facilitySectionFields.value.postalCode,
     prefectureEn: facilitySectionFields.value.prefectureEn,
     prefectureJa: facilitySectionFields.value.prefectureJa,
+    cityId: facilitySectionFields.value.cityId,
+    cityEn: facilitySectionFields.value.cityEn,
+    cityJa: facilitySectionFields.value.cityJa,
     addressLine1En: facilitySectionFields.value.addressLine1En,
     addressLine1Ja: facilitySectionFields.value.addressLine1Ja,
     mapLatitude: facilitySectionFields.value.mapLatitude,
@@ -429,13 +433,43 @@ watch(
 )
 
 const healthcareProfessionalsRelatedToFacility = computed(() => facilitySectionFields.value.healthcareProfessionalIds)
+// The picker cache holds only the first page, so linked professionals are loaded by id
+const linkedHealthcareProfessionals: Ref<HealthcareProfessional[]> = ref([])
+let linkedHealthcareProfessionalsRequest = 0
 const healthcareProfessionalRelatedToFacilityFiltered = computed<HealthcareProfessional[]>(() =>
     healthcareProfessionalsRelatedToFacility.value.flatMap(
         healthcareProfessionalId =>
-            healthcareProfessionalsStore.healthcareProfessionalsData.find(
+            linkedHealthcareProfessionals.value.find(
                 healthcareProfessional => healthcareProfessional.id === healthcareProfessionalId
             ) || []
     ))
+
+async function loadLinkedHealthcareProfessionals(ids: string[]) {
+    const request = ++linkedHealthcareProfessionalsRequest
+    if (!ids.length) {
+        linkedHealthcareProfessionals.value = []
+        return
+    }
+
+    try {
+        const { filteredSearchResults } = await fetchHealthcareProfessionalsWithCount({
+            ids,
+            offset: 0,
+            limit: ids.length
+        })
+        if (request === linkedHealthcareProfessionalsRequest) {
+            linkedHealthcareProfessionals.value = filteredSearchResults
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+watch(
+    () => facilityStore.facilitySectionFields.healthcareProfessionalIds,
+    ids => loadLinkedHealthcareProfessionals(ids),
+    { immediate: true }
+)
 // This keeps track of the existing healthcare professionals we are adding to an existing facility
 const selectedHealthcareProfessionals: Ref<HealthcareProfessional[]> = ref([])
 const selectedHealthcareProfessionalsModel = computed({

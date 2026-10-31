@@ -1,6 +1,6 @@
 <template>
-    <div class="container mx-auto p-4 max-w-lg">
-        <h1 class="text-2xl font-bold mb-6">
+    <div class="container mx-auto max-w-lg p-4">
+        <h1 class="mb-6 text-2xl font-bold">
             {{ t('profile.edit') }}
         </h1>
 
@@ -11,13 +11,13 @@
             <div>
                 <label
                     for="username"
-                    class="block mb-1 font-semibold"
+                    class="mb-1 block font-semibold"
                 >{{ t('profile.username') }}</label>
                 <input
                     id="username"
                     v-model="username"
                     type="text"
-                    class="border rounded px-3 py-2 w-full"
+                    class="w-full rounded-sm border px-3 py-2"
                     required
                     autocomplete="username"
                 >
@@ -26,24 +26,24 @@
             <div>
                 <label
                     for="email"
-                    class="block mb-1 font-semibold"
+                    class="mb-1 block font-semibold"
                 >{{ t('profile.email') }}</label>
                 <input
                     id="email"
                     v-model="email"
                     type="email"
-                    class="border rounded px-3 py-2 w-full"
+                    class="w-full rounded-sm border px-3 py-2"
                     required
                 >
             </div>
 
             <div>
-                <label class="block mb-1 font-semibold">{{ t('profile.profilePhoto') }}</label>
+                <label class="mb-1 block font-semibold">{{ t('profile.profilePhoto') }}</label>
                 <div class="flex items-center gap-4">
                     <img
                         :src="profilePhotoPreview || profilePhoto"
                         alt="Profile Photo"
-                        class="w-16 h-16 rounded-full object-cover border"
+                        class="size-16 rounded-full border object-cover"
                     >
                     <template v-if="props.isOwner ?? true">
                         <input
@@ -57,7 +57,7 @@
             <template v-if="props.isOwner ?? true">
                 <button
                     type="submit"
-                    class="text-primary py-2 px-4 rounded hover:text-primary-hover transition w-full"
+                    class="w-full rounded-sm px-4 py-2 text-primary transition hover:text-primary-hover"
                 >
                     {{ t('profile.save') }}
                 </button>

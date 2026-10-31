@@ -6,7 +6,7 @@
     >
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <h3 class="text-lg font-semibold leading-snug text-primary-text">
+                <h3 class="text-lg/snug font-semibold text-primary-text">
                     <!--
                         Stretched link: the heading is the one focusable control, and its
                         ::after covers the card so the whole surface is clickable. The href is
@@ -26,7 +26,7 @@
                 </p>
             </div>
             <svg
-                class="mt-1 h-5 w-5 shrink-0 stroke-primary-text-muted"
+                class="mt-1 size-5 shrink-0 stroke-primary-text-muted"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke-width="2"
@@ -73,7 +73,7 @@
                 </span>
                 <span
                     v-if="professional.specialties"
-                    class="text-sm leading-snug text-primary-text-muted"
+                    class="text-sm/snug text-primary-text-muted"
                 >{{ professional.specialties }}</span>
             </li>
             <li

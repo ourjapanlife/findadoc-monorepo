@@ -23,7 +23,7 @@
                         @click="toggleFilters"
                     >
                         <SVGFiltersIcon
-                            class="h-4 w-4 fill-current"
+                            class="size-4 fill-current"
                             aria-hidden="true"
                         />
                         {{ t('search.filters') }}
@@ -41,7 +41,7 @@
                         @click="toggleMap"
                     >
                         <SVGMapPinIcon
-                            class="h-4 w-4 stroke-current"
+                            class="size-4 stroke-current"
                             aria-hidden="true"
                         />
                         {{ showMap ? t('search.hideMap') : t('search.showMap') }}
@@ -54,7 +54,7 @@
                 id="search-filters"
                 data-testid="search-filters"
                 :class="filtersOpen ? 'grid' : 'hidden landscape:grid'"
-                class="grid-cols-1 gap-3 landscape:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] landscape:items-end"
+                class="grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] landscape:grid-cols-2 landscape:items-end"
                 @submit.prevent
             >
                 <div class="min-w-0">

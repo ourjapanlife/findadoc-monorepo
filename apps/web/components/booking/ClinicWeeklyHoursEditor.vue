@@ -46,7 +46,7 @@
                 <label class="flex w-40 shrink-0 cursor-pointer items-center gap-3 pt-2">
                     <input
                         type="checkbox"
-                        class="h-5 w-5 accent-primary"
+                        class="size-5 accent-primary"
                         :checked="blocksFor(day.weekday).length > 0"
                         :data-testid="`clinic-weekly-hours-open-${day.weekday}`"
                         @change="toggleDay(day.weekday)"

@@ -7,7 +7,7 @@ import {
     Scope,
     getEffectiveScopes
 } from './auth.js'
-import { bookingAccessFor } from './booking/access.js'
+import { bookingAccessForContext, userWithFacilityRoles, withClinicScope } from './booking/facilityRoles.js'
 import { allowBookingCall, type BookingBudget } from './booking/rateLimits.js'
 import { assertBookingRegion, isBookingAvailableIn } from './booking/region.js'
 import * as facilityService from './services/facilityService.js'
@@ -34,10 +34,20 @@ import { facilityListMaxLimit } from '../utils/requestedFields.js'
 import type { ApiContext } from './loaders.js'
 import type { FacilityParent, ProfessionalParent } from './typeDefs/resolverParents.js'
 
+// Each pair is the every-clinic scope an admin holds, then the own-clinic scope that
+// FacilityOwner or FacilityStaff gets from clinic_memberships. The service checks which clinic.
+const CLINIC_READ_SCOPES = [Scope['read:bookings'], Scope['read:own_clinic_bookings']]
+const CLINIC_AVAILABILITY_SCOPES = [Scope['write:clinic_availability'], Scope['write:own_clinic_availability']]
+const CLINIC_STATUS_SCOPES = [Scope['write:clinic_availability'], Scope['write:own_clinic_bookings']]
+const CLINIC_MEMBER_SCOPES = [Scope['write:clinic_memberships'], Scope['write:own_clinic_memberships']]
+const CLINIC_SETTINGS_SCOPES = [Scope['write:clinic_memberships'], Scope['write:own_clinic_settings']]
+
 const resolvers = {
     Query: {
-        currentUserAccess: (_parent: unknown, _args: unknown, context: UserContext): gqlType.CurrentUserAccess => {
-            const user = context.user
+        // Roles include FacilityOwner and FacilityStaff derived from clinic_memberships.
+        currentUserAccess: async (_parent: unknown, _args: unknown, context: UserContext)
+        : Promise<gqlType.CurrentUserAccess> => {
+            const user = await userWithFacilityRoles(context)
             const jwtScopes = user.scope?.split(/\s+/).filter(Boolean) ?? []
             const roles = (user.roles ?? []).map(r => String(r))
             return {
@@ -89,39 +99,40 @@ const resolvers = {
             enforceBookingBudget('token', context.clientIp)
             return appointmentService.getPatientBooking(args.token)
         }),
-        // Staff reads: any signed-in user. The service limits rows to that user's clinics (booking/access.ts).
+        // Any signed-in user. It claims pending invites and lists only that user's clinics,
+        // so someone with no clinic gets an empty list (booking/access.ts).
         myBookingClinics: withAuthenticatedUser(async (
             _parent: unknown,
             _args: unknown,
             context: UserContext
         ): Promise<gqlType.BookingClinic[]> =>
-            clinicAccessService.listMyBookingClinics(await bookingAccessFor(context.user))),
+            clinicAccessService.listMyBookingClinics(await bookingAccessForContext(context))),
         // The admin clinic picker on My Page. A member opens their own clinics through myBookingClinics.
         bookingClinics: withScope(Scope['read:bookings'], async (
             _parent: unknown,
             _args: unknown,
             context: UserContext
         ): Promise<gqlType.BookingClinic[]> =>
-            clinicAccessService.listAllBookingClinics(await bookingAccessFor(context.user))),
-        bookingClinic: withAuthenticatedUser(async (
+            clinicAccessService.listAllBookingClinics(await bookingAccessForContext(context))),
+        bookingClinic: withClinicScope(CLINIC_READ_SCOPES, async (
             _parent: unknown,
             args: { facilityId: string },
             context: UserContext
         ): Promise<gqlType.BookingClinic | null> =>
-            clinicAccessService.getBookingClinic(args.facilityId, await bookingAccessFor(context.user))),
-        clinicMembers: withAuthenticatedUser(async (
+            clinicAccessService.getBookingClinic(args.facilityId, await bookingAccessForContext(context))),
+        clinicMembers: withClinicScope(CLINIC_MEMBER_SCOPES, async (
             _parent: unknown,
             args: { facilityId: string },
             context: UserContext
         ): Promise<gqlType.ClinicMember[]> =>
-            clinicAccessService.listClinicMembers(args.facilityId, await bookingAccessFor(context.user))),
-        bookingSettings: withAuthenticatedUser(async (
+            clinicAccessService.listClinicMembers(args.facilityId, await bookingAccessForContext(context))),
+        bookingSettings: withClinicScope(CLINIC_READ_SCOPES, async (
             _parent: unknown,
             args: { facilityId: string },
             context: UserContext
         ): Promise<gqlType.BookingSettings | null> =>
-            clinicAccessService.getBookingSettings(args.facilityId, await bookingAccessFor(context.user))),
-        clinicAppointments: withAuthenticatedUser(async (
+            clinicAccessService.getBookingSettings(args.facilityId, await bookingAccessForContext(context))),
+        clinicAppointments: withClinicScope(CLINIC_READ_SCOPES, async (
             _parent: unknown,
             args: { clinicId: string, from: string, to: string },
             context: UserContext
@@ -129,27 +140,27 @@ const resolvers = {
             args.clinicId,
             args.from,
             args.to,
-            await bookingAccessFor(context.user)
+            await bookingAccessForContext(context)
         )),
-        bookingSubmissions: withAuthenticatedUser(async (
+        bookingSubmissions: withClinicScope(CLINIC_READ_SCOPES, async (
             _parent: unknown,
             args: { filters: gqlType.BookingSubmissionSearchFilters },
             context: UserContext
         ): Promise<gqlType.BookingSubmissionListItem[]> =>
-            staffBookingService.searchBookingSubmissions(args.filters, await bookingAccessFor(context.user))),
-        bookingSubmissionsTotalCount: withAuthenticatedUser(async (
+            staffBookingService.searchBookingSubmissions(args.filters, await bookingAccessForContext(context))),
+        bookingSubmissionsTotalCount: withClinicScope(CLINIC_READ_SCOPES, async (
             _parent: unknown,
             args: { filters: gqlType.BookingSubmissionSearchFilters },
             context: UserContext
         ): Promise<number> =>
-            staffBookingService.countBookingSubmissions(args.filters, await bookingAccessFor(context.user))),
-        bookingSubmission: withAuthenticatedUser(async (
+            staffBookingService.countBookingSubmissions(args.filters, await bookingAccessForContext(context))),
+        bookingSubmission: withClinicScope(CLINIC_READ_SCOPES, async (
             _parent: unknown,
             args: { id: string },
             context: UserContext
         ): Promise<gqlType.BookingSubmissionDetail | null> =>
-            staffBookingService.getBookingSubmissionDetail(args.id, await bookingAccessFor(context.user))),
-        clinicAvailabilityWindows: withAuthenticatedUser(async (
+            staffBookingService.getBookingSubmissionDetail(args.id, await bookingAccessForContext(context))),
+        clinicAvailabilityWindows: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { clinicSiteId: string, from: string, to: string },
             context: UserContext
@@ -157,25 +168,25 @@ const resolvers = {
             args.clinicSiteId,
             args.from,
             args.to,
-            await bookingAccessFor(context.user)
+            await bookingAccessForContext(context)
         )),
-        clinicPractitioners: withAuthenticatedUser(async (
+        clinicPractitioners: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { clinicId: string },
             context: UserContext
         ): Promise<gqlType.BookingPractitioner[]> => availabilityService.listClinicPractitioners(
             args.clinicId,
-            await bookingAccessFor(context.user)
+            await bookingAccessForContext(context)
         )),
-        clinicWeeklyHours: withAuthenticatedUser(async (
+        clinicWeeklyHours: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { clinicId: string },
             context: UserContext
         ): Promise<gqlType.ClinicWeeklyHours[]> => availabilityService.listClinicWeeklyHours(
             args.clinicId,
-            await bookingAccessFor(context.user)
+            await bookingAccessForContext(context)
         )),
-        clinicAvailabilityClosures: withAuthenticatedUser(async (
+        clinicAvailabilityClosures: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { clinicId: string, from: string, to: string },
             context: UserContext
@@ -183,7 +194,7 @@ const resolvers = {
             args.clinicId,
             args.from,
             args.to,
-            await bookingAccessFor(context.user)
+            await bookingAccessForContext(context)
         )),
         facility: withScope(Scope['read:facilities'], async (_parent: unknown, args: { id: string; })
         : Promise<FacilityParent> => {
@@ -532,14 +543,14 @@ const resolvers = {
             return result.data
         }),
 
-        bookingUploadDownloadUrl: withAuthenticatedUser(async (_parent: unknown, args: {
+        bookingUploadDownloadUrl: withClinicScope(CLINIC_READ_SCOPES, async (_parent: unknown, args: {
             uploadId: string
             disposition?: gqlType.BookingUploadDisposition | null
         }, context: UserContext): Promise<gqlType.BookingUploadDownloadUrl> => {
             const result = await staffBookingService.createStaffBookingDownloadUrl(
                 args.uploadId,
                 envVariables.apiURL() || 'http://127.0.0.1:4000',
-                await bookingAccessFor(context.user),
+                await bookingAccessForContext(context),
                 args.disposition ?? undefined,
                 context.user?.sub
             )
@@ -547,7 +558,7 @@ const resolvers = {
             return result.data
         }),
 
-        createClinicAvailabilityWindow: withAuthenticatedUser(async (
+        createClinicAvailabilityWindow: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { input: gqlType.CreateClinicAvailabilityWindowInput },
             context: UserContext
@@ -555,26 +566,26 @@ const resolvers = {
             const result = await availabilityService.createClinicAvailabilityWindow(
                 args.input,
                 context.user?.sub,
-                await bookingAccessFor(context.user)
+                await bookingAccessForContext(context)
             )
             convertErrorsToGqlErrors(result)
             return result.data
         }),
 
-        deleteClinicAvailabilityWindow: withAuthenticatedUser(async (
+        deleteClinicAvailabilityWindow: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { id: string },
             context: UserContext
         ): Promise<gqlType.DeleteResult> => {
             const result = await availabilityService.deleteClinicAvailabilityWindow(
                 args.id,
-                await bookingAccessFor(context.user)
+                await bookingAccessForContext(context)
             )
             convertErrorsToGqlErrors(result)
             return result.data
         }),
 
-        setClinicWeeklyHours: withAuthenticatedUser(async (
+        setClinicWeeklyHours: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { input: gqlType.SetClinicWeeklyHoursInput },
             context: UserContext
@@ -582,13 +593,13 @@ const resolvers = {
             const result = await availabilityService.setClinicWeeklyHours(
                 args.input,
                 context.user?.sub,
-                await bookingAccessFor(context.user)
+                await bookingAccessForContext(context)
             )
             convertErrorsToGqlErrors(result)
             return result.data
         }),
 
-        createClinicAvailabilityClosure: withAuthenticatedUser(async (
+        createClinicAvailabilityClosure: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { input: gqlType.CreateClinicAvailabilityClosureInput },
             context: UserContext
@@ -596,33 +607,33 @@ const resolvers = {
             const result = await availabilityService.createClinicAvailabilityClosure(
                 args.input,
                 context.user?.sub,
-                await bookingAccessFor(context.user)
+                await bookingAccessForContext(context)
             )
             convertErrorsToGqlErrors(result)
             return result.data
         }),
 
-        deleteClinicAvailabilityClosure: withAuthenticatedUser(async (
+        deleteClinicAvailabilityClosure: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { id: string },
             context: UserContext
         ): Promise<gqlType.DeleteResult> => {
             const result = await availabilityService.deleteClinicAvailabilityClosure(
                 args.id,
-                await bookingAccessFor(context.user)
+                await bookingAccessForContext(context)
             )
             convertErrorsToGqlErrors(result)
             return result.data
         }),
 
-        updateBookingAppointmentStatus: withAuthenticatedUser(async (
+        updateBookingAppointmentStatus: withClinicScope(CLINIC_STATUS_SCOPES, async (
             _parent: unknown,
             args: { input: gqlType.UpdateBookingAppointmentStatusInput },
             context: UserContext
         ): Promise<gqlType.BookingAppointment> => {
             const result = await appointmentService.updateAppointmentStatus(
                 args.input,
-                await bookingAccessFor(context.user),
+                await bookingAccessForContext(context),
                 context.user?.sub
             )
             convertErrorsToGqlErrors(result)
@@ -641,38 +652,38 @@ const resolvers = {
             return result.data
         }),
 
-        inviteClinicMember: withAuthenticatedUser(async (
+        inviteClinicMember: withClinicScope(CLINIC_MEMBER_SCOPES, async (
             _parent: unknown,
             args: { input: gqlType.InviteClinicMemberInput },
             context: UserContext
         ): Promise<gqlType.ClinicMember> => {
             const result = await clinicAccessService.inviteClinicMember(
                 args.input,
-                await bookingAccessFor(context.user),
+                await bookingAccessForContext(context),
                 context.user?.sub
             )
             convertErrorsToGqlErrors(result)
             return result.data
         }),
 
-        removeClinicMember: withAuthenticatedUser(async (
+        removeClinicMember: withClinicScope(CLINIC_MEMBER_SCOPES, async (
             _parent: unknown,
             args: { id: string },
             context: UserContext
         ): Promise<gqlType.DeleteResult> => {
-            const result = await clinicAccessService.removeClinicMember(args.id, await bookingAccessFor(context.user))
+            const result = await clinicAccessService.removeClinicMember(args.id, await bookingAccessForContext(context))
             convertErrorsToGqlErrors(result)
             return result.data
         }),
 
-        updateBookingSettings: withAuthenticatedUser(async (
+        updateBookingSettings: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
             _parent: unknown,
             args: { input: gqlType.UpdateBookingSettingsInput },
             context: UserContext
         ): Promise<gqlType.BookingSettings> => {
             const result = await clinicAccessService.updateBookingSettings(
                 args.input,
-                await bookingAccessFor(context.user)
+                await bookingAccessForContext(context)
             )
             convertErrorsToGqlErrors(result)
             return result.data

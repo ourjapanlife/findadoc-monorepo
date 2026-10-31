@@ -39,7 +39,6 @@ import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLan
 import {
     clinicLandingHostSlug,
     clinicLandingPath,
-    clinicSubdomainHreflang,
     clinicSubdomainUrl,
     isClinicHostPage,
     isClinicLandingPath,
@@ -104,7 +103,10 @@ useHead(() => {
         { property: 'og:locale', content: openGraphLocale(String(locale.value)), key: 'og:locale' }
     ]
 
-    for (const code of indexableLocaleCodes(route.path)) {
+    // A hosted clinic page exists only in the locales that clinic chose, so
+    // ClinicLanding writes its own og:locale:alternate and hreflang tags.
+    const clinicPage = slug !== undefined || isClinicLandingPath(route.path)
+    for (const code of clinicPage ? [] : indexableLocaleCodes(route.path)) {
         if (code === locale.value) {
             continue
         }
@@ -147,11 +149,7 @@ useHead(() => {
             // noindex directory URLs are not in the hreflang cluster. A one-way
             // alternate from /zh-CN/clinic/… to /clinic/… would point at a page
             // that does not link back.
-            ...(noindex
-                ? []
-                : slug === undefined
-                    ? hreflangLinkTags(route.path)
-                    : clinicSubdomainHreflang(slug, host))
+            ...(noindex || clinicPage ? [] : hreflangLinkTags(route.path))
         ],
         meta,
         script: [jsonLdScript('ld-organization', organizationJsonLd())]

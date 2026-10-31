@@ -103,7 +103,7 @@
         "heading": "2. Welche Daten wir erheben",
         "p1": "Suche im Verzeichnis: Sie können ohne Konto suchen. Wir erhalten Ihre Suchbegriffe, Filter und Sprache. Ihre Sprache, Ihr Design und Ihre letzten Filter werden in Ihrem eigenen Browser gespeichert.",
         "p2": "Vorschlag einer Praxis oder eines Arztes: Wir erhalten Ihre Eingaben, etwa einen Google-Maps-Link, Namen, gesprochene Sprachen und Notizen. Bitte geben Sie keine Angaben zu Ihrer eigenen Gesundheit an.",
-        "p3": "Terminanfrage: Wenn eine Praxis Terminanfragen über Find a Doc, Japan annimmt, erheben wir, was ihr Formular abfragt. Dazu können Ihr Name, Ihre E-Mail-Adresse, Telefonnummer, Ihr Alter, der Besuchsgrund, die gewählte Zeit sowie Dateien wie ein Foto von Ihnen und von Ihrer Krankenversicherungskarte oder Berechtigungsbescheinigung gehören. Terminanfragen bieten wir nur Personen an, die sich beim Absenden in Japan befinden.",
+        "p3": "Terminanfrage: Wenn eine Praxis Terminanfragen über Find a Doc, Japan annimmt, erheben wir, was ihr Formular abfragt. Dazu können Ihr Name, Ihre E-Mail-Adresse, Telefonnummer, Ihr Geburtsdatum, Ihr Geschlecht, der Besuchsgrund, die gewählte Zeit sowie Dateien wie ein Foto von Ihnen und von Ihrer Krankenversicherungskarte oder Berechtigungsbescheinigung gehören. Terminanfragen bieten wir nur Personen an, die sich beim Absenden in Japan befinden.",
         "p4": "Der Besuchsgrund ist eine Gesundheitsangabe, die das APPI als besonders schutzbedürftige personenbezogene Information einstuft. Wir erheben sie nur, wenn Sie das Formular selbst absenden, nachdem Sie per Häkchen eingewilligt haben, dass wir sie erheben und an die gewählte Praxis weitergeben. Wir speichern, wann Sie diese Einwilligung erteilt haben.",
         "p5": "Konten und technische Daten: Moderatoren und Praxispersonal melden sich über Auth0 an, wodurch wir Name, E-Mail-Adresse und eine Kontokennung erhalten. Unsere Server protokollieren IP-Adressen und Anfragedetails, um den Dienst zu betreiben und Missbrauch zu verhindern."
       },
@@ -394,7 +394,7 @@
     "submissionConfirmationAcceptanceButton": "Ja, senden",
     "submissionConfirmationMessage": "Dieses Formular wirklich senden?",
     "errorMessageFacilityId": "Zum Aktualisieren der Einrichtung ist die ID erforderlich",
-    "facilitySuccessfullyRejected": "Einrichtung abgelehnt",
+    "submissionRejected": "Einreichung abgelehnt",
     "rejectSubmissionConfirmationMessage": "Diese Einreichung wirklich ablehnen?",
     "rejectSubmissionConfirmationButton": "Ja, ablehnen",
     "searchExistingFacilities": "Vorhandene Einrichtung suchen",
@@ -542,7 +542,10 @@
     "fieldTooShort": "Eines der Felder ist zu kurz.",
     "negativeNumber": "Eine Zahl darf nicht negativ sein.",
     "nothingToSave": "Es gibt nichts Neues zu speichern.",
-    "notAllowed": "Sie haben keine Berechtigung dafür. Melden Sie sich erneut an oder bitten Sie die Administration um Zugriff."
+    "notAllowed": "Sie haben keine Berechtigung dafür. Melden Sie sich erneut an oder bitten Sie die Administration um Zugriff.",
+    "network": "Die Anfrage wurde nicht abgeschlossen. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "prefectureMismatch": "Der englische und der japanische Präfekturname müssen übereinstimmen.",
+    "prefectureRequired": "Geben Sie die Präfektur auf Englisch und auf Japanisch an."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Gesprochene Sprachen",
@@ -787,6 +790,9 @@
       "phone": "Telefonnummer",
       "fullName": "Vollständiger Name",
       "age": "Alter",
+      "dateOfBirth": "Geburtsdatum",
+      "gender": "Geschlecht",
+      "genderSelfDescribed": "Ihr Geschlecht, in Ihren eigenen Worten",
       "reason": "Grund des Besuchs",
       "insuranceDocument": "Versicherungsnachweis",
       "selfie": "Foto von Ihnen",
@@ -804,6 +810,7 @@
       "email": "Gültige E-Mail eingeben",
       "phone": "Gültige Telefonnummer eingeben",
       "number": "Zahl eingeben",
+      "date": "Geben Sie ein gültiges Datum ein",
       "fileTooLarge": "Datei ist zu groß",
       "uploadFailed": "Upload fehlgeschlagen. Erneut versuchen.",
       "form": "Markierte Felder prüfen",
@@ -855,7 +862,17 @@
         "insuranceCard": "Krankenversicherungskarte (保険証)",
         "eligibilityCertificate": "Berechtigungsnachweis (資格確認書)",
         "mynaInsurance": "Als Versicherungskarte registrierte My-Number-Karte (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Weiblich",
+        "male": "Männlich",
+        "selfDescribe": "Selbst beschreiben",
+        "preferNotToSay": "Keine Angabe"
       }
+    },
+    "hints": {
+      "dateOfBirth": "Die Klinik nutzt das, um Sie zu identifizieren und mit Ihrer Versicherungskarte abzugleichen.",
+      "gender": "Das kann für Ihre Behandlung wichtig sein. Sie können „Keine Angabe“ wählen."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto Ihrer Krankenversicherungskarte",
@@ -1066,5 +1083,14 @@
     "accept": "Akzeptieren",
     "decline": "Ablehnen",
     "settings": "Cookie-Einstellungen"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Diese Einreichung kann nicht freigegeben werden, weil sie nicht offen ist.",
+    "unableToReject": "Diese Einreichung kann nicht abgelehnt werden, weil sie nicht offen ist."
+  },
+  "moderationListErrors": {
+    "submissions": "Die Einreichungen konnten nicht geladen werden. Versuchen Sie es erneut.",
+    "facilities": "Die Kliniken konnten nicht geladen werden. Versuchen Sie es erneut.",
+    "professionals": "Die Gesundheitsfachkräfte konnten nicht geladen werden. Versuchen Sie es erneut."
   }
 }

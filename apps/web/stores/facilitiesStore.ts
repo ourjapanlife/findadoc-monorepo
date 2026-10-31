@@ -21,7 +21,9 @@ import type {
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
-import { validateCreateFacility, validateUpdateFacility } from '~/utils/facilitiesUtils'
+import { FacilityFieldError, validateCreateFacility, validateUpdateFacility } from '~/utils/facilitiesUtils'
+import { hasServerErrors } from '~/utils/moderationUtils'
+import { toastModerationLoadError } from '~/utils/moderationListToast'
 import { usePersistentFilters } from '~/composables/usePersistentFilters'
 import {
     DEFAULT_MODERATION_PAGE_SIZE,
@@ -353,8 +355,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             facilityData.value = await searchFacilities('')
         } catch (error) {
             console.error(`Error fetching facilities: ${JSON.stringify(error)}`)
-            // eslint-disable-next-line no-alert
-            alert('Error during loading data of Facility, try again')
+            toastModerationLoadError('moderationListErrors.facilities')
             facilityData.value = []
         }
     }
@@ -389,8 +390,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         } catch (error) {
             if (request !== facilityListRequest) return
             console.error(`Error fetching facilities: ${JSON.stringify(error)}`)
-            // eslint-disable-next-line no-alert
-            alert('Error during loading data of Facility, try again')
+            toastModerationLoadError('moderationListErrors.facilities')
             facilityList.value = []
             totalFacilitiesCount.value = 0
         }
@@ -449,7 +449,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
          */
         const validation = validateCreateFacility(CreateFacilityInput.input)
         if (!validation.valid) {
-            throw new Error(validation.errors.join('; '))
+            throw new FacilityFieldError(validation.errors)
         }
 
         const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
@@ -460,7 +460,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
 
         const responseData = serverResponse.data?.createFacility
 
-        if (!serverResponse.errors?.length && responseData) {
+        if (!hasServerErrors(serverResponse) && responseData) {
             await Promise.all([getFacilities(), loadFacilityList()])
             selectedFacilityData.value = responseData
             initializeFacilitySectionValues(responseData)
@@ -488,8 +488,11 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         )
 
         if (!validation.valid) {
-            throw new Error(validation.errors.join('; '))
+            throw new FacilityFieldError(validation.errors)
         }
+
+        // Snapshot what this request sends so edits made while it is in flight are kept
+        const sentRelations = [...facilitySectionFields.value.healthProfessionalsRelations]
 
         const updateFacilityInput: MutationUpdateFacilityArgs = {
             id: selectedFacilityId.value,
@@ -504,7 +507,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
 
         const responseData = serverResponse.data?.updateFacility
 
-        if (!serverResponse.errors?.length && responseData) {
+        if (!hasServerErrors(serverResponse) && responseData) {
             await Promise.all([getFacilities(), loadFacilityList()])
 
             selectedFacilityData.value = {
@@ -513,17 +516,12 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             }
             initializeFacilitySectionValues(responseData)
             // This block prevents a race condition: clear the array only if relations haven't changed while awaiting response
-            if (
-                arraysAreEqual(
-                    facilitySectionFields.value.healthProfessionalsRelations,
-                    updatedFields.contact?.address ? facilitySectionFields.value.healthProfessionalsRelations : []
-                )
-            ) {
+            if (arraysAreEqual(facilitySectionFields.value.healthProfessionalsRelations, sentRelations)) {
                 facilitySectionFields.value.healthProfessionalsRelations = []
             }
         }
         // Clear moderation unsaved-changes guard whenever the mutation did not return GraphQL errors (even if data is null).
-        if (!serverResponse.errors?.length) {
+        if (!hasServerErrors(serverResponse)) {
             unsavedChangesResetTick.value++
         }
 
@@ -572,7 +570,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         )
 
         if (
-            !serverResponse.errors?.length
+            !hasServerErrors(serverResponse)
             && serverResponse.data?.deleteFacility?.isSuccessful
         ) {
             await Promise.all([getFacilities(), loadFacilityList()])

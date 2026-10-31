@@ -19,6 +19,7 @@ import {
     clinicLandingRedirectTarget,
     clinicLandingShareImage,
     clinicLocalePrefix,
+    clinicPageLocaleCodes,
     clinicSiteFetchIsServer,
     clinicSubdomainHreflang,
     clinicSubdomainUrl,
@@ -31,7 +32,8 @@ import {
     type HostedClinicRef
 } from '@/utils/clinicLanding'
 import { clinicPreviewShellPaths, writeClinicPreviewShells } from '@/utils/nuxt/clinicPreviewShell'
-import { indexableMarketingPaths } from '@/utils/sitemap'
+import { publishedClinicPages } from '@/utils/hostedClinicIndex'
+import { indexableMarketingPaths, withLocaleAlternates } from '@/utils/sitemap'
 import { SITE_ORIGIN } from '@/utils/site'
 import { clinicThemeVars } from '@/utils/clinicTheme'
 import { clinicSiteSeeds } from '../../../../server/scripts/seed/clinicSiteContent'
@@ -143,6 +145,30 @@ describe('clinic landings', () => {
         expect(hreflang.find(link => link.hreflang === 'x-default')?.href).to.equal(`https://${slug}.findadoc.jp/`)
         expect(hreflang.find(link => link.hreflang === 'ja-JP')?.href).to.equal(`https://${slug}.findadoc.jp/ja-JP`)
         expect(new Set(hreflang.map(link => link.key)).size).to.equal(hreflang.length)
+    })
+
+    it('lists only the locales a clinic has copy for, in site order', () => {
+        const clinicLocales = ['ne-NP', 'ja-JP', 'en-US', 'xx-YY']
+
+        expect(clinicPageLocaleCodes(clinicLocales)).to.deep.equal(['en-US', 'ja-JP', 'ne-NP'])
+        expect(clinicPageLocaleCodes(undefined)).to.deep.equal(LOCALE_CODES)
+
+        const hreflang = clinicSubdomainHreflang(slug, 'www.findadoc.jp', clinicLocales)
+        expect(hreflang.map(link => link.hreflang)).to.deep.equal(['en-US', 'ja-JP', 'ne-NP', 'x-default'])
+
+        const pages = publishedClinicPages([
+            { slug, status: 'PUBLISHED', localeCodes: clinicLocales },
+            { slug: 'draft-clinic', status: 'PREVIEW', localeCodes: ['en-US'] }
+        ])
+        expect(pages).to.deep.equal([{ path: clinicLandingPath(slug), localeCodes: ['en-US', 'ja-JP', 'ne-NP'] }])
+
+        const rows = withLocaleAlternates([{ loc: clinicLandingPath(slug) }], pages[0]?.localeCodes)
+        expect(rows.map(row => row.loc)).to.deep.equal([
+            clinicLandingPath(slug),
+            `/ja-JP${clinicLandingPath(slug)}`,
+            `/ne-NP${clinicLandingPath(slug)}`
+        ])
+        expect(rows[0]?.alternatives.map(alternate => alternate.hreflang)).to.deep.equal(['en-US', 'ja-JP', 'ne-NP', 'x-default'])
     })
 
     it('sends the breadcrumb, the clean path, and the shareable id to the subdomain', () => {

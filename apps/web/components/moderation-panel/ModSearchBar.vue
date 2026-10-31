@@ -38,7 +38,7 @@
                 <SVGLookingGlass
                     role="img"
                     title="searching icon"
-                    class="h-5 w-5 shrink-0 text-primary-text-muted"
+                    class="size-5 shrink-0 text-primary-text-muted"
                 />
             </button>
         </div>
@@ -47,7 +47,7 @@
                 v-if="isInputFocused"
                 :id="listId"
                 ref="resultListElement"
-                class="fixed z-40 flex flex-col divide-y divide-accent-bg overflow-y-auto overflow-x-hidden
+                class="fixed z-40 flex flex-col divide-y divide-accent-bg overflow-x-hidden overflow-y-auto
                     rounded-lg border border-accent-bg bg-primary-bg shadow-raised"
                 :style="menuStyle"
             >
@@ -86,7 +86,7 @@
                     </div>
                     <div class="flex items-center">
                         <SVGCheckMark
-                            class="h-4 m-3"
+                            class="m-3 h-4"
                             :class="[
                                 isSelected(item) ? 'opacity-100' : 'opacity-10',
                             ]"

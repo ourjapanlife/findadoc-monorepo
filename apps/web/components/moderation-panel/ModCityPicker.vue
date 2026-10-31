@@ -29,7 +29,7 @@
         </select>
         <p
             v-if="loadError"
-            class="mt-1.5 text-xs font-sans text-error"
+            class="mt-1.5 font-sans text-xs text-error"
         >
             {{ t('modFacilitySection.cityListUnavailable') }}
         </p>

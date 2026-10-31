@@ -11,6 +11,7 @@
             :nav-label="copy.sectionNavLabel"
             :book-label="copy.book"
             :sections="sections"
+            :locale-codes="siteLocaleCodes"
             @book="onBook"
         />
         <section class="relative overflow-hidden">
@@ -70,7 +71,7 @@
                             class="absolute bottom-4 left-4 max-w-[16rem] rounded-xl border
                                 border-accent-bg bg-secondary-bg/95 p-3 shadow-raised backdrop-blur-sm"
                         >
-                            <p class="m-0 text-sm leading-snug">
+                            <p class="m-0 text-sm/snug">
                                 <span class="block font-semibold text-primary-text">{{ copy.badgeTitle }}</span>
                                 <span class="text-primary-text-muted">{{ copy.badgeDetail }}</span>
                             </p>
@@ -81,7 +82,7 @@
                     <li
                         v-for="item in copy.highlights"
                         :key="item"
-                        class="card flex items-center px-4 py-4 text-sm font-semibold"
+                        class="card flex items-center p-4 text-sm font-semibold"
                     >
                         {{ item }}
                     </li>
@@ -133,7 +134,7 @@
                             <li
                                 v-for="language in content.languages"
                                 :key="language.code"
-                                class="chip"
+                                class="chip h-auto min-h-8 max-w-full py-1 wrap-anywhere whitespace-normal"
                             >
                                 {{ language.native }}
                             </li>
@@ -295,7 +296,7 @@
                     </header>
                     <div class="grid gap-4 landscape:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                         <div class="rounded-2xl bg-primary p-6 text-primary-text-inverted shadow-raised landscape:p-8">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-primary-text-inverted/80">
+                            <p class="text-xs font-semibold tracking-wide text-primary-text-inverted/80 uppercase">
                                 {{ copy.rangeLabel }}
                             </p>
                             <div
@@ -315,7 +316,7 @@
                             </div>
                         </div>
                         <div class="card overflow-hidden">
-                            <p class="bg-primary/10 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-primary">
+                            <p class="bg-primary/10 px-5 py-3 text-xs font-semibold tracking-wide text-primary uppercase">
                                 {{ copy.includedLabel }}
                             </p>
                             <ul class="m-0 list-none p-0">
@@ -357,7 +358,7 @@
                             class="card p-5"
                         >
                             <span
-                                class="grid h-8 w-8 place-items-center rounded-lg bg-primary
+                                class="grid size-8 place-items-center rounded-lg bg-primary
                                     text-sm font-bold text-primary-text-inverted"
                             >
                                 {{ index + 1 }}
@@ -391,7 +392,7 @@
                             {{ copy.bookLead }}
                         </p>
                     </header>
-                    <p class="rounded-xl bg-primary/10 px-4 py-4 text-sm text-primary">
+                    <p class="rounded-xl bg-primary/10 p-4 text-sm text-primary">
                         {{ copy.bookNote }}
                     </p>
                     <div class="rounded-2xl bg-primary px-6 py-10 text-center text-primary-text-inverted">
@@ -411,7 +412,7 @@
                         </button>
                     </div>
                     <p
-                        class="rounded-xl border border-error/30 bg-error/10 px-4 py-4 text-sm text-primary-text"
+                        class="rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-primary-text"
                         data-testid="clinic-landing-emergency"
                     >
                         {{ copy.emergency }}
@@ -426,19 +427,22 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ClinicSiteStatus, type ClinicSite } from '@findadoc/graphql'
-import { createError, navigateTo, useAsyncData, useHead } from '#imports'
+import { createError, navigateTo, useAsyncData, useCookie, useHead, useRoute } from '#imports'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import { useUmami } from '~/composables/useUmamiTracking'
 import {
     clinicLandingHostSlug,
     clinicLandingShareImage,
     clinicSiteFetchIsServer,
+    clinicPageLocaleCodes,
+    clinicSubdomainHreflang,
     clinicSubdomainUrl
 } from '~/utils/clinicLanding'
 import { bookingClinicPath, findadocBookUrl } from '~/utils/booking/paths'
 import { fetchClinicSite } from '~/utils/clinicSiteQuery'
 import { clinicThemeVars } from '~/utils/clinicTheme'
-import { DEFAULT_LOCALE_CODE } from '~/utils/localePath'
+import { DEFAULT_LOCALE_CODE, localizedPath } from '~/utils/localePath'
+import { openGraphLocale } from '~/utils/seo'
 import { formatPageTitle } from '~/utils/site'
 import { jsonLdScript, medicalClinicJsonLd } from '~/utils/structuredData'
 
@@ -452,6 +456,10 @@ const props = defineProps<{
 }>()
 
 const { locale } = useI18n()
+const route = useRoute()
+
+/** `detectBrowserLanguage.cookieKey` in nuxt.config.ts. */
+const I18N_LOCALE_COOKIE = 'i18n_redirected'
 const { track } = useUmami()
 const { host, hostname } = useRequestHost()
 const mode = useClinicLandingMode()
@@ -475,6 +483,19 @@ async function loadLanding(): Promise<ClinicSite | null> {
 const landing = await loadLanding()
 if (landing === null) {
     throw createError({ statusCode: 404, statusMessage: 'Page not found' })
+}
+
+/**
+ * Site locales this clinic has copy for. The switcher offers only these, and a URL
+ * in any other locale goes to the English page instead of showing English copy
+ * under a foreign prefix.
+ */
+const siteLocaleCodes = landing.locales.map(item => item.locale)
+if (!siteLocaleCodes.includes(String(locale.value)) && siteLocaleCodes.includes(DEFAULT_LOCALE_CODE)) {
+    // `/` follows i18n_redirected, which this visit just set to the unsupported locale.
+    // Point it at English too, or the clinic host's `/` sends the visitor straight back.
+    useCookie(I18N_LOCALE_COOKIE, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' }).value = DEFAULT_LOCALE_CODE
+    await navigateTo(localizedPath(route.fullPath, DEFAULT_LOCALE_CODE), { replace: true, redirectCode: 302 })
 }
 
 /** Copy in the site locale, or English when that locale has no row yet. */
@@ -534,12 +555,24 @@ function onBook() {
 const shareImage = clinicLandingShareImage(landing.shareImagePath)
 const indexable = mode === 'public' && landing.status === ClinicSiteStatus.Published
 
+const pageLocaleCodes = clinicPageLocaleCodes(siteLocaleCodes)
+
 useHead(() => {
     const current = copy.value
     const titled = formatPageTitle(current.name)
+    const currentLocale = String(locale.value)
     return {
         title: current.name,
+        // A preview page stays out of the hreflang cluster, as app.vue does for noindex routes.
+        link: indexable ? clinicSubdomainHreflang(landing.slug, host, pageLocaleCodes) : [],
         meta: [
+            ...pageLocaleCodes
+                .filter(code => code !== currentLocale)
+                .map(code => ({
+                    key: `og:locale:${code}`,
+                    property: 'og:locale:alternate',
+                    content: openGraphLocale(code)
+                })),
             { key: 'robots', name: 'robots', content: indexable ? 'index, follow' : 'noindex' },
             { key: 'description', name: 'description', content: current.description },
             { key: 'og:description', property: 'og:description', content: current.description },

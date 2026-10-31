@@ -25,10 +25,16 @@ export function isMyPageFormRoute(path: string): boolean {
     return MY_PAGE_FORM_ROUTE.test(unlocalizedPath(path))
 }
 
+/**
+ * True when the server refused the request, or the request never completed.
+ * `hasErrors` covers a failure whose `errors` list was left empty.
+ */
 export function hasServerErrors(
-    response: { errors?: ServerError[] } | undefined
-): response is { errors: ServerError[] } {
-    return !!response?.errors?.length
+    response: { errors?: ServerError[], hasErrors?: boolean } | undefined
+): boolean {
+    if (response === undefined) return false
+    if (response.hasErrors === true) return true
+    return (response.errors?.length ?? 0) > 0
 }
 
 export function getModerationDashboardViewForScreen(activeScreen: ModerationScreen): ModerationDashboardView {

@@ -30,13 +30,13 @@
                     class="flex flex-wrap items-center gap-3 p-3"
                 >
                     <span
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10
+                        class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10
                         font-semibold text-primary uppercase"
                         aria-hidden="true"
                     >
                         {{ (member.email ?? '?').charAt(0) }}
                     </span>
-                    <span class="min-w-0 flex-1 break-all font-medium text-primary-text">{{ member.email }}</span>
+                    <span class="min-w-0 flex-1 font-medium break-all text-primary-text">{{ member.email }}</span>
                     <span class="chip h-7 text-xs">{{ roleLabel(member.role) }}</span>
                     <span
                         class="chip h-7 text-xs"

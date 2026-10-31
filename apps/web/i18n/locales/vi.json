@@ -103,7 +103,7 @@
         "heading": "2. Thông tin chúng tôi thu thập",
         "p1": "Tìm kiếm danh bạ: bạn có thể tìm kiếm mà không cần tài khoản. Chúng tôi nhận từ khóa, bộ lọc và ngôn ngữ của bạn. Ngôn ngữ, giao diện và các bộ lọc gần đây được lưu trong chính trình duyệt của bạn.",
         "p2": "Đề xuất phòng khám hoặc bác sĩ: chúng tôi nhận những gì bạn nhập, như liên kết Google Maps, tên, ngôn ngữ sử dụng và ghi chú. Vui lòng không đưa thông tin sức khỏe của chính bạn.",
-        "p3": "Đặt lịch hẹn: khi một phòng khám nhận yêu cầu đặt lịch qua Find a Doc, Japan, chúng tôi thu thập những gì mẫu của họ yêu cầu. Thông tin này có thể gồm họ tên, email, số điện thoại, tuổi, lý do khám, thời gian bạn chọn, và các tệp như ảnh của bạn và ảnh thẻ bảo hiểm y tế hoặc giấy xác nhận tư cách. Dịch vụ đặt lịch chỉ dành cho người đang ở Nhật Bản tại thời điểm gửi yêu cầu.",
+        "p3": "Đặt lịch hẹn: khi một phòng khám nhận yêu cầu đặt lịch qua Find a Doc, Japan, chúng tôi thu thập những gì mẫu của họ yêu cầu. Thông tin này có thể gồm họ tên, email, số điện thoại, ngày sinh, giới tính, lý do khám, thời gian bạn chọn, và các tệp như ảnh của bạn và ảnh thẻ bảo hiểm y tế hoặc giấy xác nhận tư cách. Dịch vụ đặt lịch chỉ dành cho người đang ở Nhật Bản tại thời điểm gửi yêu cầu.",
         "p4": "Lý do khám là thông tin sức khỏe, được APPI coi là thông tin cá nhân cần lưu ý đặc biệt. Chúng tôi chỉ thu thập khi bạn tự gửi mẫu, sau khi bạn đánh dấu ô đồng ý để chúng tôi thu thập và chuyển thông tin này cho phòng khám bạn đã chọn. Chúng tôi ghi lại thời điểm bạn đồng ý.",
         "p5": "Tài khoản và thông tin kỹ thuật: người kiểm duyệt và nhân viên phòng khám đăng nhập qua Auth0, cho chúng tôi biết tên, email và mã định danh tài khoản. Máy chủ ghi lại địa chỉ IP và chi tiết yêu cầu để duy trì dịch vụ và ngăn lạm dụng."
       },
@@ -459,7 +459,7 @@
     "placeholderTextHealthcareProfessionalSearchbar": "Tìm kiếm theo tên hoặc ID để thêm bác sĩ.",
     "submissionConfirmationAcceptanceButton": "Vâng, gửi đi",
     "submissionConfirmationMessage": "Bạn có chắc chắn muốn gửi mẫu đơn này không?",
-    "facilitySuccessfullyRejected": "Đã từ chối cơ sở",
+    "submissionRejected": "Đã từ chối nội dung gửi",
     "rejectSubmissionConfirmationMessage": "Từ chối nội dung gửi này?",
     "rejectSubmissionConfirmationButton": "Có, từ chối",
     "searchExistingFacilities": "Tìm cơ sở đã có",
@@ -494,7 +494,10 @@
     "fieldTooShort": "Một mục quá ngắn.",
     "negativeNumber": "Số không được là số âm.",
     "nothingToSave": "Không có nội dung mới để lưu.",
-    "notAllowed": "Bạn không có quyền làm việc này. Hãy đăng nhập lại hoặc xin quyền truy cập từ quản trị viên."
+    "notAllowed": "Bạn không có quyền làm việc này. Hãy đăng nhập lại hoặc xin quyền truy cập từ quản trị viên.",
+    "network": "Yêu cầu chưa hoàn tất. Hãy kiểm tra kết nối và thử lại.",
+    "prefectureMismatch": "Tên tỉnh bằng tiếng Anh và tiếng Nhật phải khớp nhau.",
+    "prefectureRequired": "Hãy thêm tỉnh bằng tiếng Anh và tiếng Nhật."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Ngôn ngữ sử dụng",
@@ -787,6 +790,9 @@
       "phone": "Số điện thoại",
       "fullName": "Họ và tên",
       "age": "Tuổi",
+      "dateOfBirth": "Ngày sinh",
+      "gender": "Giới tính",
+      "genderSelfDescribed": "Giới tính của bạn (tự mô tả)",
       "reason": "Lý do khám",
       "insuranceDocument": "Giấy tờ bảo hiểm",
       "selfie": "Ảnh của bạn",
@@ -804,6 +810,7 @@
       "email": "Nhập email hợp lệ",
       "phone": "Nhập số điện thoại hợp lệ",
       "number": "Nhập một số",
+      "date": "Hãy nhập ngày hợp lệ",
       "fileTooLarge": "Tệp quá lớn",
       "uploadFailed": "Tải lên thất bại. Thử lại.",
       "form": "Kiểm tra các trường được tô sáng",
@@ -855,7 +862,17 @@
         "insuranceCard": "Thẻ bảo hiểm y tế (保険証)",
         "eligibilityCertificate": "Giấy xác nhận tư cách (資格確認書)",
         "mynaInsurance": "Thẻ My Number đã đăng ký làm thẻ bảo hiểm (マイナ保険証)"
+      },
+      "gender": {
+        "female": "Nữ",
+        "male": "Nam",
+        "selfDescribe": "Tự mô tả",
+        "preferNotToSay": "Không muốn trả lời"
       }
+    },
+    "hints": {
+      "dateOfBirth": "Phòng khám dùng thông tin này để xác minh danh tính và đối chiếu với thẻ bảo hiểm của bạn.",
+      "gender": "Thông tin này có thể liên quan đến việc khám chữa bệnh. Bạn có thể chọn không trả lời."
     },
     "insuranceUpload": {
       "insuranceCard": "Ảnh thẻ bảo hiểm y tế",
@@ -1066,5 +1083,14 @@
     "accept": "Chấp nhận",
     "decline": "Từ chối",
     "settings": "Cài đặt cookie"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "Không thể duyệt nội dung này vì nó không ở trạng thái mở.",
+    "unableToReject": "Không thể từ chối nội dung này vì nó không ở trạng thái mở."
+  },
+  "moderationListErrors": {
+    "submissions": "Không tải được danh sách gửi. Hãy thử lại.",
+    "facilities": "Không tải được danh sách cơ sở. Hãy thử lại.",
+    "professionals": "Không tải được danh sách nhân viên y tế. Hãy thử lại."
   }
 }

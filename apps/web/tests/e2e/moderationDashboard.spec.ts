@@ -39,3 +39,34 @@ test.describe('Moderation dashboard', () => {
              await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.rejected, 'i') })).toBeVisible()
          })
 })
+
+test.describe('Moderation dashboard on a phone', () => {
+    test('scrolls the page so facilities and submissions stay reachable under the access panel',
+         async ({ page }) => {
+             await page.setViewportSize({ width: 390, height: 700 })
+             await page.goto('/my-page?view=submissions')
+             await page.waitForLoadState('domcontentloaded')
+             await expect(page.getByTestId('mod-access-panel')).toBeVisible({ timeout: 30_000 })
+
+             const shell = page.getByTestId('my-page-app')
+             await expect(shell).toBeVisible()
+             await expect(shell).toHaveClass(/min-h-dvh/)
+             await expect(shell).toHaveClass(/md:h-dvh/)
+
+             const search = page.getByTestId('mod-submission-search-input')
+             await search.scrollIntoViewIfNeeded()
+             await expect(search).toBeInViewport()
+
+             await page.getByRole('button', { name: enUS.accessPanel.sections.moderation }).click()
+             await page.getByTestId('access-page-link-moderation-facilities-mobile').click()
+             await expect(page).toHaveURL(/view=facilities/)
+             await search.scrollIntoViewIfNeeded()
+             await expect(search).toBeInViewport()
+
+             const pageGrowsPastViewport = await page.evaluate(() => {
+                 const root = document.documentElement
+                 return root.scrollHeight > window.innerHeight
+             })
+             expect(pageGrowsPastViewport).toBe(true)
+         })
+})

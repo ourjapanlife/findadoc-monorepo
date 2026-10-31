@@ -18,7 +18,7 @@
         >
         <p
             v-if="loadError"
-            class="mt-1.5 text-xs font-sans text-error"
+            class="mt-1.5 font-sans text-xs text-error"
         >
             {{ t('modFacilitySection.citySuggestionUnavailable') }}
         </p>
@@ -60,13 +60,13 @@
         </p>
         <p
             v-if="unmapped"
-            class="mt-1.5 text-xs font-sans text-primary-text-muted"
+            class="mt-1.5 font-sans text-xs text-primary-text-muted"
         >
             {{ t('modFacilitySection.citySuggestionUnmapped') }}
         </p>
         <p
             v-if="saveError"
-            class="mt-1.5 text-xs font-sans text-error"
+            class="mt-1.5 font-sans text-xs text-error"
         >
             {{ t('modFacilitySection.citySuggestionSaveFailed') }}
         </p>

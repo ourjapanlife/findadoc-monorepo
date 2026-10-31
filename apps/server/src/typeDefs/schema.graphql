@@ -955,7 +955,7 @@ type DeleteResult {
 
 """Auth roles and scopes for the GraphQL caller, as evaluated by the API (JWT + role mapping + production rules)."""
 type CurrentUserAccess {
-  """Application roles from the token (e.g. Admin, Moderator)."""
+  """Application roles: Admin, Moderator, and so on from the token, plus FacilityOwner and FacilityStaff from claimed clinic memberships."""
   roles: [String!]!
   """Space-delimited OAuth scopes from the access token `scope` claim."""
   jwtScopes: [String!]!
@@ -980,7 +980,8 @@ type FacilityPlaceCandidate {
 }
 
 """
-Live place details for the submit form. Do not store the name, address, or category.
+Live place details for an open form. Do not store this response.
+A moderator may copy these values into empty facility fields.
 """
 type MapsPlacePreview {
   placeId: String
@@ -988,6 +989,13 @@ type MapsPlacePreview {
   address: String
   """Short place type, such as Medical clinic."""
   category: String
+  postalCode: String
+  prefecture: String
+  city: String
+  """Street line only. The postal code, prefecture, and city stay in their own fields."""
+  street: String
+  latitude: Float
+  longitude: Float
 }
 
 """
@@ -1157,6 +1165,11 @@ type ClinicSiteSummary {
   facilityId: ID
   status: ClinicSiteStatus!
   shareImagePath: String!
+  """
+  Site locales the clinic has page copy for, sorted. The page, its generated
+  HTML, the sitemap, and hreflang offer only these.
+  """
+  localeCodes: [String!]!
 }
 
 """
@@ -1171,6 +1184,8 @@ enum BookingFormFieldType {
   TEXTAREA
   FILE
   SELECT
+  """A calendar date, sent as YYYY-MM-DD. min and max are whole calendar years from today in Japan time."""
+  DATE
 }
 
 """
@@ -1191,6 +1206,12 @@ type BookingFormFieldOption {
   label: String
 }
 
+"""Shows a field only while another field's answer equals a value."""
+type BookingFormFieldCondition {
+  fieldId: ID!
+  equals: String!
+}
+
 """
 One input on a clinic booking form.
 labelKey is the site i18n key when label is null. A CRM may set label per locale.
@@ -1198,19 +1219,26 @@ labelKey is the site i18n key when label is null. A CRM may set label per locale
 type BookingFormField {
   id: ID!
   type: BookingFormFieldType!
+  """Required while the field is shown. A field hidden by showWhen is never required."""
   required: Boolean!
   labelKey: String!
   label: String
   placeholderKey: String
+  """Site i18n key for a line under the field, such as why it is asked."""
+  hintKey: String
   accept: String
   maxLength: Int
   maxBytes: Int
+  """NUMBER: the lowest value. DATE: the earliest date, in calendar years from today in Japan time."""
   min: Float
+  """NUMBER: the highest value. DATE: the latest date, in calendar years from today in Japan time."""
   max: Float
   sensitivity: BookingFieldSensitivity!
   """Groups fields into one step of the intake form. The site renders steps in first-seen order."""
   stepKey: String!
   options: [BookingFormFieldOption!]
+  """The field is shown, and its answer kept, only while this condition holds."""
+  showWhen: BookingFormFieldCondition
 }
 
 """
@@ -1730,7 +1758,7 @@ type Query {
   facilitiesTotalCount(filters: FacilitySearchFilters!): Int!
 
   """
-  Live name, address, and category for a Maps link on the submit form.
+  Live place details for a Maps link on an open form.
   Nothing in this response is saved.
   """
   mapsPlacePreview(url: String!, languageCode: String): MapsPlacePreview

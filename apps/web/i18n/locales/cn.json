@@ -103,7 +103,7 @@
         "heading": "2. 我们收集的信息",
         "p1": "搜索目录：无需账户即可搜索。我们会收到您的搜索词、筛选条件和语言。您的语言、主题和最近的筛选条件保存在您自己的浏览器中。",
         "p2": "推荐诊所或医生：我们会收到您填写的内容，例如 Google 地图链接、姓名、所说语言和备注。请不要填写您自己的健康信息。",
-        "p3": "预约：当诊所通过 Find a Doc, Japan 接受预约申请时，我们会收集其表单要求的信息，可能包括您的姓名、电子邮箱、电话号码、年龄、就诊原因、所选时间，以及您本人的照片和健康保险卡或资格确认书的照片等文件。预约仅向发送请求时身在日本的用户提供。",
+        "p3": "预约：当诊所通过 Find a Doc, Japan 接受预约申请时，我们会收集其表单要求的信息，可能包括您的姓名、电子邮箱、电话号码、出生日期、性别、就诊原因、所选时间，以及您本人的照片和健康保险卡或资格确认书的照片等文件。预约仅向发送请求时身在日本的用户提供。",
         "p4": "就诊原因属于健康信息，在 APPI 中被视为需特别注意的个人信息。我们仅在您勾选同意我们收集该信息并将其提供给您选择的诊所的复选框、并亲自提交表单时收集该信息。我们会记录您同意的时间。",
         "p5": "账户与技术信息：管理员和诊所工作人员通过 Auth0 登录，我们会收到其姓名、电子邮箱和账户标识符。为维持服务运行和防止滥用，我们的服务器会记录 IP 地址和请求详情。"
       },
@@ -346,7 +346,7 @@
     "submissionConfirmationAcceptanceButton": "确认提交",
     "submissionConfirmationMessage": "确定提交此表单吗？",
     "errorMessageFacilityId": "更新医疗机构需要 ID",
-    "facilitySuccessfullyRejected": "医疗机构已拒绝",
+    "submissionRejected": "提交已拒绝",
     "rejectSubmissionConfirmationMessage": "确定拒绝此提交吗？",
     "rejectSubmissionConfirmationButton": "确认拒绝",
     "searchExistingFacilities": "搜索已有的医疗机构",
@@ -494,7 +494,10 @@
     "fieldTooShort": "有字段过短。",
     "negativeNumber": "数字不能为负数。",
     "nothingToSave": "没有新的内容可保存。",
-    "notAllowed": "您没有执行此操作的权限。请重新登录，或联系管理员获取权限。"
+    "notAllowed": "您没有执行此操作的权限。请重新登录，或联系管理员获取权限。",
+    "network": "请求没有完成。请检查网络连接后重试。",
+    "prefectureMismatch": "英文和日文的都道府县名称必须一致。",
+    "prefectureRequired": "请填写英文和日文的都道府县。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "使用语言",
@@ -787,6 +790,9 @@
       "phone": "电话号码",
       "fullName": "全名",
       "age": "年龄",
+      "dateOfBirth": "出生日期",
+      "gender": "性别",
+      "genderSelfDescribed": "性别（请用您自己的话填写）",
       "reason": "就诊原因",
       "insuranceDocument": "保险证明",
       "selfie": "本人照片",
@@ -804,6 +810,7 @@
       "email": "请输入有效邮箱",
       "phone": "请输入有效电话号码",
       "number": "请输入数字",
+      "date": "请输入有效的日期",
       "fileTooLarge": "文件过大",
       "uploadFailed": "上传失败，请重试。",
       "form": "请检查标出的字段",
@@ -855,7 +862,17 @@
         "insuranceCard": "健康保险证（保険証）",
         "eligibilityCertificate": "资格确认书（資格確認書）",
         "mynaInsurance": "已登记为保险证的个人编号卡（マイナ保険証）"
+      },
+      "gender": {
+        "female": "女",
+        "male": "男",
+        "selfDescribe": "自行填写",
+        "preferNotToSay": "不愿透露"
       }
+    },
+    "hints": {
+      "dateOfBirth": "诊所用于核实您的身份并核对您的保险证。",
+      "gender": "这可能与您的诊疗有关。您可以选择不回答。"
     },
     "insuranceUpload": {
       "insuranceCard": "健康保险证的照片",
@@ -1066,5 +1083,14 @@
     "accept": "接受",
     "decline": "拒绝",
     "settings": "Cookie 设置"
+  },
+  "moderationSubmissionErrors": {
+    "unableToApprove": "这条提交未处于可处理状态，无法批准。",
+    "unableToReject": "这条提交未处于可处理状态，无法拒绝。"
+  },
+  "moderationListErrors": {
+    "submissions": "无法加载提交。请重试。",
+    "facilities": "无法加载医疗机构。请重试。",
+    "professionals": "无法加载医疗人员。请重试。"
   }
 }
