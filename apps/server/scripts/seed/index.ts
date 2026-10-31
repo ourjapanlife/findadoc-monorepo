@@ -11,9 +11,11 @@ import type {
 
 const { Client } = pg
 
+/**
+ * Clears the local database and inserts the seed data. PGHOST and PGPORT choose the database,
+ * as they do for the API. The seed clears tables first, so any host but this machine is refused (#168).
+ */
 async function runSeed() {
-    // PGHOST and PGPORT choose the database, as they do for the API. The seed clears tables first,
-    // so any host but this machine is refused.
     const database = localDatabaseConfig()
 
     if (!isLocalHost(database.host)) {
@@ -300,6 +302,10 @@ async function runSeed() {
 
 const SHOWCASE_HOURS_JST = [[9, 12], [13, 17]] as const
 
+/**
+ * The `cities` id for a seed row's prefecture and city names, or null when the seed
+ * gives no city or the table has no match.
+ */
 async function lookupCityId(
     client: pg.Client,
     city: { prefectureEn: string, nameEn: string } | null

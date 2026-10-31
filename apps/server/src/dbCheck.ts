@@ -9,8 +9,11 @@ export type DatabaseCheck = {
     error?: string
 }
 
+/**
+ * Connects to the local Docker database from `pnpm db:start`, on PGHOST and PGPORT like the API,
+ * and reads one facility. `pnpm check:db` reports the result instead of throwing.
+ */
 export const checkLocalDatabase = async (): Promise<DatabaseCheck> => {
-    // The local Docker database from `pnpm db:start`, on PGHOST and PGPORT like the API.
     const database = localDatabaseConfig()
     const target = `${database.host}:${database.port}`
     const client = new pg.Client({ ...database, connectionTimeoutMillis: 3000 })

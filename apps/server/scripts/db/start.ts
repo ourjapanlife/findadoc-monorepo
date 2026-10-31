@@ -62,11 +62,15 @@ function runningContainers(): RunningContainer[] | null {
         })
 }
 
-// Docker lists a published port as "0.0.0.0:54322->5432/tcp, [::]:54322->5432/tcp".
+/**
+ * True when a container's port list publishes `port`. Docker lists it as
+ * "0.0.0.0:54322->5432/tcp, [::]:54322->5432/tcp".
+ */
 function publishesPort(ports: string, port: number): boolean {
     return ports.includes(`:${port}->`)
 }
 
+/** True when something accepts a TCP connection on 127.0.0.1:`port` within a second, Docker or not. */
 function isListening(port: number): Promise<boolean> {
     return new Promise(resolve => {
         const socket = net.connect({ host: '127.0.0.1', port })
@@ -82,6 +86,10 @@ function isListening(port: number): Promise<boolean> {
     })
 }
 
+/**
+ * Says what holds the database port and how to free it: the old Supabase stack, another
+ * container, or a process outside Docker. It also names the PGPORT way around it (#168).
+ */
 function explainTakenPort(port: number, containers: string[]): void {
     const oldSupabase = containers.filter(name => name.startsWith('supabase_'))
 

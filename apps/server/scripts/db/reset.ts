@@ -70,6 +70,7 @@ async function connectToLocalDatabase(): Promise<pg.Client> {
     return second
 }
 
+/** One connection attempt to the local database. Null while Postgres is still starting. */
 async function tryConnect(): Promise<pg.Client | null> {
     const candidate = new pg.Client(localDatabase)
 
@@ -82,7 +83,10 @@ async function tryConnect(): Promise<pg.Client | null> {
     }
 }
 
-// A dev server or test run holding a connection would block DROP SCHEMA.
+/**
+ * Ends every other session on the local database, because a dev server or test run
+ * holding one would block DROP SCHEMA.
+ */
 async function closeOtherConnections(connection: pg.Client): Promise<void> {
     await connection.query(`
         SELECT pg_terminate_backend(pid)

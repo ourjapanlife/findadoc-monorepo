@@ -116,6 +116,7 @@ function signedInSub(): string {
     return payload.sub!
 }
 
+/** Books the first open time on this spec's weekday as `patient`, in a signed-out context of its own. */
 async function bookAsPatient(
     browser: Parameters<typeof newPatientContext>[0],
     baseURL: string | undefined,
@@ -129,6 +130,7 @@ async function bookAsPatient(
     }
 }
 
+/** The start times a new signed-out patient is offered on this spec's weekday, to check a slot was held or freed. */
 async function startsOfferedToANewPatient(
     browser: Parameters<typeof newPatientContext>[0],
     baseURL: string | undefined
@@ -144,6 +146,7 @@ async function startsOfferedToANewPatient(
     }
 }
 
+/** The dashboard calendar entry for `patient`'s appointment. */
 function calendarAppointment(page: Page, patient: Patient) {
     return page.locator('.clinic-calendar-appointment').filter({ hasText: patient.name })
 }
@@ -163,6 +166,7 @@ async function showWeekOf(page: Page, dateKey: string): Promise<void> {
     }
 }
 
+/** Opens one dashboard tab, waits for its panel, and attaches a full-page screenshot to the report. */
 async function attachTab(page: Page, tab: string, testInfo: TestInfo): Promise<void> {
     await page.goto(`${dashboardPath}?tab=${tab}`)
     await expect(page.getByTestId(`clinic-dashboard-tab-${tab}`)).toHaveAttribute('aria-current', 'page')

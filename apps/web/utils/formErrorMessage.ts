@@ -142,6 +142,10 @@ export function serverErrorsFromGraphQL(errors: readonly GraphQLErrorLike[] | un
     })
 }
 
+/**
+ * The `{ errorCode, field, count }` entries the API puts in a GraphQL error's `extensions.errors`.
+ * Anything without a string code is dropped. `count` is kept for messages such as FACILITY_HAS_BOOKINGS (#169).
+ */
 function nestedErrors(value: unknown): NestedError[] {
     if (!Array.isArray(value)) return []
 
