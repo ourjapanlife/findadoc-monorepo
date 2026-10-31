@@ -15,7 +15,7 @@
                         role="img"
                         alt="profile icon"
                         title="profile icon"
-                        class="profile-icon inline h-8 w-8 stroke-primary stroke-1"
+                        class="profile-icon inline size-8 stroke-primary stroke-1"
                     />
                 </div>
                 <div
@@ -126,7 +126,7 @@
                     @keydown.enter="() => undoRemovalOfHealthcareProfessional(healthcareProfessional?.id)"
                     @keydown.space.prevent="() => undoRemovalOfHealthcareProfessional(healthcareProfessional?.id)"
                 >
-                    <SVGUndoIcon class="flex items-center justify-center w-6 h-6" />
+                    <SVGUndoIcon class="flex items-center justify-center size-6" />
                 </div>
                 <div
                     v-if="isEditOrCreateHealthcareProfessional || isEditSubmission"
@@ -140,12 +140,12 @@
                             v-if="!isEditable || chosenLocaleIndex !== 0"
                             id="edit-healthcare-professional-professional-locale-name"
                             type="button"
-                            class="flex items-center justify-center w-6 h-6 rounded hover:text-primary"
+                            class="flex items-center justify-center size-6 rounded-sm hover:text-primary"
                             :aria-label="t('modDashboardHealthcareProfessionalCard.editName')"
                             @click="() => setChangeToEditable()"
                         >
                             <SVGPencilIcon
-                                class="h-4 w-4"
+                                class="size-4"
                                 aria-hidden="true"
                             />
                         </button>
@@ -153,13 +153,13 @@
                         <button
                             v-if="isEditable && chosenLocaleIndex === 0"
                             id="close-edit-healthcare-professional-locale-name"
-                            class="flex items-center justify-center w-6 h-6 rounded hover:text-primary"
+                            class="flex items-center justify-center size-6 rounded-sm hover:text-primary"
                             type="button"
                             :aria-label="t('modDashboardHealthcareProfessionalCard.closeEditName')"
                             @click="() => setToUneditable()"
                         >
                             <SVGXCloseIcon
-                                class="h-4 w-4"
+                                class="size-4"
                                 aria-hidden="true"
                             />
                         </button>

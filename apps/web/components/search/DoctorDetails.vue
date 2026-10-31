@@ -7,7 +7,7 @@
             <div class="flex flex-col gap-1">
                 <h1
                     id="doctor-details-title"
-                    class="text-2xl font-bold leading-tight text-primary-text"
+                    class="text-2xl/tight font-bold text-primary-text"
                 >
                     {{ displayName }}
                 </h1>
@@ -124,7 +124,7 @@
                 >
                     <NuxtLink
                         :to="facility.path"
-                        class="text-lg font-semibold leading-snug text-primary hover:underline"
+                        class="text-lg/snug font-semibold text-primary hover:underline"
                         @click="track('Clinic opened', { from: 'doctor' })"
                     >
                         {{ facility.name }}

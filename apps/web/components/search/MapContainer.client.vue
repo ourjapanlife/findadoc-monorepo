@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full w-full">
+    <div class="size-full">
         <!--
             Google rejects the key silently: it logs to the console and leaves an empty box, which
             is how a referrer misconfiguration on deploy previews went unnoticed. gm_authFailure
@@ -8,7 +8,7 @@
         <div
             v-if="authFailed"
             data-testid="map-unavailable"
-            class="flex h-full w-full flex-col items-center justify-center gap-1 p-6 text-center"
+            class="flex size-full flex-col items-center justify-center gap-1 p-6 text-center"
         >
             <p class="m-0 font-semibold text-primary-text">
                 {{ t('search.mapUnavailable') }}
@@ -28,7 +28,7 @@
             :options="{
                 gestureHandling: 'cooperative',
             }"
-            class="h-full w-full"
+            class="size-full"
             :center="currentLocation"
             :zoom="currentZoom"
             :gesture-handling="'greedy'"

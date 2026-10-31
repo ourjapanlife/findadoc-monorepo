@@ -1,6 +1,6 @@
 <template>
     <div>
-        <span class="mb-3.5 text-center text-primary-text text-2xl font-bold font-sans leading-normal">
+        <span class="mb-3.5 text-center text-primary-text text-2xl/normal font-bold font-sans">
             {{ t('modSubmissionForm.healthcareProfessionalId') }}
         </span>
         <div class="flex flex-col mt-4">
@@ -16,7 +16,7 @@
                 <SVGLookingGlass
                     role="img"
                     title="searching icon"
-                    class="relative right-8 top-3 w-6 h-6"
+                    class="relative right-8 top-3 size-6"
                 />
             </div>
             <div class="relative">
@@ -28,7 +28,7 @@
                         v-for="(healthcareProfessional, index) in healthcareProfessionalByIdOrName"
                         :key="`${healthcareProfessional.id}-${healthcareProfessional.createdDate}-${index}`"
                         :class="[
-                            'w-96 border-b border-primary-gray-bg p-4',
+                            'w-96 border-b border-accent-bg p-4',
                             index === healthcareProfessionalByIdOrName.length - 1 ? 'rounded-b-lg' : '',
                         ]"
                         class="bg-secondary-bg shadow-md hover:bg-accent-bg/20"

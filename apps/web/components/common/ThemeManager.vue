@@ -19,7 +19,7 @@
         >
             <component
                 :is="option.icon"
-                class="h-4 w-4 shrink-0"
+                class="size-4 shrink-0"
                 aria-hidden="true"
             />
             <span>{{ option.label }}</span>

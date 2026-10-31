@@ -17,7 +17,7 @@
                     id="username"
                     v-model="username"
                     type="text"
-                    class="border rounded px-3 py-2 w-full"
+                    class="border rounded-sm px-3 py-2 w-full"
                     required
                     autocomplete="username"
                 >
@@ -32,7 +32,7 @@
                     id="email"
                     v-model="email"
                     type="email"
-                    class="border rounded px-3 py-2 w-full"
+                    class="border rounded-sm px-3 py-2 w-full"
                     required
                 >
             </div>
@@ -43,7 +43,7 @@
                     <img
                         :src="profilePhotoPreview || profilePhoto"
                         alt="Profile Photo"
-                        class="w-16 h-16 rounded-full object-cover border"
+                        class="size-16 rounded-full object-cover border"
                     >
                     <template v-if="props.isOwner ?? true">
                         <input
@@ -57,7 +57,7 @@
             <template v-if="props.isOwner ?? true">
                 <button
                     type="submit"
-                    class="text-primary py-2 px-4 rounded hover:text-primary-hover transition w-full"
+                    class="text-primary py-2 px-4 rounded-sm hover:text-primary-hover transition w-full"
                 >
                     {{ t('profile.save') }}
                 </button>

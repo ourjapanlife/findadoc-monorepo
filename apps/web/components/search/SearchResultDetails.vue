@@ -8,7 +8,7 @@
                 <component
                     :is="heading"
                     id="search-details-title"
-                    class="text-2xl font-bold leading-tight text-primary-text"
+                    class="text-2xl/tight font-bold text-primary-text"
                 >
                     {{ facilityName }}
                 </component>
@@ -36,7 +36,7 @@
                     @click="trackContact('Call clicked')"
                 >
                     <SVGPhoneIcon
-                        class="h-4 w-4 stroke-current"
+                        class="size-4 stroke-current"
                         aria-hidden="true"
                     />
                     {{ t('searchResultsDetails.callNow') }}
@@ -50,7 +50,7 @@
                     @click="trackContact('Website clicked')"
                 >
                     <SVGGlobeIcon
-                        class="h-4 w-4 stroke-current"
+                        class="size-4 stroke-current"
                         aria-hidden="true"
                     />
                     {{ t('search.website') }}
@@ -64,7 +64,7 @@
                     @click="trackContact('Maps clicked')"
                 >
                     <SVGMapPinIcon
-                        class="h-4 w-4 stroke-current"
+                        class="size-4 stroke-current"
                         aria-hidden="true"
                     />
                     {{ t('search.openInMaps') }}
@@ -76,7 +76,7 @@
                     @click="trackContact('Email clicked')"
                 >
                     <SVGEmailIcon
-                        class="h-4 w-4 stroke-current"
+                        class="size-4 stroke-current"
                         aria-hidden="true"
                     />
                     {{ t('search.email') }}
@@ -126,7 +126,7 @@
                     <div class="flex flex-col">
                         <NuxtLink
                             :to="professional.path"
-                            class="text-lg font-semibold leading-snug text-primary hover:underline"
+                            class="text-lg/snug font-semibold text-primary hover:underline"
                             @click="track('Doctor opened', { from: surface })"
                         >
                             {{ professional.name }}

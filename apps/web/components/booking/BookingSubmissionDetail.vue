@@ -223,7 +223,7 @@
                                 <img
                                     :src="previewUrls[upload.id]"
                                     :alt="answerLabel(upload.fieldId)"
-                                    class="block h-auto max-h-80 w-auto max-w-full object-contain"
+                                    class="block size-auto max-h-80 max-w-full object-contain"
                                     :data-testid="`booking-upload-preview-${upload.id}`"
                                 >
                             </button>
@@ -233,7 +233,7 @@
                                 px-4 py-3 text-sm font-semibold text-primary-text"
                             >
                                 <svg
-                                    class="h-5 w-5 text-primary"
+                                    class="size-5 text-primary"
                                     viewBox="0 0 24 24"
                                     fill="none"
                                     stroke="currentColor"

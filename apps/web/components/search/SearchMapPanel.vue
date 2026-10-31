@@ -14,7 +14,7 @@
             />
             <template #fallback>
                 <div
-                    class="skeleton h-full w-full rounded-none"
+                    class="skeleton size-full rounded-none"
                     aria-hidden="true"
                 />
             </template>

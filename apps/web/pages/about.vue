@@ -266,7 +266,7 @@
                         >
                             <component
                                 :is="link.icon"
-                                class="h-8 w-8 shrink-0 fill-primary"
+                                class="size-8 shrink-0 fill-primary"
                                 :class="link.iconClass"
                                 aria-hidden="true"
                             />

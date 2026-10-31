@@ -28,7 +28,7 @@ corepack prepare pnpm@10.27.0 --activate
 pnpm install
 ```
 
-`pnpm install`はHuskyも設定し、コミット前にリンティングが実行されます。
+`pnpm install`はHuskyも設定し、プッシュ前に `pnpm exec turbo lint typecheck` が実行されます。
 
 リポジトリがOneDrive内にある場合、pnpmのファイルリンクが失敗することがあります。その場合はコピーでインストールしてください：
 
@@ -165,6 +165,8 @@ pnpm test                # web、MCP、utilsのユニットテスト
 pnpm test:server         # APIのテスト（ローカルデータベースが必要）
 pnpm test:e2e            # ウェブサイトのPlaywright
 ```
+
+ウェブサイトのリントは、`eslint-plugin-better-tailwindcss` で Tailwind のクラスを `apps/web/assets/css/tailwind.css` と照合します。Tailwind v4 の正規の書き方があるクラス（`h-5 w-5` は `size-5`）、非推奨や不明なクラス、矛盾・重複するクラス、余分な空白があると失敗します。ほとんどは `pnpm lint:fix` で直ります。Tailwind ではないフック用のクラスは、`apps/web/eslint.config.js` のルールの `ignore` に加えます。
 
 1つのパッケージのタスクだけを実行するには `--filter` を使います：
 

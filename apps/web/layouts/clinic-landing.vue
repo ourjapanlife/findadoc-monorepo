@@ -4,7 +4,7 @@
             <slot />
         </main>
         <footer class="shrink-0 border-t border-accent-bg">
-            <div class="px-6 py-6 landscape:px-12">
+            <div class="p-6 landscape:px-12">
                 <div
                     class="page-container flex flex-col items-center gap-4
                         landscape:flex-row landscape:justify-between"
@@ -16,7 +16,7 @@
                         data-testid="clinic-landing-credit"
                     >
                         <SVGSiteLogo
-                            class="h-8 w-8 fill-primary"
+                            class="size-8 fill-primary"
                             aria-hidden="true"
                         />
                         <span>{{ t('footer.poweredBy', { name: t('common.siteName') }) }}</span>
