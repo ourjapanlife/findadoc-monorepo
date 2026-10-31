@@ -13,18 +13,21 @@
 -- Kept: clinic memberships, clinic sites and their languages, doctors, and
 -- locale pages, facilities, and everything outside booking.
 --
--- A migration cannot delete stored upload files. If any upload still has a
--- file, this stops and changes nothing (each migration is one transaction), so
--- the upload purge runs first and nothing is left in storage without a row.
+-- A migration cannot delete stored upload files. An upload whose file is not
+-- purged yet keeps its row and is marked due now (retain_until = now()), so the
+-- daily findadoc-booking-purge deletes the file and records purged_at. Upload rows
+-- whose file is already purged are deleted. None of the demo files are needed.
+-- This changes only rows that exist now; retention for new uploads is unchanged.
+--
+-- This file never applied on production: the first deploy stopped here on
+-- unpurged uploads and rolled back, so it is changed in place rather than
+-- followed by another migration.
 
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM booking_uploads WHERE purged_at IS NULL) THEN
-        RAISE EXCEPTION 'booking_uploads has files that are not purged yet. Purge them, then migrate again.';
-    END IF;
-END $$;
+UPDATE booking_uploads
+SET retain_until = LEAST(COALESCE(retain_until, now()), now())
+WHERE purged_at IS NULL;
 
-DELETE FROM booking_uploads;
+DELETE FROM booking_uploads WHERE purged_at IS NOT NULL;
 DELETE FROM booking_appointments;
 DELETE FROM booking_submissions;
 DELETE FROM clinic_availability_windows;

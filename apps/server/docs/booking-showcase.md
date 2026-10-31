@@ -104,7 +104,7 @@ From the repo root, on this branch.
 
 ## Demo requests
 
-There are none. Migration `20261029170000_showcase_demo_bookings.sql` added one request in each status and open hours for 21–25 December for the production demo. `20261031090000_clear_booking_requests.sql` then reset booking to an empty slate: every request, appointment, upload row, painted hour, closure, weekly hour, and booking setting. Clinic members and clinic sites stay. To see requests on the dashboard, save settings and hours, then book through the clinic site (section 6).
+There are none. Migration `20261029170000_showcase_demo_bookings.sql` added one request in each status and open hours for 21–25 December for the production demo. `20261031090000_clear_booking_requests.sql` then reset booking to an empty slate: every request, appointment, painted hour, closure, weekly hour, and booking setting. Upload files not yet purged were marked due, so the daily purge deleted them; their rows stay as the record of the purge. Clinic members and clinic sites stay. To see requests on the dashboard, save settings and hours, then book through the clinic site (section 6).
 
 ## 6. Demo script (about 10 minutes)
 
