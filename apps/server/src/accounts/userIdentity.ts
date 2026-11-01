@@ -38,6 +38,9 @@ export async function userIdFor(user: User | null | undefined): Promise<string |
     if (user === null || user === undefined || !isAuthenticatedUser(user)) {
         return undefined
     }
+    if (typeof user.userId === 'string') {
+        return user.userId
+    }
     const issuer = issuerOf(user)
     const email = verifiedEmailFromUser(user) ?? null
 

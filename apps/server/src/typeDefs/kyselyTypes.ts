@@ -169,6 +169,27 @@ export interface UserIdentitiesTable {
     created_date: Generated<string>
 }
 
+/** One grant of admin, moderator, or dev. Active while revoked_at is null. See src/accounts/roleGrants.ts. */
+export interface UserRoleGrantsTable {
+    id: Generated<string>
+    user_id: string
+    role: string
+    granted_by: string
+    granted_at: Generated<string>
+    revoked_by: string | null
+    revoked_at: string | null
+}
+
+/** Every grant and revoke of a role: who did it, when, and to whom. */
+export interface AccountAuditLogTable {
+    id: Generated<string>
+    action: string
+    actor: string
+    target_user_id: string
+    details: ColumnType<Record<string, unknown>, string | undefined, string>
+    created_date: Generated<string>
+}
+
 /**
  * A clinic-owned page. id is what an account and a future CRM attach to.
  * facility_id is the directory listing for this page.
@@ -360,6 +381,8 @@ export interface Database {
     audit_logs: AuditLogsTable
     user: UserTable
     user_identities: UserIdentitiesTable
+    user_role_grants: UserRoleGrantsTable
+    account_audit_log: AccountAuditLogTable
     clinic_sites: ClinicSitesTable
     clinic_memberships: ClinicMembershipsTable
     clinic_site_languages: ClinicSiteLanguagesTable

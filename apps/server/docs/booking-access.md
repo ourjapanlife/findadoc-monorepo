@@ -18,7 +18,8 @@ Admin access is wide only because booking is in preview. Later an admin will
 only create and manage the owner and staff memberships for a clinic. Bookings,
 calendar, and settings will be the owner's job.
 
-Moderators manage the directory and have no booking access. `getEffectiveScopes` in
+Admin and Moderator come from `user_role_grants` once the Auth0 roles are imported
+(`src/accounts/roleGrants.ts`). Moderators manage the directory and have no booking access. `getEffectiveScopes` in
 `src/auth.ts` removes the three every-clinic scopes from anyone who is not an admin,
 even when Auth0 puts them on the token. Do not give them back to moderators.
 

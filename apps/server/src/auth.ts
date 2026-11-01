@@ -130,6 +130,8 @@ export interface User {
     sub: string
     /** The token's `iss`. With sub, it names the identity (src/accounts/userIdentity.ts). */
     issuer?: string
+    /** Our user id, set once per request by withGrantedRoles (src/accounts/roleGrants.ts). */
+    userId?: string
     name: string
     email: string
     /** True only when the token carries Auth0's email_verified claim (see EMAIL_VERIFIED_CLAIM). */
