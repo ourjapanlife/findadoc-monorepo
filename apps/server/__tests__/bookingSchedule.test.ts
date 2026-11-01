@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { Locale, type BookingPractitioner } from '@findadoc/graphql'
-import { clinicLanguages, parseRequestedLanguages, scheduleLanes } from '../src/booking/practitioners.js'
+import {
+    clinicLanguages,
+    coveringInterpreters,
+    interpreterCoverage,
+    languageGap,
+    parseRequestedLanguages,
+    scheduleLanes
+} from '../src/booking/practitioners.js'
+import { interpreterStarts } from '../src/booking/interpretation.js'
 import { DEFAULT_BOOKING_FORM_ID, staffAnswers } from '../src/booking/formDefinitions.js'
 import { contentDisposition } from '../src/storage/objectStorage.js'
 import {
@@ -238,33 +246,91 @@ describe('schedule lanes', () => {
         doctor('c', [Locale.KoKr], false)
     ]
 
+    // Every case before the interpretation block is a clinic without it: no lane holds an interpreter.
+    const lanes = (input: Omit<Parameters<typeof scheduleLanes>[0], 'interpreters'>) =>
+        scheduleLanes({ ...input, interpreters: [] })?.map(lane => {
+            expect(lane.interpreterId).toBeNull()
+            return { practitionerId: lane.practitionerId }
+        })
+
     it('searches every doctor schedule, then clinic time, when no one is chosen', () => {
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [] }))
             .toEqual([{ practitionerId: 'a' }, { practitionerId: 'b' }, { practitionerId: null }])
     })
 
     it('keeps only doctors who speak every requested language', () => {
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.EnUs] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.EnUs] }))
             .toEqual([{ practitionerId: 'a' }])
     })
 
     it('keeps clinic time when the clinic or a doctor on clinic time covers the language', () => {
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.KoKr] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.KoKr] }))
             .toEqual([{ practitionerId: null }])
-        expect(scheduleLanes({
+        expect(lanes({
             practitioners, facilityLanguages: [Locale.ViVn], practitionerId: null, languages: [Locale.ViVn]
         })).toEqual([{ practitionerId: null }])
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.ViVn] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: null, languages: [Locale.ViVn] }))
             .toEqual([])
     })
 
     it('books a chosen doctor on their own schedule, or on clinic time when they have none', () => {
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'b', languages: [] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: 'b', languages: [] }))
             .toEqual([{ practitionerId: 'b' }])
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'c', languages: [] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: 'c', languages: [] }))
             .toEqual([{ practitionerId: null }])
-        expect(scheduleLanes({ practitioners, facilityLanguages: [], practitionerId: 'z', languages: [] }))
+        expect(lanes({ practitioners, facilityLanguages: [], practitionerId: 'z', languages: [] }))
             .toBeUndefined()
+    })
+
+    describe('with interpreters (#205, docs/booking-interpretation.md)', () => {
+        // The doc's example: Dr A (Japanese), Dr B (Japanese, English), a Nepali
+        // interpreter, and a phone service for every clinic language.
+        const clinic = [doctor('A', [Locale.JaJp], true), doctor('B', [Locale.JaJp, Locale.EnUs], true)]
+        const facilityLanguages = [Locale.JaJp]
+        const offered = clinicLanguages(clinic, facilityLanguages, [[Locale.NeNp], null])
+        const interpreters = interpreterCoverage(
+            [{ id: 'nepali', languages: [Locale.NeNp] }, { id: 'phone', languages: null }],
+            offered
+        )
+        const plan = (languages: Locale[], practitionerId: string | null = null) =>
+            scheduleLanes({ practitioners: clinic, facilityLanguages, practitionerId, languages, interpreters })
+                ?.map(lane => `${lane.practitionerId ?? 'clinic'}+${lane.interpreterId ?? 'none'}`)
+
+        it('reads an interpreter with no languages as every clinic language', () => {
+            expect(offered).toEqual([Locale.JaJp, Locale.EnUs, Locale.NeNp])
+            expect(interpreters[1]?.languages).toEqual(offered)
+        })
+
+        it('tries native schedules only when someone speaks the language', () => {
+            expect(plan([Locale.JaJp])).toEqual(['A+none', 'B+none', 'clinic+none'])
+        })
+
+        it('tries native schedules first, then each other schedule with each interpreter who covers it', () => {
+            expect(plan([Locale.EnUs])).toEqual(['B+none', 'A+phone', 'clinic+phone'])
+            expect(plan([Locale.NeNp])).toEqual([
+                'A+nepali', 'A+phone', 'B+nepali', 'B+phone', 'clinic+nepali', 'clinic+phone'
+            ])
+        })
+
+        it('needs one interpreter to cover every language the doctor does not speak', () => {
+            // A lacks English and Nepali: only the phone service covers both. B lacks Nepali only.
+            expect(plan([Locale.EnUs, Locale.NeNp])).toEqual(['A+phone', 'B+nepali', 'B+phone', 'clinic+phone'])
+        })
+
+        it('offers nothing for a language no one speaks or covers', () => {
+            expect(plan([Locale.KoKr])).toEqual([])
+        })
+
+        it('pairs a chosen doctor with an interpreter only when they need one', () => {
+            expect(plan([Locale.NeNp], 'A')).toEqual(['A+nepali', 'A+phone'])
+            expect(plan([Locale.JaJp], 'B')).toEqual(['B+none'])
+            expect(plan([Locale.KoKr], 'A')).toEqual(['A+none'])
+        })
+
+        it('lists covering interpreters only for a real gap', () => {
+            expect(coveringInterpreters(interpreters, []).map(item => item.id)).toEqual([])
+            expect(languageGap([Locale.JaJp], [Locale.JaJp, Locale.NeNp])).toEqual([Locale.NeNp])
+        })
     })
 
     it('accepts known languages only and lists the clinic languages once', () => {
@@ -301,5 +367,40 @@ describe('booking retention', () => {
         const until = retainUntilFromNow(BOOKING_FIELD_SENSITIVITY.IDENTITY_DOCUMENT, from)
         const days = (until.getTime() - from.getTime()) / (24 * 60 * 60 * 1000)
         expect(days).toBe(IDENTITY_DOCUMENT_RETENTION_DAYS)
+    })
+})
+
+describe('interpreter starts (#205)', () => {
+    // Monday 2 November 2026, 10:00, 11:00, and 13:30 JST.
+    const at = (hour: number, minute = 0) => new Date(Date.UTC(2026, 10, 2, hour - 9, minute))
+    const starts = [at(10), at(11), at(13, 30)]
+    const range = { rangeStart: at(0), rangeEnd: at(23) }
+    const hour = 60 * 60 * 1000
+
+    it('takes every start when the interpreter has no hours and no limit', () => {
+        expect(interpreterStarts({
+            starts, durationMs: hour, interpreter: { hours: [], capacity: null }, held: [], ...range
+        })).toEqual(starts)
+    })
+
+    it('keeps only visits that end inside the interpreter hours', () => {
+        const hours = [{ weekday: 1, startMinute: 10 * 60, endMinute: 14 * 60 }]
+        // 13:30 for an hour runs to 14:30, past the interpreter's 14:00.
+        expect(interpreterStarts({
+            starts, durationMs: hour, interpreter: { hours, capacity: null }, held: [], ...range
+        })).toEqual([at(10), at(11)])
+        expect(interpreterStarts({
+            starts, durationMs: hour / 2, interpreter: { hours, capacity: null }, held: [], ...range
+        })).toEqual(starts)
+    })
+
+    it('refuses a start once the interpreter holds as many visits as their capacity', () => {
+        const held = [{ startsAt: at(10), endsAt: at(11) }]
+        expect(interpreterStarts({
+            starts, durationMs: hour, interpreter: { hours: [], capacity: 1 }, held, ...range
+        })).toEqual([at(11), at(13, 30)])
+        expect(interpreterStarts({
+            starts, durationMs: hour, interpreter: { hours: [], capacity: 2 }, held, ...range
+        })).toEqual(starts)
     })
 })

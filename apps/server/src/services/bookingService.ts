@@ -1,7 +1,9 @@
 import {
     BookingFormFieldType,
     BookingSubmissionStatus,
+    type Locale,
     type BookingForm,
+    type BookingPractitioner,
     type BookingSubmissionResult,
     type BookingUploadUrl,
     type CreateBookingUploadUrlInput,
@@ -20,15 +22,23 @@ import {
 } from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
 import { clinicRequestEmail, isSiteLocale, patientRequestEmail } from '../booking/emailCopy.js'
+import {
+    activeInterpreters,
+    interpreterHolds,
+    interpreterStarts,
+    type Interpreter
+} from '../booking/interpretation.js'
 import { BOOKING_UPLOAD_MAX_BYTES } from '../booking/limits.js'
 import { clinicDashboardUrl, newPatientToken, patientBookingUrl } from '../booking/links.js'
 import { noticeClinic, sendBookingNotice } from '../booking/notifications.js'
 import {
     clinicLanguages,
     facilityLanguagesFor,
+    interpreterCoverage,
     listFacilityPractitioners,
     parseRequestedLanguages,
     scheduleLanes,
+    type InterpreterCoverage,
     type ScheduleLane
 } from '../booking/practitioners.js'
 import { retainUntilFromNow } from '../booking/retention.js'
@@ -41,7 +51,12 @@ import {
     resolveAppointmentDuration,
     slotStepMinutes
 } from '../booking/schedule.js'
-import { bookingLockKey, resolvePublicBookingTarget, type BookingTarget } from '../booking/target.js'
+import {
+    bookingLockKey,
+    lockClinicBookings,
+    resolvePublicBookingTarget,
+    type BookingTarget
+} from '../booking/target.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import {
@@ -84,34 +99,65 @@ export async function getBookingForm(
     if (target === undefined) {
         return null
     }
-    const [practitioners, facilityLanguages] = await Promise.all([
-        listFacilityPractitioners(target.facilityId),
-        facilityLanguagesFor(target.facilityId)
-    ])
+    const context = await choiceContext(target)
     return {
         ...bookingFormForTarget(target, chooseFormDefinitionId(target.formDefinitionIds, formId)),
-        practitioners,
-        languages: clinicLanguages(practitioners, facilityLanguages)
+        practitioners: context.practitioners,
+        languages: context.offered,
+        offersInterpretation: context.coverage.length > 0,
+        // Only languages the clinic offers, all known Locale values, so a stray stored value cannot break the page.
+        interpreters: context.coverage.map(interpreter => ({
+            languages: context.offered.filter(language => interpreter.languages.includes(language))
+        }))
     }
 }
+
+/** The clinic's doctors, languages, and the interpreters a patient may book with (#205). */
+async function choiceContext(target: BookingTarget, executor: AvailabilityExecutor = db): Promise<{
+    practitioners: BookingPractitioner[]
+    facilityLanguages: string[]
+    offered: Locale[]
+    interpreters: Map<string, Interpreter>
+    coverage: InterpreterCoverage[]
+}> {
+    const [practitioners, facilityLanguages, interpreters] = await Promise.all([
+        listFacilityPractitioners(target.facilityId),
+        facilityLanguagesFor(target.facilityId),
+        activeInterpreters(target.facilityId, executor)
+    ])
+    const offered = clinicLanguages(practitioners, facilityLanguages, interpreters.map(item => item.languages))
+    return {
+        practitioners,
+        facilityLanguages,
+        offered,
+        interpreters: new Map(interpreters.map(interpreter => [interpreter.id, interpreter])),
+        coverage: interpreterCoverage(interpreters, offered)
+    }
+}
+
+type LaneChoice = { lanes: ScheduleLane[], languages: string[], interpreters: Map<string, Interpreter> }
 
 /** The schedules a patient's doctor and language choice may book on. Undefined when the choice is not valid. */
 async function lanesForChoice(
     target: BookingTarget,
     practitionerIdInput: string | null | undefined,
-    languagesInput: readonly string[] | null | undefined
-): Promise<{ lanes: ScheduleLane[], languages: string[] } | undefined> {
+    languagesInput: readonly string[] | null | undefined,
+    executor: AvailabilityExecutor = db
+): Promise<LaneChoice | undefined> {
     const languages = parseRequestedLanguages(languagesInput)
     if (languages === undefined) {
         return undefined
     }
     const practitionerId = practitionerIdInput?.trim() || null
-    const [practitioners, facilityLanguages] = await Promise.all([
-        listFacilityPractitioners(target.facilityId),
-        facilityLanguagesFor(target.facilityId)
-    ])
-    const lanes = scheduleLanes({ practitioners, facilityLanguages, practitionerId, languages })
-    return lanes === undefined ? undefined : { lanes, languages }
+    const context = await choiceContext(target, executor)
+    const lanes = scheduleLanes({
+        practitioners: context.practitioners,
+        facilityLanguages: context.facilityLanguages,
+        practitionerId,
+        languages,
+        interpreters: context.coverage
+    })
+    return lanes === undefined ? undefined : { lanes, languages, interpreters: context.interpreters }
 }
 
 function validationError(field: string): Result<never> {
@@ -361,6 +407,8 @@ async function notifyBookingParties(input: {
     durationMinutes: number
     locale: string
     patientToken: string
+    languages: readonly string[]
+    interpreterLabel: string | null
 }): Promise<BookingSubmissionStatus> {
     const requester = requesterEmail(input.storedAnswers)
     const clinicName = input.target.clinicName
@@ -391,6 +439,8 @@ async function notifyBookingParties(input: {
             bookingId: input.bookingId,
             patientName: input.storedAnswers.fullName ?? '',
             patientEmail: requester ?? '',
+            languages: input.languages,
+            interpreterLabel: input.interpreterLabel,
             dashboardUrl: input.target.facilityId === null ? null : clinicDashboardUrl(input.target.facilityId)
         })
     })
@@ -491,22 +541,28 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
 
     const patientToken = newPatientToken()
     let appointmentId: string | null = null
-    let inserted: { id: string, created_date: string }
+    let inserted: { id: string, created_date: string, interpreterLabel: string | null }
     try {
         inserted = await db.transaction().execute(async transaction => {
-            await sql`SELECT pg_advisory_xact_lock(hashtext(${bookingLockKey(target)}))`.execute(transaction)
+            await lockClinicBookings(transaction, bookingLockKey(target))
+            // Plan again under the lock: an interpreter save or the on/off switch takes the
+            // same lock, so these settings cannot change before the visit is held (#205).
+            const locked = await lanesForChoice(target, practitionerId, input.spokenLanguages, transaction)
+            const openCache: OpenStartsCache = new Map()
 
             // The first schedule that still has this start free takes the visit.
             let lane: ScheduleLane | undefined
-            for (const candidate of choice.lanes) {
-                const open = await listAvailableStartsForTarget(
+            for (const candidate of locked?.lanes ?? []) {
+                const open = await laneStarts({
                     target,
-                    startsAt,
-                    endsAt,
+                    from: startsAt,
+                    to: endsAt,
                     durationMinutes,
-                    candidate.practitionerId,
-                    transaction
-                )
+                    lane: candidate,
+                    interpreters: locked?.interpreters ?? new Map(),
+                    executor: transaction,
+                    openCache
+                })
                 if (open.some(start => start.getTime() === startsAt.getTime())) {
                     lane = candidate
                     break
@@ -565,6 +621,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                     clinic_site_id: target.clinicSiteId,
                     booking_submission_id: row.id,
                     practitioner_id: lane.practitionerId,
+                    interpreter_id: lane.interpreterId,
                     starts_at: startsAt.toISOString(),
                     ends_at: endsAt.toISOString(),
                     duration_minutes: durationMinutes,
@@ -574,7 +631,10 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                 .executeTakeFirstOrThrow()
             appointmentId = appointment.id
 
-            return { id: row.id, created_date: row.created_date }
+            const interpreterLabel = lane.interpreterId === null
+                ? null
+                : locked?.interpreters.get(lane.interpreterId)?.label ?? null
+            return { id: row.id, created_date: row.created_date, interpreterLabel }
         })
     } catch (error) {
         if (error instanceof Error && error.message === 'BOOKING_UPLOAD_LINK') {
@@ -600,7 +660,9 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         startsAt,
         durationMinutes,
         locale: input.locale,
-        patientToken: patientToken.token
+        patientToken: patientToken.token,
+        languages: choice.languages,
+        interpreterLabel: inserted.interpreterLabel
     })
 
     return {
@@ -723,6 +785,57 @@ async function listAvailableStartsForTarget(
     })
 }
 
+/** Open starts by schedule (practitioner id, null for clinic time), for one call. */
+type OpenStartsCache = Map<string | null, Date[]>
+
+/**
+ * Open starts on one lane: the schedule's open starts and, when the lane holds an
+ * interpreter, only those inside the interpreter's hours and under their capacity
+ * (#205). Submit calls this inside the clinic lock, so the capacity count is current.
+ */
+async function laneStarts(input: {
+    target: BookingTarget
+    from: Date
+    to: Date
+    durationMinutes: number
+    lane: ScheduleLane
+    interpreters: ReadonlyMap<string, Interpreter>
+    executor?: AvailabilityExecutor
+    /** One per operation: interpreted lanes reuse their schedule's starts. */
+    openCache?: OpenStartsCache
+}): Promise<Date[]> {
+    const executor = input.executor ?? db
+    let open = input.openCache?.get(input.lane.practitionerId)
+    if (open === undefined) {
+        open = await listAvailableStartsForTarget(
+            input.target,
+            input.from,
+            input.to,
+            input.durationMinutes,
+            input.lane.practitionerId,
+            executor
+        )
+        input.openCache?.set(input.lane.practitionerId, open)
+    }
+    if (input.lane.interpreterId === null) {
+        return open
+    }
+    const interpreter = input.interpreters.get(input.lane.interpreterId)
+    if (interpreter === undefined || open.length === 0) {
+        return []
+    }
+    const durationMs = input.durationMinutes * 60 * 1000
+    const rangeEnd = new Date(input.to.getTime() + durationMs)
+    return interpreterStarts({
+        starts: open,
+        durationMs,
+        interpreter,
+        held: await interpreterHolds(interpreter.id, input.from, rangeEnd, executor),
+        rangeStart: input.from,
+        rangeEnd: input.to
+    })
+}
+
 export async function getAvailableBookingStarts(
     clinicIdOrSlug: string,
     fromIso: string,
@@ -754,9 +867,12 @@ export async function getAvailableBookingStarts(
     }
     // One start may be free on several schedules; the patient sees it once.
     const starts = new Set<number>()
+    const openCache: OpenStartsCache = new Map()
     for (const lane of choice.lanes) {
-        const laneStarts = await listAvailableStartsForTarget(target, from, to, durationMinutes, lane.practitionerId)
-        for (const start of laneStarts) {
+        const open = await laneStarts({
+            target, from, to, durationMinutes, lane, interpreters: choice.interpreters, openCache
+        })
+        for (const start of open) {
             starts.add(start.getTime())
         }
     }

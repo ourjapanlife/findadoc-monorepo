@@ -1,4 +1,6 @@
+import { sql, type Transaction } from 'kysely'
 import { db } from '../kyselyClient.js'
+import type { Database } from '../typeDefs/kyselyTypes.js'
 import { clinicThemeFromRow } from '../services/clinicSiteService.js'
 import { DEFAULT_BOOKING_FORM_ID, parseFormDefinitionIds } from './formDefinitions.js'
 import { DEFAULT_ALLOWED_DURATIONS, parseAllowedDurations, resolveDefaultDuration } from './schedule.js'
@@ -198,6 +200,15 @@ export async function bookingEnabledFacilityIds(facilityIds: readonly string[]):
         .where('facility_id', 'in', [...facilityIds])
         .execute()
     return new Set(rows.map(row => row.facility_id))
+}
+
+/**
+ * Holds a clinic's booking lock until the transaction ends. Submit, and every write
+ * that changes what submit may book (interpreters, interpretation on or off, #205),
+ * take it with the same key, so they run one at a time.
+ */
+export async function lockClinicBookings(transaction: Transaction<Database>, key: string): Promise<void> {
+    await sql`SELECT pg_advisory_xact_lock(hashtext(${key}))`.execute(transaction)
 }
 
 export function bookingLockKey(target: BookingTarget): string {

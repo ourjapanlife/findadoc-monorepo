@@ -11,6 +11,7 @@ import * as availabilityService from '../src/services/availabilityService.js'
 import * as bookingService from '../src/services/bookingService.js'
 import * as appointmentService from '../src/services/appointmentService.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
+import * as interpreterService from '../src/services/interpreterService.js'
 import * as staffBookingService from '../src/services/staffBookingService.js'
 
 const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
@@ -77,6 +78,8 @@ describe('booking flow', () => {
         await db.deleteFrom('clinic_availability_closures').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('clinic_memberships').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_interpretation').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('clinic_interpreters').where('facility_id', '=', facilityId).execute()
         if (createdPractitionerIds.length > 0) {
             await db.deleteFrom('hps_facilities').where('hps_id', 'in', createdPractitionerIds).execute()
             await db.deleteFrom('hps').where('id', 'in', createdPractitionerIds).execute()
@@ -478,6 +481,184 @@ describe('booking flow', () => {
         )
         expect(await starts(japanese)).toEqual([])
         await availabilityService.deleteClinicAvailabilityClosure(closure.data.id, admin)
+    })
+
+    it('books a doctor with an interpreter, inside the interpreter hours and capacity (#205)', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        // Three days on, 10:00-12:00 JST, so the earlier doctor test does not share the hours.
+        const later = (minutes: number) => iso(3 * 24 * 60 + minutes)
+        const jstWeekday = new Date(new Date(later(0)).getTime() + 9 * 60 * 60 * 1000).getUTCDay() || 7
+        const first = await addDoctor(facilityId, 'JapaneseOne', [Locale.JaJp])
+        const second = await addDoctor(facilityId, 'JapaneseTwo', [Locale.JaJp])
+        // Lists Nepali for the clinic but works another weekday.
+        const nepaliSpeaker = await addDoctor(facilityId, 'Nepali', [Locale.NeNp])
+        for (const practitionerId of [first, second]) {
+            await availabilityService.setClinicWeeklyHours({
+                facilityId, practitionerId, hours: [{ weekday: jstWeekday, startMinute: 600, endMinute: 720 }]
+            }, 'test|staff', admin)
+        }
+        await availabilityService.setClinicWeeklyHours({
+            facilityId,
+            practitionerId: nepaliSpeaker,
+            hours: [{ weekday: jstWeekday % 7 + 1, startMinute: 600, endMinute: 660 }]
+        }, 'test|staff', admin)
+        // The facility's own list is fake data; empty keeps clinic time out of the Nepali checks.
+        const original = await db.selectFrom('facilities')
+            .select('supported_languages')
+            .where('id', '=', facilityId)
+            .executeTakeFirstOrThrow()
+        await db.updateTable('facilities').set({ supported_languages: '[]' }).where('id', '=', facilityId).execute()
+        // Fake doctors on clinic time speak random languages, so close clinic time around
+        // this test's hours: only the doctors above can take a visit.
+        const clinicHours = await db.selectFrom('clinic_weekly_hours')
+            .select(['weekday', 'start_minute', 'end_minute'])
+            .where('facility_id', '=', facilityId)
+            .where('practitioner_id', 'is', null)
+            .execute()
+        await availabilityService.setClinicWeeklyHours({ facilityId, practitionerId: null, hours: [] }, 'test|staff', admin)
+        // An earlier test paints clinic-time windows; none may cover this test's hours.
+        await db.deleteFrom('clinic_availability_windows')
+            .where('facility_id', '=', facilityId)
+            .where('practitioner_id', 'is', null)
+            .where('starts_at', '<', later(180))
+            .where('ends_at', '>', later(-60))
+            .execute()
+
+        const startsFor = (languages: Locale[], from = 0, to = 60) => bookingService.getAvailableBookingStarts(
+            facilityId, later(from), later(to), 60, undefined, languages
+        )
+        try {
+            expect(await startsFor([Locale.NeNp])).toEqual([])
+
+            // Turning it on adds one interpreter for every language at every open time.
+            await clinicAccessService.setBookingInterpretation({ facilityId, offersInterpretation: true }, admin)
+            const [interpreter] = await interpreterService.listClinicInterpreters(facilityId, admin)
+            expect(interpreter).toMatchObject({ languages: null, capacity: null, hours: [] })
+            const form = await bookingService.getBookingForm(facilityId)
+            expect(form?.interpreters).toEqual([{ languages: expect.arrayContaining([Locale.NeNp, Locale.JaJp]) }])
+            // Fake doctors add random clinic languages, so find one the clinic does not list.
+            const unlisted = Object.values(Locale).find(language =>
+                language !== Locale.Und && !(form?.languages ?? []).includes(language))!
+            expect(await startsFor([Locale.NeNp])).toEqual([later(0)])
+            expect(await startsFor([Locale.NeNp], 60, 120)).toEqual([later(60)])
+            // A language the clinic does not list is not covered by the all-languages interpreter.
+            expect(await startsFor([unlisted])).toEqual([])
+
+            // Narrow it: Nepali only, 10:00-11:00, one visit at a time.
+            const narrowed = await interpreterService.saveClinicInterpreter({
+                id: interpreter!.id,
+                facilityId,
+                label: 'Nepali line',
+                languages: [Locale.NeNp],
+                capacity: 1,
+                hours: [{ weekday: jstWeekday, startMinute: 600, endMinute: 660 }]
+            }, admin)
+            expect(narrowed.hasErrors).toBe(false)
+            expect(await startsFor([Locale.NeNp])).toEqual([later(0)])
+            expect(await startsFor([Locale.NeNp], 60, 120)).toEqual([])
+
+            const booked = await submit(facilityId, later(0), 'nepali-1@example.com', { spokenLanguages: [Locale.NeNp] })
+            expect(booked.hasErrors).toBe(false)
+            createdSubmissionIds.push(booked.data.id)
+            const detail = await staffBookingService.getBookingSubmissionDetail(booked.data.id, admin)
+            expect([first, second]).toContain(detail?.practitionerId)
+            expect(detail?.spokenLanguages).toEqual([Locale.NeNp])
+            expect(detail?.interpreterLabel).toBe('Nepali line')
+
+            // The other doctor is free, but the interpreter is not.
+            expect(await startsFor([Locale.NeNp])).toEqual([])
+            expect((await submit(facilityId, later(0), 'nepali-2@example.com', {
+                spokenLanguages: [Locale.NeNp]
+            })).hasErrors).toBe(true)
+            const japanese = await submit(facilityId, later(0), 'japanese@example.com', {
+                spokenLanguages: [Locale.JaJp]
+            })
+            expect(japanese.hasErrors).toBe(false)
+            createdSubmissionIds.push(japanese.data.id)
+            const japaneseDetail = await staffBookingService.getBookingSubmissionDetail(japanese.data.id, admin)
+            expect(japaneseDetail?.interpreterLabel).toBeNull()
+
+            const refused = await interpreterService.deleteClinicInterpreter(interpreter!.id, admin)
+            expect(refused.errors?.[0]?.errorCode).toBe(ErrorCode.INTERPRETER_HAS_BOOKINGS)
+        } finally {
+            await clinicAccessService.setBookingInterpretation({ facilityId, offersInterpretation: false }, admin)
+            await availabilityService.setClinicWeeklyHours({
+                facilityId,
+                practitionerId: null,
+                hours: clinicHours.map(row => ({
+                    weekday: row.weekday, startMinute: row.start_minute, endMinute: row.end_minute
+                }))
+            }, 'test|staff', admin)
+            await db.updateTable('facilities')
+                .set({
+                    supported_languages: typeof original.supported_languages === 'string'
+                        ? original.supported_languages
+                        : JSON.stringify(original.supported_languages)
+                })
+                .where('id', '=', facilityId)
+                .execute()
+        }
+    })
+
+    it('lets only an admin turn interpretation on or off, and an owner edit interpreters', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const owner: BookingAccess = {
+            readAll: false,
+            writeAll: false,
+            manageMembersAll: false,
+            memberships: new Map([[facilityId, MEMBERSHIP_ROLE.OWNER]])
+        }
+        const staff: BookingAccess = { ...owner, memberships: new Map([[facilityId, MEMBERSHIP_ROLE.STAFF]]) }
+
+        const refused = await clinicAccessService.setBookingInterpretation(
+            { facilityId, offersInterpretation: true },
+            owner
+        )
+        expect(refused.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+        const ownerView = await clinicAccessService.getBookingSettings(facilityId, owner)
+        expect(ownerView?.offersInterpretation).toBe(false)
+        expect(ownerView?.canChangeInterpretation).toBe(false)
+
+        const allowed = await clinicAccessService.setBookingInterpretation(
+            { facilityId, offersInterpretation: true },
+            admin
+        )
+        expect(allowed.data.canChangeInterpretation).toBe(true)
+        expect((await clinicAccessService.getBookingSettings(facilityId, owner))?.offersInterpretation).toBe(true)
+        const ownerOff = await clinicAccessService.setBookingInterpretation(
+            { facilityId, offersInterpretation: false },
+            owner
+        )
+        expect(ownerOff.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+
+        const added = await interpreterService.saveClinicInterpreter(
+            { facilityId, label: 'Phone service', languages: null, capacity: null, hours: [] },
+            owner
+        )
+        expect(added.hasErrors).toBe(false)
+        expect((await interpreterService.listClinicInterpreters(facilityId, staff)).map(item => item.label))
+            .toContain('Phone service')
+        expect((await interpreterService.saveClinicInterpreter(
+            { facilityId, label: 'Staff try', languages: null, capacity: null, hours: [] },
+            staff
+        )).errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+        expect((await interpreterService.saveClinicInterpreter(
+            { facilityId, label: 'Outsider', languages: null, capacity: null, hours: [] },
+            outsider
+        )).errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+        expect(await interpreterService.listClinicInterpreters(facilityId, outsider)).toEqual([])
+        expect((await interpreterService.saveClinicInterpreter(
+            { facilityId, label: ' ', languages: [], capacity: 0, hours: [] },
+            owner
+        )).errors?.[0]?.field).toBe('label')
+        expect((await interpreterService.saveClinicInterpreter(
+            { facilityId: 'not-a-uuid', label: 'Phone service', languages: null, capacity: null, hours: [] },
+            admin
+        )).errors?.[0]).toMatchObject({ field: 'facilityId', errorCode: ErrorCode.INVALID_INPUT })
+        expect((await interpreterService.deleteClinicInterpreter(added.data.id, outsider)).hasErrors).toBe(true)
+        expect((await interpreterService.deleteClinicInterpreter(added.data.id, owner)).data.isSuccessful).toBe(true)
+
+        await clinicAccessService.setBookingInterpretation({ facilityId, offersInterpretation: false }, admin)
     })
 
     it('lets an owner invite staff but not another owner', async () => {

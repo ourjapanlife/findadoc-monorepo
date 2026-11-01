@@ -1265,6 +1265,19 @@ type BookingForm {
   practitioners: [BookingPractitioner!]!
   """Languages the clinic or one of its doctors speaks, for the patient's language filter."""
   languages: [Locale!]!
+  """True when the clinic has interpretation on and at least one interpreter (#205)."""
+  offersInterpretation: Boolean!
+  """
+  What each interpreter covers, for the doctor list. A doctor who does not speak a chosen
+  language is listed when one interpreter covers every such language. Times come from
+  bookingAvailableStarts, which also checks each interpreter's hours and capacity.
+  """
+  interpreters: [BookingFormInterpreter!]!
+}
+
+"""One interpreter as the Book page sees it: languages only. The label stays with staff."""
+type BookingFormInterpreter {
+  languages: [Locale!]!
 }
 
 """A doctor at a booking clinic."""
@@ -1395,6 +1408,37 @@ type BookingSettings {
   defaultDuration: Int!
   """Intake forms the clinic offers. The first is the default."""
   formDefinitionIds: [String!]!
+  """The clinic may use interpreters (#205). Admins turn it on; it is meant to be a paid add-on."""
+  offersInterpretation: Boolean!
+  """True when this user may turn offersInterpretation on or off. Clinic members may not."""
+  canChangeInterpretation: Boolean!
+  """Languages the clinic lists: its own, its doctors', and its interpreters'."""
+  clinicLanguages: [Locale!]!
+}
+
+"""
+An interpreter, team, or phone service at a clinic (#205). docs/booking-interpretation.md.
+Each empty field means "all": every clinic language, every open time, no limit.
+"""
+type ClinicInterpreter {
+  id: ID!
+  facilityId: ID!
+  """Staff-facing, such as "Nepali line". Patients never see it."""
+  label: String!
+  """Null: every language the clinic lists."""
+  languages: [Locale!]
+  """Visits at once. Null: no limit."""
+  capacity: Int
+  """When this interpreter works, in Japan time. Empty: whenever the clinic is open."""
+  hours: [ClinicInterpreterHours!]!
+}
+
+type ClinicInterpreterHours {
+  """ISO weekday: 1 is Monday, 7 is Sunday."""
+  weekday: Int!
+  """Minutes after midnight JST, on a 30-minute boundary."""
+  startMinute: Int!
+  endMinute: Int!
 }
 
 """What the patient sees on the private cancel page. No answers are returned."""
@@ -1450,6 +1494,8 @@ type BookingSubmissionDetail {
   practitionerNames: [LocalizedName!]!
   """Languages the patient asked for."""
   spokenLanguages: [Locale!]!
+  """The staff label of the interpreter this visit holds (#205). Null: none."""
+  interpreterLabel: String
   service: String
   createdDate: String!
   updatedDate: String!
@@ -1618,6 +1664,25 @@ input UpdateBookingSettingsInput {
   formDefinitionIds: [String!]!
 }
 
+input SaveClinicInterpreterInput {
+  """Omit to add an interpreter."""
+  id: ID
+  facilityId: ID!
+  """1 to 80 characters."""
+  label: String!
+  """Null: every clinic language. Otherwise 1 to 20 languages."""
+  languages: [Locale!]
+  """1 to 20, or null for no limit."""
+  capacity: Int
+  """The whole week. Empty: whenever the clinic is open. Blocks on one day that overlap or touch are joined."""
+  hours: [ClinicWeeklyHoursInput!]!
+}
+
+input SetBookingInterpretationInput {
+  facilityId: ID!
+  offersInterpretation: Boolean!
+}
+
 input SubmitBookingInput {
   """Facility id, clinic site id, or clinic site slug."""
   clinicSiteId: ID!
@@ -1708,6 +1773,9 @@ type Query {
 
   """Booking options for one clinic. Members and admins."""
   bookingSettings(facilityId: ID!): BookingSettings
+
+  """A clinic's interpreters (#205). Owners, staff, and admins."""
+  clinicInterpreters(facilityId: ID!): [ClinicInterpreter!]!
 
   """The patient's own booking, found by the private token from the email link."""
   patientBooking(token: String!): PatientBookingView
@@ -2011,4 +2079,13 @@ type Mutation {
 
   """Change visit lengths and offered forms. Owners and admins."""
   updateBookingSettings(input: UpdateBookingSettingsInput!): BookingSettings!
+
+  """Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on."""
+  setBookingInterpretation(input: SetBookingInterpretationInput!): BookingSettings!
+
+  """Add or change one interpreter, with their whole week (#205). Owners and admins."""
+  saveClinicInterpreter(input: SaveClinicInterpreterInput!): ClinicInterpreter!
+
+  """Remove an interpreter. Refused while an upcoming visit holds them (INTERPRETER_HAS_BOOKINGS)."""
+  deleteClinicInterpreter(id: ID!): DeleteResult!
 }

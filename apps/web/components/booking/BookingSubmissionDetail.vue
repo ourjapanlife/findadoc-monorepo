@@ -144,6 +144,14 @@
                         {{ detail.spokenLanguages.map(language => languageName(language, locale)).join(', ') }}
                     </dd>
                 </div>
+                <div v-if="detail.interpreterLabel !== null && detail.interpreterLabel !== undefined">
+                    <dt class="text-sm text-primary-text-muted">
+                        {{ t('bookingDashboard.interpreter') }}
+                    </dt>
+                    <dd data-testid="booking-detail-interpreter">
+                        {{ detail.interpreterLabel }}
+                    </dd>
+                </div>
             </dl>
 
             <section class="flex flex-col gap-3">

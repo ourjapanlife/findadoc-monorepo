@@ -81,6 +81,8 @@
                         v-model:spoken-languages="spokenLanguages"
                         :practitioners="form.practitioners"
                         :languages="form.languages"
+                        :offers-interpretation="form.offersInterpretation"
+                        :interpreters="form.interpreters"
                     />
                     <BookingSlotPicker
                         v-if="showSlot"

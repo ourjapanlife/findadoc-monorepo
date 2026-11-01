@@ -94,7 +94,8 @@ naming them is a preference the clinic sees on the request.
 The Book page lists the clinic's doctors and languages
 (`BookingForm.practitioners`, `BookingForm.languages`). The patient picks the
 languages they need and a doctor or "any doctor". Only doctors who speak every
-chosen language are listed. "Any doctor" searches each matching doctor's
+chosen language are listed, unless an interpreter covers the rest (see
+Interpretation below). "Any doctor" searches each matching doctor's
 schedule, then clinic time when the clinic covers those languages
 (`facilities.supported_languages`, or a doctor on clinic time who speaks them
 all). Submit takes the first schedule that still has the start free, inside the
@@ -108,6 +109,13 @@ Weekly hours and on the calendar.
 On the calendar, a click on a weekly block closes that one occurrence. In
 **Close time** mode, a drag closes a range and the all-day row closes whole
 Japan days. A click on a closed range reopens it. Every change offers Undo.
+
+### Interpretation
+
+A clinic can book visits in languages its doctors do not speak, through
+interpreters with their own languages, hours, and capacity (#205). Admins turn
+it on; owners describe the interpreters. `booking-interpretation.md` has the
+data model, the matching rules, and examples.
 
 ## Appointment lifecycle
 

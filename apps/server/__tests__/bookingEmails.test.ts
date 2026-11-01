@@ -130,6 +130,8 @@ describe('clinic booking notices', () => {
         bookingId: 'booking-1',
         patientName: 'Nguyen Van A',
         patientEmail: 'patient@example.com',
+        languages: ['ne_NP', 'ja_JP'],
+        interpreterLabel: 'Nepali line',
         dashboardUrl: 'https://www.findadoc.jp/clinic-dashboard/facility-1'
     })
 
@@ -145,6 +147,27 @@ describe('clinic booking notices', () => {
         expect(request.htmlBody.indexOf('lang="ja-JP"')).toBeLessThan(request.htmlBody.indexOf('lang="en-US"'))
         expect(request.textBody).toContain('https://www.findadoc.jp/clinic-dashboard/facility-1')
         expectSameContent(request)
+    })
+
+    it('names the chosen languages and the interpreter, in Japanese and English (#205)', () => {
+        const [japanese, english] = request.textBody.split('\n\n---\n\n')
+        expect(japanese).toContain('ご希望の言語: ネパール語、日本語')
+        expect(english).toContain('Languages requested: Nepali and Japanese')
+        expect(japanese).toContain('通訳: Nepali line')
+        expect(english).toContain('Interpreter: Nepali line')
+        const none = clinicRequestEmail({
+            clinicName: 'Minato Clinic',
+            startsAt,
+            durationMinutes: 30,
+            bookingId: 'booking-1',
+            patientName: 'Nguyen Van A',
+            patientEmail: 'patient@example.com',
+            languages: [],
+            interpreterLabel: null,
+            dashboardUrl: null
+        })
+        expect(none.textBody).not.toContain('Languages requested')
+        expect(none.textBody).not.toContain('Interpreter')
     })
 
     it('tells the clinic in Japanese and English when the patient cancels', () => {
