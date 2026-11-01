@@ -13,6 +13,7 @@ import { envVariables } from '../utils/environmentVariables.js'
 import { isAllowedApiOrigin } from './apiCors.js'
 import { apiRateLimitOptions } from './apiRateLimit.js'
 import { buildUserContext, initializeAuth } from './auth.js'
+import { withGrantedRoles } from './accounts/roleGrants.js'
 import { createLoaders, type ApiContext } from './loaders.js'
 import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
@@ -139,10 +140,15 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
         handler: fastifyApolloHandler(apolloServer, {
             //this is where we add the Auth0 user authentication to the context. We can access this context in the resolvers
             //each request also gets its own batch loaders for relation ids (see loaders.ts)
-            context: async (request): Promise<ApiContext> => ({
-                ...await buildUserContext(request),
-                loaders: createLoaders()
-            })
+            // Admin, Moderator, and Dev come from user_role_grants (src/accounts/roleGrants.ts).
+            context: async (request): Promise<ApiContext> => {
+                const userContext = await buildUserContext(request)
+                return {
+                    ...userContext,
+                    user: await withGrantedRoles(userContext.user),
+                    loaders: createLoaders()
+                }
+            }
         })
     })
 

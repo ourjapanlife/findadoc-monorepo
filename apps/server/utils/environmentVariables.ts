@@ -17,6 +17,9 @@ const envVariables = {
     logLevel: () => process.env.LOG_LEVEL,
     authAuth0APIKey: () => process.env.AUTH_AUTH0_API_KEY as string,
     authAuth0URL: () => process.env.AUTH_AUTH0_URL as string,
+    // A machine-to-machine app with read:users and read:roles. Only utils/importAuth0Roles.ts reads these.
+    auth0ManagementClientId: () => process.env.AUTH0_MANAGEMENT_CLIENT_ID,
+    auth0ManagementClientSecret: () => process.env.AUTH0_MANAGEMENT_CLIENT_SECRET,
     authGithubClientId: () => process.env.AUTH_GITHUB_CLIENT_ID as string,
     authGithubClientSecret: () => process.env.AUTH_GITHUB_CLIENT_SECRET as string,
     googleAPIKey: () => process.env.GOOGLE_API_KEY,
