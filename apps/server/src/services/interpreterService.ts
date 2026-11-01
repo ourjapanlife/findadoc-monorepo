@@ -2,6 +2,7 @@ import type { ClinicInterpreter, DeleteResult, Locale, SaveClinicInterpreterInpu
 import { canManageFacility, canReadFacility, type BookingAccess } from '../booking/access.js'
 import { listInterpreters, type Interpreter } from '../booking/interpretation.js'
 import { SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
+import { lockClinicBookings } from '../booking/target.js'
 import { sql } from 'kysely'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
@@ -58,6 +59,8 @@ export async function saveClinicInterpreter(
 
     try {
         const savedId = await db.transaction().execute(async transaction => {
+            // The same lock as submit, so a booking never reads half-saved settings (#205).
+            await lockClinicBookings(transaction, value.facilityId)
             let id = value.id
             if (id === null) {
                 const row = await transaction.insertInto('clinic_interpreters')
@@ -134,7 +137,7 @@ export async function deleteClinicInterpreter(id: string, access: BookingAccess)
         return failure('id', ErrorCode.FORBIDDEN, 403)
     }
     const outcome = await db.transaction().execute(async transaction => {
-        await sql`SELECT pg_advisory_xact_lock(hashtext(${row.facility_id}))`.execute(transaction)
+        await lockClinicBookings(transaction, row.facility_id)
         const upcoming = await transaction.selectFrom('booking_appointments')
             .select('id')
             .where('interpreter_id', '=', id)

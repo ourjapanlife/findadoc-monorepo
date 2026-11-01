@@ -1,6 +1,7 @@
 import type { BookingAccess } from './access.js'
 import { SLOT_HOLDING_STATUSES } from './lifecycle.js'
 import { expandWeeklyHours, type TimeWindow, type WeeklyHours } from './schedule.js'
+import { lockClinicBookings } from './target.js'
 import { db } from '../kyselyClient.js'
 
 /**
@@ -37,11 +38,11 @@ export function canChangeInterpretation(access: BookingAccess): boolean {
     return access.manageMembersAll
 }
 
-export async function offersInterpretation(facilityId: string | null): Promise<boolean> {
+export async function offersInterpretation(facilityId: string | null, executor: Executor = db): Promise<boolean> {
     if (facilityId === null) {
         return false
     }
-    const row = await db.selectFrom('booking_interpretation')
+    const row = await executor.selectFrom('booking_interpretation')
         .select('facility_id')
         .where('facility_id', '=', facilityId)
         .executeTakeFirst()
@@ -76,25 +77,30 @@ export async function listInterpreters(facilityId: string, executor: Executor = 
     }))
 }
 
-/** Interpreters a patient may book with: none unless the clinic has interpretation on. */
-export async function activeInterpreters(facilityId: string | null): Promise<Interpreter[]> {
-    if (facilityId === null || !await offersInterpretation(facilityId)) {
+/**
+ * Interpreters a patient may book with: none unless the clinic has interpretation on.
+ * Submit reads them with its transaction, after the clinic lock (lockClinicBookings).
+ */
+export async function activeInterpreters(facilityId: string | null, executor: Executor = db): Promise<Interpreter[]> {
+    if (facilityId === null || !await offersInterpretation(facilityId, executor)) {
         return []
     }
-    return listInterpreters(facilityId)
+    return listInterpreters(facilityId, executor)
 }
 
 /**
  * Turns interpretation on or off. Callers check canChangeInterpretation first.
  * Turning it on adds one interpreter with every field empty (every language, all
  * open times, no limit) when the clinic has none. Turning it off keeps the rows.
+ * It holds the clinic's booking lock, so a submit sees the change before or after.
  */
 export async function setInterpretation(facilityId: string, enabled: boolean): Promise<void> {
-    if (!enabled) {
-        await db.deleteFrom('booking_interpretation').where('facility_id', '=', facilityId).execute()
-        return
-    }
     await db.transaction().execute(async transaction => {
+        await lockClinicBookings(transaction, facilityId)
+        if (!enabled) {
+            await transaction.deleteFrom('booking_interpretation').where('facility_id', '=', facilityId).execute()
+            return
+        }
         await transaction.insertInto('booking_interpretation')
             .values({ facility_id: facilityId, source: INTERPRETATION_SOURCE.ADMIN })
             .onConflict(conflict => conflict.column('facility_id').doNothing())

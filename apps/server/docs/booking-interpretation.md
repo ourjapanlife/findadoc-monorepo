@@ -106,8 +106,11 @@ Rules that keep the mix-and-match small:
 - **The interpreter's hours cover the whole visit.** A 60-minute visit at 13:30
   needs the interpreter until 14:30.
 - **Capacity counts held visits** (`requested` and `confirmed`) with that
-  `interpreter_id`. Submit counts them inside the clinic's advisory lock, so two
-  patients cannot take the last place at once.
+  `interpreter_id`. Submit takes the clinic's booking lock, then reads the
+  interpreters and counts their visits. Saving or removing an interpreter and
+  turning interpretation on or off take the same lock (`lockClinicBookings`), so
+  a booking sees the settings from before or after a change, never half of one,
+  and two patients cannot take the last place at once.
 - **Clinic closures** close interpreted visits too, because the doctor schedule
   is closed. An interpreter has no closures of their own; staff change the hours.
 - **A chosen doctor** keeps their schedule. If they do not speak a chosen

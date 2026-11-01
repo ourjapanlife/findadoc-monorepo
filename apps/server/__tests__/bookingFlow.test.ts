@@ -508,6 +508,21 @@ describe('booking flow', () => {
             .where('id', '=', facilityId)
             .executeTakeFirstOrThrow()
         await db.updateTable('facilities').set({ supported_languages: '[]' }).where('id', '=', facilityId).execute()
+        // Fake doctors on clinic time speak random languages, so close clinic time around
+        // this test's hours: only the doctors above can take a visit.
+        const clinicHours = await db.selectFrom('clinic_weekly_hours')
+            .select(['weekday', 'start_minute', 'end_minute'])
+            .where('facility_id', '=', facilityId)
+            .where('practitioner_id', 'is', null)
+            .execute()
+        await availabilityService.setClinicWeeklyHours({ facilityId, practitionerId: null, hours: [] }, 'test|staff', admin)
+        // An earlier test paints clinic-time windows; none may cover this test's hours.
+        await db.deleteFrom('clinic_availability_windows')
+            .where('facility_id', '=', facilityId)
+            .where('practitioner_id', 'is', null)
+            .where('starts_at', '<', later(180))
+            .where('ends_at', '>', later(-60))
+            .execute()
 
         const startsFor = (languages: Locale[], from = 0, to = 60) => bookingService.getAvailableBookingStarts(
             facilityId, later(from), later(to), 60, undefined, languages
@@ -519,11 +534,15 @@ describe('booking flow', () => {
             await clinicAccessService.setBookingInterpretation({ facilityId, offersInterpretation: true }, admin)
             const [interpreter] = await interpreterService.listClinicInterpreters(facilityId, admin)
             expect(interpreter).toMatchObject({ languages: null, capacity: null, hours: [] })
-            expect((await bookingService.getBookingForm(facilityId))?.interpreters)
-                .toEqual([{ languages: expect.arrayContaining([Locale.NeNp, Locale.JaJp]) }])
+            const form = await bookingService.getBookingForm(facilityId)
+            expect(form?.interpreters).toEqual([{ languages: expect.arrayContaining([Locale.NeNp, Locale.JaJp]) }])
+            // Fake doctors add random clinic languages, so find one the clinic does not list.
+            const unlisted = Object.values(Locale).find(language =>
+                language !== Locale.Und && !(form?.languages ?? []).includes(language))!
             expect(await startsFor([Locale.NeNp])).toEqual([later(0)])
             expect(await startsFor([Locale.NeNp], 60, 120)).toEqual([later(60)])
-            expect(await startsFor([Locale.RuRu])).toEqual([])
+            // A language the clinic does not list is not covered by the all-languages interpreter.
+            expect(await startsFor([unlisted])).toEqual([])
 
             // Narrow it: Nepali only, 10:00-11:00, one visit at a time.
             const narrowed = await interpreterService.saveClinicInterpreter({
@@ -563,6 +582,13 @@ describe('booking flow', () => {
             expect(refused.errors?.[0]?.errorCode).toBe(ErrorCode.INTERPRETER_HAS_BOOKINGS)
         } finally {
             await clinicAccessService.setBookingInterpretation({ facilityId, offersInterpretation: false }, admin)
+            await availabilityService.setClinicWeeklyHours({
+                facilityId,
+                practitionerId: null,
+                hours: clinicHours.map(row => ({
+                    weekday: row.weekday, startMinute: row.start_minute, endMinute: row.end_minute
+                }))
+            }, 'test|staff', admin)
             await db.updateTable('facilities')
                 .set({
                     supported_languages: typeof original.supported_languages === 'string'
@@ -625,6 +651,10 @@ describe('booking flow', () => {
             { facilityId, label: ' ', languages: [], capacity: 0, hours: [] },
             owner
         )).errors?.[0]?.field).toBe('label')
+        expect((await interpreterService.saveClinicInterpreter(
+            { facilityId: 'not-a-uuid', label: 'Phone service', languages: null, capacity: null, hours: [] },
+            admin
+        )).errors?.[0]).toMatchObject({ field: 'facilityId', errorCode: ErrorCode.INVALID_INPUT })
         expect((await interpreterService.deleteClinicInterpreter(added.data.id, outsider)).hasErrors).toBe(true)
         expect((await interpreterService.deleteClinicInterpreter(added.data.id, owner)).data.isSuccessful).toBe(true)
 

@@ -56,10 +56,14 @@ export function validateClinicInterpreter(
     if (input.hours.length > MAX_INTERPRETER_HOUR_BLOCKS || !input.hours.every(isWeeklyHours)) {
         return { field: 'hours' }
     }
+    const facilityId = input.facilityId.trim()
+    if (!UUID_REGEX.test(facilityId)) {
+        return { field: 'facilityId' }
+    }
     return {
         value: {
             id,
-            facilityId: input.facilityId.trim(),
+            facilityId,
             label,
             languages,
             capacity,

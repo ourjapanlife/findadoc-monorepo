@@ -51,7 +51,12 @@ import {
     resolveAppointmentDuration,
     slotStepMinutes
 } from '../booking/schedule.js'
-import { bookingLockKey, resolvePublicBookingTarget, type BookingTarget } from '../booking/target.js'
+import {
+    bookingLockKey,
+    lockClinicBookings,
+    resolvePublicBookingTarget,
+    type BookingTarget
+} from '../booking/target.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import {
@@ -100,12 +105,15 @@ export async function getBookingForm(
         practitioners: context.practitioners,
         languages: context.offered,
         offersInterpretation: context.coverage.length > 0,
-        interpreters: context.coverage.map(interpreter => ({ languages: interpreter.languages as Locale[] }))
+        // Only languages the clinic offers, all known Locale values, so a stray stored value cannot break the page.
+        interpreters: context.coverage.map(interpreter => ({
+            languages: context.offered.filter(language => interpreter.languages.includes(language))
+        }))
     }
 }
 
 /** The clinic's doctors, languages, and the interpreters a patient may book with (#205). */
-async function choiceContext(target: BookingTarget): Promise<{
+async function choiceContext(target: BookingTarget, executor: AvailabilityExecutor = db): Promise<{
     practitioners: BookingPractitioner[]
     facilityLanguages: string[]
     offered: Locale[]
@@ -115,7 +123,7 @@ async function choiceContext(target: BookingTarget): Promise<{
     const [practitioners, facilityLanguages, interpreters] = await Promise.all([
         listFacilityPractitioners(target.facilityId),
         facilityLanguagesFor(target.facilityId),
-        activeInterpreters(target.facilityId)
+        activeInterpreters(target.facilityId, executor)
     ])
     const offered = clinicLanguages(practitioners, facilityLanguages, interpreters.map(item => item.languages))
     return {
@@ -133,14 +141,15 @@ type LaneChoice = { lanes: ScheduleLane[], languages: string[], interpreters: Ma
 async function lanesForChoice(
     target: BookingTarget,
     practitionerIdInput: string | null | undefined,
-    languagesInput: readonly string[] | null | undefined
+    languagesInput: readonly string[] | null | undefined,
+    executor: AvailabilityExecutor = db
 ): Promise<LaneChoice | undefined> {
     const languages = parseRequestedLanguages(languagesInput)
     if (languages === undefined) {
         return undefined
     }
     const practitionerId = practitionerIdInput?.trim() || null
-    const context = await choiceContext(target)
+    const context = await choiceContext(target, executor)
     const lanes = scheduleLanes({
         practitioners: context.practitioners,
         facilityLanguages: context.facilityLanguages,
@@ -532,22 +541,27 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
 
     const patientToken = newPatientToken()
     let appointmentId: string | null = null
-    let inserted: { id: string, created_date: string, interpreterId: string | null }
+    let inserted: { id: string, created_date: string, interpreterLabel: string | null }
     try {
         inserted = await db.transaction().execute(async transaction => {
-            await sql`SELECT pg_advisory_xact_lock(hashtext(${bookingLockKey(target)}))`.execute(transaction)
+            await lockClinicBookings(transaction, bookingLockKey(target))
+            // Plan again under the lock: an interpreter save or the on/off switch takes the
+            // same lock, so these settings cannot change before the visit is held (#205).
+            const locked = await lanesForChoice(target, practitionerId, input.spokenLanguages, transaction)
+            const openCache: OpenStartsCache = new Map()
 
             // The first schedule that still has this start free takes the visit.
             let lane: ScheduleLane | undefined
-            for (const candidate of choice.lanes) {
+            for (const candidate of locked?.lanes ?? []) {
                 const open = await laneStarts({
                     target,
                     from: startsAt,
                     to: endsAt,
                     durationMinutes,
                     lane: candidate,
-                    interpreters: choice.interpreters,
-                    executor: transaction
+                    interpreters: locked?.interpreters ?? new Map(),
+                    executor: transaction,
+                    openCache
                 })
                 if (open.some(start => start.getTime() === startsAt.getTime())) {
                     lane = candidate
@@ -617,7 +631,10 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                 .executeTakeFirstOrThrow()
             appointmentId = appointment.id
 
-            return { id: row.id, created_date: row.created_date, interpreterId: lane.interpreterId }
+            const interpreterLabel = lane.interpreterId === null
+                ? null
+                : locked?.interpreters.get(lane.interpreterId)?.label ?? null
+            return { id: row.id, created_date: row.created_date, interpreterLabel }
         })
     } catch (error) {
         if (error instanceof Error && error.message === 'BOOKING_UPLOAD_LINK') {
@@ -645,9 +662,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         locale: input.locale,
         patientToken: patientToken.token,
         languages: choice.languages,
-        interpreterLabel: inserted.interpreterId === null
-            ? null
-            : choice.interpreters.get(inserted.interpreterId)?.label ?? null
+        interpreterLabel: inserted.interpreterLabel
     })
 
     return {
@@ -770,6 +785,9 @@ async function listAvailableStartsForTarget(
     })
 }
 
+/** Open starts by schedule (practitioner id, null for clinic time), for one call. */
+type OpenStartsCache = Map<string | null, Date[]>
+
 /**
  * Open starts on one lane: the schedule's open starts and, when the lane holds an
  * interpreter, only those inside the interpreter's hours and under their capacity
@@ -783,16 +801,22 @@ async function laneStarts(input: {
     lane: ScheduleLane
     interpreters: ReadonlyMap<string, Interpreter>
     executor?: AvailabilityExecutor
+    /** One per operation: interpreted lanes reuse their schedule's starts. */
+    openCache?: OpenStartsCache
 }): Promise<Date[]> {
     const executor = input.executor ?? db
-    const open = await listAvailableStartsForTarget(
-        input.target,
-        input.from,
-        input.to,
-        input.durationMinutes,
-        input.lane.practitionerId,
-        executor
-    )
+    let open = input.openCache?.get(input.lane.practitionerId)
+    if (open === undefined) {
+        open = await listAvailableStartsForTarget(
+            input.target,
+            input.from,
+            input.to,
+            input.durationMinutes,
+            input.lane.practitionerId,
+            executor
+        )
+        input.openCache?.set(input.lane.practitionerId, open)
+    }
     if (input.lane.interpreterId === null) {
         return open
     }
@@ -843,8 +867,11 @@ export async function getAvailableBookingStarts(
     }
     // One start may be free on several schedules; the patient sees it once.
     const starts = new Set<number>()
+    const openCache: OpenStartsCache = new Map()
     for (const lane of choice.lanes) {
-        const open = await laneStarts({ target, from, to, durationMinutes, lane, interpreters: choice.interpreters })
+        const open = await laneStarts({
+            target, from, to, durationMinutes, lane, interpreters: choice.interpreters, openCache
+        })
         for (const start of open) {
             starts.add(start.getTime())
         }
