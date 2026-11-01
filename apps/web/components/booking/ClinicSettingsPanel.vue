@@ -185,6 +185,13 @@
                     {{ t('clinicDashboard.settings.interpretationLocked') }}
                 </template>
             </p>
+            <ClinicInterpretersEditor
+                v-if="settings.offersInterpretation"
+                :key="interpretersKey"
+                class="mt-3 border-t border-accent-bg pt-5"
+                :facility-id="props.facilityId"
+                :clinic-languages="settings.clinicLanguages"
+            />
         </section>
     </div>
 </template>
@@ -193,6 +200,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { BookingFormType, BookingSettings } from '@findadoc/graphql'
+import ClinicInterpretersEditor from '~/components/booking/ClinicInterpretersEditor.vue'
 import ClinicWeeklyHoursEditor from '~/components/booking/ClinicWeeklyHoursEditor.vue'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
@@ -220,6 +228,8 @@ const loadError = ref(false)
 const savingSettings = ref(false)
 const savingInterpretation = ref(false)
 const interpretationHelpId = 'clinic-settings-interpretation-help'
+// Turning interpretation on can add the default interpreter, so the list reloads.
+const interpretersKey = ref(0)
 
 const sortedDurations = computed(() => [...durations.value].sort((a, b) => a - b))
 
@@ -289,6 +299,7 @@ async function toggleInterpretation(event: Event): Promise<void> {
         return
     }
     settings.value = saved
+    interpretersKey.value += 1
     toast.success(t('clinicDashboard.saved'))
 }
 

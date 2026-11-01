@@ -18,7 +18,13 @@ import {
     type MembershipRole
 } from '../booking/access.js'
 import { formSourceById, listFormSources } from '../booking/formDefinitions.js'
-import { canChangeInterpretation, offersInterpretation, setInterpretation } from '../booking/interpretation.js'
+import {
+    canChangeInterpretation,
+    listInterpreters,
+    offersInterpretation,
+    setInterpretation
+} from '../booking/interpretation.js'
+import { clinicLanguages, facilityLanguagesFor, listFacilityPractitioners } from '../booking/practitioners.js'
 import { APPOINTMENT_STATUS } from '../booking/lifecycle.js'
 import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedule.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
@@ -265,9 +271,12 @@ export async function getBookingSettings(facilityId: string, access: BookingAcce
 }
 
 async function bookingSettingsFor(facilityId: string, access: BookingAccess): Promise<BookingSettings> {
-    const [settings, interpretation] = await Promise.all([
+    const [settings, interpretation, practitioners, facilityLanguages, interpreters] = await Promise.all([
         settingsForFacility(facilityId),
-        offersInterpretation(facilityId)
+        offersInterpretation(facilityId),
+        listFacilityPractitioners(facilityId),
+        facilityLanguagesFor(facilityId),
+        listInterpreters(facilityId)
     ])
     return {
         facilityId,
@@ -275,7 +284,8 @@ async function bookingSettingsFor(facilityId: string, access: BookingAccess): Pr
         defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,
         offersInterpretation: interpretation,
-        canChangeInterpretation: canChangeInterpretation(access)
+        canChangeInterpretation: canChangeInterpretation(access),
+        clinicLanguages: clinicLanguages(practitioners, facilityLanguages, interpreters.map(item => item.languages))
     }
 }
 
@@ -353,15 +363,6 @@ export async function updateBookingSettings(
         }))
         .execute()
 
-    return {
-        data: {
-            facilityId: input.facilityId,
-            allowedDurations: durations,
-            defaultDuration,
-            formDefinitionIds: formIds,
-            offersInterpretation: await offersInterpretation(input.facilityId),
-            canChangeInterpretation: canChangeInterpretation(access)
-        },
-        hasErrors: false
-    }
+    const saved = await bookingSettingsFor(input.facilityId, access)
+    return { data: { ...saved, defaultDuration }, hasErrors: false }
 }

@@ -1,32 +1,32 @@
 import { expect } from 'chai'
 import { Locale, type BookingPractitioner } from '@findadoc/graphql'
-import { interpretationCovers, practitionersForLanguages } from '@/utils/booking/practitioners'
+import { interpreterCoversDoctor, practitionersForLanguages } from '@/utils/booking/practitioners'
 
 const doctor = (id: string, spokenLanguages: Locale[]): BookingPractitioner => ({
     id, names: [], spokenLanguages, specialties: [], hasOwnSchedule: true
 })
 
 describe('booking doctor choice by language (#205)', () => {
-    const doctors = [doctor('ja', [Locale.JaJp]), doctor('ne', [Locale.NeNp, Locale.JaJp])]
-    const clinicLanguages = [Locale.JaJp, Locale.NeNp]
+    const doctors = [doctor('ja', [Locale.JaJp]), doctor('jaEn', [Locale.JaJp, Locale.EnUs])]
+    const nepali = { languages: [Locale.NeNp] }
+    const phone = { languages: [Locale.JaJp, Locale.EnUs, Locale.NeNp] }
+    const ids = (list: BookingPractitioner[]) => list.map(item => item.id)
 
-    it('lists only doctors who speak every chosen language without interpretation', () => {
-        const interpreted = interpretationCovers(false, clinicLanguages, [Locale.NeNp])
-        expect(interpreted).to.equal(false)
-        expect(practitionersForLanguages(doctors, [Locale.NeNp], interpreted).map(item => item.id))
-            .to.deep.equal(['ne'])
+    it('lists only doctors who speak every chosen language when the clinic has no interpreters', () => {
+        expect(ids(practitionersForLanguages(doctors, [Locale.EnUs], []))).to.deep.equal(['jaEn'])
+        expect(ids(practitionersForLanguages(doctors, [Locale.NeNp], []))).to.deep.equal([])
     })
 
-    it('lists every doctor for a clinic language when the clinic offers interpretation', () => {
-        const interpreted = interpretationCovers(true, clinicLanguages, [Locale.NeNp])
-        expect(interpreted).to.equal(true)
-        expect(practitionersForLanguages(doctors, [Locale.NeNp], interpreted).map(item => item.id))
-            .to.deep.equal(['ja', 'ne'])
+    it('lists a doctor when one interpreter covers what they do not speak', () => {
+        expect(ids(practitionersForLanguages(doctors, [Locale.NeNp], [nepali]))).to.deep.equal(['ja', 'jaEn'])
+        // English and Nepali: only jaEn is covered by the Nepali interpreter alone.
+        expect(ids(practitionersForLanguages(doctors, [Locale.EnUs, Locale.NeNp], [nepali]))).to.deep.equal(['jaEn'])
+        expect(ids(practitionersForLanguages(doctors, [Locale.EnUs, Locale.NeNp], [nepali, phone])))
+            .to.deep.equal(['ja', 'jaEn'])
     })
 
-    it('still narrows for a language the clinic does not list', () => {
-        const interpreted = interpretationCovers(true, clinicLanguages, [Locale.NeNp, Locale.KoKr])
-        expect(interpreted).to.equal(false)
-        expect(practitionersForLanguages(doctors, [Locale.NeNp, Locale.KoKr], interpreted)).to.deep.equal([])
+    it('needs a real gap for an interpreter to matter', () => {
+        expect(interpreterCoversDoctor([Locale.JaJp], [Locale.JaJp], [phone])).to.equal(false)
+        expect(interpreterCoversDoctor([Locale.JaJp], [Locale.KoKr], [phone])).to.equal(false)
     })
 })

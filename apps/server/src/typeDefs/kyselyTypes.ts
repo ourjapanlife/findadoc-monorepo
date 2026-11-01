@@ -231,15 +231,34 @@ export interface BookingSettingsTable {
     updated_date: Generated<string>
 }
 
-/**
- * A facility that offers interpretation (#205). A row means every clinic language
- * is available with every doctor. source is who turned it on.
- */
+/** A facility that may use interpreters (#205). source is who turned it on. docs/booking-interpretation.md */
 export interface BookingInterpretationTable {
     facility_id: string
     source: 'pilot' | 'admin'
     created_date: Generated<string>
     updated_date: Generated<string>
+}
+
+/** An interpreter, team, or service at a clinic. Null languages: every clinic language. Null capacity: no limit. */
+export interface ClinicInterpretersTable {
+    id: Generated<string>
+    facility_id: string
+    /** Staff-facing only. */
+    label: string
+    languages: string[] | null
+    capacity: number | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
+/** When an interpreter works, in JST. No rows: whenever the clinic is open. */
+export interface ClinicInterpreterHoursTable {
+    id: Generated<string>
+    interpreter_id: string
+    weekday: number
+    start_minute: number
+    end_minute: number
+    created_date: Generated<string>
 }
 
 /** Patient booking intake. answers is the scalar map; files are booking_uploads rows. */
@@ -330,6 +349,8 @@ export interface BookingAppointmentsTable {
     booking_submission_id: string | null
     /** The schedule this visit holds time on. Null is clinic time. */
     practitioner_id: string | null
+    /** The interpreter this visit holds (#205). Null is none. */
+    interpreter_id: ColumnType<string | null, string | null | undefined, string | null>
     starts_at: string
     ends_at: string
     duration_minutes: number
@@ -364,6 +385,8 @@ export interface Database {
     clinic_site_locales: ClinicSiteLocalesTable
     booking_settings: BookingSettingsTable
     booking_interpretation: BookingInterpretationTable
+    clinic_interpreters: ClinicInterpretersTable
+    clinic_interpreter_hours: ClinicInterpreterHoursTable
     booking_submissions: BookingSubmissionsTable
     booking_uploads: BookingUploadsTable
     clinic_availability_windows: ClinicAvailabilityWindowsTable

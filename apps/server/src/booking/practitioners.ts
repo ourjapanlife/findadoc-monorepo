@@ -6,10 +6,14 @@ import { db } from '../kyselyClient.js'
  *
  * A schedule ("lane") is a doctor's own weekly hours and windows, or the clinic's
  * (practitionerId null). A doctor without rows of their own books on the clinic
- * schedule; naming them is a preference the clinic sees on the request.
+ * schedule; naming them is a preference the clinic sees on the request. A lane may
+ * also hold one interpreter (#205, docs/booking-interpretation.md).
  */
 
-export type ScheduleLane = { practitionerId: string | null }
+export type ScheduleLane = { practitionerId: string | null, interpreterId: string | null }
+
+/** An interpreter's languages with null already read as every clinic language. */
+export type InterpreterCoverage = { id: string, languages: readonly string[] }
 
 export const MAX_REQUESTED_LANGUAGES = 10
 
@@ -33,79 +37,124 @@ function speaksAll(spoken: readonly string[], requested: readonly string[]): boo
     return requested.every(language => spoken.includes(language))
 }
 
+/** Requested languages this schedule does not speak. */
+export function languageGap(spoken: readonly string[], requested: readonly string[]): string[] {
+    return requested.filter(language => !spoken.includes(language))
+}
+
+/** Interpreters who cover every language in the gap, in the clinic's order. One interpreter per visit. */
+export function coveringInterpreters(
+    interpreters: readonly InterpreterCoverage[],
+    gap: readonly string[]
+): InterpreterCoverage[] {
+    return gap.length === 0 ? [] : interpreters.filter(interpreter => speaksAll(interpreter.languages, gap))
+}
+
+function interpretedLanes(
+    practitionerId: string | null,
+    interpreters: readonly InterpreterCoverage[],
+    gap: readonly string[]
+): ScheduleLane[] {
+    return coveringInterpreters(interpreters, gap)
+        .map(interpreter => ({ practitionerId, interpreterId: interpreter.id }))
+}
+
 /**
  * The schedules to search, in the order submit tries them. Undefined when the
  * chosen doctor does not practise at this clinic.
  *
- * With no doctor chosen: every doctor with their own schedule who speaks every
- * requested language, then the clinic schedule when the clinic covers those
- * languages, either itself (facilities.supported_languages) or through one doctor
- * on the clinic schedule who speaks them all. When the clinic's interpretation
- * covers the request, every doctor and the clinic schedule stay bookable.
+ * With no doctor chosen, native lanes come first: every doctor with their own
+ * schedule who speaks every requested language, then the clinic schedule when the
+ * clinic covers them (facilities.supported_languages, or one doctor on clinic time
+ * who speaks them all). Then interpreted lanes: each other doctor schedule and
+ * clinic time, paired with each interpreter who covers what that schedule does not
+ * speak. Interpreters are empty when the clinic has interpretation off.
  */
 export function scheduleLanes(input: {
     practitioners: readonly BookingPractitioner[]
     facilityLanguages: readonly string[]
     practitionerId: string | null
     languages: readonly string[]
-    offersInterpretation: boolean
+    interpreters: readonly InterpreterCoverage[]
 }): ScheduleLane[] | undefined {
     if (input.practitionerId !== null) {
-        const chosen = input.practitioners.find(practitioner => practitioner.id === input.practitionerId)
-        if (chosen === undefined) {
-            return undefined
-        }
-        return [{ practitionerId: chosen.hasOwnSchedule ? chosen.id : null }]
+        return chosenDoctorLanes(input)
     }
 
-    const languages = interpretationCovers(input) ? [] : input.languages
-    const lanes: ScheduleLane[] = input.practitioners
-        .filter(practitioner => practitioner.hasOwnSchedule && speaksAll(practitioner.spokenLanguages, languages))
-        .map(practitioner => ({ practitionerId: practitioner.id }))
+    const ownSchedules = input.practitioners.filter(practitioner => practitioner.hasOwnSchedule)
+    const native: ScheduleLane[] = ownSchedules
+        .filter(practitioner => speaksAll(practitioner.spokenLanguages, input.languages))
+        .map(practitioner => ({ practitionerId: practitioner.id, interpreterId: null }))
+    const interpreted: ScheduleLane[] = ownSchedules.flatMap(practitioner =>
+        interpretedLanes(
+            practitioner.id,
+            input.interpreters,
+            languageGap(practitioner.spokenLanguages, input.languages)
+        ))
 
-    const clinicCovers = languages.length === 0
-        || speaksAll(input.facilityLanguages, languages)
+    const clinicCovers = input.languages.length === 0
+        || speaksAll(input.facilityLanguages, input.languages)
         || input.practitioners.some(practitioner =>
-            !practitioner.hasOwnSchedule && speaksAll(practitioner.spokenLanguages, languages))
+            !practitioner.hasOwnSchedule && speaksAll(practitioner.spokenLanguages, input.languages))
     if (clinicCovers) {
-        lanes.push({ practitionerId: null })
+        native.push({ practitionerId: null, interpreterId: null })
+    } else {
+        interpreted.push(...interpretedLanes(
+            null,
+            input.interpreters,
+            languageGap(input.facilityLanguages, input.languages)
+        ))
     }
-    return lanes
+    return [...native, ...interpreted]
 }
 
 /**
- * True when the clinic offers interpretation and lists every requested language,
- * so any doctor can see the patient in them (#205). A language the clinic does not
- * list still narrows the doctors as usual. Interpretation covers every listed
- * language at every open time today; per-language interpreter hours would be
- * checked here.
+ * A chosen doctor books on their own schedule, or on clinic time when they have
+ * none. When they do not speak a requested language and an interpreter covers it,
+ * only interpreted lanes are tried. Otherwise the choice stands, as before #205.
  */
-export function interpretationCovers(input: {
+function chosenDoctorLanes(input: {
     practitioners: readonly BookingPractitioner[]
-    facilityLanguages: readonly string[]
+    practitionerId: string | null
     languages: readonly string[]
-    offersInterpretation: boolean
-}): boolean {
-    if (!input.offersInterpretation) {
-        return false
+    interpreters: readonly InterpreterCoverage[]
+}): ScheduleLane[] | undefined {
+    const chosen = input.practitioners.find(practitioner => practitioner.id === input.practitionerId)
+    if (chosen === undefined) {
+        return undefined
     }
-    const offered: readonly string[] = clinicLanguages(input.practitioners, input.facilityLanguages)
-    return speaksAll(offered, input.languages)
+    const practitionerId = chosen.hasOwnSchedule ? chosen.id : null
+    const interpreted = interpretedLanes(
+        practitionerId,
+        input.interpreters,
+        languageGap(chosen.spokenLanguages, input.languages)
+    )
+    return interpreted.length > 0 ? interpreted : [{ practitionerId, interpreterId: null }]
 }
 
-/** Languages the clinic can offer: its own list, then each doctor's. */
+/** Languages the clinic can offer: its own list, each doctor's, then each interpreter's. */
 export function clinicLanguages(
     practitioners: readonly BookingPractitioner[],
-    facilityLanguages: readonly string[]
+    facilityLanguages: readonly string[],
+    interpreterLanguages: readonly (readonly string[] | null)[] = []
 ): Locale[] {
     const languages: Locale[] = []
     const spoken = practitioners.flatMap(practitioner => practitioner.spokenLanguages)
-    for (const language of [...facilityLanguages, ...spoken]) {
+    const interpreted = interpreterLanguages.flatMap(list => list ?? [])
+    for (const language of [...facilityLanguages, ...spoken, ...interpreted]) {
         if (LOCALES.has(language) && language !== Locale.Und && !languages.includes(language as Locale)) {
             languages.push(language as Locale)
         }
     }
     return languages
+}
+
+/** Each interpreter's languages, with null read as every language the clinic offers. */
+export function interpreterCoverage(
+    interpreters: readonly { id: string, languages: readonly string[] | null }[],
+    offered: readonly string[]
+): InterpreterCoverage[] {
+    return interpreters.map(interpreter => ({ id: interpreter.id, languages: interpreter.languages ?? offered }))
 }
 
 function stringList(value: unknown): string[] {

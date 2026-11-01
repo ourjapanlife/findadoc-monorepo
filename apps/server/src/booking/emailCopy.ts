@@ -311,6 +311,7 @@ type ClinicCopy = {
     patientName: string
     patientEmail: string
     languages: string
+    interpreter: string
     reason: string
     japanTime: string
     dashboardLink: string
@@ -332,6 +333,7 @@ const CLINIC_COPY: Record<typeof CLINIC_LOCALES[number], ClinicCopy> = {
         patientName: '患者さんのお名前',
         patientEmail: 'メールアドレス',
         languages: 'ご希望の言語',
+        interpreter: '通訳',
         reason: 'キャンセルの理由',
         japanTime: '日本時間',
         dashboardLink: '予約ダッシュボード:',
@@ -348,6 +350,7 @@ const CLINIC_COPY: Record<typeof CLINIC_LOCALES[number], ClinicCopy> = {
         patientName: 'Name',
         patientEmail: 'Email',
         languages: 'Languages requested',
+        interpreter: 'Interpreter',
         reason: 'Reason',
         japanTime: 'Japan time',
         dashboardLink: 'Booking dashboard:',
@@ -537,6 +540,8 @@ export function clinicRequestEmail(input: {
     patientEmail: string
     /** The patient's language choice, saved on the request (#205). */
     languages: readonly string[]
+    /** The staff label of the interpreter the visit holds, or null (#205). */
+    interpreterLabel: string | null
     dashboardUrl: string | null
 }): BookingEmail {
     return renderEmail(clinicSubject(copy => copy.requestSubject, input.clinicName), CLINIC_LOCALES.map(locale => {
@@ -555,7 +560,10 @@ export function clinicRequestEmail(input: {
                         { label: copy.patientEmail, value: input.patientEmail, fixed: true },
                         ...(input.languages.length === 0
                             ? []
-                            : [{ label: copy.languages, value: formatLanguages(input.languages, locale) }])
+                            : [{ label: copy.languages, value: formatLanguages(input.languages, locale) }]),
+                        ...(input.interpreterLabel === null
+                            ? []
+                            : [{ label: copy.interpreter, value: input.interpreterLabel, fixed: true }])
                     ]
                 },
                 ...(input.dashboardUrl === null

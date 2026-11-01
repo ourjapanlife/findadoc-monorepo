@@ -333,7 +333,10 @@ export function isOfferedFormId(offeredFormIds: readonly string[], formId: strin
 }
 
 /** A form without the clinic's doctors, languages, and interpretation (#205), which come from the database. */
-export type AssembledBookingForm = Omit<BookingForm, 'practitioners' | 'languages' | 'offersInterpretation'>
+export type AssembledBookingForm = Omit<
+    BookingForm,
+    'practitioners' | 'languages' | 'offersInterpretation' | 'interpreters'
+>
 
 export function assembleBookingForm(input: {
     formDefinitionId?: string | null

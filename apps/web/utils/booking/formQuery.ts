@@ -84,6 +84,7 @@ const BOOKING_FORM_FIELDS = `
   }
   languages
   offersInterpretation
+  interpreters { languages }
 `
 
 const bookingFormQuery = gql`

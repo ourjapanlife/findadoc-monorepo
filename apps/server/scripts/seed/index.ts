@@ -36,6 +36,8 @@ async function runSeed() {
         await client.query('DELETE FROM clinic_weekly_hours')
         await client.query('DELETE FROM booking_settings')
         await client.query('DELETE FROM booking_interpretation')
+        await client.query('DELETE FROM clinic_interpreter_hours')
+        await client.query('DELETE FROM clinic_interpreters')
         await client.query('DELETE FROM clinic_memberships')
         await client.query('DELETE FROM clinic_site_locales')
         await client.query('DELETE FROM clinic_site_doctors')
@@ -267,9 +269,15 @@ async function runSeed() {
             [SHOWCASE_FACILITY_ID, SHOWCASE_CLINIC_SITE_ID]
         )
 
-        // The showcase clinic is the interpretation pilot (#205), as on production.
+        // The showcase clinic is the interpretation pilot (#205), as on production:
+        // one interpreter for every language at every open time.
         await client.query(
             `INSERT INTO booking_interpretation (facility_id, source) VALUES ($1, 'pilot')`,
+            [SHOWCASE_FACILITY_ID]
+        )
+        await client.query(
+            `INSERT INTO clinic_interpreters (facility_id, label, languages, capacity)
+            VALUES ($1, 'Interpretation', NULL, NULL)`,
             [SHOWCASE_FACILITY_ID]
         )
 

@@ -220,6 +220,7 @@ export async function getBookingSubmissionDetail(
         .leftJoin('facilities as facility', 'facility.id', 'booking.facility_id')
         .leftJoin('booking_appointments as appointment', 'appointment.booking_submission_id', 'booking.id')
         .leftJoin('hps as practitioner', 'practitioner.id', 'booking.practitioner_id')
+        .leftJoin('clinic_interpreters as interpreter', 'interpreter.id', 'appointment.interpreter_id')
         .select([
             'booking.id',
             'booking.clinic_site_id',
@@ -243,7 +244,8 @@ export async function getBookingSubmissionDetail(
             'appointment.cancelled_by',
             'appointment.status_reason',
             'appointment.starts_at',
-            'appointment.ends_at'
+            'appointment.ends_at',
+            'interpreter.label as interpreter_label'
         ])
         .where('booking.id', '=', id)
         .executeTakeFirst()
@@ -291,6 +293,7 @@ export async function getBookingSubmissionDetail(
         practitionerId: row.practitioner_id,
         practitionerNames: row.practitioner_names ?? [],
         spokenLanguages: (row.spoken_languages ?? []) as BookingSubmissionDetail['spokenLanguages'],
+        interpreterLabel: row.interpreter_label,
         service: row.service_key,
         createdDate: row.created_date,
         updatedDate: row.updated_date,

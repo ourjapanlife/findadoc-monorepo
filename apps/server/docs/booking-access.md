@@ -104,24 +104,10 @@ these rules.
 
 ### Interpretation
 
-A clinic with a `booking_interpretation` row offers interpretation (#205): any
-doctor can see a patient in every language the clinic lists
-(`BookingForm.offersInterpretation`). When every chosen language is in
-`BookingForm.languages`, the choice does not narrow the doctors or schedules.
-A language the clinic does not list still narrows them as above. The request
-keeps the chosen languages, and the clinic notice and request detail show them.
-There is no separate interpreter request.
-
-It is off by default and meant to be a paid add-on, so only an admin turns it on
-or off (`setBookingInterpretation`). Owners see it in Settings but cannot change
-it. `canChangeInterpretation` in `src/booking/interpretation.ts` is the one gate;
-billing hooks in there. The row is not a `booking_settings` row, so turning it on
-does not open booking. The multilingual online clinic is the pilot and has it free.
-
-Today interpretation covers every listed language at every open time. If a
-clinic later has interpreters only for some languages or hours, that check goes
-in `interpretationCovers` (`src/booking/practitioners.ts`), with a child table
-of `booking_interpretation` where no rows means "all of them".
+A clinic can book visits in languages its doctors do not speak, through
+interpreters with their own languages, hours, and capacity (#205). Admins turn
+it on; owners describe the interpreters. `booking-interpretation.md` has the
+data model, the matching rules, and examples.
 
 Staff pick the schedule they edit (whole clinic or one doctor) in Settings →
 Weekly hours and on the calendar.
