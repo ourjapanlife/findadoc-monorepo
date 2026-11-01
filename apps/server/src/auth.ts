@@ -128,6 +128,8 @@ const roleScopes: Record<Role, Scope[]> = {
 
 export interface User {
     sub: string
+    /** The token's `iss`. With sub, it names the identity (src/accounts/userIdentity.ts). */
+    issuer?: string
     name: string
     email: string
     /** True only when the token carries Auth0's email_verified claim (see EMAIL_VERIFIED_CLAIM). */
@@ -321,6 +323,7 @@ export async function buildUserContext(req: FastifyRequest): Promise<UserContext
     return {
         user: {
             sub: userFromRequest?.sub,
+            issuer: typeof userFromRequest?.iss === 'string' ? userFromRequest.iss : undefined,
             name: userFromRequest?.name,
             // Access tokens carry email only through the namespaced claims an Auth0 Action adds.
             email: (userFromRequest?.[EMAIL_CLAIM] as string | undefined) ?? userFromRequest?.email,

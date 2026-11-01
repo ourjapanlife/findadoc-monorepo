@@ -49,8 +49,10 @@ claims invites and returns an empty list to someone with no clinic.
 ### Invites
 
 An admin (or an owner, for staff) invites an email for a facility. The
-first sign-in whose **verified** email matches claims the row and stores the
-Auth0 `sub`. The API reads the email from namespaced access-token claims, so
+first sign-in whose **verified** email matches claims the row and stores our
+`user.id`, not the Auth0 `sub`. `src/accounts/userIdentity.ts` maps the token's
+`iss` and `sub` to that id through `user_identities`, and creates the user on
+their first request. The API reads the email from namespaced access-token claims, so
 an Auth0 post-login Action must add them:
 
 ```js
