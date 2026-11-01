@@ -150,13 +150,23 @@ export interface AuditLogsTable {
     updated_date: Generated<string>
 }
 
-/** A login account. */
+/** A login account. email is the last verified email from a sign-in, lower-cased. */
 export interface UserTable {
     id: Generated<string>
     display_name: string | null
     profile_pic_url: string | null
+    email: string | null
     created_date: Generated<string>
     updated_date: string | null
+}
+
+/** A sign-in provider's (issuer, subject), linked to one user. See src/accounts/userIdentity.ts. */
+export interface UserIdentitiesTable {
+    id: Generated<string>
+    user_id: string
+    issuer: string
+    subject: string
+    created_date: Generated<string>
 }
 
 /**
@@ -176,7 +186,10 @@ export interface ClinicSitesTable {
 }
 
 /** An account on a hosted clinic. owner manages it. staff is the future CRM seat. */
-/** Booking account link. Invited by email; the first matching verified sign-in claims auth0_sub. */
+/**
+ * Booking account link. Invited by email; the first matching verified sign-in claims it and
+ * stores user_id. auth0_sub is the old claim key. It is read by nothing and is dropped later.
+ */
 export interface ClinicMembershipsTable {
     id: Generated<string>
     clinic_site_id: string | null
@@ -346,6 +359,7 @@ export interface Database {
     submissions: SubmissionsTable
     audit_logs: AuditLogsTable
     user: UserTable
+    user_identities: UserIdentitiesTable
     clinic_sites: ClinicSitesTable
     clinic_memberships: ClinicMembershipsTable
     clinic_site_languages: ClinicSiteLanguagesTable

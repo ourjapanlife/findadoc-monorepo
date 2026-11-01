@@ -147,7 +147,7 @@ function memberFromRow(row: {
     facility_id: string | null
     invited_email: string | null
     role: string
-    auth0_sub: string | null
+    user_id: string | null
     created_date: string
 }): ClinicMember {
     return {
@@ -155,7 +155,7 @@ function memberFromRow(row: {
         facilityId: row.facility_id ?? '',
         email: row.invited_email,
         role: row.role === MEMBERSHIP_ROLE.OWNER ? ClinicMemberRole.Owner : ClinicMemberRole.Staff,
-        claimed: row.auth0_sub !== null,
+        claimed: row.user_id !== null,
         createdDate: row.created_date
     }
 }
@@ -165,7 +165,7 @@ export async function listClinicMembers(facilityId: string, access: BookingAcces
         return []
     }
     const rows = await db.selectFrom('clinic_memberships')
-        .select(['id', 'facility_id', 'invited_email', 'role', 'auth0_sub', 'created_date'])
+        .select(['id', 'facility_id', 'invited_email', 'role', 'user_id', 'created_date'])
         .where('facility_id', '=', facilityId)
         .orderBy('role')
         .orderBy('invited_email')
@@ -217,7 +217,7 @@ export async function inviteClinicMember(
         const row = await db.updateTable('clinic_memberships')
             .set({ role })
             .where('id', '=', existing.id)
-            .returning(['id', 'facility_id', 'invited_email', 'role', 'auth0_sub', 'created_date'])
+            .returning(['id', 'facility_id', 'invited_email', 'role', 'user_id', 'created_date'])
             .executeTakeFirstOrThrow()
         return { data: memberFromRow(row), hasErrors: false }
     }
@@ -228,12 +228,11 @@ export async function inviteClinicMember(
             clinic_site_id: site?.id ?? null,
             user_id: null,
             invited_email: email,
-            auth0_sub: null,
             invited_by: invitedBy ?? null,
             claimed_at: null,
             role
         })
-        .returning(['id', 'facility_id', 'invited_email', 'role', 'auth0_sub', 'created_date'])
+        .returning(['id', 'facility_id', 'invited_email', 'role', 'user_id', 'created_date'])
         .executeTakeFirstOrThrow()
     return { data: memberFromRow(row), hasErrors: false }
 }
