@@ -30,7 +30,10 @@ type ProfessionalRow = {
 export function clientConfig(): pg.ClientConfig {
     // RDS with DB_IAM_AUTH=true signs a token and requires TLS, the same as the API.
     if (envVariables.dbIamAuth()) {
-        // Without a user poolConfig cannot sign a token and would fall back to a password.
+        // Without a host and a user poolConfig cannot sign a token and would fall back to a password.
+        if (!envVariables.pgHost()) {
+            throw new Error('Set PGHOST to the database host. DB_IAM_AUTH=true has no password fallback.')
+        }
         if (!envVariables.pgUser()) {
             throw new Error('Set PGUSER to the IAM database user. DB_IAM_AUTH=true has no password fallback.')
         }

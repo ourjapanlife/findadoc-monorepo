@@ -57,9 +57,9 @@ describe('japanese insurance helpers', () => {
     })
 
     it('keeps a source only on a self-pay-only answer, like the API', () => {
-        expect(japaneseInsuranceInput(JapaneseInsurance.NotAccepted, ' https://tmsc.jp/jp/ ')).toEqual({
+        expect(japaneseInsuranceInput(JapaneseInsurance.NotAccepted, ' https://clinic.example/insurance ')).toEqual({
             japaneseInsurance: JapaneseInsurance.NotAccepted,
-            japaneseInsuranceSource: 'https://tmsc.jp/jp/'
+            japaneseInsuranceSource: 'https://clinic.example/insurance'
         })
         expect(japaneseInsuranceInput(JapaneseInsurance.Accepted, 'https://clinic.test')).toEqual({
             japaneseInsurance: JapaneseInsurance.Accepted,
@@ -69,7 +69,7 @@ describe('japanese insurance helpers', () => {
 
     it('takes an empty source, a link, or a note', () => {
         expect(isValidJapaneseInsuranceSource('')).toBe(true)
-        expect(isValidJapaneseInsuranceSource('https://tmsc.jp/jp/')).toBe(true)
+        expect(isValidJapaneseInsuranceSource('https://clinic.example/insurance')).toBe(true)
         expect(isValidJapaneseInsuranceSource('Called the clinic on 2 Nov 2026')).toBe(true)
         expect(isValidJapaneseInsuranceSource('x'.repeat(501))).toBe(false)
     })
@@ -96,10 +96,10 @@ describe('facility update diff', () => {
     it('sends the answer with its source', () => {
         const update = getChangedFacilityFieldsForUpdate(section({
             japaneseInsurance: JapaneseInsurance.NotAccepted,
-            japaneseInsuranceSource: ' https://tmsc.jp/jp/ '
+            japaneseInsuranceSource: ' https://clinic.example/insurance '
         }), original)
         expect(update.japaneseInsurance).toBe(JapaneseInsurance.NotAccepted)
-        expect(update.japaneseInsuranceSource).toBe('https://tmsc.jp/jp/')
+        expect(update.japaneseInsuranceSource).toBe('https://clinic.example/insurance')
     })
 
     it('clears both when the moderator goes back to unknown', () => {

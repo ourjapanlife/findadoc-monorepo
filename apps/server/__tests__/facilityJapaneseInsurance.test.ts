@@ -26,7 +26,7 @@ describe('validateJapaneseInsurance', () => {
     it('takes a link or a note as the source', () => {
         expect(check({
             japaneseInsurance: JapaneseInsurance.NotAccepted,
-            japaneseInsuranceSource: 'https://tmsc.jp/jp/'
+            japaneseInsuranceSource: 'https://clinic.example/insurance'
         })).toEqual([])
         expect(check({
             japaneseInsurance: JapaneseInsurance.NotAccepted,
@@ -81,11 +81,11 @@ describe('buildFacilityUpdatePatch Japanese insurance', () => {
     it('stores the source on a self-pay-only clinic', () => {
         const patch = buildFacilityUpdatePatch({
             japaneseInsurance: JapaneseInsurance.NotAccepted,
-            japaneseInsuranceSource: ' https://tmsc.jp/jp/ '
+            japaneseInsuranceSource: ' https://clinic.example/insurance '
         })
 
         expect(patch.japanese_insurance).toBe(JapaneseInsurance.NotAccepted)
-        expect(patch.japanese_insurance_source).toBe('https://tmsc.jp/jp/')
+        expect(patch.japanese_insurance_source).toBe('https://clinic.example/insurance')
     })
 
     it('drops a source sent with any other answer, so no stale note is stored', () => {

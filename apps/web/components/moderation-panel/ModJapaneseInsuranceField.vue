@@ -47,7 +47,8 @@ import type { JapaneseInsuranceChoice } from '~/utils/japaneseInsurance'
 /**
  * Unknown, takes it, or does not take it (self-pay only) (#18). Unknown is the default and
  * the way to clear an answer. A self-pay-only answer may carry a source: a link, or a note
- * about a call. The API keeps the note only on that answer, so any other choice clears it.
+ * about a call. The draft keeps the note while the moderator switches choices; the saved
+ * input and the API keep it only on the self-pay-only answer.
  */
 const { t } = useI18n()
 const isEditing = useModerationFormEditing()
@@ -78,9 +79,6 @@ const selected = computed({
     get: () => choice.value,
     set: value => {
         choice.value = value
-        if (value !== JapaneseInsurance.NotAccepted) {
-            source.value = ''
-        }
     }
 })
 </script>

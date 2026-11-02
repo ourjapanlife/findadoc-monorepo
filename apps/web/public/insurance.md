@@ -6,7 +6,7 @@ Find a Doc does not check anyone's coverage and does not give medical or insuran
 
 ## Public health insurance
 
-Everyone who lives in Japan is enrolled in one public health insurance program. Private life insurance or an overseas plan does not replace it.
+Almost everyone who lives in Japan must join a public health insurance program. The main exception is people receiving public assistance (生活保護): their medical care is covered through public assistance instead. Private life insurance or an overseas plan does not replace public insurance.
 
 - Employee health insurance (健康保険): employees and the family members they support, through 協会けんぽ, a company fund, or a mutual-aid association.
 - National Health Insurance (国民健康保険): residents who are not on an employment plan. A foreign resident with a residence card and a stay of more than three months is usually in this group.

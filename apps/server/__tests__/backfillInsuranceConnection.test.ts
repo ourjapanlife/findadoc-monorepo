@@ -51,8 +51,19 @@ describe('insurance backfill connection', () => {
         expect(token).toContain('X-Amz-Signature=')
     })
 
+    it('refuses IAM auth without a database host instead of signing for the default host', () => {
+        Object.assign(process.env, { DB_IAM_AUTH: 'true', PGPORT: '5432', PGUSER: 'findadoc_api' })
+        delete process.env.PGHOST
+
+        expect(() => clientConfig()).toThrow('Set PGHOST')
+    })
+
     it('refuses IAM auth without a database user instead of falling back to postgres', () => {
-        Object.assign(process.env, { DB_IAM_AUTH: 'true', PGPORT: '5432' })
+        Object.assign(process.env, {
+            DB_IAM_AUTH: 'true',
+            PGPORT: '5432',
+            PGHOST: 'findadoc.example.ap-northeast-1.rds.amazonaws.com'
+        })
         delete process.env.PGUSER
 
         expect(() => clientConfig()).toThrow('Set PGUSER')
