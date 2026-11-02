@@ -14,9 +14,9 @@ import {
  * Dry-run unless `--write` is passed. The dry-run prints each professional with
  * the facility, the city, and the stored codes written as sentences.
  * A write run empties `hps.accepted_insurance`. It never changes a facility's
- * Japanese insurance answer: the migration marked existing clinics yes, and a
- * moderator marks a self-pay-only clinic no. A doctor whose
- * old code said "does not accept insurance" is flagged so that clinic gets checked.
+ * Japanese insurance answer: every clinic starts unknown, and a moderator answers
+ * yes or no from a source. A doctor whose old code said "does not accept insurance"
+ * is flagged so that clinic gets checked.
  */
 
 type ProfessionalRow = {
@@ -26,9 +26,14 @@ type ProfessionalRow = {
     facilities: { name: string, city: string | null, japanese_insurance: string | null }[] | null
 }
 
-function clientConfig() {
+/** Session-port connection. Local Docker by default; IAM token over TLS with DB_IAM_AUTH=true. */
+export function clientConfig(): pg.ClientConfig {
     // RDS with DB_IAM_AUTH=true signs a token and requires TLS, the same as the API.
     if (envVariables.dbIamAuth()) {
+        // Without a user poolConfig cannot sign a token and would fall back to a password.
+        if (!envVariables.pgUser()) {
+            throw new Error('Set PGUSER to the IAM database user. DB_IAM_AUTH=true has no password fallback.')
+        }
         const { host, port, user, password, ssl, database } = poolConfig()
         if (port === 6543) {
             throw new Error('Use the session database port 5432. The transaction pooler cannot apply this backfill.')

@@ -594,7 +594,10 @@
     "placeholderTextFacilityPhoneNumber": "e.g. 08xxxxxxxxx",
     "placeholderTextFacilityPostalCode": "e.g. 186-0000",
     "placeholderTextFacilityWebsite": "e.g. http://www.example.com/",
-    "japaneseInsuranceHint": "Leave this unchecked if the clinic takes it. Most clinics do.",
+    "japaneseInsuranceLabel": "Japanese public health insurance",
+    "japaneseInsuranceUnknown": "Unknown. Readers see nothing.",
+    "japaneseInsuranceAccepted": "Takes Japanese public health insurance.",
+    "japaneseInsuranceHint": "Leave this unknown until the clinic's website, the regional health bureau list, or a call answers it. Private-only clinics exist, so do not guess.",
     "japaneseInsuranceNotAccepted": "Does not take Japanese public health insurance. The visit is self-pay.",
     "japaneseInsuranceSourceLabel": "Source",
     "japaneseInsuranceSourcePlaceholder": "A link, or a note such as: called the clinic on Nov 2, 2026"

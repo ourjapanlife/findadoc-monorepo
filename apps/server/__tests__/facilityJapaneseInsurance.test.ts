@@ -4,6 +4,7 @@ import { ErrorCode, type Result } from '../src/result.js'
 import { validateJapaneseInsurance } from '../src/validation/validateFacility.js'
 import { japaneseInsuranceFields } from '../src/services/mappersEntityService.js'
 import { canReadModeratorNotes, Role, type User } from '../src/auth.js'
+import { buildFacilityUpdatePatch } from '../src/services/facilityService.js'
 
 function check(input: Parameters<typeof validateJapaneseInsurance>[0]) {
     const result: Result<unknown> = { data: undefined, hasErrors: false, errors: [] }
@@ -73,5 +74,30 @@ describe('canReadModeratorNotes', () => {
         expect(canReadModeratorNotes(user([], 'read:facilities'))).toBe(false)
         expect(canReadModeratorNotes(user([Role.User]))).toBe(false)
         expect(canReadModeratorNotes(user([Role.FacilityOwner, Role.FacilityStaff]))).toBe(false)
+    })
+})
+
+describe('buildFacilityUpdatePatch Japanese insurance', () => {
+    it('stores the source on a self-pay-only clinic', () => {
+        const patch = buildFacilityUpdatePatch({
+            japaneseInsurance: JapaneseInsurance.NotAccepted,
+            japaneseInsuranceSource: ' https://tmsc.jp/jp/ '
+        })
+
+        expect(patch.japanese_insurance).toBe(JapaneseInsurance.NotAccepted)
+        expect(patch.japanese_insurance_source).toBe('https://tmsc.jp/jp/')
+    })
+
+    it('drops a source sent with any other answer, so no stale note is stored', () => {
+        const accepted = buildFacilityUpdatePatch({
+            japaneseInsurance: JapaneseInsurance.Accepted,
+            japaneseInsuranceSource: 'https://clinic.test'
+        })
+        const unknown = buildFacilityUpdatePatch({ japaneseInsurance: null, japaneseInsuranceSource: null })
+
+        expect(accepted.japanese_insurance).toBe(JapaneseInsurance.Accepted)
+        expect(accepted.japanese_insurance_source).toBeNull()
+        expect(unknown.japanese_insurance).toBeNull()
+        expect(unknown.japanese_insurance_source).toBeNull()
     })
 })

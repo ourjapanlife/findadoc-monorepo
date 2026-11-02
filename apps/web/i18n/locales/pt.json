@@ -479,7 +479,10 @@
     "fillFromMapsDone": "{count} campos vazios foram preenchidos a partir do link do Maps.",
     "fillFromMapsNone": "Não restavam campos vazios para preencher a partir deste link.",
     "fillFromMapsFailed": "Não foi possível ler este link. Abra-o no Maps e copie os dados.",
-    "japaneseInsuranceHint": "Deixe desmarcado se a clínica aceita. A maioria das clínicas aceita.",
+    "japaneseInsuranceLabel": "Seguro de saúde público japonês",
+    "japaneseInsuranceUnknown": "Desconhecido. Os leitores não veem nada.",
+    "japaneseInsuranceAccepted": "Aceita o seguro de saúde público japonês.",
+    "japaneseInsuranceHint": "Deixe como desconhecido até que o site da clínica, a lista do escritório regional de saúde ou uma ligação confirme. Existem clínicas só particulares, então não adivinhe.",
     "japaneseInsuranceNotAccepted": "Não aceita o seguro de saúde público japonês. A consulta é particular.",
     "japaneseInsuranceSourceLabel": "Fonte",
     "japaneseInsuranceSourcePlaceholder": "Um link, ou uma nota como: liguei para a clínica em 2 nov. 2026"

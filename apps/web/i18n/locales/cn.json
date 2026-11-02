@@ -479,7 +479,10 @@
     "fillFromMapsDone": "已根据地图链接填写 {count} 个空白项。",
     "fillFromMapsNone": "没有可以用此链接填写的空白项。",
     "fillFromMapsFailed": "无法读取此链接。请在地图中打开并复制详细信息。",
-    "japaneseInsuranceHint": "如果诊所接受，请不要勾选。大多数诊所都接受。",
+    "japaneseInsuranceLabel": "日本公共医疗保险",
+    "japaneseInsuranceUnknown": "未知。不向读者显示任何内容。",
+    "japaneseInsuranceAccepted": "接受日本公共医疗保险。",
+    "japaneseInsuranceHint": "在诊所官网、地方厚生局名单或电话确认之前，请保持“未知”。也有只提供自费诊疗的诊所，请勿猜测。",
     "japaneseInsuranceNotAccepted": "不接受日本公共医疗保险。就诊需自费。",
     "japaneseInsuranceSourceLabel": "信息来源",
     "japaneseInsuranceSourcePlaceholder": "链接，或备注，例如：2026年11月2日致电诊所确认"

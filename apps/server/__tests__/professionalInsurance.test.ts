@@ -59,6 +59,30 @@ describe('planStoredInsurance', () => {
         )
     })
 
+    it('flags an old "does not accept insurance" on a clinic that is still unknown', () => {
+        const plan = planStoredInsurance({
+            acceptedInsurance: [OldInsuranceCode.InsuranceNotAccepted],
+            facilities: [clinic]
+        })
+
+        expect(plan.action === 'clear' && plan.recommendation).toBe(
+            'Clear the codes and leave the facility unknown until a moderator marks it.'
+            + ' Check the clinic: an old code said it does not accept insurance.'
+            + ' If it is self-pay only, mark it so.'
+        )
+    })
+
+    it('does not flag a clinic already marked self-pay only', () => {
+        const plan = planStoredInsurance({
+            acceptedInsurance: [OldInsuranceCode.InsuranceNotAccepted],
+            facilities: [{ ...clinic, japaneseInsurance: 'NOT_ACCEPTED' }]
+        })
+
+        expect(plan.action === 'clear' && plan.recommendation).toBe(
+            'Clear the codes and keep the facility answer (the clinic is marked as self-pay only).'
+        )
+    })
+
     it('does nothing to an empty list', () => {
         expect(planStoredInsurance({ acceptedInsurance: [], facilities: [clinic] })).toEqual({ action: 'keep' })
         expect(planStoredInsurance({ acceptedInsurance: null, facilities: [] })).toEqual({ action: 'keep' })

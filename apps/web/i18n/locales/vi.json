@@ -474,7 +474,10 @@
     "fillFromMapsDone": "Đã điền {count} ô trống từ liên kết Maps.",
     "fillFromMapsNone": "Không còn ô trống để điền từ liên kết này.",
     "fillFromMapsFailed": "Không đọc được liên kết này. Hãy mở trong Maps và sao chép thông tin.",
-    "japaneseInsuranceHint": "Để trống nếu phòng khám có nhận. Hầu hết các phòng khám đều nhận.",
+    "japaneseInsuranceLabel": "Bảo hiểm y tế công của Nhật",
+    "japaneseInsuranceUnknown": "Chưa rõ. Người đọc không thấy gì.",
+    "japaneseInsuranceAccepted": "Có nhận bảo hiểm y tế công của Nhật.",
+    "japaneseInsuranceHint": "Để chưa rõ cho đến khi trang web phòng khám, danh sách của cục y tế khu vực hoặc một cuộc gọi xác nhận. Có những phòng khám chỉ khám tự chi trả, vì vậy đừng đoán.",
     "japaneseInsuranceNotAccepted": "Không nhận bảo hiểm y tế công của Nhật. Lần khám là tự chi trả.",
     "japaneseInsuranceSourceLabel": "Nguồn",
     "japaneseInsuranceSourcePlaceholder": "Đường dẫn, hoặc ghi chú như: đã gọi cho phòng khám ngày 2/11/2026"

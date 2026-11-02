@@ -527,7 +527,10 @@
     "fillFromMapsDone": "{count} leere Felder wurden aus dem Maps-Link gefüllt.",
     "fillFromMapsNone": "Es waren keine leeren Felder mehr aus diesem Link zu füllen.",
     "fillFromMapsFailed": "Dieser Link konnte nicht gelesen werden. Öffnen Sie ihn in Maps und kopieren Sie die Angaben.",
-    "japaneseInsuranceHint": "Lassen Sie das Kästchen leer, wenn die Klinik sie annimmt. Die meisten Kliniken tun das.",
+    "japaneseInsuranceLabel": "Japanische gesetzliche Krankenversicherung",
+    "japaneseInsuranceUnknown": "Unbekannt. Leser sehen nichts.",
+    "japaneseInsuranceAccepted": "Akzeptiert die japanische gesetzliche Krankenversicherung.",
+    "japaneseInsuranceHint": "Lassen Sie dies auf „Unbekannt“, bis die Website der Klinik, die Liste des regionalen Gesundheitsamts oder ein Anruf es klärt. Es gibt reine Privatkliniken, also nicht raten.",
     "japaneseInsuranceNotAccepted": "Akzeptiert die japanische gesetzliche Krankenversicherung nicht. Der Besuch ist Selbstzahlung.",
     "japaneseInsuranceSourceLabel": "Quelle",
     "japaneseInsuranceSourcePlaceholder": "Ein Link oder eine Notiz, z. B.: Klinik am 2. Nov. 2026 angerufen"

@@ -101,7 +101,8 @@ function facilitySentence(value: string | null): string | null {
 
 /**
  * Every stored code is cleared. The facility is never changed from the codes.
- * An old INSURANCE_NOT_ACCEPTED on a clinic marked yes is flagged for a moderator.
+ * An old INSURANCE_NOT_ACCEPTED is flagged for a moderator unless a clinic is already marked
+ * self-pay only. Clinics start unknown, so the flag is the lead for a private-only clinic.
  */
 export function planStoredInsurance(row: StoredInsuranceRow): StoredInsurancePlan {
     const codes = storedCodes(row.acceptedInsurance)
@@ -119,7 +120,7 @@ export function planStoredInsurance(row: StoredInsuranceRow): StoredInsurancePla
         ? `keep the facility answer (${[...new Set(marked)].join('; ')})`
         : 'leave the facility unknown until a moderator marks it'
     const saidNotAccepted = codes.includes(OldInsuranceCode.InsuranceNotAccepted)
-        && row.facilities.some(facility => facility.japaneseInsurance === 'ACCEPTED')
+        && row.facilities.some(facility => facility.japaneseInsurance !== 'NOT_ACCEPTED')
     const checkText = saidNotAccepted
         ? ' Check the clinic: an old code said it does not accept insurance.'
             + ' If it is self-pay only, mark it so.'

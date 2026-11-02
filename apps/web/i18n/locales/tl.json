@@ -423,7 +423,10 @@
     "fillFromMapsDone": "Napunan ang {count} na walang laman na field mula sa link ng Maps.",
     "fillFromMapsNone": "Wala nang walang laman na field na mapupunan mula sa link na ito.",
     "fillFromMapsFailed": "Hindi mabasa ang link na ito. Buksan ito sa Maps at kopyahin ang mga detalye.",
-    "japaneseInsuranceHint": "Huwag lagyan ng tsek kung tumatanggap ang klinika. Karamihan sa mga klinika ay tumatanggap.",
+    "japaneseInsuranceLabel": "Pampublikong health insurance ng Japan",
+    "japaneseInsuranceUnknown": "Hindi alam. Walang makikita ang mga mambabasa.",
+    "japaneseInsuranceAccepted": "Tumatanggap ng pampublikong health insurance ng Japan.",
+    "japaneseInsuranceHint": "Iwanang hindi alam hangga't hindi ito nakukumpirma ng website ng klinika, listahan ng regional health bureau, o tawag. May mga klinikang pribado lang, kaya huwag manghula.",
     "japaneseInsuranceNotAccepted": "Hindi tumatanggap ng pampublikong health insurance ng Japan. Self-pay ang konsultasyon.",
     "japaneseInsuranceSourceLabel": "Pinagmulan",
     "japaneseInsuranceSourcePlaceholder": "Isang link, o tala gaya ng: tinawagan ang klinika noong 2 Nob 2026"

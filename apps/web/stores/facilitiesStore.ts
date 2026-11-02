@@ -18,7 +18,6 @@ import type {
     UpdateFacilityInput,
     MutationCreateFacilityArgs
 } from '@findadoc/graphql'
-import { JapaneseInsurance } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
@@ -293,7 +292,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         healthcareProfessionalIds: [] as string[],
         cityId: '',
         online: false,
-        japaneseInsurance: JapaneseInsurance.Accepted as JapaneseInsuranceChoice,
+        // Unknown until the moderator chooses an answer (#18). Private-only clinics exist.
+        japaneseInsurance: '' as JapaneseInsuranceChoice,
         japaneseInsuranceSource: ''
     })
 
@@ -459,7 +459,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                         })
                 },
                 healthcareProfessionalIds: createFacilityFields.healthcareProfessionalIds,
-                // A clinic from the form takes Japanese insurance unless the moderator ticks the box.
+                // Sent only when the moderator chose an answer. Otherwise the clinic stays unknown.
                 ...(createFacilityFields.japaneseInsurance
                     ? japaneseInsuranceInput(createFacilityFields.japaneseInsurance, createFacilityFields.japaneseInsuranceSource)
                     : {}),
@@ -590,7 +590,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.healthcareProfessionalIds = []
         createFacilityFields.cityId = ''
         createFacilityFields.online = false
-        createFacilityFields.japaneseInsurance = JapaneseInsurance.Accepted
+        createFacilityFields.japaneseInsurance = ''
         createFacilityFields.japaneseInsuranceSource = ''
     }
 

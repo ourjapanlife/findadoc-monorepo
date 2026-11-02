@@ -594,7 +594,10 @@
     "placeholderTextFacilityPhoneNumber": "जस्तै: 08xxxxxxxxx",
     "placeholderTextFacilityPostalCode": "जस्तै: 186-0000",
     "placeholderTextFacilityWebsite": "जस्तै: http://www.example.com/",
-    "japaneseInsuranceHint": "क्लिनिकले स्वीकार गर्छ भने यसमा चिन्ह नलगाउनुहोस्। धेरैजसो क्लिनिकले स्वीकार गर्छन्।",
+    "japaneseInsuranceLabel": "जापानको सार्वजनिक स्वास्थ्य बीमा",
+    "japaneseInsuranceUnknown": "थाहा छैन। पाठकहरूले केही देख्दैनन्।",
+    "japaneseInsuranceAccepted": "जापानको सार्वजनिक स्वास्थ्य बीमा स्वीकार्छ।",
+    "japaneseInsuranceHint": "क्लिनिकको वेबसाइट, क्षेत्रीय स्वास्थ्य ब्युरोको सूची, वा फोनबाट पुष्टि नभएसम्म यसलाई 'थाहा छैन' मै राख्नुहोस्। निजी भुक्तानी मात्र लिने क्लिनिकहरू पनि छन्, त्यसैले अनुमान नगर्नुहोस्।",
     "japaneseInsuranceNotAccepted": "जापानको सार्वजनिक स्वास्थ्य बीमा स्वीकार्दैन। भेट सेल्फ-पे हुन्छ।",
     "japaneseInsuranceSourceLabel": "स्रोत",
     "japaneseInsuranceSourcePlaceholder": "लिङ्क, वा यस्तो टिप्पणी: 2 नोभेम्बर 2026 मा क्लिनिकमा फोन गरेर पुष्टि गरियो"

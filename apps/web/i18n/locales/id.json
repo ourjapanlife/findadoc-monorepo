@@ -594,7 +594,10 @@
     "placeholderTextFacilityPhoneNumber": "mis. 08xxxxxxxxx",
     "placeholderTextFacilityPostalCode": "mis. 186-0000",
     "placeholderTextFacilityWebsite": "mis. http://www.example.com/",
-    "japaneseInsuranceHint": "Biarkan tidak dicentang jika klinik menerimanya. Sebagian besar klinik menerimanya.",
+    "japaneseInsuranceLabel": "Asuransi kesehatan publik Jepang",
+    "japaneseInsuranceUnknown": "Tidak diketahui. Pembaca tidak melihat apa pun.",
+    "japaneseInsuranceAccepted": "Menerima asuransi kesehatan publik Jepang.",
+    "japaneseInsuranceHint": "Biarkan tidak diketahui sampai situs klinik, daftar biro kesehatan regional, atau telepon memastikannya. Ada klinik yang hanya melayani pasien mandiri, jadi jangan menebak.",
     "japaneseInsuranceNotAccepted": "Tidak menerima asuransi kesehatan publik Jepang. Kunjungan dibayar mandiri.",
     "japaneseInsuranceSourceLabel": "Sumber",
     "japaneseInsuranceSourcePlaceholder": "Tautan, atau catatan seperti: menelepon klinik pada 2 Nov 2026"
