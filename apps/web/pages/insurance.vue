@@ -120,7 +120,7 @@ const sources = computed(() => [
     },
     {
         label: t('insurancePage.sourceFacilitySearch'),
-        url: 'https://www.iryou.teikyouseido.mhlw.go.jp/znk-web/juminkanja/S2300/Initialize'
+        url: 'https://www.iryou.teikyouseido.mhlw.go.jp/'
     }
 ])
 </script>

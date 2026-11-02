@@ -277,6 +277,7 @@ const navItems = computed(() => [
     { to: '/search', label: t('topNav.search') },
     { to: '/about', label: t('topNav.about') },
     { to: '/submit', label: t('topNav.submit') },
+    { to: '/insurance', label: t('pageMeta.insuranceTitle') },
     { to: '/contact', label: t('footer.contact') }
 ])
 

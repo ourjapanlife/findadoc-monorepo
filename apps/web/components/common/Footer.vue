@@ -49,6 +49,13 @@
                                 :class="footerLink"
                             >{{ t('topNav.submit') }}</NuxtLink>
                         </li>
+                        <li>
+                            <NuxtLink
+                                to="/insurance"
+                                :class="footerLink"
+                                data-testid="insurance-link"
+                            >{{ t('pageMeta.insuranceTitle') }}</NuxtLink>
+                        </li>
                     </ul>
                 </nav>
 
