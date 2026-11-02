@@ -200,6 +200,12 @@ Clinic, doctor, hub, and facet pages are generated for English and Japanese only
 
 Moderation forms that already have saved data open in preview. Create forms stay editable. A Maps link that matches a clinic disables Submit on the public form. The same match is a warning in moderation, and update, approve, and create stay available.
 
+## Clinic hostnames
+
+A clinic hostname (`{slug}.findadoc.jp`) is the clinic, not a second copy of Find a Doc. It does not answer on Find a Doc's paths. It serves the clinic's own pages (`/` and `/book`, under a locale prefix), and any other page path goes back to the clinic's `/` (`clinicHostLandingTarget` in `apps/web/utils/clinicLanding.ts`). Links that leave the clinic for Find a Doc (the credit, privacy, Book, the dashboard) are absolute Find a Doc URLs, never a path on the clinic host. If a clinic gets more pages later, they live under that clinic's hostname and its own paths, not ours.
+
+Static files are the gap. Amplify serves the same `public/` files on every `*.findadoc.jp` name, and Nuxt serves `public/` before its middleware runs, so `{slug}.findadoc.jp/insurance.md` or `/llms.txt` still returns Find a Doc's file. Do not try to fix that in Nuxt middleware. It needs a host rule at the hosting layer that sends Find a Doc's documents (`*.md`, `/llms.txt`, `/openapi.json`, `/graphql.json`) on a clinic host to `https://www.findadoc.jp` and leaves assets alone.
+
 ## Auth
 
 The web Auth0 client keeps its cache in memory on the production site. A reload there restores the session through the iframe on `findadoc.jp.auth0.com`. That cookie is third-party on localhost, so the browser blocks it and a local reload logs the user out. `auth0CacheLocation` in `apps/web/utils/auth0Config.ts` uses localStorage only for localhost and `127.0.0.1`. Do not use localStorage for the production origin. A refresh token is not requested. After the access token expires, a local reload still cannot renew it until Auth0 allows refresh tokens for this client.
