@@ -105,7 +105,7 @@
                             <NuxtLink
                                 v-for="item in navItems"
                                 :key="item.to"
-                                :to="item.to"
+                                :to="item.href ?? item.to"
                                 :class="menuLinkClass(item.to)"
                                 @click="item.to === '/' ? handleHomeClick($event) : closeMenu()"
                             >
@@ -248,6 +248,7 @@ import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { buildLoginRoute, resolveAuthReturnPath } from '~/utils/auth0Config'
 import { localeCodeFromPath, localizedPath, routeMatchesPath } from '~/utils/localePath'
+import { INSURANCE_GUIDE_PATH } from '~/utils/japaneseInsurance'
 import { isMyPageFormRoute, leaveToAppHome } from '~/utils/moderationUtils'
 import { GITHUB_ORGANIZATION_URL } from '~/utils/site'
 
@@ -277,7 +278,11 @@ const navItems = computed(() => [
     { to: '/search', label: t('topNav.search') },
     { to: '/about', label: t('topNav.about') },
     { to: '/submit', label: t('topNav.submit') },
-    { to: '/insurance', label: t('pageMeta.insuranceTitle') },
+    {
+        to: INSURANCE_GUIDE_PATH,
+        href: localizedPath(INSURANCE_GUIDE_PATH, localeCodeFromPath(route.path)),
+        label: t('pageMeta.insuranceTitle')
+    },
     { to: '/contact', label: t('footer.contact') }
 ])
 

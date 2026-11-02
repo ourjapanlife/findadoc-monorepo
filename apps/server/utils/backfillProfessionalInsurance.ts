@@ -1,6 +1,7 @@
 import pg from 'pg'
 import { pathToFileURL } from 'node:url'
 import { envVariables } from './environmentVariables.js'
+import { poolConfig } from '../src/kyselyClient.js'
 import {
     describeStoredInsurance,
     planStoredInsurance,
@@ -26,6 +27,15 @@ type ProfessionalRow = {
 }
 
 function clientConfig() {
+    // RDS with DB_IAM_AUTH=true signs a token and requires TLS, the same as the API.
+    if (envVariables.dbIamAuth()) {
+        const { host, port, user, password, ssl, database } = poolConfig()
+        if (port === 6543) {
+            throw new Error('Use the session database port 5432. The transaction pooler cannot apply this backfill.')
+        }
+        return { host, port, user, password, ssl, database }
+    }
+
     const password = envVariables.pgPassword()
     const host = envVariables.pgHost() || '127.0.0.1'
     const port = Number(envVariables.pgPort() || (envVariables.isProduction() ? 5432 : 54322))

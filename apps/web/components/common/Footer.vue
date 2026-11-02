@@ -51,7 +51,7 @@
                         </li>
                         <li>
                             <NuxtLink
-                                to="/insurance"
+                                :to="insurancePath"
                                 :class="footerLink"
                                 data-testid="insurance-link"
                             >{{ t('pageMeta.insuranceTitle') }}</NuxtLink>
@@ -161,15 +161,21 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from '#imports'
 import SVGSiteLogo from '~/assets/icons/site-logo.svg'
 import { GITHUB_ORGANIZATION_URL, LINKEDIN_ORGANIZATION_URL } from '~/utils/site'
 import { useConsent } from '~/composables/useConsent'
 import { CONSENT_SETTINGS_HASH } from '~/utils/consent'
+import { INSURANCE_GUIDE_PATH } from '~/utils/japaneseInsurance'
+import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
 
 const { t } = useI18n()
 
 const { openSettings } = useConsent()
+const route = useRoute()
+const insurancePath = computed(() => localizedPath(INSURANCE_GUIDE_PATH, localeCodeFromPath(route.path)))
 
 const currentYear = new Date().getUTCFullYear()
 

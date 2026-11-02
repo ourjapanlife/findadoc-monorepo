@@ -219,7 +219,8 @@ export function buildFacilityUpdatePatch(
     }
     if (fields.japaneseInsurance !== undefined) {
         updatePatch.japanese_insurance = fields.japaneseInsurance ?? null
-        updatePatch.japanese_insurance_source = fields.japaneseInsurance
+        // The note explains a self-pay-only clinic. Any other answer drops it.
+        updatePatch.japanese_insurance_source = fields.japaneseInsurance === gqlTypes.JapaneseInsurance.NotAccepted
             ? fields.japaneseInsuranceSource?.trim() || null
             : null
     }
@@ -663,9 +664,10 @@ export async function createFacility(
                     verification_status: verificationStatus,
                     supported_languages: JSON.stringify(uniqueLocales(facilityInput.supportedLanguages ?? [])),
                     japanese_insurance: facilityInput.japaneseInsurance ?? null,
-                    japanese_insurance_source: facilityInput.japaneseInsurance
-                        ? facilityInput.japaneseInsuranceSource?.trim() || null
-                        : null,
+                    japanese_insurance_source:
+                        facilityInput.japaneseInsurance === gqlTypes.JapaneseInsurance.NotAccepted
+                            ? facilityInput.japaneseInsuranceSource?.trim() || null
+                            : null,
                     online: isOnline,
                     created_date: new Date().toISOString(),
                     updated_date: new Date().toISOString()
