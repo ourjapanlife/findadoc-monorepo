@@ -176,12 +176,10 @@ Playwright runs 1, 5, 6, 7, 8, 10, and 12 on every pull request against the seed
 | 23 | Account menu | Sign in as a clinic owner or staff | Account menu and My Page show **Clinic dashboard** with the number of requested appointments; confirming one lowers it |
 | 24 | Admin clinic picker | `/my-page?view=bookings` as an admin, choose a clinic | That clinic's dashboard opens |
 
-Clinic-member tests (owner and staff only see their clinic, invite claiming) need the Auth0 Action (#158). Until then, test as an admin. To try an owner locally anyway, attach your Auth0 user id directly (local database only):
+Clinic-member tests (owner and staff only see their clinic, invite claiming) need the Auth0 Action (#158). Until then, test as an admin. To try an owner locally anyway, make your Auth0 user an owner directly (local database only):
 
-```sql
--- docker exec -it findadoc-db psql -U postgres
-INSERT INTO clinic_memberships (facility_id, invited_email, auth0_sub, claimed_at, role)
-VALUES ('c32c316a-a368-499b-abaf-c5c973cb67e5', 'you@example.com', '<your Auth0 sub, e.g. google-oauth2|123>', now(), 'owner');
+```bash
+pnpm --filter @findadoc/server e2e:clinic-owner '<your Auth0 sub, e.g. google-oauth2|123>' c32c316a-a368-499b-abaf-c5c973cb67e5
 ```
 
 Sign in with a plain (non-admin) account with that sub. You see only the showcase clinic. Any other `/clinic-dashboard/{id}` says you don't have access. My Page → Access lists `FacilityOwner` (or `FacilityStaff` for a staff row). The API adds that role from the row on each request, so deleting the row removes it on the next request.

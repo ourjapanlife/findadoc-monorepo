@@ -1,14 +1,17 @@
 import { sql } from 'kysely'
-import { Scope, authorize, isAuthenticatedUser, type User } from '../auth.js'
+import { Scope, authorize, type User } from '../auth.js'
+import { userIdFor, verifiedEmailFromUser } from '../accounts/userIdentity.js'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
+
+export { verifiedEmailFromUser }
 
 /**
  * Who may see and change a clinic's bookings.
  *
  * Admins hold the global scopes and reach every clinic while booking is in preview.
  * Moderators manage the directory and get no booking access (src/auth.ts).
- * Everyone else needs a claimed clinic_memberships row for the facility.
+ * Everyone else needs a clinic_memberships row for the facility, claimed by their user id.
  * Staff read bookings and edit the calendar. Owners also manage members and
  * booking settings.
  */
@@ -32,34 +35,22 @@ export function isMembershipRole(value: string): value is MembershipRole {
     return value === MEMBERSHIP_ROLE.OWNER || value === MEMBERSHIP_ROLE.STAFF
 }
 
-/** Lower-cased email when the token says Auth0 verified it. */
-export function verifiedEmailFromUser(user: User | null | undefined): string | undefined {
-    if (user === null || user === undefined || user.emailVerified !== true) {
-        return undefined
-    }
-    if (typeof user.email !== 'string') {
-        return undefined
-    }
-    const email = user.email.trim().toLowerCase()
-    return email === '' ? undefined : email
-}
-
-/** Attach any pending invite for this verified email to the signed-in Auth0 user. */
-async function claimPendingInvites(user: User): Promise<void> {
+/** Attach any pending invite for this verified email to the signed-in user. */
+async function claimPendingInvites(user: User, userId: string): Promise<void> {
     const email = verifiedEmailFromUser(user)
     if (email === undefined) {
         return
     }
     try {
         await db.updateTable('clinic_memberships')
-            .set({ auth0_sub: user.sub, claimed_at: sql`now()` })
+            .set({ user_id: userId, claimed_at: sql`now()` })
             .where('invited_email', '=', email)
-            .where('auth0_sub', 'is', null)
+            .where('user_id', 'is', null)
             .where(({ not, exists, selectFrom }) => not(exists(
                 selectFrom('clinic_memberships as other')
                     .select('other.id')
                     .whereRef('other.facility_id', '=', 'clinic_memberships.facility_id')
-                    .where('other.auth0_sub', '=', user.sub)
+                    .where('other.user_id', '=', userId)
             )))
             .execute()
     } catch (error) {
@@ -75,15 +66,16 @@ export async function bookingAccessFor(user: User | null | undefined): Promise<B
         memberships: new Map()
     }
 
-    if (user === null || user === undefined || !isAuthenticatedUser(user)) {
+    const userId = await userIdFor(user)
+    if (user === null || user === undefined || userId === undefined) {
         return access
     }
 
-    await claimPendingInvites(user)
+    await claimPendingInvites(user, userId)
 
     const rows = await db.selectFrom('clinic_memberships')
         .select(['facility_id', 'role'])
-        .where('auth0_sub', '=', user.sub)
+        .where('user_id', '=', userId)
         .where('facility_id', 'is not', null)
         .execute()
 
