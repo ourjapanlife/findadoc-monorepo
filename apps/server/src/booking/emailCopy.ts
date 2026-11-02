@@ -310,6 +310,8 @@ type ClinicCopy = {
     bookingId: string
     patientName: string
     patientEmail: string
+    languages: string
+    interpreter: string
     reason: string
     japanTime: string
     dashboardLink: string
@@ -330,6 +332,8 @@ const CLINIC_COPY: Record<typeof CLINIC_LOCALES[number], ClinicCopy> = {
         bookingId: '受付番号',
         patientName: '患者さんのお名前',
         patientEmail: 'メールアドレス',
+        languages: 'ご希望の言語',
+        interpreter: '通訳',
         reason: 'キャンセルの理由',
         japanTime: '日本時間',
         dashboardLink: '予約ダッシュボード:',
@@ -345,6 +349,8 @@ const CLINIC_COPY: Record<typeof CLINIC_LOCALES[number], ClinicCopy> = {
         bookingId: 'Booking id',
         patientName: 'Name',
         patientEmail: 'Email',
+        languages: 'Languages requested',
+        interpreter: 'Interpreter',
         reason: 'Reason',
         japanTime: 'Japan time',
         dashboardLink: 'Booking dashboard:',
@@ -367,6 +373,20 @@ export function formatJapanTime(startsAt: Date, locale: SiteLocale, japanTimeLab
 
 export function formatVisitLength(minutes: number, locale: SiteLocale): string {
     return new Intl.NumberFormat(locale, { style: 'unit', unit: 'minute', unitDisplay: 'long' }).format(minutes)
+}
+
+/**
+ * Requested languages in the reader's language, such as "Nepali and Japanese".
+ * Only the language subtag of a Locale (ne_NP) is named, as on the site
+ * (apps/web/utils/languageName.ts), so the region does not read as "Nepali (Nepal)".
+ */
+export function formatLanguages(languages: readonly string[], locale: SiteLocale): string {
+    const names = new Intl.DisplayNames(locale, { type: 'language', fallback: 'code' })
+    return new Intl.ListFormat(locale, { type: 'conjunction' })
+        .format(languages.map(language => {
+            const subtag = language.split(/[-_]/)[0] ?? language
+            return names.of(subtag) ?? language
+        }))
 }
 
 function visitRows(
@@ -518,6 +538,10 @@ export function clinicRequestEmail(input: {
     bookingId: string
     patientName: string
     patientEmail: string
+    /** The patient's language choice, saved on the request (#205). */
+    languages: readonly string[]
+    /** The staff label of the interpreter the visit holds, or null (#205). */
+    interpreterLabel: string | null
     dashboardUrl: string | null
 }): BookingEmail {
     return renderEmail(clinicSubject(copy => copy.requestSubject, input.clinicName), CLINIC_LOCALES.map(locale => {
@@ -533,7 +557,13 @@ export function clinicRequestEmail(input: {
                         ...visitRows(copy, locale, input.startsAt, input.durationMinutes),
                         { label: copy.bookingId, value: input.bookingId, fixed: true },
                         { label: copy.patientName, value: input.patientName, fixed: true },
-                        { label: copy.patientEmail, value: input.patientEmail, fixed: true }
+                        { label: copy.patientEmail, value: input.patientEmail, fixed: true },
+                        ...(input.languages.length === 0
+                            ? []
+                            : [{ label: copy.languages, value: formatLanguages(input.languages, locale) }]),
+                        ...(input.interpreterLabel === null
+                            ? []
+                            : [{ label: copy.interpreter, value: input.interpreterLabel, fixed: true }])
                     ]
                 },
                 ...(input.dashboardUrl === null

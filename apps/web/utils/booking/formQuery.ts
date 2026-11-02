@@ -83,6 +83,8 @@ const BOOKING_FORM_FIELDS = `
     hasOwnSchedule
   }
   languages
+  offersInterpretation
+  interpreters { languages }
 `
 
 const bookingFormQuery = gql`

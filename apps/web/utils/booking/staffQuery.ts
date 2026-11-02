@@ -14,11 +14,14 @@ import type {
     ClinicAvailabilityClosure,
     ClinicAvailabilityWindow,
     ClinicMember,
+    ClinicInterpreter,
     ClinicMemberRole,
     ClinicWeeklyHours,
     CreateClinicAvailabilityClosureInput,
     CreateClinicAvailabilityWindowInput,
     DeleteResult,
+    SaveClinicInterpreterInput,
+    SetBookingInterpretationInput,
     SetClinicWeeklyHoursInput,
     UpdateBookingSettingsInput
 } from '@findadoc/graphql'
@@ -62,6 +65,7 @@ const BOOKING_DETAIL_FIELDS = `
   practitionerId
   practitionerNames { firstName middleName lastName locale }
   spokenLanguages
+  interpreterLabel
   service
   answers { fieldId value }
   uploads {
@@ -111,6 +115,9 @@ const SETTINGS_FIELDS = `
   allowedDurations
   defaultDuration
   formDefinitionIds
+  offersInterpretation
+  canChangeInterpretation
+  clinicLanguages
 `
 
 const WINDOW_FIELDS = `
@@ -544,4 +551,75 @@ export async function removeClinicMember(id: string): Promise<boolean> {
 export async function updateBookingSettings(input: UpdateBookingSettingsInput): Promise<BookingSettings | null> {
     const data = await request<{ updateBookingSettings: BookingSettings }>(updateSettingsMutation, { input }, WRITE)
     return data?.updateBookingSettings ?? null
+}
+
+const setInterpretationMutation = gql`
+  mutation SetBookingInterpretation($input: SetBookingInterpretationInput!) {
+    setBookingInterpretation(input: $input) {
+      ${SETTINGS_FIELDS}
+    }
+  }
+`
+
+/** Admins only (#205). The API refuses a clinic member. */
+export async function setBookingInterpretation(input: SetBookingInterpretationInput): Promise<BookingSettings | null> {
+    const data = await request<{ setBookingInterpretation: BookingSettings }>(
+        setInterpretationMutation,
+        { input },
+        WRITE
+    )
+    return data?.setBookingInterpretation ?? null
+}
+
+const INTERPRETER_FIELDS = `
+  id
+  facilityId
+  label
+  languages
+  capacity
+  hours { weekday startMinute endMinute }
+`
+
+const interpretersQuery = gql`
+  query ClinicInterpreters($facilityId: ID!) {
+    clinicInterpreters(facilityId: $facilityId) {
+      ${INTERPRETER_FIELDS}
+    }
+  }
+`
+
+const saveInterpreterMutation = gql`
+  mutation SaveClinicInterpreter($input: SaveClinicInterpreterInput!) {
+    saveClinicInterpreter(input: $input) {
+      ${INTERPRETER_FIELDS}
+    }
+  }
+`
+
+const deleteInterpreterMutation = gql`
+  mutation DeleteClinicInterpreter($id: ID!) {
+    deleteClinicInterpreter(id: $id) {
+      isSuccessful
+    }
+  }
+`
+
+/** A clinic's interpreters (#205). Null when the call fails. */
+export async function fetchClinicInterpreters(facilityId: string): Promise<ClinicInterpreter[] | null> {
+    const data = await request<{ clinicInterpreters: ClinicInterpreter[] }>(interpretersQuery, { facilityId }, READ)
+    return data?.clinicInterpreters ?? null
+}
+
+export async function saveClinicInterpreter(input: SaveClinicInterpreterInput): Promise<ClinicInterpreter | null> {
+    const data = await request<{ saveClinicInterpreter: ClinicInterpreter }>(saveInterpreterMutation, { input }, WRITE)
+    return data?.saveClinicInterpreter ?? null
+}
+
+export async function deleteClinicInterpreter(id: string): Promise<boolean> {
+    const data = await request<{ deleteClinicInterpreter: { isSuccessful: boolean } }>(
+        deleteInterpreterMutation,
+        { id },
+        WRITE
+    )
+    return data?.deleteClinicInterpreter.isSuccessful ?? false
 }

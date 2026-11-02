@@ -26,6 +26,7 @@ import * as availabilityService from './services/availabilityService.js'
 import * as staffBookingService from './services/staffBookingService.js'
 import * as appointmentService from './services/appointmentService.js'
 import * as clinicAccessService from './services/clinicAccessService.js'
+import * as interpreterService from './services/interpreterService.js'
 import { envVariables } from '../utils/environmentVariables.js'
 import { ErrorCode, Result } from './result.js'
 import { logger } from './logger.js'
@@ -126,6 +127,12 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.ClinicMember[]> =>
             clinicAccessService.listClinicMembers(args.facilityId, await bookingAccessForContext(context))),
+        clinicInterpreters: withClinicScope(CLINIC_READ_SCOPES, async (
+            _parent: unknown,
+            args: { facilityId: string },
+            context: UserContext
+        ): Promise<gqlType.ClinicInterpreter[]> =>
+            interpreterService.listClinicInterpreters(args.facilityId, await bookingAccessForContext(context))),
         bookingSettings: withClinicScope(CLINIC_READ_SCOPES, async (
             _parent: unknown,
             args: { facilityId: string },
@@ -682,6 +689,47 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.BookingSettings> => {
             const result = await clinicAccessService.updateBookingSettings(
+                args.input,
+                await bookingAccessForContext(context)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        saveClinicInterpreter: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+            _parent: unknown,
+            args: { input: gqlType.SaveClinicInterpreterInput },
+            context: UserContext
+        ): Promise<gqlType.ClinicInterpreter> => {
+            const result = await interpreterService.saveClinicInterpreter(
+                args.input,
+                await bookingAccessForContext(context)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        deleteClinicInterpreter: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+            _parent: unknown,
+            args: { id: string },
+            context: UserContext
+        ): Promise<gqlType.DeleteResult> => {
+            const result = await interpreterService.deleteClinicInterpreter(
+                args.id,
+                await bookingAccessForContext(context)
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        // CLINIC_SETTINGS_SCOPES lets an owner reach the service, which refuses anyone
+        // canChangeInterpretation does not allow (#205).
+        setBookingInterpretation: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+            _parent: unknown,
+            args: { input: gqlType.SetBookingInterpretationInput },
+            context: UserContext
+        ): Promise<gqlType.BookingSettings> => {
+            const result = await clinicAccessService.setBookingInterpretation(
                 args.input,
                 await bookingAccessForContext(context)
             )

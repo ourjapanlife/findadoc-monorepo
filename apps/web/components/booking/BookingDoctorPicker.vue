@@ -11,7 +11,7 @@
                 {{ t('bookingPage.languageLabel') }}
             </legend>
             <p class="-mt-1 text-sm text-primary-text-muted">
-                {{ t('bookingPage.languageHelp') }}
+                {{ offersInterpretation ? t('bookingPage.languageInterpretationHelp') : t('bookingPage.languageHelp') }}
             </p>
             <div class="flex flex-wrap gap-2">
                 <button
@@ -66,7 +66,7 @@
                 >
                     <span class="font-semibold text-primary-text">{{ t('bookingPage.anyDoctor') }}</span>
                     <span class="text-sm text-primary-text-muted">
-                        {{ spokenLanguages.length > 0
+                        {{ spokenLanguages.length > 0 && !offersInterpretation
                             ? t('bookingPage.anyDoctorLanguageHelp', { languages: chosenLanguageNames })
                             : t('bookingPage.anyDoctorHelp') }}
                     </span>
@@ -120,19 +120,28 @@ import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { BookingPractitioner, Locale } from '@findadoc/graphql'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
-import { practitionerName, sortedPractitioners } from '~/utils/booking/practitioners'
+import {
+    practitionerName,
+    practitionersForLanguages,
+    sortedPractitioners,
+    type InterpreterLanguages
+} from '~/utils/booking/practitioners'
 import { languageName } from '~/utils/languageName'
 
 /**
  * The patient picks the languages they need and, optionally, a doctor. Only
  * doctors who speak every chosen language are listed. "Any doctor" books the
- * first free doctor who speaks them, or clinic time.
+ * first free doctor who speaks them, or clinic time. A clinic with interpreters
+ * also lists a doctor when one interpreter covers the languages they do not
+ * speak (#205); the times shown then follow that interpreter's hours.
  */
 const props = defineProps<{
     practitioners: readonly BookingPractitioner[]
     languages: readonly Locale[]
     practitionerId: string | null
     spokenLanguages: readonly Locale[]
+    offersInterpretation: boolean
+    interpreters: readonly InterpreterLanguages[]
 }>()
 
 const emit = defineEmits<{
@@ -149,8 +158,11 @@ const sortedLanguages = computed(() => [...props.languages]
 const chosenLanguageNames = computed(() => new Intl.ListFormat(locale.value || 'en', { type: 'conjunction' })
     .format(props.spokenLanguages.map(language => languageName(language, locale.value))))
 
-const matchingPractitioners = computed(() => sortedPractitioners(props.practitioners, locale.value)
-    .filter(practitioner => props.spokenLanguages.every(language => practitioner.spokenLanguages.includes(language))))
+const matchingPractitioners = computed(() => practitionersForLanguages(
+    sortedPractitioners(props.practitioners, locale.value),
+    props.spokenLanguages,
+    props.interpreters
+))
 
 const hiddenCount = computed(() => props.practitioners.length - matchingPractitioners.value.length)
 
