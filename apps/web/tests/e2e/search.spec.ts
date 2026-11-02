@@ -16,7 +16,6 @@ const professionals = [
         specialties: ['DENTISTRY'],
         facilityIds: ['f1'],
         spokenLanguages: ['en_US', 'ja_JP'],
-        acceptedInsurance: [],
         additionalInfoForPatients: 'Evening appointments available.',
         updatedDate: '2026-08-01T00:00:00.000Z'
     },
@@ -27,7 +26,6 @@ const professionals = [
         specialties: ['INTERNAL_MEDICINE'],
         facilityIds: ['f1'],
         spokenLanguages: ['ja_JP'],
-        acceptedInsurance: [],
         additionalInfoForPatients: '',
         updatedDate: '2026-08-01T00:00:00.000Z'
     },
@@ -38,7 +36,6 @@ const professionals = [
         specialties: ['DENTISTRY'],
         facilityIds: ['f2'],
         spokenLanguages: ['en_US', 'es_ES'],
-        acceptedInsurance: [],
         additionalInfoForPatients: '',
         updatedDate: '2026-08-01T00:00:00.000Z'
     },
@@ -49,7 +46,6 @@ const professionals = [
         specialties: ['DERMATOLOGY'],
         facilityIds: ['f3'],
         spokenLanguages: ['ja_JP', 'fr_FR'],
-        acceptedInsurance: [],
         additionalInfoForPatients: '',
         updatedDate: '2026-08-01T00:00:00.000Z'
     }

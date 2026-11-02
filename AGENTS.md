@@ -177,6 +177,12 @@ A professional has one primary clinical license. PhD, MPH, and DSc are additiona
 
 `apps/server/utils/backfillProfessionalLicenses.ts` is the #1014 run. Dry-run is the default. It does not rewrite `degrees`. MD+DO is queued as `NEEDS_REVIEW` with recommendation `MD`. DDS+DMD is queued with recommendation `one_dental_license`. The 18 Sep notes disagree about that dental count, so the run counts the rows it reads and does not collapse them. A row with `license_review = CONFIRMED`, or a row that already has `primary_license`, is left alone. A new professional is not given a license. The moderator chooses one.
 
+## Insurance
+
+Japanese public health insurance is one fact on the facility (#18): `facilities.japanese_insurance` is `ACCEPTED`, `NOT_ACCEPTED`, or null for unknown. The migration marked every facility that existed then `ACCEPTED`. A new facility starts unknown. The moderation form is one checkbox for `NOT_ACCEPTED` (self-pay only), with an optional source note in `japanese_insurance_source`: a link, or a call. The note is internal: the `Facility.japaneseInsuranceSource` resolver returns null unless the user can edit facilities. Readers only see a line when a clinic is `NOT_ACCEPTED`. A yes or an unknown shows nothing. Do not store insurance on a professional, and do not bring back `UNINSURED`, international, or travel insurance as codes. Self-pay and overseas claims are explained on `/insurance`.
+
+`apps/server/utils/backfillProfessionalInsurance.ts` is the #18 run. Dry-run is the default. It prints each professional's old codes as sentences with the facility and city, and a write run empties `hps.accepted_insurance`. It never changes a facility answer. It flags a doctor whose old code said "does not accept insurance" so that clinic gets checked. A later migration drops `hps.accepted_insurance` once production has run it.
+
 ## Places
 
 `apps/server/docs/places-storage.md` is the storage rule. Follow it. Do not open a Places write path that contradicts it.

@@ -6,6 +6,7 @@
     "termsTitle": "Termos de serviço",
     "privacyTitle": "Política de privacidade",
     "npoTitle": "Transparência da ONG",
+    "insuranceTitle": "Como pagar o atendimento no Japão",
     "searchTitle": "Pesquisar clínicas",
     "contactTitle": "Contato"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "Atividades",
     "activitiesValue": "Construir, promover e manter uma plataforma gratuita e de qualidade de informação de saúde multilíngue, que liga as pessoas que vivem no Japão, japoneses e residentes estrangeiros, aos serviços médicos de que precisam, na sua língua; e realizar um programa de formação de programadores voluntários.",
     "contactLabel": "Contacto"
+  },
+  "insurancePage": {
+    "heading": "Como pagar o atendimento no Japão",
+    "intro": "Como funciona o seguro de saúde público japonês em uma clínica, o que significa pagar por conta própria e o que fazer com um seguro do exterior ou seguro-viagem.",
+    "disclaimer": "O Find a Doc não verifica a cobertura de ninguém e não dá orientação médica nem de seguros. Se você tiver dúvidas, pergunte à clínica, à sua seguradora ou à prefeitura.",
+    "schemesHeading": "Seguro de saúde público",
+    "schemesIntro": "Todas as pessoas que moram no Japão pertencem a um sistema público de seguro médico. Um seguro de vida privado ou um plano do exterior não o substitui.",
+    "schemeEmployee": "Seguro de saúde para empregados (健康保険): empregados e os familiares que eles sustentam, por meio da 協会けんぽ, de um fundo da empresa ou de uma associação de auxílio mútuo.",
+    "schemeNational": "Seguro Nacional de Saúde (国民健康保険): moradores que não estão em um plano de emprego. Um residente estrangeiro com cartão de residência e permanência de mais de três meses geralmente está neste grupo.",
+    "schemeElderly": "Assistência médica para pessoas com 75 anos ou mais (後期高齢者医療制度): a partir do 75º aniversário.",
+    "shareHeading": "O que você paga no balcão",
+    "shareBody": "Em uma clínica que aceita o seguro público, você paga a sua parte no balcão e a seguradora paga o restante à clínica. A parte usual é de 20% antes da idade escolar, 30% da idade escolar até 69 anos, 20% de 70 a 74 anos e 10% a partir de 75 anos. A renda pode aumentar a parte de pacientes mais velhos. Uma conta muito alta em um mês pode ter um limite pelo benefício para despesas médicas elevadas (高額療養費).",
+    "bringHeading": "O que levar",
+    "bringBody": "Leve o seu cartão My Number registrado como cartão de seguro de saúde, ou o certificado de elegibilidade (資格確認書) enviado pela sua seguradora. Os antigos cartões de seguro em papel deixaram de valer em 1º de dezembro de 2025.",
+    "clinicsHeading": "Clínicas que não aceitam o seguro público",
+    "clinicsBody": "Uma clínica só pode cobrar o seguro público se for designada como instituição médica de seguro (保険医療機関). Algumas clínicas não são designadas e atendem todos os pacientes como particulares (自由診療). Muitas vezes são clínicas de estética, algumas clínicas odontológicas e algumas clínicas internacionais. A página de uma clínica no Find a Doc informa isso quando temos uma fonte.",
+    "selfPayHeading": "Pagamento por conta própria",
+    "selfPayBody": "Se você não tem seguro público japonês, por exemplo como visitante ou antes de se inscrever, você paga à clínica o valor total. Muitas clínicas comuns ainda atenderão você. Uma clínica que não aceita o seguro público define os próprios preços.",
+    "mixedBody": "Se uma consulta coberta inclui um tratamento que o seguro não cobre, toda a consulta pode passar a ser particular, exceto por algumas exceções aprovadas. Pergunte à clínica antes de aceitar um tratamento adicional.",
+    "overseasHeading": "Seguro do exterior e seguro-viagem",
+    "overseasBody": "A maioria das clínicas não cobra de uma seguradora estrangeira ou de seguro-viagem. Você paga à clínica, guarda o recibo (領収書) e o extrato detalhado (診療明細書) e os envia à sua seguradora para pedir o reembolso. Alguns hospitais cobram diretamente da seguradora, mas somente quando ela envia uma garantia de pagamento antes da consulta.",
+    "sourcesHeading": "Fontes oficiais",
+    "sourceShare": "Parte paga pelo paciente no balcão (Ministério da Saúde, Trabalho e Bem-Estar)",
+    "sourceNationalInsurance": "Quem entra no Seguro Nacional de Saúde (Ministério da Saúde, Trabalho e Bem-Estar)",
+    "sourceMynaCard": "Cartão de seguro My Number (Ministério da Saúde, Trabalho e Bem-Estar)",
+    "sourceCertificate": "Certificado de elegibilidade (Agência Digital)",
+    "sourceFacilitySearch": "Busca de estabelecimentos de saúde (Ministério da Saúde, Trabalho e Bem-Estar)"
   },
   "common": {
     "menu": "Menu",
@@ -289,7 +317,6 @@
     "placeholderTextHealthcareProfessionalFirstName": "p. ex. John",
     "placeholderTextHealthcareProfessionalLastName": "p. ex. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "p. ex. Bronson",
-    "selectInsurances": "Seguros aceitos",
     "selectSpecialties": "Especialidades",
     "selectDegrees": "Títulos",
     "selectLocales": "Idiomas falados",
@@ -300,12 +327,10 @@
     "noFacilitiesLinked": "Nenhuma unidade associada ainda. Pesquise acima para adicionar.",
     "errorMessageHealthcareProfessionalId": "ID do profissional de saúde não encontrado",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "Pesquisar por seguro",
     "placeholderTextSpecialties": "Pesquisar por especialidade",
     "placeholderTextDegrees": "Pesquisar por título",
     "placeholderTextLocales": "Pesquisar por idioma",
     "noSpecialtiesWereFound": "Nenhuma especialidade encontrada",
-    "noInsurancesWereFound": "Nenhum seguro encontrado",
     "noDegreesWereFound": "Nenhum título encontrado",
     "noLocalesWereFound": "No language were found",
     "delete": "Excluir permanentemente",
@@ -453,7 +478,11 @@
     "fillFromMapsHint": "Preenche nome, endereço e pin vazios a partir do link do Maps. Campos que já têm valor permanecem como estão.",
     "fillFromMapsDone": "{count} campos vazios foram preenchidos a partir do link do Maps.",
     "fillFromMapsNone": "Não restavam campos vazios para preencher a partir deste link.",
-    "fillFromMapsFailed": "Não foi possível ler este link. Abra-o no Maps e copie os dados."
+    "fillFromMapsFailed": "Não foi possível ler este link. Abra-o no Maps e copie os dados.",
+    "japaneseInsuranceHint": "Deixe desmarcado se a clínica aceita. A maioria das clínicas aceita.",
+    "japaneseInsuranceNotAccepted": "Não aceita o seguro de saúde público japonês. A consulta é particular.",
+    "japaneseInsuranceSourceLabel": "Fonte",
+    "japaneseInsuranceSourcePlaceholder": "Um link, ou uma nota como: liguei para a clínica em 2 nov. 2026"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",
@@ -715,16 +744,12 @@
     "languagesFallback": "idiomas listados no perfil",
     "specialties": "Especialidades",
     "languages": "Idiomas falados",
-    "insurance": "Seguros aceitos",
     "additionalInfo": "Para pacientes",
-    "facilities": "Clínicas",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "Não aceita seguro",
-      "INTERNATIONAL_HEALTH_INSURANCE": "Seguro saúde internacional",
-      "JAPANESE_HEALTH_INSURANCE": "Seguro saúde japonês",
-      "TRAVEL_INSURANCE": "Seguro viagem",
-      "UNINSURED": "Sem seguro / particular"
-    }
+    "facilities": "Clínicas"
+  },
+  "insuranceNote": {
+    "notAccepted": "Esta clínica não aceita o seguro de saúde público japonês. A consulta é particular.",
+    "guideLink": "Como funciona o pagamento do atendimento no Japão"
   },
   "hubPage": {
     "prefectureHeading": "Atendimento de saúde em {prefecture}",

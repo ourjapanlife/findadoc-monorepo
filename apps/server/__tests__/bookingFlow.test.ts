@@ -98,7 +98,6 @@ describe('booking flow', () => {
                 license_recommendation: null,
                 specialties: asJsonb([]),
                 spoken_languages: asJsonb(spokenLanguages),
-                accepted_insurance: asJsonb([]),
                 additional_info_for_patients: null,
                 email: null,
                 created_date: now,

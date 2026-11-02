@@ -644,7 +644,6 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
                 ),
                 degrees: firstHp.degrees ?? [],
                 specialties: firstHp.specialties ?? [],
-                acceptedInsurance: firstHp.acceptedInsurance ?? [],
                 additionalInfoForPatients: firstHp.additionalInfoForPatients ?? '',
                 facilityIds: [finalFacilityId]
             }
@@ -662,7 +661,6 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
                 degrees: [],
                 specialties: [],
                 spokenLanguages: sanitizeLocales(current.spoken_languages as (gqlTypes.Locale | null | undefined)[]),
-                acceptedInsurance: [],
                 additionalInfoForPatients: current.notes ?? null,
                 facilityIds: [finalFacilityId]
             }
@@ -682,7 +680,6 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
             degrees: [],
             specialties: [],
             spokenLanguages: sanitizeLocales(current.spoken_languages as (gqlTypes.Locale | null | undefined)[]),
-            acceptedInsurance: [],
             additionalInfoForPatients: current.notes ?? null,
             facilityIds: [finalFacilityId]
         }
@@ -705,7 +702,6 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
             license_recommendation: licensed.licenseRecommendation,
             specialties: asJsonb<gqlTypes.Specialty[]>(hpInput!.specialties ?? []),
             spoken_languages: asJsonb<gqlTypes.Locale[]>(hpInput!.spokenLanguages ?? []),
-            accepted_insurance: asJsonb<gqlTypes.Insurance[]>(hpInput!.acceptedInsurance ?? []),
             email: null,
             created_date: new Date().toISOString(),
             updated_date: new Date().toISOString()

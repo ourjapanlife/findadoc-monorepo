@@ -38,7 +38,6 @@ export function professionalFromRow(row: Selectable<HpsTable>): ProfessionalPare
         licenseRecommendation: row.license_recommendation ?? null,
         spokenLanguages: row.spoken_languages ?? [],
         specialties: row.specialties ?? [],
-        acceptedInsurance: row.accepted_insurance ?? [],
         createdDate: row.created_date,
         updatedDate: row.updated_date,
         additionalInfoForPatients: row.additional_info_for_patients ?? null
@@ -72,6 +71,7 @@ export function facilityFromRow(row: Selectable<FacilitiesTable>): FacilityParen
         updatedDate: row.updated_date,
         ...paymentOptionFields(row),
         ...supportedLanguageFields(row),
+        ...japaneseInsuranceFields(row),
         ...facilityLocationFields(row)
     }
 }
@@ -111,6 +111,21 @@ export function supportedLanguageFields(row: {
 
     return {
         supportedLanguages: uniqueLocales(stored).filter(isPublishedLocale) as gqlTypes.Locale[]
+    }
+}
+
+/** Unknown stays null. An unexpected stored value is treated as unknown. */
+export function japaneseInsuranceFields(row: {
+    japanese_insurance?: string | null
+    japanese_insurance_source?: string | null
+}): Pick<gqlTypes.Facility, 'japaneseInsurance' | 'japaneseInsuranceSource'> {
+    const value = (Object.values(gqlTypes.JapaneseInsurance) as string[]).includes(row.japanese_insurance ?? '')
+        ? row.japanese_insurance as gqlTypes.JapaneseInsurance
+        : null
+
+    return {
+        japaneseInsurance: value,
+        japaneseInsuranceSource: value === null ? null : (row.japanese_insurance_source ?? null)
     }
 }
 

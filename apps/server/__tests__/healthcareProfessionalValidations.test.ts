@@ -23,7 +23,6 @@ describe('error path: validations healthcare professionals', () => {
                         degrees: testData.generateDegrees(),
                         specialties: testData.generateSpecialties(),
                         spokenLanguages: testData.generateSpokenLanguages(),
-                        acceptedInsurance: [testData.generateAcceptedInsurance()],
                         additionalInfoForPatients: ''
                     }
                 }
@@ -66,7 +65,6 @@ describe('error path: validations healthcare professionals', () => {
                     degrees: testData.generateDegrees(),
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: testData.generateSpokenLanguages(),
-                    acceptedInsurance: [testData.generateAcceptedInsurance()],
                     additionalInfoForPatients: ''
                 }
             }
@@ -98,7 +96,6 @@ describe('error path: validations healthcare professionals', () => {
                     degrees: testData.generateDegrees(),
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: testData.generateSpokenLanguages(),
-                    acceptedInsurance: [testData.generateAcceptedInsurance()],
                     additionalInfoForPatients: ''
                 }
             }
@@ -140,7 +137,6 @@ describe('error path: validations healthcare professionals', () => {
                     degrees: testData.generateDegrees(),
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: testData.generateSpokenLanguages(),
-                    acceptedInsurance: [testData.generateAcceptedInsurance()],
                     additionalInfoForPatients: ''
                 }
             }
@@ -182,7 +178,6 @@ describe('error path: validations healthcare professionals', () => {
                     degrees: testData.generateDegrees(),
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: testData.generateSpokenLanguages(),
-                    acceptedInsurance: [testData.generateAcceptedInsurance()],
                     additionalInfoForPatients: ''
                 }
             }
@@ -224,7 +219,6 @@ describe('error path: validations healthcare professionals', () => {
                     degrees: testData.generateDegrees(),
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: testData.generateSpokenLanguages(),
-                    acceptedInsurance: [testData.generateAcceptedInsurance()],
                     additionalInfoForPatients: ''
                 }
             }
@@ -256,7 +250,6 @@ describe('error path: validations healthcare professionals', () => {
                     degrees: [],
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: testData.generateSpokenLanguages(),
-                    acceptedInsurance: [testData.generateAcceptedInsurance()],
                     additionalInfoForPatients: ''
                 }
             }
@@ -288,7 +281,6 @@ describe('error path: validations healthcare professionals', () => {
                     degrees: testData.generateDegrees(),
                     specialties: [],
                     spokenLanguages: testData.generateSpokenLanguages(),
-                    acceptedInsurance: [testData.generateAcceptedInsurance()],
                     additionalInfoForPatients: ''
                 }
             }
@@ -320,7 +312,6 @@ describe('error path: validations healthcare professionals', () => {
                     degrees: testData.generateDegrees(),
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: [],
-                    acceptedInsurance: [testData.generateAcceptedInsurance()],
                     additionalInfoForPatients: ''
                 }
             }
@@ -338,38 +329,6 @@ describe('error path: validations healthcare professionals', () => {
         const error = createProfessionalResult.body?.errors[0].extensions.errors[0]
 
         expect(error.field).toBe('spokenLanguages')
-        expect(error.errorCode).toBe(ErrorCode.REQUIRED)
-        expect(error.httpStatus).toBe(400)
-    })
-
-    test('failing: throws an error if accepted Insurance is empty', async () => {
-        const createFailingHealthcareProfessional = {
-            query: createHealthcareProfessionalMutation,
-            variables: {
-                input: {
-                    facilityIds: sharedFacilityIds,
-                    names: [testData.generateLocalizedNameInput()],
-                    degrees: testData.generateDegrees(),
-                    specialties: testData.generateSpecialties(),
-                    spokenLanguages: testData.generateSpokenLanguages(),
-                    acceptedInsurance: [],
-                    additionalInfoForPatients: ''
-                }
-            }
-        } as gqlMutation<CreateHealthcareProfessionalInput>
-
-        const createProfessionalResult = await request(gqlApiUrl).post('').send(createFailingHealthcareProfessional)
-        const createdProfessional
-            = createProfessionalResult.body.data as HealthcareProfessional
-
-        expect(createdProfessional).toBeFalsy()
-        expect(createProfessionalResult.body?.errors).toBeDefined()
-        expect(createProfessionalResult.body?.errors[0].extensions.errors[0]).toBeDefined()
-        expect(createProfessionalResult.body?.errors[0].extensions.errors.length).toBeGreaterThanOrEqual(1)
-
-        const error = createProfessionalResult.body?.errors[0].extensions.errors[0]
-
-        expect(error.field).toBe('insurance')
         expect(error.errorCode).toBe(ErrorCode.REQUIRED)
         expect(error.httpStatus).toBe(400)
     })

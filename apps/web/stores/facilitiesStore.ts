@@ -18,6 +18,7 @@ import type {
     UpdateFacilityInput,
     MutationCreateFacilityArgs
 } from '@findadoc/graphql'
+import { JapaneseInsurance } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
@@ -33,6 +34,11 @@ import {
     orderByInput,
     type ListOrder
 } from '~/utils/moderationTable'
+import {
+    japaneseInsuranceChoice,
+    japaneseInsuranceInput,
+    type JapaneseInsuranceChoice
+} from '~/utils/japaneseInsurance'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -59,6 +65,10 @@ export type FacilitySectionFields = {
     mapLatitude: string
     mapLongitude: string
     online: boolean
+
+    // Japanese public health insurance. Empty is unknown.
+    japaneseInsurance: JapaneseInsuranceChoice
+    japaneseInsuranceSource: string
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -109,6 +119,16 @@ export function getChangedFacilityFieldsForUpdate(
 
     if (current.healthProfessionalsRelations?.length) {
         updatedFields.healthcareProfessionalIds = current.healthProfessionalsRelations
+    }
+
+    const nextInsurance = japaneseInsuranceInput(current.japaneseInsurance, current.japaneseInsuranceSource)
+    const previousInsurance = japaneseInsuranceInput(
+        japaneseInsuranceChoice(original.japaneseInsurance),
+        original.japaneseInsuranceSource ?? ''
+    )
+    if (nextInsurance.japaneseInsurance !== previousInsurance.japaneseInsurance
+      || nextInsurance.japaneseInsuranceSource !== previousInsurance.japaneseInsuranceSource) {
+        Object.assign(updatedFields, nextInsurance)
     }
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
@@ -242,6 +262,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         mapLatitude: '',
         mapLongitude: '',
         online: false,
+        japaneseInsurance: '' as JapaneseInsuranceChoice,
+        japaneseInsuranceSource: '',
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -270,7 +292,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         mapLongitude: '',
         healthcareProfessionalIds: [] as string[],
         cityId: '',
-        online: false
+        online: false,
+        japaneseInsurance: JapaneseInsurance.Accepted as JapaneseInsuranceChoice,
+        japaneseInsuranceSource: ''
     })
 
     /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
@@ -311,6 +335,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.mapLatitude = data.mapLatitude?.toString() ?? ''
         facilitySectionFields.value.mapLongitude = data.mapLongitude?.toString() ?? ''
         facilitySectionFields.value.online = data.online === true
+        facilitySectionFields.value.japaneseInsurance = japaneseInsuranceChoice(data.japaneseInsurance)
+        facilitySectionFields.value.japaneseInsuranceSource = data.japaneseInsuranceSource ?? ''
     }
 
     function resetFacilitySectionFields() {
@@ -334,6 +360,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             mapLatitude: '',
             mapLongitude: '',
             online: false,
+            japaneseInsurance: '' as JapaneseInsuranceChoice,
+            japaneseInsuranceSource: '',
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }
@@ -431,6 +459,10 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                         })
                 },
                 healthcareProfessionalIds: createFacilityFields.healthcareProfessionalIds,
+                // A clinic from the form takes Japanese insurance unless the moderator ticks the box.
+                ...(createFacilityFields.japaneseInsurance
+                    ? japaneseInsuranceInput(createFacilityFields.japaneseInsurance, createFacilityFields.japaneseInsuranceSource)
+                    : {}),
                 // Online is opt-in: only send when the moderator checked it.
                 ...(isOnline ? { online: true } : {}),
                 ...(isOnline
@@ -558,6 +590,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.healthcareProfessionalIds = []
         createFacilityFields.cityId = ''
         createFacilityFields.online = false
+        createFacilityFields.japaneseInsurance = JapaneseInsurance.Accepted
+        createFacilityFields.japaneseInsuranceSource = ''
     }
 
     async function deleteFacility(

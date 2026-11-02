@@ -12,7 +12,7 @@ This is the MCP server for Find a Doc, providing AI-powered tools for interactin
 
 | Tool | Description |
 |---|---|
-| `search_healthcare_professionals` | Search professionals by spoken language, specialty, degree, or insurance |
+| `search_healthcare_professionals` | Search professionals by spoken language, specialty, or degree |
 | `search_facilities` | Search clinics and hospitals by name or affiliated professional |
 | `get_facility` | Full details for a single facility by ID |
 | `get_healthcare_professional` | Full details for a single professional by ID |

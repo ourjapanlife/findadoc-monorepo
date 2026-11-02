@@ -48,8 +48,7 @@ export async function registerRestRoutes(app: FastifyInstance): Promise<void> {
                 offset: toInt(q.offset),
                 spokenLanguages: toArray(q.spokenLanguages),
                 specialties: toArray(q.specialties),
-                degrees: toArray(q.degrees),
-                acceptedInsurance: toArray(q.acceptedInsurance)
+                degrees: toArray(q.degrees)
             })
         } catch (error) {
             return fail(reply, 502, error)

@@ -67,13 +67,14 @@ const GET_FACILITY = gql`
                 paymentType
                 paymentBrands
             }
+            japaneseInsurance
         }
     }
 `
 
 // Shapes returned by the queries above: the subsets of the generated `Facility`
 // type that each selection set actually requests. Field names and value types
-// stay in sync with the schema via `yarn generate`.
+// stay in sync with the schema via `pnpm generate`.
 export type FacilitySummary = Pick<GqlFacility, 'id' | 'nameEn' | 'nameJa' | 'healthcareProfessionalIds'> & {
     contact: Pick<Contact, 'phone' | 'website'> & {
         address?: Pick<PhysicalAddress, 'postalCode' | 'prefectureEn' | 'cityEn' | 'addressLine1En' | 'addressLine2En'> | null
@@ -90,6 +91,7 @@ export type Facility = Pick<
     | 'mapLongitude'
     | 'healthcareProfessionalIds'
     | 'paymentOptions'
+    | 'japaneseInsurance'
 >
 
 export interface SearchFacilitiesParams {

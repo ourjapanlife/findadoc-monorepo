@@ -6,6 +6,7 @@
     "termsTitle": "服务条款",
     "privacyTitle": "隐私政策",
     "npoTitle": "信息公开",
+    "insuranceTitle": "在日本就医付费",
     "searchTitle": "搜索诊所",
     "contactTitle": "联系我们"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "业务内容",
     "activitiesValue": "为帮助在日本生活的日本人和外国人以所需语言获得所需的医疗服务，构建、推广并运营免费的高质量多语言医疗信息平台；以及开展志愿者程序员培养项目。",
     "contactLabel": "联系方式"
+  },
+  "insurancePage": {
+    "heading": "在日本就医付费",
+    "intro": "在日本诊所，公共医疗保险如何运作，自费是什么意思，以及海外保险或旅行保险该如何处理。",
+    "disclaimer": "Find a Doc 不会核实任何人的保险覆盖情况，也不提供医疗或保险建议。如有疑问，请咨询诊所、您的保险公司或所在市区町村的窗口。",
+    "schemesHeading": "公共医疗保险",
+    "schemesIntro": "在日本居住的人都要加入一种公共医疗保险。商业人寿保险或海外保险不能取代它。",
+    "schemeEmployee": "职工健康保险（健康保険）：在职员工及其抚养的家属，通过协会健保（協会けんぽ）、公司健保组合或互助会加入。",
+    "schemeNational": "国民健康保险（国民健康保険）：未加入职场保险的居民。持有在留卡且居留超过三个月的外国居民，通常属于这一类。",
+    "schemeElderly": "75岁及以上人群的医疗制度（後期高齢者医療制度）：从75岁生日起适用。",
+    "shareHeading": "在窗口需要支付多少",
+    "shareBody": "在接受公共保险的诊所，您在窗口支付自己负担的部分，其余由保险方支付给诊所。通常的负担比例为：学龄前20%，学龄至69岁30%，70至74岁20%，75岁及以上10%。收入较高的老年患者负担比例可能上调。单月医疗费过高时，可适用高额医疗费制度（高額療養費）设定上限。",
+    "bringHeading": "需要带什么",
+    "bringBody": "请带上已登记为健康保险证的 My Number 卡（个人编号卡），或保险方寄给您的资格确认书（資格確認書）。旧的纸质保险证自2025年12月1日起已不能使用。",
+    "clinicsHeading": "不接受公共保险的诊所",
+    "clinicsBody": "诊所只有被指定为保险医疗机构（保険医療機関），才能向公共保险申请结算。有些诊所未获指定，所有患者都按自费诊疗（自由診療）。这类诊所常见于美容诊所、部分牙科诊所和部分国际诊所。当我们有依据时，Find a Doc 的诊所页面会注明这一点。",
+    "selfPayHeading": "自费就诊",
+    "selfPayBody": "如果您没有日本的公共保险，例如作为游客或在办理加入之前，您需要自己向诊所支付全部费用。许多普通诊所仍会接诊。不接受公共保险的诊所自行定价。",
+    "mixedBody": "如果一次保险诊疗中包含保险不覆盖的治疗，除少数获准的例外情况外，整次就诊可能变为自费。同意追加治疗之前，请先向诊所确认。",
+    "overseasHeading": "海外保险与旅行保险",
+    "overseasBody": "大多数诊所不会向海外保险公司或旅行保险公司结算。您先向诊所付款，保留收据（領収書）和费用明细单（診療明細書），再寄给保险公司申请报销。少数医院会直接向保险公司收费，但前提是保险公司在就诊前已发出付款担保。",
+    "sourcesHeading": "官方资料",
+    "sourceShare": "窗口自付比例（厚生劳动省）",
+    "sourceNationalInsurance": "谁加入国民健康保险（厚生劳动省）",
+    "sourceMynaCard": "My Number 保险证（厚生劳动省）",
+    "sourceCertificate": "资格确认书（数字厅）",
+    "sourceFacilitySearch": "医疗机构查询（厚生劳动省）"
   },
   "common": {
     "menu": "菜单",
@@ -296,7 +324,6 @@
     "placeholderTextHealthcareProfessionalFirstName": "例如 John",
     "placeholderTextHealthcareProfessionalLastName": "例如 Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "例如 Bronson",
-    "selectInsurances": "接受的保险",
     "selectSpecialties": "专科",
     "selectDegrees": "学位",
     "selectLocales": "使用语言",
@@ -307,12 +334,10 @@
     "noFacilitiesLinked": "尚未关联任何机构。请在上方搜索并添加。",
     "errorMessageHealthcareProfessionalId": "未找到医疗人员 ID",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "按保险搜索",
     "placeholderTextSpecialties": "按专科搜索",
     "placeholderTextDegrees": "按学位搜索",
     "placeholderTextLocales": "按语言搜索",
     "noSpecialtiesWereFound": "未找到专科",
-    "noInsurancesWereFound": "未找到保险",
     "noDegreesWereFound": "未找到学位",
     "noLocalesWereFound": "未找到语言",
     "delete": "永久删除",
@@ -453,7 +478,11 @@
     "fillFromMapsHint": "根据地图链接填写空白的名称、地址和地图钉。已有内容的字段保持不变。",
     "fillFromMapsDone": "已根据地图链接填写 {count} 个空白项。",
     "fillFromMapsNone": "没有可以用此链接填写的空白项。",
-    "fillFromMapsFailed": "无法读取此链接。请在地图中打开并复制详细信息。"
+    "fillFromMapsFailed": "无法读取此链接。请在地图中打开并复制详细信息。",
+    "japaneseInsuranceHint": "如果诊所接受，请不要勾选。大多数诊所都接受。",
+    "japaneseInsuranceNotAccepted": "不接受日本公共医疗保险。就诊需自费。",
+    "japaneseInsuranceSourceLabel": "信息来源",
+    "japaneseInsuranceSourcePlaceholder": "链接，或备注，例如：2026年11月2日致电诊所确认"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",
@@ -715,16 +744,12 @@
     "languagesFallback": "资料中列出的语言",
     "specialties": "专科",
     "languages": "使用语言",
-    "insurance": "接受的保险",
     "additionalInfo": "患者须知",
-    "facilities": "诊所",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "不接受保险",
-      "INTERNATIONAL_HEALTH_INSURANCE": "国际医疗保险",
-      "JAPANESE_HEALTH_INSURANCE": "日本健康保险",
-      "TRAVEL_INSURANCE": "旅行保险",
-      "UNINSURED": "无保险 / 自费"
-    }
+    "facilities": "诊所"
+  },
+  "insuranceNote": {
+    "notAccepted": "该诊所不接受日本公共医疗保险。就诊需自费。",
+    "guideLink": "在日本就医如何付费"
   },
   "hubPage": {
     "prefectureHeading": "{prefecture}的医疗服务",

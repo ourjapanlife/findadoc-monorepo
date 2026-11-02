@@ -15,6 +15,7 @@ import {
 } from '~/utils/formValidations'
 import { checkPrefectureNameMatch } from '~/utils/facilitiesUtils'
 import { triggerFormValidationErrorMessages } from '~/utils/triggerFormValidationErrorMessages'
+import { isValidJapaneseInsuranceSource, type JapaneseInsuranceChoice } from '~/utils/japaneseInsurance'
 
 type FacilityValidationFields = {
     nameEn: string
@@ -47,6 +48,8 @@ type FacilityValidationFields = {
     email?: string
     website?: string
     online?: boolean
+    japaneseInsurance?: JapaneseInsuranceChoice
+    japaneseInsuranceSource?: string
     addressLine1En?: string
     addressLine1Ja?: string
     addressLine2En?: string
@@ -58,7 +61,7 @@ type FacilityValidationFields = {
 
 type HealthcareProfessionalValidationFields = Pick<
     CreateHealthcareProfessionalInput,
-    'acceptedInsurance' | 'degrees' | 'specialties' | 'spokenLanguages'
+    'degrees' | 'specialties' | 'spokenLanguages'
 >
 
 type NormalizedFacilityValidationFields = {
@@ -169,14 +172,14 @@ export function validateModerationFacilityFields(fields: FacilityValidationField
 
     const normalizedFields = normalizeFacilityValidationFields(fields)
     const validationResults = getFacilityValidationResults(normalizedFields)
-    return validationResults.every(Boolean)
+    const insuranceSourceValid = isValidJapaneseInsuranceSource(fields.japaneseInsuranceSource)
+    return validationResults.every(Boolean) && insuranceSourceValid
 }
 
 export function hasRequiredHealthcareProfessionalSelections(
     fields: HealthcareProfessionalValidationFields
 ): boolean {
-    return (fields.acceptedInsurance?.length ?? 0) > 0
-      && (fields.degrees?.length ?? 0) > 0
+    return (fields.degrees?.length ?? 0) > 0
       && (fields.specialties?.length ?? 0) > 0
       && (fields.spokenLanguages?.length ?? 0) > 0
 }

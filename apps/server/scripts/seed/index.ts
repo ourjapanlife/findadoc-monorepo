@@ -96,13 +96,13 @@ async function runSeed() {
                 `INSERT INTO hps (
                     id, names, additional_info_for_patients, degrees, primary_license,
                     additional_credentials, license_review, license_recommendation,
-                    specialties, spoken_languages, accepted_insurance, email,
+                    specialties, spoken_languages, email,
                     created_date, updated_date, firestore_id
                 ) VALUES (
                     $1, $2::jsonb, $3, $4::jsonb, $5,
                     $6::jsonb, $7, $8,
-                    $9::jsonb, $10::jsonb, $11::jsonb, $12,
-                    $13, $14, $15
+                    $9::jsonb, $10::jsonb, $11,
+                    $12, $13, $14
                 )`,
                 [
                     hp.id,
@@ -115,7 +115,6 @@ async function runSeed() {
                     hp.license_recommendation,
                     JSON.stringify(hp.specialties),
                     JSON.stringify(hp.spoken_languages),
-                    JSON.stringify(hp.accepted_insurance),
                     hp.email,
                     hp.created_date,
                     hp.updated_date,

@@ -130,25 +130,6 @@
             :title="t('modHealthcareProfessionalSection.healthcareProfessionalMedicalInfoHeading')"
         >
             <div class="mod-form-grid">
-                <div class="mod-picker">
-                    <label
-                        for="accepted-insurances"
-                        class="field-label"
-                    >
-                        {{ t("modHealthcareProfessionalSection.selectInsurances") }}
-                    </label>
-                    <ModSearchBar
-                        v-if="createHealthcareProfessionalSectionFields.acceptedInsurance"
-                        v-model="createHealthcareProfessionalSectionFields.acceptedInsurance"
-                        data-testid="mod-healthcare-professional-section-accepted-insurances"
-                        :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextAcceptedInsurances')"
-                        :no-match-text="t('modHealthcareProfessionalSection.noInsurancesWereFound')"
-                        :fields-to-display-callback="insurancesToDisplayCallback"
-                        :default-suggestions="Object.values(Insurance)"
-                        @search-input-change="handleInsuranceInputChange"
-                    />
-                    <ModTokenList :labels="tokenLabels(createHealthcareProfessionalSectionFields.acceptedInsurance)" />
-                </div>
                 <ModProfessionalLicenseFields
                     v-if="createHealthcareProfessionalSectionFields.degrees"
                     v-model:degrees="createHealthcareProfessionalSectionFields.degrees"
@@ -224,8 +205,7 @@ import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessional
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useLocaleStore } from '~/stores/localeStore'
 import { useModerationScreenStore } from '~/stores/moderationScreenStore'
-import { Insurance,
-    Locale,
+import { Locale,
     Specialty,
     type LocalizedNameInput,
     type HealthcareProfessional } from '@findadoc/graphql'
@@ -417,11 +397,6 @@ const handleAddLocalizedNames = () => {
     handleCloseAddingNewLocalizedName()
 }
 
-const handleInsuranceInputChange = (filteredItems: Ref<Insurance[]>, inputValue: string) => {
-    const arrayOfInsurances = Object.values(Insurance) as Insurance[]
-    filteredItems.value = filterByCaseInsensitiveIncludes(arrayOfInsurances, inputValue)
-}
-
 const handleSpecialtyInputChange = (filteredItems: Ref<Specialty[]>, inputValue: string) => {
     const arrayOfSpecialties = Object.values(Specialty) as Specialty[]
     filteredItems.value = filterByCaseInsensitiveIncludes(arrayOfSpecialties, inputValue)
@@ -439,6 +414,5 @@ const handleLocaleInputChange = (filteredItems: Ref<Locale[]>, inputValue: strin
 }
 
 const specialtiesToDisplayCallback = (specialty: Specialty) => [specialty]
-const insurancesToDisplayCallback = (insurance: Insurance) => [insurance]
 const localesToDisplayCallback = (locale: Locale) => [localesStore.formatLanguageCodeToSimpleText(locale)]
 </script>

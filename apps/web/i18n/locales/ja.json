@@ -6,6 +6,7 @@
     "termsTitle": "利用規約",
     "privacyTitle": "プライバシーポリシー",
     "npoTitle": "情報公開",
+    "insuranceTitle": "日本での医療費の支払い",
     "searchTitle": "クリニックを探す",
     "contactTitle": "お問い合わせ"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "事業内容",
     "activitiesValue": "日本に暮らす日本人と外国人を、必要な言語で必要な医療サービスにつなげるため、無料で利用できる質の高い多言語医療情報プラットフォームを構築・普及・運営する事業、およびボランティアプログラマー育成プログラム事業",
     "contactLabel": "連絡先"
+  },
+  "insurancePage": {
+    "heading": "日本での医療費の支払い",
+    "intro": "医療機関での公的医療保険のしくみ、自費（自己負担）の意味、海外の保険や旅行保険の扱いについて説明します。",
+    "disclaimer": "Find a Docは個人の保険加入状況を確認せず、医療や保険の助言も行いません。わからないときは、医療機関、加入している保険者、またはお住まいの市区町村の窓口に確認してください。",
+    "schemesHeading": "公的医療保険",
+    "schemesIntro": "日本に住む人は、いずれかの公的医療保険に加入します。民間の生命保険や海外の保険は、その代わりにはなりません。",
+    "schemeEmployee": "健康保険：会社などで働く人と、その人が扶養する家族。協会けんぽ、健康保険組合、共済組合などに加入します。",
+    "schemeNational": "国民健康保険：勤務先の保険に入っていない住民。在留カードを持ち、3か月を超えて滞在する外国人住民は、通常このグループに入ります。",
+    "schemeElderly": "後期高齢者医療制度：75歳の誕生日から加入します。",
+    "shareHeading": "窓口で支払う金額",
+    "shareBody": "公的医療保険を扱う医療機関では、窓口で自己負担分を支払い、残りは保険者が医療機関に支払います。一般的な負担割合は、小学校入学前が2割、小学校入学から69歳までが3割、70歳から74歳が2割、75歳以上が1割です。高齢の方は所得によって負担割合が上がることがあります。1か月の医療費が高額になったときは、高額療養費制度で上限が設けられます。",
+    "bringHeading": "持っていくもの",
+    "bringBody": "健康保険証として登録したマイナンバーカード（マイナ保険証）か、保険者から届いた資格確認書を持っていきましょう。従来の紙の保険証は2025年12月1日で使えなくなりました。",
+    "clinicsHeading": "公的医療保険を扱わない医療機関",
+    "clinicsBody": "公的医療保険で診療できるのは、保険医療機関の指定を受けた医療機関だけです。指定を受けず、すべての患者を自由診療（自費）で診る医療機関もあります。美容クリニック、一部の歯科、一部の外国人向けクリニックに多く見られます。Find a Docでは、根拠となる情報がある場合にクリニックのページにその旨を表示します。",
+    "selfPayHeading": "自費での受診",
+    "selfPayBody": "旅行者や加入手続き前の方など、日本の公的医療保険に入っていない場合は、医療費の全額を自分で医療機関に支払います。多くの一般的な医療機関でも受診できます。公的医療保険を扱わない医療機関は、料金を独自に決めています。",
+    "mixedBody": "保険診療の受診に保険が使えない治療が加わると、認められた一部の例外を除き、受診全体が自費になることがあります。追加の治療を受ける前に医療機関に確認してください。",
+    "overseasHeading": "海外の保険と旅行保険",
+    "overseasBody": "多くの医療機関は、海外の保険会社や旅行保険の会社に直接請求しません。医療機関に支払い、領収書と診療明細書を保管し、保険会社に送って払い戻しを請求します。保険会社に直接請求する病院もありますが、受診前に保険会社から支払保証書が届いている場合に限られます。",
+    "sourcesHeading": "公的な情報",
+    "sourceShare": "医療費の自己負担割合（厚生労働省）",
+    "sourceNationalInsurance": "国民健康保険の加入について（厚生労働省）",
+    "sourceMynaCard": "マイナ保険証（厚生労働省）",
+    "sourceCertificate": "資格確認書（デジタル庁）",
+    "sourceFacilitySearch": "医療情報ネット（厚生労働省）"
   },
   "common": {
     "menu": "メニュー",
@@ -297,7 +325,6 @@
     "placeholderTextHealthcareProfessionalLastName": "例: Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "例: Bronson",
     "selectDegrees": "学位",
-    "selectInsurances": "対応する保険",
     "selectLocales": "対応言語",
     "selectSpecialties": "専門",
     "facilities": "関連する医療機関",
@@ -307,12 +334,10 @@
     "noFacilitiesLinked": "関連する医療機関はまだありません。上で検索して追加してください。",
     "errorMessageHealthcareProfessionalId": "医療従事者の ID が見つかりません",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "保険で検索",
     "placeholderTextSpecialties": "専門で検索",
     "placeholderTextDegrees": "学位で検索",
     "placeholderTextLocales": "言語で検索",
     "noSpecialtiesWereFound": "専門は見つかりませんでした",
-    "noInsurancesWereFound": "保険は見つかりませんでした",
     "noDegreesWereFound": "学位は見つかりませんでした",
     "noLocalesWereFound": "No language were found",
     "delete": "完全に削除",
@@ -453,7 +478,11 @@
     "existingHPHeading": "この医療機関の医療従事者",
     "addHealthcareProfessional": "既存の医療従事者を追加",
     "noHPSelected": "医療従事者が選択されていません",
-    "noHealthcareProfessionalFound": "一致する医療従事者はいません"
+    "noHealthcareProfessionalFound": "一致する医療従事者はいません",
+    "japaneseInsuranceHint": "クリニックが扱っている場合は、チェックを入れないでください。ほとんどのクリニックは扱っています。",
+    "japaneseInsuranceNotAccepted": "公的医療保険を扱っていない。受診は自費になる。",
+    "japaneseInsuranceSourceLabel": "情報源",
+    "japaneseInsuranceSourcePlaceholder": "リンク、または「2026年11月2日にクリニックに電話で確認」などのメモ"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新して終了",
@@ -721,16 +750,12 @@
     "languagesFallback": "プロフィールに記載された言語",
     "specialties": "専門",
     "languages": "対応言語",
-    "insurance": "対応する保険",
     "additionalInfo": "患者の方へ",
-    "facilities": "クリニック",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "保険は使えません",
-      "INTERNATIONAL_HEALTH_INSURANCE": "海外の医療保険",
-      "JAPANESE_HEALTH_INSURANCE": "日本の健康保険",
-      "TRAVEL_INSURANCE": "旅行保険",
-      "UNINSURED": "保険なし / 自費"
-    }
+    "facilities": "クリニック"
+  },
+  "insuranceNote": {
+    "notAccepted": "このクリニックは公的医療保険を扱っていません。受診は自費になります。",
+    "guideLink": "日本での医療費の支払いについて"
   },
   "hubPage": {
     "prefectureHeading": "{prefecture}の医療",
