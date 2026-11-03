@@ -1,5 +1,6 @@
 import * as gqlTypes from '@findadoc/graphql'
-import { SUBMISSION_STATUS, type HpsTable, type FacilitiesTable, type SubmissionsTable } from '../typeDefs/kyselyTypes.js'
+import { SUBMISSION_KIND, SUBMISSION_STATUS, type HpsTable, type FacilitiesTable, type SubmissionsTable } from '../typeDefs/kyselyTypes.js'
+import { facilityCorrectionFromColumns } from '../corrections/facilityCorrection.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import type { Insertable, Selectable } from 'kysely'
 import { normalizePaymentOptions } from '@findadoc/utils'
@@ -150,12 +151,14 @@ export function facilityLocationFields(row: {
 
 /** Maps a submissions row to the GraphQL Submission. The three status flags come from `status`. */
 export function submissionFromRow(row: Selectable<SubmissionsTable>): gqlTypes.Submission {
+    const isCorrection = row.kind === SUBMISSION_KIND.CORRECTION
+
     return {
         id: row.id,
-        // Nullable in the table. Stored rows have always had them, so they pass through as stored.
-        googleMapsUrl: row.google_maps_url as string,
-        healthcareProfessionalName: row.healthcare_professional_name as string,
-        spokenLanguages: row.spoken_languages as gqlTypes.Locale[],
+        // Nullable in the table and non-null in GraphQL. A correction stores none of them (#22).
+        googleMapsUrl: row.google_maps_url ?? '',
+        healthcareProfessionalName: row.healthcare_professional_name ?? '',
+        spokenLanguages: row.spoken_languages ?? [],
         facility: row.facility_partial ? {
             ...row.facility_partial,
             healthcareProfessionalIds: row.facility_partial.healthcareProfessionalIds ?? []
@@ -166,7 +169,18 @@ export function submissionFromRow(row: Selectable<SubmissionsTable>): gqlTypes.S
         isRejected: row.status === SUBMISSION_STATUS.REJECTED,
         createdDate: row.created_date,
         updatedDate: row.updated_date,
-        notes: row.notes ?? undefined
+        notes: row.notes ?? undefined,
+        kind: isCorrection ? gqlTypes.SubmissionKind.Correction : gqlTypes.SubmissionKind.Listing,
+        // The database requires facilities_id on a correction. The check keeps the type honest.
+        correction: isCorrection && row.facilities_id !== null
+            ? facilityCorrectionFromColumns({
+                facilityId: row.facilities_id,
+                reasons: row.correction_reasons,
+                changes: row.correction_changes,
+                reporterRelation: row.reporter_relation,
+                duplicateListingUrl: row.duplicate_listing_url
+            })
+            : null
     }
 }
 
