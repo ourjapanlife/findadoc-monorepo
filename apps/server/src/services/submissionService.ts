@@ -12,7 +12,13 @@ import { logger } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
-import { SUBMISSION_STATUS, type SubmissionStatusEnum, type SubmissionsTable } from '../typeDefs/kyselyTypes.js'
+import {
+    SUBMISSION_KIND,
+    SUBMISSION_STATUS,
+    type SubmissionKindEnum,
+    type SubmissionStatusEnum,
+    type SubmissionsTable
+} from '../typeDefs/kyselyTypes.js'
 import type { Selectable } from 'kysely'
 import { db } from '../kyselyClient.js'
 import { submissionFromRow } from '../services/mappersEntityService.js'
@@ -22,6 +28,10 @@ import { canonicalMapsFields } from '../places/mapsLink.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import { databaseOrderColumn, SUBMISSION_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { contactForStorage, facilityPartialForStorage } from './facilityService.js'
+import { approveCorrectionInTransaction, CorrectionApprovalRejected } from './facilityCorrectionService.js'
+import { submissionAuditValue } from './submissionAudit.js'
+import { correctionRetainUntil } from '../corrections/facilityCorrection.js'
+import { cityExists } from './cityService.js'
 type SubmissionStatusFlag = keyof Pick<
     gqlTypes.SubmissionSearchFilters,
     'isUnderReview' | 'isApproved' | 'isRejected'
@@ -273,6 +283,10 @@ function applySubmissionQueryFilters<O>(
         query = query.where('status', '=', status)
     }
 
+    if (filters.kind) {
+        query = query.where('kind', '=', storedSubmissionKind(filters.kind))
+    }
+
     for (const { flag, column } of SUBMISSION_EQ_QUERY_FILTERS) {
         const value = filters[flag]
 
@@ -282,6 +296,71 @@ function applySubmissionQueryFilters<O>(
     }
 
     return query
+}
+
+function storedSubmissionKind(kind: gqlTypes.SubmissionKind): SubmissionKindEnum {
+    return kind === gqlTypes.SubmissionKind.Correction ? SUBMISSION_KIND.CORRECTION : SUBMISSION_KIND.LISTING
+}
+
+/** Update fields that describe a new listing. A correction refuses them (#22). */
+const LISTING_ONLY_UPDATE_FIELDS = [
+    'googleMapsUrl',
+    'healthcareProfessionalName',
+    'spokenLanguages',
+    'facility',
+    'healthcareProfessionals'
+] as const satisfies ReadonlyArray<keyof gqlTypes.UpdateSubmissionInput>
+
+class SubmissionUpdateRefused extends Error {
+    constructor(readonly validationErrors: ValidationError[]) {
+        super('SUBMISSION_UPDATE_REFUSED')
+    }
+}
+
+function refuseUpdate(field: string, errorCode: ErrorCode, httpStatus = 400): never {
+    throw new SubmissionUpdateRefused([{ field, errorCode, httpStatus }])
+}
+
+/**
+ * The extra patch for a correction update: the city a moderator chose, and retain_until.
+ * Declining starts the notes retention clock and reopening stops it. A listing refuses correctionCityId.
+ */
+async function correctionUpdatePatch(
+    current: Selectable<SubmissionsTable>,
+    fields: Partial<gqlTypes.UpdateSubmissionInput>,
+    nextStatus: unknown
+): Promise<Record<string, unknown>> {
+    const cityId = fields.correctionCityId
+
+    if (current.kind !== SUBMISSION_KIND.CORRECTION) {
+        if (cityId !== undefined && cityId !== null) {
+            refuseUpdate('correctionCityId', ErrorCode.SUBMISSION_KIND_MISMATCH)
+        }
+        return {}
+    }
+
+    const listingField = LISTING_ONLY_UPDATE_FIELDS.find(field => fields[field] !== undefined && fields[field] !== null)
+    if (listingField !== undefined) {
+        refuseUpdate(listingField, ErrorCode.SUBMISSION_KIND_MISMATCH)
+    }
+
+    const patch: Record<string, unknown> = {}
+
+    if (cityId !== undefined && cityId !== null) {
+        if (!(current.correction_reasons ?? []).includes(gqlTypes.FacilityCorrectionReason.WrongCity)) {
+            refuseUpdate('correctionCityId', ErrorCode.CORRECTION_FIELD_WITHOUT_REASON)
+        }
+        if (!UUID_PATTERN.test(cityId) || !(await cityExists(cityId))) {
+            refuseUpdate('correctionCityId', ErrorCode.INVALID_ID)
+        }
+        patch.correction_changes = asJsonb({ ...(current.correction_changes ?? {}), cityId })
+    }
+
+    if (nextStatus !== current.status) {
+        patch.retain_until = nextStatus === SUBMISSION_STATUS.REJECTED ? correctionRetainUntil() : null
+    }
+
+    return patch
 }
 
 const UUID_PATTERN = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
@@ -541,14 +620,24 @@ export const updateSubmission = async (
             }
 
             // Map boolean flags to status via SUBMISSION_STATUS_FILTERS
-            const patch = buildSubmissionUpdatePatch(currentSubmission.status, fields)
+            const basePatch = buildSubmissionUpdatePatch(currentSubmission.status, fields)
+            const patch = {
+                ...basePatch,
+                ...await correctionUpdatePatch(currentSubmission, fields, basePatch.status)
+            }
 
+            // Compare-and-set on the status read above, so two moderators cannot both decide.
             const updatedSubmission = await transaction
                 .updateTable('submissions')
                 .set(patch)
                 .where('id', '=', submissionId)
+                .where('status', '=', currentSubmission.status)
                 .returningAll()
-                .executeTakeFirstOrThrow()
+                .executeTakeFirst()
+
+            if (updatedSubmission === undefined) {
+                refuseUpdate('status', ErrorCode.SUBMISSION_STATUS_CHANGED, 409)
+            }
 
             // Map to GraphQL for audit log
             const oldGqlSubmission = submissionFromRow(currentSubmission)
@@ -559,8 +648,8 @@ export const updateSubmission = async (
                 actionType: gqlTypes.ActionType.Update,
                 objectType: gqlTypes.ObjectType.Submission,
                 updatedBy,
-                oldValue: oldGqlSubmission,
-                newValue: newGqlSubmission
+                oldValue: submissionAuditValue(oldGqlSubmission),
+                newValue: submissionAuditValue(newGqlSubmission)
             })
 
             return newGqlSubmission
@@ -568,6 +657,10 @@ export const updateSubmission = async (
 
         return { data: gqlSubmission, hasErrors: false }
     } catch (error) {
+        if (error instanceof SubmissionUpdateRefused) {
+            return { data: {} as gqlTypes.Submission, hasErrors: true, errors: error.validationErrors }
+        }
+
         const errorMessage = (error as Error).message
 
         // Handle NOT_FOUND error
@@ -774,6 +867,21 @@ export const approveSubmission = async (
                 throw new Error('SUBMISSION_ALREADY_APPROVED')
             }
 
+            // A correction writes only the fields the visitor changed to its facility (#22).
+            if (currentSubmission.kind === SUBMISSION_KIND.CORRECTION) {
+                const approved = await approveCorrectionInTransaction(transaction, currentSubmission, updatedBy)
+
+                await createAuditLog(transaction, {
+                    actionType: gqlTypes.ActionType.Update,
+                    objectType: gqlTypes.ObjectType.Submission,
+                    updatedBy,
+                    oldValue: submissionAuditValue(submissionFromRow(currentSubmission)),
+                    newValue: submissionAuditValue(submissionFromRow(approved))
+                })
+
+                return submissionFromRow(approved)
+            }
+
             const approvalValidation = validateApprovalProfessionalFields({
                 hpsId: currentSubmission.hps_id,
                 facilityHealthcareProfessionalIds: currentSubmission.facility_partial?.healthcareProfessionalIds,
@@ -884,8 +992,8 @@ export const approveSubmission = async (
                 actionType: gqlTypes.ActionType.Update,
                 objectType: gqlTypes.ObjectType.Submission,
                 updatedBy,
-                oldValue: oldGqlSubmission,
-                newValue: newGqlSubmission
+                oldValue: submissionAuditValue(oldGqlSubmission),
+                newValue: submissionAuditValue(newGqlSubmission)
             })
 
             return newGqlSubmission
@@ -893,7 +1001,7 @@ export const approveSubmission = async (
 
         return { data: gqlSubmission, hasErrors: false }
     } catch (error) {
-        if (error instanceof SubmissionApprovalValidationError) {
+        if (error instanceof SubmissionApprovalValidationError || error instanceof CorrectionApprovalRejected) {
             return {
                 data: {} as gqlTypes.Submission,
                 hasErrors: true,
@@ -973,7 +1081,7 @@ export async function deleteSubmission(
                 actionType: gqlTypes.ActionType.Delete,
                 objectType: gqlTypes.ObjectType.Submission,
                 updatedBy,
-                oldValue: oldGqlSubmission
+                oldValue: submissionAuditValue(oldGqlSubmission)
             })
         })
 
