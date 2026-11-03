@@ -134,6 +134,32 @@ export interface SubmissionsTable {
     healthcare_professionals_partial: ColumnType<gqlTypes.HealthcareProfessionalSubmission[]
         | null, gqlTypes.HealthcareProfessionalSubmission[] | null, gqlTypes.HealthcareProfessionalSubmission[] | null>
     firestore_id: string | null
+    /** 'listing' or 'correction' (#22). The database default is 'listing'. */
+    kind: ColumnType<SubmissionKindEnum, SubmissionKindEnum | undefined, SubmissionKindEnum>
+    /** Reason codes a visitor picked. Null on a listing. */
+    correction_reasons: ColumnType<gqlTypes.FacilityCorrectionReason[] | null,
+        gqlTypes.FacilityCorrectionReason[] | null | undefined, gqlTypes.FacilityCorrectionReason[] | null>
+    /** Only the fields a visitor changed. Null on a listing. */
+    correction_changes: ColumnType<CorrectionChanges | null, CorrectionChanges | null | undefined,
+        CorrectionChanges | null>
+    reporter_relation: ColumnType<gqlTypes.CorrectionReporterRelation | null,
+        gqlTypes.CorrectionReporterRelation | null | undefined, gqlTypes.CorrectionReporterRelation | null>
+    duplicate_listing_url: ColumnType<string | null, string | null | undefined, string | null>
+    /** When the purge clears notes on a decided correction. Null until a moderator decides. */
+    retain_until: ColumnType<string | null, string | null | undefined, string | null>
+}
+
+/**
+ * The fields a visitor changed in a correction, as stored in submissions.correction_changes.
+ * A key is present only when the visitor changed that field. cityId is set by a moderator.
+ */
+export type CorrectionChanges = {
+    address?: gqlTypes.PhysicalAddressInput
+    phone?: string
+    website?: string
+    supportedLanguages?: gqlTypes.Locale[]
+    paymentOptions?: gqlTypes.PaymentOptionsInput[]
+    cityId?: string
 }
 
 /**
@@ -410,3 +436,11 @@ export const SUBMISSION_STATUS = {
     APPROVED: 'approved',
     REJECTED: 'rejected'
 } as const satisfies Record<string, SubmissionStatusEnum>
+
+export type SubmissionKindEnum = 'listing' | 'correction'
+
+/** Submission kind values as stored (#22). GraphQL exposes them as SubmissionKind. */
+export const SUBMISSION_KIND = {
+    LISTING: 'listing',
+    CORRECTION: 'correction'
+} as const satisfies Record<string, SubmissionKindEnum>
