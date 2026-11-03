@@ -48,5 +48,17 @@ export enum ErrorCode {
     /** A facility that is not online needs a Google place id (#228). */
     PLACE_ID_REQUIRED = 'PLACE_ID_REQUIRED',
     /** A PayPay QR that is not a PNG, JPEG, or WebP up to 1 MB, or not this clinic's upload (online consult v2 §3.3). */
-    PAYMENT_QR_INVALID = 'PAYMENT_QR_INVALID'
+    PAYMENT_QR_INVALID = 'PAYMENT_QR_INVALID',
+    /** A correction changed a field without the reason that field belongs to (#22). */
+    CORRECTION_FIELD_WITHOUT_REASON = 'CORRECTION_FIELD_WITHOUT_REASON',
+    /** A WRONG_CITY correction was approved before a moderator chose the city. */
+    CORRECTION_CITY_REQUIRED = 'CORRECTION_CITY_REQUIRED',
+    /** The facility exists but is not published, so visitors cannot report on it. */
+    FACILITY_NOT_PUBLISHED = 'FACILITY_NOT_PUBLISHED',
+    /** The update does not apply to this kind of submission, such as a whole facility on a correction. */
+    SUBMISSION_KIND_MISMATCH = 'SUBMISSION_KIND_MISMATCH',
+    /** A duplicate report must link to a Find a Doc listing over https. */
+    INVALID_LISTING_URL = 'INVALID_LISTING_URL',
+    /** Someone else changed the submission status first. Reload and decide again. */
+    SUBMISSION_STATUS_CHANGED = 'SUBMISSION_STATUS_CHANGED'
 }
