@@ -14,6 +14,7 @@ import * as facilityService from './services/facilityService.js'
 import * as healthcareProfessionalService from './services/healthcareProfessionalService.js'
 import * as gqlType from '@findadoc/graphql'
 import * as submissionService from './services/submissionService.js'
+import * as facilityCorrectionService from './services/facilityCorrectionService.js'
 import * as userService from './services/userService.js'
 import * as reservationService from './services/reservationService.js'
 import * as cityService from './services/cityService.js'
@@ -472,6 +473,19 @@ const resolvers = {
             return createSubmissionResult.data
         }),
 
+        // Signed-out visitors hold create:submissions. The per-address budget comes first (#22).
+        submitFacilityCorrection: withAnyScope([Scope['write:submissions'], Scope['create:submissions']], async (
+            _parent: unknown,
+            args: { input: gqlType.FacilityCorrectionInput },
+            context: UserContext
+        ): Promise<gqlType.FacilityCorrectionResult> => {
+            enforceBookingBudget('correction', context.clientIp)
+            const result = await facilityCorrectionService.submitFacilityCorrection(args.input, context.user.sub)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
         updateSubmission: withScope(Scope['write:submissions'], async (_parent: unknown, args: {
             id: string,
             input: gqlType.UpdateSubmissionInput
@@ -739,12 +753,12 @@ const resolvers = {
     }
 }
 
-/** Refuses a signed-out booking call once this address has used its budget (booking/rateLimits.ts). */
+/** Refuses a signed-out call once this address has used its budget (booking/rateLimits.ts). */
 function enforceBookingBudget(budget: BookingBudget, clientIp: string | undefined): void {
     if (allowBookingCall(budget, clientIp || 'unknown')) {
         return
     }
-    logger.warn(`Booking ${budget} limit reached`)
+    logger.warn(`Signed-out ${budget} limit reached`)
     convertErrorsToGqlErrors({
         data: undefined,
         hasErrors: true,
