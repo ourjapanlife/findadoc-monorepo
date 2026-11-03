@@ -155,6 +155,53 @@ function contact(
     }
 }
 
+/**
+ * Two pending corrections on the first Minato clinics, so the moderation queue has visitor
+ * feedback to show (#22). Built after the listings so their random values do not shift.
+ */
+function correctionSeeds(facilities: SeedFile['facilities']): SeedFile['submissions'] {
+    const [languages, contact] = facilities
+    if (languages === undefined || contact === undefined) {
+        return []
+    }
+    const created = iso(SEED_COUNT + 1)
+    const base = {
+        status: 'pending',
+        created_date: created,
+        updated_date: created,
+        hps_id: null,
+        google_maps_url: null,
+        healthcare_professional_name: null,
+        spoken_languages: null,
+        facility_partial: null,
+        healthcare_professionals_partial: null,
+        firestore_id: null,
+        retain_until: submissionRetainUntil('pending', created, new Date(created)),
+        kind: 'correction'
+    } as const
+
+    return [
+        {
+            ...base,
+            id: faker.string.uuid(),
+            facilities_id: languages.id,
+            correction_reasons: ['WRONG_LANGUAGES'],
+            correction_changes: { supportedLanguages: [Locale.EnUs, Locale.JaJp, extraLanguages[0]!] },
+            reporter_relation: 'PATIENT',
+            notes: faker.lorem.sentence()
+        },
+        {
+            ...base,
+            id: faker.string.uuid(),
+            facilities_id: contact.id,
+            correction_reasons: ['WRONG_CONTACT', 'OTHER'],
+            correction_changes: { phone: '03-5555-0142' },
+            reporter_relation: 'CALLED',
+            notes: null
+        }
+    ]
+}
+
 function buildSeed(): SeedFile {
     const selectedCities = cities()
     const facilities: SeedFile['facilities'] = []
@@ -271,6 +318,7 @@ function buildSeed(): SeedFile {
         })
     }
 
+    submissions.push(...correctionSeeds(facilities))
     facilities.push(showcaseClinicFacility)
 
     return { facilities, hps, hps_facilities: hpsFacilities, submissions }
