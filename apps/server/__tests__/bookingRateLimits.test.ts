@@ -8,7 +8,8 @@ describe('booking rate limits', () => {
     it.each([
         ['upload', 20, 60 * 60 * 1000],
         ['submit', 10, 60 * 60 * 1000],
-        ['token', 30, 10 * 60 * 1000]
+        ['token', 30, 10 * 60 * 1000],
+        ['correction', 5, 60 * 60 * 1000]
     ] as const)('enforces the %s limit per address and window', async (budget, limit, windowMs) => {
         const { allowBookingCall } = await import('../src/booking/rateLimits.js')
         const start = Date.parse('2026-10-29T00:00:00Z')
