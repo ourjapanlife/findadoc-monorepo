@@ -44,5 +44,17 @@ export enum ErrorCode {
     TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS',
     OPEN_REQUEST_LIMIT = 'OPEN_REQUEST_LIMIT',
     FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS',
-    INTERPRETER_HAS_BOOKINGS = 'INTERPRETER_HAS_BOOKINGS'
+    INTERPRETER_HAS_BOOKINGS = 'INTERPRETER_HAS_BOOKINGS',
+    /** A correction changed a field without the reason that field belongs to (#22). */
+    CORRECTION_FIELD_WITHOUT_REASON = 'CORRECTION_FIELD_WITHOUT_REASON',
+    /** A WRONG_CITY correction was approved before a moderator chose the city. */
+    CORRECTION_CITY_REQUIRED = 'CORRECTION_CITY_REQUIRED',
+    /** The facility exists but is not published, so visitors cannot report on it. */
+    FACILITY_NOT_PUBLISHED = 'FACILITY_NOT_PUBLISHED',
+    /** The update does not apply to this kind of submission, such as a whole facility on a correction. */
+    SUBMISSION_KIND_MISMATCH = 'SUBMISSION_KIND_MISMATCH',
+    /** A duplicate report must link to a Find a Doc listing over https. */
+    INVALID_LISTING_URL = 'INVALID_LISTING_URL',
+    /** Someone else changed the submission status first. Reload and decide again. */
+    SUBMISSION_STATUS_CHANGED = 'SUBMISSION_STATUS_CHANGED'
 }

@@ -304,6 +304,106 @@ type Submission {
   updatedDate: String!
   """Optional notes from the submitter or moderator."""
   notes: String
+  """LISTING for a new clinic or professional. CORRECTION for a visitor's report from a clinic page."""
+  kind: SubmissionKind!
+  """The visitor's report. Null unless kind is CORRECTION."""
+  correction: FacilityCorrection
+}
+
+"""Whether a submission proposes a new listing or corrects a published facility."""
+enum SubmissionKind {
+  """A new clinic or professional for the directory."""
+  LISTING
+  """A visitor's correction to a published facility, sent from the clinic page."""
+  CORRECTION
+}
+
+"""What a visitor says is wrong with a clinic listing."""
+enum FacilityCorrectionReason {
+  """The address or the city is wrong. A moderator picks the city before approval."""
+  WRONG_CITY
+  """The clinic has closed or moved. Approval does not unpublish it."""
+  CLOSED
+  """The languages the facility supports are wrong."""
+  WRONG_LANGUAGES
+  """The payment or insurance options are wrong."""
+  WRONG_PAYMENT
+  """The phone number or website is wrong."""
+  WRONG_CONTACT
+  """The clinic is listed twice. Approval never merges listings."""
+  DUPLICATE
+  """Something else, described in the notes."""
+  OTHER
+}
+
+"""How the visitor knows. A fixed label, never personal data."""
+enum CorrectionReporterRelation {
+  PATIENT
+  STAFF
+  CALLED
+  WEBSITE
+}
+
+"""The fields a visitor changed. A field the visitor did not change is null."""
+type FacilityCorrectionChanges {
+  """Corrected address. Sent with WRONG_CITY."""
+  address: PhysicalAddress
+  """Corrected phone number. Sent with WRONG_CONTACT."""
+  phone: String
+  """Corrected website. Sent with WRONG_CONTACT."""
+  website: String
+  """Corrected facility languages. Sent with WRONG_LANGUAGES. Does not change any professional."""
+  supportedLanguages: [Locale!]
+  """Corrected payment options. Sent with WRONG_PAYMENT."""
+  paymentOptions: [PaymentOption!]
+  """City a moderator chose from the vocabulary. A WRONG_CITY correction is not approved without it."""
+  cityId: ID
+}
+
+"""A visitor's report against one published facility."""
+type FacilityCorrection {
+  """The facility the report is about."""
+  facilityId: ID!
+  """What the visitor says is wrong."""
+  reasons: [FacilityCorrectionReason!]!
+  """Only the fields the visitor changed. Approval writes only these."""
+  changes: FacilityCorrectionChanges!
+  """How the visitor knows, when they said."""
+  reporterRelation: CorrectionReporterRelation
+  """The other Find a Doc listing, for a DUPLICATE report."""
+  duplicateListingUrl: String
+}
+
+"""
+A visitor's report from a clinic page. No name, email, or phone of the visitor.
+Each changed field belongs to one reason and is refused without it.
+"""
+input FacilityCorrectionInput {
+  """A published facility."""
+  facilityId: ID!
+  """At least one reason."""
+  reasons: [FacilityCorrectionReason!]!
+  """Corrected address. Needs WRONG_CITY."""
+  address: PhysicalAddressInput
+  """Corrected phone number. Needs WRONG_CONTACT."""
+  phone: String
+  """Corrected website, https only. Needs WRONG_CONTACT."""
+  website: String
+  """Corrected facility languages from the published list. Needs WRONG_LANGUAGES."""
+  supportedLanguages: [Locale!]
+  """Corrected payment options. Needs WRONG_PAYMENT."""
+  paymentOptions: [PaymentOptionsInput!]
+  """The other Find a Doc listing, https only. Needs DUPLICATE."""
+  duplicateListingUrl: String
+  """Anything else, up to 1000 characters."""
+  notes: String
+  """How the visitor knows."""
+  reporterRelation: CorrectionReporterRelation
+}
+
+"""The answer to a correction. It carries no id, so a visitor cannot read the submission back."""
+type FacilityCorrectionResult {
+  isSuccessful: Boolean!
 }
 
 """Facility data embedded within a submission."""
@@ -381,6 +481,11 @@ input UpdateSubmissionInput {
   isRejected: Boolean
   """Optional notes from the moderator."""
   notes: String
+  """
+  City a moderator chose for a CORRECTION, from the city vocabulary.
+  Refused on a LISTING. facility and healthcareProfessionals are refused on a CORRECTION.
+  """
+  correctionCityId: ID
 }
 
 """Search filters for querying submissions. All filters are combined with AND logic."""
@@ -397,6 +502,8 @@ input SubmissionSearchFilters {
   isApproved: Boolean
   """Filter to rejected submissions."""
   isRejected: Boolean
+  """Filter to listings or to corrections. Omit for both."""
+  kind: SubmissionKind
   """Filter by creation date (ISO 8601)."""
   createdDate: String
   """Filter by last updated date (ISO 8601)."""
@@ -2010,6 +2117,12 @@ type Mutation {
 
   """Create a new community submission for a healthcare professional or facility."""
   createSubmission(input: CreateSubmissionInput!): Submission!
+
+  """
+  Report an error on a published clinic. Signed-out visitors may call it, within a small
+  per-address budget. The report waits for a moderator as a CORRECTION submission.
+  """
+  submitFacilityCorrection(input: FacilityCorrectionInput!): FacilityCorrectionResult!
 
   """Update an existing submission by ID."""
   updateSubmission(id: ID!, input: UpdateSubmissionInput!): Submission!
