@@ -1,5 +1,6 @@
 /* eslint-disable camelcase -- These keys are the Umami dashboard names. Renaming one splits history. */
 
+import { FacilityCorrectionReason } from '@findadoc/graphql'
 import {
     facilityEmail,
     facilityMapsUrl,
@@ -32,6 +33,7 @@ const SITE_LANGUAGES = ['en', 'ja', 'zh', 'vi', 'ko', 'tl', 'ne', 'id', 'pt', 'f
 const NOT_FOUND_AREA = ['clinic', 'doctor', 'area', 'other'] as const
 const NOT_FOUND_TO = ['home', 'search'] as const
 const SUBMIT_REASON = ['validation', 'server'] as const
+const CORRECTION_VARIANT = ['error', 'confirm'] as const
 
 /** Listing counts only. Anything larger is an id or a bug, and is clamped before send. */
 export const LISTING_COUNT_CAP = 10_000
@@ -132,6 +134,22 @@ export const eventCatalog = {
     'Submit rejected': {
         reason: SUBMIT_REASON
     },
+    // The clinic page correction form (#22). Reason flags only: the values a visitor types never leave the form.
+    'Correction opened': {
+        variant: CORRECTION_VARIANT
+    },
+    'Correction submitted': {
+        wrong_city: YES_NO,
+        closed: YES_NO,
+        wrong_languages: YES_NO,
+        wrong_payment: YES_NO,
+        wrong_contact: YES_NO,
+        duplicate: YES_NO,
+        other: YES_NO
+    },
+    'Correction rejected': {
+        reason: SUBMIT_REASON
+    },
     // The appointment flow is not built yet. The button records the click and stays put.
     'Clinic landing book': null
 } as const
@@ -201,6 +219,22 @@ export function clinicViewedProps(facility: FacilitySearchResult): EventProps['C
         has_email: yesNo(Boolean(facilityEmail(facility))),
         has_maps: yesNo(Boolean(facilityMapsUrl(facility))),
         has_professionals: yesNo(facility.healthcareProfessionals.length > 0)
+    }
+}
+
+/** One yes/no per correction reason code. Reasons are a closed list, so they are safe to send. */
+export function correctionSubmittedProps(
+    reasons: readonly FacilityCorrectionReason[]
+): EventProps['Correction submitted'] {
+    const has = (reason: FacilityCorrectionReason) => yesNo(reasons.includes(reason))
+    return {
+        wrong_city: has(FacilityCorrectionReason.WrongCity),
+        closed: has(FacilityCorrectionReason.Closed),
+        wrong_languages: has(FacilityCorrectionReason.WrongLanguages),
+        wrong_payment: has(FacilityCorrectionReason.WrongPayment),
+        wrong_contact: has(FacilityCorrectionReason.WrongContact),
+        duplicate: has(FacilityCorrectionReason.Duplicate),
+        other: has(FacilityCorrectionReason.Other)
     }
 }
 
