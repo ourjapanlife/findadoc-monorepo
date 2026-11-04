@@ -36,7 +36,8 @@
     "moderationTable.name",
     "moderationTable.status",
     "clinicPage.onlineBreadcrumb",
-    "clinicDashboard.tabs.team"
+    "clinicDashboard.tabs.team",
+    "clinicCorrection.optional"
   ],
   "it": [
     "common.menu",
@@ -54,7 +55,14 @@
     "submitPage.previewLocation",
     "clinicPage.onlineBreadcrumb",
     "bookingPage.regionNotice.email",
-    "bookingPage.regionNotice.website"
+    "bookingPage.regionNotice.website",
+    "clinicCorrection.postalCode",
+    "clinicCorrection.prefecture",
+    "clinicCorrection.paymentCash",
+    "clinicCorrection.paymentCreditCard",
+    "clinicCorrection.paymentDebitCard",
+    "clinicCorrection.paymentElectronicMoney",
+    "clinicCorrection.website"
   ],
   "vi": [
     "common.menu",
