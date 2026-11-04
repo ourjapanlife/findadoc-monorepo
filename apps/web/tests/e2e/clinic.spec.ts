@@ -66,4 +66,111 @@ test.describe('Facility pages', () => {
         const crumbs = blocks.find(block => block['@type'] === 'BreadcrumbList')
         expect(Array.isArray(crumbs?.itemListElement)).toBe(true)
     })
+
+    /*
+     * A signed-out visitor reports wrong languages on a published clinic (#22).
+     * Chromium only: the API allows five corrections an hour from one address, so every
+     * browser project sending one would spend the budget the next local run needs.
+     */
+    test('a visitor reports wrong languages from the clinic page', async ({ page, request, browserName }) => {
+        test.skip(browserName !== 'chromium', 'one correction per run keeps the hourly budget for reruns')
+
+        let facility: {
+            id: string
+            nameEn: string
+            cityId?: string | null
+            verificationStatus?: string | null
+            contact?: { address?: { cityEn?: string, prefectureEn?: string } }
+        } | undefined
+
+        try {
+            const response = await request.post('http://127.0.0.1:4000', {
+                data: {
+                    query: `query {
+                        facilities(filters: { limit: 50 }) {
+                            ${facilitySelection}
+                        }
+                    }`
+                }
+            })
+            const json = await response.json() as {
+                data?: { facilities?: NonNullable<typeof facility>[] }
+                errors?: unknown[]
+            }
+            assertLocalApiOk(json)
+            const published = requireLocalRows(json.data?.facilities, 'local API returned no facilities')
+                .filter(row => row.cityId && row.verificationStatus !== 'UNVERIFIED_LOCATION')
+            facility = requireLocalRows(published, 'local API returned no published facility')[0]
+        } catch (error) {
+            skipIfLocalApiIsDown(error)
+            return
+        }
+
+        if (!facility) {
+            return
+        }
+
+        await page.goto(facilityPath(facility))
+        await expect(page.getByTestId('clinic-correction-prompt')).toHaveAttribute('data-hydrated', 'true')
+        await page.getByTestId('clinic-correction-open').click()
+
+        const dialog = page.getByRole('dialog')
+        await expect(dialog).toBeVisible()
+
+        const reason = page.getByTestId('clinic-correction-reason-WRONG_LANGUAGES')
+        await reason.click()
+        await expect(reason).toHaveAttribute('aria-pressed', 'true')
+        await expect(page.getByTestId('clinic-correction-field-languages')).toBeVisible()
+        await expect(page.getByTestId('clinic-correction-field-contact')).toHaveCount(0)
+
+        await page.getByTestId('clinic-correction-language-zh_CN').click()
+        await page.getByTestId('clinic-correction-relation-PATIENT').check()
+        await page.getByTestId('clinic-correction-submit').click()
+
+        await expect(page.getByTestId('clinic-correction-thanks')).toBeVisible()
+        await page.getByTestId('clinic-correction-back').click()
+        await expect(dialog).toHaveCount(0)
+    })
+
+    test('the correction form closes on Escape and needs a reason', async ({ page, request }) => {
+        let facility: { id: string, nameEn: string, cityId?: string | null } | undefined
+
+        try {
+            const response = await request.post('http://127.0.0.1:4000', {
+                data: {
+                    query: `query {
+                        facilities(filters: { limit: 1 }) {
+                            ${facilitySelection}
+                        }
+                    }`
+                }
+            })
+            const json = await response.json() as {
+                data?: { facilities?: NonNullable<typeof facility>[] }
+                errors?: unknown[]
+            }
+            assertLocalApiOk(json)
+            facility = requireLocalRows(json.data?.facilities, 'local API returned no facilities')[0]
+        } catch (error) {
+            skipIfLocalApiIsDown(error)
+            return
+        }
+
+        if (!facility) {
+            return
+        }
+
+        await page.goto(facilityPath(facility))
+        await expect(page.getByTestId('clinic-correction-prompt')).toHaveAttribute('data-hydrated', 'true')
+        await page.getByTestId('clinic-correction-open').click()
+        await expect(page.getByRole('dialog')).toBeVisible()
+
+        // Nothing picked: the form stays open and asks for a reason instead of sending.
+        await page.getByTestId('clinic-correction-submit').click()
+        await expect(page.getByRole('dialog').getByRole('alert')).toBeVisible()
+
+        await page.keyboard.press('Escape')
+        await expect(page.getByRole('dialog')).toHaveCount(0)
+        await expect(page.getByTestId('clinic-correction-open')).toBeFocused()
+    })
 })
