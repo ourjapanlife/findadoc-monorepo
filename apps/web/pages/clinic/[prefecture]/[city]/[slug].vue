@@ -40,6 +40,8 @@
             surface="clinic"
         />
 
+        <ClinicCorrectionPrompt :facility="facility" />
+
         <HubRelatedFacets
             :heading="t('clinicPage.relatedSpecialtiesHeading')"
             :items="specialtyFacetItems"
