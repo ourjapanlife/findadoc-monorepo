@@ -190,6 +190,7 @@ Japanese public health insurance is one fact on the facility (#18): `facilities.
 `apps/server/docs/places-storage.md` is the storage rule. Follow it. Do not open a Places write path that contradicts it.
 
 - Store `place_id`. Refresh it if it is older than 12 months.
+- A facility that is not online has a `google_place_id` (#228). `facilities_place_id_required` enforces it; services return `PLACE_ID_REQUIRED` first. Seeds and fake data use a fake `ChIJFake…` or `ChIJFindadocSeed…` id.
 - Places latitude and longitude last at most 30 days, then delete or refresh.
 - Do not store a Places display name, formatted address, phone, website, hours, photos, or reviews as directory data.
 - The Maps URL enrichment path is gone (#1008). Do not copy a Places payload into a submission. The picker is #1012. The facility resolver is #1013.

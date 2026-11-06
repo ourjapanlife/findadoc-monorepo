@@ -1,0 +1,48 @@
+name: Directory refresh
+
+# Clinic and doctor pages are prerendered, so one created, renamed, or deleted in moderation
+# is wrong on findadoc.jp until the next build (#228). Each day this compares the public API
+# with the live sitemap. The check is about 20 API requests. The site is rebuilt only when
+# a page is missing or out of date.
+on:
+  schedule:
+    # 03:23 JST, when the site is quiet.
+    - cron: '23 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Compare the API with the live sitemap
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      stale: ${{ steps.drift.outputs.stale }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build shared packages
+        run: |
+          pnpm --filter @findadoc/graphql build
+          pnpm --filter @findadoc/utils build
+
+      - name: Check for missing pages
+        id: drift
+        run: pnpm --filter @findadoc/web check:directory-drift
+
+  rebuild:
+    name: Rebuild the site
+    needs: check
+    if: needs.check.outputs.stale == 'true'
+    uses: ./.github/workflows/web.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write

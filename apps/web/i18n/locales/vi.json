@@ -515,6 +515,7 @@
     "invalidWebsite": "Nhập địa chỉ website hợp lệ.",
     "invalidInformation": "Một phần thông tin không hợp lệ. Hãy kiểm tra biểu mẫu và thử lại.",
     "submissionCannotBeApproved": "Không thể phê duyệt hồ sơ này cho đến khi đủ thông tin bắt buộc về cơ sở và nhân viên y tế.",
+    "placeIdRequired": "Phòng khám này cần có địa điểm trên Google. Hãy dán liên kết đến trang Google Maps của chính phòng khám, hoặc đánh dấu Cơ sở trực tuyến nếu không có địa chỉ.",
     "submissionAlreadyApproved": "Hồ sơ này đã được phê duyệt.",
     "clinicRequired": "Hãy chọn cơ sở y tế cho nhân viên y tế này.",
     "japaneseInEnglishField": "Một mục tiếng Anh có ký tự tiếng Nhật.",

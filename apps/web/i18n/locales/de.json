@@ -563,6 +563,7 @@
     "invalidWebsite": "Geben Sie eine gültige Website ein.",
     "invalidInformation": "Ein Teil dieser Angaben ist ungültig. Prüfen Sie das Formular und versuchen Sie es erneut.",
     "submissionCannotBeApproved": "Dieser Eintrag kann nicht freigegeben werden, solange die Pflichtangaben zur Klinik und zur Fachkraft fehlen.",
+    "placeIdRequired": "Diese Klinik braucht ihren Google-Ort. Fügen Sie den Link zur eigenen Google-Maps-Seite der Klinik ein, oder wählen Sie „Online-Einrichtung“, wenn sie keine Adresse hat.",
     "submissionAlreadyApproved": "Dieser Eintrag wurde bereits freigegeben.",
     "clinicRequired": "Wählen Sie eine Klinik für diese Gesundheitsfachkraft.",
     "japaneseInEnglishField": "Ein englisches Feld enthält japanische Zeichen.",

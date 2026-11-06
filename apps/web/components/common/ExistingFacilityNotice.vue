@@ -94,6 +94,7 @@ const mapsHref = computed(() => facilityMapsUrl({
     nameJa: props.facility.nameJa,
     mapLatitude: props.facility.mapLatitude,
     mapLongitude: props.facility.mapLongitude,
+    googlePlaceId: props.facility.googlePlaceId,
     contact: { googleMapsUrl: props.facility.googleMapsUrl }
 }, isJapaneseLocale(locale.value)))
 </script>

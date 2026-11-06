@@ -149,6 +149,7 @@
     "invalidWebsite": "Masukkan situs web yang valid.",
     "invalidInformation": "Sebagian informasi ini tidak valid. Periksa formulir dan coba lagi.",
     "submissionCannotBeApproved": "Pengajuan ini belum dapat disetujui sampai data klinik dan tenaga kesehatan yang wajib diisi sudah lengkap.",
+    "placeIdRequired": "Klinik ini memerlukan tempat Google-nya. Tempelkan tautan ke halaman Google Maps milik klinik, atau centang Fasilitas online jika tidak punya alamat jalan.",
     "submissionAlreadyApproved": "Pengajuan ini sudah disetujui.",
     "clinicRequired": "Pilih klinik untuk tenaga kesehatan ini.",
     "japaneseInEnglishField": "Kolom bahasa Inggris berisi karakter Jepang.",

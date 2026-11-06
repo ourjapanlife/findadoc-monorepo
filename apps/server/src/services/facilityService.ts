@@ -38,6 +38,23 @@ function invalidCityId(): Result<FacilityParent> {
     }
 }
 
+/**
+ * A facility with a street address must name its Google place (#228). The database
+ * enforces the same rule (facilities_place_id_required); this returns the code the
+ * moderation form can explain instead of a constraint error.
+ */
+export function placeIdRequired<T = FacilityParent>(): Result<T> {
+    return {
+        data: {} as T,
+        hasErrors: true,
+        errors: [{
+            field: 'googlePlaceId',
+            errorCode: ErrorCode.PLACE_ID_REQUIRED,
+            httpStatus: 400
+        }]
+    }
+}
+
 class FacilityUpdateRejected extends Error {
     constructor(readonly result: Result<FacilityParent>) {
         super('Facility update rejected')
@@ -644,6 +661,10 @@ export async function createFacility(
                 ? facilityInput.googlePlaceId.trim()
                 : canonicalContact.placeId)
 
+        if (!isOnline && !googlePlaceId) {
+            return placeIdRequired()
+        }
+
         // Execute all database operations in a single atomic transaction.
         // The transaction returns the final plain GraphQL object (not the Kysely result).
         // If any operation fails, everything is automatically rolled back.
@@ -897,6 +918,66 @@ function assertPhoneAcceptedOnLockedRow(phone: string | null | undefined, stored
 }
 
 /**
+ * A facility going offline needs an address, a Maps link, and a usable pin, from this update or
+ * the locked row. Throws `FacilityUpdateRejected` with every missing field.
+ */
+function assertOfflineLocationComplete(
+    fields: Partial<gqlTypes.UpdateFacilityInput>,
+    row: { contact: unknown, map_latitude: number | null, map_longitude: number | null }
+): void {
+    const existingContact = row.contact as gqlTypes.ContactInput | null
+    const mergedAddress = fields.contact?.address !== undefined
+        ? fields.contact.address
+        : existingContact?.address
+    const mergedMapsUrl = fields.contact?.googleMapsUrl !== undefined
+        ? fields.contact.googleMapsUrl
+        : (existingContact?.googleMapsUrl ?? '')
+    const mergedLat = fields.mapLatitude !== undefined
+        ? fields.mapLatitude
+        : row.map_latitude
+    const mergedLng = fields.mapLongitude !== undefined
+        ? fields.mapLongitude
+        : row.map_longitude
+    const offlineLocationErrors: NonNullable<Result<FacilityParent>['errors']> = []
+    if (!mergedAddress) {
+        offlineLocationErrors.push({
+            field: 'contact.address',
+            errorCode: ErrorCode.REQUIRED,
+            httpStatus: 400
+        })
+    }
+    if (!(mergedMapsUrl ?? '').trim()) {
+        offlineLocationErrors.push({
+            field: 'contact.googleMapsUrl',
+            errorCode: ErrorCode.REQUIRED,
+            httpStatus: 400
+        })
+    }
+    if (!hasUsableMapPin(
+        mergedLat === null ? null : Number(mergedLat),
+        mergedLng === null ? null : Number(mergedLng)
+    )) {
+        offlineLocationErrors.push({
+            field: 'mapLatitude',
+            errorCode: ErrorCode.REQUIRED,
+            httpStatus: 400
+        })
+        offlineLocationErrors.push({
+            field: 'mapLongitude',
+            errorCode: ErrorCode.REQUIRED,
+            httpStatus: 400
+        })
+    }
+    if (offlineLocationErrors.length > 0) {
+        throw new FacilityUpdateRejected({
+            data: {} as gqlTypes.Facility,
+            hasErrors: true,
+            errors: offlineLocationErrors
+        })
+    }
+}
+
+/**
  * Updates a Facility in the database based on the id.
  * - Scalar fields are updated on facilities
  * - Relationship changes (HPs) are applied in hps_facilities via the provided actions
@@ -951,56 +1032,7 @@ export const updateFacility = async (
             const becomingOnline = fields.online === true
             const goingOffline = fields.online === false && originalFacility.online === true
             if (goingOffline) {
-                const existingContact = originalFacility.contact as gqlTypes.ContactInput | null
-                const mergedAddress = fields.contact?.address !== undefined
-                    ? fields.contact.address
-                    : existingContact?.address
-                const mergedMapsUrl = fields.contact?.googleMapsUrl !== undefined
-                    ? fields.contact.googleMapsUrl
-                    : (existingContact?.googleMapsUrl ?? '')
-                const mergedLat = fields.mapLatitude !== undefined
-                    ? fields.mapLatitude
-                    : originalFacility.map_latitude
-                const mergedLng = fields.mapLongitude !== undefined
-                    ? fields.mapLongitude
-                    : originalFacility.map_longitude
-                const offlineLocationErrors: NonNullable<Result<FacilityParent>['errors']> = []
-                if (!mergedAddress) {
-                    offlineLocationErrors.push({
-                        field: 'contact.address',
-                        errorCode: ErrorCode.REQUIRED,
-                        httpStatus: 400
-                    })
-                }
-                if (!(mergedMapsUrl ?? '').trim()) {
-                    offlineLocationErrors.push({
-                        field: 'contact.googleMapsUrl',
-                        errorCode: ErrorCode.REQUIRED,
-                        httpStatus: 400
-                    })
-                }
-                if (!hasUsableMapPin(
-                    mergedLat === null ? null : Number(mergedLat),
-                    mergedLng === null ? null : Number(mergedLng)
-                )) {
-                    offlineLocationErrors.push({
-                        field: 'mapLatitude',
-                        errorCode: ErrorCode.REQUIRED,
-                        httpStatus: 400
-                    })
-                    offlineLocationErrors.push({
-                        field: 'mapLongitude',
-                        errorCode: ErrorCode.REQUIRED,
-                        httpStatus: 400
-                    })
-                }
-                if (offlineLocationErrors.length > 0) {
-                    throw new FacilityUpdateRejected({
-                        data: {} as gqlTypes.Facility,
-                        hasErrors: true,
-                        errors: offlineLocationErrors
-                    })
-                }
+                assertOfflineLocationComplete(fields, originalFacility)
             }
 
             let publicationPatch: { city_id: string | null, verification_status: string } | undefined
@@ -1066,6 +1098,15 @@ export const updateFacility = async (
                 && fields.googlePlaceId === undefined
             ) {
                 updatePayload.google_place_id = resolvedPlaceId
+            }
+
+            const willBeOnline = fieldsToUpdate.online === true
+                || (fieldsToUpdate.online !== false && originalFacility.online)
+            const nextPlaceId = 'google_place_id' in updatePayload
+                ? updatePayload.google_place_id
+                : originalFacility.google_place_id
+            if (!willBeOnline && !nextPlaceId) {
+                throw new FacilityUpdateRejected(placeIdRequired())
             }
             
             let updatedFacility = originalFacility

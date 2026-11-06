@@ -287,6 +287,30 @@ describe('contact normalisation', () => {
                 .toBe('https://www.google.com/maps/search/Clinic/@35.6,139.7,17z')
         })
 
+        it('opens the one stored place, not a name search that lists other clinics (#228)', () => {
+            const url = facilityMapsUrl({ ...withContact({ googleMapsUrl: '' }), googlePlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4' })
+            expect(url).toBe('https://www.google.com/maps/search/?api=1&query=Clinic&query_place_id=ChIJN1t_tDeuEmsRUsoyG83frY4')
+        })
+
+        it('reads the place id from a stored Maps URL when the row has none', () => {
+            const stored = 'https://www.google.com/maps/search/?api=1&query=Clinic&query_place_id=ChIJN1t_tDeuEmsRUsoyG83frY4'
+            const url = facilityMapsUrl(withContact({ googleMapsUrl: stored }))
+            expect(url).toContain('&query_place_id=ChIJN1t_tDeuEmsRUsoyG83frY4')
+        })
+
+        it('prefers the place id to a stored place page', () => {
+            const url = facilityMapsUrl({
+                ...withContact({ googleMapsUrl: 'https://www.google.com/maps/place/Clinic/@35.6,139.7,17z' }),
+                googlePlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4'
+            })
+            expect(url).toContain('query_place_id=ChIJN1t_tDeuEmsRUsoyG83frY4')
+        })
+
+        it('ignores a place id that is not a Places token', () => {
+            const url = facilityMapsUrl({ ...withContact({ googleMapsUrl: '' }), googlePlaceId: 'bad id"><' })
+            expect(url).toBe('https://www.google.com/maps/search/Clinic/@35.6,139.7,17z')
+        })
+
         it('uses the Japanese name when the reader is Japanese', () => {
             const url = facilityMapsUrl(withContact({ googleMapsUrl: 'https://www.google.com/maps?q=1' }), true)
             expect(url).toContain(encodeURIComponent('クリニック'))

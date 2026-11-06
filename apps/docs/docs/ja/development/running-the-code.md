@@ -91,6 +91,16 @@ pnpm dev:seeded
 
 DNSゾーンは Route 53 のままにします。ネームサーバーは変えません。Amplify は本番ブランチで `*.findadoc.jp` を既に配信しているので、クリニックのホスト名はそのワイルドカードです。プルリクエストのプレビューは別の Amplify ホストです。`{slug}.findadoc.jp` ではありません。そのホストで `/clinic/multilingual-online-clinic?preview=1` を開きます。ビルドがそのパスにアプリのシェルを置き、クエリが30日間のCookieを保存し、ページは `https://api.findadoc.jp` からクリニックを読みます。ショーケースの行がそのデータベースにある必要があります。`*` は `findadoc.jp` そのものを含みません。`www`、`api`、`mcp`、`docs` に既にあるレコードは `*` より具体的なので、そのままです。クリニックのスラッグは変わりません。
 
+### 新しいクリニックと医師のページ
+
+クリニックと医師のページはビルド時に書き出されます。そのため、モデレーションで作成、名前変更、削除したクリニックや医師は、次のビルドまでサイトに反映されません。`Directory refresh` ワークフロー（`.github/workflows/directory-refresh.yml`）は1日1回動きます。公開APIのすべてのクリニックと医師を本番の `sitemap.xml` と比べ、ページが足りないか古いときだけ `Web` ワークフローを実行します。APIがすべてを返さなかったときはチェックが失敗し、再ビルドしません。早く公開したいときは Actions タブから実行します。ローカルでチェックだけ実行することもできます。
+
+```bash
+pnpm --filter @findadoc/web check:directory-drift
+```
+
+出力は件数だけで、名前は出しません。
+
 ### Storybook
 
 ```bash

@@ -515,6 +515,7 @@
     "invalidWebsite": "有効なウェブサイトを入力してください。",
     "invalidInformation": "入力内容の一部が正しくありません。内容を確認して、もう一度お試しください。",
     "submissionCannotBeApproved": "必須の医療機関と医療従事者の内容がそろうまで、この申請は承認できません。",
+    "placeIdRequired": "このクリニックには Google のプレイスが必要です。クリニック自身の Google マップのページへのリンクを貼るか、住所がない場合は「オンラインの医療機関」にチェックしてください。",
     "submissionAlreadyApproved": "この申請はすでに承認されています。",
     "clinicRequired": "この医療従事者の医療機関を選んでください。",
     "japaneseInEnglishField": "英語の項目に日本語の文字が含まれています。",

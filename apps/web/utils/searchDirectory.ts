@@ -244,22 +244,52 @@ export function hasActiveFilters(filters: SearchFilters): boolean {
  * anchored at the clinic's own position: Google resolves the business, and the map is centred
  * on the right spot even when the name is ambiguous.
  */
+const MAPS_PLACE_ID = /^[A-Za-z0-9_-]{8,}$/
+
+/** A Places id from the facility row, else from query_place_id or place_id in the stored Maps URL. */
+function facilityPlaceId(googlePlaceId: string | null | undefined, stored: string): string | null {
+    const direct = (googlePlaceId ?? '').trim()
+    if (MAPS_PLACE_ID.test(direct)) {
+        return direct
+    }
+    let params: URLSearchParams
+    try {
+        params = new URL(stored).searchParams
+    } catch {
+        return null
+    }
+    const fromUrl = (params.get('query_place_id') ?? params.get('place_id') ?? '').trim()
+    return MAPS_PLACE_ID.test(fromUrl) ? fromUrl : null
+}
+
+/**
+ * The "Open in Maps" link. A stored place id opens that one place; a name search would also
+ * list nearby clinics with similar names (#228).
+ */
 export function facilityMapsUrl(facility: {
     nameEn?: string | null
     nameJa?: string | null
     mapLatitude?: number | null
     mapLongitude?: number | null
+    googlePlaceId?: string | null
     contact?: { googleMapsUrl?: string | null } | null
 }, preferJapanese = false): string {
     const stored = (facility.contact?.googleMapsUrl ?? '').trim()
+    const name = (preferJapanese ? facility.nameJa : facility.nameEn) || facility.nameEn || facility.nameJa
+    const { mapLatitude: lat, mapLongitude: lng } = facility
+    const placeId = facilityPlaceId(facility.googlePlaceId, stored)
+
+    if (placeId) {
+        // Maps requires query; query_place_id decides which place opens.
+        const query = name || (lat && lng ? `${lat},${lng}` : placeId)
+        const params = new URLSearchParams([['api', '1'], ['query', query], ['query_place_id', placeId]])
+        return `https://www.google.com/maps/search/?${params.toString()}`
+    }
 
     // A place page is the best link there is, and a Google short link resolves to one.
     if (stored.includes('/place/') || /^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps)\//.test(stored)) {
         return stored
     }
-
-    const name = (preferJapanese ? facility.nameJa : facility.nameEn) || facility.nameEn || facility.nameJa
-    const { mapLatitude: lat, mapLongitude: lng } = facility
 
     /*
      * Never fall back to the stored value here. What is left at this point is a tracking-param
