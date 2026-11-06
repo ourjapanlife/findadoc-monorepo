@@ -38,14 +38,22 @@
                 v-else-if="column.id === 'status'"
                 class="flex flex-wrap gap-1"
             >
-                <span
+                <template
                     v-for="badge in row.badges"
                     :key="badge.label"
-                    class="rounded-full px-2 py-0.5 text-xs text-primary-inverted"
-                    :class="badge.className"
                 >
-                    {{ badge.label }}
-                </span>
+                    <ModStatusPill
+                        v-if="badge.pill"
+                        :pill="badge.pill"
+                    />
+                    <span
+                        v-else
+                        class="rounded-full px-2 py-0.5 text-xs text-primary-inverted"
+                        :class="badge.className"
+                    >
+                        {{ badge.label }}
+                    </span>
+                </template>
             </div>
             <span v-else>{{ row.cells[column.id] }}</span>
         </td>
