@@ -42,6 +42,7 @@
                     :placeholder="t('modFacilitySection.placeholderTextFacilityPhoneNumber')"
                     :required="true"
                     :input-validation-check="validatePhoneNumber"
+                    :normalize-on-blur="normalizePhoneInput"
                     :invalid-input-error-message="t(formErrorKey.invalidPhone)"
                 />
                 <ModInputField
@@ -323,6 +324,7 @@ import {
     validateAddressLineJa,
     validateNameEn,
     validateNameJa,
+    normalizePhoneInput,
     validatePhoneNumber,
     validateEmail,
     validateFloat,

@@ -185,12 +185,14 @@ describe('updateFacility', () => {
         // Get the ID of the new facility
         const newFacility = newFacilityResult.body.data.createFacility as gqlType.Facility
 
+        const updateInput = generateRandomCreateFacilityInput()
         const updateFacilityMutationRequest = {
             query: updateFacilityMutation,
             variables: {
                 id: newFacility.id,
                 input: {
-                    ...generateRandomCreateFacilityInput(),
+                    ...updateInput,
+                    contact: { ...updateInput.contact, phone: '０３ ５７２２-５５００' },
                     healthcareProfessionalIds: []
                 } satisfies gqlType.UpdateFacilityInput
             }
@@ -232,7 +234,8 @@ describe('updateFacility', () => {
         expect(updatedFacility.id).toBe(newFacility.id)
         expect(updatedFacility.nameEn).toBe(fieldsThatWereUpdated.nameEn)
         expect(updatedFacility.nameJa).toBe(fieldsThatWereUpdated.nameJa)
-        expect(updatedFacility.contact.phone).toBe(fieldsThatWereUpdated.contact?.phone)
+        // Any spacing or full-width digits on input; E.164 in storage.
+        expect(updatedFacility.contact.phone).toBe('+81357225500')
         expect(updatedFacility.createdDate).toBeDefined()
         expect(updatedFacility.updatedDate).toBeDefined()
     })

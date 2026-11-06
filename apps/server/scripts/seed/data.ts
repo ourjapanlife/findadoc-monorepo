@@ -127,7 +127,8 @@ function contact(
     return {
         googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
         email: faker.internet.email().toLowerCase(),
-        phone: faker.helpers.fromRegExp(/0[789]0-[0-9]{4}-[0-9]{4}/),
+        // E.164, as the API stores it.
+        phone: `+81${faker.helpers.fromRegExp(/[789]0[1-9][0-9]{7}/)}`,
         website: faker.internet.url(),
         address: {
             addressLine1En: faker.location.streetAddress(),

@@ -60,7 +60,8 @@ export function generateRandomCreateFacilityInput()
         contact: {
             googleMapsUrl: faker.internet.url(),
             email: email,
-            phone: faker.phone.number().replace(/-/g, ''),
+            // Stored phones are E.164 Japanese numbers; a US-style faker number fails validation.
+            phone: `+8135${faker.string.numeric(7)}`,
             website: faker.internet.url(),
             address: {
                 addressLine1En: faker.location.streetAddress(),

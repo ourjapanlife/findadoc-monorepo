@@ -28,6 +28,8 @@
         "backfill:maps-urls:write": "node --loader ts-node/esm utils/backfillCanonicalMapsUrls.ts --write",
         "backfill:licenses": "node --loader ts-node/esm utils/backfillProfessionalLicenses.ts",
         "backfill:licenses:write": "node --loader ts-node/esm utils/backfillProfessionalLicenses.ts --write",
+        "backfill:phones": "node --loader ts-node/esm utils/backfillFacilityPhones.ts",
+        "backfill:phones:write": "node --loader ts-node/esm utils/backfillFacilityPhones.ts --write",
         "backfill:insurance": "node --loader ts-node/esm utils/backfillProfessionalInsurance.ts",
         "backfill:insurance:write": "node --loader ts-node/esm utils/backfillProfessionalInsurance.ts --write",
         "purge:booking-uploads": "node --loader ts-node/esm utils/purgeExpiredBookingUploads.ts",
