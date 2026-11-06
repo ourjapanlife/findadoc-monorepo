@@ -21,8 +21,8 @@ import { cityExists, findCityBySlug } from './cityService.js'
 import { FacilitySource } from '@findadoc/graphql'
 import { matchingFacilityId } from '../places/facilityMapsMatch.js'
 import { canonicalMapsFields, isShortMapsUrl, previewTargetFromMapsUrl, resolveMapsPlace } from '../places/mapsLink.js'
-import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
-import type { Database } from '../typeDefs/kyselyTypes.js'
+import { sql, type Selectable, type SelectQueryBuilder, type Transaction } from 'kysely'
+import type { Database, FacilitiesTable } from '../typeDefs/kyselyTypes.js'
 import type { FacilityParent } from '../typeDefs/resolverParents.js'
 
 function invalidCityId(): Result<FacilityParent> {
@@ -37,7 +37,8 @@ function invalidCityId(): Result<FacilityParent> {
     }
 }
 
-class FacilityUpdateRejected extends Error {
+/** An expected refusal from updateFacilityInTransaction. result is what the service returns. */
+export class FacilityUpdateRejected extends Error {
     constructor(readonly result: Result<FacilityParent>) {
         super('Facility update rejected')
     }
@@ -874,6 +875,201 @@ export async function countFacilities(
  * - Relationship changes (HPs) are applied in hps_facilities via the provided actions
  * - Returns the updated Facility
 */
+/**
+ * The write half of updateFacility, inside a caller's transaction. It locks the row, applies the
+ * city rules, updates only the fields given, and writes the audit log. An approved correction
+ * uses it so the facility change and the submission status commit together (#22).
+ * Throws FacilityUpdateRejected for an expected refusal, and an Error when the row is missing.
+ */
+export async function updateFacilityInTransaction(
+    transaction: Transaction<Database>,
+    facilityId: string,
+    fields: Partial<gqlTypes.UpdateFacilityInput>,
+    updatedBy: string,
+    resolvedPlaceId: string | null = null
+): Promise<{ facility: Selectable<FacilitiesTable>, hpIds: string[] }> {
+    // Lock the row first. The city decision has to use this state, not an earlier read.
+    const originalFacility = await transaction
+        .selectFrom('facilities')
+        .selectAll()
+        .where('id', '=', facilityId)
+        .forUpdate()
+        .executeTakeFirst()
+
+    if (!originalFacility) {
+        throw new Error(`Could not find facility with id ${facilityId} to update.`)
+    }
+
+    const becomingOnline = fields.online === true
+    const goingOffline = fields.online === false && originalFacility.online === true
+    if (goingOffline) {
+        const existingContact = originalFacility.contact as gqlTypes.ContactInput | null
+        const mergedAddress = fields.contact?.address !== undefined
+            ? fields.contact.address
+            : existingContact?.address
+        const mergedMapsUrl = fields.contact?.googleMapsUrl !== undefined
+            ? fields.contact.googleMapsUrl
+            : (existingContact?.googleMapsUrl ?? '')
+        const mergedLat = fields.mapLatitude !== undefined
+            ? fields.mapLatitude
+            : originalFacility.map_latitude
+        const mergedLng = fields.mapLongitude !== undefined
+            ? fields.mapLongitude
+            : originalFacility.map_longitude
+        const offlineLocationErrors: NonNullable<Result<FacilityParent>['errors']> = []
+        if (!mergedAddress) {
+            offlineLocationErrors.push({
+                field: 'contact.address',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+        if (!(mergedMapsUrl ?? '').trim()) {
+            offlineLocationErrors.push({
+                field: 'contact.googleMapsUrl',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+        if (!hasUsableMapPin(
+            mergedLat === null ? null : Number(mergedLat),
+            mergedLng === null ? null : Number(mergedLng)
+        )) {
+            offlineLocationErrors.push({
+                field: 'mapLatitude',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+            offlineLocationErrors.push({
+                field: 'mapLongitude',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+        if (offlineLocationErrors.length > 0) {
+            throw new FacilityUpdateRejected({
+                data: {} as gqlTypes.Facility,
+                hasErrors: true,
+                errors: offlineLocationErrors
+            })
+        }
+    }
+
+    let publicationPatch: { city_id: string | null, verification_status: string } | undefined
+
+    if (
+        !becomingOnline
+        && (fields.cityId !== undefined || fields.verificationStatus !== undefined)
+    ) {
+        const requestedStatus = verificationStatusForUpdate(
+            originalFacility.city_id,
+            originalFacility.verification_status as gqlTypes.FacilityVerificationStatus,
+            fields.cityId,
+            fields.verificationStatus
+        )
+        const publication = resolveFacilityPublication({
+            cityId: fields.cityId !== undefined
+                ? fields.cityId
+                : originalFacility.city_id,
+            verificationStatus: requestedStatus
+        })
+
+        if (publication.hasErrors) {
+            throw new FacilityUpdateRejected({
+                data: {} as gqlTypes.Facility,
+                hasErrors: true,
+                errors: publication.errors
+            })
+        }
+
+        const nextCityId = publication.data.cityId
+
+        if (nextCityId && (!isCityRecordId(nextCityId) || !(await cityExists(nextCityId)))) {
+            throw new FacilityUpdateRejected(invalidCityId())
+        }
+
+        publicationPatch = {
+            city_id: publication.data.cityId,
+            verification_status: publication.data.verificationStatus
+        }
+    }
+
+    // Fetch original HP relations
+    const originalRelations = await transaction
+        .selectFrom('hps_facilities')
+        .select('hps_id')
+        .where('facilities_id', '=', facilityId)
+        .execute()
+
+    const originalHpIds = originalRelations.map(r => r.hps_id)
+
+    // Update scalar fields on facilities table (if any provided)
+    const updatePayload: Record<string, unknown> = {
+        ...buildFacilityUpdatePatch(
+            fields,
+            originalFacility.contact as gqlTypes.ContactInput
+        ),
+        ...publicationPatch
+    }
+    if (
+        !becomingOnline
+        && resolvedPlaceId
+        && !originalFacility.google_place_id
+        && fields.googlePlaceId === undefined
+    ) {
+        updatePayload.google_place_id = resolvedPlaceId
+    }
+    
+    let updatedFacility = originalFacility
+
+    if (Object.keys(updatePayload).length > 1) {
+        // Has fields to update beyond just updatedDate
+        updatedFacility = await transaction
+            .updateTable('facilities')
+            .set(updatePayload)
+            .where('id', '=', facilityId)
+            .returningAll()
+            .executeTakeFirstOrThrow()
+
+        logger.info(`DB-UPDATE: facilities ${facilityId} scalar fields updated.`)
+    } else {
+        // No scalar fields to update, but touch updatedDate to track the change
+        updatedFacility = await transaction
+            .updateTable('facilities')
+            .set({ updated_date: new Date().toISOString() })
+            .where('id', '=', facilityId)
+            .returningAll()
+            .executeTakeFirstOrThrow()
+    }
+
+    // Update relationships (if any provided)
+    let finalHpIds = originalHpIds
+
+    if (fields.healthcareProfessionalIds && fields.healthcareProfessionalIds.length) {
+        finalHpIds = await processHealthcareProfessionalRelationshipChanges(
+            transaction,
+            facilityId,
+            fields.healthcareProfessionalIds
+        )
+    }
+
+    // Create audit log entry
+    // If this fails, the entire transaction (including updates) is rolled back
+    const oldGqlFacility = facilityWithProfessionalIds(originalFacility, originalHpIds)
+    const newGqlFacility = facilityWithProfessionalIds(updatedFacility, finalHpIds)
+
+    await createAuditLog(transaction, {
+        actionType: gqlTypes.ActionType.Update,
+        objectType: gqlTypes.ObjectType.Facility,
+        updatedBy,
+        oldValue: oldGqlFacility,
+        newValue: newGqlFacility
+    })
+
+    // Return the updated facility and final HP IDs for mapping
+    return { facility: updatedFacility, hpIds: finalHpIds }
+}
+
 export const updateFacility = async (
     facilityId: string,
     fieldsToUpdate: Partial<gqlTypes.UpdateFacilityInput>,
@@ -905,188 +1101,8 @@ export const updateFacility = async (
         }
 
         // Execute all database operations in a single atomic transaction
-        const result = await db.transaction().execute(async transaction => {
-            // Lock the row first. The city decision has to use this state, not an earlier read.
-            const originalFacility = await transaction
-                .selectFrom('facilities')
-                .selectAll()
-                .where('id', '=', facilityId)
-                .forUpdate()
-                .executeTakeFirst()
-
-            if (!originalFacility) {
-                throw new Error(`Could not find facility with id ${facilityId} to update.`)
-            }
-
-            const becomingOnline = fields.online === true
-            const goingOffline = fields.online === false && originalFacility.online === true
-            if (goingOffline) {
-                const existingContact = originalFacility.contact as gqlTypes.ContactInput | null
-                const mergedAddress = fields.contact?.address !== undefined
-                    ? fields.contact.address
-                    : existingContact?.address
-                const mergedMapsUrl = fields.contact?.googleMapsUrl !== undefined
-                    ? fields.contact.googleMapsUrl
-                    : (existingContact?.googleMapsUrl ?? '')
-                const mergedLat = fields.mapLatitude !== undefined
-                    ? fields.mapLatitude
-                    : originalFacility.map_latitude
-                const mergedLng = fields.mapLongitude !== undefined
-                    ? fields.mapLongitude
-                    : originalFacility.map_longitude
-                const offlineLocationErrors: NonNullable<Result<FacilityParent>['errors']> = []
-                if (!mergedAddress) {
-                    offlineLocationErrors.push({
-                        field: 'contact.address',
-                        errorCode: ErrorCode.REQUIRED,
-                        httpStatus: 400
-                    })
-                }
-                if (!(mergedMapsUrl ?? '').trim()) {
-                    offlineLocationErrors.push({
-                        field: 'contact.googleMapsUrl',
-                        errorCode: ErrorCode.REQUIRED,
-                        httpStatus: 400
-                    })
-                }
-                if (!hasUsableMapPin(
-                    mergedLat === null ? null : Number(mergedLat),
-                    mergedLng === null ? null : Number(mergedLng)
-                )) {
-                    offlineLocationErrors.push({
-                        field: 'mapLatitude',
-                        errorCode: ErrorCode.REQUIRED,
-                        httpStatus: 400
-                    })
-                    offlineLocationErrors.push({
-                        field: 'mapLongitude',
-                        errorCode: ErrorCode.REQUIRED,
-                        httpStatus: 400
-                    })
-                }
-                if (offlineLocationErrors.length > 0) {
-                    throw new FacilityUpdateRejected({
-                        data: {} as gqlTypes.Facility,
-                        hasErrors: true,
-                        errors: offlineLocationErrors
-                    })
-                }
-            }
-
-            let publicationPatch: { city_id: string | null, verification_status: string } | undefined
-
-            if (
-                !becomingOnline
-                && (fieldsToUpdate.cityId !== undefined || fieldsToUpdate.verificationStatus !== undefined)
-            ) {
-                const requestedStatus = verificationStatusForUpdate(
-                    originalFacility.city_id,
-                    originalFacility.verification_status as gqlTypes.FacilityVerificationStatus,
-                    fieldsToUpdate.cityId,
-                    fieldsToUpdate.verificationStatus
-                )
-                const publication = resolveFacilityPublication({
-                    cityId: fieldsToUpdate.cityId !== undefined
-                        ? fieldsToUpdate.cityId
-                        : originalFacility.city_id,
-                    verificationStatus: requestedStatus
-                })
-
-                if (publication.hasErrors) {
-                    throw new FacilityUpdateRejected({
-                        data: {} as gqlTypes.Facility,
-                        hasErrors: true,
-                        errors: publication.errors
-                    })
-                }
-
-                const nextCityId = publication.data.cityId
-
-                if (nextCityId && (!isCityRecordId(nextCityId) || !(await cityExists(nextCityId)))) {
-                    throw new FacilityUpdateRejected(invalidCityId())
-                }
-
-                publicationPatch = {
-                    city_id: publication.data.cityId,
-                    verification_status: publication.data.verificationStatus
-                }
-            }
-
-            // Fetch original HP relations
-            const originalRelations = await transaction
-                .selectFrom('hps_facilities')
-                .select('hps_id')
-                .where('facilities_id', '=', facilityId)
-                .execute()
-
-            const originalHpIds = originalRelations.map(r => r.hps_id)
-
-            // Update scalar fields on facilities table (if any provided)
-            const updatePayload: Record<string, unknown> = {
-                ...buildFacilityUpdatePatch(
-                    fields,
-                    originalFacility.contact as gqlTypes.ContactInput
-                ),
-                ...publicationPatch
-            }
-            if (
-                !becomingOnline
-                && resolvedPlaceId
-                && !originalFacility.google_place_id
-                && fields.googlePlaceId === undefined
-            ) {
-                updatePayload.google_place_id = resolvedPlaceId
-            }
-            
-            let updatedFacility = originalFacility
-
-            if (Object.keys(updatePayload).length > 1) {
-                // Has fields to update beyond just updatedDate
-                updatedFacility = await transaction
-                    .updateTable('facilities')
-                    .set(updatePayload)
-                    .where('id', '=', facilityId)
-                    .returningAll()
-                    .executeTakeFirstOrThrow()
-
-                logger.info(`DB-UPDATE: facilities ${facilityId} scalar fields updated.`)
-            } else {
-                // No scalar fields to update, but touch updatedDate to track the change
-                updatedFacility = await transaction
-                    .updateTable('facilities')
-                    .set({ updated_date: new Date().toISOString() })
-                    .where('id', '=', facilityId)
-                    .returningAll()
-                    .executeTakeFirstOrThrow()
-            }
-
-            // Update relationships (if any provided)
-            let finalHpIds = originalHpIds
-
-            if (fieldsToUpdate.healthcareProfessionalIds && fieldsToUpdate.healthcareProfessionalIds.length) {
-                finalHpIds = await processHealthcareProfessionalRelationshipChanges(
-                    transaction,
-                    facilityId,
-                    fieldsToUpdate.healthcareProfessionalIds
-                )
-            }
-
-            // Create audit log entry
-            // If this fails, the entire transaction (including updates) is rolled back
-            const oldGqlFacility = facilityWithProfessionalIds(originalFacility, originalHpIds)
-            const newGqlFacility = facilityWithProfessionalIds(updatedFacility, finalHpIds)
-
-            await createAuditLog(transaction, {
-                actionType: gqlTypes.ActionType.Update,
-                objectType: gqlTypes.ObjectType.Facility,
-                updatedBy,
-                oldValue: oldGqlFacility,
-                newValue: newGqlFacility
-            })
-
-            // Return the updated facility and final HP IDs for mapping
-            return { facility: updatedFacility, hpIds: finalHpIds }
-        })
+        const result = await db.transaction().execute(transaction =>
+            updateFacilityInTransaction(transaction, facilityId, fields, updatedBy, resolvedPlaceId))
 
         // Map database result to GraphQL type
         const gqlFacility = facilityWithProfessionalIds(result.facility, result.hpIds)

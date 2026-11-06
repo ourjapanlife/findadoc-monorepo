@@ -32,6 +32,8 @@
         "backfill:insurance:write": "node --loader ts-node/esm utils/backfillProfessionalInsurance.ts --write",
         "purge:booking-uploads": "node --loader ts-node/esm utils/purgeExpiredBookingUploads.ts",
         "purge:booking-uploads:write": "node --loader ts-node/esm utils/purgeExpiredBookingUploads.ts --write",
+        "purge:correction-notes": "node --loader ts-node/esm utils/purgeExpiredCorrectionNotes.ts",
+        "purge:correction-notes:write": "node --loader ts-node/esm utils/purgeExpiredCorrectionNotes.ts --write",
         "prod": "pnpm db:push && pnpm prod:dockerstop && pnpm prod:dockerstart",
         "prod:startserver": "echo '💻 💻 💻✨ Starting prod server...' && cross-env NODE_ENV=production PIDUSAGE_USE_PS=true pm2 start dist/src/index.js --no-daemon && pm2 logs --lines 100",
         "prod:stopserver": "echo '💻 💻 💻✨ Stopping prod server...' && pm2 stop all && pm2 delete all",

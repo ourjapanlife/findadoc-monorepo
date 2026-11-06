@@ -739,6 +739,14 @@ export type ContactInput = {
   website?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** How the visitor knows. A fixed label, never personal data. */
+export enum CorrectionReporterRelation {
+  Called = 'CALLED',
+  Patient = 'PATIENT',
+  Staff = 'STAFF',
+  Website = 'WEBSITE'
+}
+
 export type CreateBookingUploadUrlInput = {
   byteSize?: InputMaybe<Scalars['Int']['input']>;
   /** Facility id, clinic site id, or clinic site slug. */
@@ -979,6 +987,89 @@ export type Facility = {
   updatedDate: Scalars['String']['output'];
   /** Whether the location is confirmed. Unresolved rows are UNVERIFIED_LOCATION. */
   verificationStatus: FacilityVerificationStatus;
+};
+
+/** A visitor's report against one published facility. */
+export type FacilityCorrection = {
+  __typename?: 'FacilityCorrection';
+  /** Only the fields the visitor changed. Approval writes only these. */
+  changes: FacilityCorrectionChanges;
+  /** The other Find a Doc listing, for a DUPLICATE report. */
+  duplicateListingUrl?: Maybe<Scalars['String']['output']>;
+  /** The facility the report is about. */
+  facilityId: Scalars['ID']['output'];
+  /** What the visitor says is wrong. */
+  reasons: Array<FacilityCorrectionReason>;
+  /** How the visitor knows, when they said. */
+  reporterRelation?: Maybe<CorrectionReporterRelation>;
+};
+
+/** The fields a visitor changed. A field the visitor did not change is null. */
+export type FacilityCorrectionChanges = {
+  __typename?: 'FacilityCorrectionChanges';
+  /** Corrected address. Sent with WRONG_CITY. */
+  address?: Maybe<PhysicalAddress>;
+  /** City a moderator chose from the vocabulary. A WRONG_CITY correction is not approved without it. */
+  cityId?: Maybe<Scalars['ID']['output']>;
+  /** Corrected payment options. Sent with WRONG_PAYMENT. */
+  paymentOptions?: Maybe<Array<PaymentOption>>;
+  /** Corrected phone number. Sent with WRONG_CONTACT. */
+  phone?: Maybe<Scalars['String']['output']>;
+  /** Corrected facility languages. Sent with WRONG_LANGUAGES. Does not change any professional. */
+  supportedLanguages?: Maybe<Array<Locale>>;
+  /** Corrected website. Sent with WRONG_CONTACT. */
+  website?: Maybe<Scalars['String']['output']>;
+};
+
+/**
+ * A visitor's report from a clinic page. No name, email, or phone of the visitor.
+ * Each changed field belongs to one reason and is refused without it.
+ */
+export type FacilityCorrectionInput = {
+  /** Corrected address. Needs WRONG_CITY. */
+  address?: InputMaybe<PhysicalAddressInput>;
+  /** The other Find a Doc listing, https only. Needs DUPLICATE. */
+  duplicateListingUrl?: InputMaybe<Scalars['String']['input']>;
+  /** A published facility. */
+  facilityId: Scalars['ID']['input'];
+  /** Anything else, up to 1000 characters. */
+  notes?: InputMaybe<Scalars['String']['input']>;
+  /** Corrected payment options. Needs WRONG_PAYMENT. */
+  paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
+  /** Corrected phone number. Needs WRONG_CONTACT. */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** At least one reason. */
+  reasons: Array<FacilityCorrectionReason>;
+  /** How the visitor knows. */
+  reporterRelation?: InputMaybe<CorrectionReporterRelation>;
+  /** Corrected facility languages from the published list. Needs WRONG_LANGUAGES. */
+  supportedLanguages?: InputMaybe<Array<Locale>>;
+  /** Corrected website, https only. Needs WRONG_CONTACT. */
+  website?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** What a visitor says is wrong with a clinic listing. */
+export enum FacilityCorrectionReason {
+  /** The clinic has closed or moved. Approval does not unpublish it. */
+  Closed = 'CLOSED',
+  /** The clinic is listed twice. Approval never merges listings. */
+  Duplicate = 'DUPLICATE',
+  /** Something else, described in the notes. */
+  Other = 'OTHER',
+  /** The address or the city is wrong. A moderator picks the city before approval. */
+  WrongCity = 'WRONG_CITY',
+  /** The phone number or website is wrong. */
+  WrongContact = 'WRONG_CONTACT',
+  /** The languages the facility supports are wrong. */
+  WrongLanguages = 'WRONG_LANGUAGES',
+  /** The payment or insurance options are wrong. */
+  WrongPayment = 'WRONG_PAYMENT'
+}
+
+/** The answer to a correction. It carries no id, so a visitor cannot read the submission back. */
+export type FacilityCorrectionResult = {
+  __typename?: 'FacilityCorrectionResult';
+  isSuccessful: Scalars['Boolean']['output'];
 };
 
 /** A live Google place a moderator can confirm. Do not store the name or address from this type. */
@@ -1406,6 +1497,11 @@ export type Mutation = {
    * Sends a SES notification when email is configured; otherwise records the row only.
    */
   submitBooking: BookingSubmissionResult;
+  /**
+   * Report an error on a published clinic. Signed-out visitors may call it, within a small
+   * per-address budget. The report waits for a moderator as a CORRECTION submission.
+   */
+  submitFacilityCorrection: FacilityCorrectionResult;
   /** Staff confirm, decline, cancel, or complete an appointment. Declined and cancelled free the slot. */
   updateBookingAppointmentStatus: BookingAppointment;
   /** Change visit lengths and offered forms. Owners and admins. */
@@ -1543,6 +1639,11 @@ export type MutationSetClinicWeeklyHoursArgs = {
 
 export type MutationSubmitBookingArgs = {
   input: SubmitBookingInput;
+};
+
+
+export type MutationSubmitFacilityCorrectionArgs = {
+  input: FacilityCorrectionInput;
 };
 
 
@@ -2207,6 +2308,8 @@ export enum SpecialtyCategory {
 /** A community-submitted suggestion for adding or updating a healthcare professional or facility. */
 export type Submission = {
   __typename?: 'Submission';
+  /** The visitor's report. Null unless kind is CORRECTION. */
+  correction?: Maybe<FacilityCorrection>;
   /** ISO 8601 timestamp of when this submission was created. */
   createdDate: Scalars['String']['output'];
   /** Facility data included in this submission. */
@@ -2225,6 +2328,8 @@ export type Submission = {
   isRejected: Scalars['Boolean']['output'];
   /** Whether this submission is currently under review by a moderator. */
   isUnderReview: Scalars['Boolean']['output'];
+  /** LISTING for a new clinic or professional. CORRECTION for a visitor's report from a clinic page. */
+  kind: SubmissionKind;
   /** Optional notes from the submitter or moderator. */
   notes?: Maybe<Scalars['String']['output']>;
   /** Languages spoken by the submitted healthcare professional. */
@@ -2232,6 +2337,14 @@ export type Submission = {
   /** ISO 8601 timestamp of the last update to this submission. */
   updatedDate: Scalars['String']['output'];
 };
+
+/** Whether a submission proposes a new listing or corrects a published facility. */
+export enum SubmissionKind {
+  /** A visitor's correction to a published facility, sent from the clinic page. */
+  Correction = 'CORRECTION',
+  /** A new clinic or professional for the directory. */
+  Listing = 'LISTING'
+}
 
 /** Search filters for querying submissions. All filters are combined with AND logic. */
 export type SubmissionSearchFilters = {
@@ -2247,6 +2360,8 @@ export type SubmissionSearchFilters = {
   isRejected?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter to submissions under review. */
   isUnderReview?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Filter to listings or to corrections. Omit for both. */
+  kind?: InputMaybe<SubmissionKind>;
   /** Maximum number of results to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
   /** Number of results to skip for pagination. */
@@ -2372,6 +2487,11 @@ export type UpdateReservationInput = {
 
 /** Input for updating an existing submission. Used during the moderation review process. */
 export type UpdateSubmissionInput = {
+  /**
+   * City a moderator chose for a CORRECTION, from the city vocabulary.
+   * Refused on a LISTING. facility and healthcareProfessionals are refused on a CORRECTION.
+   */
+  correctionCityId?: InputMaybe<Scalars['ID']['input']>;
   /** Facility data to associate with this submission. */
   facility?: InputMaybe<CreateFacilityInput>;
   /** Updated Google Maps URL. */
@@ -2544,6 +2664,7 @@ export type ResolversTypes = {
   ClinicWeeklyHoursInput: ClinicWeeklyHoursInput;
   Contact: ResolverTypeWrapper<Contact>;
   ContactInput: ContactInput;
+  CorrectionReporterRelation: CorrectionReporterRelation;
   CreateBookingUploadUrlInput: CreateBookingUploadUrlInput;
   CreateClinicAvailabilityClosureInput: CreateClinicAvailabilityClosureInput;
   CreateClinicAvailabilityWindowInput: CreateClinicAvailabilityWindowInput;
@@ -2556,6 +2677,11 @@ export type ResolversTypes = {
   Degree: Degree;
   DeleteResult: ResolverTypeWrapper<DeleteResult>;
   Facility: ResolverTypeWrapper<Facility>;
+  FacilityCorrection: ResolverTypeWrapper<FacilityCorrection>;
+  FacilityCorrectionChanges: ResolverTypeWrapper<FacilityCorrectionChanges>;
+  FacilityCorrectionInput: FacilityCorrectionInput;
+  FacilityCorrectionReason: FacilityCorrectionReason;
+  FacilityCorrectionResult: ResolverTypeWrapper<FacilityCorrectionResult>;
   FacilityPlaceCandidate: ResolverTypeWrapper<FacilityPlaceCandidate>;
   FacilitySearchFilters: FacilitySearchFilters;
   FacilitySource: FacilitySource;
@@ -2599,6 +2725,7 @@ export type ResolversTypes = {
   SpecialtyCategory: SpecialtyCategory;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Submission: ResolverTypeWrapper<Submission>;
+  SubmissionKind: SubmissionKind;
   SubmissionSearchFilters: SubmissionSearchFilters;
   SubmitBookingInput: SubmitBookingInput;
   UpdateBookingAppointmentStatusInput: UpdateBookingAppointmentStatusInput;
@@ -2670,6 +2797,10 @@ export type ResolversParentTypes = {
   CurrentUserAccess: CurrentUserAccess;
   DeleteResult: DeleteResult;
   Facility: Facility;
+  FacilityCorrection: FacilityCorrection;
+  FacilityCorrectionChanges: FacilityCorrectionChanges;
+  FacilityCorrectionInput: FacilityCorrectionInput;
+  FacilityCorrectionResult: FacilityCorrectionResult;
   FacilityPlaceCandidate: FacilityPlaceCandidate;
   FacilitySearchFilters: FacilitySearchFilters;
   FacilitySubmission: FacilitySubmission;
@@ -3153,6 +3284,27 @@ export type FacilityResolvers<ContextType = any, ParentType extends ResolversPar
   verificationStatus?: Resolver<ResolversTypes['FacilityVerificationStatus'], ParentType, ContextType>;
 };
 
+export type FacilityCorrectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['FacilityCorrection'] = ResolversParentTypes['FacilityCorrection']> = {
+  changes?: Resolver<ResolversTypes['FacilityCorrectionChanges'], ParentType, ContextType>;
+  duplicateListingUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  reasons?: Resolver<Array<ResolversTypes['FacilityCorrectionReason']>, ParentType, ContextType>;
+  reporterRelation?: Resolver<Maybe<ResolversTypes['CorrectionReporterRelation']>, ParentType, ContextType>;
+};
+
+export type FacilityCorrectionChangesResolvers<ContextType = any, ParentType extends ResolversParentTypes['FacilityCorrectionChanges'] = ResolversParentTypes['FacilityCorrectionChanges']> = {
+  address?: Resolver<Maybe<ResolversTypes['PhysicalAddress']>, ParentType, ContextType>;
+  cityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  paymentOptions?: Resolver<Maybe<Array<ResolversTypes['PaymentOption']>>, ParentType, ContextType>;
+  phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  supportedLanguages?: Resolver<Maybe<Array<ResolversTypes['Locale']>>, ParentType, ContextType>;
+  website?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
+export type FacilityCorrectionResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['FacilityCorrectionResult'] = ResolversParentTypes['FacilityCorrectionResult']> = {
+  isSuccessful?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+};
+
 export type FacilityPlaceCandidateResolvers<ContextType = any, ParentType extends ResolversParentTypes['FacilityPlaceCandidate'] = ResolversParentTypes['FacilityPlaceCandidate']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   category?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3243,6 +3395,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setBookingInterpretation?: Resolver<ResolversTypes['BookingSettings'], ParentType, ContextType, RequireFields<MutationSetBookingInterpretationArgs, 'input'>>;
   setClinicWeeklyHours?: Resolver<Array<ResolversTypes['ClinicWeeklyHours']>, ParentType, ContextType, RequireFields<MutationSetClinicWeeklyHoursArgs, 'input'>>;
   submitBooking?: Resolver<ResolversTypes['BookingSubmissionResult'], ParentType, ContextType, RequireFields<MutationSubmitBookingArgs, 'input'>>;
+  submitFacilityCorrection?: Resolver<ResolversTypes['FacilityCorrectionResult'], ParentType, ContextType, RequireFields<MutationSubmitFacilityCorrectionArgs, 'input'>>;
   updateBookingAppointmentStatus?: Resolver<ResolversTypes['BookingAppointment'], ParentType, ContextType, RequireFields<MutationUpdateBookingAppointmentStatusArgs, 'input'>>;
   updateBookingSettings?: Resolver<ResolversTypes['BookingSettings'], ParentType, ContextType, RequireFields<MutationUpdateBookingSettingsArgs, 'input'>>;
   updateFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationUpdateFacilityArgs, 'id' | 'input'>>;
@@ -3339,6 +3492,7 @@ export type ReservationResolvers<ContextType = any, ParentType extends Resolvers
 };
 
 export type SubmissionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Submission'] = ResolversParentTypes['Submission']> = {
+  correction?: Resolver<Maybe<ResolversTypes['FacilityCorrection']>, ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   facility?: Resolver<Maybe<ResolversTypes['FacilitySubmission']>, ParentType, ContextType>;
   googleMapsUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3348,6 +3502,7 @@ export type SubmissionResolvers<ContextType = any, ParentType extends ResolversP
   isApproved?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isRejected?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isUnderReview?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['SubmissionKind'], ParentType, ContextType>;
   notes?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   spokenLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3405,6 +3560,9 @@ export type Resolvers<ContextType = any> = {
   CurrentUserAccess?: CurrentUserAccessResolvers<ContextType>;
   DeleteResult?: DeleteResultResolvers<ContextType>;
   Facility?: FacilityResolvers<ContextType>;
+  FacilityCorrection?: FacilityCorrectionResolvers<ContextType>;
+  FacilityCorrectionChanges?: FacilityCorrectionChangesResolvers<ContextType>;
+  FacilityCorrectionResult?: FacilityCorrectionResultResolvers<ContextType>;
   FacilityPlaceCandidate?: FacilityPlaceCandidateResolvers<ContextType>;
   FacilitySubmission?: FacilitySubmissionResolvers<ContextType>;
   HealthcareProfessional?: HealthcareProfessionalResolvers<ContextType>;

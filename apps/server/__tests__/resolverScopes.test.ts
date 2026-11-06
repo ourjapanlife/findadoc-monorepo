@@ -109,6 +109,31 @@ describe('root resolver scopes', () => {
     })
 })
 
+describe('submitFacilityCorrection scope', () => {
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    const call = (context: UserContext) => Promise.resolve().then(() => resolvers.Mutation.submitFacilityCorrection(
+        {},
+        { input: { facilityId: 'not-a-uuid', reasons: [] } },
+        { ...context, clientIp: '198.51.100.7' },
+        info
+    ))
+
+    it('lets a signed-out visitor through to validation', async () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+
+        await expect(call(anonymousContext)).rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } })
+    })
+
+    it('refuses a user without create:submissions or write:submissions', async () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+
+        await expect(call(contextWithScopes(Scope['read:submissions']))).rejects.toMatchObject(unauthorized)
+    })
+})
+
 describe('withScope', () => {
     afterEach(() => {
         vi.restoreAllMocks()

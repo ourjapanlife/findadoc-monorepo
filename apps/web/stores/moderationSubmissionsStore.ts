@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 import { fetchSubmissionsWithCount } from '../utils/graphqlHelpers'
 import { submissionSelection } from '../utils/graphqlSelection'
+import { SubmissionKind } from '@findadoc/graphql'
 import type { Submission, MutationUpdateSubmissionArgs, Mutation, SubmissionSearchFilters } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql.js'
 import type { ServerResponse } from '~/typedefs/serverResponse'
@@ -51,6 +52,9 @@ const SUBMISSION_STATUS_COUNT_QUERIES = [
 ] as const
 
 const NEW_SUBMISSIONS_FETCH_LIMIT = 1000
+
+// Visitor corrections (#22) get their own User feedback queue. Until it ships, these tabs show listings only.
+const LISTINGS_ONLY = { kind: SubmissionKind.Listing } as const satisfies SubmissionSearchFilters
 
 interface SubmissionStatusCounts {
     newCount: number
@@ -118,6 +122,7 @@ export const useModerationSubmissionsStore = defineStore(
 
         async function fetchNewSubmissions() {
             const { filteredSearchResults } = await fetchSubmissionsWithCount({
+                ...LISTINGS_ONLY,
                 limit: NEW_SUBMISSIONS_FETCH_LIMIT,
                 offset: 0
             })
@@ -181,6 +186,7 @@ export const useModerationSubmissionsStore = defineStore(
                     itemsPerPage.value,
                     async offset => {
                         const filters: SubmissionSearchFilters = {
+                            ...LISTINGS_ONLY,
                             offset,
                             limit: itemsPerPage.value,
                             ...SUBMISSION_TAB_FILTERS[selectedModerationListViewTabChosen.value],
@@ -205,7 +211,7 @@ export const useModerationSubmissionsStore = defineStore(
                 const [newSubmissions, ...countResults] = await Promise.all([
                     fetchNewSubmissions(),
                     ...SUBMISSION_STATUS_COUNT_QUERIES.map(({ filter }) =>
-                        fetchSubmissionsWithCount({ ...filter, limit: 1, offset: 0 }))
+                        fetchSubmissionsWithCount({ ...LISTINGS_ONLY, ...filter, limit: 1, offset: 0 }))
                 ])
 
                 statusTotalCounts.value = SUBMISSION_STATUS_COUNT_QUERIES.reduce(
