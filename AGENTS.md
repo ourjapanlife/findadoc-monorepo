@@ -125,6 +125,15 @@ Find a Doc holds patient booking requests, insurance documents, and health infor
 - After a schema change, update `apps/server/src/typeDefs/kyselyTypes.ts` and the seed (`apps/server/scripts/seed/`), then run `pnpm db:reset` and `pnpm db:seed`.
 - A data backfill is a script in `apps/server/utils/` with dry-run as the default, like `backfillFacilityCities.ts`.
 
+## Production data access
+
+`pnpm db:prod` is the only way to reach production from a laptop. Follow `.claude/skills/production-database/SKILL.md`, which is plain Markdown and applies to any assistant. The people's guide is `apps/docs/docs/development/production-database.md`.
+
+- It tunnels through `FindadocOperatorAccess` (`infra/lib/operatorAccessStack.ts`) and signs in with a 15-minute IAM token. Do not read `findadoc/database/master` or connect as `postgres`.
+- `findadoc_readonly` is the default. `--role operator` is for a backfill write the user approved after seeing the dry-run.
+- A data change is a backfill script, never ad hoc SQL. Scripts connect through `apps/server/utils/scriptDatabase.ts`, which refuses a remote host outside `pnpm db:prod` and a production write without `--confirm-production`.
+- Both roles are closed to booking, upload, appointment, membership, user, and audit tables (`20261107090000_rds_operator_roles.sql`). There are no default privileges: a new table is closed to them until its migration grants it. Grant a new directory table. Do not grant personal data.
+
 ## Web code
 
 - Components use `<script setup lang="ts">` and `defineProps<{ ... }>()`. Template first, then script, then any scoped style.

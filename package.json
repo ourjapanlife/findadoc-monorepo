@@ -16,6 +16,7 @@
         "db:seed": "pnpm exec turbo db:seed",
         "db:reset": "pnpm exec turbo db:reset",
         "db:start": "pnpm --filter @findadoc/server db:start",
+        "db:prod": "pnpm --silent --filter @findadoc/server db:prod",
         "db:stop": "pnpm --filter @findadoc/server db:stop",
         "dev:mcp": "pnpm exec turbo dev --filter=@findadoc/mcp",
         "dev:mcp:http": "pnpm exec turbo dev:http --filter=@findadoc/mcp",

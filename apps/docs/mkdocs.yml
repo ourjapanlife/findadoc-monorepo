@@ -80,6 +80,7 @@ nav:
       - Tech Stack: development/tech-stack.md
       - Running the Code: development/running-the-code.md
       - Architecture: development/architecture.md
+      - Production Database: development/production-database.md
       - Troubleshooting: development/troubleshooting.md
   - Contributing:
       - contributing/index.md

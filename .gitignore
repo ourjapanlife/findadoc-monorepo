@@ -33,5 +33,8 @@ eslint-results.sarif
 
 .DS_Store
 .idea
-.claude
+# Local Claude Code state stays local. The shared project settings and skills are committed.
+.claude/*
+!.claude/settings.json
+!.claude/skills/
 *.storybook.log

@@ -23,10 +23,11 @@ AWS CDK app for the Find a Doc AWS account.
 | `FindadocMcp` | The MCP Lambda (`findadoc-mcp`, outside the VPC) behind CloudFront at `mcp-staging.findadoc.jp`, with an error alarm. Its tools call `https://api.findadoc.jp`. |
 | `FindadocDataCopy` | **Temporary (#81).** `findadoc-db-copy`, the one-off function that copies the Supabase database into RDS. Remove after the cutover (#13). |
 | `FindadocUploads` | Private S3 bucket. The API Lambda may presign `uploads/*`. The booking purge may delete `uploads/booking/*`. |
+| `FindadocOperatorAccess` | The EC2 Instance Connect Endpoint and the `findadoc-db-jump` t4g.nano that `pnpm db:prod` tunnels through to reach the database from a laptop. The host is stopped while nobody is connected. |
 
 ## Monthly cost
 
-Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hour except the database instance.
+Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hour except the database instance, and the jump host while someone is connected.
 
 | Item | Cost / month |
 | --- | --- |
@@ -42,6 +43,9 @@ Prices are Tokyo on-demand list prices. Nothing in these stacks bills by the hou
 | API, migration, booking purge and MCP Lambdas | $0 inside the always-free 1M requests and 400k GB-seconds |
 | EventBridge rule for the daily purge | $0 (scheduled rules are free) |
 | `findadoc-booking-purge-failed`, the 11th alarm | $0.10 |
+| `findadoc-db-jump` 8 GB gp3 volume | $0.77 |
+| `findadoc-db-jump` t4g.nano while running (stops itself 20 minutes after the last connection) | about $0.005 an hour |
+| EC2 Instance Connect Endpoint | $0 |
 | CloudFront distribution and the viewer-IP CloudFront Function | $0 inside the free 1 TB, 10M requests and 2M function invocations |
 | ACM certificate, Route 53 alias records | $0 |
 | Secrets Manager secret `findadoc/api` | $0.40 |
@@ -57,6 +61,17 @@ Not used, on purpose: NAT gateways (about $45/month each), Elastic IPs and publi
 - Recovery: point-in-time restore to any second in the last 7 days, plus monthly snapshots kept for 180 days in the `findadoc-database` backup vault. Single-AZ, so a failed host is a restore of roughly 15-30 minutes.
 - Deletion protection is on, and deleting the stack leaves a final snapshot.
 - Before a migration that changes the schema, take a manual snapshot in the RDS console.
+- People sign in as `findadoc_readonly` or `findadoc_operator`, also with IAM tokens (`20261107090000_rds_operator_roles.sql`). Neither can change the schema or read booking, upload, appointment, membership, user, or audit tables.
+
+## Laptop access (`FindadocOperatorAccess`)
+
+`pnpm db:prod` reaches the database from a laptop. The guide is `apps/docs/docs/development/production-database.md`, and the script is `apps/server/scripts/db/production.ts`.
+
+- An EC2 Instance Connect Endpoint can only forward to ports 22 and 3389, so it cannot reach RDS on 5432 directly. It opens SSH to `findadoc-db-jump`, a t4g.nano in `ap-northeast-1a` with no public address, and SSH forwards `127.0.0.1:15432` to RDS.
+- Sign-in is the person's Identity Center session. `pnpm db:prod` pushes a 60-second key with `ec2-instance-connect send-ssh-public-key`, so there is no stored SSH key. The endpoint's security group may only reach the host on 22, and the host only accepts 22 from the endpoint. The host joins `DatabaseClients` for 5432, and `sshd` permits forwarding to the database endpoint only.
+- The host is stopped while unused. `pnpm db:prod` starts it, and a systemd timer on the host powers it off after 20 minutes without an SSH connection. `pnpm db:prod` does not stop it, so one person closing a tunnel does not cut off another.
+- The AMI is cached in `cdk.context.json`, so a deploy does not replace the host. To update it, delete that entry, run `pnpm --filter @findadoc/infra synth` with a session, and merge. The host is replaced.
+- An Instance Connect tunnel lasts at most an hour.
 - `availabilityZones` in `NetworkStack` comes from the cached `availability-zones` entry in `cdk.context.json`, so synth needs no credentials.
 
 ## Credentials (IAM Identity Center)

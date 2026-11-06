@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "ask": [
+      "Bash(pnpm db:prod:*)",
+      "Bash(pnpm --filter @findadoc/server db:prod:*)"
+    ],
+    "deny": [
+      "Bash(aws secretsmanager get-secret-value --secret-id findadoc/database/master:*)",
+      "Bash(aws secretsmanager get-secret-value --profile findadoc --secret-id findadoc/database/master:*)"
+    ]
+  }
+}
