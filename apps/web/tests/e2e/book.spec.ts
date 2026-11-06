@@ -37,7 +37,7 @@ const facility = {
     online: false,
     healthcareProfessionalIds: [],
     contact: {
-        phone: '03-1234-5678',
+        phone: '+81312345678',
         email: 'desk@example.com',
         website: 'https://clinic.example.com',
         googleMapsUrl: '',
@@ -91,7 +91,7 @@ test('a visitor outside Japan sees the notice and the clinic contact, not the fo
     await expect(page.getByTestId('clinic-booking-form')).toHaveCount(0)
 
     const contact = page.getByTestId('clinic-booking-region-contact')
-    await expect(contact.getByRole('link', { name: '03-1234-5678' })).toHaveAttribute('href', 'tel:0312345678')
+    await expect(contact.getByRole('link', { name: '+81 3-1234-5678' })).toHaveAttribute('href', 'tel:+81312345678')
     await expect(contact.getByRole('link', { name: 'desk@example.com' })).toBeVisible()
     await expect(page.getByTestId('clinic-booking-region-clinic-link'))
         .toHaveAttribute('href', `/clinic/tokyo/minato/test-clinic--${FACILITY_ID}`)
@@ -134,6 +134,6 @@ test('a retry that gets a no shows the region notice', async ({ page }) => {
 
     await page.getByTestId('clinic-booking-availability-retry').click()
     await expect(page.getByTestId('clinic-booking-region-notice')).toBeVisible()
-    await expect(page.getByTestId('clinic-booking-region-contact').getByRole('link', { name: '03-1234-5678' })).toBeVisible()
+    await expect(page.getByTestId('clinic-booking-region-contact').getByRole('link', { name: '+81 3-1234-5678' })).toBeVisible()
     await expect(page.getByTestId('clinic-booking-form')).toHaveCount(0)
 })

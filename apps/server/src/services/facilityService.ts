@@ -17,7 +17,7 @@ import { prefectureTranslations, resolvePrefectureKey } from '../../utils/japane
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
 import { databaseOrderColumn, FACILITY_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { isCityRecordId, resolveFacilityPublication, verificationStatusForUpdate } from './facilityPublication.js'
-import { phoneForStorage } from '../validation/validatePhone.js'
+import { isStorablePhone, phoneForStorage } from '../validation/validatePhone.js'
 import { cityExists, findCityBySlug } from './cityService.js'
 import { FacilitySource } from '@findadoc/graphql'
 import { matchingFacilityId } from '../places/facilityMapsMatch.js'
@@ -858,6 +858,27 @@ export async function countFacilities(
 }
 
 /**
+ * The facility's stored phone, read only when an update sends a phone that does not parse.
+ * Validation then accepts that phone if it is the unchanged legacy value.
+ */
+async function storedPhoneForUnparseableUpdate(
+    facilityId: string,
+    fieldsToUpdate: Partial<gqlTypes.UpdateFacilityInput>
+): Promise<string | null> {
+    const phone = fieldsToUpdate.contact?.phone
+    if (!phone || isStorablePhone(phone)) {
+        return null
+    }
+    const row = await db
+        .selectFrom('facilities')
+        .select('contact')
+        .where('id', '=', facilityId)
+        .executeTakeFirst()
+    const contact = row?.contact as { phone?: unknown } | null | undefined
+    return typeof contact?.phone === 'string' ? contact.phone : null
+}
+
+/**
  * Updates a Facility in the database based on the id.
  * - Scalar fields are updated on facilities
  * - Relationship changes (HPs) are applied in hps_facilities via the provided actions
@@ -870,7 +891,8 @@ export const updateFacility = async (
 ): Promise<Result<FacilityParent>> => {
     try {
         // Validate input before attempting database operations
-        const validationResult = validateUpdateFacilityInput(fieldsToUpdate)
+        const storedPhone = await storedPhoneForUnparseableUpdate(facilityId, fieldsToUpdate)
+        const validationResult = validateUpdateFacilityInput(fieldsToUpdate, { storedPhone })
 
         if (validationResult.hasErrors) {
             return validationResult as Result<FacilityParent>

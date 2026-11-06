@@ -1,7 +1,7 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
 import { hasSpecialCharacters, isValidEmail, isValidWebsite } from '../../utils/stringUtils.js'
-import { isStorablePhone } from './validatePhone.js'
+import { isAcceptedUpdatePhone } from './validatePhone.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 import { isPublishedLocale } from '../languages/publishedLocales.js'
@@ -137,10 +137,18 @@ export function validateSupportedLanguages(
     }
 }
 
+export interface UpdateFacilityValidationOptions {
+    /** The phone already stored on the facility. An unchanged legacy value is accepted. */
+    storedPhone?: string | null
+}
+
 /**
  * Validates the input for updating a facility.
  */
-export function validateUpdateFacilityInput(input: Partial<gqlTypes.UpdateFacilityInput>): Result<unknown> {
+export function validateUpdateFacilityInput(
+    input: Partial<gqlTypes.UpdateFacilityInput>,
+    options: UpdateFacilityValidationOptions = {}
+): Result<unknown> {
     const validationResults: Result<unknown> = {
         data: undefined,
         hasErrors: false,
@@ -166,7 +174,7 @@ export function validateUpdateFacilityInput(input: Partial<gqlTypes.UpdateFacili
     }
 
     if (input.contact) {
-        const contactValidationResults = validateContactInput(input.contact)
+        const contactValidationResults = validateContactInput(input.contact, options.storedPhone)
 
         if (contactValidationResults.hasErrors) {
             validationResults.hasErrors = true
@@ -323,7 +331,10 @@ export function hasUsableMapPin(
     return true
 }
 
-export function validateContactInput(contactInput: gqlTypes.ContactInput | gqlTypes.Contact): Result<unknown> {
+export function validateContactInput(
+    contactInput: gqlTypes.ContactInput | gqlTypes.Contact,
+    storedPhone?: string | null
+): Result<unknown> {
     const validationResults: Result<unknown> = {
         data: undefined,
         hasErrors: false,
@@ -343,7 +354,7 @@ export function validateContactInput(contactInput: gqlTypes.ContactInput | gqlTy
         })
     }
 
-    if (contactInput.phone && !isStorablePhone(contactInput.phone)) {
+    if (contactInput.phone && !isAcceptedUpdatePhone(contactInput.phone, storedPhone)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'phone',

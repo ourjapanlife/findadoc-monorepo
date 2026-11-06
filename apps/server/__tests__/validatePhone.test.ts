@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { isStorablePhone, phoneForStorage } from '../src/validation/validatePhone.js'
-import { validateContactInput } from '../src/validation/validateFacility.js'
+import { validateContactInput, validateUpdateFacilityInput } from '../src/validation/validateFacility.js'
 import { contactForStorage } from '../src/services/facilityService.js'
 import { ErrorCode } from '../src/result.js'
 
@@ -28,6 +28,34 @@ describe('facility phone validation', () => {
         })
         expect(validateContactInput({ phone: '045-641-6961' }).hasErrors).toBe(false)
         expect(validateContactInput({ phone: '' }).hasErrors).toBe(false)
+    })
+})
+
+describe('facility phone on update', () => {
+    const legacyPhone = '03-5722-5500 (reception)'
+
+    it('keeps an unchanged legacy phone so another contact field can be edited', () => {
+        const result = validateUpdateFacilityInput(
+            { contact: { phone: legacyPhone, email: 'desk@example.com' } },
+            { storedPhone: legacyPhone }
+        )
+        expect(result.hasErrors).toBe(false)
+    })
+
+    it('refuses a new phone that does not parse, even when the stored one did not', () => {
+        const result = validateUpdateFacilityInput(
+            { contact: { phone: '+44 20 7946 0000' } },
+            { storedPhone: legacyPhone }
+        )
+        expect(result.errors).toContainEqual({
+            field: 'phone',
+            errorCode: ErrorCode.INVALID_PHONE_NUMBER,
+            httpStatus: 400
+        })
+    })
+
+    it('refuses an unparseable phone when nothing is stored', () => {
+        expect(validateUpdateFacilityInput({ contact: { phone: legacyPhone } }).hasErrors).toBe(true)
     })
 })
 
