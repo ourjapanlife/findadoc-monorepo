@@ -67,10 +67,10 @@ test.describe('Moderation user feedback', () => {
         const before = await facilityFromApi(request, facilityId)
 
         await page.getByTestId('mod-edit-submission-approve-button').click()
-        await expect(page.getByText(enUS.modCorrectionReview.approveConfirm)).toBeVisible()
+        await expect(page.getByText(enUS.modCorrectionReview.approveConfirm, { exact: true })).toBeVisible()
         await page.getByRole('button', { name: enUS.modCorrectionReview.approveConfirmButton }).click()
 
-        await expect(page.getByText(enUS.modCorrectionReview.approved)).toBeVisible()
+        await expect(page.getByText(enUS.modCorrectionReview.approved, { exact: true })).toBeVisible()
         await expect(page).not.toHaveURL(/\/edit-submission\//)
 
         const after = await facilityFromApi(request, facilityId)
@@ -91,7 +91,7 @@ test.describe('Moderation user feedback', () => {
 
         await page.getByTestId('mod-edit-submission-reject-button').click()
         await page.getByRole('button', { name: enUS.modCorrectionReview.declineConfirmButton }).click()
-        await expect(page.getByText(enUS.modCorrectionReview.declined)).toBeVisible()
+        await expect(page.getByText(enUS.modCorrectionReview.declined, { exact: true })).toBeVisible()
 
         const after = await facilityFromApi(request, facilityId)
         expect(after.contact?.phone).toBe(before.contact?.phone)
