@@ -1,4 +1,8 @@
 <template>
+    <!-- Navigation progress only exists in the browser; the server render has nothing to load. -->
+    <ClientOnly>
+        <RouteLoading />
+    </ClientOnly>
     <NuxtLayout
         v-if="hostedClinicSlug !== undefined"
         name="clinic-landing"
@@ -35,6 +39,7 @@ import { computed, onErrorCaptured, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { initializeGqlClient } from './utils/graphql.js'
 import ClinicLanding from '~/components/clinic/ClinicLanding.vue'
+import RouteLoading from '~/components/common/RouteLoading.vue'
 import { useClinicLandingMode, useRequestHost } from '~/composables/useClinicLanding'
 import {
     clinicLandingHostSlug,
