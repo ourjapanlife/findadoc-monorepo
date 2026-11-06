@@ -133,7 +133,10 @@
     "network": "La richiesta non è stata completata. Controlla la connessione e riprova.",
     "writeOutcomeUnknown": "Non abbiamo ricevuto risposta, quindi la modifica potrebbe essere già stata salvata. Controlla prima di inviarla di nuovo.",
     "prefectureMismatch": "Il nome inglese e quello giapponese della prefettura devono coincidere.",
-    "prefectureRequired": "Aggiungi la prefettura in inglese e in giapponese."
+    "prefectureRequired": "Aggiungi la prefettura in inglese e in giapponese.",
+    "correctionCityRequired": "Scegli una città prima di approvare questa correzione.",
+    "submissionKindMismatch": "Questa modifica non vale per una correzione di un visitatore.",
+    "submissionStatusChanged": "Qualcun altro ha modificato questo invio prima di te. Ricarica la pagina e controllalo di nuovo."
   },
   "footer": {
     "poweredBy": "Offerto da {name}",
@@ -326,7 +329,8 @@
     "collapse": "Comprimi la barra laterale",
     "expand": "Espandi la barra laterale",
     "bookings": "Prenotazioni",
-    "availability": "Disponibilità"
+    "availability": "Disponibilità",
+    "userFeedback": "Segnalazioni degli utenti"
   },
   "accessPanel": {
     "loading": "Caricamento autorizzazioni…",
@@ -378,6 +382,47 @@
     "approve": "Approva",
     "reject": "Rifiuta",
     "update": "Aggiorna"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "Segnalato il {date}",
+    "facilityMissing": "Impossibile caricare questa clinica. Potrebbe essere stata rimossa dall’elenco.",
+    "openClinicPage": "Apri la pagina della clinica",
+    "editFacility": "Modifica questa struttura",
+    "startReview": "Inizia la revisione",
+    "startedReview": "Segnata come in revisione.",
+    "reasonsHeading": "Cosa segnala il visitatore",
+    "changesHeading": "Prima e dopo",
+    "changesHint": "Approvando, alla clinica vengono scritti solo questi campi. Tutto il resto rimane uguale.",
+    "before": "Ora",
+    "after": "Secondo il visitatore",
+    "added": "aggiunto",
+    "removed": "rimosso",
+    "emptyValue": "Non indicato",
+    "noChanges": "Il visitatore non ha inviato un nuovo valore. Controlla la clinica prima di decidere.",
+    "fieldAddress": "Indirizzo",
+    "fieldPhone": "Telefono",
+    "fieldWebsite": "Sito web",
+    "fieldLanguages": "Lingue supportate dalla clinica",
+    "fieldPayment": "Pagamenti accettati dalla clinica",
+    "cityHint": "Il nuovo indirizzo richiede una città. Sceglila dall’elenco: la città scritta dal visitatore non viene mai usata come città.",
+    "currentCity": "Città attuale: {city}",
+    "cityLabel": "Città del nuovo indirizzo",
+    "closedNotice": "Chiusa o trasferita: l’approvazione non cambia la pagina della clinica. Per togliere la clinica dal sito, modifica la struttura.",
+    "duplicateNotice": "Scheda duplicata: l’approvazione non unisce nulla. Confronta le due schede e modificale a mano.",
+    "duplicateOtherListing": "L’altra scheda",
+    "duplicateNoLink": "Il visitatore non ha inserito il link all’altra scheda.",
+    "notesHeading": "Nota del visitatore",
+    "noNotes": "Nessuna nota.",
+    "relationHeading": "Come lo sa",
+    "relationUnknown": "Non indicato",
+    "retentionNote": "La nota del visitatore viene cancellata 180 giorni dopo che la correzione è approvata o rifiutata.",
+    "approveConfirm": "Approvare questa correzione? Sulla pagina della clinica cambiano solo i campi mostrati qui.",
+    "approveConfirmButton": "Sì, approva",
+    "approved": "Correzione approvata. La modifica è salvata nella clinica.",
+    "declineConfirm": "Rifiutare questa correzione? Sulla pagina della clinica non cambia nulla.",
+    "declineConfirmButton": "Sì, rifiuta",
+    "declined": "Correzione rifiutata.",
+    "submissionMissing": "Impossibile caricare questo invio."
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Non ci sono richieste in attesa"
@@ -652,7 +697,8 @@
     "approvedSubmission": "Approvato",
     "rejectedSubmission": "Rifiutato",
     "createdDate": "Creato il",
-    "updatedDate": "Ultimo aggiornamento"
+    "updatedDate": "Ultimo aggiornamento",
+    "feedbackSubmission": "Segnalazione"
   },
   "profile": {
     "edit": "Modifica profilo",

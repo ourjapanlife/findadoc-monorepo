@@ -170,7 +170,10 @@
     "network": "Permintaan tidak selesai. Periksa koneksi Anda, lalu coba lagi.",
     "writeOutcomeUnknown": "Kami tidak menerima jawaban, jadi perubahan Anda mungkin sudah tersimpan. Periksa dulu sebelum mengirim lagi.",
     "prefectureMismatch": "Nama prefektur dalam bahasa Inggris dan bahasa Jepang harus sama.",
-    "prefectureRequired": "Tambahkan prefektur dalam bahasa Inggris dan bahasa Jepang."
+    "prefectureRequired": "Tambahkan prefektur dalam bahasa Inggris dan bahasa Jepang.",
+    "correctionCityRequired": "Pilih kota sebelum menyetujui koreksi ini.",
+    "submissionKindMismatch": "Perubahan ini tidak berlaku untuk koreksi pengunjung.",
+    "submissionStatusChanged": "Orang lain sudah mengubah pengajuan ini lebih dulu. Muat ulang halaman dan periksa lagi."
   },
   "footer": {
     "poweredBy": "Didukung oleh {name}",
@@ -417,7 +420,8 @@
     "collapse": "Ciutkan bilah samping",
     "expand": "Bentangkan bilah samping",
     "bookings": "Reservasi",
-    "availability": "Ketersediaan"
+    "availability": "Ketersediaan",
+    "userFeedback": "Masukan pengguna"
   },
   "accessPanel": {
     "loading": "Memuat izin…",
@@ -469,6 +473,47 @@
     "updateAndExit": "Perbarui & Keluar",
     "approve": "Setujui",
     "reject": "Tolak"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "Dilaporkan pada {date}",
+    "facilityMissing": "Klinik ini tidak dapat dimuat. Mungkin sudah dihapus dari direktori.",
+    "openClinicPage": "Buka halaman klinik",
+    "editFacility": "Edit fasilitas ini",
+    "startReview": "Mulai tinjauan",
+    "startedReview": "Ditandai sedang ditinjau.",
+    "reasonsHeading": "Yang menurut pengunjung salah",
+    "changesHeading": "Sebelum dan sesudah",
+    "changesHint": "Menyetujui hanya menulis kolom-kolom ini ke klinik. Selebihnya tetap sama.",
+    "before": "Sekarang",
+    "after": "Menurut pengunjung",
+    "added": "ditambahkan",
+    "removed": "dihapus",
+    "emptyValue": "Tidak tercantum",
+    "noChanges": "Pengunjung tidak mengirim nilai baru. Periksa klinik sebelum memutuskan.",
+    "fieldAddress": "Alamat",
+    "fieldPhone": "Telepon",
+    "fieldWebsite": "Situs web",
+    "fieldLanguages": "Bahasa yang didukung klinik",
+    "fieldPayment": "Pembayaran yang diterima klinik",
+    "cityHint": "Alamat baru memerlukan kota. Pilih dari daftar: kota yang diketik pengunjung tidak pernah dipakai sebagai kota.",
+    "currentCity": "Kota sekarang: {city}",
+    "cityLabel": "Kota untuk alamat baru",
+    "closedNotice": "Tutup atau pindah: menyetujui tidak mengubah halaman klinik. Untuk menurunkan klinik dari situs, edit fasilitasnya.",
+    "duplicateNotice": "Duplikat: menyetujui tidak menggabungkan apa pun. Bandingkan kedua daftar dan edit secara manual.",
+    "duplicateOtherListing": "Daftar yang lain",
+    "duplicateNoLink": "Pengunjung tidak menautkan daftar yang lain.",
+    "notesHeading": "Catatan pengunjung",
+    "noNotes": "Tidak ada catatan.",
+    "relationHeading": "Sumber informasi",
+    "relationUnknown": "Tidak disebutkan",
+    "retentionNote": "Catatan pengunjung dihapus 180 hari setelah koreksi disetujui atau ditolak.",
+    "approveConfirm": "Setujui koreksi ini? Hanya kolom yang ditampilkan di sini yang berubah di halaman klinik.",
+    "approveConfirmButton": "Ya, setujui",
+    "approved": "Koreksi disetujui. Perubahan disimpan ke klinik.",
+    "declineConfirm": "Tolak koreksi ini? Halaman klinik tidak berubah.",
+    "declineConfirmButton": "Ya, tolak",
+    "declined": "Koreksi ditolak.",
+    "submissionMissing": "Pengajuan ini tidak dapat dimuat."
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Tidak ada pengajuan yang tertunda"
@@ -660,7 +705,8 @@
     "approvedSubmission": "Disetujui",
     "rejectedSubmission": "Ditolak",
     "createdDate": "Dibuat pada",
-    "updatedDate": "Terakhir diperbarui"
+    "updatedDate": "Terakhir diperbarui",
+    "feedbackSubmission": "Masukan"
   },
   "pagination": {
     "of": "dari",

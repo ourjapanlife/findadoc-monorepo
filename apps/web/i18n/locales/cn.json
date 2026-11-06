@@ -295,7 +295,8 @@
     "collapse": "收起侧边栏",
     "expand": "展开侧边栏",
     "bookings": "预约申请",
-    "availability": "可预约时段"
+    "availability": "可预约时段",
+    "userFeedback": "用户反馈"
   },
   "accessPanel": {
     "loading": "正在加载权限…",
@@ -314,6 +315,47 @@
     "approve": "批准",
     "reject": "驳回",
     "update": "更新"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "报告于 {date}",
+    "facilityMissing": "无法加载此诊所。它可能已从目录中删除。",
+    "openClinicPage": "打开诊所页面",
+    "editFacility": "编辑此机构",
+    "startReview": "开始审核",
+    "startedReview": "已标记为审核中。",
+    "reasonsHeading": "访客指出的问题",
+    "changesHeading": "修改前后",
+    "changesHint": "批准后只会将这些字段写入诊所，其他信息保持不变。",
+    "before": "当前",
+    "after": "访客提供",
+    "added": "新增",
+    "removed": "删除",
+    "emptyValue": "未列出",
+    "noChanges": "访客没有提供新的内容。请先核实诊所信息再做决定。",
+    "fieldAddress": "地址",
+    "fieldPhone": "电话",
+    "fieldWebsite": "网站",
+    "fieldLanguages": "诊所支持的语言",
+    "fieldPayment": "诊所接受的付款方式",
+    "cityHint": "新地址需要市区町村。请从列表中选择：不会直接使用访客输入的城市名称。",
+    "currentCity": "当前城市：{city}",
+    "cityLabel": "新地址所在城市",
+    "closedNotice": "已停业或搬迁：批准不会改变诊所页面。如需下架诊所，请编辑机构。",
+    "duplicateNotice": "重复条目：批准不会合并条目。请比较两个条目并手动编辑。",
+    "duplicateOtherListing": "另一个条目",
+    "duplicateNoLink": "访客没有提供另一个条目的链接。",
+    "notesHeading": "访客备注",
+    "noNotes": "没有备注。",
+    "relationHeading": "信息来源",
+    "relationUnknown": "未提供",
+    "retentionNote": "访客备注会在修正被批准或驳回 180 天后删除。",
+    "approveConfirm": "批准此修正吗？诊所页面上只会更改这里显示的字段。",
+    "approveConfirmButton": "确认批准",
+    "approved": "修正已批准。更改已保存到诊所。",
+    "declineConfirm": "驳回此修正吗？诊所页面不会有任何变化。",
+    "declineConfirmButton": "确认驳回",
+    "declined": "修正已驳回。",
+    "submissionMissing": "无法加载此提交。"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "暂无待审核的已提交项目"
@@ -540,7 +582,10 @@
     "network": "请求没有完成。请检查网络连接后重试。",
     "writeOutcomeUnknown": "没有收到回应，您的更改可能已经保存。再次提交前请先确认。",
     "prefectureMismatch": "英文和日文的都道府县名称必须一致。",
-    "prefectureRequired": "请填写英文和日文的都道府县。"
+    "prefectureRequired": "请填写英文和日文的都道府县。",
+    "correctionCityRequired": "批准此修正前请先选择城市。",
+    "submissionKindMismatch": "此更改不适用于访客修正。",
+    "submissionStatusChanged": "其他人已先更改了此提交。请刷新页面后再检查一次。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "使用语言",
@@ -645,7 +690,8 @@
     "approvedSubmission": "已批准",
     "rejectedSubmission": "已驳回",
     "createdDate": "创建于",
-    "updatedDate": "最近更新"
+    "updatedDate": "最近更新",
+    "feedbackSubmission": "反馈"
   },
   "settingsPage": {
     "heading": "设置",

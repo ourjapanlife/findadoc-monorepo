@@ -170,7 +170,10 @@
     "network": "The request did not finish. Check your connection and try again.",
     "writeOutcomeUnknown": "We did not get an answer, so your change may already be saved. Check before you send it again.",
     "prefectureMismatch": "The English and Japanese prefecture names have to match.",
-    "prefectureRequired": "Add a prefecture in English and in Japanese."
+    "prefectureRequired": "Add a prefecture in English and in Japanese.",
+    "correctionCityRequired": "Pick a city before you approve this correction.",
+    "submissionKindMismatch": "This change does not apply to a visitor correction.",
+    "submissionStatusChanged": "Someone else changed this submission first. Reload the page and check it again."
   },
   "footer": {
     "poweredBy": "Powered by {name}",
@@ -417,7 +420,8 @@
     "collapse": "Collapse sidebar",
     "expand": "Expand sidebar",
     "bookings": "Bookings",
-    "availability": "Availability"
+    "availability": "Availability",
+    "userFeedback": "User feedback"
   },
   "accessPanel": {
     "loading": "Loading permissions…",
@@ -469,6 +473,47 @@
     "updateAndExit": "Update & Exit",
     "approve": "Approve",
     "reject": "Reject"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "Reported on {date}",
+    "facilityMissing": "This clinic could not be loaded. It may have been removed from the directory.",
+    "openClinicPage": "Open the clinic page",
+    "editFacility": "Edit this facility",
+    "startReview": "Start review",
+    "startedReview": "Marked as under review.",
+    "reasonsHeading": "What the visitor says is wrong",
+    "changesHeading": "Before and after",
+    "changesHint": "Approving writes only these fields to the clinic. Everything else stays the same.",
+    "before": "Now",
+    "after": "Visitor says",
+    "added": "added",
+    "removed": "removed",
+    "emptyValue": "Not listed",
+    "noChanges": "The visitor did not send a new value. Check the clinic before you decide.",
+    "fieldAddress": "Address",
+    "fieldPhone": "Phone",
+    "fieldWebsite": "Website",
+    "fieldLanguages": "Languages the clinic supports",
+    "fieldPayment": "Payment the clinic accepts",
+    "cityHint": "The new address needs a city. Pick it from the list: a city the visitor typed is never used as the city.",
+    "currentCity": "City now: {city}",
+    "cityLabel": "City for the new address",
+    "closedNotice": "Closed or moved: approving changes nothing on the clinic page. To take the clinic off the site, edit the facility.",
+    "duplicateNotice": "Duplicate listing: approving merges nothing. Compare the two listings and edit them by hand.",
+    "duplicateOtherListing": "The other listing",
+    "duplicateNoLink": "The visitor did not link the other listing.",
+    "notesHeading": "Visitor's note",
+    "noNotes": "No note.",
+    "relationHeading": "How they know",
+    "relationUnknown": "Not given",
+    "retentionNote": "The visitor's note is deleted 180 days after the correction is approved or declined.",
+    "approveConfirm": "Approve this correction? Only the fields shown here change on the clinic page.",
+    "approveConfirmButton": "Yes, approve",
+    "approved": "Correction approved. The change is saved to the clinic.",
+    "declineConfirm": "Decline this correction? Nothing changes on the clinic page.",
+    "declineConfirmButton": "Yes, decline",
+    "declined": "Correction declined.",
+    "submissionMissing": "This submission could not be loaded."
   },
   "modPanelSubmissionList": {
     "noSubmissions": "There are no pending submissions"
@@ -660,7 +705,8 @@
     "approvedSubmission": "Approved",
     "rejectedSubmission": "Rejected",
     "createdDate": "Created on",
-    "updatedDate": "Updated last"
+    "updatedDate": "Updated last",
+    "feedbackSubmission": "Feedback"
   },
   "pagination": {
     "of": "of",

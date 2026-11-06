@@ -295,7 +295,8 @@
     "collapse": "Tiklupin ang gilid na menu",
     "expand": "Palawakin ang gilid na menu",
     "bookings": "Mga booking",
-    "availability": "Mga oras na bukas"
+    "availability": "Mga oras na bukas",
+    "userFeedback": "Puna ng mga user"
   },
   "accessPanel": {
     "loading": "Nilo-load ang mga pahintulot…",
@@ -345,8 +346,49 @@
   "modEditSubmissionTopNav": {
     "updateAndExit": "I-Update at I-Exit",
     "approve": "Aprubado",
-    "reject": "Hindi na-aprubahan",
+    "reject": "Tanggihan",
     "update": "I-update"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "Iniulat noong {date}",
+    "facilityMissing": "Hindi ma-load ang klinikang ito. Maaaring tinanggal na ito sa direktoryo.",
+    "openClinicPage": "Buksan ang pahina ng klinika",
+    "editFacility": "I-edit ang pasilidad na ito",
+    "startReview": "Simulan ang pagsusuri",
+    "startedReview": "Minarkahan bilang sinusuri.",
+    "reasonsHeading": "Ang sinasabi ng bisita na mali",
+    "changesHeading": "Bago at pagkatapos",
+    "changesHint": "Kapag inaprubahan, ang mga field na ito lang ang isusulat sa klinika. Hindi nagbabago ang iba.",
+    "before": "Ngayon",
+    "after": "Ayon sa bisita",
+    "added": "idinagdag",
+    "removed": "tinanggal",
+    "emptyValue": "Hindi nakalista",
+    "noChanges": "Walang ipinadalang bagong halaga ang bisita. Suriin ang klinika bago magpasya.",
+    "fieldAddress": "Address",
+    "fieldPhone": "Telepono",
+    "fieldWebsite": "Website",
+    "fieldLanguages": "Mga wikang sinusuportahan ng klinika",
+    "fieldPayment": "Mga bayad na tinatanggap ng klinika",
+    "cityHint": "Kailangan ng lungsod ang bagong address. Piliin ito sa listahan: hindi kailanman ginagamit bilang lungsod ang itinipa ng bisita.",
+    "currentCity": "Lungsod ngayon: {city}",
+    "cityLabel": "Lungsod ng bagong address",
+    "closedNotice": "Sarado o lumipat: walang binabago ang pag-apruba sa pahina ng klinika. Para alisin ang klinika sa site, i-edit ang pasilidad.",
+    "duplicateNotice": "Dobleng listahan: walang pinagsasama ang pag-apruba. Ihambing ang dalawang listahan at i-edit nang mano-mano.",
+    "duplicateOtherListing": "Ang isa pang listahan",
+    "duplicateNoLink": "Hindi nag-link ang bisita sa isa pang listahan.",
+    "notesHeading": "Tala ng bisita",
+    "noNotes": "Walang tala.",
+    "relationHeading": "Paano nila nalaman",
+    "relationUnknown": "Hindi sinabi",
+    "retentionNote": "Binubura ang tala ng bisita 180 araw matapos aprubahan o tanggihan ang pagwawasto.",
+    "approveConfirm": "Aprubahan ang pagwawastong ito? Ang mga field na nakikita rito lang ang magbabago sa pahina ng klinika.",
+    "approveConfirmButton": "Oo, aprubahan",
+    "approved": "Naaprubahan ang pagwawasto. Naka-save na sa klinika ang pagbabago.",
+    "declineConfirm": "Tanggihan ang pagwawastong ito? Walang magbabago sa pahina ng klinika.",
+    "declineConfirmButton": "Oo, tanggihan",
+    "declined": "Tinanggihan ang pagwawasto.",
+    "submissionMissing": "Hindi ma-load ang pagsusumiteng ito."
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Walang nakabinbing mga isinumite."
@@ -489,7 +531,10 @@
     "network": "Hindi natapos ang request. Suriin ang koneksyon at subukan muli.",
     "writeOutcomeUnknown": "Walang natanggap na sagot, kaya maaaring na-save na ang iyong pagbabago. Suriin muna bago ito ipadala muli.",
     "prefectureMismatch": "Dapat magkatugma ang Ingles at Japanese na pangalan ng prepektura.",
-    "prefectureRequired": "Ilagay ang prepektura sa Ingles at sa Japanese."
+    "prefectureRequired": "Ilagay ang prepektura sa Ingles at sa Japanese.",
+    "correctionCityRequired": "Pumili ng lungsod bago aprubahan ang pagwawastong ito.",
+    "submissionKindMismatch": "Hindi angkop ang pagbabagong ito sa pagwawasto ng bisita.",
+    "submissionStatusChanged": "May ibang nagbago muna sa pagsusumiteng ito. I-reload ang pahina at suriin itong muli."
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
@@ -645,7 +690,8 @@
     "approvedSubmission": "Aprubado",
     "rejectedSubmission": "Hindi na-aprubahan",
     "createdDate": "Ginawa noong",
-    "updatedDate": "Huling na-update"
+    "updatedDate": "Huling na-update",
+    "feedbackSubmission": "Puna"
   },
   "settingsPage": {
     "heading": "Mga setting",
