@@ -1,7 +1,6 @@
 import pg from 'pg'
 import { pathToFileURL } from 'node:url'
-import { envVariables } from './environmentVariables.js'
-import { poolConfig } from '../src/kyselyClient.js'
+import { assertScriptWriteAllowed, describeScriptTarget, scriptDatabaseConfig } from './scriptDatabase.js'
 import {
     describeStoredInsurance,
     planStoredInsurance,
@@ -11,8 +10,10 @@ import {
 
 /**
  * Clear the old per-professional insurance codes (#18).
- * Dry-run unless `--write` is passed. The dry-run prints each professional with
- * the facility, the city, and the stored codes written as sentences.
+ * Dry-run unless `--write` is passed. The dry-run prints each professional's id with
+ * the facility, the city, and the stored codes written as sentences. It prints no personal name.
+ * Production runs go through `pnpm db:prod`; a production write also needs `--confirm-production`
+ * and the operator role (`scriptDatabase.ts`).
  * A write run empties `hps.accepted_insurance`. It never changes a facility's
  * Japanese insurance answer: every clinic starts unknown, and a moderator answers
  * yes or no from a source. A doctor whose old code said "does not accept insurance"
@@ -21,44 +22,8 @@ import {
 
 type ProfessionalRow = {
     id: string
-    names: { firstName?: string, lastName?: string }[] | null
     accepted_insurance: unknown
     facilities: { name: string, city: string | null, japanese_insurance: string | null }[] | null
-}
-
-/** Session-port connection. Local Docker by default; IAM token over TLS with DB_IAM_AUTH=true. */
-export function clientConfig(): pg.ClientConfig {
-    // RDS with DB_IAM_AUTH=true signs a token and requires TLS, the same as the API.
-    if (envVariables.dbIamAuth()) {
-        // Without a host and a user poolConfig cannot sign a token and would fall back to a password.
-        if (!envVariables.pgHost()) {
-            throw new Error('Set PGHOST to the database host. DB_IAM_AUTH=true has no password fallback.')
-        }
-        if (!envVariables.pgUser()) {
-            throw new Error('Set PGUSER to the IAM database user. DB_IAM_AUTH=true has no password fallback.')
-        }
-        const { host, port, user, password, ssl, database } = poolConfig()
-        if (port === 6543) {
-            throw new Error('Use the session database port 5432. The transaction pooler cannot apply this backfill.')
-        }
-        return { host, port, user, password, ssl, database }
-    }
-
-    const password = envVariables.pgPassword()
-    const host = envVariables.pgHost() || '127.0.0.1'
-    const port = Number(envVariables.pgPort() || (envVariables.isProduction() ? 5432 : 54322))
-
-    if (port === 6543) {
-        throw new Error('Use the session database port 5432. The transaction pooler cannot apply this backfill.')
-    }
-
-    return {
-        host,
-        port,
-        user: envVariables.pgUser() || 'postgres',
-        password: password || 'postgres',
-        database: 'postgres'
-    }
 }
 
 function storedRow(professional: ProfessionalRow): StoredInsuranceRow {
@@ -72,23 +37,16 @@ function storedRow(professional: ProfessionalRow): StoredInsuranceRow {
     }
 }
 
-function displayName(professional: ProfessionalRow): string {
-    const name = (professional.names ?? [])
-        .map(entry => [entry.firstName, entry.lastName].filter(Boolean).join(' '))
-        .find(Boolean)
-
-    return name ?? 'Unnamed professional'
-}
-
 export async function main(write = process.argv.includes('--write')) {
-    const client = new pg.Client(clientConfig())
+    assertScriptWriteAllowed(write)
+    console.log(describeScriptTarget(write))
+    const client = new pg.Client(scriptDatabaseConfig())
     await client.connect()
 
     const counts = { cleared: 0, unchanged: 0 }
     try {
         const professionals = await client.query<ProfessionalRow>(`
             select hps.id,
-                   hps.names,
                    hps.accepted_insurance,
                    coalesce(
                        jsonb_agg(
@@ -120,7 +78,7 @@ export async function main(write = process.argv.includes('--write')) {
                 continue
             }
 
-            const description = describeStoredInsurance(professional.id, displayName(professional), row, plan)
+            const description = describeStoredInsurance(professional.id, row, plan)
 
             if (!write) {
                 counts.cleared += 1

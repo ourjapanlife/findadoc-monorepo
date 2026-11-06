@@ -1,12 +1,13 @@
 import pg from 'pg'
 import { pathToFileURL } from 'node:url'
-import { envVariables } from './environmentVariables.js'
+import { assertScriptWriteAllowed, describeScriptTarget, scriptDatabaseConfig } from './scriptDatabase.js'
 import { phoneForStorage } from '../src/validation/validatePhone.js'
 import { toJapanE164 } from './stringUtils.js'
 
 /**
  * Rewrite stored facility phones to E.164 (`+81312345678`), the form the API now writes.
- * Dry-run unless `--write` is passed.
+ * Dry-run unless `--write` is passed. Production runs go through `pnpm db:prod`, and a production
+ * write also needs `--confirm-production` and the operator role (`scriptDatabase.ts`).
  * A phone that does not parse as a Japanese number is left alone and its facility id is listed
  * for a moderator. Output is counts and ids only: a phone number is never printed.
  */
@@ -72,24 +73,6 @@ export function reportFacilityPhones(plans: PhonePlan[]): PhoneBackfillReport {
     }
 }
 
-function clientConfig() {
-    const password = envVariables.pgPassword()
-    const host = envVariables.pgHost() || '127.0.0.1'
-    const port = Number(envVariables.pgPort() || (envVariables.isProduction() ? 5432 : 54322))
-
-    if (port === 6543) {
-        throw new Error('Use the session database port 5432. The transaction pooler cannot apply this backfill.')
-    }
-
-    return {
-        host,
-        port,
-        user: envVariables.pgUser() || 'postgres',
-        password: password || 'postgres',
-        database: 'postgres'
-    }
-}
-
 async function writePlans(client: pg.Client, plans: PhonePlan[]): Promise<number> {
     let written = 0
     await client.query('begin')
@@ -119,9 +102,10 @@ async function writePlans(client: pg.Client, plans: PhonePlan[]): Promise<number
     return written
 }
 
-async function main() {
-    const write = process.argv.includes('--write')
-    const client = new pg.Client(clientConfig())
+export async function main(write = process.argv.includes('--write')) {
+    assertScriptWriteAllowed(write)
+    console.log(describeScriptTarget(write))
+    const client = new pg.Client(scriptDatabaseConfig())
     await client.connect()
 
     try {

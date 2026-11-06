@@ -159,7 +159,6 @@ export function reportStoredInsurance(rows: readonly StoredInsuranceRow[]): Stor
 /** One readable line per professional: facility, city, and the old values as sentences. */
 export function describeStoredInsurance(
     professionalId: string,
-    professionalName: string,
     row: StoredInsuranceRow,
     plan: Extract<StoredInsurancePlan, { action: 'clear' }>
 ): string {
@@ -168,7 +167,7 @@ export function describeStoredInsurance(
         : 'no linked facility'
 
     return [
-        `${professionalName} [${professionalId}] at ${facilities}`,
+        `[${professionalId}] at ${facilities}`,
         `  stored: ${plan.sentences.join('; ')}`,
         `  recommendation: ${plan.recommendation}`
     ].join('\n')
