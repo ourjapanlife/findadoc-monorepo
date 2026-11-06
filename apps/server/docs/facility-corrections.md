@@ -47,6 +47,29 @@ no id.
   moderator can unpublish the clinic first.
 - A status change is a compare-and-set on the current status (`SUBMISSION_STATUS_CHANGED`).
 
+### Dashboard
+
+The submissions dashboard has five queues. Each tab and each row status has an icon and a word,
+so color is never the only signal.
+
+| Tab | What it shows |
+| --- | --- |
+| New | Listings nobody has opened (`pending`) |
+| For Review | Listings a moderator is working on (`under_review`) |
+| Approved | Approved listings and corrections |
+| Rejected | Rejected listings and corrections (`rejected`) |
+| User feedback | Corrections that are `pending` or `under_review` |
+
+A correction in Approved or Rejected carries a Feedback tag. New and For Review show listings
+only, so User feedback is the one place to look for open corrections. Bulk approve is off in
+User feedback: each correction is approved from its review screen.
+
+A correction opens a review screen, not the listing edit form. It shows the reasons, then the
+clinic's current value next to the visitor's value for each field the visitor sent. A `WRONG_CITY`
+report shows the city picker, and the screen saves the city before it approves. `CLOSED` and
+`DUPLICATE` show what to do by hand. The review screen has no Update button, because a moderator
+does not edit what the visitor sent.
+
 ## Retention
 
 Notes are free text and can hold personal data. A correction follows the same notes rule as
