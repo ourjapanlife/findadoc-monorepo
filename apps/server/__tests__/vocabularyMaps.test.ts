@@ -274,4 +274,17 @@ describe('vocabularyCities', () => {
             expect(searchCity.nameEn).not.toMatch(/city|ward|district/i)
         }
     })
+
+    it('names a same-reading town or village by its kind, and keeps the code only when the kind matches (#228)', () => {
+        const cities = vocabularyCities()
+        const coded = cities.filter(searchCity => /\d/.test(searchCity.nameEn))
+
+        expect(cities).toContainEqual({ lgCode: '133621', prefectureEn: 'Tokyo', nameEn: 'Toshima Village', nameJa: '利島村' })
+        expect(cities).toContainEqual({ lgCode: '016616', prefectureEn: 'Hokkaido', nameEn: 'Kushiro Town', nameJa: '釧路町' })
+        expect(cities).toContainEqual({ lgCode: '016934', prefectureEn: 'Hokkaido', nameEn: 'Shibetsu Town', nameJa: '標津町' })
+        expect(cities).toContainEqual({ lgCode: '204251', prefectureEn: 'Nagano', nameEn: 'Kiso Village', nameJa: '木祖村' })
+        expect(cities).toContainEqual({ lgCode: '393631', prefectureEn: 'Kochi', nameEn: 'Tosa Town', nameJa: '土佐町' })
+        // 江差町 is also a town, so Town cannot tell 枝幸町 apart.
+        expect(coded).toEqual([{ lgCode: '015148', prefectureEn: 'Hokkaido', nameEn: 'Esashi 015148', nameJa: '枝幸町' }])
+    })
 })

@@ -42,6 +42,12 @@ export interface FacilitiesTable {
     source: string | null
     verification_status: string
     supported_languages: ColumnType<gqlTypes.Locale[], string, string>
+    japanese_insurance: ColumnType<
+        gqlTypes.JapaneseInsurance | null,
+        gqlTypes.JapaneseInsurance | null | undefined,
+        gqlTypes.JapaneseInsurance | null
+    >
+    japanese_insurance_source: ColumnType<string | null, string | null | undefined, string | null>
     online: Generated<boolean>
     search_text: Generated<string>
 }
@@ -99,7 +105,8 @@ export interface HpsTable {
     license_recommendation: string | null
     specialties: ColumnType<gqlTypes.Specialty[], gqlTypes.Specialty[], gqlTypes.Specialty[]>
     spoken_languages: ColumnType<gqlTypes.Locale[], gqlTypes.Locale[], gqlTypes.Locale[]>
-    accepted_insurance: ColumnType<gqlTypes.Insurance[], gqlTypes.Insurance[], gqlTypes.Insurance[]>
+    /** Old per-professional codes (#18). Read and cleared by the insurance backfill only. */
+    accepted_insurance: ColumnType<string[], string | undefined, string>
     email: string | null
     created_date: string
     updated_date: string

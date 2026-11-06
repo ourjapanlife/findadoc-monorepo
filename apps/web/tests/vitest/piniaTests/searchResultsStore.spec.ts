@@ -60,8 +60,7 @@ function buildProfessional(index: number): HealthcareProfessional {
         facilityIds: [`facility-${index}`],
         specialties: index % 5 === 0 ? [Specialty.Dentistry] : [Specialty.InternalMedicine],
         spokenLanguages: index % 3 === 0 ? [Locale.EnUs, Locale.JaJp] : [Locale.JaJp],
-        degrees: [],
-        acceptedInsurance: []
+        degrees: []
     } as unknown as HealthcareProfessional
 }
 

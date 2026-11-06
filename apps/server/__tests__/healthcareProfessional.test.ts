@@ -51,14 +51,13 @@ describe('createHealthcareProfessional', () => {
         expect(searchedProfessional.names[0].middleName).toEqual(originalInputValues.names[0].middleName || null)
         expect(searchedProfessional.degrees).toEqual(originalInputValues.degrees)
         expect(searchedProfessional.spokenLanguages).toEqual(originalInputValues.spokenLanguages)
-        expect(searchedProfessional.acceptedInsurance).toEqual(originalInputValues.acceptedInsurance)
         expect(searchedProfessional.createdDate).toBeDefined()
         expect(searchedProfessional.updatedDate).toBeDefined()
     })
 })
 
 describe('updateHealthcareProfessional', () => {
-    test('updates JSONB array fields (names, degrees, specialties, spokenLanguages, acceptedInsurance)', async () => {
+    test('updates JSONB array fields (names, degrees, specialties, spokenLanguages)', async () => {
         // -- Create a professional to update --
         const createRequest = {
             query: createHealthcareProfessionalMutation,
@@ -90,8 +89,7 @@ describe('updateHealthcareProfessional', () => {
                     names: updatedValues.names,
                     degrees: updatedValues.degrees,
                     specialties: updatedValues.specialties,
-                    spokenLanguages: updatedValues.spokenLanguages,
-                    acceptedInsurance: updatedValues.acceptedInsurance
+                    spokenLanguages: updatedValues.spokenLanguages
                 }
             }
         } as gqlRequest
@@ -126,7 +124,6 @@ describe('updateHealthcareProfessional', () => {
         expect(persistedProfessional.degrees).toEqual(updatedValues.degrees)
         expect(persistedProfessional.specialties).toEqual(updatedValues.specialties)
         expect(persistedProfessional.spokenLanguages).toEqual(updatedValues.spokenLanguages)
-        expect(persistedProfessional.acceptedInsurance).toEqual(updatedValues.acceptedInsurance)
     })
 })
 
@@ -537,7 +534,6 @@ export const createHealthcareProfessionalMutation = `mutation test_createHealthc
         specialties
         facilityIds
         spokenLanguages
-        acceptedInsurance
         createdDate
         updatedDate
         additionalInfoForPatients
@@ -557,7 +553,6 @@ const updateHealthcareProfessionalMutation = `mutation test_updateHealthcareProf
         specialties
         facilityIds
         spokenLanguages
-        acceptedInsurance
         createdDate
         updatedDate
         additionalInfoForPatients
@@ -577,7 +572,6 @@ const getHealthcareProfessionalByIdQuery = `query test_getHealthcareProfessional
         specialties
         facilityIds
         spokenLanguages
-        acceptedInsurance
         createdDate
         updatedDate
     }
@@ -597,7 +591,6 @@ const searchHealthcareProfessionalsWithDetails = `query test_searchHealthcarePro
         degrees
         specialties
         spokenLanguages
-        acceptedInsurance
     }
 }`
 

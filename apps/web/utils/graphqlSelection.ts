@@ -88,6 +88,8 @@ export const facilitySelection = selection<Facility>({
     googlePlaceId: true,
     healthcareProfessionalIds: true,
     id: true,
+    japaneseInsurance: true,
+    japaneseInsuranceSource: true,
     mapLatitude: true,
     mapLongitude: true,
     nameEn: true,
@@ -102,7 +104,6 @@ export const facilitySelection = selection<Facility>({
 
 /** Every HealthcareProfessional field. */
 export const professionalSelection = selection<HealthcareProfessional>({
-    acceptedInsurance: true,
     additionalCredentials: true,
     additionalInfoForPatients: true,
     createdDate: true,
@@ -130,7 +131,6 @@ export const facilitySubmissionSelection = selection<FacilitySubmission>({
 })
 
 export const professionalSubmissionSelection = selection<HealthcareProfessionalSubmission>({
-    acceptedInsurance: true,
     additionalInfoForPatients: true,
     degrees: true,
     facilityIds: true,

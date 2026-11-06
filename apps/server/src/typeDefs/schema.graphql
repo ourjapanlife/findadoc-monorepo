@@ -53,6 +53,13 @@ type Facility {
   source: FacilitySource
   """Whether the location is confirmed. Unresolved rows are UNVERIFIED_LOCATION."""
   verificationStatus: FacilityVerificationStatus!
+  """Whether this clinic takes Japanese public health insurance. Null is unknown."""
+  japaneseInsurance: JapaneseInsurance
+  """
+  Internal moderator note on where japaneseInsurance came from: a link, or a call.
+  Null for anyone who cannot edit facilities, and when there is no note.
+  """
+  japaneseInsuranceSource: String
 }
 
 """Input for creating a new facility."""
@@ -93,6 +100,10 @@ input CreateFacilityInput {
   source: FacilitySource
   """CONFIRMED requires cityId. Omit this to leave an unresolved facility as UNVERIFIED_LOCATION."""
   verificationStatus: FacilityVerificationStatus
+  """Omit to leave it unknown."""
+  japaneseInsurance: JapaneseInsurance
+  """Optional. A link, or a short note such as a call to the clinic. At most 500 characters."""
+  japaneseInsuranceSource: String
 }
 
 """Input for updating an existing facility. All fields are optional — only provided fields are updated."""
@@ -126,6 +137,13 @@ input UpdateFacilityInput {
   source: FacilitySource
   """CONFIRMED requires a cityId on the facility."""
   verificationStatus: FacilityVerificationStatus
+  """
+  Send with japaneseInsuranceSource. Null with a null source clears it back to unknown.
+  Omit both to leave the stored value unchanged.
+  """
+  japaneseInsurance: JapaneseInsurance
+  """Optional. A link, or a short note such as a call to the clinic. At most 500 characters."""
+  japaneseInsuranceSource: String
 }
 
 """Search filters for querying facilities. All filters are combined with AND logic."""
@@ -193,8 +211,6 @@ type HealthcareProfessional {
   licenseRecommendation: String
   """Medical specialties practiced."""
   specialties: [Specialty!]!
-  """Insurance types accepted by this professional."""
-  acceptedInsurance: [Insurance!]!
   """IDs of facilities where this professional practices."""
   facilityIds: [ID!]!
   """ISO 8601 timestamp of when this record was created."""
@@ -215,8 +231,6 @@ input CreateHealthcareProfessionalInput {
   degrees: [Degree!]
   """Medical specialties practiced."""
   specialties: [Specialty!]
-  """Insurance types accepted."""
-  acceptedInsurance: [Insurance!]
   """IDs of facilities where this professional practices."""
   facilityIds: [ID!]!
   """Free-text notes or instructions for patients."""
@@ -235,8 +249,6 @@ input UpdateHealthcareProfessionalInput {
   licenseReview: LicenseReviewStatus
   """Updated specialties."""
   specialties: [Specialty!]
-  """Updated accepted insurance types."""
-  acceptedInsurance: [Insurance!]
   """Facility relationships to add, update, or remove."""
   facilityIds: [Relationship!]
   """Updated free-text notes or instructions for patients."""
@@ -262,8 +274,6 @@ input HealthcareProfessionalSearchFilters {
   licenseReview: LicenseReviewStatus
   """Filter by specialties."""
   specialties: [Specialty!]
-  """Filter by accepted insurance types."""
-  acceptedInsurance: [Insurance!]
   """Filter to professionals linked to at least one of these facility IDs."""
   facilityIds: [ID!]
   """Filter by creation date (ISO 8601)."""
@@ -341,8 +351,6 @@ type HealthcareProfessionalSubmission {
   degrees: [Degree!]
   """Submitted specialties."""
   specialties: [Specialty!]
-  """Submitted accepted insurance types."""
-  acceptedInsurance: [Insurance!]
   """Submitted free-text notes for patients."""
   additionalInfoForPatients: String
   """IDs of facilities where this professional practices."""
@@ -917,18 +925,15 @@ enum LicenseReviewStatus {
   CONFIRMED
 }
 
-"""Insurance types that healthcare professionals may accept."""
-enum Insurance {
-  """Japanese national health insurance (kokumin kenko hoken / shakai hoken)."""
-  JAPANESE_HEALTH_INSURANCE
-  """International or overseas health insurance plans."""
-  INTERNATIONAL_HEALTH_INSURANCE
-  """Travel insurance with medical coverage."""
-  TRAVEL_INSURANCE
-  """The provider does not accept any insurance."""
-  INSURANCE_NOT_ACCEPTED
-  """For patients without insurance coverage."""
-  UNINSURED
+"""
+Whether a clinic is designated to bill Japanese public health insurance (保険医療機関).
+A null value on a facility is unknown.
+"""
+enum JapaneseInsurance {
+  """The clinic takes Japanese public health insurance."""
+  ACCEPTED
+  """The clinic does not take Japanese public health insurance. The visit is self-pay (自由診療)."""
+  NOT_ACCEPTED
 }
 
 """Specifies a field and direction to order query results by."""

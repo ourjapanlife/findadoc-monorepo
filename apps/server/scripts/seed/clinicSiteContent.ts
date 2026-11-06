@@ -48,7 +48,8 @@ export const showcaseClinicFacility: FacilitySeed = {
     firestore_id: null,
     payment_options: [],
     city_id: null,
-    google_place_id: null,
+    // The seed row is not marked online, so it carries a fake place id (#228).
+    google_place_id: 'ChIJFindadocSeedShowcase',
     source: FacilitySource.Manual,
     verification_status: FacilityVerificationStatus.UnverifiedLocation,
     supported_languages: [

@@ -127,6 +127,29 @@ describe('booking forms', () => {
         expect(isOfferedFormId([SHOWCASE_BOOKING_FORM_ID], DEFAULT_BOOKING_FORM_ID)).toBe(false)
     })
 
+    describe('a patient phone on the default intake', () => {
+        // A patient can be anywhere, so their phone is not held to the Japan-only clinic rule.
+        const fields = formSourceById(DEFAULT_BOOKING_FORM_ID)?.fields ?? []
+        const submitWithPhone = (phone: string) => collectAnswers({ fields }, [
+            { fieldId: 'email', value: 'patient@example.com' },
+            { fieldId: 'phone', value: phone },
+            { fieldId: 'fullName', value: 'Test Patient' },
+            { fieldId: 'reason', value: 'Checkup' }
+        ])
+
+        it('accepts a number from any country', () => {
+            for (const phone of ['090-1234-5678', '+1 212 555 0100', '+44 20 7946 0000', '+82 10-1234-5678']) {
+                const result = submitWithPhone(phone)
+                expect(result.hasErrors).toBe(false)
+                expect(result.data?.storedAnswers.phone).toBe(phone)
+            }
+        })
+
+        it('refuses a value too short to be a phone number', () => {
+            expect(submitWithPhone('090-123').hasErrors).toBe(true)
+        })
+    })
+
     describe('a submitted online consult form', () => {
         const fields = formSourceById(SHOWCASE_BOOKING_FORM_ID)?.fields ?? []
         const base = [

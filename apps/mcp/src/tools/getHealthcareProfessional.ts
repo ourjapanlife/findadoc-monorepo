@@ -6,7 +6,7 @@ export function registerGetHealthcareProfessional(server: McpServer): void {
     server.registerTool(
         'get_healthcare_professional',
         {
-            description: 'Get full details for a single healthcare professional in Japan by their ID. Typically called after search_healthcare_professionals. Returns names, specialties, spoken languages, degrees, accepted insurance, associated facility IDs, and any additional info for patients.',
+            description: 'Get full details for a single healthcare professional in Japan by their ID. Typically called after search_healthcare_professionals. Returns names, specialties, spoken languages, degrees, associated facility IDs, and any additional info for patients.',
             inputSchema: {
                 professionalId: z.string().describe('The unique ID of the healthcare professional (UUID)')
             }

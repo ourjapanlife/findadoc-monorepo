@@ -51,12 +51,16 @@ export async function main(write = process.argv.includes('--write')) {
             }
 
             const result = await client.query(
+                // A row without a place id takes the one this link names. A row that would still
+                // have none is skipped: facilities_place_id_required refuses the write (#228).
                 `update facilities
-                 set contact = jsonb_set(contact, '{googleMapsUrl}', to_jsonb($2::text), true)
+                 set contact = jsonb_set(contact, '{googleMapsUrl}', to_jsonb($2::text), true),
+                     google_place_id = coalesce(nullif(btrim(google_place_id), ''), $4)
                  where id = $3
                    and contact #>> '{googleMapsUrl}' is not distinct from $1
-                   and contact #>> '{googleMapsUrl}' is distinct from $2`,
-                [storedUrl, maps.url, facility.id]
+                   and contact #>> '{googleMapsUrl}' is distinct from $2
+                   and (online or coalesce(btrim(google_place_id), '') <> '' or $4::text is not null)`,
+                [storedUrl, maps.url, facility.id, maps.placeId]
             )
             if ((result.rowCount ?? 0) > 0) {
                 counts.facilities += 1

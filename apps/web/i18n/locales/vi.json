@@ -6,6 +6,7 @@
     "termsTitle": "Điều khoản dịch vụ",
     "privacyTitle": "Chính sách bảo mật",
     "npoTitle": "Công bố NPO",
+    "insuranceTitle": "Chi trả viện phí tại Nhật Bản",
     "searchTitle": "Tìm phòng khám",
     "contactTitle": "Liên hệ"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "Hoạt động",
     "activitiesValue": "Xây dựng, quảng bá và duy trì một nền tảng thông tin y tế đa ngôn ngữ miễn phí, chất lượng cao, giúp người sống tại Nhật Bản — cả người Nhật và người nước ngoài — tiếp cận dịch vụ y tế họ cần bằng ngôn ngữ họ cần; và thực hiện chương trình đào tạo lập trình viên tình nguyện.",
     "contactLabel": "Liên hệ"
+  },
+  "insurancePage": {
+    "heading": "Chi trả chi phí khám chữa bệnh tại Nhật Bản",
+    "intro": "Bảo hiểm y tế công của Nhật hoạt động thế nào tại phòng khám, tự chi trả nghĩa là gì, và nên làm gì với bảo hiểm nước ngoài hoặc bảo hiểm du lịch.",
+    "disclaimer": "Find a Doc không kiểm tra phạm vi bảo hiểm của bất kỳ ai và không đưa ra lời khuyên về y tế hay bảo hiểm. Khi chưa chắc chắn, hãy hỏi phòng khám, công ty bảo hiểm hoặc văn phòng quận, thành phố nơi bạn ở.",
+    "schemesHeading": "Bảo hiểm y tế công",
+    "schemesIntro": "Hầu hết mọi người sống tại Nhật Bản đều phải tham gia một chương trình bảo hiểm y tế công. Ngoại lệ chính là người đang nhận trợ cấp sinh hoạt (生活保護): chi phí y tế của họ được chi trả qua trợ cấp sinh hoạt. Bảo hiểm nhân thọ tư nhân hay bảo hiểm nước ngoài không thay thế được bảo hiểm công.",
+    "schemeEmployee": "Bảo hiểm y tế cho người đi làm (健康保険): người lao động và thân nhân do họ nuôi dưỡng, tham gia qua 協会けんぽ, quỹ bảo hiểm của công ty hoặc hội tương trợ.",
+    "schemeNational": "Bảo hiểm y tế quốc dân (国民健康保険): người dân không tham gia bảo hiểm của nơi làm việc. Cư dân nước ngoài có thẻ cư trú và lưu trú hơn ba tháng thường thuộc nhóm này.",
+    "schemeElderly": "Chế độ y tế cho người từ 75 tuổi trở lên (後期高齢者医療制度): áp dụng từ sinh nhật thứ 75.",
+    "shareHeading": "Số tiền bạn trả tại quầy",
+    "shareBody": "Tại phòng khám nhận bảo hiểm công, bạn trả phần của mình tại quầy và bên bảo hiểm trả phần còn lại cho phòng khám. Mức đồng chi trả thông thường là 20% trước tuổi đi học, 30% từ tuổi đi học đến 69 tuổi, 20% từ 70 đến 74 tuổi và 10% từ 75 tuổi. Thu nhập có thể làm tăng mức chi trả của bệnh nhân lớn tuổi. Hóa đơn quá cao trong một tháng có thể được giới hạn theo chế độ chi phí y tế cao (高額療養費).",
+    "bringHeading": "Cần mang theo gì",
+    "bringBody": "Hãy mang theo thẻ My Number đã đăng ký làm thẻ bảo hiểm y tế, hoặc giấy xác nhận tư cách (資格確認書) mà bên bảo hiểm đã gửi cho bạn. Thẻ bảo hiểm giấy cũ đã hết hiệu lực từ ngày 1 tháng 12 năm 2025.",
+    "clinicsHeading": "Phòng khám không nhận bảo hiểm công",
+    "clinicsBody": "Phòng khám chỉ có thể thanh toán với bảo hiểm công nếu được chỉ định là cơ sở y tế bảo hiểm (保険医療機関). Một số phòng khám không được chỉ định và khám cho mọi bệnh nhân theo hình thức tự chi trả (自由診療). Đó thường là phòng khám thẩm mỹ, một số phòng khám nha khoa và một số phòng khám quốc tế. Trang phòng khám trên Find a Doc sẽ ghi rõ điều này khi chúng tôi có nguồn.",
+    "selfPayHeading": "Tự chi trả",
+    "selfPayBody": "Nếu bạn không có bảo hiểm công của Nhật, ví dụ khi là du khách hoặc trước khi đăng ký tham gia, bạn tự trả toàn bộ chi phí cho phòng khám. Nhiều phòng khám thông thường vẫn sẽ khám cho bạn. Phòng khám không nhận bảo hiểm công tự quy định giá.",
+    "mixedBody": "Nếu một lần khám có bảo hiểm bao gồm cả phương pháp điều trị không được bảo hiểm chi trả, toàn bộ lần khám có thể trở thành tự chi trả, trừ một vài ngoại lệ được chấp thuận. Hãy hỏi phòng khám trước khi đồng ý điều trị bổ sung.",
+    "overseasHeading": "Bảo hiểm nước ngoài và bảo hiểm du lịch",
+    "overseasBody": "Hầu hết phòng khám không thanh toán trực tiếp với công ty bảo hiểm nước ngoài hay bảo hiểm du lịch. Bạn trả tiền cho phòng khám, giữ biên lai (領収書) và bảng kê chi tiết (診療明細書), rồi gửi cho công ty bảo hiểm để yêu cầu hoàn tiền. Một vài bệnh viện thanh toán trực tiếp với công ty bảo hiểm, nhưng chỉ khi công ty đó gửi giấy bảo lãnh thanh toán trước buổi khám.",
+    "sourcesHeading": "Nguồn chính thức",
+    "sourceShare": "Phần bệnh nhân chi trả tại quầy (Bộ Y tế, Lao động và Phúc lợi Nhật Bản)",
+    "sourceNationalInsurance": "Ai tham gia Bảo hiểm y tế quốc dân (Bộ Y tế, Lao động và Phúc lợi Nhật Bản)",
+    "sourceMynaCard": "Thẻ bảo hiểm My Number (Bộ Y tế, Lao động và Phúc lợi Nhật Bản)",
+    "sourceCertificate": "Giấy xác nhận tư cách (Cơ quan Kỹ thuật số)",
+    "sourceFacilitySearch": "Tra cứu cơ sở y tế (Bộ Y tế, Lao động và Phúc lợi Nhật Bản)"
   },
   "common": {
     "menu": "Menu",
@@ -330,7 +358,6 @@
     "placeholderTextHealthcareProfessionalLastName": "Ví.dụ. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "Ví.dụ. Bronson",
     "selectDegrees": "Chứng chỉ/ Bằng cấp",
-    "selectInsurances": "Các bảo hiểm được chấp nhận",
     "selectLocales": "Chọn các ngôn ngữ địa phương được sử dụng",
     "selectSpecialties": "Chuyên ngành.",
     "errorMessageHealthcareProfessionalId": "Không tìm thấy ID nhân viên y tế",
@@ -340,12 +367,10 @@
     "noFacilitiesWereFound": "Không tìm thấy cơ sở",
     "noFacilitiesLinked": "Chưa có cơ sở nào được liên kết. Tìm ở trên để thêm.",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "Tìm theo bảo hiểm",
     "placeholderTextSpecialties": "Tìm theo chuyên khoa",
     "placeholderTextDegrees": "Tìm theo học vị",
     "placeholderTextLocales": "Tìm theo ngôn ngữ",
     "noSpecialtiesWereFound": "Không tìm thấy chuyên khoa",
-    "noInsurancesWereFound": "Không tìm thấy bảo hiểm",
     "noDegreesWereFound": "Không tìm thấy học vị",
     "noLocalesWereFound": "Không tìm thấy ngôn ngữ",
     "delete": "Xóa vĩnh viễn",
@@ -448,7 +473,14 @@
     "fillFromMapsHint": "Điền tên, địa chỉ và ghim còn trống từ liên kết Maps. Ô đã có nội dung được giữ nguyên.",
     "fillFromMapsDone": "Đã điền {count} ô trống từ liên kết Maps.",
     "fillFromMapsNone": "Không còn ô trống để điền từ liên kết này.",
-    "fillFromMapsFailed": "Không đọc được liên kết này. Hãy mở trong Maps và sao chép thông tin."
+    "fillFromMapsFailed": "Không đọc được liên kết này. Hãy mở trong Maps và sao chép thông tin.",
+    "japaneseInsuranceLabel": "Bảo hiểm y tế công của Nhật",
+    "japaneseInsuranceUnknown": "Chưa rõ. Người đọc không thấy gì.",
+    "japaneseInsuranceAccepted": "Có nhận bảo hiểm y tế công của Nhật.",
+    "japaneseInsuranceHint": "Để chưa rõ cho đến khi trang web phòng khám, danh sách của cục y tế khu vực hoặc một cuộc gọi xác nhận. Có những phòng khám chỉ khám tự chi trả, vì vậy đừng đoán.",
+    "japaneseInsuranceNotAccepted": "Không nhận bảo hiểm y tế công của Nhật. Lần khám là tự chi trả.",
+    "japaneseInsuranceSourceLabel": "Nguồn",
+    "japaneseInsuranceSourcePlaceholder": "Đường dẫn, hoặc ghi chú như: đã gọi cho phòng khám ngày 2/11/2026"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Mã cơ sở vật chất là bắt buộc để cập nhật cơ sở vật chất.",
@@ -483,6 +515,7 @@
     "invalidWebsite": "Nhập địa chỉ website hợp lệ.",
     "invalidInformation": "Một phần thông tin không hợp lệ. Hãy kiểm tra biểu mẫu và thử lại.",
     "submissionCannotBeApproved": "Không thể phê duyệt hồ sơ này cho đến khi đủ thông tin bắt buộc về cơ sở và nhân viên y tế.",
+    "placeIdRequired": "Phòng khám này cần có địa điểm trên Google. Hãy dán liên kết đến trang Google Maps của chính phòng khám, hoặc đánh dấu Cơ sở trực tuyến nếu không có địa chỉ.",
     "submissionAlreadyApproved": "Hồ sơ này đã được phê duyệt.",
     "clinicRequired": "Hãy chọn cơ sở y tế cho nhân viên y tế này.",
     "japaneseInEnglishField": "Một mục tiếng Anh có ký tự tiếng Nhật.",
@@ -715,16 +748,12 @@
     "languagesFallback": "ngôn ngữ ghi trên hồ sơ",
     "specialties": "Chuyên khoa",
     "languages": "Ngôn ngữ sử dụng",
-    "insurance": "Bảo hiểm được nhận",
     "additionalInfo": "Cho người bệnh",
-    "facilities": "Phòng khám",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "Không nhận bảo hiểm",
-      "INTERNATIONAL_HEALTH_INSURANCE": "Bảo hiểm y tế quốc tế",
-      "JAPANESE_HEALTH_INSURANCE": "Bảo hiểm y tế Nhật Bản",
-      "TRAVEL_INSURANCE": "Bảo hiểm du lịch",
-      "UNINSURED": "Không bảo hiểm / tự chi trả"
-    }
+    "facilities": "Phòng khám"
+  },
+  "insuranceNote": {
+    "notAccepted": "Phòng khám này không nhận bảo hiểm y tế công của Nhật. Lần khám là tự chi trả.",
+    "guideLink": "Cách chi trả chi phí khám chữa bệnh tại Nhật Bản"
   },
   "hubPage": {
     "prefectureHeading": "Dịch vụ y tế tại {prefecture}",

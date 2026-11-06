@@ -91,6 +91,16 @@ The canonical URL is `https://{slug}.findadoc.jp/`. The www path and the shareab
 
 The DNS zone stays in Route 53. Do not change the nameservers. Amplify already serves `*.findadoc.jp` for the production branch, so a clinic hostname is that wildcard. A pull request preview is a separate Amplify host. It is not `{slug}.findadoc.jp`. On that host, open `/clinic/multilingual-online-clinic?preview=1`. The build copies the app shell to that path, the query stores the cookie for 30 days, and the page reads the clinic from `https://api.findadoc.jp`. The showcase row has to be in that database. `*` does not include `findadoc.jp` itself. Records that already exist for `www`, `api`, `mcp`, and `docs` are more specific than `*` and stay as they are. The clinic slug does not change.
 
+### New clinic and doctor pages
+
+Clinic and doctor pages are written at build time, so a clinic or doctor created, renamed, or deleted in moderation is not on the site until the next build. The `Directory refresh` workflow (`.github/workflows/directory-refresh.yml`) runs once a day. It compares every clinic and doctor in the public API with the live `sitemap.xml` and runs the `Web` workflow only when a page is missing or out of date. When the API does not answer in full, the check fails and nothing is rebuilt. Run it from the Actions tab to publish a change sooner, or run the check locally:
+
+```bash
+pnpm --filter @findadoc/web check:directory-drift
+```
+
+It prints counts only, not names.
+
 ### Storybook
 
 ```bash

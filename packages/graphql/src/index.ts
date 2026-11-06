@@ -780,6 +780,10 @@ export type CreateFacilityInput = {
   googlePlaceId?: InputMaybe<Scalars['String']['input']>;
   /** IDs of healthcare professionals to associate with this facility. */
   healthcareProfessionalIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Omit to leave it unknown. */
+  japaneseInsurance?: InputMaybe<JapaneseInsurance>;
+  /** Optional. A link, or a short note such as a call to the clinic. At most 500 characters. */
+  japaneseInsuranceSource?: InputMaybe<Scalars['String']['input']>;
   /**
    * Latitude for map placement.
    * Required for a normal facility (a real pin, not 0). Omit for an online facility; stored as null.
@@ -812,8 +816,6 @@ export type CreateFacilityInput = {
 
 /** Input for creating a new healthcare professional. */
 export type CreateHealthcareProfessionalInput = {
-  /** Insurance types accepted. */
-  acceptedInsurance?: InputMaybe<Array<Insurance>>;
   /** Free-text notes or instructions for patients. */
   additionalInfoForPatients?: InputMaybe<Scalars['String']['input']>;
   /** Academic or professional degrees held. */
@@ -938,6 +940,13 @@ export type Facility = {
   healthcareProfessionalIds: Array<Scalars['ID']['output']>;
   /** Unique identifier for the facility. */
   id: Scalars['ID']['output'];
+  /** Whether this clinic takes Japanese public health insurance. Null is unknown. */
+  japaneseInsurance?: Maybe<JapaneseInsurance>;
+  /**
+   * Internal moderator note on where japaneseInsurance came from: a link, or a call.
+   * Null for anyone who cannot edit facilities, and when there is no note.
+   */
+  japaneseInsuranceSource?: Maybe<Scalars['String']['output']>;
   /**
    * Latitude for map placement.
    * Null on an online facility (no street address / no pin).
@@ -1067,8 +1076,6 @@ export enum FacilityVerificationStatus {
 /** A healthcare professional registered in the Find a Doc database. */
 export type HealthcareProfessional = {
   __typename?: 'HealthcareProfessional';
-  /** Insurance types accepted by this professional. */
-  acceptedInsurance: Array<Insurance>;
   /** Credentials other than the clinical license, such as PhD or MPH. */
   additionalCredentials: Array<Degree>;
   /** Free-text notes or instructions for patients. */
@@ -1099,8 +1106,6 @@ export type HealthcareProfessional = {
 
 /** Search filters for querying healthcare professionals. All filters are combined with AND logic. */
 export type HealthcareProfessionalSearchFilters = {
-  /** Filter by accepted insurance types. */
-  acceptedInsurance?: InputMaybe<Array<Insurance>>;
   /** Filter by creation date (ISO 8601). */
   createdDate?: InputMaybe<Scalars['String']['input']>;
   /** Filter by degrees. */
@@ -1135,8 +1140,6 @@ export type HealthcareProfessionalSearchFilters = {
 /** Healthcare professional data embedded within a submission. */
 export type HealthcareProfessionalSubmission = {
   __typename?: 'HealthcareProfessionalSubmission';
-  /** Submitted accepted insurance types. */
-  acceptedInsurance?: Maybe<Array<Insurance>>;
   /** Submitted free-text notes for patients. */
   additionalInfoForPatients?: Maybe<Scalars['String']['output']>;
   /** Submitted degrees. */
@@ -1153,25 +1156,22 @@ export type HealthcareProfessionalSubmission = {
   spokenLanguages: Array<Locale>;
 };
 
-/** Insurance types that healthcare professionals may accept. */
-export enum Insurance {
-  /** The provider does not accept any insurance. */
-  InsuranceNotAccepted = 'INSURANCE_NOT_ACCEPTED',
-  /** International or overseas health insurance plans. */
-  InternationalHealthInsurance = 'INTERNATIONAL_HEALTH_INSURANCE',
-  /** Japanese national health insurance (kokumin kenko hoken / shakai hoken). */
-  JapaneseHealthInsurance = 'JAPANESE_HEALTH_INSURANCE',
-  /** Travel insurance with medical coverage. */
-  TravelInsurance = 'TRAVEL_INSURANCE',
-  /** For patients without insurance coverage. */
-  Uninsured = 'UNINSURED'
-}
-
 export type InviteClinicMemberInput = {
   email: Scalars['String']['input'];
   facilityId: Scalars['ID']['input'];
   role: ClinicMemberRole;
 };
+
+/**
+ * Whether a clinic is designated to bill Japanese public health insurance (保険医療機関).
+ * A null value on a facility is unknown.
+ */
+export enum JapaneseInsurance {
+  /** The clinic takes Japanese public health insurance. */
+  Accepted = 'ACCEPTED',
+  /** The clinic does not take Japanese public health insurance. The visit is self-pay (自由診療). */
+  NotAccepted = 'NOT_ACCEPTED'
+}
 
 /** Moderator queue for a professional license. CONFIRMED keeps a dual license. */
 export enum LicenseReviewStatus {
@@ -2314,6 +2314,13 @@ export type UpdateFacilityInput = {
   googlePlaceId?: InputMaybe<Scalars['String']['input']>;
   /** Healthcare professional relationships to add, update, or remove. */
   healthcareProfessionalIds?: InputMaybe<Array<Relationship>>;
+  /**
+   * Send with japaneseInsuranceSource. Null with a null source clears it back to unknown.
+   * Omit both to leave the stored value unchanged.
+   */
+  japaneseInsurance?: InputMaybe<JapaneseInsurance>;
+  /** Optional. A link, or a short note such as a call to the clinic. At most 500 characters. */
+  japaneseInsuranceSource?: InputMaybe<Scalars['String']['input']>;
   /** Updated latitude coordinate. Cleared when the facility becomes online. */
   mapLatitude?: InputMaybe<Scalars['Float']['input']>;
   /** Updated longitude coordinate. Cleared when the facility becomes online. */
@@ -2339,8 +2346,6 @@ export type UpdateFacilityInput = {
 
 /** Input for updating an existing healthcare professional. All fields are optional — only provided fields are updated. */
 export type UpdateHealthcareProfessionalInput = {
-  /** Updated accepted insurance types. */
-  acceptedInsurance?: InputMaybe<Array<Insurance>>;
   /** Updated free-text notes or instructions for patients. */
   additionalInfoForPatients?: InputMaybe<Scalars['String']['input']>;
   /** Updated degrees. */
@@ -2561,9 +2566,9 @@ export type ResolversTypes = {
   HealthcareProfessionalSearchFilters: HealthcareProfessionalSearchFilters;
   HealthcareProfessionalSubmission: ResolverTypeWrapper<HealthcareProfessionalSubmission>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
-  Insurance: Insurance;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   InviteClinicMemberInput: InviteClinicMemberInput;
+  JapaneseInsurance: JapaneseInsurance;
   LicenseReviewStatus: LicenseReviewStatus;
   Locale: Locale;
   LocalizedName: ResolverTypeWrapper<LocalizedName>;
@@ -3134,6 +3139,8 @@ export type FacilityResolvers<ContextType = any, ParentType extends ResolversPar
   googlePlaceId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   healthcareProfessionalIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  japaneseInsurance?: Resolver<Maybe<ResolversTypes['JapaneseInsurance']>, ParentType, ContextType>;
+  japaneseInsuranceSource?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   mapLatitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   mapLongitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3166,7 +3173,6 @@ export type FacilitySubmissionResolvers<ContextType = any, ParentType extends Re
 };
 
 export type HealthcareProfessionalResolvers<ContextType = any, ParentType extends ResolversParentTypes['HealthcareProfessional'] = ResolversParentTypes['HealthcareProfessional']> = {
-  acceptedInsurance?: Resolver<Array<ResolversTypes['Insurance']>, ParentType, ContextType>;
   additionalCredentials?: Resolver<Array<ResolversTypes['Degree']>, ParentType, ContextType>;
   additionalInfoForPatients?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3183,7 +3189,6 @@ export type HealthcareProfessionalResolvers<ContextType = any, ParentType extend
 };
 
 export type HealthcareProfessionalSubmissionResolvers<ContextType = any, ParentType extends ResolversParentTypes['HealthcareProfessionalSubmission'] = ResolversParentTypes['HealthcareProfessionalSubmission']> = {
-  acceptedInsurance?: Resolver<Maybe<Array<ResolversTypes['Insurance']>>, ParentType, ContextType>;
   additionalInfoForPatients?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   degrees?: Resolver<Maybe<Array<ResolversTypes['Degree']>>, ParentType, ContextType>;
   facilityIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;

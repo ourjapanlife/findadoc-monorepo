@@ -4,7 +4,6 @@ import {
     Degree,
     FacilitySource,
     FacilityVerificationStatus,
-    Insurance,
     Locale,
     PaymentType,
     Specialty
@@ -128,7 +127,8 @@ function contact(
     return {
         googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
         email: faker.internet.email().toLowerCase(),
-        phone: faker.helpers.fromRegExp(/0[789]0-[0-9]{4}-[0-9]{4}/),
+        // E.164, as the API stores it.
+        phone: `+81${faker.helpers.fromRegExp(/[789]0[1-9][0-9]{7}/)}`,
         website: faker.internet.url(),
         address: {
             addressLine1En: faker.location.streetAddress(),
@@ -172,9 +172,6 @@ function buildSeed(): SeedFile {
         const spokenLanguages = indexableFacet
             ? [Locale.EnUs, Locale.JaJp]
             : [Locale.EnUs, Locale.JaJp, extraLanguages[index % extraLanguages.length]!]
-        const insurance = index % 5 === 0
-            ? [Insurance.InternationalHealthInsurance]
-            : [Insurance.JapaneseHealthInsurance]
 
         facilities.push({
             id: facilityId,
@@ -189,7 +186,8 @@ function buildSeed(): SeedFile {
             firestore_id: null,
             payment_options: paymentSets[index % paymentSets.length]!,
             city_id: { prefectureEn: city.prefectureEn, nameEn: city.nameEn },
-            google_place_id: null,
+            // Fake, but Places-shaped: a clinic with an address needs one (#228).
+            google_place_id: `ChIJFindadocSeed${String(index).padStart(6, '0')}`,
             source: FacilitySource.Manual,
             verification_status: FacilityVerificationStatus.Confirmed,
             supported_languages: index % 3 === 0 ? [] : [Locale.EnUs, Locale.JaJp]
@@ -217,7 +215,6 @@ function buildSeed(): SeedFile {
             license_recommendation: licensed.licenseRecommendation,
             specialties,
             spoken_languages: spokenLanguages,
-            accepted_insurance: insurance,
             email: faker.internet.email().toLowerCase(),
             created_date: created,
             updated_date: created,
@@ -255,7 +252,6 @@ function buildSeed(): SeedFile {
                 spokenLanguages: [Locale.EnUs, Locale.JaJp],
                 degrees: [license],
                 specialties,
-                acceptedInsurance: insurance,
                 additionalInfoForPatients: faker.lorem.sentence(),
                 facilityIds: linked ? [facilityId] : []
             }],

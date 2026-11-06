@@ -92,6 +92,26 @@ async function clinicFromBundledDirectory(id: string): Promise<FacilitySearchRes
     }
 }
 
+/**
+ * One facility from the public API, with the full directory selection and without its
+ * professionals. Null when it is missing or the request failed.
+ */
+export async function fetchFacilityFromApi(id: string): Promise<Facility | null> {
+    const response = await graphQLClientRequestWithRetry<{ facility?: Facility | null }>(
+        gqlClient.request.bind(gqlClient),
+        clinicFacilityQuery,
+        { id },
+        PUBLIC_REQUEST_OPTIONS
+    )
+
+    const facility = response.data?.facility
+    if (response.hasErrors || !facility) {
+        return null
+    }
+
+    return facility
+}
+
 export async function fetchClinicById(id: string): Promise<FacilitySearchResult | null> {
     if (import.meta.server) {
         const fromConfig = clinicFromRuntimeConfig(id)
@@ -105,15 +125,8 @@ export async function fetchClinicById(id: string): Promise<FacilitySearchResult 
         }
     }
 
-    const response = await graphQLClientRequestWithRetry<{ facility?: Facility | null }>(
-        gqlClient.request.bind(gqlClient),
-        clinicFacilityQuery,
-        { id },
-        PUBLIC_REQUEST_OPTIONS
-    )
-
-    const facility = response.data?.facility
-    if (response.hasErrors || !facility) {
+    const facility = await fetchFacilityFromApi(id)
+    if (!facility) {
         return null
     }
 

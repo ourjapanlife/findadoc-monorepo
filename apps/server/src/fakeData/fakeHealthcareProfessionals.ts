@@ -26,7 +26,6 @@ export function generateRandomCreateHealthcareProfessionalData(
             degrees: generateDegrees(),
             specialties: generateSpecialties(),
             spokenLanguages: generateSpokenLanguages(),
-            acceptedInsurance: [faker.helpers.enumValue(gqlTypes.Insurance)],
             additionalInfoForPatients: ''
         },
         selectedFacilityIds: randomSelectedFacilityIds
@@ -135,10 +134,6 @@ export function generateSpokenLanguages({ count = 0, onlyEnglish = false } = {})
     )
 
     return faker.helpers.arrayElements(locales, localeCount)
-}
-
-export function generateAcceptedInsurance() {
-    return faker.helpers.enumValue(gqlTypes.Insurance)
 }
 
 export function generateFailingNameInvalidAlphabet(locale: gqlTypes.Locale): gqlTypes.LocalizedNameInput {

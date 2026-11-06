@@ -1,10 +1,14 @@
 export {
+    formatJapanPhone,
     hasJapaneseCharacters,
     hasLatinCharacters,
     hasScriptTags,
     hasSpecialCharacters,
     isInvalidName,
     isValidEmail,
-    isValidPhoneNumber,
-    isValidWebsite
+    isValidJapanPhone,
+    isValidWebsite,
+    PHONE_DISPLAY,
+    toJapanE164,
+    type PhoneDisplay
 } from '@findadoc/utils'

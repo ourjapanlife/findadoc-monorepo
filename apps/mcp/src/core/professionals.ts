@@ -18,7 +18,6 @@ const PROFESSIONAL_FIELDS = gql`
         spokenLanguages
         degrees
         specialties
-        acceptedInsurance
         facilityIds
         additionalInfoForPatients
     }
@@ -52,7 +51,6 @@ export type HealthcareProfessional = Pick<
     | 'spokenLanguages'
     | 'degrees'
     | 'specialties'
-    | 'acceptedInsurance'
     | 'facilityIds'
     | 'additionalInfoForPatients'
 >
@@ -63,7 +61,6 @@ export interface SearchProfessionalsParams {
     spokenLanguages?: string[]
     specialties?: string[]
     degrees?: string[]
-    acceptedInsurance?: string[]
 }
 
 export interface SearchProfessionalsResult {
@@ -82,7 +79,6 @@ export async function searchHealthcareProfessionals(
     if (params.spokenLanguages?.length) { filters.spokenLanguages = params.spokenLanguages }
     if (params.specialties?.length) { filters.specialties = params.specialties }
     if (params.degrees?.length) { filters.degrees = params.degrees }
-    if (params.acceptedInsurance?.length) { filters.acceptedInsurance = params.acceptedInsurance }
 
     const data = await gqlClient.request<{
         healthcareProfessionals: HealthcareProfessional[]

@@ -1,4 +1,5 @@
 import { Locale, Specialty, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
+import { formatJapanPhone, PHONE_DISPLAY, toJapanE164 } from '@findadoc/utils'
 
 /**
  * Client-side search over the whole directory.
@@ -243,22 +244,52 @@ export function hasActiveFilters(filters: SearchFilters): boolean {
  * anchored at the clinic's own position: Google resolves the business, and the map is centred
  * on the right spot even when the name is ambiguous.
  */
+const MAPS_PLACE_ID = /^[A-Za-z0-9_-]{8,}$/
+
+/** A Places id from the facility row, else from query_place_id or place_id in the stored Maps URL. */
+function facilityPlaceId(googlePlaceId: string | null | undefined, stored: string): string | null {
+    const direct = (googlePlaceId ?? '').trim()
+    if (MAPS_PLACE_ID.test(direct)) {
+        return direct
+    }
+    let params: URLSearchParams
+    try {
+        params = new URL(stored).searchParams
+    } catch {
+        return null
+    }
+    const fromUrl = (params.get('query_place_id') ?? params.get('place_id') ?? '').trim()
+    return MAPS_PLACE_ID.test(fromUrl) ? fromUrl : null
+}
+
+/**
+ * The "Open in Maps" link. A stored place id opens that one place; a name search would also
+ * list nearby clinics with similar names (#228).
+ */
 export function facilityMapsUrl(facility: {
     nameEn?: string | null
     nameJa?: string | null
     mapLatitude?: number | null
     mapLongitude?: number | null
+    googlePlaceId?: string | null
     contact?: { googleMapsUrl?: string | null } | null
 }, preferJapanese = false): string {
     const stored = (facility.contact?.googleMapsUrl ?? '').trim()
+    const name = (preferJapanese ? facility.nameJa : facility.nameEn) || facility.nameEn || facility.nameJa
+    const { mapLatitude: lat, mapLongitude: lng } = facility
+    const placeId = facilityPlaceId(facility.googlePlaceId, stored)
+
+    if (placeId) {
+        // Maps requires query; query_place_id decides which place opens.
+        const query = name || (lat && lng ? `${lat},${lng}` : placeId)
+        const params = new URLSearchParams([['api', '1'], ['query', query], ['query_place_id', placeId]])
+        return `https://www.google.com/maps/search/?${params.toString()}`
+    }
 
     // A place page is the best link there is, and a Google short link resolves to one.
     if (stored.includes('/place/') || /^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps)\//.test(stored)) {
         return stored
     }
-
-    const name = (preferJapanese ? facility.nameJa : facility.nameEn) || facility.nameEn || facility.nameJa
-    const { mapLatitude: lat, mapLongitude: lng } = facility
 
     /*
      * Never fall back to the stored value here. What is left at this point is a tracking-param
@@ -326,28 +357,37 @@ export function facilityWebsiteLabel(facility: Facility): string {
     return url.replace(/^https?:\/\//i, '').replace(/\/$/, '')
 }
 
-/** The phone number as it should be shown, or an empty string. */
-export function facilityPhone(facility: Facility): string {
+/**
+ * The phone number as people read it, or an empty string.
+ *
+ * Phones are stored in E.164. Japanese pages show the national form a local caller dials
+ * (`03-1234-5678`); every other locale shows `+81 3-1234-5678`, because visitors on an overseas
+ * SIM cannot dial a domestic number. Hyphen placement comes from libphonenumber metadata.
+ * A legacy row that does not parse is shown as stored until the backfill list is fixed.
+ */
+export function facilityPhone(facility: Facility, japanese = false): string {
     const raw = (facility.contact?.phone ?? '').trim()
+    if (isPlaceholder(raw)) return ''
+
+    const display = japanese ? PHONE_DISPLAY.NATIONAL : PHONE_DISPLAY.INTERNATIONAL
+    const formatted = formatJapanPhone(raw, display)
+    if (formatted !== null) return formatted
+
     // Needs enough digits to be a real number; Japanese numbers are 10 or 11.
-    return !isPlaceholder(raw) && (raw.match(/\d/g) ?? []).length >= 9 ? raw : ''
+    return (raw.match(/\d/g) ?? []).length >= 9 ? raw : ''
 }
 
 /**
- * The same number in a form `tel:` can actually dial.
+ * The E.164 number for a `tel:` link (`+81312345678`), or an empty string.
  *
- * Display and dial have to differ: one row is stored as "+81 045-641-6961", which keeps the
- * domestic trunk `0` after the country code. That is never valid internationally, so the raw
- * value produced a link that failed to connect.
+ * Always international so it connects from any SIM. A stored value that does not parse as a
+ * Japanese number gets no link rather than one that may not connect.
  */
 export function facilityPhoneHref(facility: Facility): string {
-    const display = facilityPhone(facility)
-    if (!display) return ''
+    const raw = (facility.contact?.phone ?? '').trim()
+    if (isPlaceholder(raw)) return ''
 
-    const compact = display.replace(/[^\d+]/g, '')
-
-    // +81 followed by a trunk 0: drop the 0, which is only used when dialling domestically.
-    return compact.startsWith('+810') ? `+81${compact.slice(4)}` : compact
+    return toJapanE164(raw) ?? ''
 }
 
 /** A contactable email address, or an empty string. */

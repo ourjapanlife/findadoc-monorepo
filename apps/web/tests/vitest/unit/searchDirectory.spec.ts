@@ -10,6 +10,7 @@ import { buildSearchQuery,
     filterDirectory,
     hasActiveFilters,
     parseSearchQuery } from '~/utils/searchDirectory'
+import { normalizePhoneInput, validatePhoneNumber } from '~/utils/formValidations'
 
 function facility(id: string, professionalIds: string[], address: Partial<Facility['contact']['address']> = {}): Facility {
     return {
@@ -210,18 +211,49 @@ describe('contact normalisation', () => {
     })
 
     describe('facilityPhone and facilityEmail', () => {
-        it('keeps dialable numbers and drops placeholders', () => {
-            expect(facilityPhone(withContact({ phone: '03-5722-5500' }))).toBe('03-5722-5500')
-            expect(facilityPhone(withContact({ phone: '+81 3 5722 5500' }))).toBe('+81 3 5722 5500')
-            expect(facilityPhone(withContact({ phone: 'none' }))).toBe('')
-            expect(facilityPhone(withContact({ phone: '123' }))).toBe('')
+        it('shows the national form with hyphens on Japanese pages', () => {
+            expect(facilityPhone(withContact({ phone: '+81357225500' }), true)).toBe('03-5722-5500')
+            expect(facilityPhone(withContact({ phone: '+81456416961' }), true)).toBe('045-641-6961')
+            expect(facilityPhone(withContact({ phone: '+81476221234' }), true)).toBe('0476-22-1234')
+            expect(facilityPhone(withContact({ phone: '+81120123456' }), true)).toBe('0120-123-456')
         })
 
-        it('dials a number that keeps the trunk zero after the country code', () => {
-            // Stored verbatim in production; "+81045..." never connects.
+        it('shows +81 with Japanese hyphens on every other locale', () => {
+            expect(facilityPhone(withContact({ phone: '+81357225500' }), false)).toBe('+81 3-5722-5500')
+            expect(facilityPhone(withContact({ phone: '+819012345678' }))).toBe('+81 90-1234-5678')
+        })
+
+        it('formats a legacy row that has not been backfilled yet', () => {
+            expect(facilityPhone(withContact({ phone: '03 5722 5500' }), true)).toBe('03-5722-5500')
+            expect(facilityPhone(withContact({ phone: '+81 045-641-6961' }))).toBe('+81 45-641-6961')
+        })
+
+        it('drops placeholders and shows an unparseable number as stored', () => {
+            expect(facilityPhone(withContact({ phone: 'none' }))).toBe('')
+            expect(facilityPhone(withContact({ phone: '123' }))).toBe('')
+            expect(facilityPhone(withContact({ phone: '03-5722-5500 (reception)' }))).toBe('03-5722-5500 (reception)')
+        })
+
+        it('always links to E.164 so the number dials from an overseas SIM', () => {
+            expect(facilityPhoneHref(withContact({ phone: '+81357225500' }))).toBe('+81357225500')
+            expect(facilityPhoneHref(withContact({ phone: '03-5722-5500' }))).toBe('+81357225500')
+            // Stored verbatim in production before the backfill; "+81045..." never connects.
             expect(facilityPhoneHref(withContact({ phone: '+81 045-641-6961' }))).toBe('+81456416961')
-            expect(facilityPhoneHref(withContact({ phone: '03-5722-5500' }))).toBe('0357225500')
+        })
+
+        it('gives no link for a placeholder or a number that does not parse', () => {
             expect(facilityPhoneHref(withContact({ phone: 'none' }))).toBe('')
+            expect(facilityPhoneHref(withContact({ phone: '03-5722-5500 (reception)' }))).toBe('')
+            expect(facilityPhoneHref(withContact({ phone: '+1 212 555 0100' }))).toBe('')
+        })
+
+        it('accepts any spacing in a form and shows the stored E.164 value', () => {
+            expect(validatePhoneNumber('03 5722 5500')).toBe(true)
+            expect(validatePhoneNumber('０３－５７２２－５５００')).toBe(true)
+            expect(validatePhoneNumber('+1 212 555 0100')).toBe(false)
+            expect(validatePhoneNumber('')).toBe(false)
+            expect(normalizePhoneInput(' 03-5722 5500 ')).toBe('+81357225500')
+            expect(normalizePhoneInput('03-5722')).toBe('03-5722')
         })
 
         it('keeps real addresses and drops placeholders', () => {
@@ -253,6 +285,30 @@ describe('contact normalisation', () => {
             // One row stores the literal string "google.maps", which as an href is a relative path.
             expect(facilityMapsUrl(withContact({ googleMapsUrl: 'google.maps' })))
                 .toBe('https://www.google.com/maps/search/Clinic/@35.6,139.7,17z')
+        })
+
+        it('opens the one stored place, not a name search that lists other clinics (#228)', () => {
+            const url = facilityMapsUrl({ ...withContact({ googleMapsUrl: '' }), googlePlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4' })
+            expect(url).toBe('https://www.google.com/maps/search/?api=1&query=Clinic&query_place_id=ChIJN1t_tDeuEmsRUsoyG83frY4')
+        })
+
+        it('reads the place id from a stored Maps URL when the row has none', () => {
+            const stored = 'https://www.google.com/maps/search/?api=1&query=Clinic&query_place_id=ChIJN1t_tDeuEmsRUsoyG83frY4'
+            const url = facilityMapsUrl(withContact({ googleMapsUrl: stored }))
+            expect(url).toContain('&query_place_id=ChIJN1t_tDeuEmsRUsoyG83frY4')
+        })
+
+        it('prefers the place id to a stored place page', () => {
+            const url = facilityMapsUrl({
+                ...withContact({ googleMapsUrl: 'https://www.google.com/maps/place/Clinic/@35.6,139.7,17z' }),
+                googlePlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4'
+            })
+            expect(url).toContain('query_place_id=ChIJN1t_tDeuEmsRUsoyG83frY4')
+        })
+
+        it('ignores a place id that is not a Places token', () => {
+            const url = facilityMapsUrl({ ...withContact({ googleMapsUrl: '' }), googlePlaceId: 'bad id"><' })
+            expect(url).toBe('https://www.google.com/maps/search/Clinic/@35.6,139.7,17z')
         })
 
         it('uses the Japanese name when the reader is Japanese', () => {

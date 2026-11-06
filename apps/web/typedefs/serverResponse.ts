@@ -57,6 +57,7 @@ export enum ErrorCode {
     BOOKING_REGION_UNAVAILABLE = 'BOOKING_REGION_UNAVAILABLE',
     FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS',
     INTERPRETER_HAS_BOOKINGS = 'INTERPRETER_HAS_BOOKINGS',
+    PLACE_ID_REQUIRED = 'PLACE_ID_REQUIRED',
     /** The request never produced GraphQL errors: a timeout, a dropped connection, or an empty failure. */
     NETWORK = 'NETWORK'
 }

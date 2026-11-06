@@ -19,6 +19,13 @@ export {
 } from './mapsUrl.js'
 export { MapDefinedFields } from './object.js'
 export {
+    formatJapanPhone,
+    isValidJapanPhone,
+    PHONE_DISPLAY,
+    toJapanE164,
+    type PhoneDisplay
+} from './phone.js'
+export {
     convertStringToSentenceCase,
     convertStringToTitleCase,
     hasJapaneseCharacters,
@@ -29,7 +36,6 @@ export {
     isFloat,
     isInvalidName,
     isValidEmail,
-    isValidPhoneNumber,
     isValidPostalCode,
     isValidUrl,
     isValidWebsite

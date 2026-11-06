@@ -1,9 +1,36 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
-import { hasSpecialCharacters, isValidEmail, isValidPhoneNumber, isValidWebsite } from '../../utils/stringUtils.js'
+import { hasSpecialCharacters, isValidEmail, isValidWebsite } from '../../utils/stringUtils.js'
+import { isStorablePhone } from './validatePhone.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 import { isPublishedLocale } from '../languages/publishedLocales.js'
+
+/** A Places id token, as Google writes it. 256 characters is far above any real id. */
+const GOOGLE_PLACE_ID = /^[A-Za-z0-9_-]{8,256}$/
+
+/** The trimmed id when it looks like a Places id, else null. */
+export function googlePlaceIdOrNull(value: string | null | undefined): string | null {
+    const trimmed = (value ?? '').trim()
+    return GOOGLE_PLACE_ID.test(trimmed) ? trimmed : null
+}
+
+/** An empty value means "none"; anything else has to look like a Places id. */
+export function validateGooglePlaceId(
+    value: string | null | undefined,
+    validationResults: Result<unknown>,
+    field = 'googlePlaceId'
+) {
+    const trimmed = (value ?? '').trim()
+    if (trimmed && !googlePlaceIdOrNull(trimmed)) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field,
+            errorCode: ErrorCode.INVALID_INPUT,
+            httpStatus: 400
+        })
+    }
+}
 
 // Used for v4 uuid
 export const UUID_REGEX =
@@ -136,10 +163,63 @@ export function validateSupportedLanguages(
     }
 }
 
+export interface UpdateFacilityValidationOptions {
+    /**
+     * The caller checks a phone that does not parse against the stored value with
+     * `isAcceptedUpdatePhone`, on the row it has locked. A stored phone read before the lock can be
+     * stale, so this validator does not judge an unparseable phone in that case.
+     */
+    legacyPhoneCheckedUnderLock?: boolean
+}
+
+const JAPANESE_INSURANCE_SOURCE_MAX = 500
+
+/**
+ * Japanese public insurance on a facility (#18). The source is an optional note:
+ * a link, or a call to the clinic. Unknown is null with no source.
+ */
+export function validateJapaneseInsurance(
+    input: { japaneseInsurance?: gqlTypes.JapaneseInsurance | null, japaneseInsuranceSource?: string | null },
+    validationResults: Result<unknown>
+): void {
+    const valueSent = input.japaneseInsurance !== undefined
+    const sourceSent = input.japaneseInsuranceSource !== undefined
+
+    if (!valueSent && !sourceSent) {
+        return
+    }
+
+    const source = input.japaneseInsuranceSource?.trim() ?? ''
+
+    if (!input.japaneseInsurance) {
+        if (source || !valueSent) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: 'japaneseInsurance',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+        return
+    }
+
+    if (source.length > JAPANESE_INSURANCE_SOURCE_MAX) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: 'japaneseInsuranceSource',
+            errorCode: ErrorCode.INVALID_LENGTH_TOO_LONG,
+            httpStatus: 400
+        })
+    }
+}
+
 /**
  * Validates the input for updating a facility.
  */
-export function validateUpdateFacilityInput(input: Partial<gqlTypes.UpdateFacilityInput>): Result<unknown> {
+export function validateUpdateFacilityInput(
+    input: Partial<gqlTypes.UpdateFacilityInput>,
+    options: UpdateFacilityValidationOptions = {}
+): Result<unknown> {
     const validationResults: Result<unknown> = {
         data: undefined,
         hasErrors: false,
@@ -165,7 +245,8 @@ export function validateUpdateFacilityInput(input: Partial<gqlTypes.UpdateFacili
     }
 
     if (input.contact) {
-        const contactValidationResults = validateContactInput(input.contact)
+        const legacyPhoneCheckedUnderLock = options.legacyPhoneCheckedUnderLock === true
+        const contactValidationResults = validateContactInput(input.contact, legacyPhoneCheckedUnderLock)
 
         if (contactValidationResults.hasErrors) {
             validationResults.hasErrors = true
@@ -195,6 +276,8 @@ export function validateUpdateFacilityInput(input: Partial<gqlTypes.UpdateFacili
     }
 
     validateSupportedLanguages(input.supportedLanguages, validationResults)
+    validateGooglePlaceId(input.googlePlaceId, validationResults)
+    validateJapaneseInsurance(input, validationResults)
 
     return validationResults
 }
@@ -276,6 +359,8 @@ export function validateCreateFacilityInput(input: gqlTypes.CreateFacilityInput)
     }
 
     validateSupportedLanguages(input.supportedLanguages, validationResults)
+    validateGooglePlaceId(input.googlePlaceId, validationResults)
+    validateJapaneseInsurance(input, validationResults)
 
     return validationResults
 }
@@ -322,7 +407,10 @@ export function hasUsableMapPin(
     return true
 }
 
-export function validateContactInput(contactInput: gqlTypes.ContactInput | gqlTypes.Contact): Result<unknown> {
+export function validateContactInput(
+    contactInput: gqlTypes.ContactInput | gqlTypes.Contact,
+    legacyPhoneCheckedUnderLock = false
+): Result<unknown> {
     const validationResults: Result<unknown> = {
         data: undefined,
         hasErrors: false,
@@ -342,7 +430,7 @@ export function validateContactInput(contactInput: gqlTypes.ContactInput | gqlTy
         })
     }
 
-    if (contactInput.phone && !isValidPhoneNumber(contactInput.phone)) {
+    if (contactInput.phone && !legacyPhoneCheckedUnderLock && !isStorablePhone(contactInput.phone)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'phone',

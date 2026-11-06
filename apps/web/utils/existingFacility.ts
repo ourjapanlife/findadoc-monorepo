@@ -11,6 +11,7 @@ export type ExistingFacilityMatch = {
     googleMapsUrl: string
     mapLatitude: number | null
     mapLongitude: number | null
+    googlePlaceId?: string | null
     online?: boolean
 }
 
@@ -30,6 +31,7 @@ type FacilityByPlaceIdResponse = {
         online?: boolean | null
         mapLatitude?: number | null
         mapLongitude?: number | null
+        googlePlaceId?: string | null
         contact?: {
             googleMapsUrl?: string | null
             address?: {
@@ -77,6 +79,7 @@ function matchFromFacility(
         googleMapsUrl: facility.contact?.googleMapsUrl ?? '',
         mapLatitude: facility.mapLatitude ?? null,
         mapLongitude: facility.mapLongitude ?? null,
+        googlePlaceId: facility.googlePlaceId ?? null,
         online: facility.online === true
     }
 }

@@ -7,6 +7,12 @@ import { faker, fakerJA } from '@faker-js/faker'
  * The UUID ('id') and relationships (like 'hps_facilities') must be managed by the seeding script.
  * * @returns {gqlTypes.CreateFacilityInput} The core facility data structure.
  */
+
+/** A Places-shaped id that cannot be mistaken for a real one. */
+export function fakeGooglePlaceId(): string {
+    return `ChIJFake${faker.string.alphanumeric(19)}`
+}
+
 export function generateRandomCreateFacilityInput()
 : gqlTypes.CreateFacilityInput {
     const fullEnglishName = faker.company.name()
@@ -57,10 +63,13 @@ export function generateRandomCreateFacilityInput()
         nameJa: fullJapaneseName,
         mapLatitude: faker.location.latitude({ min: selectedLocation.latMin, max: selectedLocation.latMax }),
         mapLongitude: faker.location.longitude({ min: selectedLocation.lngMin, max: selectedLocation.lngMax }),
+        // A clinic with an address needs a place id (#228). Fake ids say so in the token.
+        googlePlaceId: fakeGooglePlaceId(),
         contact: {
             googleMapsUrl: faker.internet.url(),
             email: email,
-            phone: faker.phone.number().replace(/-/g, ''),
+            // Stored phones are E.164 Japanese numbers; a US-style faker number fails validation.
+            phone: `+8135${faker.string.numeric(7)}`,
             website: faker.internet.url(),
             address: {
                 addressLine1En: faker.location.streetAddress(),

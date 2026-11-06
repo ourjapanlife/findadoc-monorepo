@@ -6,6 +6,7 @@
     "termsTitle": "Mga tuntunin",
     "privacyTitle": "Patakaran sa privacy",
     "npoTitle": "Pagsisiwalat ng NPO",
+    "insuranceTitle": "Pagbabayad ng gamutan sa Japan",
     "searchTitle": "Maghanap ng klinika",
     "contactTitle": "Makipag-ugnayan"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "Mga gawain",
     "activitiesValue": "Pagbuo, pagpapalaganap at pagpapanatili ng libre at de-kalidad na multilingual na plataporma ng impormasyong pangkalusugan na nag-uugnay sa mga naninirahan sa Japan, Hapon man o dayuhan, sa mga serbisyong medikal na kailangan nila sa wikang kailangan nila; at pagpapatakbo ng programa sa pagsasanay ng mga boluntaryong programmer.",
     "contactLabel": "Makipag-ugnayan"
+  },
+  "insurancePage": {
+    "heading": "Pagbabayad para sa pangangalagang medikal sa Japan",
+    "intro": "Paano gumagana ang pampublikong health insurance ng Japan sa klinika, ano ang ibig sabihin ng self-pay, at ano ang gagawin sa insurance mula sa ibang bansa o travel insurance.",
+    "disclaimer": "Hindi sinusuri ng Find a Doc ang coverage ng sinuman at hindi ito nagbibigay ng payong medikal o insurance. Kung hindi ka sigurado, magtanong sa klinika, sa iyong insurer, o sa city office.",
+    "schemesHeading": "Pampublikong health insurance",
+    "schemesIntro": "Halos lahat ng nakatira sa Japan ay kailangang sumali sa isang pampublikong health insurance. Ang pangunahing eksepsiyon ay ang mga tumatanggap ng pampublikong tulong (生活保護): ang kanilang pagpapagamot ay sinasagot ng pampublikong tulong. Hindi napapalitan ng pribadong life insurance o insurance mula sa ibang bansa ang pampublikong insurance.",
+    "schemeEmployee": "Employee health insurance (健康保険): mga empleyado at ang mga miyembro ng pamilyang sinusuportahan nila, sa pamamagitan ng 協会けんぽ, pondo ng kumpanya, o mutual-aid association.",
+    "schemeNational": "National Health Insurance (国民健康保険): mga residenteng wala sa plano ng pinagtatrabahuhan. Ang dayuhang residente na may residence card at mahigit tatlong buwang pananatili ay karaniwang nasa grupong ito.",
+    "schemeElderly": "Medikal na pangangalaga para sa mga 75 taong gulang pataas (後期高齢者医療制度): mula sa ika-75 kaarawan.",
+    "shareHeading": "Ang binabayaran mo sa counter",
+    "shareBody": "Sa klinikang tumatanggap ng pampublikong insurance, binabayaran mo ang bahagi mo sa counter at ang insurer mo ang magbabayad ng natitira sa klinika. Ang karaniwang bahagi ay 20% bago ang edad ng pag-aaral, 30% mula sa edad ng pag-aaral hanggang 69, 20% mula 70 hanggang 74, at 10% mula 75. Maaaring tumaas ang bahagi ng mga matatandang pasyente depende sa kita. Ang napakataas na bill sa isang buwan ay maaaring lagyan ng limitasyon sa ilalim ng benepisyo para sa mataas na gastusing medikal (高額療養費).",
+    "bringHeading": "Ano ang dadalhin",
+    "bringBody": "Dalhin ang iyong My Number card na nakarehistro bilang health insurance card, o ang eligibility certificate (資格確認書) na ipinadala sa iyo ng insurer mo. Hindi na magagamit ang mga lumang papel na insurance card mula 1 Disyembre 2025.",
+    "clinicsHeading": "Mga klinikang hindi tumatanggap ng pampublikong insurance",
+    "clinicsBody": "Makakasingil lang ang klinika sa pampublikong insurance kung itinalaga ito bilang insurance medical institution (保険医療機関). May ilang klinikang hindi itinalaga at self-pay (自由診療) ang lahat ng pasyente. Madalas itong mga cosmetic clinic, ilang dental clinic, at ilang international clinic. Sinasabi ito sa pahina ng klinika sa Find a Doc kapag may pinagmulan kami.",
+    "selfPayHeading": "Pagbabayad nang sarili (self-pay)",
+    "selfPayBody": "Kung wala kang pampublikong insurance ng Japan, halimbawa bilang bisita o bago ka magpalista, ikaw mismo ang magbabayad ng buong singil sa klinika. Maraming ordinaryong klinika ang tatanggap pa rin sa iyo. Ang klinikang hindi tumatanggap ng pampublikong insurance ang nagtatakda ng sarili nitong presyo.",
+    "mixedBody": "Kung ang isang saklaw na konsultasyon ay may kasamang paggamot na hindi saklaw ng insurance, maaaring maging self-pay ang buong konsultasyon, maliban sa ilang aprubadong eksepsyon. Magtanong sa klinika bago ka pumayag sa karagdagang paggamot.",
+    "overseasHeading": "Insurance mula sa ibang bansa at travel insurance",
+    "overseasBody": "Karamihan sa mga klinika ay hindi naniningil sa insurer mula sa ibang bansa o travel insurer. Magbabayad ka sa klinika, itatago mo ang resibo (領収書) at ang itemized na statement (診療明細書), at ipapadala mo ang mga ito sa insurer mo para humingi ng refund. May ilang ospital na direktang naniningil sa insurer, pero kapag nagpadala lang ang insurer na iyon ng garantiya ng bayad bago ang konsultasyon.",
+    "sourcesHeading": "Mga opisyal na sanggunian",
+    "sourceShare": "Bahagi ng pasyente sa counter (Ministry of Health, Labour and Welfare)",
+    "sourceNationalInsurance": "Sino ang sumasali sa National Health Insurance (Ministry of Health, Labour and Welfare)",
+    "sourceMynaCard": "Insurance card na My Number (Ministry of Health, Labour and Welfare)",
+    "sourceCertificate": "Sertipiko ng pagiging karapat-dapat (Digital Agency)",
+    "sourceFacilitySearch": "Paghahanap ng pasilidad medikal (Ministry of Health, Labour and Welfare)"
   },
   "common": {
     "menu": "Menu",
@@ -394,7 +422,14 @@
     "fillFromMapsHint": "Pinupunan ang walang laman na pangalan, address, at pin mula sa link ng Maps. Ang mga field na may laman ay hindi babaguhin.",
     "fillFromMapsDone": "Napunan ang {count} na walang laman na field mula sa link ng Maps.",
     "fillFromMapsNone": "Wala nang walang laman na field na mapupunan mula sa link na ito.",
-    "fillFromMapsFailed": "Hindi mabasa ang link na ito. Buksan ito sa Maps at kopyahin ang mga detalye."
+    "fillFromMapsFailed": "Hindi mabasa ang link na ito. Buksan ito sa Maps at kopyahin ang mga detalye.",
+    "japaneseInsuranceLabel": "Pampublikong health insurance ng Japan",
+    "japaneseInsuranceUnknown": "Hindi alam. Walang makikita ang mga mambabasa.",
+    "japaneseInsuranceAccepted": "Tumatanggap ng pampublikong health insurance ng Japan.",
+    "japaneseInsuranceHint": "Iwanang hindi alam hangga't hindi ito nakukumpirma ng website ng klinika, listahan ng regional health bureau, o tawag. May mga klinikang pribado lang, kaya huwag manghula.",
+    "japaneseInsuranceNotAccepted": "Hindi tumatanggap ng pampublikong health insurance ng Japan. Self-pay ang konsultasyon.",
+    "japaneseInsuranceSourceLabel": "Pinagmulan",
+    "japaneseInsuranceSourcePlaceholder": "Isang link, o tala gaya ng: tinawagan ang klinika noong 2 Nob 2026"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",
@@ -429,6 +464,7 @@
     "invalidWebsite": "Maglagay ng wastong website.",
     "invalidInformation": "May impormasyong hindi wasto. Suriin ang form at subukan muli.",
     "submissionCannotBeApproved": "Hindi maaaprubahan ang submission na ito hanggang kumpleto ang kinakailangang detalye ng klinika at propesyonal.",
+    "placeIdRequired": "Kailangan ng klinikang ito ang Google place nito. I-paste ang link sa sariling Google Maps page ng klinika, o i-check ang Online na pasilidad kung wala itong address.",
     "submissionAlreadyApproved": "Naaprubahan na ang submission na ito.",
     "clinicRequired": "Pumili ng klinika para sa propesyonal sa kalusugan na ito.",
     "japaneseInEnglishField": "May Japanese na character sa isang English na field.",
@@ -459,7 +495,6 @@
     "placeholderTextHealthcareProfessionalLastName": "hal. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "hal. Bronson",
     "selectDegrees": "Mga digri",
-    "selectInsurances": "Tinatanggap na insurance",
     "selectLocales": "Mga wikang sinasalita",
     "selectSpecialties": "Mga espesyalidad",
     "facilities": "Mga kaugnay na pasilidad",
@@ -469,12 +504,10 @@
     "noFacilitiesLinked": "Wala pang kaugnay na pasilidad. Maghanap sa itaas para magdagdag.",
     "errorMessageHealthcareProfessionalId": "Hindi nahanap ang ID ng propesyonal sa kalusugan",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "Hanapin ayon sa insurance",
     "placeholderTextSpecialties": "Hanapin ayon sa espesyalidad",
     "placeholderTextDegrees": "Hanapin ayon sa digri",
     "placeholderTextLocales": "Hanapin ayon sa wika",
     "noSpecialtiesWereFound": "Walang nahanap na espesyalidad",
-    "noInsurancesWereFound": "Walang nahanap na insurance",
     "noDegreesWereFound": "Walang nahanap na digri",
     "noLocalesWereFound": "No language were found",
     "delete": "Burahin nang tuluyan",
@@ -715,16 +748,12 @@
     "languagesFallback": "mga wikang nakalista sa profile",
     "specialties": "Mga espesyalidad",
     "languages": "Mga wikang sinasalita",
-    "insurance": "Tinatanggap na insurance",
     "additionalInfo": "Para sa mga pasyente",
-    "facilities": "Mga klinika",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "Hindi tumatanggap ng insurance",
-      "INTERNATIONAL_HEALTH_INSURANCE": "Internasyonal na health insurance",
-      "JAPANESE_HEALTH_INSURANCE": "Health insurance ng Japan",
-      "TRAVEL_INSURANCE": "Seguro sa paglalakbay",
-      "UNINSURED": "Walang insurance / sariling bayad"
-    }
+    "facilities": "Mga klinika"
+  },
+  "insuranceNote": {
+    "notAccepted": "Hindi tumatanggap ang klinikang ito ng pampublikong health insurance ng Japan. Self-pay ang konsultasyon.",
+    "guideLink": "Paano gumagana ang pagbabayad para sa pangangalagang medikal sa Japan"
   },
   "hubPage": {
     "prefectureHeading": "Pangangalagang pangkalusugan sa {prefecture}",

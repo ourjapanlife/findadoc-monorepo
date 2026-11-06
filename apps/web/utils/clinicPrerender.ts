@@ -69,7 +69,7 @@ async function graphqlPost<T>(query: string, variables: unknown): Promise<T | nu
 
 async function fetchAllPages<T>(
     requestPage: (offset: number) => Promise<{ rows: T[], totalCount: number } | null>
-): Promise<T[] | null> {
+): Promise<{ rows: T[], complete: boolean } | null> {
     const first = await requestPage(0)
     if (!first) {
         return null
@@ -80,12 +80,12 @@ async function fetchAllPages<T>(
         const page = await requestPage(offset)
         if (!page) {
             console.warn(`[clinic prerender] stopped paging at offset ${offset}`)
-            break
+            return { rows, complete: false }
         }
         rows.push(...page.rows)
     }
 
-    return rows
+    return { rows, complete: rows.length >= first.totalCount }
 }
 
 export type ProfessionalSearchResult = HealthcareProfessional & {
@@ -194,9 +194,15 @@ export function readClinicPrerenderCache(id: string): FacilitySearchResult | nul
     }
 }
 
-async function fetchDirectoryRows(): Promise<{
+/**
+ * Every published facility and professional from the public API. `complete` is false when a
+ * page failed or professionals could not be read, so callers that compare against the live
+ * site (`scripts/checkDirectoryDrift.ts`) do not act on a partial list.
+ */
+export async function fetchDirectoryRows(): Promise<{
     facilities: Facility[]
     professionals: HealthcareProfessional[]
+    complete: boolean
 } | null> {
     const facilities = await fetchAllPages(async offset => {
         const data = await graphqlPost<FacilitiesPage>(FACILITIES_QUERY, {
@@ -224,9 +230,13 @@ async function fetchDirectoryRows(): Promise<{
             rows: data.healthcareProfessionals ?? [],
             totalCount: data.healthcareProfessionalsTotalCount ?? data.healthcareProfessionals?.length ?? 0
         }
-    }) ?? []
+    })
 
-    return { facilities, professionals }
+    return {
+        facilities: facilities.rows,
+        professionals: professionals?.rows ?? [],
+        complete: facilities.complete && professionals?.complete === true
+    }
 }
 
 /**

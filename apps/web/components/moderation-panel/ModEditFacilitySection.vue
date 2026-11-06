@@ -46,6 +46,7 @@
                     :placeholder="t('modFacilitySection.placeholderTextFacilityPhoneNumber')"
                     :required="true"
                     :input-validation-check="validatePhoneNumber"
+                    :normalize-on-blur="normalizePhoneInput"
                     :invalid-input-error-message="t(formErrorKey.invalidPhone)"
                 />
                 <ModInputField
@@ -84,6 +85,11 @@
                 <span class="mt-1 block text-primary-text-muted">{{ t('modFacilitySection.onlineHint') }}</span>
             </span>
         </label>
+        <ModJapaneseInsuranceField
+            v-if="moderationScreenStore.editFacilityScreenIsActive()"
+            v-model:choice="facilityStore.facilitySectionFields.japaneseInsurance"
+            v-model:source="facilityStore.facilitySectionFields.japaneseInsuranceSource"
+        />
         <ModAccordion
             v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"
@@ -352,6 +358,7 @@ import { validateAddressLineEn,
     validateAddressLineJa,
     validateNameEn,
     validateNameJa,
+    normalizePhoneInput,
     validatePhoneNumber,
     validateEmail,
     validateFloat,

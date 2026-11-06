@@ -9,6 +9,8 @@ import { canonicalMapsLink, resolveMapsPlace } from '../src/places/mapsLink.js'
  * A short link is opened once so its redirect can be read. Places Text Search is not called.
  * The stored Maps URL is rewritten to the normalized form that carries the place id.
  * Name and address are never changed.
+ * Online facilities have no place and are skipped. With `--write`, once no facility with an
+ * address is missing a place id, the facilities_place_id_required constraint is validated (#228).
  */
 
 type FacilityRow = {
@@ -24,12 +26,13 @@ export async function main(write = process.argv.includes('--write')) {
     const client = new pg.Client(scriptDatabaseConfig())
     await client.connect()
 
-    const counts = { written: 0, unmatched: 0 }
+    const counts = { written: 0, unmatched: 0, remaining: 0, validated: false }
     try {
         const facilities = await client.query<FacilityRow>(`
             select id, name_en, name_ja, contact #>> '{googleMapsUrl}' as google_maps_url
             from facilities
-            where google_place_id is null
+            where coalesce(btrim(google_place_id), '') = ''
+              and online = false
               and coalesce(contact #>> '{googleMapsUrl}', '') <> ''
             order by updated_date desc
         `)
@@ -55,13 +58,27 @@ export async function main(write = process.argv.includes('--write')) {
                  set google_place_id = $1,
                      contact = jsonb_set(contact, '{googleMapsUrl}', to_jsonb($2::text), true),
                      updated_date = now()
-                 where id = $3 and google_place_id is null`,
+                 where id = $3 and coalesce(btrim(google_place_id), '') = ''`,
                 [target.placeId, canonical, facility.id]
             )
             if ((result.rowCount ?? 0) > 0) {
                 counts.written += 1
                 console.log(`write ${facility.id} ${target.placeId}`)
             }
+        }
+
+        const remaining = await client.query<{ id: string }>(`
+            select id from facilities
+            where online = false and coalesce(btrim(google_place_id), '') = ''
+            order by id
+        `)
+        counts.remaining = remaining.rows.length
+        for (const row of remaining.rows) {
+            console.log(`still missing a place id ${row.id}`)
+        }
+        if (write && counts.remaining === 0) {
+            await client.query('alter table facilities validate constraint facilities_place_id_required')
+            counts.validated = true
         }
     } finally {
         await client.end()
