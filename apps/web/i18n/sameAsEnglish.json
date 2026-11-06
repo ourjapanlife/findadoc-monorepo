@@ -27,7 +27,8 @@
     "submitPage.previewNotes",
     "submitPage.previewLocation",
     "bookingPage.dateLabel",
-    "bookingPage.durationMinutes"
+    "bookingPage.durationMinutes",
+    "modFacilitySection.japaneseInsuranceSourceLabel"
   ],
   "de": [
     "submitPage.previewName",

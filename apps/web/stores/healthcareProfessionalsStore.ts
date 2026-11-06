@@ -5,8 +5,7 @@ import { gql } from 'graphql-request'
 import { fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
 import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { professionalSelection } from '../utils/graphqlSelection'
-import { type Insurance,
-    type Degree,
+import { type Degree,
     LicenseReviewStatus,
     type Specialty,
     type Locale, type DeleteResult, type HealthcareProfessional,
@@ -44,9 +43,6 @@ function healthcareProfessionalUpdatePatch(
 ): UpdateHealthcareProfessionalInput {
     const patch: UpdateHealthcareProfessionalInput = {}
 
-    if (stableStringify(next.acceptedInsurance ?? []) !== stableStringify(current.acceptedInsurance ?? [])) {
-        patch.acceptedInsurance = next.acceptedInsurance ?? []
-    }
     if ((next.additionalInfoForPatients ?? '') !== (current.additionalInfoForPatients ?? '')) {
         patch.additionalInfoForPatients = next.additionalInfoForPatients ?? ''
     }
@@ -106,7 +102,6 @@ export const useHealthcareProfessionalsStore = defineStore(
         const hasPrevPage = computed(() => currentOffset.value > 0)
         const healthcareProfessionalSectionFields = reactive<HealthcareProfessional>({
             __typename: 'HealthcareProfessional',
-            acceptedInsurance: [],
             additionalInfoForPatients: '',
             createdDate: '',
             degrees: [],
@@ -121,7 +116,6 @@ export const useHealthcareProfessionalsStore = defineStore(
         })
 
         const createHealthcareProfessionalSectionFields: CreateHealthcareProfessionalInput = reactive({
-            acceptedInsurance: [] as Insurance[],
             degrees: [] as Degree[],
             facilityIds: [] as string[],
             names: [] as LocalizedNameInput[],
@@ -152,7 +146,6 @@ export const useHealthcareProfessionalsStore = defineStore(
         function updateHealthcareProfessionalSectionFields(healthcareProfessional: HealthcareProfessional) {
             // eslint-disable-next-line no-underscore-dangle
             healthcareProfessionalSectionFields.__typename = 'HealthcareProfessional'
-            healthcareProfessionalSectionFields.acceptedInsurance = healthcareProfessional.acceptedInsurance
             healthcareProfessionalSectionFields.additionalInfoForPatients = healthcareProfessional.additionalInfoForPatients
             healthcareProfessionalSectionFields.createdDate = healthcareProfessional.createdDate
             healthcareProfessionalSectionFields.degrees = healthcareProfessional.degrees
@@ -169,7 +162,6 @@ export const useHealthcareProfessionalsStore = defineStore(
         function resetHealthcareProfessionalSectionFields() {
             // eslint-disable-next-line no-underscore-dangle
             healthcareProfessionalSectionFields.__typename = 'HealthcareProfessional'
-            healthcareProfessionalSectionFields.acceptedInsurance = []
             healthcareProfessionalSectionFields.additionalInfoForPatients = ''
             healthcareProfessionalSectionFields.createdDate = ''
             healthcareProfessionalSectionFields.degrees = []
@@ -270,7 +262,6 @@ export const useHealthcareProfessionalsStore = defineStore(
                 console.error(useTranslation('healthcareProfessionalsErrors.noCurrentProfessionalDataFound'), `${selectedHealthcareProfessionalId.value}`)
                 return {
                     data: {
-                        acceptedInsurance: [],
                         additionalCredentials: [],
                         additionalInfoForPatients: '',
                         createdDate: '',
@@ -358,7 +349,6 @@ export const useHealthcareProfessionalsStore = defineStore(
 
             const createHealthcareProfessionalInput: MutationCreateHealthcareProfessionalArgs = {
                 input: {
-                    acceptedInsurance: createHealthcareProfessionalSectionFields.acceptedInsurance,
                     additionalInfoForPatients: createHealthcareProfessionalSectionFields.additionalInfoForPatients,
                     degrees: createHealthcareProfessionalSectionFields.degrees,
                     facilityIds: createHealthcareProfessionalSectionFields.facilityIds,
@@ -381,7 +371,6 @@ export const useHealthcareProfessionalsStore = defineStore(
         }
 
         function resetCreateHealthcareProfessionalFields() {
-            createHealthcareProfessionalSectionFields.acceptedInsurance = []
             createHealthcareProfessionalSectionFields.additionalInfoForPatients = ''
             createHealthcareProfessionalSectionFields.degrees = []
             createHealthcareProfessionalSectionFields.facilityIds = []

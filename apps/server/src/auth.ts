@@ -176,6 +176,14 @@ export function getEffectiveScopes(user: User | null | undefined): Scope[] {
     return [...new Set(merged)]
 }
 
+/**
+ * Moderator notes on a facility, such as where its insurance answer came from, are
+ * internal. Only users who can edit facilities (moderators and admins) read them.
+ */
+export function canReadModeratorNotes(user: User | null | undefined): boolean {
+    return getEffectiveScopes(user).includes(Scope['write:facilities'])
+}
+
 export interface UserContext {
     user: User
     clientIp?: string

@@ -22,6 +22,7 @@ describe('agent discovery files', () => {
 
         expect(guide).to.include('# Find a Doc, Japan')
         expect(guide).to.include(`${SITE_ORIGIN}/contact.md`)
+        expect(guide).to.include(`${SITE_ORIGIN}/insurance.md`)
         expect(guide).to.include(`${SITE_ORIGIN}/sitemap.xml`)
         expect(guide).to.include(MCP_SERVER_URL)
         expect(guide).to.include(`${SITE_ORIGIN}/openapi.json`)
@@ -84,11 +85,25 @@ describe('prefersMarkdown', () => {
     it('maps the trust pages onto sibling markdown files', () => {
         expect(markdownPathFor('/about')).to.equal('/about.md')
         expect(markdownPathFor('/')).to.equal('/index.md')
+        expect(markdownPathFor('/insurance')).to.equal('/insurance.md')
         expect(markdownPathFor('/ja-JP/about')).to.equal(undefined)
         expect(canNegotiateMarkdown('/about')).to.equal(true)
         expect(canNegotiateMarkdown('/about.md')).to.equal(false)
         expect(canNegotiateMarkdown('/findadoc-social.jpg')).to.equal(false)
         expect(withAcceptVary('Accept-Encoding')).to.equal('Accept-Encoding, Accept')
         expect(withAcceptVary('accept')).to.equal('accept')
+    })
+})
+
+describe('insurance markdown twin', () => {
+    it('carries every English paragraph of the insurance page', () => {
+        const en = JSON.parse(readFileSync(join(rootDir, 'i18n/locales/en.json'), 'utf8')) as {
+            insurancePage: Record<string, string>
+        }
+        const markdown = readPublic('insurance.md')
+
+        for (const [key, value] of Object.entries(en.insurancePage)) {
+            expect(markdown, `insurancePage.${key}`).to.include(value)
+        }
     })
 })

@@ -8,7 +8,8 @@ const MARKDOWN_PAGES: Record<string, string> = {
     '/about': '/about.md',
     '/contact': '/contact.md',
     '/privacypolicy': '/privacypolicy.md',
-    '/npo': '/npo.md'
+    '/npo': '/npo.md',
+    '/insurance': '/insurance.md'
 }
 
 export const MARKDOWN_NOT_FOUND_PATH = '/404.md'

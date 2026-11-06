@@ -6,6 +6,7 @@
     "termsTitle": "Termini di servizio",
     "privacyTitle": "Informativa sulla privacy",
     "npoTitle": "Informazioni NPO",
+    "insuranceTitle": "Pagare le cure in Giappone",
     "searchTitle": "Cerca cliniche",
     "contactTitle": "Contatti"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "Attività",
     "activitiesValue": "Costruire, promuovere e mantenere una piattaforma di informazione sanitaria multilingue, gratuita e di qualità, che mette in contatto chi vive in Giappone, giapponesi e residenti stranieri, con i servizi medici di cui ha bisogno nella propria lingua; e gestire un programma di formazione per programmatori volontari.",
     "contactLabel": "Contatti"
+  },
+  "insurancePage": {
+    "heading": "Pagare le cure in Giappone",
+    "intro": "Come funziona l'assicurazione sanitaria pubblica giapponese in uno studio medico, cosa significa pagare di tasca propria e cosa fare con un'assicurazione estera o di viaggio.",
+    "disclaimer": "Find a Doc non verifica la copertura di nessuno e non offre consulenza medica o assicurativa. Se hai dubbi, chiedi allo studio, alla tua assicurazione o all'ufficio comunale.",
+    "schemesHeading": "Assicurazione sanitaria pubblica",
+    "schemesIntro": "Quasi tutte le persone che vivono in Giappone devono iscriversi a un'assicurazione sanitaria pubblica. L'eccezione principale riguarda chi riceve l'assistenza pubblica (生活保護): le sue cure mediche sono coperte dall'assistenza pubblica. Un'assicurazione vita privata o una polizza estera non sostituisce l'assicurazione pubblica.",
+    "schemeEmployee": "Assicurazione sanitaria per i lavoratori dipendenti (健康保険): i dipendenti e i familiari a carico, tramite 協会けんぽ, una cassa aziendale o una cassa di mutuo soccorso.",
+    "schemeNational": "Assicurazione sanitaria nazionale (国民健康保険): i residenti che non sono iscritti a un piano del datore di lavoro. Un residente straniero con carta di soggiorno e un soggiorno di più di tre mesi di solito rientra in questo gruppo.",
+    "schemeElderly": "Assistenza medica per le persone dai 75 anni in su (後期高齢者医療制度): dal 75º compleanno.",
+    "shareHeading": "Cosa paghi allo sportello",
+    "shareBody": "In uno studio che accetta l'assicurazione pubblica, paghi la tua quota allo sportello e la tua assicurazione paga il resto allo studio. La quota abituale è il 20% prima dell'età scolare, il 30% dall'età scolare fino a 69 anni, il 20% da 70 a 74 anni e il 10% dai 75 anni. Il reddito può aumentare la quota per i pazienti più anziani. Un conto molto alto in un mese può essere limitato dal beneficio per le spese mediche elevate (高額療養費).",
+    "bringHeading": "Cosa portare",
+    "bringBody": "Porta la tua carta My Number registrata come tessera sanitaria, oppure il certificato di idoneità (資格確認書) inviato dalla tua assicurazione. Le vecchie tessere assicurative cartacee non valgono più dal 1° dicembre 2025.",
+    "clinicsHeading": "Studi che non accettano l'assicurazione pubblica",
+    "clinicsBody": "Uno studio può fatturare all'assicurazione pubblica solo se è designato come istituto medico convenzionato (保険医療機関). Alcuni studi non sono designati e trattano tutti i pazienti a pagamento privato (自由診療). Spesso sono cliniche estetiche, alcuni studi dentistici e alcune cliniche internazionali. La pagina di uno studio su Find a Doc lo indica quando abbiamo una fonte.",
+    "selfPayHeading": "Pagamento di tasca propria",
+    "selfPayBody": "Se non hai un'assicurazione pubblica giapponese, per esempio come visitatore o prima dell'iscrizione, paghi allo studio l'intero importo di tasca tua. Molti studi comuni ti visiteranno comunque. Uno studio che non accetta l'assicurazione pubblica stabilisce i propri prezzi.",
+    "mixedBody": "Se una visita coperta comprende un trattamento che l'assicurazione non copre, l'intera visita può diventare a pagamento privato, a parte alcune eccezioni approvate. Chiedi allo studio prima di accettare un trattamento aggiuntivo.",
+    "overseasHeading": "Assicurazione estera e di viaggio",
+    "overseasBody": "La maggior parte degli studi non fattura a un'assicurazione estera o di viaggio. Paghi lo studio, conservi la ricevuta (領収書) e il resoconto dettagliato (診療明細書) e li invii alla tua assicurazione per chiedere il rimborso. Alcuni ospedali fatturano direttamente all'assicurazione, ma solo quando questa invia una garanzia di pagamento prima della visita.",
+    "sourcesHeading": "Fonti ufficiali",
+    "sourceShare": "Quota a carico del paziente allo sportello (Ministero della Salute, del Lavoro e del Welfare)",
+    "sourceNationalInsurance": "Chi si iscrive all'assicurazione sanitaria nazionale (Ministero della Salute, del Lavoro e del Welfare)",
+    "sourceMynaCard": "Tessera sanitaria My Number (Ministero della Salute, del Lavoro e del Welfare)",
+    "sourceCertificate": "Certificato di idoneità (Agenzia digitale)",
+    "sourceFacilitySearch": "Ricerca delle strutture mediche (Ministero della Salute, del Lavoro e del Welfare)"
   },
   "common": {
     "menu": "Menu",
@@ -360,7 +388,6 @@
     "placeholderTextHealthcareProfessionalLastName": "es. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "es. Bronson",
     "selectDegrees": "Titoli di studio",
-    "selectInsurances": "Selezione assicurazione",
     "selectLocales": "Seleziona le lingue parlate",
     "selectSpecialties": "Specializzazioni",
     "facilities": "Strutture associate",
@@ -369,12 +396,10 @@
     "noFacilitiesWereFound": "Nessuna struttura è stata trovata",
     "noFacilitiesLinked": "Nessuna struttura associata. Cerca qui sopra per aggiungerne una.",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "Cerca per assicurazione",
     "placeholderTextSpecialties": "Cerca per specialità",
     "placeholderTextDegrees": "Cerca per titolo",
     "placeholderTextLocales": "Cerca per lingua",
     "noSpecialtiesWereFound": "Nessuna specialità trovata",
-    "noInsurancesWereFound": "Nessuna assicurazione trovata",
     "noDegreesWereFound": "Nessun titolo trovato",
     "noLocalesWereFound": "Nessuna lingua trovata",
     "delete": "Elimina definitivamente",
@@ -477,7 +502,14 @@
     "fillFromMapsHint": "Compila nome, indirizzo e pin vuoti dal link di Maps. I campi che hanno già un valore restano invariati.",
     "fillFromMapsDone": "Compilati {count} campi vuoti dal link di Maps.",
     "fillFromMapsNone": "Non restavano campi vuoti da compilare da questo link.",
-    "fillFromMapsFailed": "Impossibile leggere questo link. Aprilo in Maps e copia i dettagli."
+    "fillFromMapsFailed": "Impossibile leggere questo link. Aprilo in Maps e copia i dettagli.",
+    "japaneseInsuranceLabel": "Assicurazione sanitaria pubblica giapponese",
+    "japaneseInsuranceUnknown": "Sconosciuto. I lettori non vedono nulla.",
+    "japaneseInsuranceAccepted": "Accetta l'assicurazione sanitaria pubblica giapponese.",
+    "japaneseInsuranceHint": "Lascia «Sconosciuto» finché il sito della clinica, l'elenco dell'ufficio sanitario regionale o una telefonata non lo confermano. Esistono cliniche solo private, quindi non tirare a indovinare.",
+    "japaneseInsuranceNotAccepted": "Non accetta l'assicurazione sanitaria pubblica giapponese. La visita è a pagamento privato.",
+    "japaneseInsuranceSourceLabel": "Fonte",
+    "japaneseInsuranceSourcePlaceholder": "Un link, o una nota come: chiamata la clinica il 2 nov 2026"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "L'ID della struttura è obbligatiorio per aggiornare la struttura",
@@ -715,16 +747,12 @@
     "languagesFallback": "lingue indicate nel profilo",
     "specialties": "Specialità",
     "languages": "Lingue parlate",
-    "insurance": "Assicurazioni accettate",
     "additionalInfo": "Per i pazienti",
-    "facilities": "Cliniche",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "Non accetta assicurazione",
-      "INTERNATIONAL_HEALTH_INSURANCE": "Assicurazione sanitaria internazionale",
-      "JAPANESE_HEALTH_INSURANCE": "Assicurazione sanitaria giapponese",
-      "TRAVEL_INSURANCE": "Assicurazione di viaggio",
-      "UNINSURED": "Non assicurato / a pagamento"
-    }
+    "facilities": "Cliniche"
+  },
+  "insuranceNote": {
+    "notAccepted": "Questo studio non accetta l'assicurazione sanitaria pubblica giapponese. La visita è a pagamento privato.",
+    "guideLink": "Come funziona il pagamento delle cure in Giappone"
   },
   "hubPage": {
     "prefectureHeading": "Assistenza sanitaria a {prefecture}",

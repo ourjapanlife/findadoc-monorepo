@@ -15,6 +15,7 @@ Pages that have a markdown twin answer `Accept: text/markdown` on the production
 - [Contact](https://www.findadoc.jp/contact.md): email, and what we can and cannot help with
 - [Privacy](https://www.findadoc.jp/privacypolicy.md): what the site collects
 - [NPO disclosures](https://www.findadoc.jp/npo.md): registration number, representative, filed documents
+- [Paying for care in Japan](https://www.findadoc.jp/insurance.md): public health insurance, what you pay, self-pay, and overseas insurance claims
 - [Sitemap](https://www.findadoc.jp/sitemap.xml): every public URL, including locale alternates
 - [Search](https://www.findadoc.jp/search): clinics and doctors, filtered in the browser
 

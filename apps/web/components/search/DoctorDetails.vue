@@ -76,27 +76,6 @@
         </section>
 
         <section
-            v-if="insurance.length"
-            class="flex flex-col gap-3"
-        >
-            <h2 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
-                {{ t('doctorPage.insurance') }}
-            </h2>
-            <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
-                <li
-                    v-for="label in insurance"
-                    :key="label"
-                    class="max-w-full min-w-0"
-                >
-                    <ChipTag
-                        :label="label"
-                        chip-class="h-7 px-2.5 text-xs"
-                    />
-                </li>
-            </ul>
-        </section>
-
-        <section
             v-if="additionalInfo"
             class="flex flex-col gap-3"
         >
@@ -135,6 +114,10 @@
                     >
                         {{ facility.address }}
                     </p>
+                    <JapaneseInsuranceNote
+                        :value="facility.japaneseInsurance"
+                        class="mt-2"
+                    />
                 </li>
             </ul>
         </section>
@@ -152,7 +135,7 @@ import { isJapaneseLocale, toGqlLocale } from '~/utils/activeLocale'
 import { facilityPath } from '~/utils/clinicPath'
 import type { ProfessionalSearchResult } from '~/utils/clinicPrerender'
 import type { ProfessionalFacetLink } from '~/utils/directoryLinks'
-import { Insurance, Locale, type LocalizedName, type Specialty } from '@findadoc/graphql'
+import { Locale, type LocalizedName, type Specialty } from '@findadoc/graphql'
 
 const props = defineProps<{
     professional: ProfessionalSearchResult
@@ -209,25 +192,6 @@ function facetPathForLocale(code: Locale): string | undefined {
     return (props.facetLinks ?? []).find(link => link.locale === code)?.path
 }
 
-function insuranceLabel(code: Insurance): string {
-    switch (code) {
-        case Insurance.InsuranceNotAccepted:
-            return t('doctorPage.insuranceLabels.INSURANCE_NOT_ACCEPTED')
-        case Insurance.InternationalHealthInsurance:
-            return t('doctorPage.insuranceLabels.INTERNATIONAL_HEALTH_INSURANCE')
-        case Insurance.JapaneseHealthInsurance:
-            return t('doctorPage.insuranceLabels.JAPANESE_HEALTH_INSURANCE')
-        case Insurance.TravelInsurance:
-            return t('doctorPage.insuranceLabels.TRAVEL_INSURANCE')
-        case Insurance.Uninsured:
-            return t('doctorPage.insuranceLabels.UNINSURED')
-        default:
-            return code
-    }
-}
-
-const insurance = computed(() => (props.professional.acceptedInsurance ?? []).map(insuranceLabel))
-
 const additionalInfo = computed(() => props.professional.additionalInfoForPatients?.trim() ?? '')
 
 const facilities = computed(() => props.professional.facilities.map(facility => {
@@ -240,7 +204,8 @@ const facilities = computed(() => props.professional.facilities.map(facility => 
         id: facility.id,
         path: facilityPath(facility),
         name: (isJapanese.value ? facility.nameJa : facility.nameEn) || facility.nameEn,
-        address: addressText
+        address: addressText,
+        japaneseInsurance: facility.japaneseInsurance
     }
 }))
 </script>

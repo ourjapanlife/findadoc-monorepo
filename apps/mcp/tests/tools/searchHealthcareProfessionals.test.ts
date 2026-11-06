@@ -37,7 +37,6 @@ describe('search_healthcare_professionals', () => {
                     spokenLanguages: ['ja_JP', 'en_US'],
                     degrees: ['MD'],
                     specialties: ['GENERAL_PRACTICE'],
-                    acceptedInsurance: ['JAPANESE_HEALTH_INSURANCE'],
                     facilityIds: ['facility-1']
                 }
             ],
@@ -76,8 +75,7 @@ describe('search_healthcare_professionals', () => {
                 offset: 10,
                 spokenLanguages: ['en_US'],
                 specialties: ['PEDIATRICS'],
-                degrees: ['MD'],
-                acceptedInsurance: ['INTERNATIONAL_HEALTH_INSURANCE']
+                degrees: ['MD']
             }
         })
 
@@ -89,8 +87,7 @@ describe('search_healthcare_professionals', () => {
                     offset: 10,
                     spokenLanguages: ['en_US'],
                     specialties: ['PEDIATRICS'],
-                    degrees: ['MD'],
-                    acceptedInsurance: ['INTERNATIONAL_HEALTH_INSURANCE']
+                    degrees: ['MD']
                 }
             }
         )

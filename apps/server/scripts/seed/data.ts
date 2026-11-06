@@ -4,7 +4,6 @@ import {
     Degree,
     FacilitySource,
     FacilityVerificationStatus,
-    Insurance,
     Locale,
     PaymentType,
     Specialty
@@ -172,9 +171,6 @@ function buildSeed(): SeedFile {
         const spokenLanguages = indexableFacet
             ? [Locale.EnUs, Locale.JaJp]
             : [Locale.EnUs, Locale.JaJp, extraLanguages[index % extraLanguages.length]!]
-        const insurance = index % 5 === 0
-            ? [Insurance.InternationalHealthInsurance]
-            : [Insurance.JapaneseHealthInsurance]
 
         facilities.push({
             id: facilityId,
@@ -217,7 +213,6 @@ function buildSeed(): SeedFile {
             license_recommendation: licensed.licenseRecommendation,
             specialties,
             spoken_languages: spokenLanguages,
-            accepted_insurance: insurance,
             email: faker.internet.email().toLowerCase(),
             created_date: created,
             updated_date: created,
@@ -255,7 +250,6 @@ function buildSeed(): SeedFile {
                 spokenLanguages: [Locale.EnUs, Locale.JaJp],
                 degrees: [license],
                 specialties,
-                acceptedInsurance: insurance,
                 additionalInfoForPatients: faker.lorem.sentence(),
                 facilityIds: linked ? [facilityId] : []
             }],

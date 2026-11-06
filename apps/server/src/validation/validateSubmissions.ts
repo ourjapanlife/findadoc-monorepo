@@ -2,7 +2,7 @@ import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
 import { hasScriptTags, isInvalidName } from '../../utils/stringUtils.js'
 import { validateContactInput } from './validateFacility.js'
-import { validateNames, validateDegrees, validateSpecialties, validateInsurance, validateSpokenLanguages } from './validationHealthcareProfessional.js'
+import { validateNames, validateDegrees, validateSpecialties, validateSpokenLanguages } from './validationHealthcareProfessional.js'
 
 export function validateIdInput(id: string): Result<unknown> {
     const validationResults: Result<unknown> = {
@@ -460,25 +460,6 @@ export function validateUpdateSubmissionInput(
                 }
             }
 
-            if (hp.acceptedInsurance?.length) {
-                const insuranceValidation: Result<unknown> = {
-                    data: undefined,
-                    hasErrors: false,
-                    errors: []
-                }
-
-                validateInsurance(hp.acceptedInsurance, insuranceValidation)
-                if (insuranceValidation.hasErrors) {
-                    validationResults.hasErrors = true
-                    insuranceValidation.errors?.forEach(err => {
-                        validationResults.errors?.push({
-                            ...err,
-                            field: `healthcareProfessionals[${index}].acceptedInsurance`
-                        })
-                    })
-                }
-            }
-
             if (hp.spokenLanguages !== undefined) {
                 const languagesValidation: Result<unknown> = {
                     data: undefined,
@@ -523,17 +504,16 @@ export function validateUpdateSubmissionInput(
     return validationResults
 }
 
-const APPROVAL_PROFESSIONAL_FIELDS = ['degrees', 'specialties', 'acceptedInsurance'] as const
+const APPROVAL_PROFESSIONAL_FIELDS = ['degrees', 'specialties'] as const
 
 type ApprovalProfessionalFields = {
     id?: string | null
     degrees?: readonly unknown[] | null
     specialties?: readonly unknown[] | null
-    acceptedInsurance?: readonly unknown[] | null
 }
 
 /**
- * Degrees, specialties, and insurance can be saved empty while a submission is still a draft.
+ * Degrees and specialties can be saved empty while a submission is still a draft.
  * Approving a new professional requires each list. An existing professional already has them.
  */
 export function validateApprovalProfessionalFields(input: {

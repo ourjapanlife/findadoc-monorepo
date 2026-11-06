@@ -1,21 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { Degree, Insurance, Locale, Specialty } from '@findadoc/graphql'
+import { Degree, Locale, Specialty } from '@findadoc/graphql'
 import { hasRequiredHealthcareProfessionalSelections } from '~/utils/moderationFormValidationUtils'
 
 const completeSelections = {
-    acceptedInsurance: [Insurance.JapaneseHealthInsurance],
     degrees: [Degree.Dds],
     specialties: [Specialty.Cardiology],
     spokenLanguages: [Locale.EnUs]
 }
 
 describe('submission professional selections', () => {
-    it('is complete when approval has degrees, specialties, insurance, and languages', () => {
+    it('is complete when approval has degrees, specialties, and languages', () => {
         expect(hasRequiredHealthcareProfessionalSelections(completeSelections)).toBe(true)
     })
 
     it.each([
-        'acceptedInsurance',
         'degrees',
         'specialties',
         'spokenLanguages'

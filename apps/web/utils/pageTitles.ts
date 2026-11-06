@@ -27,6 +27,7 @@ export const PAGE_META_TITLE_ROUTES = {
     termsTitle: '/terms',
     privacyTitle: '/privacypolicy',
     npoTitle: '/npo',
+    insuranceTitle: '/insurance',
     searchTitle: '/search',
     contactTitle: '/contact'
 } as const satisfies Record<PageMetaTitleKey, string>
@@ -41,6 +42,7 @@ const PAGE_META_DESCRIPTION_KEYS = {
     aboutTitle: 'about.heroSubheading',
     submitTitle: 'home.contributeBody',
     npoTitle: 'npoPage.intro',
+    insuranceTitle: 'insurancePage.intro',
     searchTitle: 'home.heroLead',
     contactTitle: 'contactPage.intro'
 } as const satisfies Partial<Record<PageMetaTitleKey, string>>

@@ -360,30 +360,6 @@ export function validateSpecialties(
     }
 }
 
-export function validateInsurance(
-    insurance: gqlTypes.Insurance[] | undefined | null,
-    validationResults: Result<unknown>
-): void {
-    if (!insurance || !insurance.length) {
-        validationResults.hasErrors = true
-        validationResults.errors?.push({
-            field: 'insurance',
-            errorCode: ErrorCode.REQUIRED,
-            httpStatus: 400
-        })
-        return
-    }
-
-    if (insurance && insurance.length > 16) {
-        validationResults.hasErrors = true
-        validationResults.errors?.push({
-            field: 'insurance',
-            errorCode: ErrorCode.INVALID_LENGTH_TOO_LONG,
-            httpStatus: 400
-        })
-    }
-}
-
 export function validateSpokenLanguages(
     spokenLanguages: gqlTypes.Locale[] | undefined | null,
     validationResults: Result<unknown>
@@ -437,10 +413,6 @@ export function validateUpdateProfessionalInput(input: Partial<gqlTypes.UpdateHe
         validateSpecialties(input.specialties, validationResults)
     }
 
-    if (input.acceptedInsurance) {
-        validateInsurance(input.acceptedInsurance, validationResults)
-    }
-
     if (input.spokenLanguages) {
         validateSpokenLanguages(input.spokenLanguages, validationResults)
     }
@@ -469,7 +441,6 @@ export function validateCreateProfessionalInput(input: gqlTypes.CreateHealthcare
     validateNames(input.names, validationResults)
     validateDegrees(input.degrees, validationResults)
     validateSpecialties(input.specialties, validationResults)
-    validateInsurance(input.acceptedInsurance, validationResults)
     validateSpokenLanguages(input.spokenLanguages, validationResults)
 
     return validationResults

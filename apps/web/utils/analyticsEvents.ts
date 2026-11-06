@@ -244,6 +244,7 @@ const RESERVED_ROOTS = new Set([
     'login',
     'terms',
     'npo',
+    'insurance',
     'privacypolicy',
     'my-page',
     'u',
