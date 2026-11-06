@@ -53,6 +53,8 @@ function section(online: boolean, map = ''): FacilitySectionFields {
         mapLatitude: map,
         mapLongitude: map,
         online,
+        japaneseInsurance: '',
+        japaneseInsuranceSource: '',
         healthcareProfessionalIds: [],
         healthProfessionalsRelations: []
     }

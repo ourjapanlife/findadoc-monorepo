@@ -6,6 +6,7 @@
     "termsTitle": "Conditions d'utilisation",
     "privacyTitle": "Politique de confidentialité",
     "npoTitle": "Informations légales",
+    "insuranceTitle": "Payer ses soins au Japon",
     "searchTitle": "Rechercher des cliniques",
     "contactTitle": "Contact"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "Activités",
     "activitiesValue": "Créer, promouvoir et maintenir une plateforme d’information médicale multilingue, gratuite et de qualité, qui met en relation les habitants du Japon, japonais comme internationaux, avec les services médicaux dont ils ont besoin, dans leur langue ; et mener un programme de formation de programmeurs bénévoles.",
     "contactLabel": "Contact"
+  },
+  "insurancePage": {
+    "heading": "Payer ses soins au Japon",
+    "intro": "Comment fonctionne l'assurance maladie publique japonaise dans un cabinet, ce que signifie payer soi-même, et que faire avec une assurance étrangère ou de voyage.",
+    "disclaimer": "Find a Doc ne vérifie la couverture de personne et ne donne aucun conseil médical ni conseil en assurance. En cas de doute, demandez au cabinet, à votre assureur ou à la mairie.",
+    "schemesHeading": "Assurance maladie publique",
+    "schemesIntro": "Presque toutes les personnes qui vivent au Japon doivent adhérer à une assurance maladie publique. La principale exception concerne les bénéficiaires de l'aide sociale (生活保護) : leurs soins sont pris en charge par l'aide sociale. Une assurance vie privée ou une assurance étrangère ne remplace pas l'assurance publique.",
+    "schemeEmployee": "Assurance maladie des salariés (健康保険) : les salariés et les membres de leur famille à charge, via 協会けんぽ, une caisse d'entreprise ou une caisse mutuelle.",
+    "schemeNational": "Assurance maladie nationale (国民健康保険) : les résidents qui ne relèvent pas d'un régime d'employeur. Un résident étranger titulaire d'une carte de séjour et séjournant plus de trois mois relève généralement de ce groupe.",
+    "schemeElderly": "Soins médicaux pour les personnes de 75 ans et plus (後期高齢者医療制度) : à partir du 75e anniversaire.",
+    "shareHeading": "Ce que vous payez à l'accueil",
+    "shareBody": "Dans un cabinet qui accepte l'assurance publique, vous payez votre part à l'accueil et votre assureur règle le reste au cabinet. La part habituelle est de 20% avant l'âge scolaire, 30% de l'âge scolaire à 69 ans, 20% de 70 à 74 ans et 10% à partir de 75 ans. Les revenus peuvent augmenter la part des patients plus âgés. Une facture très élevée en un mois peut être plafonnée grâce à la prestation pour frais médicaux élevés (高額療養費).",
+    "bringHeading": "Ce qu'il faut apporter",
+    "bringBody": "Apportez votre carte My Number enregistrée comme carte d'assurance maladie, ou l'attestation d'éligibilité (資格確認書) envoyée par votre assureur. Les anciennes cartes d'assurance en papier ne sont plus valables depuis le 1er décembre 2025.",
+    "clinicsHeading": "Cabinets qui n'acceptent pas l'assurance publique",
+    "clinicsBody": "Un cabinet ne peut facturer l'assurance publique que s'il est désigné comme établissement médical conventionné (保険医療機関). Certains cabinets ne sont pas désignés et reçoivent tous les patients en paiement direct (自由診療). Il s'agit souvent de cliniques de médecine esthétique, de certains cabinets dentaires et de certaines cliniques internationales. La page d'un cabinet sur Find a Doc l'indique quand nous avons une source.",
+    "selfPayHeading": "Paiement à vos frais",
+    "selfPayBody": "Si vous n'avez pas d'assurance publique japonaise, par exemple en tant que visiteur ou avant votre inscription, vous réglez vous-même la totalité des frais au cabinet. Beaucoup de cabinets ordinaires vous recevront quand même. Un cabinet qui n'accepte pas l'assurance publique fixe ses propres tarifs.",
+    "mixedBody": "Si une consultation remboursable comprend un traitement que l'assurance ne couvre pas, toute la consultation peut passer en paiement à vos frais, à l'exception de quelques cas approuvés. Demandez au cabinet avant d'accepter un traitement supplémentaire.",
+    "overseasHeading": "Assurance étrangère et assurance de voyage",
+    "overseasBody": "La plupart des cabinets ne facturent pas un assureur étranger ou de voyage. Vous payez le cabinet, conservez le reçu (領収書) et le relevé détaillé (診療明細書), puis les envoyez à votre assureur pour demander un remboursement. Quelques hôpitaux facturent directement un assureur, mais seulement si celui-ci envoie une garantie de paiement avant la consultation.",
+    "sourcesHeading": "Sources officielles",
+    "sourceShare": "Part à payer à l'accueil (ministère de la Santé, du Travail et des Affaires sociales)",
+    "sourceNationalInsurance": "Qui adhère à l'assurance maladie nationale (ministère de la Santé, du Travail et des Affaires sociales)",
+    "sourceMynaCard": "Carte d'assurance My Number (ministère de la Santé, du Travail et des Affaires sociales)",
+    "sourceCertificate": "Attestation d'éligibilité (Agence du numérique)",
+    "sourceFacilitySearch": "Recherche d'établissements de santé (ministère de la Santé, du Travail et des Affaires sociales)"
   },
   "common": {
     "menu": "Menu",
@@ -447,7 +475,14 @@
     "fillFromMapsHint": "Remplit le nom, l’adresse et le repère vides à partir du lien Maps. Les champs déjà remplis restent inchangés.",
     "fillFromMapsDone": "{count} champs vides ont été remplis à partir du lien Maps.",
     "fillFromMapsNone": "Aucun champ vide ne restait à remplir à partir de ce lien.",
-    "fillFromMapsFailed": "Ce lien n’a pas pu être lu. Ouvrez-le dans Maps et copiez les informations."
+    "fillFromMapsFailed": "Ce lien n’a pas pu être lu. Ouvrez-le dans Maps et copiez les informations.",
+    "japaneseInsuranceLabel": "Assurance maladie publique japonaise",
+    "japaneseInsuranceUnknown": "Inconnu. Les lecteurs ne voient rien.",
+    "japaneseInsuranceAccepted": "Accepte l'assurance maladie publique japonaise.",
+    "japaneseInsuranceHint": "Laissez « Inconnu » tant que le site de la clinique, la liste du bureau régional de santé ou un appel ne l'a pas confirmé. Certaines cliniques sont uniquement privées : ne devinez pas.",
+    "japaneseInsuranceNotAccepted": "N'accepte pas l'assurance maladie publique japonaise. La consultation est à vos frais.",
+    "japaneseInsuranceSourceLabel": "Source",
+    "japaneseInsuranceSourcePlaceholder": "Un lien, ou une note comme : clinique appelée le 2 nov. 2026"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",
@@ -507,7 +542,6 @@
     "placeholderTextHealthcareProfessionalLastName": "p. ex. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "p. ex. Bronson",
     "selectDegrees": "Diplômes",
-    "selectInsurances": "Assurances acceptées",
     "selectLocales": "Langues parlées",
     "selectSpecialties": "Spécialités",
     "facilities": "Établissements associés",
@@ -517,12 +551,10 @@
     "noFacilitiesLinked": "Aucun établissement associé pour le moment. Recherchez ci-dessus pour en ajouter un.",
     "errorMessageHealthcareProfessionalId": "ID du professionnel de santé introuvable",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "Rechercher par assurance",
     "placeholderTextSpecialties": "Rechercher par spécialité",
     "placeholderTextDegrees": "Rechercher par diplôme",
     "placeholderTextLocales": "Rechercher par langue",
     "noSpecialtiesWereFound": "Aucune spécialité trouvée",
-    "noInsurancesWereFound": "Aucune assurance trouvée",
     "noDegreesWereFound": "Aucun diplôme trouvé",
     "noLocalesWereFound": "No language were found",
     "delete": "Supprimer définitivement",
@@ -715,16 +747,12 @@
     "languagesFallback": "langues indiquées sur le profil",
     "specialties": "Spécialités",
     "languages": "Langues parlées",
-    "insurance": "Assurances acceptées",
     "additionalInfo": "Pour les patients",
-    "facilities": "Cliniques",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "N’accepte pas d’assurance",
-      "INTERNATIONAL_HEALTH_INSURANCE": "Assurance maladie internationale",
-      "JAPANESE_HEALTH_INSURANCE": "Assurance maladie japonaise",
-      "TRAVEL_INSURANCE": "Assurance voyage",
-      "UNINSURED": "Sans assurance / à la charge du patient"
-    }
+    "facilities": "Cliniques"
+  },
+  "insuranceNote": {
+    "notAccepted": "Ce cabinet n'accepte pas l'assurance maladie publique japonaise. La consultation est à vos frais.",
+    "guideLink": "Comment payer ses soins au Japon"
   },
   "hubPage": {
     "prefectureHeading": "Soins à {prefecture}",

@@ -293,7 +293,6 @@ function createSubmissionDeepCopy(submissionData: Submission): Submission {
         healthcareProfessionals: submissionData.healthcareProfessionals?.map(hp => ({
             ...hp,
             names: hp.names.map(name => ({ ...name })),
-            acceptedInsurance: hp.acceptedInsurance ? [...hp.acceptedInsurance] : [],
             degrees: hp.degrees ? [...hp.degrees] : [],
             specialties: hp.specialties ? [...hp.specialties] : [],
             spokenLanguages: hp.spokenLanguages ? [...hp.spokenLanguages] : [],
@@ -399,11 +398,6 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
         ]
     )
 
-    if (submissionData?.healthcareProfessionals?.[0]?.acceptedInsurance) {
-        healthcareProfessionalSections.acceptedInsurance
-            = submissionData.healthcareProfessionals[0].acceptedInsurance
-    }
-
     if (submissionData?.healthcareProfessionals?.[0]?.additionalInfoForPatients) {
         healthcareProfessionalSections.additionalInfoForPatients
             = submissionData.healthcareProfessionals[0].additionalInfoForPatients
@@ -485,7 +479,6 @@ async function saveSubmissionDraft(
 
     const healthcareProfessionalUpdate = [
         {
-            acceptedInsurance: healthcareProfessionalsStore.healthcareProfessionalSectionFields.acceptedInsurance,
             additionalInfoForPatients: healthcareProfessionalsStore.healthcareProfessionalSectionFields.additionalInfoForPatients,
             degrees: healthcareProfessionalsStore.healthcareProfessionalSectionFields.degrees,
             specialties: healthcareProfessionalsStore.healthcareProfessionalSectionFields.specialties,

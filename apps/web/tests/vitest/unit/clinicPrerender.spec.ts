@@ -40,7 +40,6 @@ function professional(id: string, facilityIds: string[] = []): HealthcareProfess
         specialties: [],
         facilityIds,
         spokenLanguages: [],
-        acceptedInsurance: [],
         additionalInfoForPatients: '',
         createdDate: '2026-01-01T00:00:00.000Z',
         updatedDate: '2026-01-01T00:00:00.000Z'

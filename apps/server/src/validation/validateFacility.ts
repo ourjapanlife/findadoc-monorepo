@@ -146,6 +146,47 @@ export interface UpdateFacilityValidationOptions {
     legacyPhoneCheckedUnderLock?: boolean
 }
 
+const JAPANESE_INSURANCE_SOURCE_MAX = 500
+
+/**
+ * Japanese public insurance on a facility (#18). The source is an optional note:
+ * a link, or a call to the clinic. Unknown is null with no source.
+ */
+export function validateJapaneseInsurance(
+    input: { japaneseInsurance?: gqlTypes.JapaneseInsurance | null, japaneseInsuranceSource?: string | null },
+    validationResults: Result<unknown>
+): void {
+    const valueSent = input.japaneseInsurance !== undefined
+    const sourceSent = input.japaneseInsuranceSource !== undefined
+
+    if (!valueSent && !sourceSent) {
+        return
+    }
+
+    const source = input.japaneseInsuranceSource?.trim() ?? ''
+
+    if (!input.japaneseInsurance) {
+        if (source || !valueSent) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: 'japaneseInsurance',
+                errorCode: ErrorCode.REQUIRED,
+                httpStatus: 400
+            })
+        }
+        return
+    }
+
+    if (source.length > JAPANESE_INSURANCE_SOURCE_MAX) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: 'japaneseInsuranceSource',
+            errorCode: ErrorCode.INVALID_LENGTH_TOO_LONG,
+            httpStatus: 400
+        })
+    }
+}
+
 /**
  * Validates the input for updating a facility.
  */
@@ -209,6 +250,7 @@ export function validateUpdateFacilityInput(
     }
 
     validateSupportedLanguages(input.supportedLanguages, validationResults)
+    validateJapaneseInsurance(input, validationResults)
 
     return validationResults
 }
@@ -290,6 +332,7 @@ export function validateCreateFacilityInput(input: gqlTypes.CreateFacilityInput)
     }
 
     validateSupportedLanguages(input.supportedLanguages, validationResults)
+    validateJapaneseInsurance(input, validationResults)
 
     return validationResults
 }

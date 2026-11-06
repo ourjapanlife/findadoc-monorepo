@@ -85,6 +85,11 @@
                 <span class="mt-1 block text-primary-text-muted">{{ t('modFacilitySection.onlineHint') }}</span>
             </span>
         </label>
+        <ModJapaneseInsuranceField
+            v-if="moderationScreenStore.editFacilityScreenIsActive()"
+            v-model:choice="facilityStore.facilitySectionFields.japaneseInsurance"
+            v-model:source="facilityStore.facilitySectionFields.japaneseInsuranceSource"
+        />
         <ModAccordion
             v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"

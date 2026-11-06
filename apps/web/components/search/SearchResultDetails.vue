@@ -110,6 +110,7 @@
                     </dd>
                 </div>
             </dl>
+            <JapaneseInsuranceNote :value="facility.japaneseInsurance" />
         </header>
 
         <section class="flex flex-col gap-3">

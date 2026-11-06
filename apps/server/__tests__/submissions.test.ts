@@ -606,8 +606,7 @@ describe('submission status filters and counts', () => {
         const draftProfessional = {
             ...professional,
             degrees: [],
-            specialties: [],
-            acceptedInsurance: []
+            specialties: []
         }
 
         const updateResult = await request(gqlApiUrl).post('').send({
@@ -627,15 +626,13 @@ describe('submission status filters and counts', () => {
 
         expect(savedProfessional.degrees).toEqual([])
         expect(savedProfessional.specialties).toEqual([])
-        expect(savedProfessional.acceptedInsurance).toEqual([])
 
         const blockedApproval = await updateSubmissionForTest(createdSubmission.id, { isApproved: true })
         const approvalErrors = blockedApproval.body.errors[0].extensions.errors as Error[]
 
         expect(approvalErrors.map(error => error.field)).toEqual([
             'healthcareProfessionals[0].degrees',
-            'healthcareProfessionals[0].specialties',
-            'healthcareProfessionals[0].acceptedInsurance'
+            'healthcareProfessionals[0].specialties'
         ])
         expect(approvalErrors.every(error => error.errorCode === ErrorCode.REQUIRED)).toBe(true)
 
@@ -907,7 +904,6 @@ const updateSubmissionWithProfessionalListsMutation = `mutation test_updateSubmi
         healthcareProfessionals {
             degrees
             specialties
-            acceptedInsurance
         }
         isApproved
     }

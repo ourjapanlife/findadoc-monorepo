@@ -19,7 +19,7 @@ paths:
       summary: Search healthcare professionals
       description: >-
         Search for individual healthcare professionals in Japan by spoken
-        language, medical specialty, degree, or accepted insurance.
+        language, medical specialty, or degree.
       parameters:
         - name: limit
           in: query
@@ -57,15 +57,6 @@ paths:
         - name: degrees
           in: query
           description: Filter by degrees (e.g. "MD", "DO", "PhD").
-          style: form
-          explode: true
-          schema:
-            type: array
-            items:
-              type: string
-        - name: acceptedInsurance
-          in: query
-          description: Filter by accepted insurance (e.g. "JAPANESE_HEALTH_INSURANCE").
           style: form
           explode: true
           schema:
@@ -306,10 +297,6 @@ components:
           type: array
           items:
             type: string
-        acceptedInsurance:
-          type: array
-          items:
-            type: string
         facilityIds:
           type: array
           items:
@@ -379,3 +366,9 @@ components:
                 type: ['array', 'null']
                 items:
                   type: string
+        japaneseInsurance:
+          type: ['string', 'null']
+          enum: ['ACCEPTED', 'NOT_ACCEPTED', null]
+          description: >-
+            Whether the clinic takes Japanese public health insurance. Null is
+            unknown. NOT_ACCEPTED means the visit is self-pay.

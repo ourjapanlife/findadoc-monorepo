@@ -6,6 +6,7 @@
     "termsTitle": "Nutzungsbedingungen",
     "privacyTitle": "Datenschutzerklärung",
     "npoTitle": "NPO-Offenlegung",
+    "insuranceTitle": "Die Kosten der Behandlung in Japan",
     "searchTitle": "Kliniken suchen",
     "contactTitle": "Kontakt"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "Tätigkeiten",
     "activitiesValue": "Aufbau, Förderung und Betrieb einer kostenlosen, hochwertigen mehrsprachigen Gesundheitsinformationsplattform, die Menschen in Japan – Japaner wie internationale Einwohner – in ihrer Sprache mit den medizinischen Leistungen verbindet, die sie brauchen; sowie ein Förderprogramm für ehrenamtliche Programmierer.",
     "contactLabel": "Kontakt"
+  },
+  "insurancePage": {
+    "heading": "Die Kosten der Behandlung in Japan",
+    "intro": "Wie die japanische gesetzliche Krankenversicherung in der Praxis funktioniert, was Selbstzahlung bedeutet und was Sie mit einer ausländischen Versicherung oder Reiseversicherung tun können.",
+    "disclaimer": "Find a Doc prüft den Versicherungsschutz niemandes und gibt keine medizinische Beratung oder Versicherungsberatung. Wenn Sie unsicher sind, fragen Sie die Praxis, Ihre Versicherung oder Ihr Bürgeramt.",
+    "schemesHeading": "Gesetzliche Krankenversicherung",
+    "schemesIntro": "Fast alle, die in Japan leben, müssen einer öffentlichen Krankenversicherung beitreten. Die wichtigste Ausnahme sind Menschen, die Sozialhilfe (生活保護) beziehen: Ihre medizinische Versorgung wird über die Sozialhilfe bezahlt. Eine private Lebensversicherung oder ein ausländischer Tarif ersetzt die öffentliche Versicherung nicht.",
+    "schemeEmployee": "Krankenversicherung für Beschäftigte (健康保険): Arbeitnehmer und die von ihnen unterhaltenen Familienangehörigen, über 協会けんぽ, eine Betriebskrankenkasse oder eine Beihilfekasse auf Gegenseitigkeit.",
+    "schemeNational": "Nationale Krankenversicherung (国民健康保険): Einwohner, die nicht über ihren Arbeitgeber versichert sind. Ausländische Einwohner mit Aufenthaltskarte und einem Aufenthalt von mehr als drei Monaten gehören meist zu dieser Gruppe.",
+    "schemeElderly": "Medizinische Versorgung für Menschen ab 75 (後期高齢者医療制度): ab dem 75. Geburtstag.",
+    "shareHeading": "Was Sie am Schalter zahlen",
+    "shareBody": "In einer Praxis, die die gesetzliche Versicherung akzeptiert, zahlen Sie Ihren Anteil am Schalter, und Ihre Versicherung zahlt der Praxis den Rest. Der übliche Anteil beträgt 20% vor dem Schulalter, 30% vom Schulalter bis 69, 20% von 70 bis 74 und 10% ab 75. Bei älteren Patienten kann das Einkommen den Anteil erhöhen. Eine sehr hohe Rechnung in einem Monat kann durch die Leistung für hohe Behandlungskosten (高額療養費) begrenzt werden.",
+    "bringHeading": "Was Sie mitbringen",
+    "bringBody": "Bringen Sie Ihre My-Number-Karte mit, die als Krankenversicherungskarte registriert ist, oder die Anspruchsbescheinigung (資格確認書), die Ihre Versicherung Ihnen geschickt hat. Die alten Versicherungskarten aus Papier sind seit dem 1. Dezember 2025 nicht mehr gültig.",
+    "clinicsHeading": "Praxen, die keine gesetzliche Versicherung akzeptieren",
+    "clinicsBody": "Eine Praxis kann mit der gesetzlichen Versicherung nur abrechnen, wenn sie als Vertragseinrichtung (保険医療機関) zugelassen ist. Manche Praxen sind nicht zugelassen und behandeln alle Patienten als Selbstzahler (自由診療). Das sind oft Kliniken für Schönheitsmedizin, einige Zahnarztpraxen und einige internationale Kliniken. Eine Praxisseite auf Find a Doc weist darauf hin, wenn wir eine Quelle haben.",
+    "selfPayHeading": "Selbstzahlung",
+    "selfPayBody": "Wenn Sie keine japanische gesetzliche Versicherung haben, zum Beispiel als Besucher oder vor der Anmeldung, zahlen Sie der Praxis die gesamte Gebühr selbst. Viele normale Praxen behandeln Sie trotzdem. Eine Praxis, die keine gesetzliche Versicherung akzeptiert, legt ihre Preise selbst fest.",
+    "mixedBody": "Wenn ein versicherter Besuch eine Behandlung umfasst, die die Versicherung nicht übernimmt, kann der gesamte Besuch zur Selbstzahlung werden, abgesehen von einigen zugelassenen Ausnahmen. Fragen Sie die Praxis, bevor Sie einer zusätzlichen Behandlung zustimmen.",
+    "overseasHeading": "Ausländische Versicherung und Reiseversicherung",
+    "overseasBody": "Die meisten Praxen rechnen nicht mit einer ausländischen Versicherung oder Reiseversicherung ab. Sie bezahlen die Praxis, bewahren die Quittung (領収書) und die aufgeschlüsselte Abrechnung (診療明細書) auf und schicken sie zur Erstattung an Ihre Versicherung. Einige Krankenhäuser rechnen direkt mit einer Versicherung ab, aber nur, wenn diese vor dem Besuch eine Kostenübernahmeerklärung schickt.",
+    "sourcesHeading": "Offizielle Quellen",
+    "sourceShare": "Eigenanteil am Schalter (Ministerium für Gesundheit, Arbeit und Soziales)",
+    "sourceNationalInsurance": "Wer der Nationalen Krankenversicherung beitritt (Ministerium für Gesundheit, Arbeit und Soziales)",
+    "sourceMynaCard": "Krankenversicherungskarte mit My Number (Ministerium für Gesundheit, Arbeit und Soziales)",
+    "sourceCertificate": "Anspruchsbescheinigung (Digitalagentur)",
+    "sourceFacilitySearch": "Suche nach medizinischen Einrichtungen (Ministerium für Gesundheit, Arbeit und Soziales)"
   },
   "common": {
     "menu": "Menü",
@@ -344,7 +372,6 @@
     "placeholderTextHealthcareProfessionalFirstName": "z. B. John",
     "placeholderTextHealthcareProfessionalLastName": "z. B. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "z. B. Bronson",
-    "selectInsurances": "Akzeptierte Versicherung",
     "selectSpecialties": "Fachgebiete",
     "selectDegrees": "Abschlüsse",
     "selectLocales": "Gesprochene Sprachen",
@@ -355,12 +382,10 @@
     "noFacilitiesLinked": "Noch keine Einrichtungen zugeordnet. Oben suchen, um eine hinzuzufügen.",
     "errorMessageHealthcareProfessionalId": "ID der Gesundheitsfachkraft wurde nicht gefunden",
     "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
-    "placeholderTextAcceptedInsurances": "Nach Versicherung suchen",
     "placeholderTextSpecialties": "Nach Fachgebiet suchen",
     "placeholderTextDegrees": "Nach Abschluss suchen",
     "placeholderTextLocales": "Nach Sprache suchen",
     "noSpecialtiesWereFound": "Keine Fachgebiete gefunden",
-    "noInsurancesWereFound": "Keine Versicherung gefunden",
     "noDegreesWereFound": "Keine Abschlüsse gefunden",
     "noLocalesWereFound": "Keine Sprachen gefunden",
     "delete": "Endgültig löschen",
@@ -501,7 +526,14 @@
     "fillFromMapsHint": "Füllt leere Namens-, Adress- und Pin-Felder aus dem Maps-Link. Felder mit einem Wert bleiben unverändert.",
     "fillFromMapsDone": "{count} leere Felder wurden aus dem Maps-Link gefüllt.",
     "fillFromMapsNone": "Es waren keine leeren Felder mehr aus diesem Link zu füllen.",
-    "fillFromMapsFailed": "Dieser Link konnte nicht gelesen werden. Öffnen Sie ihn in Maps und kopieren Sie die Angaben."
+    "fillFromMapsFailed": "Dieser Link konnte nicht gelesen werden. Öffnen Sie ihn in Maps und kopieren Sie die Angaben.",
+    "japaneseInsuranceLabel": "Japanische gesetzliche Krankenversicherung",
+    "japaneseInsuranceUnknown": "Unbekannt. Leser sehen nichts.",
+    "japaneseInsuranceAccepted": "Akzeptiert die japanische gesetzliche Krankenversicherung.",
+    "japaneseInsuranceHint": "Lassen Sie dies auf „Unbekannt“, bis die Website der Klinik, die Liste des regionalen Gesundheitsamts oder ein Anruf es klärt. Es gibt reine Privatkliniken, also nicht raten.",
+    "japaneseInsuranceNotAccepted": "Akzeptiert die japanische gesetzliche Krankenversicherung nicht. Der Besuch ist Selbstzahlung.",
+    "japaneseInsuranceSourceLabel": "Quelle",
+    "japaneseInsuranceSourcePlaceholder": "Ein Link oder eine Notiz, z. B.: Klinik am 2. Nov. 2026 angerufen"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Aktualisieren und beenden",
@@ -715,16 +747,12 @@
     "languagesFallback": "im Profil genannte Sprachen",
     "specialties": "Fachgebiete",
     "languages": "Gesprochene Sprachen",
-    "insurance": "Akzeptierte Versicherung",
     "additionalInfo": "Für Patientinnen und Patienten",
-    "facilities": "Kliniken",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "Keine Versicherung",
-      "INTERNATIONAL_HEALTH_INSURANCE": "Internationale Krankenversicherung",
-      "JAPANESE_HEALTH_INSURANCE": "Japanische Krankenversicherung",
-      "TRAVEL_INSURANCE": "Reiseversicherung",
-      "UNINSURED": "Nicht versichert / Selbstzahler"
-    }
+    "facilities": "Kliniken"
+  },
+  "insuranceNote": {
+    "notAccepted": "Diese Praxis akzeptiert die japanische gesetzliche Krankenversicherung nicht. Der Besuch ist Selbstzahlung.",
+    "guideLink": "So funktioniert die Bezahlung der Behandlung in Japan"
   },
   "hubPage": {
     "prefectureHeading": "Gesundheitsversorgung in {prefecture}",
