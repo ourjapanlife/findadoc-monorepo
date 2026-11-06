@@ -9,7 +9,7 @@
         :total-items="totalItems"
         :page-size="pageSize"
         :sort="sort"
-        :selectable="submissionsModerationListViewChosen"
+        :selectable="bulkSelectable"
         :selected-ids="selectedIds"
         :selected-names="selectedNames"
         :page-selection="pageSelection"
@@ -30,14 +30,24 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import type { BookingSubmissionListItem, HealthcareProfessional, Submission } from '@findadoc/graphql'
-import { SelectedModerationListView, useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
+import {
+    SelectedModerationListView,
+    SelectedSubmissionListViewTab,
+    useModerationSubmissionsStore
+} from '~/stores/moderationSubmissionsStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useBookingSubmissionsStore } from '~/stores/bookingSubmissionsStore'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { formatToReadableDate } from '~/utils/dateUtils'
-import { isNewSubmission } from '~/utils/moderationUtils'
-import { pageSelectionState, type ModerationTableColumn, type ModerationTableRow } from '~/utils/moderationTable'
+import {
+    pageSelectionState,
+    type ModerationTableBadge,
+    type ModerationTableColumn,
+    type ModerationTableRow
+} from '~/utils/moderationTable'
+import { isCorrection, MODERATION_PILL_LABEL_KEYS, moderationPills } from '~/utils/moderationSubmissionStatus'
+import { CORRECTION_REASON_OPTIONS } from '~/utils/facilityCorrection'
 import { runBulkSubmissionAction } from '~/utils/moderationTable'
 
 const { t } = useI18n()
@@ -62,6 +72,10 @@ const submissionsModerationListViewChosen = computed(() => modSubmissionsStore.s
 
 const bookingsModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
   === SelectedModerationListView.Bookings)
+
+// A correction is approved from its review screen, after the moderator has seen before and after (#22).
+const bulkSelectable = computed(() => submissionsModerationListViewChosen.value
+  && modSubmissionsStore.selectedModerationListViewTabChosen !== SelectedSubmissionListViewTab.UserFeedback)
 
 const columnStorageKey = computed(() => {
     if (facilitiesModerationListViewChosen.value) {
@@ -171,8 +185,8 @@ const rows = computed((): ModerationTableRow[] => {
         linkColumn: 'name',
         badges: submissionBadges(submission),
         cells: {
-            name: submission.healthcareProfessionalName,
-            facility: submission.facility?.nameEn || submission.facility?.nameJa || '',
+            name: submissionTitle(submission),
+            facility: facilityCell(submission),
             status: '',
             created: formatToReadableDate(submission.createdDate),
             updated: formatToReadableDate(submission.updatedDate)
@@ -317,21 +331,29 @@ function bookingStatusLabel(booking: BookingSubmissionListItem): string {
         : t('bookingDashboard.noAppointment')
 }
 
-function submissionBadges(submission: Submission) {
-    const badges = []
-    if (isNewSubmission(submission)) {
-        badges.push({ label: t('modListContainerItem.newSubmission'), className: 'bg-success/80' })
+function submissionBadges(submission: Submission): ModerationTableBadge[] {
+    return moderationPills(submission).map(pill => ({
+        label: t(MODERATION_PILL_LABEL_KEYS[pill]),
+        className: '',
+        pill
+    }))
+}
+
+/** A listing names the professional. A correction names what the visitor says is wrong (#22). */
+function submissionTitle(submission: Submission): string {
+    if (!isCorrection(submission)) {
+        return submission.healthcareProfessionalName
     }
-    if (submission.isUnderReview) {
-        badges.push({ label: t('modListContainerItem.underReviewSubmission'), className: 'bg-info/80' })
-    }
-    if (submission.isApproved) {
-        badges.push({ label: t('modListContainerItem.approvedSubmission'), className: 'bg-warning/80' })
-    }
-    if (submission.isRejected) {
-        badges.push({ label: t('modListContainerItem.rejectedSubmission'), className: 'bg-error/80' })
-    }
-    return badges
+    const reasons = submission.correction?.reasons ?? []
+    const labels = CORRECTION_REASON_OPTIONS
+        .filter(option => reasons.includes(option.reason))
+        .map(option => t(option.labelKey))
+    return labels.join(', ') || t('modListContainerItem.feedbackSubmission')
+}
+
+function facilityCell(submission: Submission): string {
+    const facility = modSubmissionsStore.submissionFacilityName(submission)
+    return facility?.nameEn || facility?.nameJa || ''
 }
 
 function onOffset(nextOffset: number) {
