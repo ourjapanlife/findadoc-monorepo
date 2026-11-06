@@ -12,7 +12,7 @@ import {
 } from '../src/validation/validateFacility.js'
 
 const phoneOnlyContact = {
-    phone: '03-0000-0000',
+    phone: '+81300000000',
     email: '',
     website: '',
     googleMapsUrl: 'https://maps.google.com/?q=tokyo',
@@ -44,7 +44,7 @@ describe('online facility updates', () => {
         expect(patch.google_place_id).toBeNull()
         expect(patch.verification_status).toBe('UNVERIFIED_LOCATION')
         expect(patch.contact).toEqual({
-            phone: '03-0000-0000',
+            phone: '+81300000000',
             email: '',
             website: '',
             googleMapsUrl: '',
@@ -64,7 +64,7 @@ describe('online facility updates', () => {
             phoneOnlyContact
         )
         expect(patch.contact).toEqual({
-            phone: '03-1111-2222',
+            phone: '+81311112222',
             email: 'desk@example.com',
             website: 'https://example.com',
             googleMapsUrl: 'https://maps.google.com/?q=tokyo',
@@ -72,14 +72,14 @@ describe('online facility updates', () => {
         })
         expect(contactUpdateForStorage(
             { phone: '03-1111-2222' },
-            { phone: '03-0000-0000', googleMapsUrl: '', address: null },
+            { phone: '+81300000000', googleMapsUrl: '', address: null },
             { clearLocation: false }
         ).address).toBeNull()
     })
 
     it('stores a null address when online create omits it', () => {
-        expect(contactForStorage({ phone: '03-0000-0000' }, { clearLocation: true })).toEqual({
-            phone: '03-0000-0000',
+        expect(contactForStorage({ phone: '+81300000000' }, { clearLocation: true })).toEqual({
+            phone: '+81300000000',
             email: '',
             website: '',
             googleMapsUrl: '',
@@ -95,13 +95,13 @@ describe('submission facility_partial storage', () => {
             nameEn: 'Online clinic',
             nameJa: 'オンラインクリニック',
             online: true,
-            contact: { phone: '03-0000-0000' }
+            contact: { phone: '+81300000000' }
         })).toEqual({
             nameEn: 'Online clinic',
             nameJa: 'オンラインクリニック',
             online: true,
             contact: {
-                phone: '03-0000-0000',
+                phone: '+81300000000',
                 email: '',
                 website: '',
                 googleMapsUrl: '',
@@ -109,10 +109,10 @@ describe('submission facility_partial storage', () => {
             }
         })
         expect(contactForStorage(
-            { phone: '03-0000-0000' },
+            { phone: '+81300000000' },
             { clearLocation: false }
         )).toEqual({
-            phone: '03-0000-0000',
+            phone: '+81300000000',
             email: '',
             website: '',
             googleMapsUrl: '',
@@ -132,7 +132,7 @@ describe('submission facility_partial storage', () => {
             nameEn: 'Neighborhood clinic',
             nameJa: '近所のクリニック',
             contact: {
-                phone: '03-0000-0000',
+                phone: '+81300000000',
                 googleMapsUrl: 'https://maps.google.com/?q=tokyo',
                 address: phoneOnlyContact.address
             },
@@ -154,7 +154,7 @@ describe('map pin requirements', () => {
             nameEn: 'Neighborhood clinic',
             nameJa: '近所のクリニック',
             contact: {
-                phone: '03-0000-0000',
+                phone: '+81300000000',
                 address: phoneOnlyContact.address
             },
             mapLatitude: 35.68,
@@ -176,7 +176,7 @@ describe('map pin requirements', () => {
             nameEn: 'Online clinic',
             nameJa: 'オンラインクリニック',
             online: true,
-            contact: { phone: '03-0000-0000' }
+            contact: { phone: '+81300000000' }
         })
         expect(onlineWithoutMaps.hasErrors).toBe(false)
     })

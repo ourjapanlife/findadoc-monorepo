@@ -27,10 +27,6 @@ export function isValidEmail(email: string) {
     return /\S+@\S+\.\S+/.test(email)
 }
 
-export function isValidPhoneNumber(phoneNumber: string) {
-    return /^[+]?[0-9]{0,3}[\s./]?[(]?[0-9]{1,4}[)]?[-\s./0-9x]{8,18}$/g.test(phoneNumber)
-}
-
 export function isValidWebsite(website: string) {
     return /^((https?:\/\/)?([a-z0-9-]+\.)+[a-z0-9-]{2,}(\/[a-z0-9\-._~:/?#[\]@!$&'()*+,;=]*)?)?$/.test(website)
 }

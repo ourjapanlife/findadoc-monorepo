@@ -29,7 +29,7 @@
 
             <div class="mt-1 flex flex-wrap gap-2">
                 <a
-                    v-if="phone"
+                    v-if="phoneHref"
                     :href="`tel:${phoneHref}`"
                     data-testid="search-details-call"
                     class="btn btn-primary btn-sm"
@@ -255,7 +255,7 @@ const addressLine2 = computed(() => {
 const mapsUrl = computed(() => facilityMapsUrl(props.facility, isJapanese.value))
 const website = computed(() => facilityWebsiteUrl(props.facility))
 const websiteLabel = computed(() => facilityWebsiteLabel(props.facility))
-const phone = computed(() => facilityPhone(props.facility))
+const phone = computed(() => facilityPhone(props.facility, isJapanese.value))
 const phoneHref = computed(() => facilityPhoneHref(props.facility))
 const email = computed(() => facilityEmail(props.facility))
 

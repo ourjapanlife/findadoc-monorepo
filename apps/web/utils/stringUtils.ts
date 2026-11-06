@@ -1,4 +1,5 @@
 export {
+    formatJapanPhone,
     convertStringToSentenceCase,
     convertStringToTitleCase,
     hasJapaneseCharacters,
@@ -9,8 +10,11 @@ export {
     isFloat,
     isInvalidName,
     isValidEmail,
-    isValidPhoneNumber,
+    isValidJapanPhone,
     isValidPostalCode,
     isValidUrl,
-    isValidWebsite
+    isValidWebsite,
+    PHONE_DISPLAY,
+    toJapanE164,
+    type PhoneDisplay
 } from '@findadoc/utils'

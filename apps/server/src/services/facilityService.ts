@@ -17,6 +17,7 @@ import { prefectureTranslations, resolvePrefectureKey } from '../../utils/japane
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
 import { databaseOrderColumn, FACILITY_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { isCityRecordId, resolveFacilityPublication, verificationStatusForUpdate } from './facilityPublication.js'
+import { phoneForStorage } from '../validation/validatePhone.js'
 import { cityExists, findCityBySlug } from './cityService.js'
 import { FacilitySource } from '@findadoc/graphql'
 import { matchingFacilityId } from '../places/facilityMapsMatch.js'
@@ -91,7 +92,7 @@ export function contactForStorage(
 ): gqlTypes.ContactInput {
     if (options.clearLocation) {
         return {
-            phone: contact.phone,
+            phone: phoneForStorage(contact.phone),
             email: contact.email ?? '',
             website: contact.website ?? '',
             googleMapsUrl: '',
@@ -99,7 +100,7 @@ export function contactForStorage(
         }
     }
     return {
-        phone: contact.phone,
+        phone: phoneForStorage(contact.phone),
         email: contact.email ?? '',
         website: contact.website ?? '',
         googleMapsUrl: contact.googleMapsUrl ?? '',

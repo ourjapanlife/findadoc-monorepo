@@ -1,6 +1,7 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
-import { hasSpecialCharacters, isValidEmail, isValidPhoneNumber, isValidWebsite } from '../../utils/stringUtils.js'
+import { hasSpecialCharacters, isValidEmail, isValidWebsite } from '../../utils/stringUtils.js'
+import { isStorablePhone } from './validatePhone.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 import { isPublishedLocale } from '../languages/publishedLocales.js'
@@ -342,7 +343,7 @@ export function validateContactInput(contactInput: gqlTypes.ContactInput | gqlTy
         })
     }
 
-    if (contactInput.phone && !isValidPhoneNumber(contactInput.phone)) {
+    if (contactInput.phone && !isStorablePhone(contactInput.phone)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'phone',

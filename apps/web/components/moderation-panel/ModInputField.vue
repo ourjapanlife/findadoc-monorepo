@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref, watch, nextTick } from 'vue'
+import { ref, type PropType, type Ref, watch, nextTick } from 'vue'
 import { useI18n } from '#imports'
 import { useModerationFormEditing } from '~/composables/useModerationFormMode'
 
@@ -52,7 +52,9 @@ const props = defineProps({
     placeholder: String,
     required: Boolean,
     invalidInputErrorMessage: String,
-    inputValidationCheck: Function
+    inputValidationCheck: Function,
+    /** Rewrites the value on blur, such as a phone into the form the API stores. */
+    normalizeOnBlur: Function as PropType<(value: string) => string>
 })
 
 const labelsToOnlyValidateOnBlur = [
@@ -61,6 +63,9 @@ const labelsToOnlyValidateOnBlur = [
     t('modSubmissionForm.labelHealthcareProfessionalMiddleName')]
 
 const initialValidationCheck = async () => {
+    if (props.normalizeOnBlur && isEditing.value && typeof model.value === 'string') {
+        model.value = props.normalizeOnBlur(model.value)
+    }
     if (!labelsToOnlyValidateOnBlur.includes(props.label)) {
         validationCheckedPreviously.value = true
     }

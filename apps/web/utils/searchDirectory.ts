@@ -1,4 +1,5 @@
 import { Locale, Specialty, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
+import { formatJapanPhone, PHONE_DISPLAY, toJapanE164 } from '@findadoc/utils'
 
 /**
  * Client-side search over the whole directory.
@@ -326,28 +327,37 @@ export function facilityWebsiteLabel(facility: Facility): string {
     return url.replace(/^https?:\/\//i, '').replace(/\/$/, '')
 }
 
-/** The phone number as it should be shown, or an empty string. */
-export function facilityPhone(facility: Facility): string {
+/**
+ * The phone number as people read it, or an empty string.
+ *
+ * Phones are stored in E.164. Japanese pages show the national form a local caller dials
+ * (`03-1234-5678`); every other locale shows `+81 3-1234-5678`, because visitors on an overseas
+ * SIM cannot dial a domestic number. Hyphen placement comes from libphonenumber metadata.
+ * A legacy row that does not parse is shown as stored until the backfill list is fixed.
+ */
+export function facilityPhone(facility: Facility, japanese = false): string {
     const raw = (facility.contact?.phone ?? '').trim()
+    if (isPlaceholder(raw)) return ''
+
+    const display = japanese ? PHONE_DISPLAY.NATIONAL : PHONE_DISPLAY.INTERNATIONAL
+    const formatted = formatJapanPhone(raw, display)
+    if (formatted !== null) return formatted
+
     // Needs enough digits to be a real number; Japanese numbers are 10 or 11.
-    return !isPlaceholder(raw) && (raw.match(/\d/g) ?? []).length >= 9 ? raw : ''
+    return (raw.match(/\d/g) ?? []).length >= 9 ? raw : ''
 }
 
 /**
- * The same number in a form `tel:` can actually dial.
+ * The E.164 number for a `tel:` link (`+81312345678`), or an empty string.
  *
- * Display and dial have to differ: one row is stored as "+81 045-641-6961", which keeps the
- * domestic trunk `0` after the country code. That is never valid internationally, so the raw
- * value produced a link that failed to connect.
+ * Always international so it connects from any SIM. A stored value that does not parse as a
+ * Japanese number gets no link rather than one that may not connect.
  */
 export function facilityPhoneHref(facility: Facility): string {
-    const display = facilityPhone(facility)
-    if (!display) return ''
+    const raw = (facility.contact?.phone ?? '').trim()
+    if (isPlaceholder(raw)) return ''
 
-    const compact = display.replace(/[^\d+]/g, '')
-
-    // +81 followed by a trunk 0: drop the 0, which is only used when dialling domestically.
-    return compact.startsWith('+810') ? `+81${compact.slice(4)}` : compact
+    return toJapanE164(raw) ?? ''
 }
 
 /** A contactable email address, or an empty string. */

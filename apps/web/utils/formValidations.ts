@@ -3,10 +3,11 @@ import { validateGoogleMapsUrlInput } from '@findadoc/utils'
 import { hasJapaneseCharacters,
     hasOnlyValidJapaneseAndLatinCharacters,
     isValidEmail,
-    isValidPhoneNumber,
+    isValidJapanPhone,
     isValidWebsite,
     isFloat,
-    isValidPostalCode } from './stringUtils'
+    isValidPostalCode,
+    toJapanE164 } from './stringUtils'
 
 export { validateGoogleMapsUrlInput }
 
@@ -42,18 +43,17 @@ export function validateNameJa(nameJa: string): boolean {
     return true
 }
 
+/** A Japanese phone number in any spacing or hyphenation. The API applies the same rule. */
 export function validatePhoneNumber(phoneNumber: string): boolean {
-    if (phoneNumber.length < 1) {
-        return false
-    }
+    return isValidJapanPhone(phoneNumber)
+}
 
-    const isPhoneNumberValid: boolean = isValidPhoneNumber(phoneNumber)
-
-    if (!isPhoneNumberValid) {
-        return false
-    }
-
-    return true
+/**
+ * The E.164 form the API will store (`+81312345678`), shown in the field once it parses so the
+ * moderator sees what is saved. A value that does not parse is left as typed for them to fix.
+ */
+export function normalizePhoneInput(phoneNumber: string): string {
+    return toJapanE164(phoneNumber) ?? phoneNumber
 }
 
 export function validateEmail(email: string): boolean {
