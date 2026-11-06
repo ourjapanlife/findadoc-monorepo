@@ -1,4 +1,5 @@
 import { OrderDirection, type OrderBy } from '@findadoc/graphql'
+import type { ModerationPill } from './moderationSubmissionStatus'
 
 export interface ListOrder {
     field: string
@@ -8,6 +9,8 @@ export interface ListOrder {
 export interface ModerationTableBadge {
     label: string
     className: string
+    /** A submission status shown as ModStatusPill: an icon and a word, not color alone (#22). */
+    pill?: ModerationPill
 }
 
 export interface ModerationTableColumn {
