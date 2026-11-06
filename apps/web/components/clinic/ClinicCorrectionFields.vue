@@ -6,7 +6,11 @@
             class="m-0 flex min-w-0 flex-col gap-3 rounded-lg border border-accent-bg p-4"
         >
             <legend class="px-1 text-sm font-semibold text-primary-text">
-                <span aria-hidden="true">📍</span> {{ t('clinicCorrection.addressLegend') }}
+                <ClinicCorrectionReasonIcon
+                    :reason="FacilityCorrectionReason.WrongCity"
+                    class="inline-block align-text-bottom"
+                />
+                {{ t('clinicCorrection.addressLegend') }}
             </legend>
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
@@ -108,7 +112,11 @@
             class="m-0 min-w-0 rounded-lg border border-accent-bg p-4"
         >
             <legend class="px-1 text-sm font-semibold text-primary-text">
-                <span aria-hidden="true">🗣️</span> {{ t('clinicCorrection.languagesLegend') }}
+                <ClinicCorrectionReasonIcon
+                    :reason="FacilityCorrectionReason.WrongLanguages"
+                    class="inline-block align-text-bottom"
+                />
+                {{ t('clinicCorrection.languagesLegend') }}
             </legend>
             <p
                 id="clinic-correction-languages-hint"
@@ -141,7 +149,11 @@
             class="m-0 min-w-0 rounded-lg border border-accent-bg p-4"
         >
             <legend class="px-1 text-sm font-semibold text-primary-text">
-                <span aria-hidden="true">💳</span> {{ t('clinicCorrection.paymentLegend') }}
+                <ClinicCorrectionReasonIcon
+                    :reason="FacilityCorrectionReason.WrongPayment"
+                    class="inline-block align-text-bottom"
+                />
+                {{ t('clinicCorrection.paymentLegend') }}
             </legend>
             <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <label
@@ -168,7 +180,11 @@
             class="m-0 flex min-w-0 flex-col gap-3 rounded-lg border border-accent-bg p-4"
         >
             <legend class="px-1 text-sm font-semibold text-primary-text">
-                <span aria-hidden="true">☎️</span> {{ t('clinicCorrection.contactLegend') }}
+                <ClinicCorrectionReasonIcon
+                    :reason="FacilityCorrectionReason.WrongContact"
+                    class="inline-block align-text-bottom"
+                />
+                {{ t('clinicCorrection.contactLegend') }}
             </legend>
             <div>
                 <label
@@ -237,7 +253,11 @@
                 for="clinic-correction-duplicate"
                 class="field-label"
             >
-                <span aria-hidden="true">👥</span> {{ t('clinicCorrection.duplicateLabel') }}
+                <ClinicCorrectionReasonIcon
+                    :reason="FacilityCorrectionReason.Duplicate"
+                    class="inline-block align-text-bottom"
+                />
+                {{ t('clinicCorrection.duplicateLabel') }}
                 <span class="font-normal text-primary-text-muted">({{ t('clinicCorrection.optional') }})</span>
             </label>
             <input
@@ -276,7 +296,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { Locale, PaymentType, PhysicalAddressInput } from '@findadoc/graphql'
+import { FacilityCorrectionReason, type Locale, type PaymentType, type PhysicalAddressInput } from '@findadoc/graphql'
 import { localeDisplayOptions } from '~/stores/localeStore'
 import { listPrefectureJapanEn, listPrefectureJapanJa } from '~/stores/locationsStore'
 import { isJapaneseLocale } from '~/utils/activeLocale'
