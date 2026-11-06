@@ -1,12 +1,22 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { faker } from '@faker-js/faker'
 import { generateRandomCreateHealthcareProfessionalInputArray, generateSpokenLanguages } from './fakeHealthcareProfessionals.js'
-import { generateRandomCreateFacilityInput } from './fakeFacilities.js'
+import { fakeGooglePlaceId, generateRandomCreateFacilityInput } from './fakeFacilities.js'
 import { removeDuplicates } from '../../utils/arrayUtils.js'
+
+/** A Maps link to one place, the shape the public form saves. Approval reads the place id from it (#228). */
+export function fakeGoogleMapsPlaceUrl(): string {
+    const params = new URLSearchParams([
+        ['api', '1'],
+        ['query', faker.company.name()],
+        ['query_place_id', fakeGooglePlaceId()]
+    ])
+    return `https://www.google.com/maps/search/?${params.toString()}`
+}
 
 export function generateRandomCreateSubmissionInput(): gqlTypes.CreateSubmissionInput {
     return {
-        googleMapsUrl: faker.internet.url(),
+        googleMapsUrl: fakeGoogleMapsPlaceUrl(),
         healthcareProfessionalName: faker.person.fullName(),
         spokenLanguages: removeDuplicates(generateSpokenLanguages({ count: 2 }))
     }
@@ -47,7 +57,7 @@ export function generateRandomUpdateSubmissionInput(
     }))
 
     return {
-        googleMapsUrl: faker.internet.url(),
+        googleMapsUrl: fakeGoogleMapsPlaceUrl(),
         healthcareProfessionalName: faker.person.fullName(),
         spokenLanguages: removeDuplicates(generateSpokenLanguages({ count: 2 })),
         facility: generateRandomCreateFacilityInput(),

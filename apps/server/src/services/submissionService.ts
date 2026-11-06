@@ -19,6 +19,7 @@ import { submissionFromRow } from '../services/mappersEntityService.js'
 import { asJsonb } from '../../utils/dbUtils.js'
 import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { canonicalMapsFields } from '../places/mapsLink.js'
+import { googlePlaceIdOrNull } from '../validation/validateFacility.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import { databaseOrderColumn, SUBMISSION_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { contactForStorage, facilityPartialForStorage } from './facilityService.js'
@@ -818,6 +819,20 @@ export const approveSubmission = async (
                 // CRITICAL NESTED TRANSACTION
                 // I'm tryin inline inside transaction
                 const isOnline = facilityInput.online === true
+                // The Maps link decides when it names a place; a place id saved on the
+                // submission's facility is the fallback.
+                const googlePlaceId = isOnline
+                    ? null
+                    : ((useResolvedMaps && resolvedMaps ? resolvedMaps.placeId : null)
+                        ?? googlePlaceIdOrNull(facilityInput.googlePlaceId))
+                // A clinic with an address needs its Google place before it is published (#228).
+                if (!isOnline && !googlePlaceId) {
+                    throw new SubmissionApprovalValidationError([{
+                        field: 'googlePlaceId',
+                        errorCode: ErrorCode.PLACE_ID_REQUIRED,
+                        httpStatus: 400
+                    }])
+                }
                 const storedContact = contactForStorage(
                     facilityInput.contact ?? createBlankContact(),
                     { clearLocation: isOnline }
@@ -834,9 +849,7 @@ export const approveSubmission = async (
                         updated_date: new Date().toISOString(),
                         payment_options: JSON.stringify(facilityInput.paymentOptions ?? []),
                         city_id: null,
-                        google_place_id: isOnline
-                            ? null
-                            : (useResolvedMaps && resolvedMaps ? resolvedMaps.placeId : null),
+                        google_place_id: googlePlaceId,
                         source: null,
                         verification_status: 'UNVERIFIED_LOCATION',
                         supported_languages: JSON.stringify(

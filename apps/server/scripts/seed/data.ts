@@ -189,7 +189,8 @@ function buildSeed(): SeedFile {
             firestore_id: null,
             payment_options: paymentSets[index % paymentSets.length]!,
             city_id: { prefectureEn: city.prefectureEn, nameEn: city.nameEn },
-            google_place_id: null,
+            // Fake, but Places-shaped: a clinic with an address needs one (#228).
+            google_place_id: `ChIJFindadocSeed${String(index).padStart(6, '0')}`,
             source: FacilitySource.Manual,
             verification_status: FacilityVerificationStatus.Confirmed,
             supported_languages: index % 3 === 0 ? [] : [Locale.EnUs, Locale.JaJp]

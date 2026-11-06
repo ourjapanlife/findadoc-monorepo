@@ -483,6 +483,7 @@
     "invalidWebsite": "请输入有效的网站地址。",
     "invalidInformation": "部分信息无效。请检查表单后再试。",
     "submissionCannotBeApproved": "在必填的医疗机构和医疗人员信息填写完整之前，无法批准此申请。",
+    "placeIdRequired": "这家诊所需要对应的 Google 地点。请粘贴诊所自己的 Google 地图页面链接；如果没有街道地址，请勾选“在线医疗机构”。",
     "submissionAlreadyApproved": "此申请已经批准。",
     "clinicRequired": "请为此医疗人员选择医疗机构。",
     "japaneseInEnglishField": "英文栏中包含日文字符。",

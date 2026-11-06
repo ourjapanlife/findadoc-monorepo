@@ -121,6 +121,7 @@
     "invalidWebsite": "Enter a valid website.",
     "invalidInformation": "Some of this information is not valid. Check the form and try again.",
     "submissionCannotBeApproved": "This submission cannot be approved until the required clinic and professional details are complete.",
+    "placeIdRequired": "This clinic needs its Google place. Paste the link to the clinic's own Google Maps page, or check Online facility if it has no street address.",
     "submissionAlreadyApproved": "This submission has already been approved.",
     "clinicRequired": "Choose a clinic for this healthcare professional.",
     "japaneseInEnglishField": "An English field contains Japanese characters.",

@@ -25,6 +25,10 @@ describe('sentenceKeyForServerCode', () => {
     it('does not tell a signed-in user without the scope to sign in', () => {
         expect(sentenceKeyForServerCode(ErrorCode.UNAUTHORIZED)).toBe('serverErrorMessages.notAllowed')
     })
+
+    it('tells a moderator that a clinic with an address needs its Google place (#228)', () => {
+        expect(sentenceKeyForServerCode(ErrorCode.PLACE_ID_REQUIRED)).toBe('serverErrorMessages.placeIdRequired')
+    })
 })
 
 describe('translatedFormError', () => {

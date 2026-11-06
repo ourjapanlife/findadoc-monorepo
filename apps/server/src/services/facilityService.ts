@@ -37,6 +37,23 @@ function invalidCityId(): Result<FacilityParent> {
     }
 }
 
+/**
+ * A facility with a street address must name its Google place (#228). The database
+ * enforces the same rule (facilities_place_id_required); this returns the code the
+ * moderation form can explain instead of a constraint error.
+ */
+export function placeIdRequired<T = FacilityParent>(): Result<T> {
+    return {
+        data: {} as T,
+        hasErrors: true,
+        errors: [{
+            field: 'googlePlaceId',
+            errorCode: ErrorCode.PLACE_ID_REQUIRED,
+            httpStatus: 400
+        }]
+    }
+}
+
 class FacilityUpdateRejected extends Error {
     constructor(readonly result: Result<FacilityParent>) {
         super('Facility update rejected')
@@ -636,6 +653,10 @@ export async function createFacility(
                 ? facilityInput.googlePlaceId.trim()
                 : canonicalContact.placeId)
 
+        if (!isOnline && !googlePlaceId) {
+            return placeIdRequired()
+        }
+
         // Execute all database operations in a single atomic transaction.
         // The transaction returns the final plain GraphQL object (not the Kysely result).
         // If any operation fails, everything is automatically rolled back.
@@ -1024,6 +1045,15 @@ export const updateFacility = async (
                 && fields.googlePlaceId === undefined
             ) {
                 updatePayload.google_place_id = resolvedPlaceId
+            }
+
+            const willBeOnline = fieldsToUpdate.online === true
+                || (fieldsToUpdate.online !== false && originalFacility.online)
+            const nextPlaceId = 'google_place_id' in updatePayload
+                ? updatePayload.google_place_id
+                : originalFacility.google_place_id
+            if (!willBeOnline && !nextPlaceId) {
+                throw new FacilityUpdateRejected(placeIdRequired())
             }
             
             let updatedFacility = originalFacility

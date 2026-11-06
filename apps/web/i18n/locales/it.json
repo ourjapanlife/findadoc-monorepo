@@ -84,6 +84,7 @@
     "invalidWebsite": "Inserisci un sito web valido.",
     "invalidInformation": "Alcune di queste informazioni non sono valide. Controlla il modulo e riprova.",
     "submissionCannotBeApproved": "Questa segnalazione non può essere approvata finché i dati obbligatori della struttura e del professionista non sono completi.",
+    "placeIdRequired": "Questa clinica ha bisogno del suo luogo Google. Incolla il link alla pagina Google Maps della clinica, oppure seleziona Struttura online se non ha un indirizzo.",
     "submissionAlreadyApproved": "Questa segnalazione è già stata approvata.",
     "clinicRequired": "Scegli una struttura per questo professionista sanitario.",
     "japaneseInEnglishField": "Un campo in inglese contiene caratteri giapponesi.",

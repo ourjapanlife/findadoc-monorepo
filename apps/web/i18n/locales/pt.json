@@ -483,6 +483,7 @@
     "invalidWebsite": "Informe um site válido.",
     "invalidInformation": "Parte destas informações não é válida. Confira o formulário e tente novamente.",
     "submissionCannotBeApproved": "Este envio não pode ser aprovado até que os dados obrigatórios da clínica e do profissional estejam completos.",
+    "placeIdRequired": "Esta clínica precisa do seu local no Google. Cole o link da página da clínica no Google Maps ou marque Estabelecimento online se ela não tiver endereço.",
     "submissionAlreadyApproved": "Este envio já foi aprovado.",
     "clinicRequired": "Escolha uma clínica para este profissional de saúde.",
     "japaneseInEnglishField": "Um campo em inglês contém caracteres japoneses.",

@@ -23,6 +23,8 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     BAD_USER_INPUT: 'serverErrorMessages.invalidInformation',
     INVALID_SUBMISSION_APPROVAL: 'serverErrorMessages.submissionCannotBeApproved',
     SUBMISSION_ALREADY_APPROVED: 'serverErrorMessages.submissionAlreadyApproved',
+    // A clinic with an address needs its Google place (#228).
+    PLACE_ID_REQUIRED: 'serverErrorMessages.placeIdRequired',
     CREATEPROFFESIONAL_FACILITYIDS_REQUIRED: 'serverErrorMessages.clinicRequired',
     UPDATEPROFFESIONAL_FACILITYIDS_REQUIRED: 'serverErrorMessages.clinicRequired',
     CONTAINS_JAPANESE_CHARACTER: 'serverErrorMessages.japaneseInEnglishField',

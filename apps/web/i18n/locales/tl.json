@@ -429,6 +429,7 @@
     "invalidWebsite": "Maglagay ng wastong website.",
     "invalidInformation": "May impormasyong hindi wasto. Suriin ang form at subukan muli.",
     "submissionCannotBeApproved": "Hindi maaaprubahan ang submission na ito hanggang kumpleto ang kinakailangang detalye ng klinika at propesyonal.",
+    "placeIdRequired": "Kailangan ng klinikang ito ang Google place nito. I-paste ang link sa sariling Google Maps page ng klinika, o i-check ang Online na pasilidad kung wala itong address.",
     "submissionAlreadyApproved": "Naaprubahan na ang submission na ito.",
     "clinicRequired": "Pumili ng klinika para sa propesyonal sa kalusugan na ito.",
     "japaneseInEnglishField": "May Japanese na character sa isang English na field.",

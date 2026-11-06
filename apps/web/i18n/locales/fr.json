@@ -477,6 +477,7 @@
     "invalidWebsite": "Saisissez un site web valide.",
     "invalidInformation": "Une partie de ces informations n’est pas valide. Vérifiez le formulaire et réessayez.",
     "submissionCannotBeApproved": "Cette soumission ne peut pas être approuvée tant que les informations obligatoires de l’établissement et du professionnel ne sont pas complètes.",
+    "placeIdRequired": "Cette clinique a besoin de son lieu Google. Collez le lien vers la page Google Maps de la clinique, ou cochez « Établissement en ligne » si elle n’a pas d’adresse.",
     "submissionAlreadyApproved": "Cette soumission a déjà été approuvée.",
     "clinicRequired": "Choisissez un établissement pour ce professionnel de santé.",
     "japaneseInEnglishField": "Un champ en anglais contient des caractères japonais.",

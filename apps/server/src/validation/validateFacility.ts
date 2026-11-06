@@ -5,6 +5,32 @@ import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 import { isPublishedLocale } from '../languages/publishedLocales.js'
 
+/** A Places id token, as Google writes it. 256 characters is far above any real id. */
+const GOOGLE_PLACE_ID = /^[A-Za-z0-9_-]{8,256}$/
+
+/** The trimmed id when it looks like a Places id, else null. */
+export function googlePlaceIdOrNull(value: string | null | undefined): string | null {
+    const trimmed = (value ?? '').trim()
+    return GOOGLE_PLACE_ID.test(trimmed) ? trimmed : null
+}
+
+/** An empty value means "none"; anything else has to look like a Places id. */
+export function validateGooglePlaceId(
+    value: string | null | undefined,
+    validationResults: Result<unknown>,
+    field = 'googlePlaceId'
+) {
+    const trimmed = (value ?? '').trim()
+    if (trimmed && !googlePlaceIdOrNull(trimmed)) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field,
+            errorCode: ErrorCode.INVALID_INPUT,
+            httpStatus: 400
+        })
+    }
+}
+
 // Used for v4 uuid
 export const UUID_REGEX =
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
@@ -195,6 +221,7 @@ export function validateUpdateFacilityInput(input: Partial<gqlTypes.UpdateFacili
     }
 
     validateSupportedLanguages(input.supportedLanguages, validationResults)
+    validateGooglePlaceId(input.googlePlaceId, validationResults)
 
     return validationResults
 }
@@ -276,6 +303,7 @@ export function validateCreateFacilityInput(input: gqlTypes.CreateFacilityInput)
     }
 
     validateSupportedLanguages(input.supportedLanguages, validationResults)
+    validateGooglePlaceId(input.googlePlaceId, validationResults)
 
     return validationResults
 }
