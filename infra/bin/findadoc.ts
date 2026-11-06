@@ -32,6 +32,7 @@ import {
 } from '../lib/environment.js'
 import { GithubDeployStack } from '../lib/githubDeployStack.js'
 import { NetworkStack } from '../lib/networkStack.js'
+import { OperatorAccessStack } from '../lib/operatorAccessStack.js'
 import { UploadsStack } from '../lib/uploadsStack.js'
 import { WebStack } from '../lib/webStack.js'
 
@@ -144,6 +145,14 @@ new DataCopyStack(app, 'FindadocDataCopy', {
     vpc: network.vpc,
     database: database.instance,
     databaseClients: database.clientSecurityGroup,
+})
+
+// `pnpm db:prod`: a laptop reaches the private database through a jump host that is stopped when idle.
+new OperatorAccessStack(app, 'FindadocOperatorAccess', {
+    env: FINDADOC_ENV,
+    vpc: network.vpc,
+    databaseClients: database.clientSecurityGroup,
+    databaseHostname: database.instance.dbInstanceEndpointAddress,
 })
 
 new UploadsStack(app, 'FindadocUploads', {

@@ -25,6 +25,13 @@ const envVariables = {
     pgHost: () => process.env.PGHOST,
     dbUrl: () => process.env.DB_URL || process.env.DATABASE_URL,
     pgPort: () => process.env.PGPORT,
+    // `pnpm db:prod` sets these for a script it runs: PGHOST is the RDS name the certificate is for,
+    // PGHOSTADDR is the local end of the tunnel, and PGSSLROOTCERT is the RDS CA bundle.
+    pgHostAddr: () => process.env.PGHOSTADDR,
+    pgSslRootCert: () => process.env.PGSSLROOTCERT,
+    pgAppName: () => process.env.PGAPPNAME,
+    // 'production' only inside `pnpm db:prod`. Scripts then refuse --write without --confirm-production.
+    databaseTarget: () => process.env.FINDADOC_DB_TARGET,
     // RDS: sign in with an IAM auth token instead of PGPASSWORD. Implies TLS.
     dbIamAuth: () => process.env.DB_IAM_AUTH === 'true',
     dbSsl: () => process.env.PGSSLMODE === 'require',

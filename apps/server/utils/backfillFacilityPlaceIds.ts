@@ -1,6 +1,6 @@
 import pg from 'pg'
 import { pathToFileURL } from 'node:url'
-import { envVariables } from './environmentVariables.js'
+import { assertScriptWriteAllowed, describeScriptTarget, scriptDatabaseConfig } from './scriptDatabase.js'
 import { canonicalMapsLink, resolveMapsPlace } from '../src/places/mapsLink.js'
 
 /**
@@ -20,26 +20,10 @@ type FacilityRow = {
     google_maps_url: string | null
 }
 
-function clientConfig() {
-    const password = envVariables.pgPassword()
-    const host = envVariables.pgHost() || '127.0.0.1'
-    const port = Number(envVariables.pgPort() || (envVariables.isProduction() ? 5432 : 54322))
-
-    if (port === 6543) {
-        throw new Error('Use the session database port 5432. The transaction pooler cannot apply this backfill.')
-    }
-
-    return {
-        host,
-        port,
-        user: envVariables.pgUser() || 'postgres',
-        password: password || 'postgres',
-        database: 'postgres'
-    }
-}
-
 export async function main(write = process.argv.includes('--write')) {
-    const client = new pg.Client(clientConfig())
+    assertScriptWriteAllowed(write)
+    console.log(describeScriptTarget(write))
+    const client = new pg.Client(scriptDatabaseConfig())
     await client.connect()
 
     const counts = { written: 0, unmatched: 0, remaining: 0, validated: false }
