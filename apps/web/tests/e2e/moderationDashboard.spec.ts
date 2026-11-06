@@ -31,12 +31,14 @@ test.describe('Moderation dashboard', () => {
         await expect(page.getByTestId('access-page-link-moderation-submissions')).toBeVisible({ timeout: 30_000 })
     })
 
-    test('shows left nav for submissions with New, For Review, Approved, Rejected',
+    test('shows the submission queues New, Under review, Approved, Declined, and User feedback',
          async ({ page }) => {
              await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.new, 'i') })).toBeVisible()
              await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.forReview, 'i') })).toBeVisible()
              await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.approved, 'i') })).toBeVisible()
              await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.rejected, 'i') })).toBeVisible()
+             await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.userFeedback, 'i') }))
+                 .toBeVisible()
          })
 })
 
