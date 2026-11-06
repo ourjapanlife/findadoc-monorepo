@@ -25,6 +25,10 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     SUBMISSION_ALREADY_APPROVED: 'serverErrorMessages.submissionAlreadyApproved',
     // A clinic with an address needs its Google place (#228).
     PLACE_ID_REQUIRED: 'serverErrorMessages.placeIdRequired',
+    // Clinic corrections in moderation (#22).
+    CORRECTION_CITY_REQUIRED: 'serverErrorMessages.correctionCityRequired',
+    SUBMISSION_KIND_MISMATCH: 'serverErrorMessages.submissionKindMismatch',
+    SUBMISSION_STATUS_CHANGED: 'serverErrorMessages.submissionStatusChanged',
     CREATEPROFFESIONAL_FACILITYIDS_REQUIRED: 'serverErrorMessages.clinicRequired',
     UPDATEPROFFESIONAL_FACILITYIDS_REQUIRED: 'serverErrorMessages.clinicRequired',
     CONTAINS_JAPANESE_CHARACTER: 'serverErrorMessages.japaneseInEnglishField',
@@ -68,7 +72,8 @@ const FIELD_LABEL_BY_SERVER_FIELD: Readonly<Record<string, string>> = {
     googleMapsUrl: 'modFacilitySection.labelFacilityGoogleMapsUrl',
     'contact.googleMapsUrl': 'modFacilitySection.labelFacilityGoogleMapsUrl',
     mapLatitude: 'modFacilitySection.labelFacilityMapLatitude',
-    mapLongitude: 'modFacilitySection.labelFacilityMapLongitude'
+    mapLongitude: 'modFacilitySection.labelFacilityMapLongitude',
+    correctionCityId: 'modCorrectionReview.cityLabel'
 }
 
 /** Client checks that match a rule the API also enforces, or that the API does not name. */
