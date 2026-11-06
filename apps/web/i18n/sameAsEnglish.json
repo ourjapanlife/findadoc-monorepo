@@ -62,7 +62,9 @@
     "clinicCorrection.paymentCreditCard",
     "clinicCorrection.paymentDebitCard",
     "clinicCorrection.paymentElectronicMoney",
-    "clinicCorrection.website"
+    "clinicCorrection.website",
+    "modCorrectionReview.fieldAddress",
+    "modCorrectionReview.fieldWebsite"
   ],
   "vi": [
     "common.menu",
