@@ -308,7 +308,8 @@
     "collapse": "Seitenleiste einklappen",
     "expand": "Seitenleiste ausklappen",
     "bookings": "Buchungen",
-    "availability": "Verfügbarkeit"
+    "availability": "Verfügbarkeit",
+    "userFeedback": "Rückmeldungen"
   },
   "accessPanel": {
     "loading": "Berechtigungen werden geladen…",
@@ -327,6 +328,47 @@
     "approve": "Genehmigen",
     "reject": "Ablehnen",
     "update": "Aktualisieren"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "Gemeldet am {date}",
+    "facilityMissing": "Diese Klinik konnte nicht geladen werden. Sie wurde möglicherweise aus dem Verzeichnis entfernt.",
+    "openClinicPage": "Klinikseite öffnen",
+    "editFacility": "Diese Einrichtung bearbeiten",
+    "startReview": "Prüfung starten",
+    "startedReview": "Als „In Prüfung“ markiert.",
+    "reasonsHeading": "Was laut Besucher falsch ist",
+    "changesHeading": "Vorher und nachher",
+    "changesHint": "Beim Freigeben werden nur diese Felder in die Klinik übernommen. Alles andere bleibt gleich.",
+    "before": "Jetzt",
+    "after": "Laut Besucher",
+    "added": "hinzugefügt",
+    "removed": "entfernt",
+    "emptyValue": "Nicht angegeben",
+    "noChanges": "Der Besucher hat keinen neuen Wert geschickt. Prüfen Sie die Klinik, bevor Sie entscheiden.",
+    "fieldAddress": "Adresse",
+    "fieldPhone": "Telefon",
+    "fieldWebsite": "Webseite",
+    "fieldLanguages": "Sprachen der Klinik",
+    "fieldPayment": "Zahlungsarten der Klinik",
+    "cityHint": "Die neue Adresse braucht eine Stadt. Wählen Sie sie aus der Liste: Eine vom Besucher eingegebene Stadt wird nie übernommen.",
+    "currentCity": "Stadt jetzt: {city}",
+    "cityLabel": "Stadt der neuen Adresse",
+    "closedNotice": "Geschlossen oder umgezogen: Die Freigabe ändert nichts an der Klinikseite. Um die Klinik von der Seite zu nehmen, bearbeiten Sie die Einrichtung.",
+    "duplicateNotice": "Doppelter Eintrag: Die Freigabe führt nichts zusammen. Vergleichen Sie beide Einträge und bearbeiten Sie sie von Hand.",
+    "duplicateOtherListing": "Der andere Eintrag",
+    "duplicateNoLink": "Der Besucher hat keinen Link zum anderen Eintrag geschickt.",
+    "notesHeading": "Notiz des Besuchers",
+    "noNotes": "Keine Notiz.",
+    "relationHeading": "Woher die Information stammt",
+    "relationUnknown": "Keine Angabe",
+    "retentionNote": "Die Notiz des Besuchers wird 180 Tage nach Freigabe oder Ablehnung der Korrektur gelöscht.",
+    "approveConfirm": "Diese Korrektur freigeben? Nur die hier gezeigten Felder ändern sich auf der Klinikseite.",
+    "approveConfirmButton": "Ja, freigeben",
+    "approved": "Korrektur freigegeben. Die Änderung ist in der Klinik gespeichert.",
+    "declineConfirm": "Diese Korrektur ablehnen? Auf der Klinikseite ändert sich nichts.",
+    "declineConfirmButton": "Ja, ablehnen",
+    "declined": "Korrektur abgelehnt.",
+    "submissionMissing": "Diese Einreichung konnte nicht geladen werden."
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Es gibt keine ausstehenden Einreichungen"
@@ -545,7 +587,10 @@
     "notAllowed": "Sie haben keine Berechtigung dafür. Melden Sie sich erneut an oder bitten Sie die Administration um Zugriff.",
     "network": "Die Anfrage wurde nicht abgeschlossen. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
     "prefectureMismatch": "Der englische und der japanische Präfekturname müssen übereinstimmen.",
-    "prefectureRequired": "Geben Sie die Präfektur auf Englisch und auf Japanisch an."
+    "prefectureRequired": "Geben Sie die Präfektur auf Englisch und auf Japanisch an.",
+    "correctionCityRequired": "Wählen Sie eine Stadt, bevor Sie diese Korrektur freigeben.",
+    "submissionKindMismatch": "Diese Änderung gilt nicht für eine Korrektur eines Besuchers.",
+    "submissionStatusChanged": "Jemand anderes hat diese Einreichung zuerst geändert. Laden Sie die Seite neu und prüfen Sie sie erneut."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Gesprochene Sprachen",
@@ -602,7 +647,8 @@
     "approvedSubmission": "Genehmigt",
     "rejectedSubmission": "Abgelehnt",
     "createdDate": "Erstellt am",
-    "updatedDate": "Zuletzt aktualisiert"
+    "updatedDate": "Zuletzt aktualisiert",
+    "feedbackSubmission": "Rückmeldung"
   },
   "settingsPage": {
     "heading": "Einstellungen",
