@@ -58,7 +58,6 @@ export function buildHpUpdatePatch(
     }
     if (fields.spokenLanguages !== undefined) { updatePatch.spoken_languages = asJsonb(fields.spokenLanguages) }
     if (fields.specialties !== undefined) { updatePatch.specialties = asJsonb(fields.specialties) }
-    if (fields.acceptedInsurance !== undefined) { updatePatch.accepted_insurance = asJsonb(fields.acceptedInsurance) }
     if (fields.additionalInfoForPatients !== undefined) {
         updatePatch.additional_info_for_patients = fields.additionalInfoForPatients
     }
@@ -66,7 +65,7 @@ export function buildHpUpdatePatch(
     return updatePatch
 }
 
-// Applies JSONB array filters (degrees, specialties, languages, insurance) and the facility filter to an HP query.
+// Applies JSONB array filters (degrees, specialties, languages) and the facility filter to an HP query.
 export function applyHpFilters<O>(
   query: SelectQueryBuilder<Database, 'hps', O>,
   filters: gqlTypes.HealthcareProfessionalSearchFilters
@@ -79,7 +78,6 @@ export function applyHpFilters<O>(
     if (filters.licenseReview) { filtered = filtered.where('hps.license_review', '=', filters.licenseReview) }
     if (filters.specialties?.length) { filtered = filtered.where('hps.specialties', '@>', asJsonb(filters.specialties)) }
     if (filters.spokenLanguages?.length) { filtered = filtered.where('hps.spoken_languages', '@>', asJsonb(filters.spokenLanguages)) }
-    if (filters.acceptedInsurance?.length) { filtered = filtered.where('hps.accepted_insurance', '@>', asJsonb(filters.acceptedInsurance)) }
     // Keeps professionals linked to at least one of the facilities. facilityIds on the result are still loaded separately.
     const facilityIds = filters.facilityIds ?? []
     if (facilityIds.length) {
@@ -410,7 +408,6 @@ export async function createHealthcareProfessional(
                     license_recommendation: licensed.licenseRecommendation,
                     specialties: asJsonb(createInput.specialties ?? []),
                     spoken_languages: asJsonb(input.spokenLanguages ?? []),
-                    accepted_insurance: asJsonb(input.acceptedInsurance ?? []),
                     additional_info_for_patients: input.additionalInfoForPatients ?? null,
                     email: null,
                     created_date: new Date().toISOString(),

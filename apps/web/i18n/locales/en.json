@@ -6,6 +6,7 @@
     "termsTitle": "Terms of service",
     "privacyTitle": "Privacy policy",
     "npoTitle": "NPO disclosures",
+    "insuranceTitle": "Paying for care in Japan",
     "searchTitle": "Search clinics",
     "contactTitle": "Contact"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "Activities",
     "activitiesValue": "Building, promoting and maintaining a free, high-quality multilingual healthcare information platform that connects people living in Japan, Japanese and international residents alike, with the medical services they need in the language they need; and running a volunteer programmer development programme.",
     "contactLabel": "Contact"
+  },
+  "insurancePage": {
+    "heading": "Paying for care in Japan",
+    "intro": "How Japanese public health insurance works at a clinic, what self-pay means, and what to do with an overseas or travel insurance policy.",
+    "disclaimer": "Find a Doc does not check anyone's coverage and does not give medical or insurance advice. When you are unsure, ask the clinic, your insurer, or your city office.",
+    "schemesHeading": "Public health insurance",
+    "schemesIntro": "Almost everyone who lives in Japan must join a public health insurance program. The main exception is people receiving public assistance (生活保護): their medical care is covered through public assistance instead. Private life insurance or an overseas plan does not replace public insurance.",
+    "schemeEmployee": "Employee health insurance (健康保険): employees and the family members they support, through 協会けんぽ, a company fund, or a mutual-aid association.",
+    "schemeNational": "National Health Insurance (国民健康保険): residents who are not on an employment plan. A foreign resident with a residence card and a stay of more than three months is usually in this group.",
+    "schemeElderly": "Medical care for people 75 and older (後期高齢者医療制度): from the 75th birthday.",
+    "shareHeading": "What you pay at the desk",
+    "shareBody": "At a clinic that takes public insurance, you pay your share at the desk and your insurer pays the clinic the rest. The usual share is 20% before school age, 30% from school age to 69, 20% from 70 to 74, and 10% from 75. Income can raise the share for older patients. A very high bill in one month can be capped under the high-cost medical care benefit (高額療養費).",
+    "bringHeading": "What to bring",
+    "bringBody": "Bring your My Number card registered as a health insurance card, or the eligibility certificate (資格確認書) your insurer sent you. Old paper insurance cards stopped working on December 1, 2025.",
+    "clinicsHeading": "Clinics that do not take public insurance",
+    "clinicsBody": "A clinic can bill public insurance only if it is designated as an insurance medical institution (保険医療機関). Some clinics are not designated and see every patient as self-pay (自由診療). These are often cosmetic clinics, some dental clinics, and some international clinics. A clinic page on Find a Doc says so when we have a source.",
+    "selfPayHeading": "Self-pay",
+    "selfPayBody": "If you do not have Japanese public insurance, for example as a visitor or before you enroll, you pay the clinic the full fee yourself. Many ordinary clinics will still see you. A clinic that does not take public insurance sets its own prices.",
+    "mixedBody": "If a covered visit includes a treatment that insurance does not cover, the whole visit can become self-pay, apart from a few approved exceptions. Ask the clinic before you agree to an extra treatment.",
+    "overseasHeading": "Overseas and travel insurance",
+    "overseasBody": "Most clinics do not bill an overseas or travel insurer. You pay the clinic, keep the receipt (領収書) and the itemized statement (診療明細書), and send them to your insurer to claim a refund. A few hospitals bill an insurer directly, but only when that insurer sends a guarantee of payment before the visit.",
+    "sourcesHeading": "Official sources",
+    "sourceShare": "Patient share at the desk (Ministry of Health, Labour and Welfare)",
+    "sourceNationalInsurance": "Who joins National Health Insurance (Ministry of Health, Labour and Welfare)",
+    "sourceMynaCard": "My Number insurance card (Ministry of Health, Labour and Welfare)",
+    "sourceCertificate": "Eligibility certificate (Digital Agency)",
+    "sourceFacilitySearch": "Medical facility search (Ministry of Health, Labour and Welfare)"
   },
   "home": {
     "heroHeading": "Find a doctor who speaks your language",
@@ -473,11 +501,9 @@
     "licenseRecommendationConfirm": "More than one clinical license is stored. Choose the primary license, or keep both.",
     "storedHiddenDegrees": "Also stored, and still shown on the public listing: {degrees}",
     "listingShowsSavedDegrees": "The public listing shows every degree saved here.",
-    "selectInsurances": "Accepted Insurance",
     "selectLocales": "Spoken Languages",
     "selectSpecialties": "Specialties",
     "facilities": "Associated facilities",
-    "placeholderTextAcceptedInsurances": "Search by insurance",
     "placeholderTextSpecialties": "Search by specialty",
     "placeholderTextDegrees": "Search by degree",
     "placeholderTextLocales": "Search by language",
@@ -486,7 +512,6 @@
     "noFacilitiesWereFound": "No Facilities were found",
     "noFacilitiesLinked": "No facilities are associated yet. Search above to add one.",
     "noSpecialtiesWereFound": "No specialties were found",
-    "noInsurancesWereFound": "No insurance was found",
     "noDegreesWereFound": "No degrees were found",
     "noLocalesWereFound": "No languages were found",
     "update": "Update"
@@ -569,7 +594,14 @@
     "placeholderTextFacilityNameJa": "e.g. 立川中央病院",
     "placeholderTextFacilityPhoneNumber": "e.g. 08xxxxxxxxx",
     "placeholderTextFacilityPostalCode": "e.g. 186-0000",
-    "placeholderTextFacilityWebsite": "e.g. http://www.example.com/"
+    "placeholderTextFacilityWebsite": "e.g. http://www.example.com/",
+    "japaneseInsuranceLabel": "Japanese public health insurance",
+    "japaneseInsuranceUnknown": "Unknown. Readers see nothing.",
+    "japaneseInsuranceAccepted": "Takes Japanese public health insurance.",
+    "japaneseInsuranceHint": "Leave this unknown until the clinic's website, the regional health bureau list, or a call answers it. Private-only clinics exist, so do not guess.",
+    "japaneseInsuranceNotAccepted": "Does not take Japanese public health insurance. The visit is self-pay.",
+    "japaneseInsuranceSourceLabel": "Source",
+    "japaneseInsuranceSourcePlaceholder": "A link, or a note such as: called the clinic on Nov 2, 2026"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",
@@ -726,16 +758,12 @@
     "languagesFallback": "languages listed on the profile",
     "specialties": "Specialties",
     "languages": "Languages spoken",
-    "insurance": "Accepted insurance",
     "additionalInfo": "For patients",
-    "facilities": "Clinics",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "Does not accept insurance",
-      "INTERNATIONAL_HEALTH_INSURANCE": "International health insurance",
-      "JAPANESE_HEALTH_INSURANCE": "Japanese health insurance",
-      "TRAVEL_INSURANCE": "Travel insurance",
-      "UNINSURED": "Uninsured / self-pay"
-    }
+    "facilities": "Clinics"
+  },
+  "insuranceNote": {
+    "notAccepted": "This clinic does not take Japanese public health insurance. The visit is self-pay.",
+    "guideLink": "How paying for care works in Japan"
   },
   "hubPage": {
     "prefectureHeading": "Healthcare in {prefecture}",

@@ -4,7 +4,6 @@ import {
     Degree,
     FacilitySource,
     FacilityVerificationStatus,
-    Insurance,
     LicenseReviewStatus,
     Locale,
     PaymentType,
@@ -90,7 +89,6 @@ export type HpSeed = {
     license_recommendation: string | null
     specialties: EnumValue<Specialty>[]
     spoken_languages: EnumValue<Locale>[]
-    accepted_insurance: EnumValue<Insurance>[]
     email: string | null
     created_date: string
     updated_date: string
@@ -102,7 +100,6 @@ export type HpSubmissionSeed = {
     spokenLanguages: EnumValue<Locale>[]
     degrees?: EnumValue<Degree>[] | null
     specialties?: EnumValue<Specialty>[] | null
-    acceptedInsurance?: EnumValue<Insurance>[] | null
     additionalInfoForPatients?: string | null
     facilityIds: string[]
 }
@@ -207,7 +204,6 @@ function enumValues<T extends Record<string, string>>(enumObject: T): Set<string
 const degreeValues = enumValues(Degree)
 const specialtyValues = enumValues(Specialty)
 const localeValues = enumValues(Locale)
-const insuranceValues = enumValues(Insurance)
 const paymentTypeValues = enumValues(PaymentType)
 const verificationValues = enumValues(FacilityVerificationStatus)
 const sourceValues = enumValues(FacilitySource)
@@ -289,7 +285,6 @@ export function parseSeed(value: unknown): SeedFile {
         readEnum(hp.license_review, licenseReviewValues, `${hp.id} license_review`, problems)
         readEnumList(hp.specialties, specialtyValues, `${hp.id} specialties`, problems)
         readEnumList(hp.spoken_languages, localeValues, `${hp.id} spoken_languages`, problems)
-        readEnumList(hp.accepted_insurance, insuranceValues, `${hp.id} accepted_insurance`, problems)
 
         if (!Array.isArray(hp.names)) {
             problems.push(`${hp.id} names is missing`)
@@ -324,7 +319,6 @@ export function parseSeed(value: unknown): SeedFile {
                 readEnumList(hp.degrees, degreeValues, `${submission.id} professional ${index} degrees`, problems)
                 readEnumList(hp.specialties, specialtyValues, `${submission.id} professional ${index} specialties`, problems)
                 readEnumList(hp.spokenLanguages, localeValues, `${submission.id} professional ${index} spokenLanguages`, problems)
-                readEnumList(hp.acceptedInsurance, insuranceValues, `${submission.id} professional ${index} acceptedInsurance`, problems)
             })
         }
     }

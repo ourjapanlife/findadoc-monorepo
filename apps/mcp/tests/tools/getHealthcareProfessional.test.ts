@@ -36,7 +36,6 @@ describe('get_healthcare_professional', () => {
                 spokenLanguages: ['ja_JP', 'en_US'],
                 degrees: ['MD'],
                 specialties: ['DENTISTRY'],
-                acceptedInsurance: ['JAPANESE_HEALTH_INSURANCE'],
                 facilityIds: ['facility-1'],
                 additionalInfoForPatients: null
             }

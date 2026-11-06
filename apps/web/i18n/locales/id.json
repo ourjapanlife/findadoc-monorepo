@@ -6,6 +6,7 @@
     "termsTitle": "Ketentuan layanan",
     "privacyTitle": "Kebijakan privasi",
     "npoTitle": "Keterbukaan informasi NPO",
+    "insuranceTitle": "Membayar biaya berobat di Jepang",
     "searchTitle": "Cari klinik",
     "contactTitle": "Kontak"
   },
@@ -37,6 +38,33 @@
     "activitiesLabel": "Kegiatan",
     "activitiesValue": "Membangun, mempromosikan, dan memelihara platform informasi kesehatan multibahasa yang gratis dan berkualitas tinggi, yang menghubungkan orang-orang yang tinggal di Jepang, baik warga Jepang maupun warga asing, dengan layanan medis yang mereka butuhkan dalam bahasa yang mereka perlukan; serta menjalankan program pengembangan pemrogram sukarelawan.",
     "contactLabel": "Kontak"
+  },
+  "insurancePage": {
+    "heading": "Membayar biaya berobat di Jepang",
+    "intro": "Cara kerja asuransi kesehatan publik Jepang di klinik, arti bayar mandiri, dan apa yang harus dilakukan dengan polis asuransi luar negeri atau asuransi perjalanan.",
+    "disclaimer": "Find a Doc tidak memeriksa cakupan asuransi siapa pun dan tidak memberikan saran medis atau asuransi. Jika Anda ragu, tanyakan kepada klinik, perusahaan asuransi Anda, atau kantor kota Anda.",
+    "schemesHeading": "Asuransi kesehatan publik",
+    "schemesIntro": "Hampir semua orang yang tinggal di Jepang wajib ikut program asuransi kesehatan publik. Pengecualian utama adalah penerima bantuan sosial (生活保護): biaya pengobatan mereka ditanggung melalui bantuan sosial. Asuransi jiwa swasta atau asuransi luar negeri tidak menggantikan asuransi publik.",
+    "schemeEmployee": "Asuransi kesehatan karyawan (健康保険): karyawan dan anggota keluarga yang mereka tanggung, melalui 協会けんぽ, dana perusahaan, atau asosiasi saling bantu.",
+    "schemeNational": "Asuransi Kesehatan Nasional (国民健康保険): penduduk yang tidak tercakup dalam program dari tempat kerja. Penduduk asing dengan kartu residen dan masa tinggal lebih dari tiga bulan biasanya masuk kelompok ini.",
+    "schemeElderly": "Layanan medis untuk usia 75 tahun ke atas (後期高齢者医療制度): mulai dari ulang tahun ke-75.",
+    "shareHeading": "Yang Anda bayar di loket",
+    "shareBody": "Di klinik yang menerima asuransi publik, Anda membayar bagian Anda di loket dan perusahaan asuransi membayar sisanya kepada klinik. Porsi yang umum adalah 20% sebelum usia sekolah, 30% dari usia sekolah sampai 69 tahun, 20% dari 70 sampai 74 tahun, dan 10% dari 75 tahun. Penghasilan dapat menaikkan porsi pasien lanjut usia. Tagihan yang sangat besar dalam satu bulan dapat dibatasi melalui tunjangan biaya medis tinggi (高額療養費).",
+    "bringHeading": "Yang perlu dibawa",
+    "bringBody": "Bawa kartu My Number Anda yang terdaftar sebagai kartu asuransi kesehatan, atau sertifikat kelayakan (資格確認書) yang dikirim oleh perusahaan asuransi Anda. Kartu asuransi kertas lama tidak berlaku lagi sejak 1 Desember 2025.",
+    "clinicsHeading": "Klinik yang tidak menerima asuransi publik",
+    "clinicsBody": "Klinik hanya dapat menagih asuransi publik jika ditetapkan sebagai fasilitas medis asuransi (保険医療機関). Beberapa klinik tidak ditetapkan dan melayani semua pasien sebagai bayar mandiri (自由診療). Biasanya ini klinik kosmetik, sebagian klinik gigi, dan sebagian klinik internasional. Halaman klinik di Find a Doc menyebutkannya jika kami punya sumbernya.",
+    "selfPayHeading": "Bayar mandiri",
+    "selfPayBody": "Jika Anda tidak punya asuransi publik Jepang, misalnya sebagai pengunjung atau sebelum Anda mendaftar, Anda membayar seluruh biaya sendiri kepada klinik. Banyak klinik biasa tetap akan melayani Anda. Klinik yang tidak menerima asuransi publik menetapkan harganya sendiri.",
+    "mixedBody": "Jika kunjungan yang ditanggung asuransi mencakup perawatan yang tidak ditanggung asuransi, seluruh kunjungan dapat menjadi bayar mandiri, kecuali beberapa pengecualian yang disetujui. Tanyakan kepada klinik sebelum Anda menyetujui perawatan tambahan.",
+    "overseasHeading": "Asuransi luar negeri dan asuransi perjalanan",
+    "overseasBody": "Sebagian besar klinik tidak menagih perusahaan asuransi luar negeri atau asuransi perjalanan. Anda membayar kepada klinik, menyimpan kuitansi (領収書) dan rincian biaya (診療明細書), lalu mengirimkannya ke perusahaan asuransi Anda untuk mengajukan penggantian. Beberapa rumah sakit menagih perusahaan asuransi secara langsung, tetapi hanya jika perusahaan asuransi itu mengirim jaminan pembayaran sebelum kunjungan.",
+    "sourcesHeading": "Sumber resmi",
+    "sourceShare": "Porsi pasien di loket (Kementerian Kesehatan, Tenaga Kerja, dan Kesejahteraan)",
+    "sourceNationalInsurance": "Siapa yang ikut Asuransi Kesehatan Nasional (Kementerian Kesehatan, Tenaga Kerja, dan Kesejahteraan)",
+    "sourceMynaCard": "Kartu asuransi My Number (Kementerian Kesehatan, Tenaga Kerja, dan Kesejahteraan)",
+    "sourceCertificate": "Sertifikat kelayakan (Badan Digital)",
+    "sourceFacilitySearch": "Pencarian fasilitas medis (Kementerian Kesehatan, Tenaga Kerja, dan Kesejahteraan)"
   },
   "home": {
     "heroHeading": "Temukan dokter yang berbicara dalam bahasa Anda",
@@ -473,11 +501,9 @@
     "licenseRecommendationConfirm": "Tersimpan lebih dari satu lisensi klinis. Pilih lisensi utama, atau pertahankan keduanya.",
     "storedHiddenDegrees": "Juga tersimpan, dan masih ditampilkan di daftar publik: {degrees}",
     "listingShowsSavedDegrees": "Daftar publik menampilkan semua gelar yang tersimpan di sini.",
-    "selectInsurances": "Asuransi yang Diterima",
     "selectLocales": "Bahasa yang Digunakan",
     "selectSpecialties": "Spesialisasi",
     "facilities": "Fasilitas terkait",
-    "placeholderTextAcceptedInsurances": "Cari berdasarkan asuransi",
     "placeholderTextSpecialties": "Cari berdasarkan spesialisasi",
     "placeholderTextDegrees": "Cari berdasarkan gelar",
     "placeholderTextLocales": "Cari berdasarkan bahasa",
@@ -486,7 +512,6 @@
     "noFacilitiesWereFound": "Tidak ada Fasilitas yang ditemukan",
     "noFacilitiesLinked": "Belum ada fasilitas terkait. Cari di atas untuk menambahkannya.",
     "noSpecialtiesWereFound": "Tidak ada spesialisasi yang ditemukan",
-    "noInsurancesWereFound": "Tidak ada asuransi yang ditemukan",
     "noDegreesWereFound": "Tidak ada gelar yang ditemukan",
     "noLocalesWereFound": "Tidak ada bahasa yang ditemukan",
     "update": "Perbarui"
@@ -569,7 +594,14 @@
     "placeholderTextFacilityNameJa": "mis. 立川中央病院",
     "placeholderTextFacilityPhoneNumber": "mis. 08xxxxxxxxx",
     "placeholderTextFacilityPostalCode": "mis. 186-0000",
-    "placeholderTextFacilityWebsite": "mis. http://www.example.com/"
+    "placeholderTextFacilityWebsite": "mis. http://www.example.com/",
+    "japaneseInsuranceLabel": "Asuransi kesehatan publik Jepang",
+    "japaneseInsuranceUnknown": "Tidak diketahui. Pembaca tidak melihat apa pun.",
+    "japaneseInsuranceAccepted": "Menerima asuransi kesehatan publik Jepang.",
+    "japaneseInsuranceHint": "Biarkan tidak diketahui sampai situs klinik, daftar biro kesehatan regional, atau telepon memastikannya. Ada klinik yang hanya melayani pasien mandiri, jadi jangan menebak.",
+    "japaneseInsuranceNotAccepted": "Tidak menerima asuransi kesehatan publik Jepang. Kunjungan dibayar mandiri.",
+    "japaneseInsuranceSourceLabel": "Sumber",
+    "japaneseInsuranceSourcePlaceholder": "Tautan, atau catatan seperti: menelepon klinik pada 2 Nov 2026"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",
@@ -726,16 +758,12 @@
     "languagesFallback": "bahasa yang tercantum di profil",
     "specialties": "Spesialisasi",
     "languages": "Bahasa yang digunakan",
-    "insurance": "Asuransi yang diterima",
     "additionalInfo": "Untuk pasien",
-    "facilities": "Klinik",
-    "insuranceLabels": {
-      "INSURANCE_NOT_ACCEPTED": "Tidak menerima asuransi",
-      "INTERNATIONAL_HEALTH_INSURANCE": "Asuransi kesehatan internasional",
-      "JAPANESE_HEALTH_INSURANCE": "Asuransi kesehatan Jepang",
-      "TRAVEL_INSURANCE": "Asuransi perjalanan",
-      "UNINSURED": "Tanpa asuransi / bayar sendiri"
-    }
+    "facilities": "Klinik"
+  },
+  "insuranceNote": {
+    "notAccepted": "Klinik ini tidak menerima asuransi kesehatan publik Jepang. Kunjungan dibayar mandiri.",
+    "guideLink": "Cara membayar biaya berobat di Jepang"
   },
   "hubPage": {
     "prefectureHeading": "Layanan kesehatan di {prefecture}",

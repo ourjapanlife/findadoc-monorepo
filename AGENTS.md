@@ -177,6 +177,14 @@ A professional has one primary clinical license. PhD, MPH, and DSc are additiona
 
 `apps/server/utils/backfillProfessionalLicenses.ts` is the #1014 run. Dry-run is the default. It does not rewrite `degrees`. MD+DO is queued as `NEEDS_REVIEW` with recommendation `MD`. DDS+DMD is queued with recommendation `one_dental_license`. The 18 Sep notes disagree about that dental count, so the run counts the rows it reads and does not collapse them. A row with `license_review = CONFIRMED`, or a row that already has `primary_license`, is left alone. A new professional is not given a license. The moderator chooses one.
 
+## Insurance
+
+Japanese public health insurance is one fact on the facility (#18): `facilities.japanese_insurance` is `ACCEPTED`, `NOT_ACCEPTED`, or null for unknown. Every facility starts unknown, including the ones that existed before the migration. Do not backfill `ACCEPTED`: private-only clinics exist. The moderation form has three choices: unknown, takes it, and does not take it (self-pay only). A self-pay-only answer may carry an optional source note in `japanese_insurance_source`: a link, or a call. The service drops the note for any other answer. The note is internal: the `Facility.japaneseInsuranceSource` resolver returns null unless the user can edit facilities. Readers only see a line when a clinic is `NOT_ACCEPTED`. A yes or an unknown shows nothing. Clinic and doctor pages are prerendered, so they re-read the answer in the browser after load (`useLiveJapaneseInsurance`). Do not store insurance on a professional, and do not bring back `UNINSURED`, international, or travel insurance as codes. Self-pay and overseas claims are explained on `/insurance`.
+
+`/insurance` is an indexable marketing page in every locale: prerendered, in the sitemap with hreflang, linked from the footer and menu. `apps/web/public/insurance.md` is its plain-text twin, listed in `llms.txt` and served for `Accept: text/markdown`. An English edit to `insurancePage` changes `insurance.md` in the same change; `agentReadiness.spec.ts` fails otherwise. The page is general information, not medical or insurance advice, and not an advertisement for a clinic. Keep the disclaimer, write the text in our own words, and link the ministry pages instead of copying them. The copay shares and the December 1, 2025 card change go stale: check them against the linked ministry pages once a year.
+
+`apps/server/utils/backfillProfessionalInsurance.ts` is the #18 run. Dry-run is the default. It prints each professional's old codes as sentences with the facility and city, and a write run empties `hps.accepted_insurance`. It never changes a facility answer. It flags a doctor whose old code said "does not accept insurance" so that clinic gets checked. A later migration drops `hps.accepted_insurance` once production has run it.
+
 ## Places
 
 `apps/server/docs/places-storage.md` is the storage rule. Follow it. Do not open a Places write path that contradicts it.
@@ -192,6 +200,12 @@ A professional has one primary clinical license. PhD, MPH, and DSc are additiona
 Clinic, doctor, hub, and facet pages are generated for English and Japanese only. `apps/web/utils/localePath.ts` names that set as `DIRECTORY_PRERENDER_LOCALE_CODES`. Marketing pages still generate for every locale. A directory URL in another locale renders in the browser, stays `noindex`, and stays out of hreflang and the sitemap. Do not add a `/ja-JP/*` rewrite. Unknown Japanese clinics stay a real 404.
 
 Moderation forms that already have saved data open in preview. Create forms stay editable. A Maps link that matches a clinic disables Submit on the public form. The same match is a warning in moderation, and update, approve, and create stay available.
+
+## Clinic hostnames
+
+A clinic hostname (`{slug}.findadoc.jp`) is the clinic, not a second copy of Find a Doc. It does not answer on Find a Doc's paths. It serves the clinic's own pages (`/` and `/book`, under a locale prefix), and any other page path goes back to the clinic's `/` (`clinicHostLandingTarget` in `apps/web/utils/clinicLanding.ts`). Links that leave the clinic for Find a Doc (the credit, privacy, Book, the dashboard) are absolute Find a Doc URLs, never a path on the clinic host. If a clinic gets more pages later, they live under that clinic's hostname and its own paths, not ours.
+
+Static files are the gap. Amplify serves the same `public/` files on every `*.findadoc.jp` name, and Nuxt serves `public/` before its middleware runs, so `{slug}.findadoc.jp/insurance.md` or `/llms.txt` still returns Find a Doc's file. Do not try to fix that in Nuxt middleware. It needs a host rule at the hosting layer that sends Find a Doc's documents (`*.md`, `/llms.txt`, `/openapi.json`, `/graphql.json`) on a clinic host to `https://www.findadoc.jp` and leaves assets alone.
 
 ## Auth
 

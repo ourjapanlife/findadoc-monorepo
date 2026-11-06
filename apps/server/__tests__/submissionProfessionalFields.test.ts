@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { Degree, Insurance, Locale, Specialty } from '@findadoc/graphql'
+import { Degree, Locale, Specialty } from '@findadoc/graphql'
 import { ErrorCode } from '../src/result.js'
 import { generateRandomUpdateSubmissionInput } from '../src/fakeData/fakeSubmissions.js'
 import {
@@ -12,7 +12,6 @@ const draftProfessional = {
     spokenLanguages: [Locale.EnUs],
     degrees: [],
     specialties: [],
-    acceptedInsurance: [],
     facilityIds: []
 }
 
@@ -58,15 +57,14 @@ describe('submission professional fields', () => {
         expect(result.errors?.[0].errorCode).toBe(ErrorCode.INVALID_LENGTH_TOO_LONG)
     })
 
-    test('requires degrees, specialties, and insurance before approving a new professional', () => {
+    test('requires degrees and specialties before approving a new professional', () => {
         const result = validateApprovalProfessionalFields({
             healthcareProfessionals: [draftProfessional]
         })
 
         expect(result.errors?.map(error => error.field)).toEqual([
             'healthcareProfessionals[0].degrees',
-            'healthcareProfessionals[0].specialties',
-            'healthcareProfessionals[0].acceptedInsurance'
+            'healthcareProfessionals[0].specialties'
         ])
     })
 
@@ -75,8 +73,7 @@ describe('submission professional fields', () => {
             healthcareProfessionals: [{
                 ...draftProfessional,
                 degrees: [Degree.Dds],
-                specialties: [Specialty.Cardiology],
-                acceptedInsurance: [Insurance.JapaneseHealthInsurance]
+                specialties: [Specialty.Cardiology]
             }]
         })
 

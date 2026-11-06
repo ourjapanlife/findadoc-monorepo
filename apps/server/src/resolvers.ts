@@ -5,7 +5,8 @@ import {
     withScope,
     UserContext,
     Scope,
-    getEffectiveScopes
+    getEffectiveScopes,
+    canReadModeratorNotes
 } from './auth.js'
 import { bookingAccessForContext, userWithFacilityRoles, withClinicScope } from './booking/facilityRoles.js'
 import { allowBookingCall, type BookingBudget } from './booking/rateLimits.js'
@@ -381,7 +382,10 @@ const resolvers = {
             }
 
             return context.loaders.cityById.load(parent.cityId)
-        }
+        },
+        // Internal. The public only sees japaneseInsurance.
+        japaneseInsuranceSource: (parent: FacilityParent, _args: unknown, context: ApiContext): string | null =>
+            canReadModeratorNotes(context.user) ? parent.japaneseInsuranceSource ?? null : null
     },
 
     HealthcareProfessional: {

@@ -16,7 +16,7 @@
             data-testid="clinic-booking-region-contact"
         >
             <div
-                v-if="contact.phone"
+                v-if="phone"
                 class="flex flex-wrap gap-x-2"
             >
                 <dt class="font-medium">
@@ -24,9 +24,13 @@
                 </dt>
                 <dd>
                     <a
-                        :href="`tel:${contact.phone.replace(/[^\d+]/g, '')}`"
+                        v-if="phoneHref"
+                        :href="`tel:${phoneHref}`"
                         class="text-primary underline"
-                    >{{ contact.phone }}</a>
+                    >{{ phone }}</a>
+                    <template v-else>
+                        {{ phone }}
+                    </template>
                 </dd>
             </div>
             <div
@@ -80,7 +84,8 @@ import { fetchClinicById } from '~/utils/clinicFacility'
 import { clinicLandingPath } from '~/utils/clinicLanding'
 import { facilityPath } from '~/utils/clinicPath'
 import { localizedPath } from '~/utils/localePath'
-import type { FacilitySearchResult } from '~/utils/searchDirectory'
+import { facilityPhone, facilityPhoneHref, type FacilitySearchResult } from '~/utils/searchDirectory'
+import { isJapaneseLocale } from '~/utils/activeLocale'
 
 /**
  * Shown on the Book page instead of the form when the API says booking is not
@@ -95,6 +100,9 @@ const { t, locale } = useI18n()
 const facility = ref<FacilitySearchResult | null>(null)
 
 const contact = computed<Pick<Contact, 'phone' | 'email' | 'website'> | null>(() => facility.value?.contact ?? null)
+// Stored as E.164: national form on Japanese pages, +81 elsewhere; the link is always E.164.
+const phone = computed(() => facility.value ? facilityPhone(facility.value, isJapaneseLocale(String(locale.value))) : '')
+const phoneHref = computed(() => facility.value ? facilityPhoneHref(facility.value) : '')
 
 const clinicPath = computed(() => {
     if (facility.value) {

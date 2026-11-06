@@ -212,6 +212,7 @@ export default defineNuxtConfig({
         '/privacypolicy': { prerender: true },
         '/submit': { prerender: true },
         '/npo': { prerender: true },
+        '/insurance': { prerender: true },
         '/contact': { prerender: true },
         /*
          * /search reads its filters from the query string and loads the directory from the
@@ -268,7 +269,7 @@ export default defineNuxtConfig({
             // directory cache, not live facility(id)/healthcareProfessional(id) calls.
             concurrency: 8,
             routes: [
-                ...withLocaleVariants(['/', '/about', '/terms', '/privacypolicy', '/submit', '/npo', '/contact']),
+                ...withLocaleVariants(['/', '/about', '/terms', '/privacypolicy', '/submit', '/npo', '/insurance', '/contact']),
                 '/sitemap.xml'
             ],
             /*
