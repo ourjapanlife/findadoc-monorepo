@@ -132,7 +132,7 @@ Find a Doc holds patient booking requests, insurance documents, and health infor
 - It tunnels through `FindadocOperatorAccess` (`infra/lib/operatorAccessStack.ts`) and signs in with a 15-minute IAM token. Do not read `findadoc/database/master` or connect as `postgres`.
 - `findadoc_readonly` is the default. `--role operator` is for a backfill write the user approved after seeing the dry-run.
 - A data change is a backfill script, never ad hoc SQL. Scripts connect through `apps/server/utils/scriptDatabase.ts`, which refuses a remote host outside `pnpm db:prod` and a production write without `--confirm-production`.
-- Both roles are closed to booking, upload, appointment, membership, user, and audit tables (`20261107090000_rds_operator_roles.sql`). There are no default privileges: a new table is closed to them until its migration grants it. Grant a new directory table. Do not grant personal data.
+- Both roles are closed to booking, upload, appointment, membership, user, audit, and legacy `Reservation` tables (`20261107090000_rds_operator_roles.sql`, `20261107100000_rds_operator_row_policies.sql`). There are no default privileges: a new table is closed to them until its migration grants it and, when RLS is on, adds `findadoc_readonly_select` and `findadoc_operator_all` policies next to `findadoc_api_all`. Grant a new directory table. Do not grant personal data.
 
 ## Web code
 

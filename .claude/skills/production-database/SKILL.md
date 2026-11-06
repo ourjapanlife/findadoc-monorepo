@@ -60,7 +60,7 @@ A backfill that calls Google Places (`backfill:place-ids`) also needs `--places-
 
 ### 4. Writing a new backfill
 
-Use `scriptDatabaseConfig`, `assertScriptWriteAllowed`, and `describeScriptTarget` from `apps/server/utils/scriptDatabase.ts`, like `backfillProfessionalLicenses.ts`. Dry-run is the default, and `--write` is a separate script entry. A table added after the `rds_operator_roles` migration needs a grant to `findadoc_readonly` and `findadoc_operator` in its own migration before either role can see it.
+Use `scriptDatabaseConfig`, `assertScriptWriteAllowed`, and `describeScriptTarget` from `apps/server/utils/scriptDatabase.ts`, like `backfillProfessionalLicenses.ts`. Dry-run is the default, and `--write` is a separate script entry. A table added after the `rds_operator_roles` migration needs a grant to `findadoc_readonly` and `findadoc_operator` in its own migration before either role can see it. When RLS is on, it also needs `findadoc_readonly_select` and `findadoc_operator_all` policies, or the role sees zero rows without an error (see `20261107100000_rds_operator_row_policies.sql`). A count of 0 on a table you expect to have rows usually means that policy is missing.
 
 ## When it fails
 
