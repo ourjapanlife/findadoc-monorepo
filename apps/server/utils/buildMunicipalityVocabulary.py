@@ -174,13 +174,23 @@ def kind_rank(city: dict[str, str]) -> tuple[int, str]:
     return (kind, city['lgCode'])
 
 
+def kind_word(city: dict[str, str]) -> str:
+    """English kind for a town or village. A 市 or 区 keeps the plain name, so it has none here."""
+    if city['nameJa'].endswith('町'):
+        return 'Town'
+    if city['nameJa'].endswith('村'):
+        return 'Village'
+    return ''
+
+
 def disambiguate(cities: list[dict[str, str]]) -> None:
     """Same reading inside one prefecture. The winner keeps the plain name.
 
     The other municipality takes its district when that name differs. When the
-    district is the same word, or there is no district, the national code is
-    appended. Both pieces come from the source file, so the next refresh
-    applies the same rule.
+    district is the same word, or there is no district, it takes its kind (Town
+    for 町, Village for 村) if that tells it apart from the winner. The national
+    code is the last resort (#228). Every piece comes from the source file, so
+    the next refresh applies the same rule.
     """
     groups: dict[tuple[str, str], list[dict[str, str]]] = {}
     for city in cities:
@@ -189,11 +199,16 @@ def disambiguate(cities: list[dict[str, str]]) -> None:
     for group in groups.values():
         if len(group) < 2:
             continue
-        for city in sorted(group, key=kind_rank)[1:]:
+        ranked = sorted(group, key=kind_rank)
+        winner_kind = kind_word(ranked[0])
+        for city in ranked[1:]:
             stem = english_from_roma(city['countyRoma']) if city['countyRoma'] else ''
             base = city['nameEn']
+            kind = kind_word(city)
             if stem and slug_of(stem) != slug_of(base):
                 candidate = f'{base} {stem}'
+            elif kind and kind != winner_kind:
+                candidate = f'{base} {kind}'
             else:
                 candidate = f'{base} {city["lgCode"]}'
             key = (city['prefectureEn'], slug_of(candidate))

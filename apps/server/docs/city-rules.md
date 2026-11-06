@@ -49,7 +49,7 @@ When English and Japanese name different municipalities and the address does not
 
 ## Same reading inside one prefecture
 
-Two municipalities in one prefecture can share a reading, such as 釧路市 and 釧路町. The slug stays unique. The plain English name goes to the 市, otherwise the Tokyo 区, otherwise a name already published in this document, otherwise the 町, otherwise the smallest national code. The other row keeps that reading and adds the district when the district is a different word, so 府中町 is Fuchu Aki. When the district is the same word, or there is no district, the national code is appended, so 釧路町 is Kushiro 016616 and 枝幸町 is Esashi 015148. 江差町 stays Esashi. Japanese `nameJa` stays the official name. Do not invent a second spelling by hand. The generator applies this on the next register file.
+Two municipalities in one prefecture can share a reading, such as 釧路市 and 釧路町. The slug stays unique. The plain English name goes to the 市, otherwise the Tokyo 区, otherwise a name already published in this document, otherwise the 町, otherwise the smallest national code. The other row keeps that reading and adds the district when the district is a different word, so 府中町 is Fuchu Aki. When the district is the same word, or there is no district, it adds its kind instead: Town for 町, Village for 村. So 釧路町 is Kushiro Town and 利島村 is Toshima Village. The national code is the last resort, used only when the kind is the same as the plain-name row's: 江差町 stays Esashi, and 枝幸町, also a town, is Esashi 015148 (#228). Japanese `nameJa` stays the official name. Do not invent a second spelling by hand. The generator applies this on the next register file.
 
 ## Tokyo wards
 
