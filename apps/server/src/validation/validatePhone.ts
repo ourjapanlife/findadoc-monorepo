@@ -12,13 +12,6 @@ export function isStorablePhone(phone: string): boolean {
 }
 
 /**
- * The value written to `contact.phone`: E.164 (`+81312345678`) so it dials from any SIM.
- *
- * An empty phone stays empty. A value that does not parse is returned trimmed and unchanged:
- * validation has already refused it on input, so this only happens for a stored legacy row that
- * a write carries over untouched. The backfill reports those ids (`backfillFacilityPhones.ts`).
- */
-/**
  * True when a contact update may keep this phone: a storable number, or the exact value already
  * stored on the facility. The moderation form resends the stored phone whenever another contact
  * field changes, so an unparseable legacy row must not block an unrelated edit. A new value that
@@ -32,6 +25,13 @@ export function isAcceptedUpdatePhone(phone: string, storedPhone: string | null 
     return stored !== '' && phone.trim() === stored
 }
 
+/**
+ * The value written to `contact.phone`: E.164 (`+81312345678`) so it dials from any SIM.
+ *
+ * An empty phone stays empty. A value that does not parse is returned trimmed and unchanged:
+ * validation has already refused it on input, so this only happens for a stored legacy row that
+ * a write carries over untouched. The backfill reports those ids (`backfillFacilityPhones.ts`).
+ */
 export function phoneForStorage(phone: string | null | undefined): string {
     const trimmed = (phone ?? '').trim()
     if (trimmed === '') {

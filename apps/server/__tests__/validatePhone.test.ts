@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { isStorablePhone, phoneForStorage } from '../src/validation/validatePhone.js'
-import { validateContactInput, validateUpdateFacilityInput } from '../src/validation/validateFacility.js'
+import type { ContactInput } from '@findadoc/graphql'
+import { isAcceptedUpdatePhone, isStorablePhone, phoneForStorage } from '../src/validation/validatePhone.js'
+import { validateContactInput } from '../src/validation/validateFacility.js'
+import * as facilityService from '../src/services/facilityService.js'
 import { contactForStorage } from '../src/services/facilityService.js'
+import { generateRandomCreateFacilityInput } from '../src/fakeData/fakeFacilities.js'
+import { db } from '../src/kyselyClient.js'
+import { asJsonb } from '../utils/dbUtils.js'
 import { ErrorCode } from '../src/result.js'
 
 describe('facility phone validation', () => {
@@ -31,31 +36,74 @@ describe('facility phone validation', () => {
     })
 })
 
-describe('facility phone on update', () => {
+describe('isAcceptedUpdatePhone', () => {
     const legacyPhone = '03-5722-5500 (reception)'
 
-    it('keeps an unchanged legacy phone so another contact field can be edited', () => {
-        const result = validateUpdateFacilityInput(
-            { contact: { phone: legacyPhone, email: 'desk@example.com' } },
-            { storedPhone: legacyPhone }
-        )
+    it('accepts any storable number', () => {
+        expect(isAcceptedUpdatePhone('03-5722-5500', null)).toBe(true)
+    })
+
+    it('accepts an unparseable phone only when it is the stored value', () => {
+        expect(isAcceptedUpdatePhone(legacyPhone, legacyPhone)).toBe(true)
+        expect(isAcceptedUpdatePhone('+44 20 7946 0000', legacyPhone)).toBe(false)
+        expect(isAcceptedUpdatePhone(legacyPhone, '+81357225500')).toBe(false)
+        expect(isAcceptedUpdatePhone(legacyPhone, null)).toBe(false)
+    })
+})
+
+describe('facility update with a legacy phone', () => {
+    const legacyPhone = '03-5722-5500 (reception)'
+
+    async function facilityWithLegacyPhone(): Promise<{ id: string, contact: ContactInput }> {
+        const input = generateRandomCreateFacilityInput()
+        const created = await facilityService.createFacility(input, 'test|moderator')
+        expect(created.hasErrors).toBe(false)
+        const contact = { ...input.contact, phone: legacyPhone }
+        await db.updateTable('facilities')
+            .set({ contact: asJsonb(contact) })
+            .where('id', '=', created.data.id)
+            .execute()
+        return { id: created.data.id, contact }
+    }
+
+    async function storedPhone(id: string): Promise<unknown> {
+        const row = await db.selectFrom('facilities').select('contact').where('id', '=', id).executeTakeFirstOrThrow()
+        return (row.contact as { phone?: unknown }).phone
+    }
+
+    it('keeps the unchanged legacy phone so another contact field can be edited', async () => {
+        const facility = await facilityWithLegacyPhone()
+        const result = await facilityService.updateFacility(facility.id, {
+            contact: { ...facility.contact, email: 'desk@example.com' }
+        }, 'test|moderator')
+
         expect(result.hasErrors).toBe(false)
+        expect(await storedPhone(facility.id)).toBe(legacyPhone)
     })
 
-    it('refuses a new phone that does not parse, even when the stored one did not', () => {
-        const result = validateUpdateFacilityInput(
-            { contact: { phone: '+44 20 7946 0000' } },
-            { storedPhone: legacyPhone }
-        )
-        expect(result.errors).toContainEqual({
-            field: 'phone',
-            errorCode: ErrorCode.INVALID_PHONE_NUMBER,
-            httpStatus: 400
-        })
+    it('refuses a new phone that does not parse', async () => {
+        const facility = await facilityWithLegacyPhone()
+        const result = await facilityService.updateFacility(facility.id, {
+            contact: { ...facility.contact, phone: '+44 20 7946 0000' }
+        }, 'test|moderator')
+
+        expect(result.errors).toContainEqual({ field: 'phone', errorCode: ErrorCode.INVALID_PHONE_NUMBER, httpStatus: 400 })
+        expect(await storedPhone(facility.id)).toBe(legacyPhone)
     })
 
-    it('refuses an unparseable phone when nothing is stored', () => {
-        expect(validateUpdateFacilityInput({ contact: { phone: legacyPhone } }).hasErrors).toBe(true)
+    it('refuses a stale form that resends the legacy phone after it was fixed', async () => {
+        const facility = await facilityWithLegacyPhone()
+        const fixed = await facilityService.updateFacility(facility.id, {
+            contact: { ...facility.contact, phone: '03-5722-5500' }
+        }, 'test|moderator')
+        expect(fixed.hasErrors).toBe(false)
+
+        const stale = await facilityService.updateFacility(facility.id, {
+            contact: { ...facility.contact, email: 'desk@example.com' }
+        }, 'test|moderator')
+
+        expect(stale.errors).toContainEqual({ field: 'phone', errorCode: ErrorCode.INVALID_PHONE_NUMBER, httpStatus: 400 })
+        expect(await storedPhone(facility.id)).toBe('+81357225500')
     })
 })
 

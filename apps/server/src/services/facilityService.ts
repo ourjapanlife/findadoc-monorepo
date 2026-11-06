@@ -17,7 +17,7 @@ import { prefectureTranslations, resolvePrefectureKey } from '../../utils/japane
 import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
 import { databaseOrderColumn, FACILITY_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { isCityRecordId, resolveFacilityPublication, verificationStatusForUpdate } from './facilityPublication.js'
-import { isStorablePhone, phoneForStorage } from '../validation/validatePhone.js'
+import { isAcceptedUpdatePhone, phoneForStorage } from '../validation/validatePhone.js'
 import { cityExists, findCityBySlug } from './cityService.js'
 import { FacilitySource } from '@findadoc/graphql'
 import { matchingFacilityId } from '../places/facilityMapsMatch.js'
@@ -857,25 +857,31 @@ export async function countFacilities(
     }
 }
 
-/**
- * The facility's stored phone, read only when an update sends a phone that does not parse.
- * Validation then accepts that phone if it is the unchanged legacy value.
- */
-async function storedPhoneForUnparseableUpdate(
-    facilityId: string,
-    fieldsToUpdate: Partial<gqlTypes.UpdateFacilityInput>
-): Promise<string | null> {
-    const phone = fieldsToUpdate.contact?.phone
-    if (!phone || isStorablePhone(phone)) {
-        return null
+function invalidPhone(): Result<FacilityParent> {
+    return {
+        data: {} as FacilityParent,
+        hasErrors: true,
+        errors: [{
+            field: 'phone',
+            errorCode: ErrorCode.INVALID_PHONE_NUMBER,
+            httpStatus: 400
+        }]
     }
-    const row = await db
-        .selectFrom('facilities')
-        .select('contact')
-        .where('id', '=', facilityId)
-        .executeTakeFirst()
-    const contact = row?.contact as { phone?: unknown } | null | undefined
-    return typeof contact?.phone === 'string' ? contact.phone : null
+}
+
+/**
+ * Refuses a phone that does not parse unless it is the value on the locked row. The moderation
+ * form resends a stored legacy phone with every contact edit; checking under the lock stops a
+ * stale copy from overwriting a phone another moderator just fixed.
+ */
+function assertPhoneAcceptedOnLockedRow(phone: string | null | undefined, storedContact: unknown): void {
+    if (!phone) {
+        return
+    }
+    const stored = (storedContact as { phone?: unknown } | null)?.phone
+    if (!isAcceptedUpdatePhone(phone, typeof stored === 'string' ? stored : null)) {
+        throw new FacilityUpdateRejected(invalidPhone())
+    }
 }
 
 /**
@@ -891,8 +897,7 @@ export const updateFacility = async (
 ): Promise<Result<FacilityParent>> => {
     try {
         // Validate input before attempting database operations
-        const storedPhone = await storedPhoneForUnparseableUpdate(facilityId, fieldsToUpdate)
-        const validationResult = validateUpdateFacilityInput(fieldsToUpdate, { storedPhone })
+        const validationResult = validateUpdateFacilityInput(fieldsToUpdate, { legacyPhoneCheckedUnderLock: true })
 
         if (validationResult.hasErrors) {
             return validationResult as Result<FacilityParent>
@@ -928,6 +933,8 @@ export const updateFacility = async (
             if (!originalFacility) {
                 throw new Error(`Could not find facility with id ${facilityId} to update.`)
             }
+
+            assertPhoneAcceptedOnLockedRow(fields.contact?.phone, originalFacility.contact)
 
             const becomingOnline = fields.online === true
             const goingOffline = fields.online === false && originalFacility.online === true

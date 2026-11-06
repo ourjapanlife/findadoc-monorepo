@@ -1,7 +1,7 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
 import { hasSpecialCharacters, isValidEmail, isValidWebsite } from '../../utils/stringUtils.js'
-import { isAcceptedUpdatePhone } from './validatePhone.js'
+import { isStorablePhone } from './validatePhone.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 import { isPublishedLocale } from '../languages/publishedLocales.js'
@@ -138,8 +138,12 @@ export function validateSupportedLanguages(
 }
 
 export interface UpdateFacilityValidationOptions {
-    /** The phone already stored on the facility. An unchanged legacy value is accepted. */
-    storedPhone?: string | null
+    /**
+     * The caller checks a phone that does not parse against the stored value with
+     * `isAcceptedUpdatePhone`, on the row it has locked. A stored phone read before the lock can be
+     * stale, so this validator does not judge an unparseable phone in that case.
+     */
+    legacyPhoneCheckedUnderLock?: boolean
 }
 
 /**
@@ -174,7 +178,8 @@ export function validateUpdateFacilityInput(
     }
 
     if (input.contact) {
-        const contactValidationResults = validateContactInput(input.contact, options.storedPhone)
+        const legacyPhoneCheckedUnderLock = options.legacyPhoneCheckedUnderLock === true
+        const contactValidationResults = validateContactInput(input.contact, legacyPhoneCheckedUnderLock)
 
         if (contactValidationResults.hasErrors) {
             validationResults.hasErrors = true
@@ -333,7 +338,7 @@ export function hasUsableMapPin(
 
 export function validateContactInput(
     contactInput: gqlTypes.ContactInput | gqlTypes.Contact,
-    storedPhone?: string | null
+    legacyPhoneCheckedUnderLock = false
 ): Result<unknown> {
     const validationResults: Result<unknown> = {
         data: undefined,
@@ -354,7 +359,7 @@ export function validateContactInput(
         })
     }
 
-    if (contactInput.phone && !isAcceptedUpdatePhone(contactInput.phone, storedPhone)) {
+    if (contactInput.phone && !legacyPhoneCheckedUnderLock && !isStorablePhone(contactInput.phone)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'phone',
