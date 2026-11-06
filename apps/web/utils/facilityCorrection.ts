@@ -39,36 +39,19 @@ export type CorrectionFieldGroup = 'address' | 'contact' | 'languages' | 'paymen
 
 export type CorrectionReasonOption = {
     reason: FacilityCorrectionReason
-    /** Shown before the label. Decorative only: the label carries the meaning. */
-    icon: string
     labelKey: string
     field: CorrectionFieldGroup | null
 }
 
 /** In the order the form shows them. */
 export const CORRECTION_REASON_OPTIONS: readonly CorrectionReasonOption[] = [
-    { reason: FacilityCorrectionReason.WrongCity, icon: '📍', labelKey: 'clinicCorrection.reasonWrongCity', field: 'address' },
-    { reason: FacilityCorrectionReason.Closed, icon: '🚪', labelKey: 'clinicCorrection.reasonClosed', field: null },
-    {
-        reason: FacilityCorrectionReason.WrongLanguages,
-        icon: '🗣️',
-        labelKey: 'clinicCorrection.reasonWrongLanguages',
-        field: 'languages'
-    },
-    {
-        reason: FacilityCorrectionReason.WrongPayment,
-        icon: '💳',
-        labelKey: 'clinicCorrection.reasonWrongPayment',
-        field: 'payment'
-    },
-    {
-        reason: FacilityCorrectionReason.WrongContact,
-        icon: '☎️',
-        labelKey: 'clinicCorrection.reasonWrongContact',
-        field: 'contact'
-    },
-    { reason: FacilityCorrectionReason.Duplicate, icon: '👥', labelKey: 'clinicCorrection.reasonDuplicate', field: 'duplicate' },
-    { reason: FacilityCorrectionReason.Other, icon: '✏️', labelKey: 'clinicCorrection.reasonOther', field: null }
+    { reason: FacilityCorrectionReason.WrongCity, labelKey: 'clinicCorrection.reasonWrongCity', field: 'address' },
+    { reason: FacilityCorrectionReason.Closed, labelKey: 'clinicCorrection.reasonClosed', field: null },
+    { reason: FacilityCorrectionReason.WrongLanguages, labelKey: 'clinicCorrection.reasonWrongLanguages', field: 'languages' },
+    { reason: FacilityCorrectionReason.WrongPayment, labelKey: 'clinicCorrection.reasonWrongPayment', field: 'payment' },
+    { reason: FacilityCorrectionReason.WrongContact, labelKey: 'clinicCorrection.reasonWrongContact', field: 'contact' },
+    { reason: FacilityCorrectionReason.Duplicate, labelKey: 'clinicCorrection.reasonDuplicate', field: 'duplicate' },
+    { reason: FacilityCorrectionReason.Other, labelKey: 'clinicCorrection.reasonOther', field: null }
 ]
 
 export const CORRECTION_RELATION_OPTIONS: readonly { relation: CorrectionReporterRelation, labelKey: string }[] = [

@@ -109,7 +109,7 @@
                                 :data-testid="`clinic-correction-reason-${option.reason}`"
                                 @click="toggleReason(option.reason)"
                             >
-                                <span aria-hidden="true">{{ option.icon }}</span>
+                                <ClinicCorrectionReasonIcon :reason="option.reason" />
                                 {{ t(option.labelKey) }}
                             </button>
                         </div>
