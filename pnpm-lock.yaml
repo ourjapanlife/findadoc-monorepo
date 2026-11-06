@@ -500,6 +500,9 @@ importers:
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -13521,7 +13524,7 @@ snapshots:
       '@intlify/message-compiler': 11.4.14
       '@intlify/shared': 11.4.14
       acorn: 8.19.0
-      esbuild: 0.25.12
+      esbuild: 0.25.11
       escodegen: 2.1.0
       estree-walker: 2.0.2
       jsonc-eslint-parser: 2.4.2

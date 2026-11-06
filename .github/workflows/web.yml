@@ -2,6 +2,8 @@ name: Web
 
 on:
   workflow_dispatch:
+  # directory-refresh.yml calls this when a clinic or doctor page is missing from the live site.
+  workflow_call:
   push:
     branches: [main]
     paths:
