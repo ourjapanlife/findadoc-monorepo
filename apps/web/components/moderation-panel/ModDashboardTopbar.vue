@@ -89,32 +89,29 @@
             landscape:flex-wrap landscape:items-end portrait:[&>*:last-child:nth-child(odd)]:col-span-2"
         >
             <button
+                v-for="tab in SUBMISSION_TABS"
+                :key="tab.tab"
                 type="button"
-                :class="statusFilterClass(SelectedSubmissionListViewTab.New)"
-                @click="updateSubmissionListViewState(SelectedSubmissionListViewTab.New)"
+                :class="statusFilterClass(tab.tab)"
+                :aria-pressed="moderationSubmissionsStore.selectedModerationListViewTabChosen === tab.tab"
+                :data-testid="`mod-submission-tab-${tab.tab}`"
+                @click="updateSubmissionListViewState(tab.tab)"
             >
-                {{ t("modDashboardLeftNav.new") }} ({{ moderationSubmissionsStore.statusTotalCounts.newCount }})
-            </button>
-            <button
-                type="button"
-                :class="statusFilterClass(SelectedSubmissionListViewTab.ForReview)"
-                @click="updateSubmissionListViewState(SelectedSubmissionListViewTab.ForReview)"
-            >
-                {{ t("modDashboardLeftNav.forReview") }} ({{ moderationSubmissionsStore.statusTotalCounts.forReviewCount }})
-            </button>
-            <button
-                type="button"
-                :class="statusFilterClass(SelectedSubmissionListViewTab.Approved)"
-                @click="updateSubmissionListViewState(SelectedSubmissionListViewTab.Approved)"
-            >
-                {{ t("modDashboardLeftNav.approved") }} ({{ moderationSubmissionsStore.statusTotalCounts.approvedCount }})
-            </button>
-            <button
-                type="button"
-                :class="statusFilterClass(SelectedSubmissionListViewTab.Rejected)"
-                @click="updateSubmissionListViewState(SelectedSubmissionListViewTab.Rejected)"
-            >
-                {{ t("modDashboardLeftNav.rejected") }} ({{ moderationSubmissionsStore.statusTotalCounts.rejectedCount }})
+                <span class="inline-flex items-center gap-2">
+                    <component
+                        :is="tab.icon"
+                        class="size-4 shrink-0"
+                        :class="tab.iconClass"
+                        aria-hidden="true"
+                    />
+                    {{ t(tab.labelKey) }}
+                    <span
+                        class="min-w-6 rounded-full px-1.5 py-0.5 text-center text-xs font-semibold tabular-nums"
+                        :class="tab.countClass"
+                    >
+                        {{ moderationSubmissionsStore.statusTotalCounts[tab.countKey] }}
+                    </span>
+                </span>
             </button>
         </div>
     </div>
@@ -134,6 +131,11 @@ import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessional
 import { navigateTo, useI18n } from '#imports'
 import { fetchAllBookingClinics } from '~/utils/booking/staffQuery'
 import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
+import SvgChatBubbles from '~/assets/icons/chat-bubbles.svg'
+import SvgCheckMark from '~/assets/icons/check-mark.svg'
+import SvgClose from '~/assets/icons/x-close-symbol.svg'
+import SvgTime from '~/assets/icons/time-icon.svg'
+import SvgInbox from '~/assets/icons/inbox.svg'
 
 const { t } = useI18n()
 const moderationSubmissionsStore = useModerationSubmissionsStore()
@@ -190,6 +192,62 @@ function toggleLicenseReviewFilter() {
     const reviewIsOff = healthcareProfessionalsStore.licenseReviewFilter === null
     healthcareProfessionalsStore.setLicenseReviewFilter(reviewIsOff)
 }
+
+type SubmissionTabCountKey = keyof typeof moderationSubmissionsStore.statusTotalCounts
+
+type SubmissionTab = {
+    tab: SelectedSubmissionListViewTab
+    labelKey: string
+    countKey: SubmissionTabCountKey
+    // nuxt-svgo makes each icon a component. Its module declaration types the import as string.
+    icon: string
+    iconClass: string
+    countClass: string
+}
+
+/** Five queues (#22). Each has an icon and a count, so the color is never the only signal. */
+const SUBMISSION_TABS: readonly SubmissionTab[] = [
+    {
+        tab: SelectedSubmissionListViewTab.New,
+        labelKey: 'modDashboardLeftNav.new',
+        countKey: 'newCount',
+        icon: SvgInbox,
+        iconClass: 'text-info',
+        countClass: 'bg-info/10 text-primary-text'
+    },
+    {
+        tab: SelectedSubmissionListViewTab.ForReview,
+        labelKey: 'modDashboardLeftNav.forReview',
+        countKey: 'forReviewCount',
+        icon: SvgTime,
+        iconClass: 'stroke-warning stroke-2',
+        countClass: 'bg-warning/15 text-primary-text'
+    },
+    {
+        tab: SelectedSubmissionListViewTab.Approved,
+        labelKey: 'modDashboardLeftNav.approved',
+        countKey: 'approvedCount',
+        icon: SvgCheckMark,
+        iconClass: 'text-success',
+        countClass: 'bg-success/10 text-primary-text'
+    },
+    {
+        tab: SelectedSubmissionListViewTab.Rejected,
+        labelKey: 'modDashboardLeftNav.rejected',
+        countKey: 'rejectedCount',
+        icon: SvgClose,
+        iconClass: 'text-error',
+        countClass: 'bg-error/10 text-primary-text'
+    },
+    {
+        tab: SelectedSubmissionListViewTab.UserFeedback,
+        labelKey: 'modDashboardLeftNav.userFeedback',
+        countKey: 'feedbackCount',
+        icon: SvgChatBubbles,
+        iconClass: 'stroke-accent stroke-2',
+        countClass: 'bg-accent/20 text-primary-text'
+    }
+]
 
 async function updateSubmissionListViewState(newValue: SelectedSubmissionListViewTab) {
     await moderationSubmissionsStore.setSelectedModerationListViewTabChosen(newValue)
