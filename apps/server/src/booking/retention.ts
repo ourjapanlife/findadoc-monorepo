@@ -6,8 +6,9 @@
  * its number is never collected. They are kept only until retain_until, then
  * a purge run deletes the object. Standard attachments use a longer default.
  *
- * Medical free-text answers are not auto-purged here; that needs a separate
- * policy once the CRM export path is decided.
+ * Answers on the submission row follow one rule for every field (#212): they
+ * are erased a set number of days after the visit ends, and at once when the
+ * visit is cancelled or declined (src/booking/answerPurge.ts).
  */
 
 export const BOOKING_FIELD_SENSITIVITY = {
@@ -34,6 +35,20 @@ export function retentionDaysForSensitivity(sensitivity: BookingFieldSensitivity
     const raw = process.env.BOOKING_STANDARD_RETENTION_DAYS
     const parsed = raw ? Number(raw) : NaN
     return Number.isFinite(parsed) && parsed > 0 ? parsed : STANDARD_UPLOAD_RETENTION_DAYS
+}
+
+/**
+ * Default days a patient's answers stay after the visit ends (#212). A request with
+ * no appointment counts from when it was sent. The clinic copies what it needs into
+ * its own chart; the medical record duty is the clinic's, not Find a Doc's.
+ */
+export const ANSWER_RETENTION_DAYS_AFTER_VISIT = 90
+
+/** Days answers stay after the visit, from BOOKING_ANSWER_RETENTION_DAYS when it is a positive number. */
+export function answerRetentionDays(): number {
+    const raw = process.env.BOOKING_ANSWER_RETENTION_DAYS
+    const parsed = raw ? Number(raw) : NaN
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : ANSWER_RETENTION_DAYS_AFTER_VISIT
 }
 
 export function retainUntilFromNow(

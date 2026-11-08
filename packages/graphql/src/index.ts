@@ -265,6 +265,11 @@ export type BookingSettings = {
 export type BookingSubmissionDetail = {
   __typename?: 'BookingSubmissionDetail';
   answers: Array<BookingAnswerView>;
+  /**
+   * When the patient's answers were erased (#212): 90 days after the visit, or at a cancel
+   * or decline. answers is empty from then on. Null while the answers are kept.
+   */
+  answersPurgedAt?: Maybe<Scalars['String']['output']>;
   appointmentId?: Maybe<Scalars['ID']['output']>;
   appointmentStatus?: Maybe<BookingAppointmentStatus>;
   cancelledBy?: Maybe<BookingCancelledBy>;
@@ -2882,6 +2887,7 @@ export type BookingSettingsResolvers<ContextType = any, ParentType extends Resol
 
 export type BookingSubmissionDetailResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingSubmissionDetail'] = ResolversParentTypes['BookingSubmissionDetail']> = {
   answers?: Resolver<Array<ResolversTypes['BookingAnswerView']>, ParentType, ContextType>;
+  answersPurgedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   appointmentId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   appointmentStatus?: Resolver<Maybe<ResolversTypes['BookingAppointmentStatus']>, ParentType, ContextType>;
   cancelledBy?: Resolver<Maybe<ResolversTypes['BookingCancelledBy']>, ParentType, ContextType>;

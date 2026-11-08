@@ -194,7 +194,7 @@
   "privacyPage": {
     "heading": "Kebijakan Privasi",
     "subheading": "Data apa yang kami kumpulkan, mengapa kami mengumpulkannya, dengan siapa kami membagikannya, dan cara menghubungi kami tentang informasi Anda.",
-    "date": "Tanggal berlaku: 29 Oktober 2026",
+    "date": "Tanggal berlaku: 8 November 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Siapa kami",
@@ -222,7 +222,7 @@
       "retention": {
         "heading": "5. Berapa lama kami menyimpannya",
         "p1": "Foto kartu asuransi dan dokumen identitas lain yang diunggah bersama reservasi dihapus 30 hari setelah diunggah. File reservasi lainnya dihapus setelah satu tahun, dan file dari reservasi yang tidak pernah dikirim dihapus setelah 24 jam.",
-        "p2": "Jawaban reservasi dan catatan janji temu disimpan selama dibutuhkan oleh klinik dan selama diperlukan untuk menyelesaikan sengketa atau memenuhi kewajiban hukum. Informasi akun disimpan selama akun masih aktif. Anda dapat meminta kami menghapus informasi Anda lebih awal (bagian 8)."
+        "p2": "Jawaban reservasi Anda, seperti nama, kontak, tanggal lahir, dan alasan kunjungan, dihapus 90 hari setelah janji temu selesai. Jika janji temu dibatalkan atau klinik menolak permintaan, jawaban langsung dihapus. Jawaban untuk permintaan tanpa waktu janji temu dihapus 90 hari setelah dikirim, dan catatan yang diberikan saat pembatalan dihapus 90 hari setelah waktu janji temu. Kami hanya menyimpan catatan bahwa permintaan pernah dibuat: klinik, waktu dan status janji temu, serta tanggal. Klinik menyimpan rekam medisnya sendiri sesuai kewajiban hukumnya sendiri. Informasi akun disimpan selama akun masih aktif. Anda dapat meminta kami menghapus informasi Anda lebih awal (bagian 8)."
       },
       "cookies": {
         "heading": "6. Cookie dan pengukuran iklan",
@@ -948,6 +948,8 @@
     "loadError": "Tidak dapat memuat reservasi ini.",
     "empty": "Belum ada pengajuan reservasi",
     "answersHeading": "Jawaban",
+    "answersRemoved": "Jawaban dihapus setelah masa simpan berakhir.",
+    "answersRemovedOnClose": "Jawaban dihapus saat permintaan ini dibatalkan atau ditolak.",
     "uploadsHeading": "Unggahan",
     "uploadsRetentionNote": "Foto identitas dan asuransi disimpan sampai tanggal batas penyimpanannya. Foto tersebut langsung dihapus begitu kunjungan dibatalkan atau ditolak.",
     "download": "Unduh",

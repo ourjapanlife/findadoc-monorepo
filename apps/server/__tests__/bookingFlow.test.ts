@@ -231,6 +231,10 @@ describe('booking flow', () => {
             'test|staff'
         )
         expect(confirmed.data.status).toBe(BookingAppointmentStatus.Confirmed)
+        // A confirmed visit keeps the answers the clinic needs for it.
+        const confirmedDetail = await staffBookingService.getBookingSubmissionDetail(submitted.data.id, admin)
+        expect(confirmedDetail?.answersPurgedAt).toBeNull()
+        expect(confirmedDetail?.answers.find(answer => answer.fieldId === 'fullName')?.value).toBe('Test Patient')
 
         // Confirming twice is a stale transition.
         const again = await appointmentService.updateAppointmentStatus(
@@ -260,6 +264,22 @@ describe('booking flow', () => {
 
         const detail = await staffBookingService.getBookingSubmissionDetail(submitted.data.id, admin)
         expect(detail?.statusReason).toBe('Feeling better')
+        // The patient's cancel erases their answers in the same call (#212).
+        expect(detail?.answers).toEqual([])
+        expect(detail?.answersPurgedAt).not.toBeNull()
+        const erased = await db.selectFrom('booking_submissions')
+            .select('answers')
+            .where('id', '=', submitted.data.id)
+            .executeTakeFirstOrThrow()
+        expect(erased.answers).toEqual({})
+        const listedAfter = await staffBookingService.searchBookingSubmissions({ facilityId }, admin)
+        expect(listedAfter.find(item => item.id === submitted.data.id)?.patientName).toBeNull()
+
+        // The manage link still opens, with no answers in it.
+        const afterView = await appointmentService.getPatientBooking(token)
+        expect(afterView?.status).toBe(BookingAppointmentStatus.Cancelled)
+        expect(Object.keys(afterView ?? {}).sort()).toEqual(['canCancel', 'clinicName', 'endsAt', 'startsAt', 'status'])
+        expect(JSON.stringify(afterView)).not.toContain('patient@example.com')
     })
 
     it('hides one clinic\'s bookings and calendar from another clinic\'s members', async () => {
@@ -455,6 +475,11 @@ describe('booking flow', () => {
         expect(row.file_name).toBe('')
         expect((await staffBookingService.createStaffBookingDownloadUrl(upload.id, 'http://127.0.0.1:4000', admin))
             .hasErrors).toBe(true)
+
+        // The decline erases the answers too (#212).
+        const detail = await staffBookingService.getBookingSubmissionDetail(submitted.data.id, admin)
+        expect(detail?.answers).toEqual([])
+        expect(detail?.answersPurgedAt).not.toBeNull()
         await db.deleteFrom('booking_uploads').where('id', '=', upload.id).execute()
     })
 

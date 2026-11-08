@@ -1504,6 +1504,11 @@ type BookingSubmissionDetail {
   service: String
   createdDate: String!
   updatedDate: String!
+  """
+  When the patient's answers were erased (#212): 90 days after the visit, or at a cancel
+  or decline. answers is empty from then on. Null while the answers are kept.
+  """
+  answersPurgedAt: String
   answers: [BookingAnswerView!]!
   uploads: [BookingUploadView!]!
 }

@@ -284,6 +284,8 @@ export interface BookingSubmissionsTable {
     cancel_token_hash: string | null
     /** When the patient ticked the health-data consent box (#173). Null on requests sent before it existed. */
     health_data_consented_at: string | null
+    /** When answers was emptied under the retention rule (#212). Null while the answers are kept. */
+    answers_purged_at: ColumnType<string | null, string | null | undefined, string | null>
     created_date: Generated<string>
     updated_date: Generated<string>
 }

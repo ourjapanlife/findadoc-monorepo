@@ -121,7 +121,7 @@
   "privacyPage": {
     "heading": "Patakaran sa Privacy",
     "subheading": "Ano ang kinokolekta namin, bakit, kanino namin ito ibinabahagi, at paano kami makakausap tungkol sa iyong impormasyon.",
-    "date": "Petsa ng bisa: Oktubre 29, 2026",
+    "date": "Petsa ng bisa: Nobyembre 8, 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Sino kami",
@@ -149,7 +149,7 @@
       "retention": {
         "heading": "5. Gaano katagal namin ito itinatago",
         "p1": "Binubura ang mga larawan ng insurance card at iba pang identity document na na-upload kasama ng booking 30 araw matapos i-upload. Binubura ang iba pang file ng booking pagkalipas ng isang taon, at ang mga file mula sa booking na hindi naipadala ay binubura pagkalipas ng 24 oras.",
-        "p2": "Itinatago ang mga sagot sa booking at mga talaan ng appointment habang kailangan ng klinika at hangga't kailangan para lutasin ang mga alitan o tuparin ang mga legal na obligasyon. Itinatago ang impormasyon ng account habang aktibo ang account. Maaari mong hilinging burahin namin nang mas maaga ang iyong impormasyon (seksyon 8)."
+        "p2": "Binubura ang mga sagot mo sa booking, gaya ng pangalan, contact details, petsa ng kapanganakan, at dahilan ng pagbisita, 90 araw matapos ang appointment. Kapag kinansela ang appointment o tinanggihan ng klinika ang request, binubura agad ang mga ito. Ang mga sagot sa request na walang oras ng appointment ay binubura 90 araw matapos itong ipadala, at ang tala na kasama ng pagkansela ay binubura 90 araw matapos ang oras ng appointment. Talaan lang na may ginawang request ang itinatago namin: ang klinika, ang oras at status ng appointment, at mga petsa. Ang klinika ang nagtatago ng sarili nitong medical records ayon sa sarili nitong mga legal na tungkulin. Itinatago ang impormasyon ng account habang aktibo ang account. Maaari mong hilinging burahin namin nang mas maaga ang iyong impormasyon (seksyon 8)."
       },
       "cookies": {
         "heading": "6. Mga Cookie at Pagsukat ng Advertising",
@@ -948,6 +948,8 @@
     "loadError": "Hindi ma-load ang booking na ito.",
     "empty": "Wala pang booking submissions",
     "answersHeading": "Mga sagot",
+    "answersRemoved": "Binura ang mga sagot matapos ang panahon ng pagtatago.",
+    "answersRemovedOnClose": "Binura ang mga sagot nang kinansela o tinanggihan ang request na ito.",
     "uploadsHeading": "Mga upload",
     "uploadsRetentionNote": "Itinatago ang mga larawan ng ID at insurance hanggang sa petsa ng pagtatago. Binubura ang mga ito kapag kinansela o tinanggihan ang pagbisita.",
     "download": "I-download",

@@ -51,3 +51,20 @@ export function staffActionLabelKey(next: BookingAppointmentStatus): string {
 export function actionTakesReason(next: BookingAppointmentStatus): boolean {
     return next === BookingAppointmentStatus.Declined || next === BookingAppointmentStatus.Cancelled
 }
+
+/**
+ * The note staff see in place of answers the retention rule erased (#212), or null
+ * while the answers are kept. A cancel or decline erases them at once; anything else
+ * waited out the retention period.
+ */
+export function answersRemovedNoteKey(detail: {
+    answersPurgedAt?: string | null
+    appointmentStatus?: BookingAppointmentStatus | null
+} | null | undefined): string | null {
+    if (detail?.answersPurgedAt === null || detail?.answersPurgedAt === undefined) {
+        return null
+    }
+    return actionTakesReason(detail.appointmentStatus ?? BookingAppointmentStatus.Requested)
+        ? 'bookingDashboard.answersRemovedOnClose'
+        : 'bookingDashboard.answersRemoved'
+}

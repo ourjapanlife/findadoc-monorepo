@@ -121,7 +121,7 @@
   "privacyPage": {
     "heading": "Datenschutzerklärung",
     "subheading": "Was wir erheben, warum, an wen wir es weitergeben und wie Sie uns zu Ihren Daten erreichen.",
-    "date": "Gültig ab: 29. Oktober 2026",
+    "date": "Gültig ab: 8. November 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Wer wir sind",
@@ -149,7 +149,7 @@
       "retention": {
         "heading": "5. Wie lange wir sie speichern",
         "p1": "Fotos von Versicherungskarten und anderen Ausweisdokumenten, die mit einer Terminanfrage hochgeladen werden, löschen wir 30 Tage nach dem Hochladen. Andere Dateien einer Terminanfrage löschen wir nach einem Jahr, Dateien einer nie abgesendeten Anfrage nach 24 Stunden.",
-        "p2": "Antworten und Termindaten speichern wir, solange die Praxis sie braucht und solange es zur Klärung von Streitigkeiten oder zur Erfüllung gesetzlicher Pflichten nötig ist. Kontodaten speichern wir, solange das Konto besteht. Sie können eine frühere Löschung verlangen (Abschnitt 8)."
+        "p2": "Ihre Antworten bei der Buchung, etwa Name, Kontaktdaten, Geburtsdatum und Grund des Besuchs, löschen wir 90 Tage nach dem Ende des Termins. Wird der Termin abgesagt oder lehnt die Praxis die Anfrage ab, löschen wir sie sofort. Antworten zu einer Anfrage ohne Terminzeit löschen wir 90 Tage nach dem Absenden, eine Notiz zu einer Absage 90 Tage nach der Terminzeit. Wir behalten nur einen Nachweis, dass die Anfrage gestellt wurde: die Praxis, Zeit und Status des Termins und Datumsangaben. Die Praxis führt ihre eigenen Patientenakten nach ihren eigenen gesetzlichen Pflichten. Kontodaten speichern wir, solange das Konto besteht. Sie können eine frühere Löschung verlangen (Abschnitt 8)."
       },
       "cookies": {
         "heading": "6. Cookies und Werbemessung",
@@ -948,6 +948,8 @@
     "loadError": "Diese Buchung konnte nicht geladen werden.",
     "empty": "Noch keine Buchungsanfragen",
     "answersHeading": "Antworten",
+    "answersRemoved": "Die Antworten wurden nach Ablauf der Aufbewahrungsfrist gelöscht.",
+    "answersRemovedOnClose": "Die Antworten wurden gelöscht, als diese Anfrage abgesagt oder abgelehnt wurde.",
     "uploadsHeading": "Hochgeladene Dateien",
     "uploadsRetentionNote": "Ausweis- und Versicherungsfotos werden bis zu ihrem Aufbewahrungsdatum gespeichert. Sie werden gelöscht, sobald der Termin abgesagt oder abgelehnt wird.",
     "download": "Herunterladen",

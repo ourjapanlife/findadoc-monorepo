@@ -151,7 +151,7 @@
   "privacyPage": {
     "heading": "Informativa sulla privacy",
     "subheading": "Cosa raccogliamo, perché, con chi lo condividiamo e come contattarci riguardo alle tue informazioni.",
-    "date": "Data di entrata in vigore: 29 ottobre 2026",
+    "date": "Data di entrata in vigore: 8 novembre 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Chi siamo",
@@ -179,7 +179,7 @@
       "retention": {
         "heading": "5. Per quanto tempo le conserviamo",
         "p1": "Le foto delle tessere assicurative e di altri documenti d'identità caricate con una prenotazione vengono eliminate 30 giorni dopo il caricamento. Gli altri file di prenotazione vengono eliminati dopo un anno, e i file di una prenotazione mai inviata dopo 24 ore.",
-        "p2": "Le risposte e i dati delle prenotazioni sono conservati finché servono alla clinica e per il tempo necessario a risolvere controversie o adempiere obblighi di legge. Le informazioni dell'account sono conservate finché l'account è attivo. Puoi chiederci di eliminarle prima (sezione 8)."
+        "p2": "Le risposte che dai per la prenotazione, come nome, recapiti, data di nascita e motivo della visita, vengono eliminate 90 giorni dopo la fine dell'appuntamento. Se l'appuntamento viene annullato o la clinica rifiuta la richiesta, vengono eliminate subito. Le risposte a una richiesta senza orario vengono eliminate 90 giorni dopo l'invio, e una nota lasciata con un annullamento 90 giorni dopo l'orario dell'appuntamento. Conserviamo solo la traccia della richiesta: la clinica, l'orario e lo stato dell'appuntamento e le date. La clinica conserva le proprie cartelle cliniche secondo i propri obblighi di legge. Le informazioni dell'account sono conservate finché l'account è attivo. Puoi chiederci di eliminarle prima (sezione 8)."
       },
       "cookies": {
         "heading": "6. Cookie e misurazione pubblicitaria",
@@ -948,6 +948,8 @@
     "loadError": "Impossibile caricare questa prenotazione.",
     "empty": "Nessuna richiesta di prenotazione",
     "answersHeading": "Risposte",
+    "answersRemoved": "Risposte eliminate al termine del periodo di conservazione.",
+    "answersRemovedOnClose": "Risposte eliminate quando questa richiesta è stata annullata o rifiutata.",
     "uploadsHeading": "Caricamenti",
     "uploadsRetentionNote": "Le foto dei documenti e dell'assicurazione restano fino alla data di conservazione. Vengono eliminate appena la visita è annullata o rifiutata.",
     "download": "Scarica",

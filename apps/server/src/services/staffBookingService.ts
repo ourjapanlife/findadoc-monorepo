@@ -234,6 +234,7 @@ export async function getBookingSubmissionDetail(
             'booking.form_definition_id',
             'booking.form_version',
             'booking.answers',
+            'booking.answers_purged_at',
             'booking.created_date',
             'booking.updated_date',
             'site.slug',
@@ -297,6 +298,7 @@ export async function getBookingSubmissionDetail(
         service: row.service_key,
         createdDate: row.created_date,
         updatedDate: row.updated_date,
+        answersPurgedAt: row.answers_purged_at === null ? null : new Date(row.answers_purged_at).toISOString(),
         answers: staffAnswers(row.form_definition_id, answersRecord, new Set(uploads.map(upload => upload.id))),
         uploads: uploads.map(upload => ({
             id: upload.id,

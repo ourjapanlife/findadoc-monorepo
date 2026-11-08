@@ -121,7 +121,7 @@
   "privacyPage": {
     "heading": "Política de Privacidade",
     "subheading": "O que coletamos, por que coletamos, com quem compartilhamos e como falar conosco sobre suas informações.",
-    "date": "Data de vigência: 29 de outubro de 2026",
+    "date": "Data de vigência: 8 de novembro de 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Quem somos",
@@ -149,7 +149,7 @@
       "retention": {
         "heading": "5. Por quanto tempo guardamos",
         "p1": "Fotos de cartões de seguro e outros documentos de identidade enviados com um agendamento são excluídas 30 dias após o envio. Outros arquivos de agendamento são excluídos após um ano, e arquivos de um agendamento que nunca foi enviado são excluídos após 24 horas.",
-        "p2": "Respostas e registros de agendamento são guardados enquanto a clínica precisar deles e pelo tempo necessário para resolver disputas ou cumprir obrigações legais. Informações de conta são guardadas enquanto a conta estiver ativa. Você pode pedir que excluamos suas informações antes (seção 8)."
+        "p2": "Suas respostas no agendamento, como nome, contatos, data de nascimento e motivo da consulta, são excluídas 90 dias depois do fim da consulta. Se a consulta for cancelada ou a clínica recusar o pedido, elas são excluídas na hora. As respostas de um pedido sem horário marcado são excluídas 90 dias depois do envio, e uma observação deixada num cancelamento, 90 dias depois do horário da consulta. Guardamos apenas o registro de que o pedido foi feito: a clínica, o horário e a situação da consulta e as datas. A clínica guarda os próprios prontuários conforme as próprias obrigações legais. Informações de conta são guardadas enquanto a conta estiver ativa. Você pode pedir que excluamos suas informações antes (seção 8)."
       },
       "cookies": {
         "heading": "6. Cookies e medição de publicidade",
@@ -948,6 +948,8 @@
     "loadError": "Não foi possível carregar esta reserva.",
     "empty": "Ainda não há pedidos de reserva",
     "answersHeading": "Respostas",
+    "answersRemoved": "Respostas excluídas após o período de guarda.",
+    "answersRemovedOnClose": "Respostas excluídas quando este pedido foi cancelado ou recusado.",
     "uploadsHeading": "Envios",
     "uploadsRetentionNote": "As fotos de identidade e do seguro ficam guardadas até a data limite. São apagadas assim que a consulta é cancelada ou recusada.",
     "download": "Baixar",
