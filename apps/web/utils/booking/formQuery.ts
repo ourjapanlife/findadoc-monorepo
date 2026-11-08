@@ -298,6 +298,7 @@ export async function putBookingFile(
 }
 
 const PATIENT_BOOKING_FIELDS = `
+  clinicId
   clinicName
   clinicNameJa
   ${CLINIC_BRANDING_FIELDS}

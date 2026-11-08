@@ -58,8 +58,8 @@
                     <span>{{ t('patientBooking.reasonLabel') }}</span>
                     <textarea
                         v-model="reason"
-                        class="field"
-                        rows="2"
+                        class="field field-textarea"
+                        rows="3"
                         maxlength="500"
                     />
                 </label>
@@ -104,6 +104,29 @@
             >
                 {{ t('patientBooking.cancelled') }}
             </p>
+            <!-- A cancelled or declined visit is over. Offer the next step instead of a dead end. -->
+            <nav
+                v-if="isClosed(booking)"
+                class="flex flex-wrap items-center gap-3"
+                :aria-label="t('patientBooking.nextSteps')"
+                data-testid="patient-booking-next-steps"
+            >
+                <NuxtLink
+                    v-if="booking.clinicId"
+                    :to="localizedPath(`/book/${booking.clinicId}`, String(locale))"
+                    class="btn btn-primary"
+                    data-testid="patient-booking-book-again"
+                >
+                    {{ t('patientBooking.bookAgain') }}
+                </NuxtLink>
+                <NuxtLink
+                    :to="localizedPath('/', String(locale))"
+                    class="link"
+                    data-testid="patient-booking-home"
+                >
+                    {{ t('patientBooking.backHome', { site: t('common.siteName') }) }}
+                </NuxtLink>
+            </nav>
             <p
                 v-if="cancelError"
                 class="field-error"
@@ -126,6 +149,7 @@ import { patientClinicName } from '~/utils/booking/clinicBranding'
 import { cancelPatientBooking, fetchPatientBooking, isBookingRefusal } from '~/utils/booking/formQuery'
 import { formatJapanDateTime } from '~/utils/booking/japanTime'
 import { intlLocale } from '~/utils/intlLocale'
+import { localizedPath } from '~/utils/localePath'
 import { formatPageTitle } from '~/utils/site'
 
 /**
@@ -149,6 +173,15 @@ const cancelError = ref(false)
 const rateLimited = ref(false)
 const clinicBranding = useClinicBranding()
 let token = ''
+
+const CLOSED_STATUSES: readonly BookingAppointmentStatus[] = [
+    BookingAppointmentStatus.Cancelled,
+    BookingAppointmentStatus.Declined
+]
+
+function isClosed(view: PatientBookingView): boolean {
+    return view.status !== null && view.status !== undefined && CLOSED_STATUSES.includes(view.status)
+}
 
 function showBranding(view: PatientBookingView | null): void {
     // An unknown or refused token keeps the branding of a booking already on screen.

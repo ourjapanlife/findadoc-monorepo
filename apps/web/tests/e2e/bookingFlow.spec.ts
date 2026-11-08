@@ -57,7 +57,11 @@ test('a patient cancels from the manage link with a reason, and the time is offe
 
     await cancelFromManageLink(page, booking.manageUrl, 'E2E: plans changed')
     await expect(page.getByTestId('clinic-branded-header')).toBeVisible()
+    await expect(page.getByTestId('patient-booking-home')).toBeVisible()
 
+    // "Book another appointment" goes back to this clinic's Book page.
+    await page.getByTestId('patient-booking-book-again').click()
+    await expect(page.getByTestId('clinic-booking-form')).toBeVisible()
     await page.goto(bookPagePath(day))
     await fillContactStep(page, newPatient('After'))
     expect(await offeredStarts(page, day)).toContain(booking.start)

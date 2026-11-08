@@ -1829,6 +1829,8 @@ export type PatientBookingView = {
   __typename?: 'PatientBookingView';
   branding?: Maybe<ClinicBranding>;
   canCancel: Scalars['Boolean']['output'];
+  /** Id for the clinic's Book page (/book/{clinicId}), to book again after a cancel. Not secret: the Book URL carries it. */
+  clinicId?: Maybe<Scalars['ID']['output']>;
   /** The clinic's English name. Every reader who is not Japanese sees this. */
   clinicName: Scalars['String']['output'];
   /** The clinic site's Japanese (ja-JP) name for Japanese readers, else clinicName. */
@@ -3628,6 +3630,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type PatientBookingViewResolvers<ContextType = any, ParentType extends ResolversParentTypes['PatientBookingView'] = ResolversParentTypes['PatientBookingView']> = {
   branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
   canCancel?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  clinicId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicNameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   endsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

@@ -1238,6 +1238,9 @@
     "yesCancel": "Có, hủy",
     "keep": "Giữ lại",
     "cancelled": "Lịch hẹn này đã bị hủy.",
+    "nextSteps": "Bước tiếp theo",
+    "bookAgain": "Đặt lịch hẹn khác",
+    "backHome": "Đến {site}",
     "cancelFailed": "Không thể hủy. Lịch hẹn có thể đã bắt đầu hoặc đã thay đổi; đang hiển thị trạng thái mới nhất.",
     "tooManyRequests": "Có quá nhiều yêu cầu từ kết nối này. Đợi vài phút rồi thử lại."
   },

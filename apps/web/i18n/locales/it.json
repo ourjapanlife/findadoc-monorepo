@@ -1238,6 +1238,9 @@
     "yesCancel": "Sì, annulla",
     "keep": "Mantieni",
     "cancelled": "Questo appuntamento è annullato.",
+    "nextSteps": "Prossimi passi",
+    "bookAgain": "Prenota un altro appuntamento",
+    "backHome": "Vai a {site}",
     "cancelFailed": "Impossibile annullare. Potrebbe essere già iniziato o cambiato; viene mostrato lo stato più recente.",
     "tooManyRequests": "Troppe richieste da questa connessione. Attendi qualche minuto e riprova."
   },

@@ -1238,6 +1238,9 @@
     "yesCancel": "Oo, kanselahin",
     "keep": "Panatilihin",
     "cancelled": "Kinansela na ang appointment na ito.",
+    "nextSteps": "Mga susunod na hakbang",
+    "bookAgain": "Mag-book ng ibang appointment",
+    "backHome": "Pumunta sa {site}",
     "cancelFailed": "Hindi makansela. Maaaring nagsimula na o nagbago ito; ipinapakita ang pinakabagong katayuan.",
     "tooManyRequests": "Masyadong maraming kahilingan mula sa koneksyong ito. Maghintay ng ilang minuto at subukan ulit."
   },

@@ -241,6 +241,7 @@ async function patientView(row: TokenRow): Promise<PatientBookingView> {
     const target = await resolveBookingTarget(row.facility_id ?? row.clinic_site_id ?? '')
     const startsAt = row.starts_at === null ? null : new Date(row.starts_at)
     return {
+        clinicId: row.facility_id ?? row.clinic_site_id,
         clinicName: target?.clinicName ?? '',
         clinicNameJa: target?.clinicNameJa ?? '',
         branding: target?.branding ?? null,

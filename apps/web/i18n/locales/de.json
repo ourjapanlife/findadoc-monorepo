@@ -1238,6 +1238,9 @@
     "yesCancel": "Ja, stornieren",
     "keep": "Behalten",
     "cancelled": "Dieser Termin ist storniert.",
+    "nextSteps": "Nächste Schritte",
+    "bookAgain": "Einen anderen Termin buchen",
+    "backHome": "Zu {site}",
     "cancelFailed": "Stornierung nicht möglich. Der Termin hat vielleicht schon begonnen oder sich geändert; der aktuelle Stand wird angezeigt.",
     "tooManyRequests": "Zu viele Anfragen von dieser Verbindung. Warten Sie einige Minuten und versuchen Sie es erneut."
   },

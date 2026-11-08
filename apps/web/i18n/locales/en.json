@@ -1238,6 +1238,9 @@
     "yesCancel": "Yes, cancel",
     "keep": "Keep it",
     "cancelled": "This appointment is cancelled.",
+    "nextSteps": "What to do next",
+    "bookAgain": "Book another appointment",
+    "backHome": "Go to {site}",
     "cancelFailed": "Could not cancel. It may have already started or changed. The latest status is shown.",
     "tooManyRequests": "Too many requests from this connection. Wait a few minutes and try again."
   },

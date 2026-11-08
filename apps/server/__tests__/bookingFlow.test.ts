@@ -259,6 +259,8 @@ describe('booking flow', () => {
         const cancelled = await appointmentService.cancelBookingByToken({ token, reason: 'Feeling better' })
         expect(cancelled.data.status).toBe(BookingAppointmentStatus.Cancelled)
         expect(cancelled.data.canCancel).toBe(false)
+        // The patient can book the same clinic again from the manage page.
+        expect(cancelled.data.clinicId).toBe(facilityId)
         expect(await openStarts(facilityId)).toEqual([iso(0)])
 
         const detail = await staffBookingService.getBookingSubmissionDetail(submitted.data.id, admin)

@@ -1560,6 +1560,8 @@ type ClinicInterpreterHours {
 
 """What the patient sees on the private cancel page. No answers are returned."""
 type PatientBookingView {
+  """Id for the clinic's Book page (/book/{clinicId}), to book again after a cancel. Not secret: the Book URL carries it."""
+  clinicId: ID
   """The clinic's English name. Every reader who is not Japanese sees this."""
   clinicName: String!
   """The clinic site's Japanese (ja-JP) name for Japanese readers, else clinicName."""

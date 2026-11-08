@@ -1238,6 +1238,9 @@
     "yesCancel": "是，取消",
     "keep": "保留",
     "cancelled": "此预约已取消。",
+    "nextSteps": "下一步",
+    "bookAgain": "预约其他时间",
+    "backHome": "前往{site}",
     "cancelFailed": "无法取消。预约可能已开始或已变化，已显示最新状态。",
     "tooManyRequests": "来自此网络连接的请求过多。请等待几分钟后重试。"
   },

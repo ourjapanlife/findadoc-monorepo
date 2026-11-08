@@ -1238,6 +1238,9 @@
     "yesCancel": "Ya, batalkan",
     "keep": "Tetap pertahankan",
     "cancelled": "Janji temu ini sudah dibatalkan.",
+    "nextSteps": "Langkah berikutnya",
+    "bookAgain": "Buat janji temu lain",
+    "backHome": "Buka {site}",
     "cancelFailed": "Tidak dapat membatalkan. Janji temu mungkin sudah dimulai atau berubah. Status terbaru ditampilkan.",
     "tooManyRequests": "Terlalu banyak permintaan dari koneksi ini. Tunggu beberapa menit, lalu coba lagi."
   },

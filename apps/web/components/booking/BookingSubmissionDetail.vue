@@ -68,8 +68,8 @@
                         <span>{{ t('bookingDashboard.reasonLabel') }}</span>
                         <textarea
                             v-model="reason"
-                            class="field"
-                            rows="2"
+                            class="field field-textarea"
+                            rows="3"
                             maxlength="500"
                             data-testid="booking-status-reason"
                         />
