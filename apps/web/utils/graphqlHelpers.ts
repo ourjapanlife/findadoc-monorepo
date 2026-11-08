@@ -36,7 +36,7 @@ export async function fetchHealthcareProfessionalsWithCount(
                 listFilters: filters,
                 countFilters: { ...filters, limit: undefined, offset: undefined }
             },
-            { retryAmount: 1 }
+            { retryAmount: 1, abortAfterMs: 15000 }
         )
 
         // Extract the list of professionals and the total count from the response data.
@@ -68,7 +68,7 @@ export async function fetchFacilitiesWithCount(
                 listFilters: filters,
                 countFilters: { ...filters, limit: undefined, offset: undefined }
             },
-            { retryAmount: 1 }
+            { retryAmount: 1, abortAfterMs: 15000 }
         )
 
         const filteredSearchResults = response.data?.facilities ?? []
@@ -98,7 +98,7 @@ export async function fetchSubmissionsWithCount(
                 listFilters: filters,
                 countFilters: { ...filters, limit: undefined, offset: undefined }
             },
-            { retryAmount: 1 }
+            { retryAmount: 1, abortAfterMs: 15000 }
         )
 
         const filteredSearchResults = response.data?.submissions ?? []

@@ -40,7 +40,7 @@ export const useCurrentUserAccessStore = defineStore('currentUserAccessStore', (
             gqlClient.request.bind(gqlClient),
             currentUserAccessQuery,
             {},
-            { retryAmount: 1 }
+            { retryAmount: 1, abortAfterMs: 10000 }
         )
         if (response.hasErrors || !response.data?.currentUserAccess) {
             loadError.value = true

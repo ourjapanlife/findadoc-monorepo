@@ -415,7 +415,6 @@
   "accessPanel": {
     "loading": "권한을 불러오는 중…",
     "loadError": "서버에서 권한을 불러오지 못했습니다.",
-    "retry": "다시 시도",
     "signedInAs": "로그인 계정",
     "roles": "역할:",
     "sections": {

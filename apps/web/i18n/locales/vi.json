@@ -293,7 +293,6 @@
   "accessPanel": {
     "loading": "Đang tải quyền truy cập…",
     "loadError": "Không thể tải quyền truy cập từ máy chủ.",
-    "retry": "Thử lại",
     "signedInAs": "Đăng nhập với tên",
     "roles": "Vai trò:",
     "none": "—",

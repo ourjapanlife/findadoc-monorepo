@@ -311,7 +311,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
                 gqlClient.request.bind(gqlClient),
                 updateHealthcareProfessionalGqlMutation,
-                updateInput
+                updateInput,
+                { abortAfterMs: 15000 }
             )
 
             const responseData = serverResponse.data?.updateHealthcareProfessional
@@ -360,7 +361,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             const response = await graphQLClientRequestWithRetry<Mutation>(
                 gqlClient.request.bind(gqlClient),
                 createHealthcareProfessionalGqMutation,
-                createHealthcareProfessionalInput
+                createHealthcareProfessionalInput,
+                { abortAfterMs: 15000 }
             )
 
             serverResponse.data = response.data?.createHealthcareProfessional ?? null
@@ -385,7 +387,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
                 gqlClient.request.bind(gqlClient),
                 deleteHealthcareProfessionalGqlMutation,
-                inputArgs
+                inputArgs,
+                { abortAfterMs: 15000 }
             )
 
             const deleteResult = serverResponse.data?.deleteHealthcareProfessional as DeleteResult | undefined
@@ -501,7 +504,7 @@ export async function getHealthcareProfessionalById(id: string): Promise<Healthc
             gqlClient.request.bind(gqlClient),
             getHealthcareProfessionalByIdGqlQuery,
             queryData,
-            { retryAmount: 1 }
+            { retryAmount: 1, abortAfterMs: 10000 }
         )
 
         if (!result.data?.healthcareProfessional) {

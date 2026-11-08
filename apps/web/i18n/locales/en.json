@@ -415,7 +415,6 @@
   "accessPanel": {
     "loading": "Loading permissions…",
     "loadError": "Could not load permissions from the server.",
-    "retry": "Try again",
     "signedInAs": "Signed in as",
     "roles": "Roles:",
     "sections": {

@@ -293,7 +293,6 @@
   "accessPanel": {
     "loading": "権限を読み込み中…",
     "loadError": "サーバーから権限を読み込めませんでした。",
-    "retry": "再試行",
     "signedInAs": "サインイン中",
     "roles": "ロール:",
     "none": "—",

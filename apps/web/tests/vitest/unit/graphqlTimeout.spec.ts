@@ -1,11 +1,11 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { gql } from 'graphql-request'
-import { graphQLClientRequestWithRetry } from '~/utils/graphql'
+import { DEFAULT_ABORT_AFTER_MS, graphQLClientRequestWithRetry } from '~/utils/graphql'
 
 /*
  * The retry loop only fires on rejection, so before `abortAfterMs` a connection the server
  * accepted and then never answered produced a promise that never settled. The search page sat
- * on skeletons indefinitely with no error and no way to retry.
+ * on skeletons indefinitely with no error. Every attempt now has a deadline and is aborted at it (#219).
  */
 describe('graphQLClientRequestWithRetry: per-attempt deadline', () => {
     beforeEach(() => {
@@ -51,18 +51,47 @@ describe('graphQLClientRequestWithRetry: per-attempt deadline', () => {
         await expect(result).resolves.toMatchObject({ hasErrors: false, data: { x: 1 } })
     })
 
-    it('waits indefinitely when no deadline is set, preserving the previous behaviour', async () => {
-        let settled = false
+    it('gives up at the default deadline when the caller names none', async () => {
         const slow = () => new Promise<{ x: number }>(resolve => setTimeout(() => resolve({ x: 1 }), 60000))
 
-        const result = graphQLClientRequestWithRetry(slow, 'query Q { x }', {}, publicOptions)
-            .then(value => { settled = true; return value })
+        const result = graphQLClientRequestWithRetry(slow, 'query Q { x }', {}, { skipAuth: true })
+        await vi.advanceTimersByTimeAsync(DEFAULT_ABORT_AFTER_MS + 1)
 
-        await vi.advanceTimersByTimeAsync(30000)
-        expect(settled).toBe(false)
+        await expect(result).resolves.toMatchObject({ hasErrors: true, errors: [{ code: 'NETWORK' }] })
+    })
 
-        await vi.advanceTimersByTimeAsync(30001)
-        await expect(result).resolves.toMatchObject({ hasErrors: false })
+    it('aborts the fetch when the deadline passes', async () => {
+        let signal: AbortSignal | undefined
+        const neverSettles = (options: { signal?: AbortSignal }) => {
+            signal = options.signal
+            return new Promise<never>(() => {})
+        }
+
+        const result = graphQLClientRequestWithRetry(
+            neverSettles,
+            'mutation CreateSubmission { createSubmission { id } }',
+            { input: { notes: 'fake' } },
+            { skipAuth: true, abortAfterMs: 1000 }
+        )
+        expect(signal?.aborted).toBe(false)
+
+        await vi.advanceTimersByTimeAsync(1001)
+
+        expect(signal?.aborted).toBe(true)
+        await expect(result).resolves.toMatchObject({ errors: [{ code: 'WRITE_OUTCOME_UNKNOWN' }] })
+    })
+
+    it('sends the document, variables, and signal in the object form', async () => {
+        const request = vi.fn((_options: { document: unknown, variables?: unknown, signal?: AbortSignal }) =>
+            Promise.resolve({ x: 1 }))
+
+        await graphQLClientRequestWithRetry(request, 'query Q { x }', { id: 'abc' }, { skipAuth: true })
+
+        expect(request).toHaveBeenCalledWith(expect.objectContaining({
+            document: 'query Q { x }',
+            variables: { id: 'abc' },
+            signal: expect.any(AbortSignal)
+        }))
     })
 })
 

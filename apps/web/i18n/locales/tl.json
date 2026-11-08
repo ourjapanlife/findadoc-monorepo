@@ -293,7 +293,6 @@
   "accessPanel": {
     "loading": "Nilo-load ang mga pahintulot…",
     "loadError": "Hindi ma-load ang mga pahintulot mula sa server.",
-    "retry": "Subukan ulit",
     "signedInAs": "Naka-sign in bilang",
     "roles": "Mga papel:",
     "none": "—",

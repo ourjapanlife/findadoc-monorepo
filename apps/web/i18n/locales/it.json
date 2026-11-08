@@ -324,7 +324,6 @@
   "accessPanel": {
     "loading": "Caricamento autorizzazioni…",
     "loadError": "Impossibile caricare le autorizzazioni dal server.",
-    "retry": "Riprova",
     "signedInAs": "Accesso come",
     "roles": "Ruoli:",
     "none": "—",

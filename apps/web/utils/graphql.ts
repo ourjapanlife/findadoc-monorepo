@@ -20,7 +20,7 @@ export const initializeGqlClient = () => {
     gqlClient = new GraphQLClient(apiURL)
 }
 
-/** Thrown when an attempt passes `abortAfterMs`. The server may still finish the request. */
+/** An attempt passed `abortAfterMs`. The fetch is aborted, but a write the server already got may still land. */
 class RequestTimeoutError extends Error {
     constructor(abortAfterMs: number) {
         super(`Request timed out after ${abortAfterMs}ms`)
@@ -28,19 +28,36 @@ class RequestTimeoutError extends Error {
     }
 }
 
-/** Rejects if the request has not settled in time, so a hung connection cannot stall a caller. */
-async function withTimeout<T>(request: Promise<T>, abortAfterMs?: number): Promise<T> {
-    if (!abortAfterMs) {
-        return request
-    }
+/** The deadline for one attempt when the caller names none. No request may hang forever (#219). */
+export const DEFAULT_ABORT_AFTER_MS = 15000
 
+/** One attempt, as graphql-request's object form takes it: `gqlClient.request.bind(gqlClient)`. */
+export type GraphQLRequestFunction<T> = (options: {
+    document: RequestDocument
+    variables?: unknown
+    requestHeaders?: HeadersInit
+    signal?: AbortSignal
+}) => Promise<T>
+
+/**
+ * Runs one attempt with a deadline. At the deadline the fetch is aborted, so the browser stops
+ * waiting and drops the connection, and the attempt rejects with `RequestTimeoutError` (#219).
+ */
+async function withAbortDeadline<T>(
+    send: (signal: AbortSignal) => Promise<T>,
+    abortAfterMs: number
+): Promise<T> {
+    const controller = new AbortController()
     let timer: ReturnType<typeof setTimeout> | undefined
 
     try {
         return await Promise.race([
-            request,
+            send(controller.signal),
             new Promise<never>((_resolve, reject) => {
-                timer = setTimeout(() => reject(new RequestTimeoutError(abortAfterMs)), abortAfterMs)
+                timer = setTimeout(() => {
+                    reject(new RequestTimeoutError(abortAfterMs))
+                    controller.abort()
+                }, abortAfterMs)
             })
         ])
     } finally {
@@ -156,11 +173,7 @@ function errorsForFailure(error: unknown, kind: FailureKind, isMutation: boolean
  * connection, or a 502/503/504.
  */
 export const graphQLClientRequestWithRetry = async <T>(
-    gqlClientRequestFunction: (
-        queryOrMutation: RequestDocument,
-        variables?: unknown,
-        requestHeaders?: HeadersInit
-    ) => Promise<T>,
+    gqlClientRequestFunction: GraphQLRequestFunction<T>,
     queryOrMutation: RequestDocument,
     variables: unknown,
     retryOptions?: graphQLClientRequestWithRetryOptions
@@ -169,6 +182,7 @@ export const graphQLClientRequestWithRetry = async <T>(
     const isMutation = isGraphQLMutation(queryOrMutation)
     const retryAmount = isMutation ? 0 : retryOptions?.retryAmount ?? 0
     const requestTimeoutInMilliseconds = retryOptions?.requestTimeoutInMilliseconds ?? 5000
+    const abortAfterMs = retryOptions?.abortAfterMs ?? DEFAULT_ABORT_AFTER_MS
 
     const executeGQLClientRequest = async (): Promise<ServerResponse<T>> => {
         try {
@@ -186,15 +200,13 @@ export const graphQLClientRequestWithRetry = async <T>(
             } satisfies HeadersInit
 
             /*
-             * Execute our actual HTTP request.
-             *
-             * `abortAfterMs` bounds how long one attempt may hang. Without it a connection the
-             * server accepts and then never answers produced a promise that never settled, and
-             * any caller waiting on it (the search page's loading state, for one) waited forever.
+             * Execute our actual HTTP request. Every attempt has a deadline, and the fetch is
+             * aborted when it passes. Without one, a connection the server accepted and then
+             * never answered left the caller (the search page's loading state, for one) waiting forever.
              */
-            const rawResponseData = await withTimeout(
-                gqlClientRequestFunction(queryOrMutation, variables, requestHeaders),
-                retryOptions?.abortAfterMs
+            const rawResponseData = await withAbortDeadline(
+                signal => gqlClientRequestFunction({ document: queryOrMutation, variables, requestHeaders, signal }),
+                abortAfterMs
             )
 
             // If the request is successful, return the data in the standardized `ServerResponse` format
@@ -229,7 +241,7 @@ export interface graphQLClientRequestWithRetryOptions {
     retryAmount?: number
     /** Send no bearer token and do not wait for Auth0. For operations the API serves without a session. */
     skipAuth?: boolean
-    /** Fail an attempt that has not responded in this long. Without it a hung request never settles. */
+    /** Abort an attempt that has not responded in this long. Default `DEFAULT_ABORT_AFTER_MS`. */
     abortAfterMs?: number
 }
 export interface gqlMutation<T> extends gqlRequest {

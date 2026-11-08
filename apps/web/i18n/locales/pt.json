@@ -286,7 +286,6 @@
   "accessPanel": {
     "loading": "Carregando permissões…",
     "loadError": "Não foi possível carregar as permissões do servidor.",
-    "retry": "Tentar novamente",
     "signedInAs": "Conectado como",
     "roles": "Funções:",
     "none": "—",

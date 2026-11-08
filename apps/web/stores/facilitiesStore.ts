@@ -487,7 +487,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
             gqlClient.request.bind(gqlClient),
             createFacilityGqlMutation,
-            CreateFacilityInput
+            CreateFacilityInput,
+            { abortAfterMs: 15000 }
         )
 
         const responseData = serverResponse.data?.createFacility
@@ -534,7 +535,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
             gqlClient.request.bind(gqlClient),
             updateExistingFacilityGqlMutation,
-            updateFacilityInput
+            updateFacilityInput,
+            { abortAfterMs: 15000 }
         )
 
         const responseData = serverResponse.data?.updateFacility
@@ -600,7 +602,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
             gqlClient.request.bind(gqlClient),
             deleteExistingFacilityGqlMutation,
-            facilityId
+            facilityId,
+            { abortAfterMs: 15000 }
         )
 
         if (

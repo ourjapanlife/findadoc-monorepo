@@ -341,7 +341,6 @@
   "accessPanel": {
     "loading": "Berechtigungen werden geladen…",
     "loadError": "Berechtigungen konnten nicht vom Server geladen werden.",
-    "retry": "Erneut versuchen",
     "signedInAs": "Angemeldet als",
     "roles": "Rollen:",
     "none": "—",

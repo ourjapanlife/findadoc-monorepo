@@ -286,7 +286,6 @@
   "accessPanel": {
     "loading": "Chargement des autorisations…",
     "loadError": "Impossible de charger les autorisations depuis le serveur.",
-    "retry": "Réessayer",
     "signedInAs": "Connecté en tant que",
     "roles": "Rôles :",
     "none": "—",

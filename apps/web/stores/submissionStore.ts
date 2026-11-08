@@ -14,7 +14,8 @@ export const useSubmissionStore = defineStore('submissionStore', () => {
         const serverResponse = await graphQLClientRequestWithRetry<Mutation['createSubmission']>(
             gqlClient.request.bind(gqlClient),
             createSubmissionMutation,
-            newSubmission
+            newSubmission,
+            { abortAfterMs: 15000 }
         )
 
         return serverResponse

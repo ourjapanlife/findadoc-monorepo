@@ -293,7 +293,6 @@
   "accessPanel": {
     "loading": "正在加载权限…",
     "loadError": "无法从服务器加载权限。",
-    "retry": "重试",
     "signedInAs": "登录身份",
     "roles": "角色:",
     "none": "—",

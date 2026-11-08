@@ -415,7 +415,6 @@
   "accessPanel": {
     "loading": "Memuat izin…",
     "loadError": "Tidak dapat memuat izin dari server.",
-    "retry": "Coba lagi",
     "signedInAs": "Masuk sebagai",
     "roles": "Peran:",
     "sections": {

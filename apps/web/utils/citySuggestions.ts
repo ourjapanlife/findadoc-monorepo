@@ -84,7 +84,8 @@ export async function recordCityPlaceId(cityId: string, placeId: string): Promis
     const response = await graphQLClientRequestWithRetry<{ recordCityPlaceId: { id: string } }>(
         gqlClient.request.bind(gqlClient),
         RECORD_CITY_PLACE_ID,
-        { cityId, placeId }
+        { cityId, placeId },
+        { abortAfterMs: 15000 }
     )
 
     if (response.hasErrors) {
