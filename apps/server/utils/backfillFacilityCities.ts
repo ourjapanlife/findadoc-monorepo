@@ -23,6 +23,7 @@ type FacilityRow = {
     city_ja: string | null
     address_line_1_en: string | null
     address_line_1_ja: string | null
+    online: boolean
 }
 
 const write = process.argv.includes('--write')
@@ -52,6 +53,7 @@ async function main() {
         }))
         const facilities = await client.query<FacilityRow>(`
             select id,
+                   online,
                    verification_status,
                    city_id,
                    contact #>> '{address,prefectureEn}' as prefecture_en,
@@ -69,13 +71,15 @@ async function main() {
             cityEn: row.city_en ?? '',
             cityJa: row.city_ja ?? '',
             addressLine1En: row.address_line_1_en ?? '',
-            addressLine1Ja: row.address_line_1_ja ?? ''
+            addressLine1Ja: row.address_line_1_ja ?? '',
+            online: row.online
         }))
         const report = reportFacilityCities(weighted, cities)
 
         console.log(JSON.stringify({
             write,
             total: report.total,
+            online: report.online,
             mapped: report.mapped,
             unmatched: report.unmatched,
             rate: Number(report.rate.toFixed(4)),
@@ -106,7 +110,8 @@ async function main() {
                     cityEn: row.city_en ?? '',
                     cityJa: row.city_ja ?? '',
                     addressLine1En: row.address_line_1_en ?? '',
-                    addressLine1Ja: row.address_line_1_ja ?? ''
+                    addressLine1Ja: row.address_line_1_ja ?? '',
+                    online: row.online
                 }, cities)
 
                 if (plan.action !== 'assign') {
