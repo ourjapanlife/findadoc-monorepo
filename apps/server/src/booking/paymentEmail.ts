@@ -6,7 +6,7 @@ import {
     imageTypeFromBytes,
     readClinicAsset
 } from '../storage/clinicAssetStorage.js'
-import type { BookingEmail } from './emailCopy.js'
+import type { BookingEmail, EmailBrand } from './emailCopy.js'
 import { isPaymentMethod, type PaymentMethod } from './formDefinitions.js'
 import { PAYPAY_QR_CONTENT_ID, patientPendingPaymentEmail } from './paymentEmailCopy.js'
 import { paymentDetailsFromRow, paymentSettingsRow, type ClinicPaymentDetails } from './paymentSettings.js'
@@ -63,6 +63,7 @@ export async function pendingPaymentEmail(input: {
     manageUrl: string
     /** The stored paymentMethod answer. Anything but a known method reads as not chosen. */
     paymentAnswer: unknown
+    brand?: EmailBrand | null
 }): Promise<BookingEmail> {
     const method: PaymentMethod | null = isPaymentMethod(input.paymentAnswer) ? input.paymentAnswer : null
     const details = await clinicPaymentDetails(input.facilityId)
@@ -74,6 +75,7 @@ export async function pendingPaymentEmail(input: {
         durationMinutes: input.durationMinutes,
         reference: input.reference,
         manageUrl: input.manageUrl,
+        brand: input.brand ?? null,
         instructions: {
             method,
             feeJpy: details.feeJpy,

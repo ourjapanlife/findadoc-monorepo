@@ -5,6 +5,7 @@ import {
     visitRows,
     type BookingEmail,
     type DetailRow,
+    type EmailBrand,
     type EmailBlock,
     type SiteLocale
 } from './emailCopy.js'
@@ -349,6 +350,7 @@ export function patientPendingPaymentEmail(input: {
     reference: string
     manageUrl: string
     instructions: PaymentEmailInstructions
+    brand?: EmailBrand | null
 }): BookingEmail {
     const locale = readerLocale(input.locale)
     const copy = PATIENT_COPY[locale]
@@ -375,5 +377,5 @@ export function patientPendingPaymentEmail(input: {
             { kind: 'link', text: copy.manageLink, href: input.manageUrl },
             { kind: 'paragraph', text: copy.sentThrough }
         ]
-    }])
+    }], input.brand ?? null)
 }

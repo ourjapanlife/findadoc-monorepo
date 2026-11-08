@@ -3,6 +3,7 @@ import { db } from '../kyselyClient.js'
 import type { Database } from '../typeDefs/kyselyTypes.js'
 import type { ClinicBranding } from '@findadoc/graphql'
 import { clinicBrandingFromRow, clinicThemeFromRow } from '../services/clinicSiteService.js'
+import type { EmailBrand } from './emailCopy.js'
 import { DEFAULT_BOOKING_FORM_ID, parseFormDefinitionIds } from './formDefinitions.js'
 import { DEFAULT_ALLOWED_DURATIONS, parseAllowedDurations, resolveDefaultDuration } from './schedule.js'
 
@@ -54,6 +55,24 @@ export function clinicNameForLocale(
     locale: string | null | undefined
 ): string {
     return locale === JAPANESE_LOCALE ? target.clinicNameJa : target.clinicName
+}
+
+/**
+ * The clinic header on a patient email: the wordmark in the reader's language, else the clinic
+ * name, in the clinic colour. Only a clinic with a branded Book page gets one (online consult v2 §4).
+ */
+export function emailBrandFor(
+    target: Pick<BookingTarget, 'clinicName' | 'clinicNameJa' | 'branding'> | undefined,
+    locale: string | null | undefined
+): EmailBrand | null {
+    if (target === undefined || target.branding === null) {
+        return null
+    }
+    const wordmark = target.branding.wordmark
+    const name = locale === JAPANESE_LOCALE
+        ? wordmark?.ja ?? wordmark?.en
+        : wordmark?.en ?? wordmark?.ja
+    return { name: name ?? clinicNameForLocale(target, locale), color: target.branding.primary ?? null }
 }
 
 export async function settingsForFacility(facilityId: string | null): Promise<{

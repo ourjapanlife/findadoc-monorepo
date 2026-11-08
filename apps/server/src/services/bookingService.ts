@@ -70,6 +70,7 @@ import {
     bookingLockKey,
     lockClinicBookings,
     clinicNameForLocale,
+    emailBrandFor,
     resolvePublicBookingTarget,
     type BookingTarget
 } from '../booking/target.js'
@@ -438,7 +439,8 @@ async function patientFirstEmail(input: PatientEmailInput): Promise<BookingEmail
         startsAt: input.startsAt,
         durationMinutes: input.durationMinutes,
         reference: input.bookingId,
-        manageUrl: patientBookingUrl(input.patientToken, input.locale)
+        manageUrl: patientBookingUrl(input.patientToken, input.locale),
+        brand: emailBrandFor(input.target, input.locale)
     }
     if (input.startStatus !== APPOINTMENT_STATUS.PENDING_PAYMENT) {
         return patientRequestEmail(common)

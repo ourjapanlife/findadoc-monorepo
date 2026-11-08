@@ -18,7 +18,7 @@ import {
 import { clinicPatientCancelledEmail, patientStatusEmail, type PatientNoticeStatus } from '../booking/emailCopy.js'
 import { hashPatientToken } from '../booking/links.js'
 import { emailFromUnknown, noticeClinic, sendBookingNotice } from '../booking/notifications.js'
-import { clinicNameForLocale, resolveBookingTarget } from '../booking/target.js'
+import { clinicNameForLocale, emailBrandFor, resolveBookingTarget } from '../booking/target.js'
 import { purgeSubmissionUploads } from '../booking/uploadPurge.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
@@ -205,7 +205,8 @@ export async function updateAppointmentStatus(
                 startsAt: new Date(current.starts_at),
                 durationMinutes: current.duration_minutes,
                 reference: current.booking_submission_id,
-                clinicNote: reason
+                clinicNote: reason,
+                brand: emailBrandFor(target, current.locale)
             })
         })
     }

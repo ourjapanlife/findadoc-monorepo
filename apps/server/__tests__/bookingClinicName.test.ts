@@ -125,6 +125,9 @@ describe('the patient-facing clinic name', () => {
         expect(patientEmail?.subject).toContain(NAME_JA)
         expect(patientEmail?.textBody).toContain(NAME_JA)
         expect(patientEmail?.textBody).not.toContain(NAME_EN)
+        // The clinic site brands the email with its name in Japanese.
+        expect(patientEmail?.htmlBody).toContain('border-top:4px solid')
+        expect(patientEmail?.textBody.startsWith(`${NAME_JA}\n\n`)).toBe(true)
 
         const token = booked.manageToken
         if (token === null || token === undefined) {
@@ -148,6 +151,7 @@ describe('the patient-facing clinic name', () => {
         const statusEmail = notice.mock.calls[0]?.[0].email
         expect(statusEmail?.subject).toContain(NAME_JA)
         expect(statusEmail?.textBody).not.toContain(NAME_EN)
+        expect(statusEmail?.htmlBody).toContain('border-top:4px solid')
     })
 
     it('names the clinic in English in an English patient email', async () => {

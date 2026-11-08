@@ -7,19 +7,25 @@ import {
     patientStatusEmail,
     type BookingEmail
 } from '../src/booking/emailCopy.js'
+import { patientPendingPaymentEmail } from '../src/booking/paymentEmailCopy.js'
+import { emailBrandFor } from '../src/booking/target.js'
 
 // 09:00 on Monday 2 November 2026 in Japan.
 const startsAt = new Date('2026-11-02T00:00:00.000Z')
 const manageUrl = 'https://www.findadoc.jp/vi-VN/book/manage#token'
 
-function receipt(locale: string | null): BookingEmail {
+const BRAND = { name: '多言語オンラインクリニック', color: '#177A80' }
+const BRAND_HEADER = 'border-top:4px solid'
+
+function receipt(locale: string | null, brand: { name: string, color: string | null } | null = null): BookingEmail {
     return patientRequestEmail({
         locale,
         clinicName: 'Minato Clinic',
         startsAt,
         durationMinutes: 30,
         reference: 'booking-1',
-        manageUrl
+        manageUrl,
+        brand
     })
 }
 
@@ -119,6 +125,99 @@ describe('patient booking emails', () => {
         expect(email.htmlBody).toContain('Please call &lt;first&gt;')
         expect(email.htmlBody).not.toContain('<first>')
         expectSameContent(email)
+    })
+})
+
+describe('the clinic header on patient emails (online consult v2 §4)', () => {
+    it('opens the HTML part with the clinic name in its colour, and the text part with the name', () => {
+        const email = receipt('ja-JP', BRAND)
+
+        expect(email.htmlBody).toContain(`${BRAND_HEADER} #177A80`)
+        expect(email.htmlBody).toContain(
+            '<p translate="no" class="notranslate" style="margin:0;font-size:20px;font-weight:700;line-height:1.3;'
+            + 'color:#177A80">多言語オンラインクリニック</p>'
+        )
+        expect(email.htmlBody.indexOf('多言語オンラインクリニック'))
+            .toBeLessThan(email.htmlBody.indexOf('<div lang="ja-JP">'))
+        expect(email.textBody.startsWith('多言語オンラインクリニック\n\n')).toBe(true)
+        expectSameContent(email)
+    })
+
+    it('keeps the plain email for a clinic without branding', () => {
+        const email = receipt('en-US')
+
+        expect(email.htmlBody).not.toContain(BRAND_HEADER)
+        expect(email.textBody.startsWith('Minato Clinic')).toBe(false)
+    })
+
+    it('never puts a colour that is not #RRGGBB into the style attribute', () => {
+        const html = receipt('en-US', { name: 'Clinic', color: 'red;background:url(https://example.com/x)' }).htmlBody
+
+        expect(html).not.toContain('example.com/x')
+        expect(html).toContain(`${BRAND_HEADER} #111827`)
+    })
+
+    it('escapes the clinic name', () => {
+        const html = receipt('en-US', { name: '<b>Clinic</b>', color: null }).htmlBody
+
+        expect(html).toContain('&lt;b&gt;Clinic&lt;/b&gt;')
+        expect(html).not.toContain('<b>Clinic</b>')
+    })
+
+    it('carries the header on the status and pending-payment emails too', () => {
+        const status = patientStatusEmail({
+            locale: 'en-US',
+            status: 'confirmed',
+            clinicName: 'Minato Clinic',
+            startsAt,
+            durationMinutes: 30,
+            reference: 'booking-1',
+            clinicNote: null,
+            brand: BRAND
+        })
+        const pending = patientPendingPaymentEmail({
+            locale: 'en-US',
+            clinicName: 'Minato Clinic',
+            startsAt,
+            durationMinutes: 30,
+            reference: 'booking-1',
+            manageUrl,
+            instructions: { method: null, feeJpy: null, card: null, bank: null, payPayQr: false },
+            brand: BRAND
+        })
+
+        expect(status.htmlBody).toContain(BRAND_HEADER)
+        expect(pending.htmlBody).toContain(BRAND_HEADER)
+        expectSameContent(status)
+        expectSameContent(pending)
+    })
+})
+
+describe('emailBrandFor', () => {
+    const names = { clinicName: 'Multilingual Online Clinic', clinicNameJa: '多言語オンラインクリニック' }
+    const branding = {
+        displayName: 'Multilingual Online Clinic',
+        wordmark: { ja: '多言語オンラインクリニック', en: 'Multilingual Online Clinic' },
+        logoPath: null,
+        primary: '#177A80'
+    }
+
+    it('uses the wordmark in the reader\'s language and the clinic colour', () => {
+        expect(emailBrandFor({ ...names, branding }, 'ja-JP'))
+            .toEqual({ name: '多言語オンラインクリニック', color: '#177A80' })
+        expect(emailBrandFor({ ...names, branding }, 'vi-VN'))
+            .toEqual({ name: 'Multilingual Online Clinic', color: '#177A80' })
+    })
+
+    it('falls back to the clinic name without a wordmark', () => {
+        const brand = emailBrandFor({ ...names, branding: { ...branding, wordmark: null, primary: null } }, 'ja-JP')
+
+        expect(brand).toEqual({ name: '多言語オンラインクリニック', color: null })
+    })
+
+    it('gives no header to a clinic without a branded Book page', () => {
+        expect(emailBrandFor({ ...names, branding: null }, 'en-US')).toBeNull()
+        expect(emailBrandFor(undefined, 'en-US')).toBeNull()
     })
 })
 

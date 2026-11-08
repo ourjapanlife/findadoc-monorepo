@@ -59,6 +59,12 @@ export type EmailSection = {
     blocks: EmailBlock[]
 }
 
+/**
+ * The clinic's header on a patient email, like the branded Book page (online consult v2 §4):
+ * its name in the patient's language and its colour. Null keeps the plain email.
+ */
+export type EmailBrand = { name: string, color: string | null }
+
 export type PatientCopy = {
     sentThrough: string
     clinic: string
@@ -462,14 +468,27 @@ function blockHtml(block: EmailBlock): string {
         + `<a${NO_TRANSLATE} href="${escapeHtml(block.href)}" style="color:#1d4ed8;word-break:break-all">${escapeHtml(block.href)}</a></p>`
 }
 
+const BRAND_COLOR = /^#[0-9a-f]{6}$/i
+const DEFAULT_BRAND_COLOR = '#111827'
+
+function brandHtml(brand: EmailBrand): string {
+    // The color comes from clinic_sites.theme, checked again here because it goes into a style attribute.
+    const color = brand.color !== null && BRAND_COLOR.test(brand.color) ? brand.color : DEFAULT_BRAND_COLOR
+    return `<div style="border-top:4px solid ${color};padding:16px 0 0;margin:0 0 24px">`
+        + `<p${NO_TRANSLATE} style="margin:0;font-size:20px;font-weight:700;line-height:1.3;color:${color}">`
+        + `${escapeHtml(brand.name)}</p></div>`
+}
+
 /** One content model, two parts: the HTML part says exactly what the text part says. */
-export function renderEmail(subject: string, sections: EmailSection[]): BookingEmail {
-    const textBody = sections
+export function renderEmail(subject: string, sections: EmailSection[], brand: EmailBrand | null = null): BookingEmail {
+    const content = sections
         .map(section => section.blocks.map(blockText).join('\n\n'))
         .join('\n\n---\n\n')
-    const body = sections
+    const textBody = brand === null ? content : `${brand.name}\n\n${content}`
+    const sectionsHtml = sections
         .map(section => `<div lang="${section.lang}">${section.blocks.map(blockHtml).join('')}</div>`)
         .join('<hr style="border:0;border-top:1px solid #d1d5db;margin:24px 0">')
+    const body = brand === null ? sectionsHtml : `${brandHtml(brand)}${sectionsHtml}`
     const htmlBody = '<!doctype html>'
         + `<html lang="${sections[0]?.lang ?? DEFAULT_LOCALE}">`
         + '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
@@ -490,6 +509,7 @@ export function patientRequestEmail(input: {
     durationMinutes: number | null
     reference: string
     manageUrl: string
+    brand?: EmailBrand | null
 }): BookingEmail {
     const locale = readerLocale(input.locale)
     const copy = PATIENT_COPY[locale]
@@ -508,7 +528,7 @@ export function patientRequestEmail(input: {
             { kind: 'link', text: copy.manageLink, href: input.manageUrl },
             { kind: 'paragraph', text: copy.sentThrough }
         ]
-    }])
+    }], input.brand ?? null)
 }
 
 export type PatientNoticeStatus = 'confirmed' | 'declined' | 'cancelled'
@@ -522,6 +542,7 @@ export function patientStatusEmail(input: {
     durationMinutes: number | null
     reference: string
     clinicNote: string | null
+    brand?: EmailBrand | null
 }): BookingEmail {
     const locale = readerLocale(input.locale)
     const copy = PATIENT_COPY[locale]
@@ -545,7 +566,7 @@ export function patientStatusEmail(input: {
             },
             { kind: 'paragraph', text: copy.sentThrough }
         ]
-    }])
+    }], input.brand ?? null)
 }
 
 function clinicSubject(pick: (copy: ClinicCopy) => string, clinicName: string): string {
