@@ -264,7 +264,7 @@ It renders correctly today, which is why it has gone unnoticed, but it is non-id
 | Concept | Source | Notes |
 |---|---|---|
 | Facility | `facilities` / `facilitiesTotalCount` | name En/Ja, lat/lng, `healthcareProfessionalIds`, `contact { address { cityEn/Ja, prefectureEn/Ja, postalCode, … }, phone, email, website, googleMapsUrl }` |
-| Healthcare professional | `healthcareProfessionals` / `…TotalCount` | localised `names`, `specialties`, `spokenLanguages`, `degrees`, `acceptedInsurance`, `additionalInfoForPatients`, `facilityIds` |
+| Healthcare professional | `healthcareProfessionals` / `…TotalCount` | localised `names`, `specialties`, `spokenLanguages`, `degrees`, `additionalInfoForPatients`, `facilityIds` |
 | Specialty | `Specialty` enum (~31) + `SpecialtyCategory` (12) | client-side display map in `stores/specialtiesStore.ts` |
 | Language | `Locale` enum (40+ server-side; 10 shipped in UI) | `i18n/index.ts` |
 | Location | **derived** — no location entity | cities come from paging facilities in `stores/locationsStore.ts` |

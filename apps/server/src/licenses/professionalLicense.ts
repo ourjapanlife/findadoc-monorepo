@@ -11,7 +11,6 @@ import {
 /**
  * One clinical license, with extra credentials stored separately (#1014).
  * MD+DO and DDS+DMD stay in the moderator queue. A confirmed dual is left alone.
- * The snapshot notes disagree (90 vs 86 DDS+DMD). This counts stored rows and does not collapse them.
  */
 
 export {
@@ -37,19 +36,6 @@ export type LicenseColumns = {
     licenseReview: LicenseReviewValue | null
     licenseRecommendation: LicenseRecommendationValue | null
 }
-
-export type StoredLicenseRow = {
-    degrees: readonly string[] | null
-    primaryLicense: string | null
-    additionalCredentials: readonly string[] | null
-    licenseReview: string | null
-    licenseRecommendation: string | null
-}
-
-export type StoredLicensePlan =
-    | { action: 'keep', reason: 'confirmed_dual' | 'unchanged' }
-    | { action: 'split', columns: LicenseColumns }
-    | { action: 'needs_review', columns: LicenseColumns }
 
 const DEGREE_VALUES = new Set<string>(Object.values(Degree))
 
@@ -147,93 +133,4 @@ export function licenseColumnsForDegrees(
         licenseReview: null,
         licenseRecommendation: null
     }
-}
-
-function sameMembers(left: readonly string[], right: readonly string[]): boolean {
-    if (left.length !== right.length) {
-        return false
-    }
-
-    const sortedLeft = [...left].sort()
-    const sortedRight = [...right].sort()
-
-    return sortedLeft.every((value, index) => value === sortedRight[index])
-}
-
-function columnsMatch(row: StoredLicenseRow, columns: LicenseColumns): boolean {
-    return row.primaryLicense === columns.primaryLicense
-        && (row.licenseReview ?? null) === columns.licenseReview
-        && (row.licenseRecommendation ?? null) === columns.licenseRecommendation
-        && sameMembers(asList(row.additionalCredentials), columns.additionalCredentials)
-}
-
-/**
- * Decision for one stored professional.
- * Degrees are not part of the write. A chosen primary or a confirmed dual stays.
- */
-export function planStoredLicense(row: StoredLicenseRow): StoredLicensePlan {
-    if (row.licenseReview === LicenseReview.Confirmed) {
-        return { action: 'keep', reason: 'confirmed_dual' }
-    }
-
-    if (row.primaryLicense) {
-        return { action: 'keep', reason: 'unchanged' }
-    }
-
-    const columns = licenseColumnsForDegrees(row.degrees)
-
-    if (columnsMatch(row, columns)) {
-        return { action: 'keep', reason: 'unchanged' }
-    }
-
-    if (columns.licenseReview === LicenseReview.NeedsReview) {
-        return { action: 'needs_review', columns }
-    }
-
-    return { action: 'split', columns }
-}
-
-export type LicenseBackfillReport = {
-    total: number
-    split: number
-    needsReview: Record<LicenseRecommendationValue, number>
-    confirmed: number
-    unchanged: number
-}
-
-export function reportStoredLicenses(rows: readonly StoredLicenseRow[]): LicenseBackfillReport {
-    const report: LicenseBackfillReport = {
-        total: rows.length,
-        split: 0,
-        needsReview: {
-            [LicenseRecommendation.Md]: 0,
-            [LicenseRecommendation.OneDentalLicense]: 0,
-            [LicenseRecommendation.ConfirmPrimary]: 0
-        },
-        confirmed: 0,
-        unchanged: 0
-    }
-
-    for (const row of rows) {
-        const plan = planStoredLicense(row)
-
-        if (plan.action === 'keep' && plan.reason === 'confirmed_dual') {
-            report.confirmed += 1
-            continue
-        }
-
-        if (plan.action === 'keep') {
-            report.unchanged += 1
-            continue
-        }
-
-        if (plan.action === 'needs_review' && plan.columns.licenseRecommendation) {
-            report.needsReview[plan.columns.licenseRecommendation] += 1
-            continue
-        }
-
-        report.split += 1
-    }
-
-    return report
 }

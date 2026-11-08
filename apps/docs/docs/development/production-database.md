@@ -102,31 +102,31 @@ A token works for new connections for 15 minutes. A connection that is already o
 
 ## Run a backfill
 
-Backfills are scripts in `apps/server/utils/`. They do nothing unless you ask them to write. The steps are always the same:
+Backfills are one-off scripts in `apps/server/utils/`. They do nothing unless you ask them to write. `pnpm db:prod` runs the command from `apps/server`, so call the script with `node` (on Windows, `pnpm db:prod pnpm …` cannot start `pnpm`). The steps are always the same:
 
 **1. Dry-run** with the read-only role. Read the counts it prints:
 
 ```bash
-pnpm db:prod pnpm --filter @findadoc/server backfill:cities
+pnpm db:prod node --loader ts-node/esm utils/<script>.ts
 ```
 
 The first line names the target: `[dry-run] PRODUCTION database as findadoc_readonly`.
 
-**2. Write** with the operator role. A production write needs `--confirm-production` as well as the write script:
+**2. Write** with the operator role. A production write needs `--write` and `--confirm-production`:
 
 ```bash
-pnpm db:prod --role operator pnpm --filter @findadoc/server backfill:cities:write --confirm-production
+pnpm db:prod --role operator node --loader ts-node/esm utils/<script>.ts --write --confirm-production
 ```
 
 **3. Dry-run again** and check that nothing is left to change.
 
-A backfill that calls Google Places needs the API key, which `--places-key` reads from AWS for that one command:
+A script that calls the Google Places API needs the API key, which `--places-key` reads from AWS for that one command:
 
 ```bash
-pnpm db:prod --places-key pnpm --filter @findadoc/server backfill:place-ids
+pnpm db:prod --places-key node --loader ts-node/esm utils/<script>.ts
 ```
 
-Available backfills: `backfill:cities`, `backfill:place-ids`, `backfill:maps-urls`, and `backfill:licenses`. Each has a `:write` version.
+There is no backfill waiting to run. The city, place id, Maps link, license, phone, and insurance backfills ran on production in November 2026 and were deleted. A new one is written with `apps/server/utils/scriptDatabase.ts` and deleted after it runs.
 
 ## With Claude Code or another AI assistant
 

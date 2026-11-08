@@ -62,7 +62,6 @@ describe('published language allowlist', () => {
             license_review: null,
             license_recommendation: null,
             specialties: [],
-            accepted_insurance: [],
             additional_info_for_patients: null,
             email: null,
             firestore_id: null,

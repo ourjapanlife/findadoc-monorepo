@@ -12,7 +12,7 @@ These notes apply to the whole monorepo: the site, the API, the MCP server, and 
 - Prefecture keys come from `apps/server/utils/japanesePrefectures.ts`.
 - A district (郡), a street, or an English/Japanese pair that names two different places stays unresolved. Do not guess. Osaka and Sakai both have Kita and Nishi, so a bare North Ward is not Osaka.
 
-Alias lookup lives in `apps/server/src/vocabulary/`. Resolvers and services do not import it. `apps/server/utils/backfillFacilityCities.ts` is the #1011 run: it writes `city_id` only when the facility maps to one official municipality, leaves anything else as `UNVERIFIED_LOCATION`, and does not change a confirmed facility's stored name or address. A district row uses the town named in the address line. Dry-run is the default. It does not call Places. It writes nothing unless every facility that is not online maps and no published row is still a generic East, West, North, South, or Chuo Ward. An online facility has no address and keeps a null city. The city table is #1009: every current municipality from the Address Base Registry, shaped by the rules above. Designated-city wards are not rows. Tokyo's 23 wards are. Refresh with `apps/server/utils/buildMunicipalityVocabulary.py` and match on `lg_code`. The alias map only returns a row that already exists.
+Alias lookup lives in `apps/server/src/vocabulary/`. Resolvers and services do not import it. The #1011 city backfill has run on production. Every facility with an address has a `city_id` for one official municipality, and no published row is a generic East, West, North, South, or Chuo Ward. An online facility has no address and keeps a null city. A facility that does not map to one municipality stays `UNVERIFIED_LOCATION`, and a confirmed facility's stored name and address are not rewritten. A district row uses the town named in the address line. The city table is #1009: every current municipality from the Address Base Registry, shaped by the rules above. Designated-city wards are not rows. Tokyo's 23 wards are. Refresh with `apps/server/utils/buildMunicipalityVocabulary.py` and match on `lg_code`. The alias map only returns a row that already exists.
 
 ## Affiliations
 
@@ -123,7 +123,7 @@ Find a Doc holds patient booking requests, insurance documents, and health infor
 - Make it safe to run once on production data: add columns as nullable or with a default, backfill in a separate step, then add the constraint.
 - Add a foreign key, a `CHECK`, or `NOT NULL` where the data has a rule. The database is the last check.
 - After a schema change, update `apps/server/src/typeDefs/kyselyTypes.ts` and the seed (`apps/server/scripts/seed/`), then run `pnpm db:reset` and `pnpm db:seed`.
-- A data backfill is a script in `apps/server/utils/` with dry-run as the default, like `backfillFacilityCities.ts`.
+- A data backfill is a script in `apps/server/utils/` with dry-run as the default, built on `apps/server/utils/scriptDatabase.ts` (see `.claude/skills/production-database/SKILL.md`). Delete it once it has run on production.
 
 ## Production data access
 
@@ -184,7 +184,7 @@ Before a change is done:
 
 A professional has one primary clinical license. PhD, MPH, and DSc are additional credentials. DVM, EdD, and DSW stay in the enum and stay hidden from the moderation picker.
 
-`apps/server/utils/backfillProfessionalLicenses.ts` is the #1014 run. Dry-run is the default. It does not rewrite `degrees`. MD+DO is queued as `NEEDS_REVIEW` with recommendation `MD`. DDS+DMD is queued with recommendation `one_dental_license`. The 18 Sep notes disagree about that dental count, so the run counts the rows it reads and does not collapse them. A row with `license_review = CONFIRMED`, or a row that already has `primary_license`, is left alone. A new professional is not given a license. The moderator chooses one.
+The #1014 license backfill has run on production. `degrees` keeps the submitted list. MD+DO is `NEEDS_REVIEW` with recommendation `MD`. DDS+DMD is `NEEDS_REVIEW` with recommendation `one_dental_license`. A row with `license_review = CONFIRMED`, or one that already has `primary_license`, keeps it (`licenseColumnsForDegrees` in `apps/server/src/licenses/professionalLicense.ts`). A new professional is not given a license. The moderator chooses one.
 
 ## Insurance
 
@@ -192,7 +192,7 @@ Japanese public health insurance is one fact on the facility (#18): `facilities.
 
 `/insurance` is an indexable marketing page in every locale: prerendered, in the sitemap with hreflang, linked from the footer and menu. `apps/web/public/insurance.md` is its plain-text twin, listed in `llms.txt` and served for `Accept: text/markdown`. An English edit to `insurancePage` changes `insurance.md` in the same change; `agentReadiness.spec.ts` fails otherwise. The page is general information, not medical or insurance advice, and not an advertisement for a clinic. Keep the disclaimer, write the text in our own words, and link the ministry pages instead of copying them. The copay shares and the December 1, 2025 card change go stale: check them against the linked ministry pages once a year.
 
-`apps/server/utils/backfillProfessionalInsurance.ts` is the #18 run. Dry-run is the default. It prints each professional's old codes as sentences with the facility and city, and a write run empties `hps.accepted_insurance`. It never changes a facility answer. It flags a doctor whose old code said "does not accept insurance" so that clinic gets checked. A later migration drops `hps.accepted_insurance` once production has run it.
+The #18 insurance backfill has run on production, and `20261108120000_drop_hps_accepted_insurance.sql` drops the old per-professional codes. Do not bring back a professional insurance column.
 
 ## Places
 

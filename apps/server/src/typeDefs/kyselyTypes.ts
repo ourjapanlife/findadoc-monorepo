@@ -105,8 +105,6 @@ export interface HpsTable {
     license_recommendation: string | null
     specialties: ColumnType<gqlTypes.Specialty[], gqlTypes.Specialty[], gqlTypes.Specialty[]>
     spoken_languages: ColumnType<gqlTypes.Locale[], gqlTypes.Locale[], gqlTypes.Locale[]>
-    /** Old per-professional codes (#18). Read and cleared by the insurance backfill only. */
-    accepted_insurance: ColumnType<string[], string | undefined, string>
     email: string | null
     created_date: string
     updated_date: string
