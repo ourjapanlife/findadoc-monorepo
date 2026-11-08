@@ -32,20 +32,29 @@ export type ValidPaymentSettings = {
 export type PaymentSettingsError = { field: string, errorCode: ErrorCode }
 
 /**
- * True for an absolute https URL with a host and no user name or password.
- * Card payment links go into patient emails, so http, javascript:, and data: never pass.
+ * The link as the URL parser writes it, when it is an absolute https URL with a host and no
+ * user name or password; otherwise null. Card payment links go into patient emails, so http,
+ * javascript:, and data: never pass. Storing the parsed form means `HTTPS://Example.com` is saved
+ * as `https://example.com/`, which the database CHECK (`LIKE 'https://%'`) accepts, and a tab or
+ * line break pasted inside the link never reaches the email.
  */
-export function isHttpsUrl(value: string): boolean {
+export function normalizedHttpsUrl(value: string): string | null {
     if (value.length > MAX_PAYMENT_URL_LENGTH) {
-        return false
+        return null
     }
     let url: URL
     try {
         url = new URL(value)
     } catch {
-        return false
+        return null
     }
-    return url.protocol === 'https:' && url.hostname !== '' && url.username === '' && url.password === ''
+    const valid = url.protocol === 'https:' && url.hostname !== '' && url.username === '' && url.password === ''
+    return valid && url.href.length <= MAX_PAYMENT_URL_LENGTH ? url.href : null
+}
+
+/** True for a link normalizedHttpsUrl accepts. */
+export function isHttpsUrl(value: string): boolean {
+    return normalizedHttpsUrl(value) !== null
 }
 
 /** Blank becomes null, so clearing a field in the dashboard clears it in the email. */
@@ -104,9 +113,9 @@ export function validatePaymentSettings(
         return { error: { field: 'facilityId', errorCode: ErrorCode.INVALID_ID } }
     }
     const cardMode: CardMode = input.cardMode === BookingCardPaymentMode.FixedLink ? 'fixed_link' : 'sent_by_staff'
-    const cardUrl = optionalText(input.cardUrl)
+    const typedCardUrl = optionalText(input.cardUrl)
     const feeJpy = input.feeJpy ?? null
-    const error = cardError(cardMode, cardUrl) ?? bankTextError(input) ?? feeError(feeJpy)
+    const error = cardError(cardMode, typedCardUrl) ?? bankTextError(input) ?? feeError(feeJpy)
     if (error !== null) {
         return { error }
     }
@@ -115,7 +124,7 @@ export function validatePaymentSettings(
         value: {
             facilityId,
             cardMode,
-            cardUrl,
+            cardUrl: typedCardUrl === null ? null : normalizedHttpsUrl(typedCardUrl),
             bankName: optionalText(input.bankName),
             bankBranch: optionalText(input.bankBranch),
             bankAccountType: accountType === null

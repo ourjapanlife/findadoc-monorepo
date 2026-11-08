@@ -1,5 +1,11 @@
 import { expect } from 'chai'
-import { PAYMENT_QR_MAX_BYTES, isAcceptedQrFile, isHttpsLink, parseFeeJpy } from '@/utils/booking/paymentSettings'
+import {
+    MAX_FEE_JPY,
+    PAYMENT_QR_MAX_BYTES,
+    isAcceptedQrFile,
+    isHttpsLink,
+    parseFeeJpy
+} from '@/utils/booking/paymentSettings'
 
 describe('payment settings form checks', () => {
     it('reads a blank fee as no fee, and a whole number of yen as the fee', () => {
@@ -13,6 +19,11 @@ describe('payment settings form checks', () => {
         for (const value of ['-1', '1.5', '5,000', '¥5000', 'abc', '1e3']) {
             expect(parseFeeJpy(value), value).to.equal(undefined)
         }
+    })
+
+    it('refuses a fee above the cap the API enforces', () => {
+        expect(parseFeeJpy(String(MAX_FEE_JPY))).to.equal(MAX_FEE_JPY)
+        expect(parseFeeJpy(String(MAX_FEE_JPY + 1))).to.equal(undefined)
     })
 
     it('accepts https links only', () => {

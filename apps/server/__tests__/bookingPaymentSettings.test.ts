@@ -1,13 +1,17 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { SESv2Client } from '@aws-sdk/client-sesv2'
 import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
+    BookingAppointmentStatus,
     BookingBankAccountType,
     BookingCardPaymentMode,
     type UpdateBookingPaymentSettingsInput
 } from '@findadoc/graphql'
 import type { BookingAccess } from '../src/booking/access.js'
+import { SHOWCASE_BOOKING_FORM_ID } from '../src/booking/formDefinitions.js'
+import * as notifications from '../src/booking/notifications.js'
 import { PAYPAY_QR_CONTENT_ID } from '../src/booking/paymentEmailCopy.js'
 import { pendingPaymentEmail } from '../src/booking/paymentEmail.js'
 import { writeEmailPreview } from '../src/email/emailPreview.js'
@@ -16,6 +20,9 @@ import { generateRandomCreateFacilityInput } from '../src/fakeData/fakeFacilitie
 import { db } from '../src/kyselyClient.js'
 import { logger } from '../src/logger.js'
 import { ErrorCode } from '../src/result.js'
+import * as availabilityService from '../src/services/availabilityService.js'
+import * as bookingService from '../src/services/bookingService.js'
+import * as clinicAccessService from '../src/services/clinicAccessService.js'
 import * as facilityService from '../src/services/facilityService.js'
 import * as paymentSettingsService from '../src/services/paymentSettingsService.js'
 import {
@@ -83,6 +90,13 @@ describe('payment settings validation', () => {
         }
         expect(validatePaymentSettings(settingsInput(facilityId, { cardUrl: 'http://example.com' })))
             .toEqual({ error: { field: 'cardUrl', errorCode: ErrorCode.INVALID_WEBSITE } })
+    })
+
+    it('stores the link as the parser writes it, so an upper-case scheme still meets the database check', () => {
+        const checked = validatePaymentSettings(settingsInput(facilityId, { cardUrl: ' HTTPS://Example.com/Pay?x=1 ' }))
+        expect('value' in checked && checked.value.cardUrl).toBe('https://example.com/Pay?x=1')
+        const pasted = validatePaymentSettings(settingsInput(facilityId, { cardUrl: 'https://example.com/p\tay' }))
+        expect('value' in pasted && pasted.value.cardUrl).toBe('https://example.com/pay')
     })
 
     it('requires the card link for a fixed link, but not when staff send it', () => {
@@ -348,6 +362,16 @@ describe('booking payment settings', () => {
         })
     })
 
+    it('saves an upper-case https link instead of failing on the database check', async () => {
+        const saved = await paymentSettingsService.updateBookingPaymentSettings(
+            settingsInput(otherFacilityId, { cardUrl: 'HTTPS://EXAMPLE.COM/pay' }),
+            admin,
+            API
+        )
+        expect(saved.hasErrors).toBe(false)
+        expect(saved.data.cardUrl).toBe('https://example.com/pay')
+    })
+
     it('is deleted with the facility', async () => {
         const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
         const id = created.data.id
@@ -415,5 +439,146 @@ describe('inline attachments when SES is not configured', () => {
         } finally {
             await rm(root, { recursive: true, force: true })
         }
+    })
+})
+
+describe('submitting an online consult request', () => {
+    let facilityId = ''
+    const day = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
+    day.setUTCHours(1, 0, 0, 0)
+    const iso = (minutes: number) => new Date(day.getTime() + minutes * 60 * 1000).toISOString()
+
+    beforeAll(async () => {
+        const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
+        expect(created.hasErrors).toBe(false)
+        facilityId = created.data.id
+        const settings = await clinicAccessService.updateBookingSettings({
+            facilityId,
+            allowedDurations: [30],
+            formDefinitionIds: [SHOWCASE_BOOKING_FORM_ID]
+        }, admin)
+        expect(settings.hasErrors).toBe(false)
+        const payment = await paymentSettingsService.updateBookingPaymentSettings(settingsInput(facilityId), admin, API)
+        expect(payment.hasErrors).toBe(false)
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    afterAll(async () => {
+        await db.deleteFrom('booking_appointments').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_uploads').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_submissions').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('clinic_availability_windows').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_payment_settings').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('facilities').where('id', '=', facilityId).execute()
+    })
+
+    /** A file upload as the browser does it: a signed target, then the bytes in the local store. */
+    async function uploaded(fieldId: string): Promise<string> {
+        const signed = await bookingService.createBookingUploadUrl({
+            clinicSiteId: facilityId,
+            formDefinitionId: SHOWCASE_BOOKING_FORM_ID,
+            fieldId,
+            contentType: 'image/jpeg',
+            fileName: 'photo.jpg',
+            byteSize: JPEG.byteLength
+        }, API)
+        expect(signed.hasErrors).toBe(false)
+        await storeLocalBookingUpload(signed.data.objectKey, JPEG, 'image/jpeg')
+        return signed.data.uploadId
+    }
+
+    it('starts pending payment and sends the payment email, not the plain receipt', async () => {
+        await availabilityService.createClinicAvailabilityWindow(
+            { clinicSiteId: facilityId, startsAt: iso(0), endsAt: iso(30) },
+            'test|staff',
+            admin
+        )
+        const notice = vi.spyOn(notifications, 'sendBookingNotice').mockResolvedValue(true)
+
+        const submitted = await bookingService.submitBooking({
+            clinicSiteId: facilityId,
+            formDefinitionId: SHOWCASE_BOOKING_FORM_ID,
+            formVersion: 4,
+            locale: 'en-US',
+            answers: [
+                { fieldId: 'email', value: 'consult-pay@example.com' },
+                { fieldId: 'phone', value: '090-1234-5678' },
+                { fieldId: 'fullName', value: 'Test Patient' },
+                { fieldId: 'dateOfBirth', value: '1990-04-15' },
+                { fieldId: 'gender', value: 'female' },
+                { fieldId: 'addressInJapan', value: '1-1 Shiba, Minato-ku, Tokyo' },
+                { fieldId: 'japaneseLevel', value: 'little' },
+                { fieldId: 'consultationLanguage', value: 'ne' },
+                { fieldId: 'reason', value: 'Checkup' },
+                { fieldId: 'insuranceType', value: 'insuranceCard' },
+                { fieldId: 'insuranceDocument', uploadId: await uploaded('insuranceDocument') },
+                { fieldId: 'selfie', uploadId: await uploaded('selfie') },
+                { fieldId: 'paymentMethod', value: 'bankTransfer' }
+            ],
+            startsAt: iso(0),
+            durationMinutes: 30,
+            confirmedInJapan: true,
+            healthDataConsent: true
+        })
+        expect(submitted.errors).toBeUndefined()
+        expect(submitted.data.appointmentStatus).toBe(BookingAppointmentStatus.PendingPayment)
+
+        const patient = notice.mock.calls.map(([call]) => call).find(call => call.to === 'consult-pay@example.com')
+        expect(patient?.email.subject).toMatch(/^Payment needed to confirm your appointment · /)
+        expect(patient?.email.textBody).toContain('Payment method: Bank transfer')
+        expect(patient?.email.textBody).toContain('Initial fee: ¥5,000')
+        expect(patient?.email.textBody).toContain('口座番号: 1234567')
+        expect(patient?.email.textBody).not.toContain('https://example.com/pay')
+        expect(patient?.email.textBody).toContain('/book/manage#')
+    })
+})
+
+describe('inline attachments through SES', () => {
+    const before = process.env.SES_FROM_ADDRESS
+
+    afterEach(() => {
+        vi.restoreAllMocks()
+        if (before === undefined) {
+            delete process.env.SES_FROM_ADDRESS
+        } else {
+            process.env.SES_FROM_ADDRESS = before
+        }
+    })
+
+    it('sends the QR as an INLINE attachment with its content id', async () => {
+        process.env.SES_FROM_ADDRESS = 'bookings@example.com'
+        const send = vi.spyOn(SESv2Client.prototype, 'send').mockImplementation(async () => ({}))
+        const result = await sendTransactionalEmail({
+            to: 'patient@example.com',
+            subject: 'Subject',
+            textBody: 'Body',
+            htmlBody: `<img src="cid:${PAYPAY_QR_CONTENT_ID}">`,
+            inlineAttachments: [{
+                contentId: PAYPAY_QR_CONTENT_ID,
+                fileName: 'paypay-qr.png',
+                contentType: 'image/png',
+                content: PNG
+            }]
+        })
+        expect(result).toBe('sent')
+        expect(send.mock.calls[0]?.[0]).toMatchObject({
+            input: {
+                Content: {
+                    Simple: {
+                        Attachments: [{
+                            RawContent: PNG,
+                            ContentDisposition: 'INLINE',
+                            ContentId: PAYPAY_QR_CONTENT_ID,
+                            FileName: 'paypay-qr.png',
+                            ContentType: 'image/png'
+                        }]
+                    }
+                }
+            }
+        })
     })
 })
