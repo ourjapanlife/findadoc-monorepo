@@ -132,6 +132,23 @@ test('the owner downloads the bookings as a UTF-8 CSV with contact columns only'
 })
 
 /** The `sub` of the Auth0 user the setup project signed in. */
+test('the owner sees the seeded payment settings with the PayPay QR, and an http link is refused', async ({ page }) => {
+    await page.goto(`${dashboardPath}?tab=settings`)
+    const payment = page.getByTestId('clinic-payment-settings')
+    await expect(payment).toBeVisible()
+    await expect(page.getByTestId('clinic-payment-fee')).toHaveValue('5000')
+    await expect(page.getByTestId('clinic-payment-card-url')).toHaveValue('https://example.com/pay')
+    await expect(page.getByTestId('clinic-payment-bankAccountNumber')).toHaveValue('1234567')
+    const qr = page.getByTestId('clinic-payment-qr-preview')
+    await expect(qr).toBeVisible()
+    await expect.poll(() => qr.evaluate(image => image instanceof HTMLImageElement && image.naturalWidth > 0)).toBe(true)
+
+    // Checked in the browser before anything is sent, so the seeded settings stay as they are.
+    await page.getByTestId('clinic-payment-card-url').fill('http://example.com/pay')
+    await page.getByTestId('clinic-payment-save').click()
+    await expect(page.getByTestId('clinic-payment-card-url')).toHaveAttribute('aria-invalid', 'true')
+})
+
 function signedInSub(): string {
     const state = JSON.parse(readFileSync(STORAGE_STATE, 'utf8')) as { cookies: Array<{ name: string, value: string }> }
     const token = state.cookies.find(cookie => cookie.name === 'auth_token')?.value

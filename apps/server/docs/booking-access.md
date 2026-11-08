@@ -150,6 +150,40 @@ compare-and-set on the current status. The patient may cancel until the visit
 starts. Each other change emails the other side. The dashboard badge counts
 `requested` and `pending_payment`.
 
+### Payment settings and the pending-payment email
+
+`booking_payment_settings` holds one row per facility (online consult v2 §3.3):
+card mode (`fixed_link` or `sent_by_staff`), an https card link (required for
+`fixed_link`), five bank fields, a PayPay QR object key, and the fee in whole
+yen (null leaves it out). It is separate from `booking_settings`, so the
+durations form never overwrites it. `bookingPaymentSettings` takes the read
+scopes and `canReadFacility`; `updateBookingPaymentSettings` and
+`createPaymentQrUploadUrl` take the owner settings scopes and
+`canManageFacility`, so staff read but do not change it. The facility delete
+removes the row. It is clinic data, closed to the db:prod roles like every new
+table, and never logged.
+
+The QR is a presigned PUT under `uploads/clinic/{facilityId}/paypay/{uuid}.{ext}`.
+The API signs PNG, JPEG, or WebP up to 1 MB, and on save reads the object again:
+the key must be that facility's, at most 1 MB, and its first bytes must match
+the type in the key. The patient purge only covers `uploads/booking/`. The API
+role cannot delete objects, so a replaced or removed QR stays in the bucket.
+
+A submit that starts as `pending_payment` sends the patient the pending-payment
+email instead of the plain receipt, in the form locale
+(`src/booking/paymentEmail.ts`, copy in `paymentEmailCopy.ts`). It names the
+chosen method, which is the one patient answer a patient email carries: a fixed
+label, never free text. It gives the fee when set, then instructions for that
+method only: the card link or "the clinic will email you a link", the bank
+details as a fixed Japanese block in every language, or the QR as an inline
+`cid:` image (SES `Attachments` with `ContentDisposition: INLINE`). A method
+whose setting is missing says the clinic will send payment instructions.
+
+Without `SES_FROM_ADDRESS`, outside production and tests, each email is also
+written to `apps/server/.email-previews/{time}-{bookingId}-{random}/` as
+`index.html` (the `cid:` images point at files beside it) and `body.txt`.
+The folder is gitignored and holds the message, so it never runs on AWS.
+
 ### Export
 
 Owners and admins can download one clinic's bookings as a CSV from the

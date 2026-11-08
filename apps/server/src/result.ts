@@ -46,5 +46,7 @@ export enum ErrorCode {
     FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS',
     INTERPRETER_HAS_BOOKINGS = 'INTERPRETER_HAS_BOOKINGS',
     /** A facility that is not online needs a Google place id (#228). */
-    PLACE_ID_REQUIRED = 'PLACE_ID_REQUIRED'
+    PLACE_ID_REQUIRED = 'PLACE_ID_REQUIRED',
+    /** A PayPay QR that is not a PNG, JPEG, or WebP up to 1 MB, or not this clinic's upload (online consult v2 §3.3). */
+    PAYMENT_QR_INVALID = 'PAYMENT_QR_INVALID'
 }

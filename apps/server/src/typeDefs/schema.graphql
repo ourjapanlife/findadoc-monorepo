@@ -1449,6 +1449,54 @@ type BookingSettings {
   clinicLanguages: [Locale!]!
 }
 
+"""How the email tells a patient to pay by card (online consult v2 §3.3)."""
+enum BookingCardPaymentMode {
+  """The email gives every patient the clinic's one https payment link."""
+  FIXED_LINK
+  """Staff send each patient a payment link by hand. The email says so."""
+  SENT_BY_STAFF
+}
+
+"""A Japanese bank account type. The email shows 普通 or 当座."""
+enum BookingBankAccountType {
+  ORDINARY
+  CHECKING
+}
+
+"""
+How a clinic takes the initial fee, for the pending-payment email (online consult v2 §3.3, §3.4).
+Members read it. Owners and admins change it. Clinic data, not patient data.
+"""
+type BookingPaymentSettings {
+  facilityId: ID!
+  cardMode: BookingCardPaymentMode!
+  """https only. Set when cardMode is FIXED_LINK."""
+  cardUrl: String
+  bankName: String
+  bankBranch: String
+  bankAccountType: BookingBankAccountType
+  """1 to 8 digits."""
+  bankAccountNumber: String
+  bankAccountHolder: String
+  """True when the clinic uploaded a PayPay QR."""
+  hasPayPayQr: Boolean!
+  """A link that shows the QR for 5 minutes. Null when there is no QR."""
+  payPayQrPreviewUrl: String
+  """Whole yen. Null leaves the fee out of the email."""
+  feeJpy: Int
+  """True when this user may change the settings."""
+  canManage: Boolean!
+}
+
+"""A short-lived PUT for one PayPay QR image."""
+type PaymentQrUploadUrl {
+  """Pass this to updateBookingPaymentSettings once the PUT has finished."""
+  objectKey: String!
+  uploadUrl: String!
+  headers: [BookingUploadHeader!]!
+  expiresAt: String!
+}
+
 """
 An interpreter, team, or phone service at a clinic (#205). docs/booking-interpretation.md.
 Each empty field means "all": every clinic language, every open time, no limit.
@@ -1780,6 +1828,40 @@ input UpdateBookingSettingsInput {
   formDefinitionIds: [String!]!
 }
 
+"""Every field is saved as sent: a blank or omitted field clears that setting."""
+input UpdateBookingPaymentSettingsInput {
+  facilityId: ID!
+  cardMode: BookingCardPaymentMode!
+  """https only, up to 2048 characters. Required for FIXED_LINK."""
+  cardUrl: String
+  """Up to 100 characters."""
+  bankName: String
+  """Up to 100 characters."""
+  bankBranch: String
+  bankAccountType: BookingBankAccountType
+  """1 to 8 digits."""
+  bankAccountNumber: String
+  """Up to 100 characters."""
+  bankAccountHolder: String
+  """
+  A new QR: the objectKey from createPaymentQrUploadUrl, after the upload finished.
+  Omit to keep the current QR.
+  """
+  payPayQrObjectKey: String
+  """True removes the current QR. Ignored when payPayQrObjectKey is set."""
+  removePayPayQr: Boolean
+  """Whole yen, 0 or more. Null leaves the fee out of the email."""
+  feeJpy: Int
+}
+
+input CreatePaymentQrUploadUrlInput {
+  facilityId: ID!
+  """image/png, image/jpeg, or image/webp."""
+  contentType: String!
+  """Up to 1 MB (1048576 bytes)."""
+  byteSize: Int!
+}
+
 input SaveClinicInterpreterInput {
   """Omit to add an interpreter."""
   id: ID
@@ -1892,6 +1974,9 @@ type Query {
 
   """Booking options for one clinic. Members and admins."""
   bookingSettings(facilityId: ID!): BookingSettings
+
+  """How one clinic takes the initial fee. Members and admins. Null when the clinic saved none."""
+  bookingPaymentSettings(facilityId: ID!): BookingPaymentSettings
 
   """A clinic's interpreters (#205). Owners, staff, and admins."""
   clinicInterpreters(facilityId: ID!): [ClinicInterpreter!]!
@@ -2204,6 +2289,15 @@ type Mutation {
 
   """Change visit lengths and offered forms. Owners and admins."""
   updateBookingSettings(input: UpdateBookingSettingsInput!): BookingSettings!
+
+  """Change how the clinic takes the initial fee (online consult v2 §3.3). Owners and admins."""
+  updateBookingPaymentSettings(input: UpdateBookingPaymentSettingsInput!): BookingPaymentSettings!
+
+  """
+  A short-lived upload URL for the clinic's PayPay QR. Owners and admins. PNG, JPEG, or WebP up to
+  1 MB; the server checks the stored file again on save.
+  """
+  createPaymentQrUploadUrl(input: CreatePaymentQrUploadUrlInput!): PaymentQrUploadUrl!
 
   """Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on."""
   setBookingInterpretation(input: SetBookingInterpretationInput!): BookingSettings!

@@ -20,10 +20,22 @@ import {
     initialAppointmentStatus,
     isOfferedFormId,
     phoneAnswer,
+    PAYMENT_METHOD_FIELD_ID,
     storedSensitivity
 } from '../booking/formDefinitions.js'
-import { OPEN_REQUEST_STATUSES, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
-import { clinicRequestEmail, isSiteLocale, patientRequestEmail } from '../booking/emailCopy.js'
+import {
+    APPOINTMENT_STATUS,
+    OPEN_REQUEST_STATUSES,
+    SLOT_HOLDING_STATUSES,
+    type AppointmentStatus
+} from '../booking/lifecycle.js'
+import {
+    clinicRequestEmail,
+    isSiteLocale,
+    patientRequestEmail,
+    type BookingEmail
+} from '../booking/emailCopy.js'
+import { pendingPaymentEmail } from '../booking/paymentEmail.js'
 import { CURRENT_CONSENT_TEXT_VERSION } from '../booking/consentText.js'
 import {
     activeInterpreters,
@@ -401,11 +413,7 @@ function requesterEmail(storedAnswers: Record<string, string>): string | undefin
     return email
 }
 
-/**
- * Patient receipt (with the private manage link), then the clinic notice.
- * The clinic is told even when the patient email fails.
- */
-async function notifyBookingParties(input: {
+type PatientEmailInput = {
     target: BookingTarget
     bookingId: string
     storedAnswers: Record<string, string>
@@ -413,6 +421,37 @@ async function notifyBookingParties(input: {
     durationMinutes: number
     locale: string
     patientToken: string
+    startStatus: AppointmentStatus
+}
+
+/**
+ * The patient's first email. A visit that starts pending_payment gets the payment email
+ * (online consult v2 §3.4) instead of the plain receipt. Both carry the private manage link.
+ */
+async function patientFirstEmail(input: PatientEmailInput): Promise<BookingEmail> {
+    const common = {
+        locale: input.locale,
+        clinicName: input.target.clinicName,
+        startsAt: input.startsAt,
+        durationMinutes: input.durationMinutes,
+        reference: input.bookingId,
+        manageUrl: patientBookingUrl(input.patientToken, input.locale)
+    }
+    if (input.startStatus !== APPOINTMENT_STATUS.PENDING_PAYMENT) {
+        return patientRequestEmail(common)
+    }
+    return pendingPaymentEmail({
+        ...common,
+        facilityId: input.target.facilityId,
+        paymentAnswer: input.storedAnswers[PAYMENT_METHOD_FIELD_ID]
+    })
+}
+
+/**
+ * Patient receipt (with the private manage link), then the clinic notice.
+ * The clinic is told even when the patient email fails.
+ */
+async function notifyBookingParties(input: PatientEmailInput & {
     languages: readonly string[]
     interpreterLabel: string | null
 }): Promise<BookingSubmissionStatus> {
@@ -424,14 +463,7 @@ async function notifyBookingParties(input: {
         : await sendBookingNotice({
             to: requester,
             bookingId: input.bookingId,
-            email: patientRequestEmail({
-                locale: input.locale,
-                clinicName,
-                startsAt: input.startsAt,
-                durationMinutes: input.durationMinutes,
-                reference: input.bookingId,
-                manageUrl: patientBookingUrl(input.patientToken, input.locale)
-            })
+            email: await patientFirstEmail(input)
         })
 
     await noticeClinic({
@@ -670,6 +702,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         durationMinutes,
         locale: input.locale,
         patientToken: patientToken.token,
+        startStatus,
         languages: choice.languages,
         interpreterLabel: inserted.interpreterLabel
     })

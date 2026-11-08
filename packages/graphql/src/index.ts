@@ -92,9 +92,23 @@ export enum BookingAppointmentStatus {
   Requested = 'REQUESTED'
 }
 
+/** A Japanese bank account type. The email shows 普通 or 当座. */
+export enum BookingBankAccountType {
+  Checking = 'CHECKING',
+  Ordinary = 'ORDINARY'
+}
+
 export enum BookingCancelledBy {
   Clinic = 'CLINIC',
   Patient = 'PATIENT'
+}
+
+/** How the email tells a patient to pay by card (online consult v2 §3.3). */
+export enum BookingCardPaymentMode {
+  /** The email gives every patient the clinic's one https payment link. */
+  FixedLink = 'FIXED_LINK',
+  /** Staff send each patient a payment link by hand. The email says so. */
+  SentByStaff = 'SENT_BY_STAFF'
 }
 
 /** A clinic the signed-in user may open in the booking dashboard. */
@@ -245,6 +259,32 @@ export enum BookingPaymentMethod {
   CreditCard = 'CREDIT_CARD',
   PayPay = 'PAY_PAY'
 }
+
+/**
+ * How a clinic takes the initial fee, for the pending-payment email (online consult v2 §3.3, §3.4).
+ * Members read it. Owners and admins change it. Clinic data, not patient data.
+ */
+export type BookingPaymentSettings = {
+  __typename?: 'BookingPaymentSettings';
+  bankAccountHolder?: Maybe<Scalars['String']['output']>;
+  /** 1 to 8 digits. */
+  bankAccountNumber?: Maybe<Scalars['String']['output']>;
+  bankAccountType?: Maybe<BookingBankAccountType>;
+  bankBranch?: Maybe<Scalars['String']['output']>;
+  bankName?: Maybe<Scalars['String']['output']>;
+  /** True when this user may change the settings. */
+  canManage: Scalars['Boolean']['output'];
+  cardMode: BookingCardPaymentMode;
+  /** https only. Set when cardMode is FIXED_LINK. */
+  cardUrl?: Maybe<Scalars['String']['output']>;
+  facilityId: Scalars['ID']['output'];
+  /** Whole yen. Null leaves the fee out of the email. */
+  feeJpy?: Maybe<Scalars['Int']['output']>;
+  /** True when the clinic uploaded a PayPay QR. */
+  hasPayPayQr: Scalars['Boolean']['output'];
+  /** A link that shows the QR for 5 minutes. Null when there is no QR. */
+  payPayQrPreviewUrl?: Maybe<Scalars['String']['output']>;
+};
 
 /**
  * Country a PHONE answer must belong to.
@@ -902,6 +942,14 @@ export type CreateHealthcareProfessionalInput = {
   spokenLanguages?: InputMaybe<Array<Locale>>;
 };
 
+export type CreatePaymentQrUploadUrlInput = {
+  /** Up to 1 MB (1048576 bytes). */
+  byteSize: Scalars['Int']['input'];
+  /** image/png, image/jpeg, or image/webp. */
+  contentType: Scalars['String']['input'];
+  facilityId: Scalars['ID']['input'];
+};
+
 /** Input for creating a new reservation. */
 export type CreateReservationInput = {
   /** ID of the user making the reservation. */
@@ -1482,6 +1530,11 @@ export type Mutation = {
   createFacility: Facility;
   /** Create a new healthcare professional record. */
   createHealthcareProfessional: HealthcareProfessional;
+  /**
+   * A short-lived upload URL for the clinic's PayPay QR. Owners and admins. PNG, JPEG, or WebP up to
+   * 1 MB; the server checks the stored file again on save.
+   */
+  createPaymentQrUploadUrl: PaymentQrUploadUrl;
   /** Create a new reservation. */
   createReservation: Reservation;
   /** Create a new community submission for a healthcare professional or facility. */
@@ -1519,6 +1572,8 @@ export type Mutation = {
   submitBooking: BookingSubmissionResult;
   /** Staff confirm, decline, cancel, complete, or mark a confirmed visit unpaid. Declined and cancelled free the slot. */
   updateBookingAppointmentStatus: BookingAppointment;
+  /** Change how the clinic takes the initial fee (online consult v2 §3.3). Owners and admins. */
+  updateBookingPaymentSettings: BookingPaymentSettings;
   /** Change visit lengths and offered forms. Owners and admins. */
   updateBookingSettings: BookingSettings;
   /** Update an existing facility by ID. */
@@ -1573,6 +1628,11 @@ export type MutationCreateFacilityArgs = {
 
 export type MutationCreateHealthcareProfessionalArgs = {
   input: CreateHealthcareProfessionalInput;
+};
+
+
+export type MutationCreatePaymentQrUploadUrlArgs = {
+  input: CreatePaymentQrUploadUrlInput;
 };
 
 
@@ -1662,6 +1722,11 @@ export type MutationUpdateBookingAppointmentStatusArgs = {
 };
 
 
+export type MutationUpdateBookingPaymentSettingsArgs = {
+  input: UpdateBookingPaymentSettingsInput;
+};
+
+
 export type MutationUpdateBookingSettingsArgs = {
   input: UpdateBookingSettingsInput;
 };
@@ -1744,6 +1809,16 @@ export type PaymentOption = {
 export type PaymentOptionsInput = {
   paymentBrands?: InputMaybe<Array<Scalars['String']['input']>>;
   paymentType: PaymentType;
+};
+
+/** A short-lived PUT for one PayPay QR image. */
+export type PaymentQrUploadUrl = {
+  __typename?: 'PaymentQrUploadUrl';
+  expiresAt: Scalars['String']['output'];
+  headers: Array<BookingUploadHeader>;
+  /** Pass this to updateBookingPaymentSettings once the PUT has finished. */
+  objectKey: Scalars['String']['output'];
+  uploadUrl: Scalars['String']['output'];
 };
 
 /** List of payment types for healthcare facilities */
@@ -1847,6 +1922,8 @@ export type Query = {
   bookingForm?: Maybe<BookingForm>;
   /** Intake form types a clinic may offer. */
   bookingFormTypes: Array<BookingFormType>;
+  /** How one clinic takes the initial fee. Members and admins. Null when the clinic saved none. */
+  bookingPaymentSettings?: Maybe<BookingPaymentSettings>;
   /** Booking options for one clinic. Members and admins. */
   bookingSettings?: Maybe<BookingSettings>;
   /** Staff read-only detail for one booking submission. */
@@ -1968,6 +2045,11 @@ export type QueryBookingClinicArgs = {
 export type QueryBookingFormArgs = {
   clinicSiteId: Scalars['ID']['input'];
   formId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryBookingPaymentSettingsArgs = {
+  facilityId: Scalars['ID']['input'];
 };
 
 
@@ -2423,6 +2505,32 @@ export type UpdateBookingAppointmentStatusInput = {
   status: BookingAppointmentStatus;
 };
 
+/** Every field is saved as sent: a blank or omitted field clears that setting. */
+export type UpdateBookingPaymentSettingsInput = {
+  /** Up to 100 characters. */
+  bankAccountHolder?: InputMaybe<Scalars['String']['input']>;
+  /** 1 to 8 digits. */
+  bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
+  bankAccountType?: InputMaybe<BookingBankAccountType>;
+  /** Up to 100 characters. */
+  bankBranch?: InputMaybe<Scalars['String']['input']>;
+  /** Up to 100 characters. */
+  bankName?: InputMaybe<Scalars['String']['input']>;
+  cardMode: BookingCardPaymentMode;
+  /** https only, up to 2048 characters. Required for FIXED_LINK. */
+  cardUrl?: InputMaybe<Scalars['String']['input']>;
+  facilityId: Scalars['ID']['input'];
+  /** Whole yen, 0 or more. Null leaves the fee out of the email. */
+  feeJpy?: InputMaybe<Scalars['Int']['input']>;
+  /**
+   * A new QR: the objectKey from createPaymentQrUploadUrl, after the upload finished.
+   * Omit to keep the current QR.
+   */
+  payPayQrObjectKey?: InputMaybe<Scalars['String']['input']>;
+  /** True removes the current QR. Ignored when payPayQrObjectKey is set. */
+  removePayPayQr?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type UpdateBookingSettingsInput = {
   allowedDurations: Array<Scalars['Int']['input']>;
   /** One of allowedDurations. Omit for 30 minutes when offered, else the shortest. */
@@ -2622,7 +2730,9 @@ export type ResolversTypes = {
   BookingAnswerView: ResolverTypeWrapper<BookingAnswerView>;
   BookingAppointment: ResolverTypeWrapper<BookingAppointment>;
   BookingAppointmentStatus: BookingAppointmentStatus;
+  BookingBankAccountType: BookingBankAccountType;
   BookingCancelledBy: BookingCancelledBy;
+  BookingCardPaymentMode: BookingCardPaymentMode;
   BookingClinic: ResolverTypeWrapper<BookingClinic>;
   BookingFieldSensitivity: BookingFieldSensitivity;
   BookingForm: ResolverTypeWrapper<BookingForm>;
@@ -2633,6 +2743,7 @@ export type ResolversTypes = {
   BookingFormInterpreter: ResolverTypeWrapper<BookingFormInterpreter>;
   BookingFormType: ResolverTypeWrapper<BookingFormType>;
   BookingPaymentMethod: BookingPaymentMethod;
+  BookingPaymentSettings: ResolverTypeWrapper<BookingPaymentSettings>;
   BookingPhoneRegion: BookingPhoneRegion;
   BookingPractitioner: ResolverTypeWrapper<BookingPractitioner>;
   BookingSettings: ResolverTypeWrapper<BookingSettings>;
@@ -2682,6 +2793,7 @@ export type ResolversTypes = {
   CreateClinicAvailabilityWindowInput: CreateClinicAvailabilityWindowInput;
   CreateFacilityInput: CreateFacilityInput;
   CreateHealthcareProfessionalInput: CreateHealthcareProfessionalInput;
+  CreatePaymentQrUploadUrlInput: CreatePaymentQrUploadUrlInput;
   CreateReservationInput: CreateReservationInput;
   CreateSubmissionInput: CreateSubmissionInput;
   CreateUserInput: CreateUserInput;
@@ -2717,6 +2829,7 @@ export type ResolversTypes = {
   PatientBookingView: ResolverTypeWrapper<PatientBookingView>;
   PaymentOption: ResolverTypeWrapper<PaymentOption>;
   PaymentOptionsInput: PaymentOptionsInput;
+  PaymentQrUploadUrl: ResolverTypeWrapper<PaymentQrUploadUrl>;
   PaymentType: PaymentType;
   PhysicalAddress: ResolverTypeWrapper<PhysicalAddress>;
   PhysicalAddressInput: PhysicalAddressInput;
@@ -2738,6 +2851,7 @@ export type ResolversTypes = {
   SubmissionSearchFilters: SubmissionSearchFilters;
   SubmitBookingInput: SubmitBookingInput;
   UpdateBookingAppointmentStatusInput: UpdateBookingAppointmentStatusInput;
+  UpdateBookingPaymentSettingsInput: UpdateBookingPaymentSettingsInput;
   UpdateBookingSettingsInput: UpdateBookingSettingsInput;
   UpdateFacilityInput: UpdateFacilityInput;
   UpdateHealthcareProfessionalInput: UpdateHealthcareProfessionalInput;
@@ -2760,6 +2874,7 @@ export type ResolversParentTypes = {
   BookingFormFieldOption: BookingFormFieldOption;
   BookingFormInterpreter: BookingFormInterpreter;
   BookingFormType: BookingFormType;
+  BookingPaymentSettings: BookingPaymentSettings;
   BookingPractitioner: BookingPractitioner;
   BookingSettings: BookingSettings;
   BookingSubmissionDetail: BookingSubmissionDetail;
@@ -2803,6 +2918,7 @@ export type ResolversParentTypes = {
   CreateClinicAvailabilityWindowInput: CreateClinicAvailabilityWindowInput;
   CreateFacilityInput: CreateFacilityInput;
   CreateHealthcareProfessionalInput: CreateHealthcareProfessionalInput;
+  CreatePaymentQrUploadUrlInput: CreatePaymentQrUploadUrlInput;
   CreateReservationInput: CreateReservationInput;
   CreateSubmissionInput: CreateSubmissionInput;
   CreateUserInput: CreateUserInput;
@@ -2829,6 +2945,7 @@ export type ResolversParentTypes = {
   PatientBookingView: PatientBookingView;
   PaymentOption: PaymentOption;
   PaymentOptionsInput: PaymentOptionsInput;
+  PaymentQrUploadUrl: PaymentQrUploadUrl;
   PhysicalAddress: PhysicalAddress;
   PhysicalAddressInput: PhysicalAddressInput;
   Prefecture: Prefecture;
@@ -2843,6 +2960,7 @@ export type ResolversParentTypes = {
   SubmissionSearchFilters: SubmissionSearchFilters;
   SubmitBookingInput: SubmitBookingInput;
   UpdateBookingAppointmentStatusInput: UpdateBookingAppointmentStatusInput;
+  UpdateBookingPaymentSettingsInput: UpdateBookingPaymentSettingsInput;
   UpdateBookingSettingsInput: UpdateBookingSettingsInput;
   UpdateFacilityInput: UpdateFacilityInput;
   UpdateHealthcareProfessionalInput: UpdateHealthcareProfessionalInput;
@@ -2947,6 +3065,21 @@ export type BookingFormTypeResolvers<ContextType = any, ParentType extends Resol
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   labelKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type BookingPaymentSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingPaymentSettings'] = ResolversParentTypes['BookingPaymentSettings']> = {
+  bankAccountHolder?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  bankAccountNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  bankAccountType?: Resolver<Maybe<ResolversTypes['BookingBankAccountType']>, ParentType, ContextType>;
+  bankBranch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  bankName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  canManage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  cardMode?: Resolver<ResolversTypes['BookingCardPaymentMode'], ParentType, ContextType>;
+  cardUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  feeJpy?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  hasPayPayQr?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  payPayQrPreviewUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type BookingPractitionerResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingPractitioner'] = ResolversParentTypes['BookingPractitioner']> = {
@@ -3402,6 +3535,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createClinicAvailabilityWindow?: Resolver<ResolversTypes['ClinicAvailabilityWindow'], ParentType, ContextType, RequireFields<MutationCreateClinicAvailabilityWindowArgs, 'input'>>;
   createFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationCreateFacilityArgs, 'input'>>;
   createHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationCreateHealthcareProfessionalArgs, 'input'>>;
+  createPaymentQrUploadUrl?: Resolver<ResolversTypes['PaymentQrUploadUrl'], ParentType, ContextType, RequireFields<MutationCreatePaymentQrUploadUrlArgs, 'input'>>;
   createReservation?: Resolver<ResolversTypes['Reservation'], ParentType, ContextType, RequireFields<MutationCreateReservationArgs, 'input'>>;
   createSubmission?: Resolver<ResolversTypes['Submission'], ParentType, ContextType, RequireFields<MutationCreateSubmissionArgs, 'input'>>;
   createUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
@@ -3419,6 +3553,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setClinicWeeklyHours?: Resolver<Array<ResolversTypes['ClinicWeeklyHours']>, ParentType, ContextType, RequireFields<MutationSetClinicWeeklyHoursArgs, 'input'>>;
   submitBooking?: Resolver<ResolversTypes['BookingSubmissionResult'], ParentType, ContextType, RequireFields<MutationSubmitBookingArgs, 'input'>>;
   updateBookingAppointmentStatus?: Resolver<ResolversTypes['BookingAppointment'], ParentType, ContextType, RequireFields<MutationUpdateBookingAppointmentStatusArgs, 'input'>>;
+  updateBookingPaymentSettings?: Resolver<ResolversTypes['BookingPaymentSettings'], ParentType, ContextType, RequireFields<MutationUpdateBookingPaymentSettingsArgs, 'input'>>;
   updateBookingSettings?: Resolver<ResolversTypes['BookingSettings'], ParentType, ContextType, RequireFields<MutationUpdateBookingSettingsArgs, 'input'>>;
   updateFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationUpdateFacilityArgs, 'id' | 'input'>>;
   updateHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationUpdateHealthcareProfessionalArgs, 'id' | 'input'>>;
@@ -3438,6 +3573,13 @@ export type PatientBookingViewResolvers<ContextType = any, ParentType extends Re
 export type PaymentOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentOption'] = ResolversParentTypes['PaymentOption']> = {
   paymentBrands?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   paymentType?: Resolver<ResolversTypes['PaymentType'], ParentType, ContextType>;
+};
+
+export type PaymentQrUploadUrlResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentQrUploadUrl'] = ResolversParentTypes['PaymentQrUploadUrl']> = {
+  expiresAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  headers?: Resolver<Array<ResolversTypes['BookingUploadHeader']>, ParentType, ContextType>;
+  objectKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  uploadUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type PhysicalAddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['PhysicalAddress'] = ResolversParentTypes['PhysicalAddress']> = {
@@ -3467,6 +3609,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   bookingClinics?: Resolver<Array<ResolversTypes['BookingClinic']>, ParentType, ContextType>;
   bookingForm?: Resolver<Maybe<ResolversTypes['BookingForm']>, ParentType, ContextType, RequireFields<QueryBookingFormArgs, 'clinicSiteId'>>;
   bookingFormTypes?: Resolver<Array<ResolversTypes['BookingFormType']>, ParentType, ContextType>;
+  bookingPaymentSettings?: Resolver<Maybe<ResolversTypes['BookingPaymentSettings']>, ParentType, ContextType, RequireFields<QueryBookingPaymentSettingsArgs, 'facilityId'>>;
   bookingSettings?: Resolver<Maybe<ResolversTypes['BookingSettings']>, ParentType, ContextType, RequireFields<QueryBookingSettingsArgs, 'facilityId'>>;
   bookingSubmission?: Resolver<Maybe<ResolversTypes['BookingSubmissionDetail']>, ParentType, ContextType, RequireFields<QueryBookingSubmissionArgs, 'id'>>;
   bookingSubmissions?: Resolver<Array<ResolversTypes['BookingSubmissionListItem']>, ParentType, ContextType, RequireFields<QueryBookingSubmissionsArgs, 'filters'>>;
@@ -3548,6 +3691,7 @@ export type Resolvers<ContextType = any> = {
   BookingFormFieldOption?: BookingFormFieldOptionResolvers<ContextType>;
   BookingFormInterpreter?: BookingFormInterpreterResolvers<ContextType>;
   BookingFormType?: BookingFormTypeResolvers<ContextType>;
+  BookingPaymentSettings?: BookingPaymentSettingsResolvers<ContextType>;
   BookingPractitioner?: BookingPractitionerResolvers<ContextType>;
   BookingSettings?: BookingSettingsResolvers<ContextType>;
   BookingSubmissionDetail?: BookingSubmissionDetailResolvers<ContextType>;
@@ -3593,6 +3737,7 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   PatientBookingView?: PatientBookingViewResolvers<ContextType>;
   PaymentOption?: PaymentOptionResolvers<ContextType>;
+  PaymentQrUploadUrl?: PaymentQrUploadUrlResolvers<ContextType>;
   PhysicalAddress?: PhysicalAddressResolvers<ContextType>;
   Prefecture?: PrefectureResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

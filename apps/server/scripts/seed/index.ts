@@ -2,6 +2,7 @@ import pg from 'pg'
 import { isLocalHost, localDatabaseConfig } from '../../utils/localDatabase.js'
 import { seedData } from './data.js'
 import { clinicSiteSeeds, SHOWCASE_CLINIC_SITE_ID, SHOWCASE_FACILITY_ID } from './clinicSiteContent.js'
+import { SHOWCASE_PAYMENT_SETTINGS, writeShowcaseQr } from './paymentSettings.js'
 import type {
     ClinicSiteDoctorInsert,
     ClinicSiteInsert,
@@ -35,6 +36,7 @@ async function runSeed() {
         await client.query('DELETE FROM clinic_availability_closures')
         await client.query('DELETE FROM clinic_weekly_hours')
         await client.query('DELETE FROM booking_settings')
+        await client.query('DELETE FROM booking_payment_settings')
         await client.query('DELETE FROM booking_interpretation')
         await client.query('DELETE FROM clinic_interpreter_hours')
         await client.query('DELETE FROM clinic_interpreters')
@@ -267,6 +269,29 @@ async function runSeed() {
             ) VALUES ($1, $2, ARRAY['showcase-intake-v1', 'findadoc-intake-v1'], ARRAY[15, 30, 45, 60])`,
             [SHOWCASE_FACILITY_ID, SHOWCASE_CLINIC_SITE_ID]
         )
+
+        // Fake payment settings, so the online-consult form sends the pending-payment email
+        // with a card link, a bank block, and a placeholder PayPay QR (online consult v2 §3.3).
+        const payment = SHOWCASE_PAYMENT_SETTINGS
+        await client.query(
+            `INSERT INTO booking_payment_settings (
+                facility_id, card_mode, card_url, bank_name, bank_branch, bank_account_type,
+                bank_account_number, bank_account_holder, paypay_qr_object_key, fee_jpy
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+            [
+                payment.facility_id,
+                payment.card_mode,
+                payment.card_url,
+                payment.bank_name,
+                payment.bank_branch,
+                payment.bank_account_type,
+                payment.bank_account_number,
+                payment.bank_account_holder,
+                payment.paypay_qr_object_key,
+                payment.fee_jpy
+            ]
+        )
+        await writeShowcaseQr()
 
         // The showcase clinic is the interpretation pilot (#205), as on production:
         // one interpreter for every language at every open time.

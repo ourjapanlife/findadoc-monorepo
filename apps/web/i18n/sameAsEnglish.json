@@ -13,6 +13,7 @@
     "bookingPage.placeholders.age",
     "bookingPage.placeholders.email",
     "bookingPage.placeholders.phone",
+    "clinicDashboard.payment.payPay",
     "common.siteName",
     "common.siteNameLine1",
     "common.siteNameLine2",
@@ -67,7 +68,8 @@
     "bookingPage.regionNotice.email",
     "bookingPage.regionNotice.website",
     "bookingPage.options.consultationLanguage.tl",
-    "bookingPage.options.paymentMethod.creditCard"
+    "bookingPage.options.paymentMethod.creditCard",
+    "clinicDashboard.payment.card"
   ],
   "vi": [
     "common.menu",

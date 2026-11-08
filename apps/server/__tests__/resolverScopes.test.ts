@@ -25,6 +25,7 @@ const clinicFields = new Set([
     'bookingClinic',
     'clinicMembers',
     'bookingSettings',
+    'bookingPaymentSettings',
     'clinicInterpreters',
     'clinicAppointments',
     'bookingSubmissions',
@@ -45,6 +46,8 @@ const clinicFields = new Set([
     'inviteClinicMember',
     'removeClinicMember',
     'updateBookingSettings',
+    'updateBookingPaymentSettings',
+    'createPaymentQrUploadUrl',
     'setBookingInterpretation',
     'saveClinicInterpreter',
     'deleteClinicInterpreter'
