@@ -125,7 +125,7 @@ describe('reportStoredInsurance', () => {
 })
 
 describe('describeStoredInsurance', () => {
-    it('prints the facility, city, and sentences', () => {
+    it('prints the id, facility, city, and sentences without a personal name', () => {
         const row = {
             acceptedInsurance: [OldInsuranceCode.JapaneseHealthInsurance, OldInsuranceCode.Uninsured],
             facilities: [clinic]
@@ -135,8 +135,8 @@ describe('describeStoredInsurance', () => {
             throw new Error('expected a clear plan')
         }
 
-        expect(describeStoredInsurance('hp-1', 'Ada Lovelace', row, plan)).toBe([
-            'Ada Lovelace [hp-1] at Minato Dental (Minato)',
+        expect(describeStoredInsurance('hp-1', row, plan)).toBe([
+            '[hp-1] at Minato Dental (Minato)',
             '  stored: Takes Japanese health insurance; Sees uninsured / self-pay patients',
             '  recommendation: Clear both codes and leave the facility unknown until a moderator marks it.'
         ].join('\n'))
