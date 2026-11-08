@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "Salin ke Selasa–Jumat",
       "invalid": "Dua blok pada hari yang sama saling tumpang tindih. Ubah salah satunya.",
       "save": "Simpan jam mingguan",
-      "doctorHelp": "Minggu kerja dokter ini sendiri. Setelah disimpan, reservasi dokter ini dihitung terpisah dari jam klinik dan dari dokter lain. Penutupan untuk seluruh klinik tetap berlaku."
+      "doctorHelp": "Minggu kerja dokter ini sendiri. Setelah disimpan, reservasi dokter ini dihitung terpisah dari jam klinik dan dari dokter lain. Penutupan untuk seluruh klinik tetap berlaku.",
+      "repeats": "Ulangi",
+      "everyWeek": "Setiap minggu",
+      "everyNWeeks": "Setiap {count} minggu",
+      "firstOfMonth": "{day} ke-1 setiap bulan",
+      "secondOfMonth": "{day} ke-2 setiap bulan",
+      "thirdOfMonth": "{day} ke-3 setiap bulan",
+      "fourthOfMonth": "{day} ke-4 setiap bulan",
+      "lastOfMonth": "{day} terakhir setiap bulan",
+      "startingOn": "Mulai",
+      "from": "Dari (opsional)",
+      "until": "Sampai (opsional)",
+      "datesInvalid": "Tanggal akhir sebelum tanggal awal. Ubah salah satunya."
     },
     "requestedCount": "Permintaan menunggu: {count}"
   },

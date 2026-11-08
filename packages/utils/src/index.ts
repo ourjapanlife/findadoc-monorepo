@@ -41,3 +41,17 @@ export {
     isValidWebsite
 } from './string.js'
 export type { OptionalsRemoved } from './types.js'
+export {
+    cleanHoursRepeat,
+    EVERY_WEEK,
+    hoursRepeatAppliesOn,
+    hoursRepeatKey,
+    isDateKey,
+    isoWeekdayOfDateKey,
+    LAST_WEEK_OF_MONTH,
+    MAX_INTERVAL_WEEKS,
+    MIN_INTERVAL_WEEKS,
+    WEEKS_OF_MONTH,
+    type CleanHoursRepeat,
+    type HoursRepeatRule
+} from './hoursRepeat.js'

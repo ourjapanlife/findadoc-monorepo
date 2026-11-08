@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, it } from 'vitest'
-import { BookingAppointmentStatus, ClinicMemberRole, Locale } from '@findadoc/graphql'
+import { BookingAppointmentStatus, ClinicMemberRole, HoursRecurrence, Locale } from '@findadoc/graphql'
 import { sharedFacilityIds } from './testSetup.test.js'
 import { db } from '../src/kyselyClient.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
@@ -359,6 +359,54 @@ describe('booking flow', () => {
         expect(await nextStarts()).toEqual([next(0)])
 
         await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|staff', admin)
+    })
+
+    it('opens hours that repeat every other week only on their weeks (#203)', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const next = (minutes: number) => iso(24 * 60 + minutes)
+        const nextWeek = (minutes: number) => iso(8 * 24 * 60 + minutes)
+        const jstDay = (value: string) => new Date(new Date(value).getTime() + 9 * 60 * 60 * 1000)
+        const jstWeekday = jstDay(next(0)).getUTCDay() || 7
+        const anchorDate = jstDay(next(0)).toISOString().slice(0, 10)
+        const repeat = { recurrence: HoursRecurrence.Interval, intervalWeeks: 2, anchorDate }
+
+        const hours = await availabilityService.setClinicWeeklyHours({
+            facilityId,
+            hours: [{ weekday: jstWeekday, startMinute: 600, endMinute: 660, repeat }]
+        }, 'test|staff', admin)
+        expect(hours.hasErrors).toBe(false)
+        expect(hours.data[0]?.repeat).toEqual({
+            ...repeat,
+            weekOfMonth: null,
+            startsOn: null,
+            endsOn: null
+        })
+        expect(await bookingService.getAvailableBookingStarts(facilityId, next(-60), next(120), 60))
+            .toEqual([next(0)])
+        // A week later is the off week.
+        expect(await bookingService.getAvailableBookingStarts(facilityId, nextWeek(-60), nextWeek(120), 60))
+            .toEqual([])
+
+        // An anchor on another weekday is refused.
+        expect((await availabilityService.setClinicWeeklyHours({
+            facilityId,
+            hours: [{ weekday: (jstWeekday % 7) + 1, startMinute: 600, endMinute: 660, repeat }]
+        }, 'test|staff', admin)).hasErrors).toBe(true)
+
+        await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|staff', admin)
+    })
+
+    it('refuses a repeat row with its required field missing (#203)', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const insert = (row: { recurrence: string, interval_weeks?: number, anchor_date?: string }) =>
+            db.insertInto('clinic_weekly_hours')
+                .values({ facility_id: facilityId, weekday: 1, start_minute: 540, end_minute: 720, ...row })
+                .execute()
+        // 2 November 2026 is a Monday, so only the missing field can fail the check.
+        await expect(insert({ recurrence: 'interval', anchor_date: '2026-11-02' })).rejects.toThrow()
+        await expect(insert({ recurrence: 'monthly_nth' })).rejects.toThrow()
+        expect(await db.selectFrom('clinic_weekly_hours').select('id').where('facility_id', '=', facilityId).execute())
+            .toEqual([])
     })
 
     it('purges the patient\'s files when the clinic declines the visit', async () => {

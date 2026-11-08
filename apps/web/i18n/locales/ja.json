@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "火曜〜金曜にコピー",
       "invalid": "同じ日の時間帯が重なっています。どちらかを変更してください。",
       "save": "週の診療時間を保存",
-      "doctorHelp": "この医師専用の1週間です。保存すると、この医師はクリニックの時間や他の医師とは別に予約を受けます。クリニック全体の休診は引き続き適用されます。"
+      "doctorHelp": "この医師専用の1週間です。保存すると、この医師はクリニックの時間や他の医師とは別に予約を受けます。クリニック全体の休診は引き続き適用されます。",
+      "repeats": "繰り返し",
+      "everyWeek": "毎週",
+      "everyNWeeks": "{count}週間ごと",
+      "firstOfMonth": "毎月第1{day}",
+      "secondOfMonth": "毎月第2{day}",
+      "thirdOfMonth": "毎月第3{day}",
+      "fourthOfMonth": "毎月第4{day}",
+      "lastOfMonth": "毎月最終{day}",
+      "startingOn": "開始日",
+      "from": "開始（任意）",
+      "until": "終了（任意）",
+      "datesInvalid": "終了日が開始日より前になっています。どちらかを変更してください。"
     },
     "requestedCount": "確認待ちのリクエスト: {count}件"
   },

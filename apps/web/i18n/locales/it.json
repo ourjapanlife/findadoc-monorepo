@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "Copia da martedì a venerdì",
       "invalid": "Due fasce nello stesso giorno si sovrappongono. Modificane una.",
       "save": "Salva orario settimanale",
-      "doctorHelp": "La settimana propria di questo medico. Una volta salvata, il medico viene prenotato separatamente dall'orario della clinica e dagli altri medici. Le chiusure dell'intera clinica valgono comunque."
+      "doctorHelp": "La settimana propria di questo medico. Una volta salvata, il medico viene prenotato separatamente dall'orario della clinica e dagli altri medici. Le chiusure dell'intera clinica valgono comunque.",
+      "repeats": "Ripetizione",
+      "everyWeek": "Ogni settimana",
+      "everyNWeeks": "Ogni {count} settimane",
+      "firstOfMonth": "1° {day} del mese",
+      "secondOfMonth": "2° {day} del mese",
+      "thirdOfMonth": "3° {day} del mese",
+      "fourthOfMonth": "4° {day} del mese",
+      "lastOfMonth": "Ultimo {day} del mese",
+      "startingOn": "Inizio",
+      "from": "Dal (facoltativo)",
+      "until": "Al (facoltativo)",
+      "datesInvalid": "Un ultimo giorno è prima del primo giorno. Modificane uno."
     },
     "requestedCount": "Richieste in attesa: {count}"
   },

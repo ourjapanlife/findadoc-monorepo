@@ -125,6 +125,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import luxonPlugin from '@fullcalendar/luxon3'
 import {
     BookingAppointmentStatus,
+    HoursRecurrence,
     type BookingAppointment,
     type BookingPractitioner,
     type ClinicAvailabilityClosure,
@@ -148,6 +149,8 @@ import {
 import { practitionerName } from '~/utils/booking/practitioners'
 import { expandWeeklyHours, JAPAN_TIME_ZONE, jstMidnight, subtractRanges } from '~/utils/booking/japanTime'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
+import { repeatLabel } from '~/utils/booking/weeklyHoursBlocks'
+import { intlLocale } from '~/utils/intlLocale'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
 
 /**
@@ -297,14 +300,29 @@ function isClosed(status: BookingAppointmentStatus): boolean {
     return status === BookingAppointmentStatus.Cancelled || status === BookingAppointmentStatus.Declined
 }
 
-// Each weekly block in the visible range, minus the parts a closure covers.
+// Each weekly block on the days its repeat allows (#203), minus the parts a closure covers.
 const weeklySegments = computed(() => expandWeeklyHours(laneWeeklyHours.value, rangeFrom.value, rangeTo.value)
-    .flatMap(occurrence => subtractRanges(occurrence, laneClosures.value)))
+    .flatMap(occurrence => subtractRanges(occurrence, laneClosures.value)
+        .map(part => ({ ...part, block: occurrence.block }))))
+
+const weekdayFormat = computed(() => new Intl.DateTimeFormat(intlLocale(locale.value), {
+    weekday: 'long',
+    timeZone: JAPAN_TIME_ZONE
+}))
+
+/** 'Weekly hours', or with the repeat when the block is not every week. */
+function weeklyTitle(block: ClinicWeeklyHours, startsAt: string): string {
+    const title = t('bookingAvailability.weeklyTitle')
+    if (block.repeat.recurrence === HoursRecurrence.Weekly) {
+        return title
+    }
+    return `${title} · ${repeatLabel(t, block.repeat, weekdayFormat.value.format(new Date(startsAt)))}`
+}
 
 const events = computed((): EventInput[] => [
     ...weeklySegments.value.map(segment => ({
         id: `weekly:${segment.startsAt}|${segment.endsAt}`,
-        title: t('bookingAvailability.weeklyTitle'),
+        title: weeklyTitle(segment.block, segment.startsAt),
         start: segment.startsAt,
         end: segment.endsAt,
         backgroundColor: WEEKLY_COLORS.background,

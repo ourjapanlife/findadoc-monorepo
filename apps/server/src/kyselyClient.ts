@@ -8,6 +8,7 @@ import { envVariables } from '../utils/environmentVariables.js'
 let pool: Pool | null = null
 
 const TIMESTAMPTZ_OID = 1184
+const DATE_OID = 1082
 
 /**
  * Reads a timestamptz as the ISO string PostgREST used to return, such as
@@ -18,10 +19,21 @@ export function timestamptzToIso(value: string): string {
     return value.replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00')
 }
 
+/** A date column is a Japan day ('YYYY-MM-DD', #203). A Date would move it to the server's midnight. */
+function dateAsKey(value: string): string {
+    return value
+}
+
+function textParser(oid: number): ((value: string) => string) | undefined {
+    if (oid === TIMESTAMPTZ_OID) {
+        return timestamptzToIso
+    }
+    return oid === DATE_OID ? dateAsKey : undefined
+}
+
 const getTypeParser: typeof types.getTypeParser = ((oid: number, format?: 'text' | 'binary') =>
-    oid === TIMESTAMPTZ_OID && format !== 'binary'
-        ? timestamptzToIso
-        : types.getTypeParser(oid, format)) as typeof types.getTypeParser
+    (format === 'binary' ? undefined : textParser(oid))
+        ?? types.getTypeParser(oid, format)) as typeof types.getTypeParser
 let kyselyInstance: Kysely<Database> | null = null
 
 /**

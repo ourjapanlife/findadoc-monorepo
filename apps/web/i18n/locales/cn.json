@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "复制到周二至周五",
       "invalid": "同一天的两个时段重叠了。请修改其中一个。",
       "save": "保存每周营业时间",
-      "doctorHelp": "这是该医生自己的一周时间。保存后，该医生将与诊所时间和其他医生分开预约。诊所的全体休诊仍然适用。"
+      "doctorHelp": "这是该医生自己的一周时间。保存后，该医生将与诊所时间和其他医生分开预约。诊所的全体休诊仍然适用。",
+      "repeats": "重复",
+      "everyWeek": "每周",
+      "everyNWeeks": "每{count}周",
+      "firstOfMonth": "每月第1个{day}",
+      "secondOfMonth": "每月第2个{day}",
+      "thirdOfMonth": "每月第3个{day}",
+      "fourthOfMonth": "每月第4个{day}",
+      "lastOfMonth": "每月最后一个{day}",
+      "startingOn": "开始日期",
+      "from": "起始（可选）",
+      "until": "截止（可选）",
+      "datesInvalid": "结束日期早于开始日期。请修改其中一个。"
     },
     "requestedCount": "待处理的预约请求：{count}"
   },

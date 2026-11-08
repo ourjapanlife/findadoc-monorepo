@@ -37,14 +37,22 @@
             v-else
             v-model:blocks="blocks"
             testid-prefix="clinic-weekly-hours"
+            with-repeat
         />
 
         <p
-            v-if="invalid"
+            v-if="overlapping"
             class="field-error"
             role="alert"
         >
             {{ t('clinicDashboard.weeklyHours.invalid') }}
+        </p>
+        <p
+            v-else-if="datesInvalid"
+            class="field-error"
+            role="alert"
+        >
+            {{ t('clinicDashboard.weeklyHours.datesInvalid') }}
         </p>
 
         <div class="flex items-center gap-3 border-t border-accent-bg pt-5">
@@ -70,13 +78,22 @@ import BookingScheduleSelect from '~/components/booking/BookingScheduleSelect.vu
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
 import WeeklyHoursFields from '~/components/booking/WeeklyHoursFields.vue'
-import { blocksOverlap, hoursInput, newBlock, type EditableBlock } from '~/utils/booking/weeklyHoursBlocks'
+import { jstDateKey } from '~/utils/booking/japanTime'
+import {
+    blockDatesInvalid,
+    blocksOverlap,
+    editableBlocks,
+    scheduleHoursInput,
+    upcomingAnchor,
+    type EditableBlock
+} from '~/utils/booking/weeklyHoursBlocks'
 import { fetchClinicPractitioners, fetchClinicWeeklyHours, setClinicWeeklyHours } from '~/utils/booking/staffQuery'
 
 /**
  * The usual week in Japan time (#162), for the clinic or one doctor. Open starts
  * are these hours plus painted windows on the calendar, minus closures and held
- * appointments. A doctor with a week of their own is booked separately.
+ * appointments. A doctor with a week of their own is booked separately. Each block
+ * repeats every week, every N weeks, or on the nth weekday of the month (#203).
  */
 const props = defineProps<{
     facilityId: string
@@ -93,12 +110,20 @@ const lane = ref<string | null>(null)
 const loadError = ref(false)
 const saving = ref(false)
 
-const invalid = computed(() => blocksOverlap(blocks.value))
+const overlapping = computed(() => blocksOverlap(blocks.value))
+const datesInvalid = computed(() => blockDatesInvalid(blocks.value))
+const invalid = computed(() => overlapping.value || datesInvalid.value)
 
 function showLane(): void {
-    blocks.value = savedRows.value
-        .filter(row => (row.practitionerId ?? null) === lane.value)
-        .map(item => newBlock(item.weekday, item.startMinute, item.endMinute))
+    const todayKey = jstDateKey(new Date())
+    blocks.value = editableBlocks(savedRows.value.filter(row => (row.practitionerId ?? null) === lane.value))
+    // A past anchor shows as the next day in the same rhythm, so the picker can select it.
+    for (const block of blocks.value) {
+        const { anchorDate, intervalWeeks } = block.repeat
+        if (anchorDate !== null && intervalWeeks !== null) {
+            block.repeat.anchorDate = upcomingAnchor(anchorDate, intervalWeeks, todayKey)
+        }
+    }
 }
 
 function selectLane(value: string | null): void {
@@ -126,7 +151,7 @@ async function save(): Promise<void> {
     const saved = await setClinicWeeklyHours({
         facilityId: props.facilityId,
         practitionerId: savedLane,
-        hours: hoursInput(blocks.value)
+        hours: scheduleHoursInput(blocks.value)
     })
     saving.value = false
     if (saved === null) {

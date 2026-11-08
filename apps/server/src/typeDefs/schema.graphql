@@ -1582,6 +1582,55 @@ type ClinicWeeklyHours {
   startMinute: Int!
   """Minutes after midnight JST, on a 30-minute boundary. At most 1440."""
   endMinute: Int!
+  """Which weeks the block applies to (#203)."""
+  repeat: HoursRepeat!
+}
+
+"""How often a weekly-hours block repeats (#203). Dates are Japan days, YYYY-MM-DD."""
+enum HoursRecurrence {
+  """Every week."""
+  WEEKLY
+  """Every intervalWeeks weeks, starting on anchorDate."""
+  INTERVAL
+  """One weekday of each month: weekOfMonth is 1 to 4, or -1 for the last."""
+  MONTHLY_NTH
+}
+
+type HoursRepeat {
+  recurrence: HoursRecurrence!
+  """INTERVAL only: 2 to 12."""
+  intervalWeeks: Int
+  """INTERVAL only: the first day, on the block's weekday."""
+  anchorDate: String
+  """MONTHLY_NTH only: 1 to 4, or -1 for the last."""
+  weekOfMonth: Int
+  """First day the block applies, or null."""
+  startsOn: String
+  """Last day the block applies, or null."""
+  endsOn: String
+}
+
+input HoursRepeatInput {
+  recurrence: HoursRecurrence!
+  """INTERVAL only: 2 to 12. Ignored for other rules."""
+  intervalWeeks: Int
+  """INTERVAL only: the first day, YYYY-MM-DD, on the block's weekday. Ignored for other rules."""
+  anchorDate: String
+  """MONTHLY_NTH only: 1 to 4, or -1 for the last. Ignored for other rules."""
+  weekOfMonth: Int
+  """First day the block applies, YYYY-MM-DD, or null."""
+  startsOn: String
+  """Last day the block applies, YYYY-MM-DD, or null. Not before startsOn."""
+  endsOn: String
+}
+
+"""One block of a clinic's or doctor's week. Interpreter hours use ClinicWeeklyHoursInput and repeat every week."""
+input ClinicScheduleHoursInput {
+  weekday: Int!
+  startMinute: Int!
+  endMinute: Int!
+  """Null repeats every week."""
+  repeat: HoursRepeatInput
 }
 
 input ClinicWeeklyHoursInput {
@@ -1595,8 +1644,8 @@ input SetClinicWeeklyHoursInput {
   facilityId: ID!
   """A doctor at this clinic. Null sets the clinic's own week. Other schedules are unchanged."""
   practitionerId: ID
-  """The whole week. Blocks that overlap or touch on one day are joined."""
-  hours: [ClinicWeeklyHoursInput!]!
+  """The whole week. Blocks on one day with the same repeat that overlap or touch are joined."""
+  hours: [ClinicScheduleHoursInput!]!
 }
 
 """A dated range with no open time: a holiday, a day off, or one closed weekly block."""
