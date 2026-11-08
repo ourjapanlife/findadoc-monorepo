@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Locale, type BookingPractitioner } from '@findadoc/graphql'
+import { HoursRecurrence, Locale, type BookingPractitioner } from '@findadoc/graphql'
 import {
     clinicLanguages,
     coveringInterpreters,
@@ -188,6 +188,49 @@ describe('weekly hours', () => {
         expect(windows.map(window => [window.startsAt.toISOString(), window.endsAt.toISOString()])).toEqual([
             ['2026-11-05T01:00:00.000Z', '2026-11-05T02:00:00.000Z']
         ])
+    })
+
+    // Each Monday's JST date that has a 09:00-12:00 window in the range.
+    type Repeat = Parameters<typeof expandWeeklyHours>[0][number]['repeat']
+    const openMondays = (repeat: Repeat, from: string, to: string) =>
+        expandWeeklyHours(
+            [{ weekday: 1, startMinute: 9 * 60, endMinute: 12 * 60, repeat }],
+            new Date(from),
+            new Date(to)
+        )
+            .map(window => new Date(window.startsAt.getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10))
+
+    it('opens an every-other-week block across a month boundary (#203)', () => {
+        const everyOther = { recurrence: HoursRecurrence.Interval, intervalWeeks: 2, anchorDate: '2026-11-02' }
+        expect(openMondays(everyOther, '2026-11-01T15:00:00.000Z', '2026-12-15T15:00:00.000Z'))
+            .toEqual(['2026-11-02', '2026-11-16', '2026-11-30', '2026-12-14'])
+    })
+
+    it('keeps the every-other-week rhythm across a year boundary (#203)', () => {
+        const everyOther = { recurrence: HoursRecurrence.Interval, intervalWeeks: 2, anchorDate: '2026-11-02' }
+        expect(openMondays(everyOther, '2026-12-20T15:00:00.000Z', '2027-01-20T15:00:00.000Z'))
+            .toEqual(['2026-12-28', '2027-01-11'])
+    })
+
+    it('opens the last Monday in a month with five Mondays (#203)', () => {
+        const lastMonday = { recurrence: HoursRecurrence.MonthlyNth, weekOfMonth: -1 }
+        expect(openMondays(lastMonday, '2026-10-31T15:00:00.000Z', '2027-01-31T15:00:00.000Z'))
+            .toEqual(['2026-11-30', '2026-12-28', '2027-01-25'])
+    })
+
+    it('opens the first Monday of each month on the JST date, not the UTC one (#203)', () => {
+        const firstMonday = { recurrence: HoursRecurrence.MonthlyNth, weekOfMonth: 1 }
+        // 09:00 JST on Monday 2 November is 00:00 UTC; the JST day starts on 1 November UTC.
+        expect(openMondays(firstMonday, '2026-10-31T15:00:00.000Z', '2026-12-31T15:00:00.000Z'))
+            .toEqual(['2026-11-02', '2026-12-07'])
+    })
+
+    it('keeps blocks that repeat differently apart when they touch', () => {
+        const firstMonday = { recurrence: HoursRecurrence.MonthlyNth, weekOfMonth: 1 }
+        expect(normalizeWeeklyHours([
+            { weekday: 1, startMinute: 540, endMinute: 720 },
+            { weekday: 1, startMinute: 720, endMinute: 900, repeat: firstMonday }
+        ])).toHaveLength(2)
     })
 
     it('rejects blocks that are not 30-minute aligned or end after midnight', () => {

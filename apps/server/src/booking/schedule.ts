@@ -1,3 +1,5 @@
+import { hoursRepeatAppliesOn, hoursRepeatKey, type HoursRepeatRule } from '@findadoc/utils'
+
 /**
  * Staff availability is painted in 30-minute windows.
  * Visit length is one of 15, 30, 45, or 60 minutes from the clinic settings.
@@ -189,6 +191,8 @@ export type WeeklyHours = {
     /** Minutes after midnight JST. */
     startMinute: number
     endMinute: number
+    /** Which weeks the block applies to (#203). Absent or null is every week. */
+    repeat?: HoursRepeatRule | null
 }
 
 export function isWeeklyHours(hours: WeeklyHours): boolean {
@@ -199,22 +203,32 @@ export function isWeeklyHours(hours: WeeklyHours): boolean {
         && hours.endMinute % AVAILABILITY_SNAP_MINUTES === 0
 }
 
-/** Joins blocks on the same weekday that overlap or touch, sorted by weekday then start. */
-export function normalizeWeeklyHours(hours: readonly WeeklyHours[]): WeeklyHours[] {
-    const normalized: WeeklyHours[] = []
-    const sorted = [...hours].sort((a, b) => a.weekday - b.weekday || a.startMinute - b.startMinute)
-    for (const block of sorted) {
+/**
+ * Joins blocks on the same weekday with the same repeat that overlap or touch, sorted
+ * by weekday, then repeat, then start. An every-week block and a first-Monday block
+ * stay apart even when they overlap: each opens on its own days.
+ */
+export function normalizeWeeklyHours<T extends WeeklyHours>(hours: readonly T[]): T[] {
+    const normalized: T[] = []
+    const keyed = hours.map(block => ({ block, key: hoursRepeatKey(block.repeat) }))
+    keyed.sort((a, b) => a.block.weekday - b.block.weekday
+        || a.key.localeCompare(b.key)
+        || a.block.startMinute - b.block.startMinute)
+    let lastKey = ''
+    for (const { block, key } of keyed) {
         const last = normalized.at(-1)
-        if (last !== undefined && last.weekday === block.weekday && block.startMinute <= last.endMinute) {
+        if (last !== undefined && last.weekday === block.weekday && key === lastKey
+          && block.startMinute <= last.endMinute) {
             last.endMinute = Math.max(last.endMinute, block.endMinute)
             continue
         }
-        normalized.push({ weekday: block.weekday, startMinute: block.startMinute, endMinute: block.endMinute })
+        normalized.push({ ...block })
+        lastKey = key
     }
     return normalized
 }
 
-/** Each weekly block as a dated window in the range, clipped to it. */
+/** Each weekly block as a dated window in the range, clipped to it, on the days its repeat allows. */
 export function expandWeeklyHours(hours: readonly WeeklyHours[], rangeStart: Date, rangeEnd: Date): TimeWindow[] {
     const windows: TimeWindow[] = []
     if (hours.length === 0 || !(rangeEnd > rangeStart)) {
@@ -225,8 +239,9 @@ export function expandWeeklyHours(hours: readonly WeeklyHours[], rangeStart: Dat
     for (let day = firstDay; day < rangeEnd.getTime(); day += DAY_MS) {
         // 1970-01-01 was a Thursday (ISO 4).
         const weekday = ((Math.floor((day + JST_OFFSET_MS) / DAY_MS) + 3) % 7) + 1
+        const dateKey = new Date(day + JST_OFFSET_MS).toISOString().slice(0, 10)
         for (const block of hours) {
-            if (block.weekday !== weekday) {
+            if (block.weekday !== weekday || !hoursRepeatAppliesOn(block.repeat, dateKey)) {
                 continue
             }
             const startsAt = Math.max(day + block.startMinute * 60 * 1000, rangeStart.getTime())

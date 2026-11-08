@@ -328,6 +328,18 @@ export interface ClinicWeeklyHoursTable {
     weekday: number
     start_minute: number
     end_minute: number
+    /** weekly, interval, or monthly_nth (#203). */
+    recurrence: Generated<string>
+    /** interval only: 2 to 12. */
+    interval_weeks: number | null
+    /** interval only: the first JST day, 'YYYY-MM-DD', on weekday. */
+    anchor_date: string | null
+    /** monthly_nth only: 1 to 4, or -1 for the last. */
+    week_of_month: number | null
+    /** First JST day the block applies, inclusive. */
+    starts_on: string | null
+    /** Last JST day the block applies, inclusive. */
+    ends_on: string | null
     created_by: string | null
     created_date: Generated<string>
     updated_date: Generated<string>

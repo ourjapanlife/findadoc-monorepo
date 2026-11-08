@@ -57,6 +57,7 @@ import {
     resolvePublicBookingTarget,
     type BookingTarget
 } from '../booking/target.js'
+import { REPEAT_COLUMNS, repeatFromRow } from '../booking/weeklyHoursRows.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import {
@@ -748,7 +749,7 @@ async function listAvailableStartsForTarget(
         facilityId === null
             ? []
             : executor.selectFrom('clinic_weekly_hours')
-                .select(['weekday', 'start_minute', 'end_minute'])
+                .select(['weekday', 'start_minute', 'end_minute', ...REPEAT_COLUMNS])
                 .where('facility_id', '=', facilityId)
                 .where('practitioner_id', practitionerId === null ? 'is' : '=', practitionerId)
                 .execute(),
@@ -766,7 +767,12 @@ async function listAvailableStartsForTarget(
     ])
 
     const weeklyWindows = expandWeeklyHours(
-        weekly.map(row => ({ weekday: row.weekday, startMinute: row.start_minute, endMinute: row.end_minute })),
+        weekly.map(row => ({
+            weekday: row.weekday,
+            startMinute: row.start_minute,
+            endMinute: row.end_minute,
+            repeat: repeatFromRow(row)
+        })),
         from,
         to
     )

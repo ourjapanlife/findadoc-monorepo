@@ -137,6 +137,14 @@ const WEEKLY_HOURS_FIELDS = `
   weekday
   startMinute
   endMinute
+  repeat {
+    recurrence
+    intervalWeeks
+    anchorDate
+    weekOfMonth
+    startsOn
+    endsOn
+  }
 `
 
 const CLOSURE_FIELDS = `

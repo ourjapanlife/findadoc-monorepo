@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "Copier du mardi au vendredi",
       "invalid": "Deux plages du même jour se chevauchent. Modifiez l'une d'elles.",
       "save": "Enregistrer les horaires",
-      "doctorHelp": "La semaine propre à ce médecin. Une fois enregistrée, ce médecin est réservé séparément des horaires de la clinique et des autres médecins. Les fermetures de toute la clinique s'appliquent toujours."
+      "doctorHelp": "La semaine propre à ce médecin. Une fois enregistrée, ce médecin est réservé séparément des horaires de la clinique et des autres médecins. Les fermetures de toute la clinique s'appliquent toujours.",
+      "repeats": "Répétition",
+      "everyWeek": "Chaque semaine",
+      "everyNWeeks": "Toutes les {count} semaines",
+      "firstOfMonth": "1er {day} du mois",
+      "secondOfMonth": "2e {day} du mois",
+      "thirdOfMonth": "3e {day} du mois",
+      "fourthOfMonth": "4e {day} du mois",
+      "lastOfMonth": "Dernier {day} du mois",
+      "startingOn": "À partir du",
+      "from": "Du (facultatif)",
+      "until": "Au (facultatif)",
+      "datesInvalid": "Un dernier jour précède le premier jour. Modifiez l’un des deux."
     },
     "requestedCount": "Demandes en attente : {count}"
   },

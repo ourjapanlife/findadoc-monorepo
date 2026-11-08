@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "Auf Dienstag–Freitag kopieren",
       "invalid": "Zwei Blöcke am selben Tag überschneiden sich. Ändern Sie einen davon.",
       "save": "Wochenzeiten speichern",
-      "doctorHelp": "Die eigene Woche dieser Ärztin bzw. dieses Arztes. Nach dem Speichern wird sie bzw. er getrennt von den Praxiszeiten und anderen Ärzten gebucht. Schließungen der ganzen Praxis gelten weiterhin."
+      "doctorHelp": "Die eigene Woche dieser Ärztin bzw. dieses Arztes. Nach dem Speichern wird sie bzw. er getrennt von den Praxiszeiten und anderen Ärzten gebucht. Schließungen der ganzen Praxis gelten weiterhin.",
+      "repeats": "Wiederholung",
+      "everyWeek": "Jede Woche",
+      "everyNWeeks": "Alle {count} Wochen",
+      "firstOfMonth": "1. {day} im Monat",
+      "secondOfMonth": "2. {day} im Monat",
+      "thirdOfMonth": "3. {day} im Monat",
+      "fourthOfMonth": "4. {day} im Monat",
+      "lastOfMonth": "Letzter {day} im Monat",
+      "startingOn": "Beginn",
+      "from": "Ab (optional)",
+      "until": "Bis (optional)",
+      "datesInvalid": "Ein letzter Tag liegt vor dem ersten Tag. Ändern Sie einen davon."
     },
     "requestedCount": "Offene Anfragen: {count}"
   },

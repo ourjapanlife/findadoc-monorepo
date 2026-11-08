@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "화요일~금요일에 복사",
       "invalid": "같은 날 두 시간대가 겹칩니다. 하나를 바꿔 주세요.",
       "save": "주간 진료 시간 저장",
-      "doctorHelp": "이 의사만의 일주일입니다. 저장하면 이 의사는 클리닉 시간이나 다른 의사와 따로 예약을 받습니다. 클리닉 전체 휴진은 그대로 적용됩니다."
+      "doctorHelp": "이 의사만의 일주일입니다. 저장하면 이 의사는 클리닉 시간이나 다른 의사와 따로 예약을 받습니다. 클리닉 전체 휴진은 그대로 적용됩니다.",
+      "repeats": "반복",
+      "everyWeek": "매주",
+      "everyNWeeks": "{count}주마다",
+      "firstOfMonth": "매월 첫째 {day}",
+      "secondOfMonth": "매월 둘째 {day}",
+      "thirdOfMonth": "매월 셋째 {day}",
+      "fourthOfMonth": "매월 넷째 {day}",
+      "lastOfMonth": "매월 마지막 {day}",
+      "startingOn": "시작일",
+      "from": "시작 (선택)",
+      "until": "종료 (선택)",
+      "datesInvalid": "종료일이 시작일보다 앞서 있습니다. 둘 중 하나를 변경하세요."
     },
     "requestedCount": "대기 중인 예약 요청: {count}"
   },

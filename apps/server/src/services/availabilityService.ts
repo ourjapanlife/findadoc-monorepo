@@ -8,6 +8,7 @@ import type {
     DeleteResult,
     SetClinicWeeklyHoursInput
 } from '@findadoc/graphql'
+import { cleanHoursRepeat, type CleanHoursRepeat } from '@findadoc/utils'
 import { randomUUID } from 'node:crypto'
 import { canWriteFacility, type BookingAccess } from '../booking/access.js'
 import { listFacilityPractitioners } from '../booking/practitioners.js'
@@ -19,6 +20,7 @@ import {
     snapDownToAvailability,
     snapUpToAvailability
 } from '../booking/schedule.js'
+import { REPEAT_COLUMNS, repeatColumns, repeatFromRow, type RepeatRow } from '../booking/weeklyHoursRows.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 
@@ -202,7 +204,7 @@ async function writableFacilityId(clinicId: string, access: BookingAccess): Prom
     return target.facilityId
 }
 
-function weeklyHoursFromRow(row: {
+function weeklyHoursFromRow(row: RepeatRow & {
     id: string
     facility_id: string
     practitioner_id: string | null
@@ -216,8 +218,28 @@ function weeklyHoursFromRow(row: {
         practitionerId: row.practitioner_id,
         weekday: row.weekday,
         startMinute: row.start_minute,
-        endMinute: row.end_minute
+        endMinute: row.end_minute,
+        repeat: repeatFromRow(row)
     }
+}
+
+type ScheduleBlock = { weekday: number, startMinute: number, endMinute: number, repeat: CleanHoursRepeat }
+
+/** The blocks with clean repeats, or undefined when any block or repeat is not valid (#203). */
+function scheduleBlocks(input: SetClinicWeeklyHoursInput['hours']): ScheduleBlock[] | undefined {
+    if (input.length > MAX_WEEKLY_HOUR_BLOCKS) {
+        return undefined
+    }
+    const blocks: ScheduleBlock[] = []
+    for (const block of input) {
+        const repeat = cleanHoursRepeat(block.repeat, block.weekday)
+        const hours = { weekday: block.weekday, startMinute: block.startMinute, endMinute: block.endMinute }
+        if (repeat === undefined || !isWeeklyHours(hours)) {
+            return undefined
+        }
+        blocks.push({ ...hours, repeat })
+    }
+    return blocks
 }
 
 function closureFromRow(row: {
@@ -240,7 +262,15 @@ function closureFromRow(row: {
     }
 }
 
-const WEEKLY_HOURS_COLUMNS = ['id', 'facility_id', 'practitioner_id', 'weekday', 'start_minute', 'end_minute'] as const
+const WEEKLY_HOURS_COLUMNS = [
+    'id',
+    'facility_id',
+    'practitioner_id',
+    'weekday',
+    'start_minute',
+    'end_minute',
+    ...REPEAT_COLUMNS
+] as const
 const CLOSURE_COLUMNS = ['id', 'facility_id', 'practitioner_id', 'starts_at', 'ends_at', 'reason', 'created_date'] as const
 
 export async function listClinicWeeklyHours(clinicId: string, access: BookingAccess): Promise<ClinicWeeklyHours[]> {
@@ -253,12 +283,16 @@ export async function listClinicWeeklyHours(clinicId: string, access: BookingAcc
         .where('facility_id', '=', facilityId)
         .orderBy('practitioner_id')
         .orderBy('weekday')
+        .orderBy('recurrence')
         .orderBy('start_minute')
         .execute()
     return rows.map(weeklyHoursFromRow)
 }
 
-/** Replaces one schedule's whole week. Blocks that overlap or touch on one day are joined. */
+/**
+ * Replaces one schedule's whole week. Blocks on one day with the same repeat that
+ * overlap or touch are joined. A repeat drops the fields its rule does not use (#203).
+ */
 export async function setClinicWeeklyHours(
     input: SetClinicWeeklyHoursInput,
     createdBy: string | undefined,
@@ -272,10 +306,11 @@ export async function setClinicWeeklyHours(
     if (practitionerId === undefined) {
         return validationError('practitionerId')
     }
-    if (input.hours.length > MAX_WEEKLY_HOUR_BLOCKS || !input.hours.every(isWeeklyHours)) {
+    const blocks = scheduleBlocks(input.hours)
+    if (blocks === undefined) {
         return validationError('hours')
     }
-    const hours = normalizeWeeklyHours(input.hours)
+    const hours = normalizeWeeklyHours(blocks)
 
     const rows = await db.transaction().execute(async transaction => {
         await transaction.deleteFrom('clinic_weekly_hours')
@@ -292,6 +327,7 @@ export async function setClinicWeeklyHours(
                 weekday: block.weekday,
                 start_minute: block.startMinute,
                 end_minute: block.endMinute,
+                ...repeatColumns(block.repeat),
                 created_by: createdBy ?? null
             })))
             .returning(WEEKLY_HOURS_COLUMNS)

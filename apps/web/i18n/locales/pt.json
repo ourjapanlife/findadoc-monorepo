@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "Copiar para terça a sexta",
       "invalid": "Dois blocos no mesmo dia se sobrepõem. Altere um deles.",
       "save": "Salvar horário semanal",
-      "doctorHelp": "A semana própria deste médico. Depois de salva, o médico é agendado separadamente do horário da clínica e dos outros médicos. Os fechamentos da clínica toda continuam valendo."
+      "doctorHelp": "A semana própria deste médico. Depois de salva, o médico é agendado separadamente do horário da clínica e dos outros médicos. Os fechamentos da clínica toda continuam valendo.",
+      "repeats": "Repetição",
+      "everyWeek": "Toda semana",
+      "everyNWeeks": "A cada {count} semanas",
+      "firstOfMonth": "1ª {day} do mês",
+      "secondOfMonth": "2ª {day} do mês",
+      "thirdOfMonth": "3ª {day} do mês",
+      "fourthOfMonth": "4ª {day} do mês",
+      "lastOfMonth": "Última {day} do mês",
+      "startingOn": "Início",
+      "from": "De (opcional)",
+      "until": "Até (opcional)",
+      "datesInvalid": "Um último dia está antes do primeiro dia. Altere um deles."
     },
     "requestedCount": "Pedidos pendentes: {count}"
   },

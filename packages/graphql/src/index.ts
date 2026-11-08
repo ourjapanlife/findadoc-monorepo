@@ -515,6 +515,15 @@ export enum ClinicMembershipRole {
   Staff = 'STAFF'
 }
 
+/** One block of a clinic's or doctor's week. Interpreter hours use ClinicWeeklyHoursInput and repeat every week. */
+export type ClinicScheduleHoursInput = {
+  endMinute: Scalars['Int']['input'];
+  /** Null repeats every week. */
+  repeat?: InputMaybe<HoursRepeatInput>;
+  startMinute: Scalars['Int']['input'];
+  weekday: Scalars['Int']['input'];
+};
+
 /**
  * A clinic-owned page. id is the id accounts and a future CRM attach to.
  * facilityId is the directory listing, null until that facility exists.
@@ -692,6 +701,8 @@ export type ClinicWeeklyHours = {
   id: Scalars['ID']['output'];
   /** Null is the clinic's own schedule. */
   practitionerId?: Maybe<Scalars['ID']['output']>;
+  /** Which weeks the block applies to (#203). */
+  repeat: HoursRepeat;
   /** Minutes after midnight JST, on a 30-minute boundary. */
   startMinute: Scalars['Int']['output'];
   /** ISO weekday: 1 is Monday, 7 is Sunday. */
@@ -1154,6 +1165,45 @@ export type HealthcareProfessionalSubmission = {
   specialties?: Maybe<Array<Specialty>>;
   /** Submitted spoken languages. */
   spokenLanguages: Array<Locale>;
+};
+
+/** How often a weekly-hours block repeats (#203). Dates are Japan days, YYYY-MM-DD. */
+export enum HoursRecurrence {
+  /** Every intervalWeeks weeks, starting on anchorDate. */
+  Interval = 'INTERVAL',
+  /** One weekday of each month: weekOfMonth is 1 to 4, or -1 for the last. */
+  MonthlyNth = 'MONTHLY_NTH',
+  /** Every week. */
+  Weekly = 'WEEKLY'
+}
+
+export type HoursRepeat = {
+  __typename?: 'HoursRepeat';
+  /** INTERVAL only: the first day, on the block's weekday. */
+  anchorDate?: Maybe<Scalars['String']['output']>;
+  /** Last day the block applies, or null. */
+  endsOn?: Maybe<Scalars['String']['output']>;
+  /** INTERVAL only: 2 to 12. */
+  intervalWeeks?: Maybe<Scalars['Int']['output']>;
+  recurrence: HoursRecurrence;
+  /** First day the block applies, or null. */
+  startsOn?: Maybe<Scalars['String']['output']>;
+  /** MONTHLY_NTH only: 1 to 4, or -1 for the last. */
+  weekOfMonth?: Maybe<Scalars['Int']['output']>;
+};
+
+export type HoursRepeatInput = {
+  /** INTERVAL only: the first day, YYYY-MM-DD, on the block's weekday. Ignored for other rules. */
+  anchorDate?: InputMaybe<Scalars['String']['input']>;
+  /** Last day the block applies, YYYY-MM-DD, or null. Not before startsOn. */
+  endsOn?: InputMaybe<Scalars['String']['input']>;
+  /** INTERVAL only: 2 to 12. Ignored for other rules. */
+  intervalWeeks?: InputMaybe<Scalars['Int']['input']>;
+  recurrence: HoursRecurrence;
+  /** First day the block applies, YYYY-MM-DD, or null. */
+  startsOn?: InputMaybe<Scalars['String']['input']>;
+  /** MONTHLY_NTH only: 1 to 4, or -1 for the last. Ignored for other rules. */
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type InviteClinicMemberInput = {
@@ -2094,8 +2144,8 @@ export type SetBookingInterpretationInput = {
 export type SetClinicWeeklyHoursInput = {
   /** Facility id, clinic site id, or clinic site slug. */
   facilityId: Scalars['ID']['input'];
-  /** The whole week. Blocks that overlap or touch on one day are joined. */
-  hours: Array<ClinicWeeklyHoursInput>;
+  /** The whole week. Blocks on one day with the same repeat that overlap or touch are joined. */
+  hours: Array<ClinicScheduleHoursInput>;
   /** A doctor at this clinic. Null sets the clinic's own week. Other schedules are unchanged. */
   practitionerId?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -2528,6 +2578,7 @@ export type ResolversTypes = {
   ClinicMemberRole: ClinicMemberRole;
   ClinicMembership: ResolverTypeWrapper<ClinicMembership>;
   ClinicMembershipRole: ClinicMembershipRole;
+  ClinicScheduleHoursInput: ClinicScheduleHoursInput;
   ClinicSite: ResolverTypeWrapper<ClinicSite>;
   ClinicSiteCase: ResolverTypeWrapper<ClinicSiteCase>;
   ClinicSiteDoctor: ResolverTypeWrapper<ClinicSiteDoctor>;
@@ -2565,6 +2616,9 @@ export type ResolversTypes = {
   HealthcareProfessional: ResolverTypeWrapper<HealthcareProfessional>;
   HealthcareProfessionalSearchFilters: HealthcareProfessionalSearchFilters;
   HealthcareProfessionalSubmission: ResolverTypeWrapper<HealthcareProfessionalSubmission>;
+  HoursRecurrence: HoursRecurrence;
+  HoursRepeat: ResolverTypeWrapper<HoursRepeat>;
+  HoursRepeatInput: HoursRepeatInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   InviteClinicMemberInput: InviteClinicMemberInput;
@@ -2644,6 +2698,7 @@ export type ResolversParentTypes = {
   ClinicInterpreterHours: ClinicInterpreterHours;
   ClinicMember: ClinicMember;
   ClinicMembership: ClinicMembership;
+  ClinicScheduleHoursInput: ClinicScheduleHoursInput;
   ClinicSite: ClinicSite;
   ClinicSiteCase: ClinicSiteCase;
   ClinicSiteDoctor: ClinicSiteDoctor;
@@ -2677,6 +2732,8 @@ export type ResolversParentTypes = {
   HealthcareProfessional: HealthcareProfessional;
   HealthcareProfessionalSearchFilters: HealthcareProfessionalSearchFilters;
   HealthcareProfessionalSubmission: HealthcareProfessionalSubmission;
+  HoursRepeat: HoursRepeat;
+  HoursRepeatInput: HoursRepeatInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   InviteClinicMemberInput: InviteClinicMemberInput;
@@ -3108,6 +3165,7 @@ export type ClinicWeeklyHoursResolvers<ContextType = any, ParentType extends Res
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   practitionerId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  repeat?: Resolver<ResolversTypes['HoursRepeat'], ParentType, ContextType>;
   startMinute?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   weekday?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
@@ -3196,6 +3254,15 @@ export type HealthcareProfessionalSubmissionResolvers<ContextType = any, ParentT
   names?: Resolver<Array<ResolversTypes['LocalizedName']>, ParentType, ContextType>;
   specialties?: Resolver<Maybe<Array<ResolversTypes['Specialty']>>, ParentType, ContextType>;
   spokenLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
+};
+
+export type HoursRepeatResolvers<ContextType = any, ParentType extends ResolversParentTypes['HoursRepeat'] = ResolversParentTypes['HoursRepeat']> = {
+  anchorDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  endsOn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  intervalWeeks?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  recurrence?: Resolver<ResolversTypes['HoursRecurrence'], ParentType, ContextType>;
+  startsOn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  weekOfMonth?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 };
 
 export type LocalizedNameResolvers<ContextType = any, ParentType extends ResolversParentTypes['LocalizedName'] = ResolversParentTypes['LocalizedName']> = {
@@ -3409,6 +3476,7 @@ export type Resolvers<ContextType = any> = {
   FacilitySubmission?: FacilitySubmissionResolvers<ContextType>;
   HealthcareProfessional?: HealthcareProfessionalResolvers<ContextType>;
   HealthcareProfessionalSubmission?: HealthcareProfessionalSubmissionResolvers<ContextType>;
+  HoursRepeat?: HoursRepeatResolvers<ContextType>;
   LocalizedName?: LocalizedNameResolvers<ContextType>;
   MapsPlacePreview?: MapsPlacePreviewResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

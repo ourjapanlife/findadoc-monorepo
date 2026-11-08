@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "Kopyahin sa Martes–Biyernes",
       "invalid": "Nagsasapawan ang dalawang block sa iisang araw. Baguhin ang isa sa mga ito.",
       "save": "I-save ang lingguhang oras",
-      "doctorHelp": "Sariling linggo ng doktor na ito. Kapag na-save, hiwalay nang bino-book ang doktor sa oras ng klinika at sa ibang doktor. Nalalapat pa rin ang pagsasara ng buong klinika."
+      "doctorHelp": "Sariling linggo ng doktor na ito. Kapag na-save, hiwalay nang bino-book ang doktor sa oras ng klinika at sa ibang doktor. Nalalapat pa rin ang pagsasara ng buong klinika.",
+      "repeats": "Inuulit",
+      "everyWeek": "Bawat linggo",
+      "everyNWeeks": "Bawat {count} linggo",
+      "firstOfMonth": "Unang {day} ng buwan",
+      "secondOfMonth": "Ikalawang {day} ng buwan",
+      "thirdOfMonth": "Ikatlong {day} ng buwan",
+      "fourthOfMonth": "Ikaapat na {day} ng buwan",
+      "lastOfMonth": "Huling {day} ng buwan",
+      "startingOn": "Simula",
+      "from": "Mula (opsyonal)",
+      "until": "Hanggang (opsyonal)",
+      "datesInvalid": "Mas maaga ang huling araw kaysa sa unang araw. Baguhin ang isa."
     },
     "requestedCount": "Mga naghihintay na kahilingan: {count}"
   },

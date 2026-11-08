@@ -74,9 +74,19 @@ Open starts are, for one clinic:
    one weekly block staff closed on the calendar;
 4. minus `requested` and `confirmed` appointments.
 
+Each weekly block has a repeat (#203): every week (the default), every 2 to 12
+weeks from an anchor date on the block's weekday (the block opens on the anchor
+and every Nth week after it, never before), or the 1st, 2nd, 3rd, 4th, or last
+weekday of each month. A block may also have a first and a last Japan day,
+inclusive. `cleanHoursRepeat` and `hoursRepeatAppliesOn` in `@findadoc/utils`
+hold the rule, so the API and the dashboard calendar agree on the days. The
+service drops the fields a repeat does not use, and the table's `CHECK`
+constraints refuse the rest. Interpreter hours stay every week.
+
 Japan has no daylight saving time, so a weekly block is always the same UTC
 range. `src/booking/schedule.ts` does the arithmetic. Saving weekly hours
-replaces the whole week and joins blocks that overlap or touch. A closure does
+replaces the whole week and joins blocks that overlap or touch and repeat the
+same way. Blocks that repeat differently stay apart. A closure does
 not touch an appointment already inside it; staff cancel that one themselves.
 Submit still takes the clinic's advisory lock and re-reads open starts inside
 it.

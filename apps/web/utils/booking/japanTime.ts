@@ -1,3 +1,5 @@
+import { hoursRepeatAppliesOn, type HoursRepeatRule } from '@findadoc/utils'
+
 /**
  * Booking times are Japan time. Japan has no daylight saving time, so JST is
  * always UTC+9, and a JST date or weekday is plain arithmetic on the instant.
@@ -12,6 +14,8 @@ export type WeeklyHoursBlock = {
     weekday: number
     startMinute: number
     endMinute: number
+    /** Which weeks the block applies to (#203). Absent or null is every week. */
+    repeat?: HoursRepeatRule | null
 }
 
 export type TimeRange = { startsAt: string, endsAt: string }
@@ -50,7 +54,7 @@ export function minutesLabel(minutes: number): string {
     return `${hours}:${String(minutes % 60).padStart(2, '0')}`
 }
 
-/** Each weekly block as a dated range inside [from, to). */
+/** Each weekly block as a dated range inside [from, to), on the days its repeat allows. */
 export function expandWeeklyHours<T extends WeeklyHoursBlock>(
     hours: readonly T[],
     fromIso: string,
@@ -63,7 +67,7 @@ export function expandWeeklyHours<T extends WeeklyHoursBlock>(
         const midnight = jstMidnight(dateKey).getTime()
         const weekday = weekdayOfKey(dateKey)
         for (const block of hours) {
-            if (block.weekday !== weekday) {
+            if (block.weekday !== weekday || !hoursRepeatAppliesOn(block.repeat, dateKey)) {
                 continue
             }
             const startsAt = Math.max(midnight + block.startMinute * 60 * 1000, from)

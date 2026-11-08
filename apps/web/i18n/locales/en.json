@@ -1114,7 +1114,19 @@
       "copyToWeekdays": "Copy to Tuesday–Friday",
       "invalid": "Two blocks on the same day overlap. Change one of them.",
       "save": "Save weekly hours",
-      "doctorHelp": "This doctor's own week. Once it is saved, the doctor is booked separately from clinic hours and from other doctors. Clinic-wide closures still apply."
+      "doctorHelp": "This doctor's own week. Once it is saved, the doctor is booked separately from clinic hours and from other doctors. Clinic-wide closures still apply.",
+      "repeats": "Repeats",
+      "everyWeek": "Every week",
+      "everyNWeeks": "Every {count} weeks",
+      "firstOfMonth": "1st {day} of the month",
+      "secondOfMonth": "2nd {day} of the month",
+      "thirdOfMonth": "3rd {day} of the month",
+      "fourthOfMonth": "4th {day} of the month",
+      "lastOfMonth": "Last {day} of the month",
+      "startingOn": "Starting",
+      "from": "From (optional)",
+      "until": "Until (optional)",
+      "datesInvalid": "A last day is before its first day. Change one of them."
     },
     "requestedCount": "Requests waiting: {count}"
   },
