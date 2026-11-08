@@ -825,14 +825,25 @@
       "reason": "就诊原因",
       "insuranceDocument": "保险证明",
       "selfie": "本人照片",
-      "insuranceType": "您用什么证明医疗保险？"
+      "insuranceType": "您用什么证明医疗保险？",
+      "addressInJapan": "在日本的住址",
+      "backupContactChannel": "其他联系方式",
+      "backupContactHandle": "您在该应用上的 ID 或号码",
+      "japaneseLevel": "您的日语水平如何？",
+      "consultationLanguage": "希望使用的问诊语言",
+      "currentSymptoms": "目前症状",
+      "pastIllnesses": "既往病史或慢性病",
+      "paymentMethod": "付款方式"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "与证件一致的姓名",
       "age": "35",
-      "reason": "简要说明需求"
+      "reason": "简要说明需求",
+      "addressInJapan": "都道府县、市区町村、街道门牌及建筑名",
+      "currentSymptoms": "有哪些症状？从什么时候开始？",
+      "pastIllnesses": "例如：哮喘、糖尿病、既往手术"
     },
     "errors": {
       "required": "此项为必填",
@@ -849,7 +860,8 @@
       "tooManyRequests": "来自此网络连接的请求过多。请等待几分钟后重试。",
       "openRequestLimit": "此电子邮箱在这家诊所已有等待回复的申请。请等待诊所回复，或通过邮件中的链接取消其中一个。",
       "confirmations": "发送请求前，请勾选两个复选框",
-      "regionUnavailable": "预约目前仅向身在日本的用户开放。"
+      "regionUnavailable": "预约目前仅向身在日本的用户开放。",
+      "phoneJapan": "请输入日本的电话号码，例如 090-1234-5678"
     },
     "slotLabel": "希望时间",
     "slotLoading": "正在加载可预约时间…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "联系方式",
       "visit": "就诊内容",
-      "documents": "材料"
+      "documents": "材料",
+      "payment": "付款"
     },
     "dateLabel": "日期",
     "durationLabel": "就诊时长",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "女",
         "male": "男",
-        "selfDescribe": "自行填写",
+        "selfDescribe": "其他",
         "preferNotToSay": "不愿透露"
+      },
+      "japaneseLevel": {
+        "none": "完全不会",
+        "greetings": "只会打招呼",
+        "little": "会一点",
+        "conversational": "能进行日常对话",
+        "fluent": "流利"
+      },
+      "consultationLanguage": {
+        "ja": "日语",
+        "en": "英语",
+        "zh": "中文",
+        "vi": "越南语",
+        "id": "印尼语",
+        "tl": "他加禄语",
+        "fr": "法语",
+        "ne": "尼泊尔语",
+        "my": "缅甸语"
+      },
+      "paymentMethod": {
+        "creditCard": "信用卡",
+        "bankTransfer": "银行转账",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "诊所用于核实您的身份并核对您的保险证。",
-      "gender": "这可能与您的诊疗有关。您可以选择不回答。"
+      "gender": "这可能与您的诊疗有关。",
+      "consultationLanguage": "如果医生不会说该语言，诊所会尽量安排口译。部分语言或时段可能无法提供口译。",
+      "paymentMethod": "您的预约尚未确定。诊所收到首次付款后，预约即确定。我们会通过电子邮件向您发送付款说明。"
     },
     "insuranceUpload": {
       "insuranceCard": "健康保险证的照片",
@@ -925,7 +968,7 @@
     },
     "confirmationsLegend": "发送前确认",
     "confirmInJapan": "我目前在日本。",
-    "healthDataConsent": "我同意 Find a Doc, Japan 将我的就诊原因（属于健康信息）发送给{clinic}。",
+    "healthDataConsent": "我同意 Find a Doc, Japan 收集我在本表单中填写的健康信息（目前的症状以及既往病史或慢性病），并为安排我的诊疗将其提供给{clinic}。",
     "privacyPolicyLink": "隐私政策",
     "availabilityError": {
       "heading": "无法确认是否可以预约",
@@ -985,6 +1028,7 @@
     "cancelledByClinic": "诊所已取消",
     "appointmentStatus": {
       "requested": "待确认",
+      "pendingPayment": "待付款",
       "confirmed": "已确认",
       "declined": "已拒绝",
       "cancelled": "已取消",
@@ -992,9 +1036,11 @@
     },
     "actions": {
       "confirm": "确认",
+      "confirmPaid": "已收到付款，确认",
       "decline": "拒绝",
       "cancel": "取消预约",
-      "complete": "标记为已完成"
+      "complete": "标记为已完成",
+      "markUnpaid": "标记为未付款"
     },
     "doctor": "医生",
     "languagesRequested": "所需语言",
@@ -1045,6 +1091,7 @@
     "noClinics": "此账户尚未关联诊所。",
     "noClinicsHelp": "请联系 Find a Doc, Japan 邀请您登录所用的邮箱。下次登录时邀请即会生效。",
     "noAccessHeading": "您无权访问此诊所",
+    "switchClinic": "切换诊所",
     "statusFilter": "显示",
     "allStatuses": "全部申请",
     "saved": "已保存",
@@ -1071,6 +1118,40 @@
       "interpretation": "我们提供口译/翻译服务：任何医生都可以用我们提供的每种语言为患者看诊",
       "interpretationHelp": "开启后会添加一位口译员，覆盖所有语言和所有开放时间。可在下方设置语言、时间或每位口译员可同时负责的预约数。",
       "interpretationLocked": "此功能由 Find a Doc 为您的诊所开启。如需更改，请联系我们。"
+    },
+    "payment": {
+      "heading": "付款",
+      "help": "在询问付款方式的表单上预约的患者，会收到一封电子邮件，内含其所选方式的付款说明。信息不完整的方式会告知患者诊所将与其联系。",
+      "fee": "首次费用（日元）",
+      "feeHelp": "留空则邮件中不写费用。",
+      "feeInvalid": "请输入 0 或以上的整数日元。",
+      "card": "信用卡",
+      "cardFixedLink": "所有患者通过同一个链接付款",
+      "cardSentByStaff": "工作人员通过电子邮件向每位患者发送付款链接",
+      "cardUrl": "付款链接",
+      "cardUrlInvalid": "请输入以 https:// 开头的链接。",
+      "bank": "银行转账",
+      "bankHelp": "无论患者使用何种语言，这些信息都以日语显示。请填写所有字段。",
+      "bankName": "银行名称",
+      "bankBranch": "支行",
+      "bankAccountType": "账户类型",
+      "accountTypeNotSet": "未设置",
+      "accountTypeOrdinary": "普通账户（普通）",
+      "accountTypeChecking": "活期支票账户（当座）",
+      "bankAccountNumber": "账号",
+      "bankAccountNumberInvalid": "请输入最多 8 位数字。",
+      "bankAccountHolder": "账户名",
+      "payPay": "PayPay",
+      "payPayHelp": "您的 PayPay 二维码，PNG、JPEG 或 WebP 图片，最大 1 MB。它会显示在邮件中。",
+      "payPayQrAlt": "您的 PayPay 二维码",
+      "payPayFile": "二维码图片",
+      "payPayRemove": "删除二维码",
+      "payPayNone": "尚无二维码。",
+      "payPayFileInvalid": "请选择最大 1 MB 的 PNG、JPEG 或 WebP 图片。",
+      "payPayUploadFailed": "无法上传图片，请重试。",
+      "payPayPending": "新的二维码，保存后生效。",
+      "payPayRemoving": "保存后将删除二维码。",
+      "save": "保存付款设置"
     },
     "interpreters": {
       "heading": "口译员",
@@ -1128,7 +1209,25 @@
       "until": "截止（可选）",
       "datesInvalid": "结束日期早于开始日期。请修改其中一个。"
     },
-    "requestedCount": "待处理的预约请求：{count}"
+    "requestedCount": "待处理的预约请求：{count}",
+    "export": {
+      "button": "下载 CSV",
+      "working": "正在生成文件…",
+      "failed": "无法生成文件，请重试。",
+      "done": "没有可下载的预约。 | 已下载 1 条预约。 | 已下载 {n} 条预约。",
+      "truncated": "已下载最新的 {n} 条预约。请选择状态以下载其余预约。",
+      "columns": {
+        "date": "日期",
+        "time": "时间（日本时间）",
+        "status": "状态",
+        "paymentMethod": "付款方式",
+        "consultationLanguage": "问诊语言",
+        "name": "姓名",
+        "email": "电子邮箱",
+        "phone": "电话",
+        "submissionId": "提交编号"
+      }
+    }
   },
   "patientBooking": {
     "heading": "您的预约申请",
@@ -1139,6 +1238,9 @@
     "yesCancel": "是，取消",
     "keep": "保留",
     "cancelled": "此预约已取消。",
+    "nextSteps": "下一步",
+    "bookAgain": "预约其他时间",
+    "backHome": "前往{site}",
     "cancelFailed": "无法取消。预约可能已开始或已变化，已显示最新状态。",
     "tooManyRequests": "来自此网络连接的请求过多。请等待几分钟后重试。"
   },

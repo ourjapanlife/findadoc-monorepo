@@ -3,6 +3,7 @@ import { BookingAppointmentStatus, ClinicMemberRole, HoursRecurrence, Locale } f
 import { sharedFacilityIds } from './testSetup.test.js'
 import { db } from '../src/kyselyClient.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
+import { CURRENT_CONSENT_TEXT_VERSION } from '../src/booking/consentText.js'
 import { DEFAULT_BOOKING_FORM_ID } from '../src/booking/formDefinitions.js'
 import { hashPatientToken } from '../src/booking/links.js'
 import { ErrorCode } from '../src/result.js'
@@ -212,10 +213,12 @@ describe('booking flow', () => {
         expect(await openStarts(facilityId)).toEqual([])
 
         const consent = await db.selectFrom('booking_submissions')
-            .select('health_data_consented_at')
+            .select(['health_data_consented_at', 'consent_text_version'])
             .where('id', '=', submitted.data.id)
             .executeTakeFirstOrThrow()
         expect(new Date(consent.health_data_consented_at!).getTime()).toBeGreaterThanOrEqual(before - 1000)
+        // The server stamps the wording version; the client never sends it (spec §6).
+        expect(consent.consent_text_version).toBe(CURRENT_CONSENT_TEXT_VERSION)
 
         // A second patient cannot take the held slot.
         expect((await submit(facilityId, iso(0))).hasErrors).toBe(true)
@@ -256,6 +259,8 @@ describe('booking flow', () => {
         const cancelled = await appointmentService.cancelBookingByToken({ token, reason: 'Feeling better' })
         expect(cancelled.data.status).toBe(BookingAppointmentStatus.Cancelled)
         expect(cancelled.data.canCancel).toBe(false)
+        // The patient can book the same clinic again from the manage page.
+        expect(cancelled.data.clinicId).toBe(facilityId)
         expect(await openStarts(facilityId)).toEqual([iso(0)])
 
         const detail = await staffBookingService.getBookingSubmissionDetail(submitted.data.id, admin)

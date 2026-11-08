@@ -1344,6 +1344,8 @@ export async function deleteFacility(
 
             // Clinic setup with no patient data. Weekly hours, closures, and members cascade.
             await transaction.deleteFrom('booking_settings').where('facility_id', '=', id).execute()
+            // Payment settings are clinic data. The QR object stays in storage: the API role may not delete.
+            await transaction.deleteFrom('booking_payment_settings').where('facility_id', '=', id).execute()
             await transaction.deleteFrom('clinic_availability_windows').where('facility_id', '=', id).execute()
 
             // Delete the facility

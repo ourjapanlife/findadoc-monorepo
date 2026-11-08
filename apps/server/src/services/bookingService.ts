@@ -17,11 +17,26 @@ import {
     type AssembledBookingForm,
     fieldById,
     fieldIsShown,
+    initialAppointmentStatus,
     isOfferedFormId,
+    phoneAnswer,
+    PAYMENT_METHOD_FIELD_ID,
     storedSensitivity
 } from '../booking/formDefinitions.js'
-import { APPOINTMENT_STATUS, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
-import { clinicRequestEmail, isSiteLocale, patientRequestEmail } from '../booking/emailCopy.js'
+import {
+    APPOINTMENT_STATUS,
+    OPEN_REQUEST_STATUSES,
+    SLOT_HOLDING_STATUSES,
+    type AppointmentStatus
+} from '../booking/lifecycle.js'
+import {
+    clinicRequestEmail,
+    isSiteLocale,
+    patientRequestEmail,
+    type BookingEmail
+} from '../booking/emailCopy.js'
+import { pendingPaymentEmail } from '../booking/paymentEmail.js'
+import { CURRENT_CONSENT_TEXT_VERSION } from '../booking/consentText.js'
 import {
     activeInterpreters,
     interpreterHolds,
@@ -54,6 +69,8 @@ import {
 import {
     bookingLockKey,
     lockClinicBookings,
+    clinicNameForLocale,
+    emailBrandFor,
     resolvePublicBookingTarget,
     type BookingTarget
 } from '../booking/target.js'
@@ -67,10 +84,11 @@ import {
     newUploadId
 } from '../storage/objectStorage.js'
 import { asJsonb } from '../../utils/dbUtils.js'
+import { appointmentStatusFromRow } from './staffBookingService.js'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_UPLOAD_BYTES = BOOKING_UPLOAD_MAX_BYTES
-/** Upcoming `requested` appointments one email may hold at one clinic (#160). */
+/** Upcoming `requested` or `pending_payment` appointments one email may hold at one clinic (#160). */
 export const MAX_OPEN_REQUESTS_PER_EMAIL = 3
 const ALLOWED_UPLOAD_TYPES = new Set([
     'image/jpeg',
@@ -86,7 +104,9 @@ function bookingFormForTarget(target: BookingTarget, formDefinitionId?: string |
         clinicSiteId: target.clinicSiteId,
         clinicSiteSlug: target.clinicSiteSlug,
         clinicName: target.clinicName,
+        clinicNameJa: target.clinicNameJa,
         themePrimary: target.themePrimary,
+        branding: target.branding,
         allowedDurations: target.allowedDurations,
         defaultDuration: target.defaultDuration
     })
@@ -275,7 +295,7 @@ function scalarAnswerIsValid(
         return EMAIL_PATTERN.test(raw)
     }
     if (field.type === BookingFormFieldType.Phone) {
-        return raw.replace(/\D/g, '').length >= 8
+        return phoneAnswer(field, raw) !== null
     }
     if (field.type === BookingFormFieldType.Number) {
         const number = Number(raw)
@@ -339,7 +359,8 @@ export function collectAnswers(
         if (!scalarAnswerIsValid(field, raw)) {
             return validationError(field.id)
         }
-        storedAnswers[field.id] = raw
+        // A JP-only phone is stored in one domestic form, whatever spelling was typed.
+        storedAnswers[field.id] = field.type === BookingFormFieldType.Phone ? phoneAnswer(field, raw) ?? raw : raw
     }
 
     return { data: { storedAnswers, uploads }, hasErrors: false }
@@ -396,11 +417,7 @@ function requesterEmail(storedAnswers: Record<string, string>): string | undefin
     return email
 }
 
-/**
- * Patient receipt (with the private manage link), then the clinic notice.
- * The clinic is told even when the patient email fails.
- */
-async function notifyBookingParties(input: {
+type PatientEmailInput = {
     target: BookingTarget
     bookingId: string
     storedAnswers: Record<string, string>
@@ -408,6 +425,38 @@ async function notifyBookingParties(input: {
     durationMinutes: number
     locale: string
     patientToken: string
+    startStatus: AppointmentStatus
+}
+
+/**
+ * The patient's first email. A visit that starts pending_payment gets the payment email
+ * (online consult v2 §3.4) instead of the plain receipt. Both carry the private manage link.
+ */
+async function patientFirstEmail(input: PatientEmailInput): Promise<BookingEmail> {
+    const common = {
+        locale: input.locale,
+        clinicName: clinicNameForLocale(input.target, input.locale),
+        startsAt: input.startsAt,
+        durationMinutes: input.durationMinutes,
+        reference: input.bookingId,
+        manageUrl: patientBookingUrl(input.patientToken, input.locale),
+        brand: emailBrandFor(input.target, input.locale)
+    }
+    if (input.startStatus !== APPOINTMENT_STATUS.PENDING_PAYMENT) {
+        return patientRequestEmail(common)
+    }
+    return pendingPaymentEmail({
+        ...common,
+        facilityId: input.target.facilityId,
+        paymentAnswer: input.storedAnswers[PAYMENT_METHOD_FIELD_ID]
+    })
+}
+
+/**
+ * Patient receipt (with the private manage link), then the clinic notice.
+ * The clinic is told even when the patient email fails.
+ */
+async function notifyBookingParties(input: PatientEmailInput & {
     languages: readonly string[]
     interpreterLabel: string | null
 }): Promise<BookingSubmissionStatus> {
@@ -419,14 +468,7 @@ async function notifyBookingParties(input: {
         : await sendBookingNotice({
             to: requester,
             bookingId: input.bookingId,
-            email: patientRequestEmail({
-                locale: input.locale,
-                clinicName,
-                startsAt: input.startsAt,
-                durationMinutes: input.durationMinutes,
-                reference: input.bookingId,
-                manageUrl: patientBookingUrl(input.patientToken, input.locale)
-            })
+            email: await patientFirstEmail(input)
         })
 
     await noticeClinic({
@@ -473,7 +515,8 @@ function parseServiceKey(value: string | null | undefined): string | null {
 }
 
 export async function submitBooking(input: SubmitBookingInput): Promise<Result<BookingSubmissionResult>> {
-    // Both boxes on the Book page (#173). The consent time is stored with the request.
+    // Both boxes on the Book page (#173). The consent time and the server's wording version
+    // (spec §6) are stored with the request. The client does not send the version.
     if (input.confirmedInJapan !== true) {
         return validationError('confirmedInJapan')
     }
@@ -495,6 +538,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
     if (input.formVersion !== form.version) {
         return validationError('formVersion')
     }
+    const startStatus = initialAppointmentStatus(form)
 
     if (!isSiteLocale(input.locale)) {
         return validationError('locale')
@@ -595,7 +639,8 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                     status: 'received',
                     notify_email_sent_at: null,
                     cancel_token_hash: patientToken.hash,
-                    health_data_consented_at: healthDataConsentedAt
+                    health_data_consented_at: healthDataConsentedAt,
+                    consent_text_version: CURRENT_CONSENT_TEXT_VERSION
                 })
                 .returning(['id', 'created_date', 'status'])
                 .executeTakeFirstOrThrow()
@@ -626,7 +671,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                     starts_at: startsAt.toISOString(),
                     ends_at: endsAt.toISOString(),
                     duration_minutes: durationMinutes,
-                    status: APPOINTMENT_STATUS.REQUESTED
+                    status: startStatus
                 })
                 .returning(['id'])
                 .executeTakeFirstOrThrow()
@@ -662,6 +707,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         durationMinutes,
         locale: input.locale,
         patientToken: patientToken.token,
+        startStatus,
         languages: choice.languages,
         interpreterLabel: inserted.interpreterLabel
     })
@@ -673,6 +719,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
             facilityId: target.facilityId,
             status,
             appointmentId,
+            appointmentStatus: appointmentStatusFromRow(startStatus),
             createdDate: inserted.created_date,
             manageToken: patientToken.token
         },
@@ -691,7 +738,7 @@ async function countOpenRequestsForEmail(
     let query = executor.selectFrom('booking_appointments as appointment')
         .innerJoin('booking_submissions as booking', 'booking.id', 'appointment.booking_submission_id')
         .select(eb => eb.fn.countAll<string>().as('count'))
-        .where('appointment.status', '=', APPOINTMENT_STATUS.REQUESTED)
+        .where('appointment.status', 'in', OPEN_REQUEST_STATUSES)
         .where('appointment.ends_at', '>', new Date().toISOString())
         .where(sql<string>`lower(booking.answers->>'email')`, '=', email.toLowerCase())
 

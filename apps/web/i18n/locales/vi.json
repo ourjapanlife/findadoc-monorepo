@@ -825,14 +825,25 @@
       "reason": "Lý do khám",
       "insuranceDocument": "Giấy tờ bảo hiểm",
       "selfie": "Ảnh của bạn",
-      "insuranceType": "Bạn dùng giấy tờ gì để chứng minh bảo hiểm y tế?"
+      "insuranceType": "Bạn dùng giấy tờ gì để chứng minh bảo hiểm y tế?",
+      "addressInJapan": "Địa chỉ tại Nhật Bản",
+      "backupContactChannel": "Cách liên hệ khác",
+      "backupContactHandle": "ID hoặc số của bạn trên ứng dụng đó",
+      "japaneseLevel": "Bạn nói tiếng Nhật ở mức nào?",
+      "consultationLanguage": "Ngôn ngữ cho buổi khám",
+      "currentSymptoms": "Triệu chứng hiện tại",
+      "pastIllnesses": "Bệnh đã từng mắc hoặc bệnh mãn tính",
+      "paymentMethod": "Phương thức thanh toán"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Tên trên giấy tờ",
       "age": "35",
-      "reason": "Mô tả ngắn nhu cầu của bạn"
+      "reason": "Mô tả ngắn nhu cầu của bạn",
+      "addressInJapan": "Tỉnh, thành phố, số nhà, đường và tòa nhà",
+      "currentSymptoms": "Bạn có triệu chứng gì và từ khi nào?",
+      "pastIllnesses": "Ví dụ: hen suyễn, tiểu đường, từng phẫu thuật"
     },
     "errors": {
       "required": "Trường này là bắt buộc",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Có quá nhiều yêu cầu từ kết nối này. Đợi vài phút rồi thử lại.",
       "openRequestLimit": "Email này đã có yêu cầu đang chờ tại phòng khám này. Hãy đợi phòng khám trả lời, hoặc hủy một yêu cầu bằng liên kết trong email của bạn.",
       "confirmations": "Hãy đánh dấu cả hai ô trước khi gửi yêu cầu",
-      "regionUnavailable": "Hiện chỉ những người đang ở Nhật Bản mới có thể đặt lịch."
+      "regionUnavailable": "Hiện chỉ những người đang ở Nhật Bản mới có thể đặt lịch.",
+      "phoneJapan": "Hãy nhập số điện thoại Nhật Bản, ví dụ 090-1234-5678"
     },
     "slotLabel": "Giờ mong muốn",
     "slotLoading": "Đang tải giờ trống…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Liên hệ",
       "visit": "Lý do khám",
-      "documents": "Giấy tờ"
+      "documents": "Giấy tờ",
+      "payment": "Thanh toán"
     },
     "dateLabel": "Ngày",
     "durationLabel": "Thời lượng khám",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Nữ",
         "male": "Nam",
-        "selfDescribe": "Tự mô tả",
+        "selfDescribe": "Khác",
         "preferNotToSay": "Không muốn trả lời"
+      },
+      "japaneseLevel": {
+        "none": "Không biết",
+        "greetings": "Chỉ chào hỏi",
+        "little": "Một chút",
+        "conversational": "Giao tiếp hằng ngày",
+        "fluent": "Thành thạo"
+      },
+      "consultationLanguage": {
+        "ja": "Tiếng Nhật",
+        "en": "Tiếng Anh",
+        "zh": "Tiếng Trung",
+        "vi": "Tiếng Việt",
+        "id": "Tiếng Indonesia",
+        "tl": "Tiếng Tagalog",
+        "fr": "Tiếng Pháp",
+        "ne": "Tiếng Nepal",
+        "my": "Tiếng Miến Điện"
+      },
+      "paymentMethod": {
+        "creditCard": "Thẻ tín dụng",
+        "bankTransfer": "Chuyển khoản ngân hàng",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "Phòng khám dùng thông tin này để xác minh danh tính và đối chiếu với thẻ bảo hiểm của bạn.",
-      "gender": "Thông tin này có thể liên quan đến việc khám chữa bệnh. Bạn có thể chọn không trả lời."
+      "gender": "Thông tin này có thể liên quan đến việc khám chữa bệnh.",
+      "consultationLanguage": "Nếu bác sĩ không nói được ngôn ngữ này, phòng khám sẽ cố gắng sắp xếp phiên dịch. Có thể không có phiên dịch cho mọi ngôn ngữ hoặc mọi khung giờ.",
+      "paymentMethod": "Lịch hẹn của bạn chưa được xác nhận. Lịch hẹn sẽ được xác nhận khi phòng khám nhận được khoản thanh toán đầu tiên. Chúng tôi sẽ gửi email hướng dẫn thanh toán cho bạn."
     },
     "insuranceUpload": {
       "insuranceCard": "Ảnh thẻ bảo hiểm y tế",
@@ -925,7 +968,7 @@
     },
     "confirmationsLegend": "Trước khi gửi",
     "confirmInJapan": "Tôi hiện đang ở Nhật Bản.",
-    "healthDataConsent": "Tôi đồng ý để Find a Doc, Japan gửi lý do khám của tôi, là thông tin sức khỏe, đến {clinic}.",
+    "healthDataConsent": "Tôi đồng ý để Find a Doc, Japan thu thập thông tin sức khỏe tôi nhập vào biểu mẫu này (triệu chứng hiện tại và bệnh đã mắc hoặc bệnh mãn tính) và cung cấp cho {clinic} để sắp xếp buổi khám của tôi.",
     "privacyPolicyLink": "Chính sách quyền riêng tư",
     "availabilityError": {
       "heading": "Không thể kiểm tra xem có đặt lịch được hay không",
@@ -985,6 +1028,7 @@
     "cancelledByClinic": "Phòng khám đã hủy",
     "appointmentStatus": {
       "requested": "Đang chờ",
+      "pendingPayment": "Chờ thanh toán",
       "confirmed": "Đã xác nhận",
       "declined": "Đã từ chối",
       "cancelled": "Đã hủy",
@@ -992,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Xác nhận",
+      "confirmPaid": "Đã nhận thanh toán, xác nhận",
       "decline": "Từ chối",
       "cancel": "Hủy lịch hẹn",
-      "complete": "Đánh dấu hoàn thành"
+      "complete": "Đánh dấu hoàn thành",
+      "markUnpaid": "Đánh dấu chưa thanh toán"
     },
     "doctor": "Bác sĩ",
     "languagesRequested": "Ngôn ngữ yêu cầu",
@@ -1045,6 +1091,7 @@
     "noClinics": "Tài khoản này chưa được liên kết với phòng khám nào.",
     "noClinicsHelp": "Hãy nhờ Find a Doc, Japan mời địa chỉ email bạn dùng để đăng nhập. Lời mời sẽ được liên kết ở lần đăng nhập tiếp theo.",
     "noAccessHeading": "Bạn không có quyền truy cập phòng khám này",
+    "switchClinic": "Đổi phòng khám",
     "statusFilter": "Hiển thị",
     "allStatuses": "Tất cả yêu cầu",
     "saved": "Đã lưu",
@@ -1071,6 +1118,40 @@
       "interpretation": "Chúng tôi có phiên dịch/biên dịch: bác sĩ nào cũng có thể khám cho bệnh nhân bằng mọi ngôn ngữ chúng tôi cung cấp",
       "interpretationHelp": "Bật tính năng này sẽ thêm một phiên dịch viên cho mọi ngôn ngữ vào mọi giờ mở cửa. Thay đổi bên dưới để đặt ngôn ngữ, giờ hoặc số lượt khám cùng lúc của mỗi phiên dịch viên.",
       "interpretationLocked": "Find a Doc bật tính năng này cho phòng khám của bạn. Hãy liên hệ với chúng tôi để thay đổi."
+    },
+    "payment": {
+      "heading": "Thanh toán",
+      "help": "Bệnh nhân đặt lịch qua biểu mẫu có hỏi cách thanh toán sẽ nhận được email hướng dẫn cho phương thức họ chọn. Phương thức thiếu thông tin sẽ báo cho bệnh nhân rằng phòng khám sẽ liên hệ.",
+      "fee": "Phí lần đầu (yên)",
+      "feeHelp": "Để trống nếu không muốn ghi phí trong email.",
+      "feeInvalid": "Nhập số yên nguyên, từ 0 trở lên.",
+      "card": "Thẻ tín dụng",
+      "cardFixedLink": "Mọi bệnh nhân thanh toán qua một liên kết",
+      "cardSentByStaff": "Nhân viên gửi email liên kết thanh toán cho từng bệnh nhân",
+      "cardUrl": "Liên kết thanh toán",
+      "cardUrlInvalid": "Nhập liên kết bắt đầu bằng https://.",
+      "bank": "Chuyển khoản ngân hàng",
+      "bankHelp": "Bệnh nhân thấy thông tin này bằng tiếng Nhật, dù họ dùng ngôn ngữ nào. Hãy điền đủ mọi trường.",
+      "bankName": "Tên ngân hàng",
+      "bankBranch": "Chi nhánh",
+      "bankAccountType": "Loại tài khoản",
+      "accountTypeNotSet": "Chưa đặt",
+      "accountTypeOrdinary": "Thường (普通)",
+      "accountTypeChecking": "Vãng lai (当座)",
+      "bankAccountNumber": "Số tài khoản",
+      "bankAccountNumberInvalid": "Nhập tối đa 8 chữ số.",
+      "bankAccountHolder": "Chủ tài khoản",
+      "payPay": "PayPay",
+      "payPayHelp": "Mã QR PayPay của bạn dưới dạng ảnh PNG, JPEG hoặc WebP, tối đa 1 MB. Ảnh hiển thị trong email.",
+      "payPayQrAlt": "Mã QR PayPay của bạn",
+      "payPayFile": "Ảnh mã QR",
+      "payPayRemove": "Xóa mã QR",
+      "payPayNone": "Chưa có mã QR.",
+      "payPayFileInvalid": "Chọn ảnh PNG, JPEG hoặc WebP tối đa 1 MB.",
+      "payPayUploadFailed": "Không tải được ảnh lên. Hãy thử lại.",
+      "payPayPending": "Mã QR mới. Lưu để sử dụng.",
+      "payPayRemoving": "Mã QR sẽ bị xóa khi bạn lưu.",
+      "save": "Lưu cài đặt thanh toán"
     },
     "interpreters": {
       "heading": "Phiên dịch viên",
@@ -1128,7 +1209,25 @@
       "until": "Đến (không bắt buộc)",
       "datesInvalid": "Ngày cuối trước ngày đầu. Hãy sửa một trong hai."
     },
-    "requestedCount": "Yêu cầu đang chờ: {count}"
+    "requestedCount": "Yêu cầu đang chờ: {count}",
+    "export": {
+      "button": "Tải xuống CSV",
+      "working": "Đang tạo tệp…",
+      "failed": "Không thể tạo tệp. Hãy thử lại.",
+      "done": "Không có lịch hẹn nào để tải xuống. | Đã tải xuống 1 lịch hẹn. | Đã tải xuống {n} lịch hẹn.",
+      "truncated": "Đã tải xuống {n} lịch hẹn mới nhất. Hãy chọn một trạng thái để tải phần còn lại.",
+      "columns": {
+        "date": "Ngày",
+        "time": "Giờ (Nhật Bản)",
+        "status": "Trạng thái",
+        "paymentMethod": "Phương thức thanh toán",
+        "consultationLanguage": "Ngôn ngữ khám",
+        "name": "Họ và tên",
+        "email": "Địa chỉ email",
+        "phone": "Số điện thoại",
+        "submissionId": "Mã yêu cầu"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Yêu cầu đặt lịch của bạn",
@@ -1139,6 +1238,9 @@
     "yesCancel": "Có, hủy",
     "keep": "Giữ lại",
     "cancelled": "Lịch hẹn này đã bị hủy.",
+    "nextSteps": "Bước tiếp theo",
+    "bookAgain": "Đặt lịch hẹn khác",
+    "backHome": "Đến {site}",
     "cancelFailed": "Không thể hủy. Lịch hẹn có thể đã bắt đầu hoặc đã thay đổi; đang hiển thị trạng thái mới nhất.",
     "tooManyRequests": "Có quá nhiều yêu cầu từ kết nối này. Đợi vài phút rồi thử lại."
   },

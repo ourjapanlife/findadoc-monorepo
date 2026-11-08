@@ -1146,6 +1146,27 @@ type ClinicSiteTheme {
   primary: String
 }
 
+"""Clinic wordmark text (online consult v2 §4). Japanese pages show ja; every other locale shows en."""
+type ClinicWordmark {
+  ja: String
+  en: String
+}
+
+"""
+How a clinic with a hosted clinic page brands its booking pages and dashboard (online consult v2 §4).
+Read from clinic_sites.theme. Null on a clinic with no clinic page, or a draft one: those pages keep
+the Find a Doc header.
+"""
+type ClinicBranding {
+  """theme.displayName, or the clinic name. Alt text for the logo, and the header when there is no wordmark."""
+  displayName: String!
+  wordmark: ClinicWordmark
+  """A static site path such as /clinic-landings/{slug}/logo.svg. Shown instead of the wordmark when set."""
+  logoPath: String
+  """Brand color as #RRGGBB. Null keeps the Find a Doc primary."""
+  primary: String
+}
+
 """
 A clinic-owned page. id is the id accounts and a future CRM attach to.
 facilityId is the directory listing, null until that facility exists.
@@ -1211,10 +1232,22 @@ type BookingFormFieldOption {
   label: String
 }
 
-"""Shows a field only while another field's answer equals a value."""
+"""
+Shows a field only while another field's answer equals a value, or is one of several values.
+anyOf lets one condition cover every choice of a select, such as any backup contact app.
+"""
 type BookingFormFieldCondition {
   fieldId: ID!
-  equals: String!
+  equals: String
+  anyOf: [String!]
+}
+
+"""
+Country a PHONE answer must belong to.
+JP accepts Japanese numbers only and stores them in domestic hyphenated form, such as 090-1234-5678.
+"""
+enum BookingPhoneRegion {
+  JP
 }
 
 """
@@ -1244,6 +1277,8 @@ type BookingFormField {
   options: [BookingFormFieldOption!]
   """The field is shown, and its answer kept, only while this condition holds."""
   showWhen: BookingFormFieldCondition
+  """PHONE only. Null accepts a number from any country, stored as typed."""
+  phoneRegion: BookingPhoneRegion
 }
 
 """
@@ -1259,8 +1294,12 @@ type BookingForm {
   """Hosted clinic page id. Null when the clinic has no Find a Doc landing."""
   clinicSiteId: ID
   clinicSiteSlug: String
+  """The clinic's English name. Every reader who is not Japanese sees this."""
   clinicName: String!
+  """The clinic site's Japanese (ja-JP) name for Japanese readers, else clinicName."""
+  clinicNameJa: String!
   themePrimary: String
+  branding: ClinicBranding
   """Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60."""
   allowedDurations: [Int!]!
   """The offered length the Book page preselects."""
@@ -1319,6 +1358,11 @@ type BookingSubmissionResult {
   facilityId: ID
   status: BookingSubmissionStatus!
   appointmentId: ID
+  """
+  The status the visit starts in. PENDING_PAYMENT on a form that asks for a payment method:
+  the confirmation screen then says the visit is not confirmed until the clinic has the payment.
+  """
+  appointmentStatus: BookingAppointmentStatus
   createdDate: String!
   """
   The private token for /book/manage#{token}, returned once to the submitter.
@@ -1335,15 +1379,24 @@ enum BookingSubmissionStatus {
 }
 
 """
-Appointment lifecycle. A submit creates REQUESTED. Staff confirm or decline it.
-Staff or the patient may cancel. REQUESTED and CONFIRMED hold the slot.
+Appointment lifecycle. A submit creates REQUESTED, or PENDING_PAYMENT on a form that asks for a
+payment method. Staff confirm or decline it, and may move a CONFIRMED visit back to PENDING_PAYMENT.
+Staff or the patient may cancel. REQUESTED, PENDING_PAYMENT, and CONFIRMED hold the slot.
 """
 enum BookingAppointmentStatus {
   REQUESTED
+  PENDING_PAYMENT
   CONFIRMED
   DECLINED
   CANCELLED
   COMPLETED
+}
+
+"""The patient's paymentMethod answer, on forms that ask it."""
+enum BookingPaymentMethod {
+  CREDIT_CARD
+  BANK_TRANSFER
+  PAY_PAY
 }
 
 enum BookingCancelledBy {
@@ -1389,8 +1442,14 @@ type BookingClinic {
   role: ClinicMemberRole
   """True when the user may change members and booking settings."""
   canManage: Boolean!
-  """Appointments still REQUESTED, waiting for the clinic to confirm or decline."""
+  """Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline."""
   requestedCount: Int!
+  """
+  True when the clinic offers a form that asks how the patient pays, so new visits
+  start as PENDING_PAYMENT. The staff list opens on that status only then.
+  """
+  takesPayment: Boolean!
+  branding: ClinicBranding
 }
 
 """A person invited to, or signed in to, one clinic's booking dashboard."""
@@ -1413,12 +1472,65 @@ type BookingSettings {
   defaultDuration: Int!
   """Intake forms the clinic offers. The first is the default."""
   formDefinitionIds: [String!]!
+  """
+  Intake forms this user may offer at this clinic. The online consult form is
+  limited to admins and preview clinic sites until its answers have a purge path.
+  """
+  offerableFormDefinitionIds: [String!]!
   """The clinic may use interpreters (#205). Admins turn it on; it is meant to be a paid add-on."""
   offersInterpretation: Boolean!
   """True when this user may turn offersInterpretation on or off. Clinic members may not."""
   canChangeInterpretation: Boolean!
   """Languages the clinic lists: its own, its doctors', and its interpreters'."""
   clinicLanguages: [Locale!]!
+}
+
+"""How the email tells a patient to pay by card (online consult v2 §3.3)."""
+enum BookingCardPaymentMode {
+  """The email gives every patient the clinic's one https payment link."""
+  FIXED_LINK
+  """Staff send each patient a payment link by hand. The email says so."""
+  SENT_BY_STAFF
+}
+
+"""A Japanese bank account type. The email shows 普通 or 当座."""
+enum BookingBankAccountType {
+  ORDINARY
+  CHECKING
+}
+
+"""
+How a clinic takes the initial fee, for the pending-payment email (online consult v2 §3.3, §3.4).
+Members read it. Owners and admins change it. Clinic data, not patient data.
+"""
+type BookingPaymentSettings {
+  facilityId: ID!
+  cardMode: BookingCardPaymentMode!
+  """https only. Set when cardMode is FIXED_LINK."""
+  cardUrl: String
+  bankName: String
+  bankBranch: String
+  bankAccountType: BookingBankAccountType
+  """1 to 8 digits."""
+  bankAccountNumber: String
+  bankAccountHolder: String
+  """True when the clinic uploaded a PayPay QR."""
+  hasPayPayQr: Boolean!
+  """A link that shows the QR for 5 minutes. Null when there is no QR."""
+  payPayQrPreviewUrl: String
+  """Whole yen. Null leaves the fee out of the email."""
+  feeJpy: Int
+  """True when this user may change the settings."""
+  canManage: Boolean!
+}
+
+"""A short-lived PUT for one PayPay QR image."""
+type PaymentQrUploadUrl {
+  """Pass this to updateBookingPaymentSettings once the PUT has finished."""
+  objectKey: String!
+  uploadUrl: String!
+  headers: [BookingUploadHeader!]!
+  expiresAt: String!
 }
 
 """
@@ -1448,7 +1560,13 @@ type ClinicInterpreterHours {
 
 """What the patient sees on the private cancel page. No answers are returned."""
 type PatientBookingView {
+  """Id for the clinic's Book page (/book/{clinicId}), to book again after a cancel. Not secret: the Book URL carries it."""
+  clinicId: ID
+  """The clinic's English name. Every reader who is not Japanese sees this."""
   clinicName: String!
+  """The clinic site's Japanese (ja-JP) name for Japanese readers, else clinicName."""
+  clinicNameJa: String!
+  branding: ClinicBranding
   startsAt: String
   endsAt: String
   status: BookingAppointmentStatus
@@ -1471,6 +1589,8 @@ type BookingSubmissionListItem {
   appointmentId: ID
   appointmentStatus: BookingAppointmentStatus
   patientName: String
+  """The paymentMethod answer. Null when the form did not ask."""
+  paymentMethod: BookingPaymentMethod
   createdDate: String!
   updatedDate: String!
   hasIdentityUploads: Boolean!
@@ -1491,6 +1611,8 @@ type BookingSubmissionDetail {
   endsAt: String
   appointmentId: ID
   appointmentStatus: BookingAppointmentStatus
+  """The paymentMethod answer. Null when the form did not ask."""
+  paymentMethod: BookingPaymentMethod
   cancelledBy: BookingCancelledBy
   """Reason staff or the patient gave for a decline or cancel."""
   statusReason: String
@@ -1511,6 +1633,8 @@ type BookingSubmissionDetail {
 type BookingAnswerView {
   fieldId: String!
   value: String
+  """Site i18n key the form labels this answer with. Null for an answer the form no longer asks, such as age."""
+  labelKey: String
 }
 
 type BookingUploadView {
@@ -1545,6 +1669,31 @@ input BookingSubmissionSearchFilters {
   limit: Int
   offset: Int
   orderBy: [OrderBy!]
+}
+
+"""
+One row of the owner export (spec §3.2). Contact and scheduling fields only: medical answers,
+the address, and files are never exported, so the file holds no health data.
+"""
+type BookingSubmissionExportRow {
+  id: ID!
+  startsAt: String
+  endsAt: String
+  appointmentStatus: BookingAppointmentStatus
+  paymentMethod: BookingPaymentMethod
+  """The consultationLanguage answer, a short language code such as ja or en."""
+  consultationLanguage: String
+  patientName: String
+  email: String
+  phone: String
+  createdDate: String!
+}
+
+type BookingSubmissionExport {
+  """Newest visits first, at most 1000."""
+  rows: [BookingSubmissionExportRow!]!
+  """True when more rows matched than the export returns."""
+  truncated: Boolean!
 }
 
 """Staff-painted availability. Boundaries are 30-minute aligned."""
@@ -1692,7 +1841,10 @@ input BookingAnswerInput {
 
 input UpdateBookingAppointmentStatusInput {
   appointmentId: ID!
-  """CONFIRMED, DECLINED, CANCELLED, or COMPLETED."""
+  """
+  CONFIRMED, DECLINED, CANCELLED, or COMPLETED. PENDING_PAYMENT marks a confirmed visit as unpaid
+  again, and sends the patient no email.
+  """
   status: BookingAppointmentStatus!
   reason: String
 }
@@ -1716,6 +1868,40 @@ input UpdateBookingSettingsInput {
   defaultDuration: Int
   """Known form ids. The first is the default."""
   formDefinitionIds: [String!]!
+}
+
+"""Every field is saved as sent: a blank or omitted field clears that setting."""
+input UpdateBookingPaymentSettingsInput {
+  facilityId: ID!
+  cardMode: BookingCardPaymentMode!
+  """https only, up to 2048 characters. Required for FIXED_LINK."""
+  cardUrl: String
+  """Up to 100 characters."""
+  bankName: String
+  """Up to 100 characters."""
+  bankBranch: String
+  bankAccountType: BookingBankAccountType
+  """1 to 8 digits."""
+  bankAccountNumber: String
+  """Up to 100 characters."""
+  bankAccountHolder: String
+  """
+  A new QR: the objectKey from createPaymentQrUploadUrl, after the upload finished.
+  Omit to keep the current QR.
+  """
+  payPayQrObjectKey: String
+  """True removes the current QR. Ignored when payPayQrObjectKey is set."""
+  removePayPayQr: Boolean
+  """Whole yen, 0 or more. Null leaves the fee out of the email."""
+  feeJpy: Int
+}
+
+input CreatePaymentQrUploadUrlInput {
+  facilityId: ID!
+  """image/png, image/jpeg, or image/webp."""
+  contentType: String!
+  """Up to 1 MB (1048576 bytes)."""
+  byteSize: Int!
 }
 
 input SaveClinicInterpreterInput {
@@ -1760,8 +1946,11 @@ input SubmitBookingInput {
   """The patient ticked "I am currently in Japan". Must be true."""
   confirmedInJapan: Boolean!
   """
-  The patient consented to the reason for the visit being sent to the clinic.
-  Must be true. The consent time is stored with the request.
+  The patient consented to Find a Doc, Japan collecting the health information in this
+  form (current symptoms and past illnesses or chronic conditions) and providing it to
+  this clinic, the only named recipient, to arrange the consultation. Must be true. The
+  consent time and the server's current consent wording version are stored with the
+  request. The client does not send the version.
   """
   healthDataConsent: Boolean!
 }
@@ -1828,6 +2017,9 @@ type Query {
   """Booking options for one clinic. Members and admins."""
   bookingSettings(facilityId: ID!): BookingSettings
 
+  """How one clinic takes the initial fee. Members and admins. Null when the clinic saved none."""
+  bookingPaymentSettings(facilityId: ID!): BookingPaymentSettings
+
   """A clinic's interpreters (#205). Owners, staff, and admins."""
   clinicInterpreters(facilityId: ID!): [ClinicInterpreter!]!
 
@@ -1844,6 +2036,12 @@ type Query {
 
   """Staff read-only detail for one booking submission."""
   bookingSubmission(id: ID!): BookingSubmissionDetail
+
+  """
+  Contact and scheduling rows for one clinic's bookings, for a CSV the browser builds.
+  Owners and admins only. Each call is access-logged with ids only.
+  """
+  bookingSubmissionsExport(facilityId: ID!, appointmentStatus: BookingAppointmentStatus): BookingSubmissionExport!
 
   """Staff availability windows for the calendar editor."""
   clinicAvailabilityWindows(clinicSiteId: ID!, from: String!, to: String!): [ClinicAvailabilityWindow!]!
@@ -2119,7 +2317,7 @@ type Mutation {
   """Reopen a closed range."""
   deleteClinicAvailabilityClosure(id: ID!): DeleteResult!
 
-  """Staff confirm, decline, cancel, or complete an appointment. Declined and cancelled free the slot."""
+  """Staff confirm, decline, cancel, complete, or mark a confirmed visit unpaid. Declined and cancelled free the slot."""
   updateBookingAppointmentStatus(input: UpdateBookingAppointmentStatusInput!): BookingAppointment!
 
   """The patient cancels with the private token from the email link. Frees the slot."""
@@ -2133,6 +2331,15 @@ type Mutation {
 
   """Change visit lengths and offered forms. Owners and admins."""
   updateBookingSettings(input: UpdateBookingSettingsInput!): BookingSettings!
+
+  """Change how the clinic takes the initial fee (online consult v2 §3.3). Owners and admins."""
+  updateBookingPaymentSettings(input: UpdateBookingPaymentSettingsInput!): BookingPaymentSettings!
+
+  """
+  A short-lived upload URL for the clinic's PayPay QR. Owners and admins. PNG, JPEG, or WebP up to
+  1 MB; the server checks the stored file again on save.
+  """
+  createPaymentQrUploadUrl(input: CreatePaymentQrUploadUrlInput!): PaymentQrUploadUrl!
 
   """Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on."""
   setBookingInterpretation(input: SetBookingInterpretationInput!): BookingSettings!

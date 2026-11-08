@@ -1,19 +1,28 @@
 import { sql, type Transaction } from 'kysely'
 import { db } from '../kyselyClient.js'
 import type { Database } from '../typeDefs/kyselyTypes.js'
-import { clinicThemeFromRow } from '../services/clinicSiteService.js'
+import type { ClinicBranding } from '@findadoc/graphql'
+import { clinicBrandingFromRow, clinicThemeFromRow } from '../services/clinicSiteService.js'
+import type { EmailBrand } from './emailCopy.js'
 import { DEFAULT_BOOKING_FORM_ID, parseFormDefinitionIds } from './formDefinitions.js'
 import { DEFAULT_ALLOWED_DURATIONS, parseAllowedDurations, resolveDefaultDuration } from './schedule.js'
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const ENGLISH_LOCALE = 'en-US'
+const JAPANESE_LOCALE = 'ja-JP'
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export type BookingTarget = {
     facilityId: string | null
     clinicSiteId: string | null
     clinicSiteSlug: string | null
+    /** Patient-facing name for English and every other non-Japanese reader. */
     clinicName: string
+    /** Patient-facing name for Japanese readers: the site's ja-JP name, else clinicName. */
+    clinicNameJa: string
     themePrimary: string | null
+    /** Header and colour for the branded pages. Null without a non-draft clinic site (§4). */
+    branding: ClinicBranding | null
     allowedDurations: number[]
     /** The offered length the Book page preselects. */
     defaultDuration: number
@@ -30,6 +39,40 @@ function defaultDurationFor(allowed: readonly number[], preferred?: number | nul
 
 function isUuid(value: string): boolean {
     return UUID_PATTERN.test(value)
+}
+
+function nonEmpty(value: string | null | undefined): string | null {
+    const trimmed = value?.trim() ?? ''
+    return trimmed === '' ? null : trimmed
+}
+
+/**
+ * The clinic name a patient reads. Japanese readers get the site's Japanese name; every other
+ * locale gets the English one. Patient emails pass the locale stored on the booking.
+ */
+export function clinicNameForLocale(
+    target: Pick<BookingTarget, 'clinicName' | 'clinicNameJa'>,
+    locale: string | null | undefined
+): string {
+    return locale === JAPANESE_LOCALE ? target.clinicNameJa : target.clinicName
+}
+
+/**
+ * The clinic header on a patient email: the wordmark in the reader's language, else the clinic
+ * name, in the clinic colour. Only a clinic with a branded Book page gets one (online consult v2 §4).
+ */
+export function emailBrandFor(
+    target: Pick<BookingTarget, 'clinicName' | 'clinicNameJa' | 'branding'> | undefined,
+    locale: string | null | undefined
+): EmailBrand | null {
+    if (target === undefined || target.branding === null) {
+        return null
+    }
+    const wordmark = target.branding.wordmark
+    const name = locale === JAPANESE_LOCALE
+        ? wordmark?.ja ?? wordmark?.en
+        : wordmark?.en ?? wordmark?.ja
+    return { name: name ?? clinicNameForLocale(target, locale), color: target.branding.primary ?? null }
 }
 
 export async function settingsForFacility(facilityId: string | null): Promise<{
@@ -80,14 +123,17 @@ async function targetFromFacility(facilityId: string): Promise<BookingTarget | u
     }
 
     const site = await db.selectFrom('clinic_sites')
-        .leftJoin('clinic_site_locales as locale', join =>
-            join.onRef('locale.clinic_site_id', '=', 'clinic_sites.id').on('locale.locale', '=', 'en-US'))
+        .leftJoin('clinic_site_locales as en', join =>
+            join.onRef('en.clinic_site_id', '=', 'clinic_sites.id').on('en.locale', '=', ENGLISH_LOCALE))
+        .leftJoin('clinic_site_locales as ja', join =>
+            join.onRef('ja.clinic_site_id', '=', 'clinic_sites.id').on('ja.locale', '=', JAPANESE_LOCALE))
         .select([
             'clinic_sites.id',
             'clinic_sites.slug',
             'clinic_sites.status',
             'clinic_sites.theme',
-            'locale.name'
+            'en.name as name',
+            'ja.name as name_ja'
         ])
         .where('clinic_sites.facility_id', '=', facility.id)
         .where('clinic_sites.status', '!=', 'draft')
@@ -105,7 +151,9 @@ async function targetFromFacility(facilityId: string): Promise<BookingTarget | u
         clinicSiteId: site?.id ?? null,
         clinicSiteSlug: site?.slug ?? null,
         clinicName,
+        clinicNameJa: nonEmpty(site?.name_ja) ?? clinicName,
         themePrimary: theme?.primary ?? null,
+        branding: site === undefined ? null : clinicBrandingFromRow(site.theme, clinicName),
         allowedDurations: settings.allowedDurations,
         defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,
@@ -115,15 +163,18 @@ async function targetFromFacility(facilityId: string): Promise<BookingTarget | u
 
 async function targetFromClinicSite(siteIdOrSlug: string, byId: boolean): Promise<BookingTarget | undefined> {
     let query = db.selectFrom('clinic_sites as site')
-        .leftJoin('clinic_site_locales as locale', join =>
-            join.onRef('locale.clinic_site_id', '=', 'site.id').on('locale.locale', '=', 'en-US'))
+        .leftJoin('clinic_site_locales as en', join =>
+            join.onRef('en.clinic_site_id', '=', 'site.id').on('en.locale', '=', ENGLISH_LOCALE))
+        .leftJoin('clinic_site_locales as ja', join =>
+            join.onRef('ja.clinic_site_id', '=', 'site.id').on('ja.locale', '=', JAPANESE_LOCALE))
         .select([
             'site.id',
             'site.slug',
             'site.facility_id',
             'site.status',
             'site.theme',
-            'locale.name'
+            'en.name as name',
+            'ja.name as name_ja'
         ])
         .where('site.status', '!=', 'draft')
 
@@ -145,12 +196,15 @@ async function targetFromClinicSite(siteIdOrSlug: string, byId: boolean): Promis
 
     const settings = await settingsForFacility(site.facility_id)
     const theme = clinicThemeFromRow(site.theme)
+    const clinicName = site.name?.trim() || site.slug
     return {
         facilityId: site.facility_id,
         clinicSiteId: site.id,
         clinicSiteSlug: site.slug,
-        clinicName: site.name?.trim() || site.slug,
+        clinicName,
+        clinicNameJa: nonEmpty(site.name_ja) ?? clinicName,
         themePrimary: theme.primary,
+        branding: clinicBrandingFromRow(site.theme, clinicName),
         allowedDurations: settings.allowedDurations,
         defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,

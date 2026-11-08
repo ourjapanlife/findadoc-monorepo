@@ -1,10 +1,14 @@
+import type { InlineAttachment } from '../email/sesClient.js'
+
 /**
  * Booking email copy (#164).
  *
  * Patient emails use the locale the patient booked in. Clinic notices are
  * always Japanese first, then English, so every doctor can read them.
  * Times are Japan time in the reader's language, with the visit length.
- * Patient answers never go into a patient email.
+ * Patient answers never go into a patient email. One documented exception: the
+ * pending-payment email names the payment method the patient chose, because the
+ * instructions depend on it. It is a fixed label, never free text (paymentEmailCopy.ts).
  */
 
 export const SITE_LOCALES = [
@@ -21,7 +25,7 @@ export function isSiteLocale(value: string): value is SiteLocale {
     return SITE_LOCALES.some(locale => locale === value)
 }
 
-function readerLocale(value: string | null | undefined): SiteLocale {
+export function readerLocale(value: string | null | undefined): SiteLocale {
     return typeof value === 'string' && isSiteLocale(value) ? value : DEFAULT_LOCALE
 }
 
@@ -29,25 +33,39 @@ export type BookingEmail = {
     subject: string
     textBody: string
     htmlBody: string
+    /** Images the HTML part shows through cid: links, such as the PayPay QR. */
+    inlineAttachments?: InlineAttachment[]
 }
 
-type EmailBlock =
+/**
+ * `lang` on details marks a table that stays in that language whatever the email's
+ * language, such as the Japanese bank transfer block. Its values are all fixed.
+ * An image shows `textFallback` in the text part, which cannot carry it.
+ */
+export type EmailBlock =
     | { kind: 'paragraph', text: string }
-    | { kind: 'details', rows: DetailRow[] }
+    | { kind: 'details', rows: DetailRow[], lang?: SiteLocale }
     | { kind: 'link', text: string, href: string }
+    | { kind: 'image', contentId: string, alt: string, textFallback: string, width: number }
 
 /**
  * `fixed` marks a value the reader's Translate button must leave alone: a name,
  * an id, an address. Links are always fixed.
  */
-type DetailRow = { label: string, value: string, fixed?: boolean }
+export type DetailRow = { label: string, value: string, fixed?: boolean }
 
-type EmailSection = {
+export type EmailSection = {
     lang: SiteLocale
     blocks: EmailBlock[]
 }
 
-type PatientCopy = {
+/**
+ * The clinic's header on a patient email, like the branded Book page (online consult v2 §4):
+ * its name in the patient's language and its colour. Null keeps the plain email.
+ */
+export type EmailBrand = { name: string, color: string | null }
+
+export type PatientCopy = {
     sentThrough: string
     clinic: string
     time: string
@@ -66,7 +84,7 @@ type PatientCopy = {
     cancelledIntro: string
 }
 
-const PATIENT_COPY: Record<SiteLocale, PatientCopy> = {
+export const PATIENT_COPY: Record<SiteLocale, PatientCopy> = {
     'en-US': {
         sentThrough: 'Sent through Find a Doc, Japan.',
         clinic: 'Clinic',
@@ -389,7 +407,7 @@ export function formatLanguages(languages: readonly string[], locale: SiteLocale
         }))
 }
 
-function visitRows(
+export function visitRows(
     copy: { time: string, length: string, japanTime: string },
     locale: SiteLocale,
     startsAt: Date,
@@ -407,6 +425,9 @@ function blockText(block: EmailBlock): string {
     }
     if (block.kind === 'details') {
         return block.rows.map(row => `${row.label}: ${row.value}`).join('\n')
+    }
+    if (block.kind === 'image') {
+        return block.textFallback
     }
     return `${block.text}\n${block.href}`
 }
@@ -434,20 +455,40 @@ function blockHtml(block: EmailBlock): string {
             + `<th scope="row" style="${LABEL_STYLE}">${escapeHtml(row.label)}</th>`
             + `<td${row.fixed === true ? NO_TRANSLATE : ''} style="padding:4px 0">${escapeHtml(row.value)}</td>`
             + '</tr>').join('')
-        return `<table role="presentation" style="border-collapse:collapse;margin:0 0 16px">${rows}</table>`
+        const fixedLanguage = block.lang === undefined ? '' : ` lang="${block.lang}"${NO_TRANSLATE}`
+        return `<table role="presentation"${fixedLanguage} style="border-collapse:collapse;margin:0 0 16px">`
+            + `${rows}</table>`
+    }
+    if (block.kind === 'image') {
+        return `<p style="margin:0 0 16px"><img src="cid:${escapeHtml(block.contentId)}" alt="${escapeHtml(block.alt)}"`
+            + ` width="${block.width}" style="display:block;width:${block.width}px;max-width:100%;height:auto;border:0">`
+            + '</p>'
     }
     return `<p style="margin:0 0 16px">${escapeHtml(block.text)}<br>`
         + `<a${NO_TRANSLATE} href="${escapeHtml(block.href)}" style="color:#1d4ed8;word-break:break-all">${escapeHtml(block.href)}</a></p>`
 }
 
+const BRAND_COLOR = /^#[0-9a-f]{6}$/i
+const DEFAULT_BRAND_COLOR = '#111827'
+
+function brandHtml(brand: EmailBrand): string {
+    // The color comes from clinic_sites.theme, checked again here because it goes into a style attribute.
+    const color = brand.color !== null && BRAND_COLOR.test(brand.color) ? brand.color : DEFAULT_BRAND_COLOR
+    return `<div style="border-top:4px solid ${color};padding:16px 0 0;margin:0 0 24px">`
+        + `<p${NO_TRANSLATE} style="margin:0;font-size:20px;font-weight:700;line-height:1.3;color:${color}">`
+        + `${escapeHtml(brand.name)}</p></div>`
+}
+
 /** One content model, two parts: the HTML part says exactly what the text part says. */
-function renderEmail(subject: string, sections: EmailSection[]): BookingEmail {
-    const textBody = sections
+export function renderEmail(subject: string, sections: EmailSection[], brand: EmailBrand | null = null): BookingEmail {
+    const content = sections
         .map(section => section.blocks.map(blockText).join('\n\n'))
         .join('\n\n---\n\n')
-    const body = sections
+    const textBody = brand === null ? content : `${brand.name}\n\n${content}`
+    const sectionsHtml = sections
         .map(section => `<div lang="${section.lang}">${section.blocks.map(blockHtml).join('')}</div>`)
         .join('<hr style="border:0;border-top:1px solid #d1d5db;margin:24px 0">')
+    const body = brand === null ? sectionsHtml : `${brandHtml(brand)}${sectionsHtml}`
     const htmlBody = '<!doctype html>'
         + `<html lang="${sections[0]?.lang ?? DEFAULT_LOCALE}">`
         + '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
@@ -468,6 +509,7 @@ export function patientRequestEmail(input: {
     durationMinutes: number | null
     reference: string
     manageUrl: string
+    brand?: EmailBrand | null
 }): BookingEmail {
     const locale = readerLocale(input.locale)
     const copy = PATIENT_COPY[locale]
@@ -486,7 +528,7 @@ export function patientRequestEmail(input: {
             { kind: 'link', text: copy.manageLink, href: input.manageUrl },
             { kind: 'paragraph', text: copy.sentThrough }
         ]
-    }])
+    }], input.brand ?? null)
 }
 
 export type PatientNoticeStatus = 'confirmed' | 'declined' | 'cancelled'
@@ -500,6 +542,7 @@ export function patientStatusEmail(input: {
     durationMinutes: number | null
     reference: string
     clinicNote: string | null
+    brand?: EmailBrand | null
 }): BookingEmail {
     const locale = readerLocale(input.locale)
     const copy = PATIENT_COPY[locale]
@@ -523,7 +566,7 @@ export function patientStatusEmail(input: {
             },
             { kind: 'paragraph', text: copy.sentThrough }
         ]
-    }])
+    }], input.brand ?? null)
 }
 
 function clinicSubject(pick: (copy: ClinicCopy) => string, clinicName: string): string {

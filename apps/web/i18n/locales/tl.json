@@ -825,14 +825,25 @@
       "reason": "Dahilan ng pagbisita",
       "insuranceDocument": "Patunay ng insurance",
       "selfie": "Larawan ng mukha",
-      "insuranceType": "Ano ang ginagamit mo para sa health insurance?"
+      "insuranceType": "Ano ang ginagamit mo para sa health insurance?",
+      "addressInJapan": "Tirahan sa Japan",
+      "backupContactChannel": "Iba pang paraan para makontak ka",
+      "backupContactHandle": "Ang ID o numero mo sa app na iyon",
+      "japaneseLevel": "Gaano ka kahusay mag-Japanese?",
+      "consultationLanguage": "Wika para sa iyong konsultasyon",
+      "currentSymptoms": "Kasalukuyang sintomas",
+      "pastIllnesses": "Mga dating sakit o pangmatagalang kondisyon",
+      "paymentMethod": "Paraan ng pagbabayad"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Pangalan gaya sa ID",
       "age": "35",
-      "reason": "Maikling paliwanag ng kailangan mo"
+      "reason": "Maikling paliwanag ng kailangan mo",
+      "addressInJapan": "Prefecture, lungsod, kalye, at gusali",
+      "currentSymptoms": "Anong mga sintomas ang nararamdaman mo, at kailan ito nagsimula?",
+      "pastIllnesses": "Halimbawa, hika, diabetes, o dating operasyon"
     },
     "errors": {
       "required": "Kailangan ang field na ito",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Masyadong maraming kahilingan mula sa koneksyong ito. Maghintay ng ilang minuto at subukan ulit.",
       "openRequestLimit": "May mga kahilingan na ang email na ito na naghihintay sa klinikang ito. Hintayin ang sagot ng klinika, o kanselahin ang isa gamit ang link sa iyong email.",
       "confirmations": "Lagyan ng tsek ang dalawang kahon bago ipadala ang kahilingan",
-      "regionUnavailable": "Sa ngayon, para lang sa mga nasa Japan ang booking."
+      "regionUnavailable": "Sa ngayon, para lang sa mga nasa Japan ang booking.",
+      "phoneJapan": "Maglagay ng numero ng telepono sa Japan, gaya ng 090-1234-5678"
     },
     "slotLabel": "Gustong oras",
     "slotLoading": "Naglo-load ng bukas na oras…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Impormasyon sa pakikipag-ugnayan",
       "visit": "Pagbisita",
-      "documents": "Mga dokumento"
+      "documents": "Mga dokumento",
+      "payment": "Bayad"
     },
     "dateLabel": "Petsa",
     "durationLabel": "Haba ng konsultasyon",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Babae",
         "male": "Lalaki",
-        "selfDescribe": "Ilalarawan ko mismo",
+        "selfDescribe": "Iba pa",
         "preferNotToSay": "Mas gusto kong hindi sabihin"
+      },
+      "japaneseLevel": {
+        "none": "Hindi marunong",
+        "greetings": "Pagbati lang",
+        "little": "Kaunti",
+        "conversational": "Pang-araw-araw na usapan",
+        "fluent": "Matatas"
+      },
+      "consultationLanguage": {
+        "ja": "Wikang Hapon",
+        "en": "Ingles",
+        "zh": "Tsino",
+        "vi": "Biyetnamita",
+        "id": "Indonesyo",
+        "tl": "Tagalog",
+        "fr": "Pranses",
+        "ne": "Wikang Nepali",
+        "my": "Burmes"
+      },
+      "paymentMethod": {
+        "creditCard": "Credit card",
+        "bankTransfer": "Paglipat sa bangko",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "Ginagamit ito ng klinika para makilala ka at itugma sa iyong insurance card.",
-      "gender": "Maaaring mahalaga ito sa iyong pangangalaga. Puwede kang hindi sumagot."
+      "gender": "Maaaring mahalaga ito sa iyong pangangalaga.",
+      "consultationLanguage": "Kung hindi nagsasalita ng wikang ito ang iyong doktor, sisikapin ng klinika na magsaayos ng interpreter. Maaaring walang interpreter para sa bawat wika o oras.",
+      "paymentMethod": "Hindi pa kumpirmado ang iyong reserbasyon. Makukumpirma ito kapag natanggap na ng klinika ang unang bayad. Padadalhan ka namin ng email na may mga tagubilin sa pagbabayad."
     },
     "insuranceUpload": {
       "insuranceCard": "Larawan ng iyong health insurance card",
@@ -925,7 +968,7 @@
     },
     "confirmationsLegend": "Bago ipadala",
     "confirmInJapan": "Kasalukuyan akong nasa Japan.",
-    "healthDataConsent": "Pumapayag akong ipadala ng Find a Doc, Japan sa {clinic} ang dahilan ng aking pagpapatingin, na impormasyong pangkalusugan.",
+    "healthDataConsent": "Pumapayag akong kolektahin ng Find a Doc, Japan ang impormasyong pangkalusugan na inilagay ko sa form na ito (kasalukuyang sintomas at mga nakaraang sakit o malalang kondisyon) at ibigay ito sa {clinic} upang maisaayos ang aking konsultasyon.",
     "privacyPolicyLink": "Patakaran sa privacy",
     "availabilityError": {
       "heading": "Hindi namin ma-check kung puwedeng mag-book",
@@ -985,6 +1028,7 @@
     "cancelledByClinic": "Kinansela ng klinika",
     "appointmentStatus": {
       "requested": "Hiniling",
+      "pendingPayment": "Naghihintay ng bayad",
       "confirmed": "Kumpirmado",
       "declined": "Tinanggihan",
       "cancelled": "Kinansela",
@@ -992,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Kumpirmahin",
+      "confirmPaid": "Natanggap ang bayad, kumpirmahin",
       "decline": "Tanggihan",
       "cancel": "Kanselahin ang appointment",
-      "complete": "Markahang tapos na"
+      "complete": "Markahang tapos na",
+      "markUnpaid": "Markahan bilang hindi pa bayad"
     },
     "doctor": "Doktor",
     "languagesRequested": "Mga hiniling na wika",
@@ -1045,6 +1091,7 @@
     "noClinics": "Hindi pa naka-link ang account na ito sa isang klinika.",
     "noClinicsHelp": "Hilingin sa Find a Doc, Japan na imbitahan ang email address na ginagamit mo sa pag-sign in. Mali-link ang imbitasyon sa susunod mong pag-sign in.",
     "noAccessHeading": "Wala kang access sa klinikang ito",
+    "switchClinic": "Lumipat ng klinika",
     "statusFilter": "Ipakita",
     "allStatuses": "Lahat ng kahilingan",
     "saved": "Na-save",
@@ -1071,6 +1118,40 @@
       "interpretation": "Nag-aalok kami ng interpretasyon/pagsasalin: kahit sinong doktor ay makakakita ng pasyente sa bawat wikang inaalok namin",
       "interpretationHelp": "Kapag in-on ito, magdadagdag ng isang interpreter para sa bawat wika sa lahat ng oras na bukas. Baguhin sa ibaba ang mga wika, oras, o ilang pagbisita ang kaya ng bawat interpreter nang sabay.",
       "interpretationLocked": "Ang Find a Doc ang nag-o-on nito para sa inyong klinika. Makipag-ugnayan sa amin para baguhin ito."
+    },
+    "payment": {
+      "heading": "Pagbabayad",
+      "help": "Ang pasyenteng nag-book sa form na nagtatanong kung paano sila magbabayad ay makakatanggap ng email na may mga tagubilin para sa paraang pinili nila. Kapag kulang ang detalye ng isang paraan, sasabihin sa pasyente na kokontakin ninyo sila.",
+      "fee": "Paunang singil (yen)",
+      "feeHelp": "Iwanang blangko para hindi isama ang singil sa email.",
+      "feeInvalid": "Maglagay ng buong bilang ng yen, 0 o higit pa.",
+      "card": "Credit card",
+      "cardFixedLink": "Iisang link ang gagamitin ng lahat ng pasyente sa pagbabayad",
+      "cardSentByStaff": "Ang staff ang mag-e-email ng payment link sa bawat pasyente",
+      "cardUrl": "Link para sa pagbabayad",
+      "cardUrlInvalid": "Maglagay ng link na nagsisimula sa https://.",
+      "bank": "Paglipat sa bangko",
+      "bankHelp": "Makikita ng mga pasyente ang mga detalyeng ito sa Japanese, anuman ang kanilang wika. Punan ang bawat field.",
+      "bankName": "Pangalan ng bangko",
+      "bankBranch": "Sangay",
+      "bankAccountType": "Uri ng account",
+      "accountTypeNotSet": "Hindi nakatakda",
+      "accountTypeOrdinary": "Ordinaryo (普通)",
+      "accountTypeChecking": "Kasalukuyang account (当座)",
+      "bankAccountNumber": "Numero ng account",
+      "bankAccountNumberInvalid": "Maglagay ng hanggang 8 numero.",
+      "bankAccountHolder": "Pangalan ng may-ari ng account",
+      "payPay": "PayPay",
+      "payPayHelp": "Ang inyong PayPay QR code bilang PNG, JPEG, o WebP na larawan, hanggang 1 MB. Ipapakita ito sa loob ng email.",
+      "payPayQrAlt": "Ang inyong PayPay QR code",
+      "payPayFile": "Larawan ng QR code",
+      "payPayRemove": "Alisin ang QR code",
+      "payPayNone": "Wala pang QR code.",
+      "payPayFileInvalid": "Pumili ng PNG, JPEG, o WebP na larawan na hanggang 1 MB.",
+      "payPayUploadFailed": "Hindi na-upload ang larawan. Subukang muli.",
+      "payPayPending": "Bagong QR code. I-save para magamit ito.",
+      "payPayRemoving": "Aalisin ang QR code kapag nag-save kayo.",
+      "save": "I-save ang mga setting sa pagbabayad"
     },
     "interpreters": {
       "heading": "Mga interpreter",
@@ -1128,7 +1209,25 @@
       "until": "Hanggang (opsyonal)",
       "datesInvalid": "Mas maaga ang huling araw kaysa sa unang araw. Baguhin ang isa."
     },
-    "requestedCount": "Mga naghihintay na kahilingan: {count}"
+    "requestedCount": "Mga naghihintay na kahilingan: {count}",
+    "export": {
+      "button": "I-download ang CSV",
+      "working": "Inihahanda ang file…",
+      "failed": "Hindi magawa ang file. Subukang muli.",
+      "done": "Walang booking na mada-download. | Na-download ang 1 booking. | Na-download ang {n} na booking.",
+      "truncated": "Na-download ang {n} pinakabagong booking. Pumili ng status para makuha ang iba.",
+      "columns": {
+        "date": "Petsa",
+        "time": "Oras (Japan)",
+        "status": "Katayuan",
+        "paymentMethod": "Paraan ng pagbabayad",
+        "consultationLanguage": "Wika ng konsultasyon",
+        "name": "Pangalan",
+        "email": "Email address",
+        "phone": "Telepono",
+        "submissionId": "ID ng kahilingan"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Ang iyong kahilingan sa appointment",
@@ -1139,6 +1238,9 @@
     "yesCancel": "Oo, kanselahin",
     "keep": "Panatilihin",
     "cancelled": "Kinansela na ang appointment na ito.",
+    "nextSteps": "Mga susunod na hakbang",
+    "bookAgain": "Mag-book ng ibang appointment",
+    "backHome": "Pumunta sa {site}",
     "cancelFailed": "Hindi makansela. Maaaring nagsimula na o nagbago ito; ipinapakita ang pinakabagong katayuan.",
     "tooManyRequests": "Masyadong maraming kahilingan mula sa koneksyong ito. Maghintay ng ilang minuto at subukan ulit."
   },

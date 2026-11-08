@@ -825,14 +825,25 @@
       "reason": "Alasan kunjungan",
       "insuranceDocument": "Bukti asuransi",
       "selfie": "Foto diri Anda",
-      "insuranceType": "Apa yang Anda gunakan untuk asuransi kesehatan?"
+      "insuranceType": "Apa yang Anda gunakan untuk asuransi kesehatan?",
+      "addressInJapan": "Alamat di Jepang",
+      "backupContactChannel": "Cara lain untuk menghubungi Anda",
+      "backupContactHandle": "ID atau nomor Anda di aplikasi itu",
+      "japaneseLevel": "Seberapa lancar bahasa Jepang Anda?",
+      "consultationLanguage": "Bahasa untuk konsultasi Anda",
+      "currentSymptoms": "Gejala saat ini",
+      "pastIllnesses": "Riwayat penyakit atau penyakit kronis",
+      "paymentMethod": "Metode pembayaran"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Nama sesuai kartu identitas",
       "age": "35",
-      "reason": "Uraian singkat tentang apa yang Anda butuhkan"
+      "reason": "Uraian singkat tentang apa yang Anda butuhkan",
+      "addressInJapan": "Prefektur, kota, jalan, dan gedung",
+      "currentSymptoms": "Gejala apa yang Anda alami, dan sejak kapan?",
+      "pastIllnesses": "Misalnya asma, diabetes, atau operasi sebelumnya"
     },
     "errors": {
       "required": "Kolom ini wajib diisi",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Terlalu banyak permintaan dari koneksi ini. Tunggu beberapa menit, lalu coba lagi.",
       "openRequestLimit": "Email ini sudah memiliki permintaan yang menunggu di klinik ini. Tunggu jawaban klinik, atau batalkan salah satunya melalui tautan di email Anda.",
       "confirmations": "Centang kedua kotak sebelum mengirim permintaan",
-      "regionUnavailable": "Saat ini reservasi hanya tersedia bagi orang yang berada di Jepang."
+      "regionUnavailable": "Saat ini reservasi hanya tersedia bagi orang yang berada di Jepang.",
+      "phoneJapan": "Masukkan nomor telepon Jepang, misalnya 090-1234-5678"
     },
     "slotLabel": "Waktu yang diinginkan",
     "slotLoading": "Memuat waktu yang tersedia…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Kontak",
       "visit": "Kunjungan",
-      "documents": "Dokumen"
+      "documents": "Dokumen",
+      "payment": "Pembayaran"
     },
     "dateLabel": "Tanggal",
     "durationLabel": "Durasi kunjungan",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Perempuan",
         "male": "Laki-laki",
-        "selfDescribe": "Saya ingin menjelaskan sendiri",
+        "selfDescribe": "Lainnya",
         "preferNotToSay": "Memilih tidak menjawab"
+      },
+      "japaneseLevel": {
+        "none": "Tidak bisa",
+        "greetings": "Hanya salam",
+        "little": "Sedikit",
+        "conversational": "Percakapan sehari-hari",
+        "fluent": "Lancar"
+      },
+      "consultationLanguage": {
+        "ja": "Bahasa Jepang",
+        "en": "Bahasa Inggris",
+        "zh": "Bahasa Mandarin",
+        "vi": "Bahasa Vietnam",
+        "id": "Bahasa Indonesia",
+        "tl": "Bahasa Tagalog",
+        "fr": "Bahasa Prancis",
+        "ne": "Bahasa Nepal",
+        "my": "Bahasa Burma"
+      },
+      "paymentMethod": {
+        "creditCard": "Kartu kredit",
+        "bankTransfer": "Transfer bank",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "Klinik menggunakan ini untuk memastikan identitas Anda dan mencocokkannya dengan kartu asuransi Anda.",
-      "gender": "Ini bisa berkaitan dengan perawatan Anda. Anda boleh memilih tidak menjawab."
+      "gender": "Ini bisa berkaitan dengan perawatan Anda.",
+      "consultationLanguage": "Jika dokter Anda tidak berbicara bahasa ini, klinik akan berusaha menyediakan penerjemah. Penerjemah mungkin tidak tersedia untuk setiap bahasa atau waktu.",
+      "paymentMethod": "Reservasi Anda belum dikonfirmasi. Reservasi dikonfirmasi setelah klinik menerima pembayaran awal. Kami akan mengirimkan email berisi petunjuk pembayaran."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto kartu asuransi kesehatan Anda",
@@ -925,7 +968,7 @@
     },
     "confirmationsLegend": "Sebelum mengirim",
     "confirmInJapan": "Saya sedang berada di Jepang.",
-    "healthDataConsent": "Saya menyetujui Find a Doc, Japan mengirimkan alasan kunjungan saya, yang merupakan informasi kesehatan, kepada {clinic}.",
+    "healthDataConsent": "Saya menyetujui Find a Doc, Japan mengumpulkan informasi kesehatan yang saya isi dalam formulir ini (gejala saat ini serta riwayat penyakit atau penyakit kronis) dan memberikannya kepada {clinic} untuk mengatur konsultasi saya.",
     "privacyPolicyLink": "Kebijakan privasi",
     "availabilityError": {
       "heading": "Kami tidak dapat memeriksa ketersediaan reservasi",
@@ -985,6 +1028,7 @@
     "cancelledByClinic": "Dibatalkan oleh klinik",
     "appointmentStatus": {
       "requested": "Diminta",
+      "pendingPayment": "Menunggu pembayaran",
       "confirmed": "Dikonfirmasi",
       "declined": "Ditolak",
       "cancelled": "Dibatalkan",
@@ -992,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Konfirmasi",
+      "confirmPaid": "Pembayaran diterima, konfirmasi",
       "decline": "Tolak",
       "cancel": "Batalkan janji temu",
-      "complete": "Tandai selesai"
+      "complete": "Tandai selesai",
+      "markUnpaid": "Tandai belum dibayar"
     },
     "doctor": "Dokter",
     "languagesRequested": "Bahasa yang diminta",
@@ -1045,6 +1091,7 @@
     "noClinics": "Akun ini belum terhubung dengan klinik.",
     "noClinicsHelp": "Minta Find a Doc, Japan untuk mengundang alamat email yang Anda gunakan untuk masuk. Undangan akan terhubung saat Anda masuk berikutnya.",
     "noAccessHeading": "Anda tidak memiliki akses ke klinik ini",
+    "switchClinic": "Ganti klinik",
     "statusFilter": "Tampilkan",
     "allStatuses": "Semua permintaan",
     "saved": "Tersimpan",
@@ -1071,6 +1118,40 @@
       "interpretation": "Kami menyediakan juru bahasa/penerjemah: setiap dokter dapat melayani pasien dalam semua bahasa yang kami tawarkan",
       "interpretationHelp": "Mengaktifkan ini menambahkan satu juru bahasa untuk semua bahasa di semua jam buka. Ubah di bawah untuk mengatur bahasa, jam, atau jumlah kunjungan sekaligus per juru bahasa.",
       "interpretationLocked": "Find a Doc mengaktifkan ini untuk klinik Anda. Hubungi kami untuk mengubahnya."
+    },
+    "payment": {
+      "heading": "Pembayaran",
+      "help": "Pasien yang memesan lewat formulir yang menanyakan cara bayar akan menerima email berisi petunjuk untuk metode yang mereka pilih. Metode dengan detail yang belum lengkap memberi tahu pasien bahwa klinik akan menghubungi mereka.",
+      "fee": "Biaya awal (yen)",
+      "feeHelp": "Kosongkan agar biaya tidak dicantumkan di email.",
+      "feeInvalid": "Masukkan bilangan bulat yen, 0 atau lebih.",
+      "card": "Kartu kredit",
+      "cardFixedLink": "Semua pasien membayar lewat satu tautan",
+      "cardSentByStaff": "Staf mengirim tautan pembayaran ke setiap pasien lewat email",
+      "cardUrl": "Tautan pembayaran",
+      "cardUrlInvalid": "Masukkan tautan yang diawali https://.",
+      "bank": "Transfer bank",
+      "bankHelp": "Pasien melihat detail ini dalam bahasa Jepang, apa pun bahasanya. Isi semua kolom.",
+      "bankName": "Nama bank",
+      "bankBranch": "Cabang",
+      "bankAccountType": "Jenis rekening",
+      "accountTypeNotSet": "Belum diatur",
+      "accountTypeOrdinary": "Biasa (普通)",
+      "accountTypeChecking": "Giro (当座)",
+      "bankAccountNumber": "Nomor rekening",
+      "bankAccountNumberInvalid": "Masukkan maksimal 8 digit.",
+      "bankAccountHolder": "Nama pemilik rekening",
+      "payPay": "PayPay",
+      "payPayHelp": "Kode QR PayPay Anda sebagai gambar PNG, JPEG, atau WebP, maksimal 1 MB. Gambar ditampilkan di dalam email.",
+      "payPayQrAlt": "Kode QR PayPay Anda",
+      "payPayFile": "Gambar kode QR",
+      "payPayRemove": "Hapus kode QR",
+      "payPayNone": "Belum ada kode QR.",
+      "payPayFileInvalid": "Pilih gambar PNG, JPEG, atau WebP maksimal 1 MB.",
+      "payPayUploadFailed": "Gambar tidak dapat diunggah. Coba lagi.",
+      "payPayPending": "Kode QR baru. Simpan untuk menggunakannya.",
+      "payPayRemoving": "Kode QR akan dihapus saat Anda menyimpan.",
+      "save": "Simpan pengaturan pembayaran"
     },
     "interpreters": {
       "heading": "Juru bahasa",
@@ -1128,7 +1209,25 @@
       "until": "Sampai (opsional)",
       "datesInvalid": "Tanggal akhir sebelum tanggal awal. Ubah salah satunya."
     },
-    "requestedCount": "Permintaan menunggu: {count}"
+    "requestedCount": "Permintaan menunggu: {count}",
+    "export": {
+      "button": "Unduh CSV",
+      "working": "Menyiapkan file…",
+      "failed": "File tidak dapat dibuat. Coba lagi.",
+      "done": "Tidak ada pemesanan untuk diunduh. | 1 pemesanan telah diunduh. | {n} pemesanan telah diunduh.",
+      "truncated": "{n} pemesanan terbaru telah diunduh. Pilih status untuk mengunduh sisanya.",
+      "columns": {
+        "date": "Tanggal",
+        "time": "Waktu (Jepang)",
+        "status": "Status pemesanan",
+        "paymentMethod": "Metode pembayaran",
+        "consultationLanguage": "Bahasa konsultasi",
+        "name": "Nama",
+        "email": "Alamat email",
+        "phone": "Telepon",
+        "submissionId": "ID permintaan"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Permintaan janji temu Anda",
@@ -1139,6 +1238,9 @@
     "yesCancel": "Ya, batalkan",
     "keep": "Tetap pertahankan",
     "cancelled": "Janji temu ini sudah dibatalkan.",
+    "nextSteps": "Langkah berikutnya",
+    "bookAgain": "Buat janji temu lain",
+    "backHome": "Buka {site}",
     "cancelFailed": "Tidak dapat membatalkan. Janji temu mungkin sudah dimulai atau berubah. Status terbaru ditampilkan.",
     "tooManyRequests": "Terlalu banyak permintaan dari koneksi ini. Tunggu beberapa menit, lalu coba lagi."
   },

@@ -28,6 +28,7 @@ import * as staffBookingService from './services/staffBookingService.js'
 import * as appointmentService from './services/appointmentService.js'
 import * as clinicAccessService from './services/clinicAccessService.js'
 import * as interpreterService from './services/interpreterService.js'
+import * as paymentSettingsService from './services/paymentSettingsService.js'
 import { envVariables } from '../utils/environmentVariables.js'
 import { ErrorCode, Result } from './result.js'
 import { logger } from './logger.js'
@@ -140,6 +141,15 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.BookingSettings | null> =>
             clinicAccessService.getBookingSettings(args.facilityId, await bookingAccessForContext(context))),
+        bookingPaymentSettings: withClinicScope(CLINIC_READ_SCOPES, async (
+            _parent: unknown,
+            args: { facilityId: string },
+            context: UserContext
+        ): Promise<gqlType.BookingPaymentSettings | null> => paymentSettingsService.getBookingPaymentSettings(
+            args.facilityId,
+            await bookingAccessForContext(context),
+            apiBaseUrl()
+        )),
         clinicAppointments: withClinicScope(CLINIC_READ_SCOPES, async (
             _parent: unknown,
             args: { clinicId: string, from: string, to: string },
@@ -168,6 +178,22 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.BookingSubmissionDetail | null> =>
             staffBookingService.getBookingSubmissionDetail(args.id, await bookingAccessForContext(context))),
+        // The export is an owner action (spec §3.2), so it takes the owner settings scopes, not
+        // the read scopes staff hold. The service also checks canManageFacility for the clinic.
+        bookingSubmissionsExport: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+            _parent: unknown,
+            args: { facilityId: string, appointmentStatus?: gqlType.BookingAppointmentStatus | null },
+            context: UserContext
+        ): Promise<gqlType.BookingSubmissionExport> => {
+            const result = await staffBookingService.exportBookingSubmissions(
+                args.facilityId,
+                args.appointmentStatus,
+                await bookingAccessForContext(context),
+                context.user?.sub
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
         clinicAvailabilityWindows: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { clinicSiteId: string, from: string, to: string },
@@ -700,6 +726,34 @@ const resolvers = {
             return result.data
         }),
 
+        updateBookingPaymentSettings: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+            _parent: unknown,
+            args: { input: gqlType.UpdateBookingPaymentSettingsInput },
+            context: UserContext
+        ): Promise<gqlType.BookingPaymentSettings> => {
+            const result = await paymentSettingsService.updateBookingPaymentSettings(
+                args.input,
+                await bookingAccessForContext(context),
+                apiBaseUrl()
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
+        createPaymentQrUploadUrl: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+            _parent: unknown,
+            args: { input: gqlType.CreatePaymentQrUploadUrlInput },
+            context: UserContext
+        ): Promise<gqlType.PaymentQrUploadUrl> => {
+            const result = await paymentSettingsService.createPaymentQrUploadUrl(
+                args.input,
+                await bookingAccessForContext(context),
+                apiBaseUrl()
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+
         saveClinicInterpreter: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
             _parent: unknown,
             args: { input: gqlType.SaveClinicInterpreterInput },
@@ -741,6 +795,11 @@ const resolvers = {
             return result.data
         })
     }
+}
+
+/** The API's own origin, for local upload and preview URLs when files are not on S3. */
+function apiBaseUrl(): string {
+    return envVariables.apiURL() || 'http://127.0.0.1:4000'
 }
 
 /** Refuses a signed-out booking call once this address has used its budget (booking/rateLimits.ts). */

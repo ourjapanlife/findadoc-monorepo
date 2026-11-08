@@ -825,14 +825,25 @@
       "reason": "Motivo da visita",
       "insuranceDocument": "Comprovante do seguro",
       "selfie": "Foto do rosto",
-      "insuranceType": "O que você usa como comprovante do seguro de saúde?"
+      "insuranceType": "O que você usa como comprovante do seguro de saúde?",
+      "addressInJapan": "Endereço no Japão",
+      "backupContactChannel": "Outra forma de contato",
+      "backupContactHandle": "Seu ID ou número nesse aplicativo",
+      "japaneseLevel": "Quanto você fala japonês?",
+      "consultationLanguage": "Idioma da consulta",
+      "currentSymptoms": "Sintomas atuais",
+      "pastIllnesses": "Doenças anteriores ou condições crônicas",
+      "paymentMethod": "Forma de pagamento"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Nome como no documento",
       "age": "35",
-      "reason": "Descrição breve do que precisa"
+      "reason": "Descrição breve do que precisa",
+      "addressInJapan": "Província, cidade, rua e prédio",
+      "currentSymptoms": "Quais sintomas você tem e desde quando?",
+      "pastIllnesses": "Por exemplo, asma, diabetes ou uma cirurgia anterior"
     },
     "errors": {
       "required": "Este campo é obrigatório",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Muitas solicitações desta conexão. Aguarde alguns minutos e tente novamente.",
       "openRequestLimit": "Este e-mail já tem pedidos aguardando resposta nesta clínica. Aguarde a resposta da clínica ou cancele um deles pelo link no seu e-mail.",
       "confirmations": "Marque as duas caixas antes de enviar o pedido",
-      "regionUnavailable": "No momento, o agendamento está disponível apenas para quem está no Japão."
+      "regionUnavailable": "No momento, o agendamento está disponível apenas para quem está no Japão.",
+      "phoneJapan": "Informe um número de telefone japonês, como 090-1234-5678"
     },
     "slotLabel": "Horário preferido",
     "slotLoading": "Carregando horários…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Contato",
       "visit": "Consulta",
-      "documents": "Documentos"
+      "documents": "Documentos",
+      "payment": "Pagamento"
     },
     "dateLabel": "Data",
     "durationLabel": "Duração da consulta",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Feminino",
         "male": "Masculino",
-        "selfDescribe": "Prefiro descrever",
+        "selfDescribe": "Outro",
         "preferNotToSay": "Prefiro não dizer"
+      },
+      "japaneseLevel": {
+        "none": "Nada",
+        "greetings": "Só cumprimentos",
+        "little": "Um pouco",
+        "conversational": "Conversa do dia a dia",
+        "fluent": "Fluente"
+      },
+      "consultationLanguage": {
+        "ja": "Japonês",
+        "en": "Inglês",
+        "zh": "Chinês",
+        "vi": "Vietnamita",
+        "id": "Indonésio",
+        "tl": "Tagalo",
+        "fr": "Francês",
+        "ne": "Nepalês",
+        "my": "Birmanês"
+      },
+      "paymentMethod": {
+        "creditCard": "Cartão de crédito",
+        "bankTransfer": "Transferência bancária",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "A clínica usa isso para identificar você e conferir com seu cartão do seguro.",
-      "gender": "Isso pode ser importante para o seu atendimento. Você pode preferir não dizer."
+      "gender": "Isso pode ser importante para o seu atendimento.",
+      "consultationLanguage": "Se o médico não falar esse idioma, a clínica tentará providenciar um intérprete. Pode não haver intérprete para todos os idiomas ou horários.",
+      "paymentMethod": "Sua reserva ainda não está confirmada. Ela será confirmada quando a clínica receber o pagamento inicial. Enviaremos um e-mail com as instruções de pagamento."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto do cartão do seguro de saúde",
@@ -925,7 +968,7 @@
     },
     "confirmationsLegend": "Antes de enviar",
     "confirmInJapan": "Estou no Japão neste momento.",
-    "healthDataConsent": "Consinto que o Find a Doc, Japan envie o motivo da minha consulta, que é uma informação de saúde, para {clinic}.",
+    "healthDataConsent": "Consinto que o Find a Doc, Japan colete as informações de saúde que eu inserir neste formulário (sintomas atuais e doenças anteriores ou condições crônicas) e as forneça a {clinic} para organizar a minha consulta.",
     "privacyPolicyLink": "Política de privacidade",
     "availabilityError": {
       "heading": "Não foi possível verificar se o agendamento está disponível",
@@ -985,6 +1028,7 @@
     "cancelledByClinic": "Cancelada pela clínica",
     "appointmentStatus": {
       "requested": "Solicitada",
+      "pendingPayment": "Pagamento pendente",
       "confirmed": "Confirmada",
       "declined": "Recusada",
       "cancelled": "Cancelada",
@@ -992,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Confirmar",
+      "confirmPaid": "Pagamento recebido, confirmar",
       "decline": "Recusar",
       "cancel": "Cancelar consulta",
-      "complete": "Marcar como concluída"
+      "complete": "Marcar como concluída",
+      "markUnpaid": "Marcar como não pago"
     },
     "doctor": "Médico",
     "languagesRequested": "Idiomas pedidos",
@@ -1045,6 +1091,7 @@
     "noClinics": "Esta conta ainda não está vinculada a uma clínica.",
     "noClinicsHelp": "Peça ao Find a Doc, Japan para convidar o e-mail que você usa para entrar. O convite é vinculado no próximo acesso.",
     "noAccessHeading": "Você não tem acesso a esta clínica",
+    "switchClinic": "Trocar de clínica",
     "statusFilter": "Mostrar",
     "allStatuses": "Todos os pedidos",
     "saved": "Salvo",
@@ -1071,6 +1118,40 @@
       "interpretation": "Oferecemos interpretação/tradução: qualquer médico pode atender pacientes em todos os idiomas que oferecemos",
       "interpretationHelp": "Ativar adiciona um intérprete para todos os idiomas em todos os horários de funcionamento. Altere abaixo os idiomas, horários ou quantas consultas cada intérprete atende ao mesmo tempo.",
       "interpretationLocked": "O Find a Doc ativa isso para a sua clínica. Entre em contato conosco para alterar."
+    },
+    "payment": {
+      "heading": "Pagamento",
+      "help": "O paciente que agenda por um formulário que pergunta a forma de pagamento recebe um e-mail com suas instruções para a forma escolhida. Se faltar algum dado de uma forma, o paciente é avisado de que a clínica entrará em contato.",
+      "fee": "Taxa inicial (ienes)",
+      "feeHelp": "Deixe em branco para não mostrar a taxa no e-mail.",
+      "feeInvalid": "Informe um número inteiro de ienes, 0 ou mais.",
+      "card": "Cartão de crédito",
+      "cardFixedLink": "Todos os pacientes pagam pelo mesmo link",
+      "cardSentByStaff": "A equipe envia um link de pagamento por e-mail a cada paciente",
+      "cardUrl": "Link de pagamento",
+      "cardUrlInvalid": "Informe um link que comece com https://.",
+      "bank": "Transferência bancária",
+      "bankHelp": "Os pacientes veem estes dados em japonês, seja qual for o idioma deles. Preencha todos os campos.",
+      "bankName": "Nome do banco",
+      "bankBranch": "Agência",
+      "bankAccountType": "Tipo de conta",
+      "accountTypeNotSet": "Não definido",
+      "accountTypeOrdinary": "Comum (普通)",
+      "accountTypeChecking": "Corrente (当座)",
+      "bankAccountNumber": "Número da conta",
+      "bankAccountNumberInvalid": "Informe até 8 dígitos.",
+      "bankAccountHolder": "Titular da conta",
+      "payPay": "PayPay",
+      "payPayHelp": "Seu QR code do PayPay em imagem PNG, JPEG ou WebP, de até 1 MB. Ele aparece dentro do e-mail.",
+      "payPayQrAlt": "Seu QR code do PayPay",
+      "payPayFile": "Imagem do QR code",
+      "payPayRemove": "Remover QR code",
+      "payPayNone": "Ainda não há QR code.",
+      "payPayFileInvalid": "Escolha uma imagem PNG, JPEG ou WebP de até 1 MB.",
+      "payPayUploadFailed": "Não foi possível enviar a imagem. Tente de novo.",
+      "payPayPending": "Novo QR code. Salve para usá-lo.",
+      "payPayRemoving": "O QR code será removido quando você salvar.",
+      "save": "Salvar configurações de pagamento"
     },
     "interpreters": {
       "heading": "Intérpretes",
@@ -1128,7 +1209,25 @@
       "until": "Até (opcional)",
       "datesInvalid": "Um último dia está antes do primeiro dia. Altere um deles."
     },
-    "requestedCount": "Pedidos pendentes: {count}"
+    "requestedCount": "Pedidos pendentes: {count}",
+    "export": {
+      "button": "Baixar CSV",
+      "working": "Preparando o arquivo…",
+      "failed": "Não foi possível criar o arquivo. Tente novamente.",
+      "done": "Nenhuma reserva para baixar. | 1 reserva baixada. | {n} reservas baixadas.",
+      "truncated": "As {n} reservas mais recentes foram baixadas. Escolha um status para obter as demais.",
+      "columns": {
+        "date": "Data",
+        "time": "Horário (Japão)",
+        "status": "Situação",
+        "paymentMethod": "Forma de pagamento",
+        "consultationLanguage": "Idioma da consulta",
+        "name": "Nome",
+        "email": "E-mail",
+        "phone": "Telefone",
+        "submissionId": "ID da solicitação"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Seu pedido de consulta",
@@ -1139,6 +1238,9 @@
     "yesCancel": "Sim, cancelar",
     "keep": "Manter",
     "cancelled": "Esta consulta foi cancelada.",
+    "nextSteps": "Próximos passos",
+    "bookAgain": "Marcar outra consulta",
+    "backHome": "Ir para {site}",
     "cancelFailed": "Não foi possível cancelar. Ela pode já ter começado ou mudado; o status mais recente está sendo exibido.",
     "tooManyRequests": "Muitas solicitações desta conexão. Aguarde alguns minutos e tente novamente."
   },

@@ -50,6 +50,14 @@
                     </span>
                 </div>
                 <p
+                    v-if="detail.paymentMethod"
+                    class="flex flex-wrap items-baseline gap-2"
+                    data-testid="booking-payment-method"
+                >
+                    <span class="text-sm text-primary-text-muted">{{ t('bookingPage.fields.paymentMethod') }}</span>
+                    <span class="font-semibold">{{ t(paymentMethodLabelKey(detail.paymentMethod)) }}</span>
+                </p>
+                <p
                     v-if="detail.statusReason"
                     class="text-sm wrap-break-word whitespace-pre-wrap"
                 >
@@ -60,8 +68,8 @@
                         <span>{{ t('bookingDashboard.reasonLabel') }}</span>
                         <textarea
                             v-model="reason"
-                            class="field"
-                            rows="2"
+                            class="field field-textarea"
+                            rows="3"
                             maxlength="500"
                             data-testid="booking-status-reason"
                         />
@@ -76,7 +84,7 @@
                             :data-testid="`booking-action-${next.toLowerCase()}`"
                             @click="changeStatus(next)"
                         >
-                            {{ t(staffActionLabelKey(next)) }}
+                            {{ t(staffActionLabelKey(next, detail.appointmentStatus)) }}
                         </button>
                     </div>
                 </template>
@@ -163,9 +171,10 @@
                         v-for="answer in detail.answers"
                         :key="answer.fieldId"
                         class="rounded-lg border border-accent-bg bg-secondary-bg p-3"
+                        :data-testid="`booking-detail-answer-${answer.fieldId}`"
                     >
                         <dt class="text-sm text-primary-text-muted">
-                            {{ answerLabel(answer.fieldId) }}
+                            {{ answerLabel(answer.fieldId, answer.labelKey) }}
                         </dt>
                         <dd class="wrap-break-word whitespace-pre-wrap">
                             {{ answerValue(answer.fieldId, answer.value) }}
@@ -311,6 +320,7 @@ import { intlLocale } from '~/utils/intlLocale'
 import {
     actionTakesReason,
     appointmentStatusLabelKey,
+    paymentMethodLabelKey,
     staffActionLabelKey,
     staffActionsFor
 } from '~/utils/booking/appointmentStatus'
@@ -348,7 +358,14 @@ const doctor = computed(() => practitionerName(detail.value?.practitionerNames, 
 const patientName = computed(() =>
     detail.value?.answers.find(answer => answer.fieldId === 'fullName')?.value ?? '')
 
-function answerLabel(fieldId: string): string {
+/**
+ * The label the form used, such as "Current symptoms" for the online consult reason.
+ * An answer the form no longer asks (age) falls back to `bookingPage.fields.{fieldId}`.
+ */
+function answerLabel(fieldId: string, labelKey?: string | null): string {
+    if (labelKey !== null && labelKey !== undefined && te(labelKey)) {
+        return t(labelKey)
+    }
     const key = `bookingPage.fields.${fieldId}`
     return te(key) ? t(key) : fieldId
 }

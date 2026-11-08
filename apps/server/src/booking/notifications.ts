@@ -49,7 +49,10 @@ export async function sendBookingNotice(input: {
             bookingId: input.bookingId,
             subject: input.email.subject,
             textBody: input.email.textBody,
-            htmlBody: input.email.htmlBody
+            htmlBody: input.email.htmlBody,
+            ...(input.email.inlineAttachments === undefined
+                ? {}
+                : { inlineAttachments: input.email.inlineAttachments })
         })
         return true
     } catch (error) {

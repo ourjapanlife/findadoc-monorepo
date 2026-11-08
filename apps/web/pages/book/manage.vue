@@ -27,7 +27,7 @@
                         {{ t('bookingDashboard.columns.clinic') }}
                     </dt>
                     <dd class="font-medium">
-                        {{ booking.clinicName }}
+                        {{ patientClinicName(booking, String(locale)) }}
                     </dd>
                 </div>
                 <div>
@@ -58,8 +58,8 @@
                     <span>{{ t('patientBooking.reasonLabel') }}</span>
                     <textarea
                         v-model="reason"
-                        class="field"
-                        rows="2"
+                        class="field field-textarea"
+                        rows="3"
                         maxlength="500"
                     />
                 </label>
@@ -104,6 +104,29 @@
             >
                 {{ t('patientBooking.cancelled') }}
             </p>
+            <!-- A cancelled or declined visit is over. Offer the next step instead of a dead end. -->
+            <nav
+                v-if="isClosed(booking)"
+                class="flex flex-wrap items-center gap-3"
+                :aria-label="t('patientBooking.nextSteps')"
+                data-testid="patient-booking-next-steps"
+            >
+                <NuxtLink
+                    v-if="booking.clinicId"
+                    :to="localizedPath(`/book/${booking.clinicId}`, String(locale))"
+                    class="btn btn-primary"
+                    data-testid="patient-booking-book-again"
+                >
+                    {{ t('patientBooking.bookAgain') }}
+                </NuxtLink>
+                <NuxtLink
+                    :to="localizedPath('/', String(locale))"
+                    class="link"
+                    data-testid="patient-booking-home"
+                >
+                    {{ t('patientBooking.backHome', { site: t('common.siteName') }) }}
+                </NuxtLink>
+            </nav>
             <p
                 v-if="cancelError"
                 class="field-error"
@@ -120,18 +143,23 @@ import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BookingAppointmentStatus, type PatientBookingView } from '@findadoc/graphql'
 import { definePageMeta, useHead } from '#imports'
+import { useClinicBranding } from '~/composables/useClinicBranding'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
+import { patientClinicName } from '~/utils/booking/clinicBranding'
 import { cancelPatientBooking, fetchPatientBooking, isBookingRefusal } from '~/utils/booking/formQuery'
 import { formatJapanDateTime } from '~/utils/booking/japanTime'
 import { intlLocale } from '~/utils/intlLocale'
+import { localizedPath } from '~/utils/localePath'
 import { formatPageTitle } from '~/utils/site'
 
 /**
  * `/book/manage#{token}`: the private link from the confirmation email.
  * The token is in the fragment, so it never reaches a server or CDN log.
+ * Once the booking loads, a clinic with a clinic page gets its own header (online consult v2 §4).
  */
 definePageMeta({
-    ssr: false
+    ssr: false,
+    layout: 'clinic-branded'
 })
 
 const { t, locale } = useI18n()
@@ -143,12 +171,33 @@ const cancelling = ref(false)
 const cancelError = ref(false)
 // The API refused the last call because this address made too many (#160).
 const rateLimited = ref(false)
+const clinicBranding = useClinicBranding()
 let token = ''
+
+const CLOSED_STATUSES: readonly BookingAppointmentStatus[] = [
+    BookingAppointmentStatus.Cancelled,
+    BookingAppointmentStatus.Declined
+]
+
+function isClosed(view: PatientBookingView): boolean {
+    return view.status !== null && view.status !== undefined && CLOSED_STATUSES.includes(view.status)
+}
+
+function showBranding(view: PatientBookingView | null): void {
+    // An unknown or refused token keeps the branding of a booking already on screen.
+    if (view === null) {
+        return
+    }
+    clinicBranding.show(view.branding === null || view.branding === undefined
+        ? null
+        : { branding: view.branding, staff: false, canSwitchClinic: false, localeSelector: true })
+}
 
 async function loadBooking(): Promise<void> {
     const loaded = token === '' ? null : await fetchPatientBooking(token)
     rateLimited.value = loaded === 'rateLimited'
     booking.value = isBookingRefusal(loaded) ? null : loaded
+    showBranding(booking.value)
 }
 
 async function cancel(): Promise<void> {
@@ -169,6 +218,7 @@ async function cancel(): Promise<void> {
     }
     rateLimited.value = false
     booking.value = updated
+    showBranding(updated)
 }
 
 onMounted(async () => {

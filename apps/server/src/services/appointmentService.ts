@@ -18,7 +18,7 @@ import {
 import { clinicPatientCancelledEmail, patientStatusEmail, type PatientNoticeStatus } from '../booking/emailCopy.js'
 import { hashPatientToken } from '../booking/links.js'
 import { emailFromUnknown, noticeClinic, sendBookingNotice } from '../booking/notifications.js'
-import { resolveBookingTarget } from '../booking/target.js'
+import { clinicNameForLocale, emailBrandFor, resolveBookingTarget } from '../booking/target.js'
 import { purgeSubmissionUploads } from '../booking/uploadPurge.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
@@ -139,7 +139,7 @@ export async function listClinicAppointments(
     return rows.map(appointmentFromRow)
 }
 
-/** Staff changes the patient hears about. Completed sends nothing. */
+/** Staff changes the patient hears about. Completed and a move back to pending payment send nothing (§3.2). */
 const PATIENT_NOTICE: Partial<Record<AppointmentStatus, PatientNoticeStatus>> = {
     [APPOINTMENT_STATUS.CONFIRMED]: 'confirmed',
     [APPOINTMENT_STATUS.DECLINED]: 'declined',
@@ -201,11 +201,12 @@ export async function updateAppointmentStatus(
             email: patientStatusEmail({
                 locale: current.locale,
                 status: notice,
-                clinicName: target?.clinicName ?? 'Find a Doc, Japan',
+                clinicName: target === undefined ? 'Find a Doc, Japan' : clinicNameForLocale(target, current.locale),
                 startsAt: new Date(current.starts_at),
                 durationMinutes: current.duration_minutes,
                 reference: current.booking_submission_id,
-                clinicNote: reason
+                clinicNote: reason,
+                brand: emailBrandFor(target, current.locale)
             })
         })
     }
@@ -241,7 +242,10 @@ async function patientView(row: TokenRow): Promise<PatientBookingView> {
     const target = await resolveBookingTarget(row.facility_id ?? row.clinic_site_id ?? '')
     const startsAt = row.starts_at === null ? null : new Date(row.starts_at)
     return {
+        clinicId: row.facility_id ?? row.clinic_site_id,
         clinicName: target?.clinicName ?? '',
+        clinicNameJa: target?.clinicNameJa ?? '',
+        branding: target?.branding ?? null,
         startsAt: startsAt?.toISOString() ?? null,
         endsAt: row.ends_at === null ? null : new Date(row.ends_at).toISOString(),
         status: appointmentStatusFromRow(row.status),

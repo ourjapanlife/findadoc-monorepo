@@ -59,6 +59,8 @@
                 <ClinicBookingRequests
                     v-else-if="tab === 'requests'"
                     :facility-id="facilityId"
+                    :can-manage="clinic.canManage"
+                    :takes-payment="clinic.takesPayment"
                     @open-booking="openBooking"
                 />
                 <div
@@ -85,11 +87,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { BookingClinic } from '@findadoc/graphql'
 import { definePageMeta, navigateTo, useHead, useRoute } from '#imports'
+import { useClinicBranding } from '~/composables/useClinicBranding'
 import { useAuthStore } from '~/stores/authStore'
+import { useMyBookingClinicsStore } from '~/stores/myBookingClinicsStore'
 import { fetchBookingClinic } from '~/utils/booking/staffQuery'
 import { formatPageTitle } from '~/utils/site'
 
@@ -97,9 +101,12 @@ import { formatPageTitle } from '~/utils/site'
  * `/clinic-dashboard/{facilityId}`: one clinic's booking requests, calendar,
  * and (for owners and admins) settings and the team. A clinic subdomain's
  * `/dashboard` redirects here so sign-in stays on one origin.
+ * A clinic with a clinic page gets its own header (online consult v2 §4), which keeps
+ * sign-out and the way back to the clinic picker. Signed out, it is the Find a Doc layout.
  */
 definePageMeta({
-    ssr: false
+    ssr: false,
+    layout: 'clinic-branded'
 })
 
 type Tab = 'requests' | 'calendar' | 'settings' | 'team'
@@ -107,6 +114,8 @@ type Tab = 'requests' | 'calendar' | 'settings' | 'team'
 const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
+const myBookingClinicsStore = useMyBookingClinicsStore()
+const clinicBranding = useClinicBranding()
 const facilityId = computed(() => String(route.params.facilityId ?? ''))
 const clinic = ref<BookingClinic | null>(null)
 const loading = ref(true)
@@ -146,6 +155,22 @@ watch([() => authStore.isLoggedIn, facilityId], ([isLoggedIn]) => {
         void load()
     }
 }, { immediate: true })
+
+watchEffect(() => {
+    const loaded = clinic.value
+    const branding = loaded?.branding
+    if (!authStore.isLoggedIn || loaded === null || branding === null || branding === undefined) {
+        clinicBranding.clear()
+        return
+    }
+    clinicBranding.show({
+        branding,
+        staff: true,
+        // Admins (no role) reach every clinic. A member of one clinic has nowhere to switch to.
+        canSwitchClinic: loaded.role === null || (myBookingClinicsStore.clinics?.length ?? 0) > 1,
+        localeSelector: true
+    })
+})
 
 useHead(() => ({
     title: formatPageTitle(clinic.value?.clinicName ?? t('clinicDashboard.heading')),

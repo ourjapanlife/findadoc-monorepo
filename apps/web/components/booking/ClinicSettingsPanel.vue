@@ -108,7 +108,7 @@
                 </p>
                 <div class="grid gap-3 landscape:grid-cols-2">
                     <div
-                        v-for="formType in formTypes"
+                        v-for="formType in offerableFormTypes"
                         :key="formType.id"
                         class="flex flex-col gap-3 rounded-lg border p-4 transition-colors"
                         :class="formIds.includes(formType.id)
@@ -156,6 +156,11 @@
             </div>
         </form>
 
+        <ClinicPaymentSettings
+            v-if="settings"
+            :facility-id="props.facilityId"
+        />
+
         <section
             v-if="settings"
             class="card flex flex-col gap-3 p-5 shadow-card landscape:p-6"
@@ -201,6 +206,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { BookingFormType, BookingSettings } from '@findadoc/graphql'
 import ClinicInterpretersEditor from '~/components/booking/ClinicInterpretersEditor.vue'
+import ClinicPaymentSettings from '~/components/booking/ClinicPaymentSettings.vue'
 import ClinicWeeklyHoursEditor from '~/components/booking/ClinicWeeklyHoursEditor.vue'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
@@ -208,7 +214,8 @@ import { ALLOWED_APPOINTMENT_DURATIONS, resolveDuration } from '~/utils/booking/
 import { fetchClinicAdmin, setBookingInterpretation, updateBookingSettings } from '~/utils/booking/staffQuery'
 
 /**
- * Owner settings: weekly hours, visit lengths, and which intake forms the clinic offers.
+ * Owner settings: weekly hours, visit lengths, which intake forms the clinic offers, and
+ * how it takes the initial fee (ClinicPaymentSettings, saved on its own).
  * Who may use the dashboard is the Team tab (ClinicTeamPanel).
  */
 const props = defineProps<{
@@ -232,6 +239,11 @@ const interpretationHelpId = 'clinic-settings-interpretation-help'
 const interpretersKey = ref(0)
 
 const sortedDurations = computed(() => [...durations.value].sort((a, b) => a - b))
+// The server limits the online consult form to preview clinics until its answers have a purge path.
+const offerableFormTypes = computed(() => {
+    const offerable = settings.value?.offerableFormDefinitionIds ?? []
+    return formTypes.value.filter(formType => offerable.includes(formType.id))
+})
 
 async function load(): Promise<void> {
     const loaded = await fetchClinicAdmin(props.facilityId)

@@ -7,7 +7,7 @@
             {{ t('bookingPage.regionNotice.heading') }}
         </h2>
         <p class="text-primary-text-muted">
-            {{ t('bookingPage.regionNotice.body', { clinic: form.clinicName }) }}
+            {{ t('bookingPage.regionNotice.body', { clinic: clinicName }) }}
         </p>
 
         <dl
@@ -71,7 +71,7 @@
             class="btn btn-secondary self-start"
             data-testid="clinic-booking-region-clinic-link"
         >
-            {{ t('bookingPage.regionNotice.clinicLink', { clinic: form.clinicName }) }}
+            {{ t('bookingPage.regionNotice.clinicLink', { clinic: clinicName }) }}
         </NuxtLink>
     </div>
 </template>
@@ -86,6 +86,7 @@ import { facilityPath } from '~/utils/clinicPath'
 import { localizedPath } from '~/utils/localePath'
 import { facilityPhone, facilityPhoneHref, type FacilitySearchResult } from '~/utils/searchDirectory'
 import { isJapaneseLocale } from '~/utils/activeLocale'
+import { patientClinicName } from '~/utils/booking/clinicBranding'
 
 /**
  * Shown on the Book page instead of the form when the API says booking is not
@@ -93,10 +94,11 @@ import { isJapaneseLocale } from '~/utils/activeLocale'
  * page and its own contact details stay open to everyone.
  */
 const props = defineProps<{
-    form: Pick<BookingForm, 'clinicName' | 'facilityId' | 'clinicSiteSlug'>
+    form: Pick<BookingForm, 'clinicName' | 'clinicNameJa' | 'facilityId' | 'clinicSiteSlug'>
 }>()
 
 const { t, locale } = useI18n()
+const clinicName = computed(() => patientClinicName(props.form, String(locale.value)))
 const facility = ref<FacilitySearchResult | null>(null)
 
 const contact = computed<Pick<Contact, 'phone' | 'email' | 'website'> | null>(() => facility.value?.contact ?? null)

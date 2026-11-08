@@ -26,6 +26,16 @@ the マイナポータル API.
 Medical free-text answers on the submission row are not auto-purged here.
 That needs a separate policy once the CRM export path is decided.
 
+Version 4 of the online consult form (`showcase-intake-v1`) adds more answers to
+`booking_submissions.answers`: `addressInJapan` and `backupContactHandle`
+(personal data), and `pastIllnesses` (medical, next to `reason`). They have no
+purge path yet, the same as the other answers on the row. A retention period
+and a purge for them are needed before the form takes real patients. Until then
+the form stays on the preview showcase clinic: `updateBookingSettings` refuses
+it for a clinic owner unless the clinic site is on `preview` or an admin already
+turned it on, and `BookingSettings.offerableFormDefinitionIds` leaves it out of
+that owner's settings panel. None of them is logged.
+
 ## Purge
 
 On AWS, `findadoc-booking-purge` (`apps/server/src/lambdaPurge.ts`) runs the
