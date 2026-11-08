@@ -11,7 +11,7 @@ Showcase ids:
 | Clinic subdomain | `multilingual-online-clinic` |
 | Facility id (the Book and dashboard id) | `c32c316a-a368-499b-abaf-c5c973cb67e5` |
 | Clinic site id | `a303a8ac-31c9-45d8-96d1-cf6630aa11bd` |
-| Forms it offers | `showcase-intake-v1` (online consult: contact, visit, insurance card, photo). The local seed also offers `findadoc-intake-v1`. |
+| Forms it offers | `showcase-intake-v1` version 4 (online consult: contact with a Japanese phone and address, visit with language and symptoms, insurance card, photo, payment method). The local seed also offers `findadoc-intake-v1`. |
 
 ---
 

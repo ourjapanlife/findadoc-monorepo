@@ -825,14 +825,25 @@
       "reason": "Dahilan ng pagbisita",
       "insuranceDocument": "Patunay ng insurance",
       "selfie": "Larawan ng mukha",
-      "insuranceType": "Ano ang ginagamit mo para sa health insurance?"
+      "insuranceType": "Ano ang ginagamit mo para sa health insurance?",
+      "addressInJapan": "Tirahan sa Japan",
+      "backupContactChannel": "Iba pang paraan para makontak ka",
+      "backupContactHandle": "Ang ID o numero mo sa app na iyon",
+      "japaneseLevel": "Gaano ka kahusay mag-Japanese?",
+      "consultationLanguage": "Wika para sa iyong konsultasyon",
+      "currentSymptoms": "Kasalukuyang sintomas",
+      "pastIllnesses": "Mga dating sakit o pangmatagalang kondisyon",
+      "paymentMethod": "Paraan ng pagbabayad"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Pangalan gaya sa ID",
       "age": "35",
-      "reason": "Maikling paliwanag ng kailangan mo"
+      "reason": "Maikling paliwanag ng kailangan mo",
+      "addressInJapan": "Prefecture, lungsod, kalye, at gusali",
+      "currentSymptoms": "Anong mga sintomas ang nararamdaman mo, at kailan ito nagsimula?",
+      "pastIllnesses": "Halimbawa, hika, diabetes, o dating operasyon"
     },
     "errors": {
       "required": "Kailangan ang field na ito",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Masyadong maraming kahilingan mula sa koneksyong ito. Maghintay ng ilang minuto at subukan ulit.",
       "openRequestLimit": "May mga kahilingan na ang email na ito na naghihintay sa klinikang ito. Hintayin ang sagot ng klinika, o kanselahin ang isa gamit ang link sa iyong email.",
       "confirmations": "Lagyan ng tsek ang dalawang kahon bago ipadala ang kahilingan",
-      "regionUnavailable": "Sa ngayon, para lang sa mga nasa Japan ang booking."
+      "regionUnavailable": "Sa ngayon, para lang sa mga nasa Japan ang booking.",
+      "phoneJapan": "Maglagay ng numero ng telepono sa Japan, gaya ng 090-1234-5678"
     },
     "slotLabel": "Gustong oras",
     "slotLoading": "Naglo-load ng bukas na oras…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Impormasyon sa pakikipag-ugnayan",
       "visit": "Pagbisita",
-      "documents": "Mga dokumento"
+      "documents": "Mga dokumento",
+      "payment": "Bayad"
     },
     "dateLabel": "Petsa",
     "durationLabel": "Haba ng konsultasyon",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Babae",
         "male": "Lalaki",
-        "selfDescribe": "Ilalarawan ko mismo",
+        "selfDescribe": "Iba pa",
         "preferNotToSay": "Mas gusto kong hindi sabihin"
+      },
+      "japaneseLevel": {
+        "none": "Hindi marunong",
+        "greetings": "Pagbati lang",
+        "little": "Kaunti",
+        "conversational": "Pang-araw-araw na usapan",
+        "fluent": "Matatas"
+      },
+      "consultationLanguage": {
+        "ja": "Wikang Hapon",
+        "en": "Ingles",
+        "zh": "Tsino",
+        "vi": "Biyetnamita",
+        "id": "Indonesyo",
+        "tl": "Tagalog",
+        "fr": "Pranses",
+        "ne": "Wikang Nepali",
+        "my": "Burmes"
+      },
+      "paymentMethod": {
+        "creditCard": "Credit card",
+        "bankTransfer": "Paglipat sa bangko",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "Ginagamit ito ng klinika para makilala ka at itugma sa iyong insurance card.",
-      "gender": "Maaaring mahalaga ito sa iyong pangangalaga. Puwede kang hindi sumagot."
+      "gender": "Maaaring mahalaga ito sa iyong pangangalaga.",
+      "consultationLanguage": "Kung hindi nagsasalita ng wikang ito ang iyong doktor, sisikapin ng klinika na magsaayos ng interpreter. Maaaring walang interpreter para sa bawat wika o oras.",
+      "paymentMethod": "Hindi pa kumpirmado ang iyong reserbasyon. Makukumpirma ito kapag natanggap na ng klinika ang unang bayad. Padadalhan ka namin ng email na may mga tagubilin sa pagbabayad."
     },
     "insuranceUpload": {
       "insuranceCard": "Larawan ng iyong health insurance card",

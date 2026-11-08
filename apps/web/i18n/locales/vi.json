@@ -825,14 +825,25 @@
       "reason": "Lý do khám",
       "insuranceDocument": "Giấy tờ bảo hiểm",
       "selfie": "Ảnh của bạn",
-      "insuranceType": "Bạn dùng giấy tờ gì để chứng minh bảo hiểm y tế?"
+      "insuranceType": "Bạn dùng giấy tờ gì để chứng minh bảo hiểm y tế?",
+      "addressInJapan": "Địa chỉ tại Nhật Bản",
+      "backupContactChannel": "Cách liên hệ khác",
+      "backupContactHandle": "ID hoặc số của bạn trên ứng dụng đó",
+      "japaneseLevel": "Bạn nói tiếng Nhật ở mức nào?",
+      "consultationLanguage": "Ngôn ngữ cho buổi khám",
+      "currentSymptoms": "Triệu chứng hiện tại",
+      "pastIllnesses": "Bệnh đã từng mắc hoặc bệnh mãn tính",
+      "paymentMethod": "Phương thức thanh toán"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Tên trên giấy tờ",
       "age": "35",
-      "reason": "Mô tả ngắn nhu cầu của bạn"
+      "reason": "Mô tả ngắn nhu cầu của bạn",
+      "addressInJapan": "Tỉnh, thành phố, số nhà, đường và tòa nhà",
+      "currentSymptoms": "Bạn có triệu chứng gì và từ khi nào?",
+      "pastIllnesses": "Ví dụ: hen suyễn, tiểu đường, từng phẫu thuật"
     },
     "errors": {
       "required": "Trường này là bắt buộc",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Có quá nhiều yêu cầu từ kết nối này. Đợi vài phút rồi thử lại.",
       "openRequestLimit": "Email này đã có yêu cầu đang chờ tại phòng khám này. Hãy đợi phòng khám trả lời, hoặc hủy một yêu cầu bằng liên kết trong email của bạn.",
       "confirmations": "Hãy đánh dấu cả hai ô trước khi gửi yêu cầu",
-      "regionUnavailable": "Hiện chỉ những người đang ở Nhật Bản mới có thể đặt lịch."
+      "regionUnavailable": "Hiện chỉ những người đang ở Nhật Bản mới có thể đặt lịch.",
+      "phoneJapan": "Hãy nhập số điện thoại Nhật Bản, ví dụ 090-1234-5678"
     },
     "slotLabel": "Giờ mong muốn",
     "slotLoading": "Đang tải giờ trống…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Liên hệ",
       "visit": "Lý do khám",
-      "documents": "Giấy tờ"
+      "documents": "Giấy tờ",
+      "payment": "Thanh toán"
     },
     "dateLabel": "Ngày",
     "durationLabel": "Thời lượng khám",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Nữ",
         "male": "Nam",
-        "selfDescribe": "Tự mô tả",
+        "selfDescribe": "Khác",
         "preferNotToSay": "Không muốn trả lời"
+      },
+      "japaneseLevel": {
+        "none": "Không biết",
+        "greetings": "Chỉ chào hỏi",
+        "little": "Một chút",
+        "conversational": "Giao tiếp hằng ngày",
+        "fluent": "Thành thạo"
+      },
+      "consultationLanguage": {
+        "ja": "Tiếng Nhật",
+        "en": "Tiếng Anh",
+        "zh": "Tiếng Trung",
+        "vi": "Tiếng Việt",
+        "id": "Tiếng Indonesia",
+        "tl": "Tiếng Tagalog",
+        "fr": "Tiếng Pháp",
+        "ne": "Tiếng Nepal",
+        "my": "Tiếng Miến Điện"
+      },
+      "paymentMethod": {
+        "creditCard": "Thẻ tín dụng",
+        "bankTransfer": "Chuyển khoản ngân hàng",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "Phòng khám dùng thông tin này để xác minh danh tính và đối chiếu với thẻ bảo hiểm của bạn.",
-      "gender": "Thông tin này có thể liên quan đến việc khám chữa bệnh. Bạn có thể chọn không trả lời."
+      "gender": "Thông tin này có thể liên quan đến việc khám chữa bệnh.",
+      "consultationLanguage": "Nếu bác sĩ không nói được ngôn ngữ này, phòng khám sẽ cố gắng sắp xếp phiên dịch. Có thể không có phiên dịch cho mọi ngôn ngữ hoặc mọi khung giờ.",
+      "paymentMethod": "Lịch hẹn của bạn chưa được xác nhận. Lịch hẹn sẽ được xác nhận khi phòng khám nhận được khoản thanh toán đầu tiên. Chúng tôi sẽ gửi email hướng dẫn thanh toán cho bạn."
     },
     "insuranceUpload": {
       "insuranceCard": "Ảnh thẻ bảo hiểm y tế",

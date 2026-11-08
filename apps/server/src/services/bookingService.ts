@@ -18,6 +18,7 @@ import {
     fieldById,
     fieldIsShown,
     isOfferedFormId,
+    phoneAnswer,
     storedSensitivity
 } from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
@@ -276,7 +277,7 @@ function scalarAnswerIsValid(
         return EMAIL_PATTERN.test(raw)
     }
     if (field.type === BookingFormFieldType.Phone) {
-        return raw.replace(/\D/g, '').length >= 8
+        return phoneAnswer(field, raw) !== null
     }
     if (field.type === BookingFormFieldType.Number) {
         const number = Number(raw)
@@ -340,7 +341,8 @@ export function collectAnswers(
         if (!scalarAnswerIsValid(field, raw)) {
             return validationError(field.id)
         }
-        storedAnswers[field.id] = raw
+        // A JP-only phone is stored in one domestic form, whatever spelling was typed.
+        storedAnswers[field.id] = field.type === BookingFormFieldType.Phone ? phoneAnswer(field, raw) ?? raw : raw
     }
 
     return { data: { storedAnswers, uploads }, hasErrors: false }

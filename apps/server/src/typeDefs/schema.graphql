@@ -1211,10 +1211,22 @@ type BookingFormFieldOption {
   label: String
 }
 
-"""Shows a field only while another field's answer equals a value."""
+"""
+Shows a field only while another field's answer equals a value, or is one of several values.
+anyOf lets one condition cover every choice of a select, such as any backup contact app.
+"""
 type BookingFormFieldCondition {
   fieldId: ID!
-  equals: String!
+  equals: String
+  anyOf: [String!]
+}
+
+"""
+Country a PHONE answer must belong to.
+JP accepts Japanese numbers only and stores them in domestic hyphenated form, such as 090-1234-5678.
+"""
+enum BookingPhoneRegion {
+  JP
 }
 
 """
@@ -1244,6 +1256,8 @@ type BookingFormField {
   options: [BookingFormFieldOption!]
   """The field is shown, and its answer kept, only while this condition holds."""
   showWhen: BookingFormFieldCondition
+  """PHONE only. Null accepts a number from any country, stored as typed."""
+  phoneRegion: BookingPhoneRegion
 }
 
 """
@@ -1511,6 +1525,8 @@ type BookingSubmissionDetail {
 type BookingAnswerView {
   fieldId: String!
   value: String
+  """Site i18n key the form labels this answer with. Null for an answer the form no longer asks, such as age."""
+  labelKey: String
 }
 
 type BookingUploadView {

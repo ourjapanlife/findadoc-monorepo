@@ -825,14 +825,25 @@
       "reason": "受診理由",
       "insuranceDocument": "保険の確認書類",
       "selfie": "顔写真",
-      "insuranceType": "健康保険の確認に使うもの"
+      "insuranceType": "健康保険の確認に使うもの",
+      "addressInJapan": "日本国内の住所",
+      "backupContactChannel": "その他の連絡方法",
+      "backupContactHandle": "そのアプリのIDまたは番号",
+      "japaneseLevel": "日本語はどのくらい話せますか？",
+      "consultationLanguage": "診察で希望する言語",
+      "currentSymptoms": "現在の症状",
+      "pastIllnesses": "既往歴・持病",
+      "paymentMethod": "お支払い方法"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "身分証と同じ氏名",
       "age": "35",
-      "reason": "症状や希望を短く書いてください"
+      "reason": "症状や希望を短く書いてください",
+      "addressInJapan": "都道府県、市区町村、番地、建物名",
+      "currentSymptoms": "どのような症状が、いつからありますか？",
+      "pastIllnesses": "例：ぜんそく、糖尿病、過去の手術"
     },
     "errors": {
       "required": "必須項目です",
@@ -849,7 +860,8 @@
       "tooManyRequests": "この接続からのリクエストが多すぎます。数分待ってからもう一度お試しください。",
       "openRequestLimit": "このメールアドレスには、このクリニックで返答待ちのリクエストがすでにあります。クリニックの返答を待つか、メールのリンクからいずれかをキャンセルしてください。",
       "confirmations": "送信する前に、両方のチェックボックスにチェックを入れてください",
-      "regionUnavailable": "予約は現在、日本国内にいる方のみご利用いただけます。"
+      "regionUnavailable": "予約は現在、日本国内にいる方のみご利用いただけます。",
+      "phoneJapan": "日本の電話番号を入力してください（例：090-1234-5678）"
     },
     "slotLabel": "希望日時",
     "slotLoading": "空き時間を読み込み中…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "連絡先",
       "visit": "受診内容",
-      "documents": "書類"
+      "documents": "書類",
+      "payment": "お支払い"
     },
     "dateLabel": "日付",
     "durationLabel": "診察時間",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "女性",
         "male": "男性",
-        "selfDescribe": "自分で記入する",
+        "selfDescribe": "その他",
         "preferNotToSay": "回答しない"
+      },
+      "japaneseLevel": {
+        "none": "話せない",
+        "greetings": "あいさつ程度",
+        "little": "少し話せる",
+        "conversational": "日常会話ができる",
+        "fluent": "流暢に話せる"
+      },
+      "consultationLanguage": {
+        "ja": "日本語",
+        "en": "英語",
+        "zh": "中国語",
+        "vi": "ベトナム語",
+        "id": "インドネシア語",
+        "tl": "タガログ語",
+        "fr": "フランス語",
+        "ne": "ネパール語",
+        "my": "ビルマ語（ミャンマー語）"
+      },
+      "paymentMethod": {
+        "creditCard": "クレジットカード",
+        "bankTransfer": "銀行振込",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "本人確認と保険証の照合に使います。",
-      "gender": "診療に関わることがあります。回答しないこともできます。"
+      "gender": "診療に関わることがあります。",
+      "consultationLanguage": "医師がこの言語を話せない場合、クリニックが通訳の手配を試みます。言語や時間帯によっては通訳を手配できないことがあります。",
+      "paymentMethod": "ご予約はまだ確定していません。クリニックが初回のお支払いを確認した時点で確定します。お支払い方法をご案内するメールをお送りします。"
     },
     "insuranceUpload": {
       "insuranceCard": "健康保険証の写真",

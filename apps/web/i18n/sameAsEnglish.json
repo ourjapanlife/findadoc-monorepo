@@ -6,6 +6,10 @@
     "about.mascotsMichael",
     "about.mascotsSachi",
     "about.mascotsTamika",
+    "bookingPage.options.backupContactChannel.line",
+    "bookingPage.options.backupContactChannel.messenger",
+    "bookingPage.options.backupContactChannel.whatsapp",
+    "bookingPage.options.paymentMethod.payPay",
     "bookingPage.placeholders.age",
     "bookingPage.placeholders.email",
     "bookingPage.placeholders.phone",
@@ -28,7 +32,8 @@
     "submitPage.previewLocation",
     "bookingPage.dateLabel",
     "bookingPage.durationMinutes",
-    "modFacilitySection.japaneseInsuranceSourceLabel"
+    "modFacilitySection.japaneseInsuranceSourceLabel",
+    "bookingPage.options.consultationLanguage.tl"
   ],
   "de": [
     "submitPage.previewName",
@@ -37,13 +42,15 @@
     "moderationTable.name",
     "moderationTable.status",
     "clinicPage.onlineBreadcrumb",
-    "clinicDashboard.tabs.team"
+    "clinicDashboard.tabs.team",
+    "bookingPage.options.consultationLanguage.tl"
   ],
   "it": [
     "common.menu",
     "footer.privacy",
     "submitPage.previewLocation",
-    "clinicPage.onlineBreadcrumb"
+    "clinicPage.onlineBreadcrumb",
+    "bookingPage.options.consultationLanguage.tl"
   ],
   "pt": [
     "common.menu",
@@ -55,7 +62,9 @@
     "submitPage.previewLocation",
     "clinicPage.onlineBreadcrumb",
     "bookingPage.regionNotice.email",
-    "bookingPage.regionNotice.website"
+    "bookingPage.regionNotice.website",
+    "bookingPage.options.consultationLanguage.tl",
+    "bookingPage.options.paymentMethod.creditCard"
   ],
   "vi": [
     "common.menu",

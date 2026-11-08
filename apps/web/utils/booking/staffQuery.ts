@@ -67,7 +67,7 @@ const BOOKING_DETAIL_FIELDS = `
   spokenLanguages
   interpreterLabel
   service
-  answers { fieldId value }
+  answers { fieldId value labelKey }
   uploads {
     id
     fieldId

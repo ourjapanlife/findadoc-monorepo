@@ -163,6 +163,7 @@
                             :maxlength="field.maxLength ?? undefined"
                             :placeholder="fieldPlaceholder(field)"
                             :autocomplete="autocompleteFor(field)"
+                            :aria-describedby="fieldHint(field) ? `booking-${field.id}-hint` : undefined"
                             :data-testid="`clinic-booking-field-${field.id}`"
                             @blur="touch(field.id)"
                         >
@@ -175,6 +176,8 @@
                             :required="field.required"
                             :maxlength="field.maxLength ?? undefined"
                             :placeholder="fieldPlaceholder(field)"
+                            :autocomplete="autocompleteFor(field)"
+                            :aria-describedby="fieldHint(field) ? `booking-${field.id}-hint` : undefined"
                             :data-testid="`clinic-booking-field-${field.id}`"
                             @blur="touch(field.id)"
                         />
@@ -243,6 +246,7 @@
                             v-if="fieldHint(field)"
                             :id="`booking-${field.id}-hint`"
                             class="field-hint mt-1.5"
+                            :data-testid="`clinic-booking-hint-${field.id}`"
                         >
                             {{ fieldHint(field) }}
                         </p>
@@ -355,7 +359,7 @@ import {
 } from '~/utils/booking/draftMemory'
 import { localizedPath } from '~/utils/localePath'
 import { resolveDuration } from '~/utils/booking/durations'
-import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday } from '~/utils/booking/formFields'
+import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday, phoneAnswer } from '~/utils/booking/formFields'
 import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
 import Stepper from '~/components/common/Stepper.vue'
@@ -419,7 +423,7 @@ const currentStepKey = computed(() => formSteps.value[stepIndex.value]?.key ?? '
 const visibleFields = computed(() =>
     props.form.fields.filter(field => field.stepKey === currentStepKey.value && isShown(field)))
 
-/** Self-described gender appears only after "Prefer to self-describe" (#202). */
+/** Self-described gender appears only after "Other" (#202); the backup handle after any app. */
 function isShown(field: BookingFormField): boolean {
     return fieldIsShown(field, fieldId => fieldText(values[fieldId]))
 }
@@ -674,6 +678,9 @@ function autocompleteFor(field: BookingFormField): string {
     if (field.id === 'gender') {
         return 'sex'
     }
+    if (field.id === 'addressInJapan') {
+        return 'street-address'
+    }
     return 'off'
 }
 
@@ -687,7 +694,20 @@ function onNumberInput(fieldId: string, event: Event): void {
 
 function touch(fieldId: string) {
     touched[fieldId] = true
+    showNormalisedPhone(fieldId)
     validateField(fieldId)
+}
+
+/** A JP phone is rewritten as 090-1234-5678 when the patient leaves it, the form the clinic stores. */
+function showNormalisedPhone(fieldId: string): void {
+    const field = props.form.fields.find(item => item.id === fieldId)
+    if (field?.type !== BookingFormFieldType.Phone || field.phoneRegion === null || field.phoneRegion === undefined) {
+        return
+    }
+    const normalised = phoneAnswer(field, fieldText(values[fieldId]))
+    if (normalised !== null) {
+        values[fieldId] = normalised
+    }
 }
 
 /** Age is kept as text. A number is accepted so an older value does not crash validation. */
@@ -699,6 +719,15 @@ function fieldText(value: unknown): string {
         return String(value)
     }
     return ''
+}
+
+/** The answer as sent. A phone goes in the form the field stores; the API checks it again. */
+function answerText(field: BookingFormField): string {
+    const raw = fieldText(values[field.id])
+    if (field.type === BookingFormFieldType.Phone && raw !== '') {
+        return phoneAnswer(field, raw) ?? raw
+    }
+    return raw
 }
 
 function validateField(fieldId: string): boolean {
@@ -735,8 +764,10 @@ function validateField(fieldId: string): boolean {
         fieldErrors[field.id] = t('bookingPage.errors.email')
         return false
     }
-    if (field.type === BookingFormFieldType.Phone && raw.replace(/\D/g, '').length < 8) {
-        fieldErrors[field.id] = t('bookingPage.errors.phone')
+    if (field.type === BookingFormFieldType.Phone && phoneAnswer(field, raw) === null) {
+        // A JP-only field says so, since a valid overseas number is still refused there.
+        const japanOnly = field.phoneRegion !== null && field.phoneRegion !== undefined
+        fieldErrors[field.id] = t(japanOnly ? 'bookingPage.errors.phoneJapan' : 'bookingPage.errors.phone')
         return false
     }
     if (field.type === BookingFormFieldType.Date && !dateAnswerIsValid(raw, field)) {
@@ -897,7 +928,7 @@ async function onSubmit() {
                 return { fieldId: field.id, uploadId: uploadIds[field.id] ?? null, value: null }
             }
             // A hidden field sends nothing, so an answer left from an earlier choice is not kept.
-            return { fieldId: field.id, value: isShown(field) ? fieldText(values[field.id]) : '', uploadId: null }
+            return { fieldId: field.id, value: isShown(field) ? answerText(field) : '', uploadId: null }
         })
 
         if (selectedStart.value === null) {

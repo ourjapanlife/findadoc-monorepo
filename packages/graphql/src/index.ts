@@ -57,6 +57,8 @@ export type BookingAnswerInput = {
 export type BookingAnswerView = {
   __typename?: 'BookingAnswerView';
   fieldId: Scalars['String']['output'];
+  /** Site i18n key the form labels this answer with. Null for an answer the form no longer asks, such as age. */
+  labelKey?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
 
@@ -172,6 +174,8 @@ export type BookingFormField = {
   /** NUMBER: the lowest value. DATE: the earliest date, in calendar years from today in Japan time. */
   min?: Maybe<Scalars['Float']['output']>;
   options?: Maybe<Array<BookingFormFieldOption>>;
+  /** PHONE only. Null accepts a number from any country, stored as typed. */
+  phoneRegion?: Maybe<BookingPhoneRegion>;
   placeholderKey?: Maybe<Scalars['String']['output']>;
   /** Required while the field is shown. A field hidden by showWhen is never required. */
   required: Scalars['Boolean']['output'];
@@ -183,10 +187,14 @@ export type BookingFormField = {
   type: BookingFormFieldType;
 };
 
-/** Shows a field only while another field's answer equals a value. */
+/**
+ * Shows a field only while another field's answer equals a value, or is one of several values.
+ * anyOf lets one condition cover every choice of a select, such as any backup contact app.
+ */
 export type BookingFormFieldCondition = {
   __typename?: 'BookingFormFieldCondition';
-  equals: Scalars['String']['output'];
+  anyOf?: Maybe<Array<Scalars['String']['output']>>;
+  equals?: Maybe<Scalars['String']['output']>;
   fieldId: Scalars['ID']['output'];
 };
 
@@ -228,6 +236,14 @@ export type BookingFormType = {
   labelKey: Scalars['String']['output'];
   version: Scalars['Int']['output'];
 };
+
+/**
+ * Country a PHONE answer must belong to.
+ * JP accepts Japanese numbers only and stores them in domestic hyphenated form, such as 090-1234-5678.
+ */
+export enum BookingPhoneRegion {
+  Jp = 'JP'
+}
 
 /** A doctor at a booking clinic. */
 export type BookingPractitioner = {
@@ -2557,6 +2573,7 @@ export type ResolversTypes = {
   BookingFormFieldType: BookingFormFieldType;
   BookingFormInterpreter: ResolverTypeWrapper<BookingFormInterpreter>;
   BookingFormType: ResolverTypeWrapper<BookingFormType>;
+  BookingPhoneRegion: BookingPhoneRegion;
   BookingPractitioner: ResolverTypeWrapper<BookingPractitioner>;
   BookingSettings: ResolverTypeWrapper<BookingSettings>;
   BookingSubmissionDetail: ResolverTypeWrapper<BookingSubmissionDetail>;
@@ -2784,6 +2801,7 @@ export type AuditLogResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type BookingAnswerViewResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingAnswerView'] = ResolversParentTypes['BookingAnswerView']> = {
   fieldId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labelKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
@@ -2836,6 +2854,7 @@ export type BookingFormFieldResolvers<ContextType = any, ParentType extends Reso
   maxLength?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   min?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   options?: Resolver<Maybe<Array<ResolversTypes['BookingFormFieldOption']>>, ParentType, ContextType>;
+  phoneRegion?: Resolver<Maybe<ResolversTypes['BookingPhoneRegion']>, ParentType, ContextType>;
   placeholderKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   required?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   sensitivity?: Resolver<ResolversTypes['BookingFieldSensitivity'], ParentType, ContextType>;
@@ -2845,7 +2864,8 @@ export type BookingFormFieldResolvers<ContextType = any, ParentType extends Reso
 };
 
 export type BookingFormFieldConditionResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingFormFieldCondition'] = ResolversParentTypes['BookingFormFieldCondition']> = {
-  equals?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  anyOf?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  equals?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   fieldId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 

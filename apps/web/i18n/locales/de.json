@@ -825,14 +825,25 @@
       "reason": "Grund des Besuchs",
       "insuranceDocument": "Versicherungsnachweis",
       "selfie": "Foto von Ihnen",
-      "insuranceType": "Womit weisen Sie Ihre Krankenversicherung nach?"
+      "insuranceType": "Womit weisen Sie Ihre Krankenversicherung nach?",
+      "addressInJapan": "Adresse in Japan",
+      "backupContactChannel": "Weitere Kontaktmöglichkeit",
+      "backupContactHandle": "Ihre ID oder Nummer in dieser App",
+      "japaneseLevel": "Wie gut sprechen Sie Japanisch?",
+      "consultationLanguage": "Sprache der Sprechstunde",
+      "currentSymptoms": "Aktuelle Beschwerden",
+      "pastIllnesses": "Frühere oder chronische Erkrankungen",
+      "paymentMethod": "Zahlungsart"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Name wie im Ausweis",
       "age": "35",
-      "reason": "Kurz beschreiben, was Sie brauchen"
+      "reason": "Kurz beschreiben, was Sie brauchen",
+      "addressInJapan": "Präfektur, Stadt, Straße und Gebäude",
+      "currentSymptoms": "Welche Beschwerden haben Sie, und seit wann?",
+      "pastIllnesses": "Zum Beispiel Asthma, Diabetes oder eine frühere Operation"
     },
     "errors": {
       "required": "Pflichtfeld",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Zu viele Anfragen von dieser Verbindung. Warten Sie einige Minuten und versuchen Sie es erneut.",
       "openRequestLimit": "Für diese E-Mail-Adresse warten bereits Anfragen bei dieser Klinik auf Antwort. Warten Sie auf die Antwort der Klinik oder stornieren Sie eine Anfrage über den Link in Ihrer E-Mail.",
       "confirmations": "Setzen Sie vor dem Absenden beide Häkchen",
-      "regionUnavailable": "Terminanfragen sind derzeit nur für Personen in Japan möglich."
+      "regionUnavailable": "Terminanfragen sind derzeit nur für Personen in Japan möglich.",
+      "phoneJapan": "Geben Sie eine japanische Telefonnummer ein, z. B. 090-1234-5678"
     },
     "slotLabel": "Wunschzeit",
     "slotLoading": "Freie Zeiten werden geladen…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Kontakt",
       "visit": "Besuch",
-      "documents": "Unterlagen"
+      "documents": "Unterlagen",
+      "payment": "Zahlung"
     },
     "dateLabel": "Datum",
     "durationLabel": "Termindauer",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Weiblich",
         "male": "Männlich",
-        "selfDescribe": "Selbst beschreiben",
+        "selfDescribe": "Andere",
         "preferNotToSay": "Keine Angabe"
+      },
+      "japaneseLevel": {
+        "none": "Gar nicht",
+        "greetings": "Nur Begrüßungen",
+        "little": "Ein wenig",
+        "conversational": "Alltagsgespräche",
+        "fluent": "Fließend"
+      },
+      "consultationLanguage": {
+        "ja": "Japanisch",
+        "en": "Englisch",
+        "zh": "Chinesisch",
+        "vi": "Vietnamesisch",
+        "id": "Indonesisch",
+        "tl": "Tagalog",
+        "fr": "Französisch",
+        "ne": "Nepalesisch",
+        "my": "Birmanisch"
+      },
+      "paymentMethod": {
+        "creditCard": "Kreditkarte",
+        "bankTransfer": "Banküberweisung",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "Die Klinik nutzt das, um Sie zu identifizieren und mit Ihrer Versicherungskarte abzugleichen.",
-      "gender": "Das kann für Ihre Behandlung wichtig sein. Sie können „Keine Angabe“ wählen."
+      "gender": "Das kann für Ihre Behandlung wichtig sein.",
+      "consultationLanguage": "Wenn Ihre Ärztin oder Ihr Arzt diese Sprache nicht spricht, versucht die Klinik, eine Dolmetscherin oder einen Dolmetscher zu organisieren. Das ist nicht für jede Sprache und jede Uhrzeit möglich.",
+      "paymentMethod": "Ihre Reservierung ist noch nicht bestätigt. Sie wird bestätigt, sobald die Klinik die erste Zahlung erhalten hat. Wir senden Ihnen eine E-Mail mit der Zahlungsanleitung."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto Ihrer Krankenversicherungskarte",

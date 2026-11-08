@@ -73,7 +73,8 @@ const BOOKING_FORM_FIELDS = `
     max
     sensitivity
     options { value labelKey label }
-    showWhen { fieldId equals }
+    showWhen { fieldId equals anyOf }
+    phoneRegion
   }
   practitioners {
     id

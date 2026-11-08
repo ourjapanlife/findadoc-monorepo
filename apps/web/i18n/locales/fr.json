@@ -825,14 +825,25 @@
       "reason": "Motif de la visite",
       "insuranceDocument": "Justificatif d'assurance",
       "selfie": "Photo de vous",
-      "insuranceType": "Quel justificatif d'assurance maladie utilisez-vous ?"
+      "insuranceType": "Quel justificatif d'assurance maladie utilisez-vous ?",
+      "addressInJapan": "Adresse au Japon",
+      "backupContactChannel": "Autre moyen de vous joindre",
+      "backupContactHandle": "Votre identifiant ou numéro sur cette application",
+      "japaneseLevel": "Quel est votre niveau de japonais ?",
+      "consultationLanguage": "Langue de la consultation",
+      "currentSymptoms": "Symptômes actuels",
+      "pastIllnesses": "Antécédents médicaux ou maladies chroniques",
+      "paymentMethod": "Moyen de paiement"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Nom tel que sur la pièce d’identité",
       "age": "35",
-      "reason": "Courte description de votre besoin"
+      "reason": "Courte description de votre besoin",
+      "addressInJapan": "Préfecture, ville, rue et bâtiment",
+      "currentSymptoms": "Quels symptômes avez-vous, et depuis quand ?",
+      "pastIllnesses": "Par exemple : asthme, diabète ou une opération passée"
     },
     "errors": {
       "required": "Ce champ est obligatoire",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Trop de demandes depuis cette connexion. Patientez quelques minutes, puis réessayez.",
       "openRequestLimit": "Cette adresse e-mail a déjà des demandes en attente auprès de cette clinique. Attendez la réponse de la clinique, ou annulez-en une avec le lien reçu par e-mail.",
       "confirmations": "Cochez les deux cases avant d'envoyer la demande",
-      "regionUnavailable": "La prise de rendez-vous est actuellement réservée aux personnes qui se trouvent au Japon."
+      "regionUnavailable": "La prise de rendez-vous est actuellement réservée aux personnes qui se trouvent au Japon.",
+      "phoneJapan": "Saisissez un numéro de téléphone japonais, par exemple 090-1234-5678"
     },
     "slotLabel": "Horaire souhaité",
     "slotLoading": "Chargement des créneaux…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Coordonnées",
       "visit": "Consultation",
-      "documents": "Justificatifs"
+      "documents": "Justificatifs",
+      "payment": "Paiement"
     },
     "dateLabel": "Date",
     "durationLabel": "Durée de la visite",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Femme",
         "male": "Homme",
-        "selfDescribe": "Je préfère le décrire",
+        "selfDescribe": "Autre",
         "preferNotToSay": "Je préfère ne pas répondre"
+      },
+      "japaneseLevel": {
+        "none": "Aucun",
+        "greetings": "Quelques salutations",
+        "little": "Un peu",
+        "conversational": "Conversation courante",
+        "fluent": "Courant"
+      },
+      "consultationLanguage": {
+        "ja": "Japonais",
+        "en": "Anglais",
+        "zh": "Chinois",
+        "vi": "Vietnamien",
+        "id": "Indonésien",
+        "tl": "Tagalog",
+        "fr": "Français",
+        "ne": "Népalais",
+        "my": "Birman"
+      },
+      "paymentMethod": {
+        "creditCard": "Carte bancaire",
+        "bankTransfer": "Virement bancaire",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "La clinique l'utilise pour vous identifier et le comparer à votre carte d'assurance.",
-      "gender": "Cela peut compter pour vos soins. Vous pouvez choisir de ne pas répondre."
+      "gender": "Cela peut compter pour vos soins.",
+      "consultationLanguage": "Si votre médecin ne parle pas cette langue, la clinique essaiera d'organiser un interprète. Un interprète n'est pas toujours disponible pour chaque langue ou horaire.",
+      "paymentMethod": "Votre réservation n'est pas encore confirmée. Elle le sera dès que la clinique aura reçu le paiement initial. Nous vous enverrons un e-mail avec les instructions de paiement."
     },
     "insuranceUpload": {
       "insuranceCard": "Photo de votre carte d'assurance maladie",

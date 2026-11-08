@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { BookingFormFieldType } from '@findadoc/graphql'
+import { BookingFieldSensitivity, BookingFormFieldType, BookingPhoneRegion } from '@findadoc/graphql'
 import {
+    BACKUP_CONTACT_CHANNELS,
     DEFAULT_BOOKING_FORM_ID,
     SHOWCASE_BOOKING_FORM_ID,
     chooseFormDefinitionId,
@@ -11,7 +12,9 @@ import {
     OLDEST_BIRTH_DATE_YEARS,
     isOfferedFormId,
     listFormSources,
-    parseFormDefinitionIds
+    parseFormDefinitionIds,
+    phoneAnswer,
+    staffAnswers
 } from '../src/booking/formDefinitions.js'
 import { collectAnswers } from '../src/services/bookingService.js'
 
@@ -42,7 +45,7 @@ describe('booking forms', () => {
         expect(insuranceType?.required).toBe(true)
         expect(insuranceType?.options?.map(option => option.value))
             .toEqual(['insuranceCard', 'eligibilityCertificate', 'mynaInsurance'])
-        expect(form?.version).toBe(3)
+        expect(form?.version).toBe(4)
     })
 
     it('asks date of birth and gender on the first step, not age', () => {
@@ -50,8 +53,10 @@ describe('booking forms', () => {
         const contact = form?.fields.filter(field => field.stepKey === 'contact') ?? []
         const byId = (id: string) => contact.find(field => field.id === id)
 
-        expect(contact.map(field => field.id))
-            .toEqual(['email', 'phone', 'fullName', 'dateOfBirth', 'gender', 'genderSelfDescribed'])
+        expect(contact.map(field => field.id)).toEqual([
+            'email', 'phone', 'fullName', 'dateOfBirth', 'gender', 'genderSelfDescribed',
+            'addressInJapan', 'backupContactChannel', 'backupContactHandle'
+        ])
         expect(form?.fields.some(field => field.id === 'age')).toBe(false)
 
         expect(byId('dateOfBirth')?.type).toBe(BookingFormFieldType.Date)
@@ -60,7 +65,7 @@ describe('booking forms', () => {
 
         expect(byId('gender')?.type).toBe(BookingFormFieldType.Select)
         expect(byId('gender')?.options?.map(option => option.value))
-            .toEqual(['female', 'male', 'selfDescribe', 'preferNotToSay'])
+            .toEqual(['male', 'female', 'selfDescribe'])
         expect(byId('genderSelfDescribed')?.showWhen).toEqual({ fieldId: 'gender', equals: 'selfDescribe' })
     })
 
@@ -157,10 +162,14 @@ describe('booking forms', () => {
             { fieldId: 'phone', value: '090-1234-5678' },
             { fieldId: 'fullName', value: 'Test Patient' },
             { fieldId: 'dateOfBirth', value: '1990-04-15' },
+            { fieldId: 'addressInJapan', value: '1-1 Shiba, Minato-ku, Tokyo' },
+            { fieldId: 'japaneseLevel', value: 'little' },
+            { fieldId: 'consultationLanguage', value: 'ne' },
             { fieldId: 'reason', value: 'Checkup' },
             { fieldId: 'insuranceType', value: 'insuranceCard' },
             { fieldId: 'insuranceDocument', uploadId: 'upload-card' },
-            { fieldId: 'selfie', uploadId: 'upload-selfie' }
+            { fieldId: 'selfie', uploadId: 'upload-selfie' },
+            { fieldId: 'paymentMethod', value: 'bankTransfer' }
         ]
         const collect = (extra: Array<{ fieldId: string, value: string }>) =>
             collectAnswers({ fields }, [...base, ...extra])
@@ -179,7 +188,7 @@ describe('booking forms', () => {
 
         it('requires the description only when self-describe is chosen', () => {
             expect(collect([{ fieldId: 'gender', value: 'selfDescribe' }]).hasErrors).toBe(true)
-            expect(collect([{ fieldId: 'gender', value: 'preferNotToSay' }]).hasErrors).toBe(false)
+            expect(collect([{ fieldId: 'gender', value: 'female' }]).hasErrors).toBe(false)
         })
 
         it('drops a description sent with another choice', () => {
@@ -195,12 +204,147 @@ describe('booking forms', () => {
         it('rejects a missing gender, an unknown choice, and a future date of birth', () => {
             expect(collect([]).hasErrors).toBe(true)
             expect(collect([{ fieldId: 'gender', value: 'other' }]).hasErrors).toBe(true)
+            // Version 3 offered it; version 4 asks Male, Female, or Other.
+            expect(collect([{ fieldId: 'gender', value: 'preferNotToSay' }]).hasErrors).toBe(true)
 
             const future = collectAnswers({ fields }, [
                 ...base.map(answer => (answer.fieldId === 'dateOfBirth' ? { ...answer, value: '2999-01-01' } : answer)),
                 { fieldId: 'gender', value: 'male' }
             ])
             expect(future.hasErrors).toBe(true)
+        })
+
+        const male = { fieldId: 'gender', value: 'male' }
+        const withAnswer = (fieldId: string, value: string) => collectAnswers({ fields }, [
+            ...base.filter(answer => answer.fieldId !== fieldId),
+            male,
+            { fieldId, value }
+        ])
+
+        it('stores a Japanese phone in the domestic hyphenated form, however it was typed', () => {
+            for (const phone of ['09012345678', '090-1234-5678', '+81 90 1234 5678', '+81 090 1234 5678', '０９０−１２３４−５６７８']) {
+                const result = withAnswer('phone', phone)
+                expect(result.hasErrors).toBe(false)
+                expect(result.data?.storedAnswers.phone).toBe('090-1234-5678')
+            }
+            expect(withAnswer('phone', '03 1234 5678').data?.storedAnswers.phone).toBe('03-1234-5678')
+        })
+
+        it('refuses a phone number from outside Japan', () => {
+            for (const phone of ['+1 212 555 0100', '+44 20 7946 0000', '+82 10-1234-5678', '090-123']) {
+                const result = withAnswer('phone', phone)
+                expect(result.hasErrors).toBe(true)
+                expect(result.errors?.[0]?.field).toBe('phone')
+            }
+        })
+
+        it('requires the backup handle once any app is chosen, and drops it when none is', () => {
+            for (const channel of BACKUP_CONTACT_CHANNELS) {
+                const missing = collectAnswers({ fields }, [...base, male, { fieldId: 'backupContactChannel', value: channel }])
+                expect(missing.hasErrors).toBe(true)
+
+                const kept = collectAnswers({ fields }, [
+                    ...base,
+                    male,
+                    { fieldId: 'backupContactChannel', value: channel },
+                    { fieldId: 'backupContactHandle', value: 'patient-id' }
+                ])
+                expect(kept.data?.storedAnswers.backupContactHandle).toBe('patient-id')
+            }
+
+            const none = collectAnswers({ fields }, [...base, male, { fieldId: 'backupContactHandle', value: 'stale' }])
+            expect(none.hasErrors).toBe(false)
+            expect(none.data?.storedAnswers).not.toHaveProperty('backupContactHandle')
+            expect(withAnswer('backupContactChannel', 'telegram').hasErrors).toBe(true)
+        })
+
+        it('requires the address, Japanese level, consultation language, and payment method', () => {
+            for (const fieldId of ['addressInJapan', 'japaneseLevel', 'consultationLanguage', 'paymentMethod']) {
+                const result = collectAnswers({ fields }, [...base.filter(answer => answer.fieldId !== fieldId), male])
+                expect(result.hasErrors).toBe(true)
+                expect(result.errors?.[0]?.field).toBe(fieldId)
+            }
+        })
+
+        it('offers Nepali and Burmese as consultation languages, and the three payment methods', () => {
+            expect(withAnswer('consultationLanguage', 'my').data?.storedAnswers.consultationLanguage).toBe('my')
+            expect(withAnswer('consultationLanguage', 'xx').hasErrors).toBe(true)
+            for (const method of ['creditCard', 'bankTransfer', 'payPay']) {
+                expect(withAnswer('paymentMethod', method).data?.storedAnswers.paymentMethod).toBe(method)
+            }
+            expect(withAnswer('paymentMethod', 'cash').hasErrors).toBe(true)
+        })
+
+        it('keeps past illnesses optional', () => {
+            expect(collectAnswers({ fields }, [...base, male]).data?.storedAnswers).not.toHaveProperty('pastIllnesses')
+            expect(withAnswer('pastIllnesses', 'Asthma').data?.storedAnswers.pastIllnesses).toBe('Asthma')
+        })
+    })
+
+    describe('the version 4 online consult fields', () => {
+        const fields = formSourceById(SHOWCASE_BOOKING_FORM_ID)?.fields ?? []
+        const byId = (id: string) => fields.find(field => field.id === id)
+        const ids = fields.map(field => field.id)
+
+        it('labels the reason "Current symptoms" and asks past illnesses right after it, as medical data', () => {
+            expect(byId('reason')?.labelKey).toBe('bookingPage.fields.currentSymptoms')
+            expect(ids.indexOf('pastIllnesses')).toBe(ids.indexOf('reason') + 1)
+            expect(byId('pastIllnesses')?.sensitivity).toBe(BookingFieldSensitivity.Medical)
+            expect(byId('pastIllnesses')?.required).toBe(false)
+            // The default form keeps its own label.
+            expect(formSourceById(DEFAULT_BOOKING_FORM_ID)?.fields.find(field => field.id === 'reason')?.labelKey)
+                .toBe('bookingPage.fields.reason')
+        })
+
+        it('puts the interpreter note under the language and the payment notice under the payment method', () => {
+            expect(byId('consultationLanguage')?.hintKey).toBe('bookingPage.hints.consultationLanguage')
+            expect(byId('paymentMethod')?.hintKey).toBe('bookingPage.hints.paymentMethod')
+            expect(byId('paymentMethod')?.stepKey).toBe('payment')
+            expect(ids.at(-1)).toBe('paymentMethod')
+        })
+
+        it('takes a Japanese phone only on this form', () => {
+            expect(byId('phone')?.phoneRegion).toBe(BookingPhoneRegion.Jp)
+            expect(formSourceById(DEFAULT_BOOKING_FORM_ID)?.fields.find(field => field.id === 'phone')?.phoneRegion)
+                .toBeNull()
+        })
+
+        it('shows a field for any value in anyOf, and for no empty answer', () => {
+            const handle = byId('backupContactHandle')
+            if (handle === undefined) {
+                throw new Error('backupContactHandle is missing')
+            }
+            const channel = (value: string) => (fieldId: string) => (fieldId === 'backupContactChannel' ? value : '')
+            expect(fieldIsShown(handle, channel('line'))).toBe(true)
+            expect(fieldIsShown(handle, channel('messenger'))).toBe(true)
+            expect(fieldIsShown(handle, channel(''))).toBe(false)
+            expect(fieldIsShown(handle, channel('telegram'))).toBe(false)
+        })
+    })
+
+    describe('phoneAnswer', () => {
+        it('normalises a JP field and keeps any other field as typed', () => {
+            expect(phoneAnswer({ phoneRegion: BookingPhoneRegion.Jp }, '+819012345678')).toBe('090-1234-5678')
+            expect(phoneAnswer({ phoneRegion: BookingPhoneRegion.Jp }, '+1 212 555 0100')).toBeNull()
+            expect(phoneAnswer({ phoneRegion: null }, '+1 212 555 0100')).toBe('+1 212 555 0100')
+            expect(phoneAnswer({ phoneRegion: null }, '12345')).toBeNull()
+        })
+    })
+
+    describe('staff answers', () => {
+        it('carries the label the form used, and none for an answer the form no longer asks', () => {
+            const answers = staffAnswers(SHOWCASE_BOOKING_FORM_ID, {
+                reason: 'Cough',
+                age: '35',
+                fullName: 'Test Patient',
+                paymentMethod: 'payPay'
+            }, new Set())
+            const labelOf = (fieldId: string) => answers.find(answer => answer.fieldId === fieldId)?.labelKey
+
+            expect(labelOf('reason')).toBe('bookingPage.fields.currentSymptoms')
+            expect(labelOf('paymentMethod')).toBe('bookingPage.fields.paymentMethod')
+            expect(labelOf('age')).toBeNull()
+            expect(answers.map(answer => answer.fieldId)).toEqual(['fullName', 'reason', 'paymentMethod', 'age'])
         })
     })
 })

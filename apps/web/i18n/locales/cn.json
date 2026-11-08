@@ -825,14 +825,25 @@
       "reason": "就诊原因",
       "insuranceDocument": "保险证明",
       "selfie": "本人照片",
-      "insuranceType": "您用什么证明医疗保险？"
+      "insuranceType": "您用什么证明医疗保险？",
+      "addressInJapan": "在日本的住址",
+      "backupContactChannel": "其他联系方式",
+      "backupContactHandle": "您在该应用上的 ID 或号码",
+      "japaneseLevel": "您的日语水平如何？",
+      "consultationLanguage": "希望使用的问诊语言",
+      "currentSymptoms": "目前症状",
+      "pastIllnesses": "既往病史或慢性病",
+      "paymentMethod": "付款方式"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "与证件一致的姓名",
       "age": "35",
-      "reason": "简要说明需求"
+      "reason": "简要说明需求",
+      "addressInJapan": "都道府县、市区町村、街道门牌及建筑名",
+      "currentSymptoms": "有哪些症状？从什么时候开始？",
+      "pastIllnesses": "例如：哮喘、糖尿病、既往手术"
     },
     "errors": {
       "required": "此项为必填",
@@ -849,7 +860,8 @@
       "tooManyRequests": "来自此网络连接的请求过多。请等待几分钟后重试。",
       "openRequestLimit": "此电子邮箱在这家诊所已有等待回复的申请。请等待诊所回复，或通过邮件中的链接取消其中一个。",
       "confirmations": "发送请求前，请勾选两个复选框",
-      "regionUnavailable": "预约目前仅向身在日本的用户开放。"
+      "regionUnavailable": "预约目前仅向身在日本的用户开放。",
+      "phoneJapan": "请输入日本的电话号码，例如 090-1234-5678"
     },
     "slotLabel": "希望时间",
     "slotLoading": "正在加载可预约时间…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "联系方式",
       "visit": "就诊内容",
-      "documents": "材料"
+      "documents": "材料",
+      "payment": "付款"
     },
     "dateLabel": "日期",
     "durationLabel": "就诊时长",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "女",
         "male": "男",
-        "selfDescribe": "自行填写",
+        "selfDescribe": "其他",
         "preferNotToSay": "不愿透露"
+      },
+      "japaneseLevel": {
+        "none": "完全不会",
+        "greetings": "只会打招呼",
+        "little": "会一点",
+        "conversational": "能进行日常对话",
+        "fluent": "流利"
+      },
+      "consultationLanguage": {
+        "ja": "日语",
+        "en": "英语",
+        "zh": "中文",
+        "vi": "越南语",
+        "id": "印尼语",
+        "tl": "他加禄语",
+        "fr": "法语",
+        "ne": "尼泊尔语",
+        "my": "缅甸语"
+      },
+      "paymentMethod": {
+        "creditCard": "信用卡",
+        "bankTransfer": "银行转账",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "诊所用于核实您的身份并核对您的保险证。",
-      "gender": "这可能与您的诊疗有关。您可以选择不回答。"
+      "gender": "这可能与您的诊疗有关。",
+      "consultationLanguage": "如果医生不会说该语言，诊所会尽量安排口译。部分语言或时段可能无法提供口译。",
+      "paymentMethod": "您的预约尚未确定。诊所收到首次付款后，预约即确定。我们会通过电子邮件向您发送付款说明。"
     },
     "insuranceUpload": {
       "insuranceCard": "健康保险证的照片",

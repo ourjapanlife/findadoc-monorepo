@@ -825,14 +825,25 @@
       "reason": "Alasan kunjungan",
       "insuranceDocument": "Bukti asuransi",
       "selfie": "Foto diri Anda",
-      "insuranceType": "Apa yang Anda gunakan untuk asuransi kesehatan?"
+      "insuranceType": "Apa yang Anda gunakan untuk asuransi kesehatan?",
+      "addressInJapan": "Alamat di Jepang",
+      "backupContactChannel": "Cara lain untuk menghubungi Anda",
+      "backupContactHandle": "ID atau nomor Anda di aplikasi itu",
+      "japaneseLevel": "Seberapa lancar bahasa Jepang Anda?",
+      "consultationLanguage": "Bahasa untuk konsultasi Anda",
+      "currentSymptoms": "Gejala saat ini",
+      "pastIllnesses": "Riwayat penyakit atau penyakit kronis",
+      "paymentMethod": "Metode pembayaran"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Nama sesuai kartu identitas",
       "age": "35",
-      "reason": "Uraian singkat tentang apa yang Anda butuhkan"
+      "reason": "Uraian singkat tentang apa yang Anda butuhkan",
+      "addressInJapan": "Prefektur, kota, jalan, dan gedung",
+      "currentSymptoms": "Gejala apa yang Anda alami, dan sejak kapan?",
+      "pastIllnesses": "Misalnya asma, diabetes, atau operasi sebelumnya"
     },
     "errors": {
       "required": "Kolom ini wajib diisi",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Terlalu banyak permintaan dari koneksi ini. Tunggu beberapa menit, lalu coba lagi.",
       "openRequestLimit": "Email ini sudah memiliki permintaan yang menunggu di klinik ini. Tunggu jawaban klinik, atau batalkan salah satunya melalui tautan di email Anda.",
       "confirmations": "Centang kedua kotak sebelum mengirim permintaan",
-      "regionUnavailable": "Saat ini reservasi hanya tersedia bagi orang yang berada di Jepang."
+      "regionUnavailable": "Saat ini reservasi hanya tersedia bagi orang yang berada di Jepang.",
+      "phoneJapan": "Masukkan nomor telepon Jepang, misalnya 090-1234-5678"
     },
     "slotLabel": "Waktu yang diinginkan",
     "slotLoading": "Memuat waktu yang tersedia…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Kontak",
       "visit": "Kunjungan",
-      "documents": "Dokumen"
+      "documents": "Dokumen",
+      "payment": "Pembayaran"
     },
     "dateLabel": "Tanggal",
     "durationLabel": "Durasi kunjungan",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Perempuan",
         "male": "Laki-laki",
-        "selfDescribe": "Saya ingin menjelaskan sendiri",
+        "selfDescribe": "Lainnya",
         "preferNotToSay": "Memilih tidak menjawab"
+      },
+      "japaneseLevel": {
+        "none": "Tidak bisa",
+        "greetings": "Hanya salam",
+        "little": "Sedikit",
+        "conversational": "Percakapan sehari-hari",
+        "fluent": "Lancar"
+      },
+      "consultationLanguage": {
+        "ja": "Bahasa Jepang",
+        "en": "Bahasa Inggris",
+        "zh": "Bahasa Mandarin",
+        "vi": "Bahasa Vietnam",
+        "id": "Bahasa Indonesia",
+        "tl": "Bahasa Tagalog",
+        "fr": "Bahasa Prancis",
+        "ne": "Bahasa Nepal",
+        "my": "Bahasa Burma"
+      },
+      "paymentMethod": {
+        "creditCard": "Kartu kredit",
+        "bankTransfer": "Transfer bank",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "Klinik menggunakan ini untuk memastikan identitas Anda dan mencocokkannya dengan kartu asuransi Anda.",
-      "gender": "Ini bisa berkaitan dengan perawatan Anda. Anda boleh memilih tidak menjawab."
+      "gender": "Ini bisa berkaitan dengan perawatan Anda.",
+      "consultationLanguage": "Jika dokter Anda tidak berbicara bahasa ini, klinik akan berusaha menyediakan penerjemah. Penerjemah mungkin tidak tersedia untuk setiap bahasa atau waktu.",
+      "paymentMethod": "Reservasi Anda belum dikonfirmasi. Reservasi dikonfirmasi setelah klinik menerima pembayaran awal. Kami akan mengirimkan email berisi petunjuk pembayaran."
     },
     "insuranceUpload": {
       "insuranceCard": "Foto kartu asuransi kesehatan Anda",

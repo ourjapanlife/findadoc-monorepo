@@ -163,9 +163,10 @@
                         v-for="answer in detail.answers"
                         :key="answer.fieldId"
                         class="rounded-lg border border-accent-bg bg-secondary-bg p-3"
+                        :data-testid="`booking-detail-answer-${answer.fieldId}`"
                     >
                         <dt class="text-sm text-primary-text-muted">
-                            {{ answerLabel(answer.fieldId) }}
+                            {{ answerLabel(answer.fieldId, answer.labelKey) }}
                         </dt>
                         <dd class="wrap-break-word whitespace-pre-wrap">
                             {{ answerValue(answer.fieldId, answer.value) }}
@@ -348,7 +349,14 @@ const doctor = computed(() => practitionerName(detail.value?.practitionerNames, 
 const patientName = computed(() =>
     detail.value?.answers.find(answer => answer.fieldId === 'fullName')?.value ?? '')
 
-function answerLabel(fieldId: string): string {
+/**
+ * The label the form used, such as "Current symptoms" for the online consult reason.
+ * An answer the form no longer asks (age) falls back to `bookingPage.fields.{fieldId}`.
+ */
+function answerLabel(fieldId: string, labelKey?: string | null): string {
+    if (labelKey !== null && labelKey !== undefined && te(labelKey)) {
+        return t(labelKey)
+    }
     const key = `bookingPage.fields.${fieldId}`
     return te(key) ? t(key) : fieldId
 }

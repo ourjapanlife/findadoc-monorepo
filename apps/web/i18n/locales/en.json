@@ -825,14 +825,25 @@
       "reason": "Reason for visit",
       "insuranceDocument": "Proof of insurance",
       "selfie": "Photo of you",
-      "insuranceType": "What do you use for health insurance?"
+      "insuranceType": "What do you use for health insurance?",
+      "addressInJapan": "Address in Japan",
+      "backupContactChannel": "Another way to reach you",
+      "backupContactHandle": "Your ID or number on that app",
+      "japaneseLevel": "How much Japanese do you speak?",
+      "consultationLanguage": "Language for your consultation",
+      "currentSymptoms": "Current symptoms",
+      "pastIllnesses": "Past illnesses or chronic conditions",
+      "paymentMethod": "Payment method"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "Name as on your ID",
       "age": "35",
-      "reason": "Short description of what you need"
+      "reason": "Short description of what you need",
+      "addressInJapan": "Prefecture, city, street, and building",
+      "currentSymptoms": "What symptoms do you have, and since when?",
+      "pastIllnesses": "For example, asthma, diabetes, or a past operation"
     },
     "errors": {
       "required": "This field is required",
@@ -849,7 +860,8 @@
       "tooManyRequests": "Too many requests from this connection. Wait a few minutes and try again.",
       "openRequestLimit": "This email already has requests waiting at this clinic. Wait for the clinic to answer, or cancel one from the link in your email.",
       "confirmations": "Tick both boxes before you send the request",
-      "regionUnavailable": "Booking is currently available only to people in Japan."
+      "regionUnavailable": "Booking is currently available only to people in Japan.",
+      "phoneJapan": "Enter a Japanese phone number, such as 090-1234-5678"
     },
     "slotLabel": "Preferred time",
     "slotLoading": "Loading open times…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "Contact",
       "visit": "Visit",
-      "documents": "Documents"
+      "documents": "Documents",
+      "payment": "Payment"
     },
     "dateLabel": "Date",
     "durationLabel": "Visit length",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "Female",
         "male": "Male",
-        "selfDescribe": "Prefer to self-describe",
+        "selfDescribe": "Other",
         "preferNotToSay": "Prefer not to say"
+      },
+      "japaneseLevel": {
+        "none": "None",
+        "greetings": "Greetings only",
+        "little": "A little",
+        "conversational": "Everyday conversation",
+        "fluent": "Fluent"
+      },
+      "consultationLanguage": {
+        "ja": "Japanese",
+        "en": "English",
+        "zh": "Chinese",
+        "vi": "Vietnamese",
+        "id": "Indonesian",
+        "tl": "Tagalog",
+        "fr": "French",
+        "ne": "Nepali",
+        "my": "Burmese"
+      },
+      "paymentMethod": {
+        "creditCard": "Credit card",
+        "bankTransfer": "Bank transfer",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "The clinic uses this to identify you and to match your insurance card.",
-      "gender": "This can matter for your care. You can choose not to say."
+      "gender": "This can matter for your care.",
+      "consultationLanguage": "If your doctor does not speak this language, the clinic will try to arrange an interpreter. An interpreter may not be available for every language or time.",
+      "paymentMethod": "Your reservation is not confirmed yet. It is confirmed once the clinic receives the initial payment. We will email you instructions for paying."
     },
     "insuranceUpload": {
       "insuranceCard": "Photo of your health insurance card",
