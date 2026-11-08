@@ -87,11 +87,14 @@
                     placeholder="https://"
                     :disabled="readOnly"
                     :aria-invalid="cardUrlInvalid"
+                    :aria-describedby="cardUrlInvalid ? 'payment-card-url-error' : undefined"
                     data-testid="clinic-payment-card-url"
                 >
                 <p
                     v-if="cardUrlInvalid"
+                    id="payment-card-url-error"
                     class="field-error"
+                    role="alert"
                 >
                     {{ t('clinicDashboard.payment.cardUrlInvalid') }}
                 </p>
@@ -125,6 +128,10 @@
                         lang="ja"
                         :maxlength="field.maxLength"
                         :inputmode="field.key === 'bankAccountNumber' ? 'numeric' : undefined"
+                        :aria-invalid="field.key === 'bankAccountNumber' ? accountNumberInvalid : undefined"
+                        :aria-describedby="field.key === 'bankAccountNumber' && accountNumberInvalid
+                            ? 'payment-bankAccountNumber-error'
+                            : undefined"
                         :disabled="readOnly"
                         :data-testid="`clinic-payment-${field.key}`"
                     >
@@ -157,7 +164,9 @@
             </div>
             <p
                 v-if="accountNumberInvalid"
+                id="payment-bankAccountNumber-error"
                 class="field-error"
+                role="alert"
             >
                 {{ t('clinicDashboard.payment.bankAccountNumberInvalid') }}
             </p>
@@ -249,7 +258,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BookingBankAccountType, BookingCardPaymentMode, type BookingPaymentSettings } from '@findadoc/graphql'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
@@ -390,10 +399,24 @@ function removeQr(): void {
     draft.removeQr = true
 }
 
+/** Moves focus to the first field the save refused, so a screen reader hears its error. */
+async function focusFirstInvalid(): Promise<void> {
+    await nextTick()
+    const invalid = [
+        { failed: feeInvalid.value, id: 'payment-fee' },
+        { failed: cardUrlInvalid.value, id: 'payment-card-url' },
+        { failed: accountNumberInvalid.value, id: 'payment-bankAccountNumber' }
+    ].find(item => item.failed)
+    if (invalid !== undefined) {
+        document.getElementById(invalid.id)?.focus()
+    }
+}
+
 async function save(): Promise<void> {
     submitted.value = true
     const feeJpy = parseFeeJpy(draft.fee)
     if (feeJpy === undefined || cardUrlInvalid.value || accountNumberInvalid.value) {
+        await focusFirstInvalid()
         return
     }
     saving.value = true
