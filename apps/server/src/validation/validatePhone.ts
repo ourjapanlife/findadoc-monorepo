@@ -30,7 +30,7 @@ export function isAcceptedUpdatePhone(phone: string, storedPhone: string | null 
  *
  * An empty phone stays empty. A value that does not parse is returned trimmed and unchanged:
  * validation has already refused it on input, so this only happens for a stored legacy row that
- * a write carries over untouched. The backfill reports those ids (`backfillFacilityPhones.ts`).
+ * a write carries over untouched.
  */
 export function phoneForStorage(phone: string | null | undefined): string {
     const trimmed = (phone ?? '').trim()

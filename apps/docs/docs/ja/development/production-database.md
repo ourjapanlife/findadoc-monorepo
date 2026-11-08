@@ -102,31 +102,31 @@ pnpm db:prod
 
 ## バックフィルを実行する
 
-バックフィルは`apps/server/utils/`にあるスクリプトです。書き込みを指示しない限り何も変更しません。手順は常に同じです。
+バックフィルは`apps/server/utils/`にある一度きりのスクリプトです。書き込みを指示しない限り何も変更しません。`pnpm db:prod`はコマンドを`apps/server`で実行するので、スクリプトは`node`で呼び出します（Windowsでは`pnpm db:prod pnpm …`が`pnpm`を起動できません）。手順は常に同じです。
 
 **1. ドライラン**を読み取り専用ロールで実行し、表示された件数を確認します。
 
 ```bash
-pnpm db:prod pnpm --filter @findadoc/server backfill:cities
+pnpm db:prod node --loader ts-node/esm utils/<script>.ts
 ```
 
 1行目に接続先が表示されます：`[dry-run] PRODUCTION database as findadoc_readonly`
 
-**2. 書き込み**をoperatorロールで実行します。本番への書き込みには、書き込み用スクリプトに加えて`--confirm-production`が必要です。
+**2. 書き込み**をoperatorロールで実行します。本番への書き込みには`--write`と`--confirm-production`が必要です。
 
 ```bash
-pnpm db:prod --role operator pnpm --filter @findadoc/server backfill:cities:write --confirm-production
+pnpm db:prod --role operator node --loader ts-node/esm utils/<script>.ts --write --confirm-production
 ```
 
 **3. もう一度ドライラン**を実行し、変更が残っていないことを確認します。
 
-Google Placesを呼ぶバックフィルにはAPIキーが必要です。`--places-key`を付けると、そのコマンドの実行中だけAWSからキーを読み込みます。
+Google Places APIを呼ぶスクリプトにはAPIキーが必要です。`--places-key`を付けると、そのコマンドの実行中だけAWSからキーを読み込みます。
 
 ```bash
-pnpm db:prod --places-key pnpm --filter @findadoc/server backfill:place-ids
+pnpm db:prod --places-key node --loader ts-node/esm utils/<script>.ts
 ```
 
-使えるバックフィル：`backfill:cities`、`backfill:place-ids`、`backfill:maps-urls`、`backfill:licenses`。それぞれに`:write`版があります。
+実行待ちのバックフィルはありません。市区町村、Place ID、Mapsリンク、資格、電話番号、保険のバックフィルは2026年11月に本番で実行し、削除しました。新しいバックフィルは`apps/server/utils/scriptDatabase.ts`を使って書き、実行後に削除します。
 
 ## Claude Codeなど、AIアシスタントと使う
 

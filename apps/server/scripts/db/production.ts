@@ -56,8 +56,8 @@ Options:
 
 Examples:
   pnpm db:prod psql
-  pnpm db:prod pnpm --filter @findadoc/server backfill:cities
-  pnpm db:prod --role operator pnpm --filter @findadoc/server backfill:cities:write --confirm-production
+  pnpm db:prod node --loader ts-node/esm utils/<script>.ts
+  pnpm db:prod --role operator node --loader ts-node/esm utils/<script>.ts --write --confirm-production
 `
 
 type Options = {

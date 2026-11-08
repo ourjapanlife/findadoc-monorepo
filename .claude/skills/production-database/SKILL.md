@@ -40,10 +40,10 @@ For several queries, use `psql -f <file>` with a file in your scratchpad, or one
 
 ### 3. Run a backfill
 
-Dry-run as read-only:
+Dry-run as read-only. `pnpm db:prod` runs the command from `apps/server`. Call the script with `node`: on Windows, `pnpm db:prod pnpm …` fails with `spawn pnpm ENOENT`.
 
 ```bash
-pnpm db:prod pnpm --filter @findadoc/server backfill:cities
+pnpm db:prod node --loader ts-node/esm utils/<script>.ts
 ```
 
 The script's first line names the target, for example `[dry-run] PRODUCTION database as findadoc_readonly`. If it says `local database`, it did not go through `pnpm db:prod`. Stop.
@@ -51,16 +51,18 @@ The script's first line names the target, for example `[dry-run] PRODUCTION data
 Summarize the report for the user and ask to write. After they say yes:
 
 ```bash
-pnpm db:prod --role operator pnpm --filter @findadoc/server backfill:cities:write --confirm-production
+pnpm db:prod --role operator node --loader ts-node/esm utils/<script>.ts --write --confirm-production
 ```
 
 Then run the dry-run again and show that the counts moved as expected.
 
-A backfill that calls Google Places (`backfill:place-ids`) also needs `--places-key`, which reads `GOOGLE_API_KEY` from the `findadoc/api` secret into that one command's environment.
+A script that calls the Google Places API also needs `--places-key`, which reads `GOOGLE_API_KEY` from the `findadoc/api` secret into that one command's environment. Opening a Maps link does not need it.
+
+When a backfill has run on production and the dry-run shows nothing left, delete the script, its `package.json` entries, and its tests in a follow-up pull request.
 
 ### 4. Writing a new backfill
 
-Use `scriptDatabaseConfig`, `assertScriptWriteAllowed`, and `describeScriptTarget` from `apps/server/utils/scriptDatabase.ts`, like `backfillProfessionalLicenses.ts`. Dry-run is the default, and `--write` is a separate script entry. A table added after the `rds_operator_roles` migration needs a grant to `findadoc_readonly` and `findadoc_operator` in its own migration before either role can see it. When RLS is on, it also needs `findadoc_readonly_select` and `findadoc_operator_all` policies, or the role sees zero rows without an error (see `20261107100000_rds_operator_row_policies.sql`). A count of 0 on a table you expect to have rows usually means that policy is missing.
+Use `scriptDatabaseConfig`, `assertScriptWriteAllowed`, and `describeScriptTarget` from `apps/server/utils/scriptDatabase.ts`. Call `assertScriptWriteAllowed(write)` and print `describeScriptTarget(write)` before connecting with `scriptDatabaseConfig()`. Export `main(write)` so a test can check those guards without a database. Dry-run is the default, and `--write` is a separate script entry. Print counts and ids only. A table added after the `rds_operator_roles` migration needs a grant to `findadoc_readonly` and `findadoc_operator` in its own migration before either role can see it. When RLS is on, it also needs `findadoc_readonly_select` and `findadoc_operator_all` policies, or the role sees zero rows without an error (see `20261107100000_rds_operator_row_policies.sql`). A count of 0 on a table you expect to have rows usually means that policy is missing.
 
 ## When it fails
 
