@@ -396,6 +396,19 @@ describe('booking flow', () => {
         await availabilityService.setClinicWeeklyHours({ facilityId, hours: [] }, 'test|staff', admin)
     })
 
+    it('refuses a repeat row with its required field missing (#203)', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const insert = (row: { recurrence: string, interval_weeks?: number, anchor_date?: string }) =>
+            db.insertInto('clinic_weekly_hours')
+                .values({ facility_id: facilityId, weekday: 1, start_minute: 540, end_minute: 720, ...row })
+                .execute()
+        // 2 November 2026 is a Monday, so only the missing field can fail the check.
+        await expect(insert({ recurrence: 'interval', anchor_date: '2026-11-02' })).rejects.toThrow()
+        await expect(insert({ recurrence: 'monthly_nth' })).rejects.toThrow()
+        expect(await db.selectFrom('clinic_weekly_hours').select('id').where('facility_id', '=', facilityId).execute())
+            .toEqual([])
+    })
+
     it('purges the patient\'s files when the clinic declines the visit', async () => {
         const facilityId = sharedFacilityIds[0]!
         const at = (minutes: number) => iso(3 * 24 * 60 + minutes)

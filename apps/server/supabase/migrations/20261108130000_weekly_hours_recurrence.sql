@@ -12,6 +12,8 @@
 -- starts_on and ends_on are optional first and last JST days, inclusive. Dates are
 -- Japan days. Closures and painted windows apply on top, as before.
 --
+-- A CHECK passes when it reads NULL, so each required field also says IS NOT NULL.
+--
 -- Every column is added with a default or as nullable, so existing rows become
 -- weekly with no backfill.
 
@@ -29,6 +31,7 @@ ALTER TABLE clinic_weekly_hours
   ADD CONSTRAINT clinic_weekly_hours_interval_check
     CHECK (
       (recurrence = 'interval'
+        AND interval_weeks IS NOT NULL
         AND interval_weeks BETWEEN 2 AND 12
         AND anchor_date IS NOT NULL
         AND extract(isodow FROM anchor_date) = weekday)
@@ -36,7 +39,7 @@ ALTER TABLE clinic_weekly_hours
     ),
   ADD CONSTRAINT clinic_weekly_hours_week_of_month_check
     CHECK (
-      (recurrence = 'monthly_nth' AND week_of_month IN (1, 2, 3, 4, -1))
+      (recurrence = 'monthly_nth' AND week_of_month IS NOT NULL AND week_of_month IN (1, 2, 3, 4, -1))
       OR (recurrence <> 'monthly_nth' AND week_of_month IS NULL)
     ),
   ADD CONSTRAINT clinic_weekly_hours_dates_check

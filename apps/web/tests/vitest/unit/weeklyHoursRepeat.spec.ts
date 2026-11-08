@@ -54,6 +54,14 @@ describe('weekly hours repeat (#203)', () => {
         expect(repeatChoice(repeatFromChoice('weekly', block, TODAY))).to.equal('weekly')
     })
 
+    it('reads an interval the API would refuse as every week', () => {
+        const block = newBlock(1, 540, 720)
+        for (const choice of ['interval:0', 'interval:-3', 'interval:13', 'interval:1e9']) {
+            expect(repeatFromChoice(choice, block, TODAY).recurrence).to.equal(HoursRecurrence.Weekly)
+        }
+        expect(upcomingAnchor('2026-10-12', 0, TODAY)).to.equal('2026-10-12')
+    })
+
     it('moves the first day to the same week when Monday is copied to Wednesday', () => {
         const repeat = repeatFromChoice('interval:2', newBlock(1, 540, 720), TODAY)
         expect(repeatOnWeekday(repeat, 1, 3).anchorDate).to.equal('2026-11-11')

@@ -240,6 +240,15 @@ function anchorChoices(block: EditableBlock): string[] {
     return anchor === null || options.includes(anchor) ? options : [anchor, ...options]
 }
 
+// An every-N-weeks block always has a first day, so the select never shows a blank or saves a null.
+watch(blocks, list => {
+    for (const block of list) {
+        if (block.repeat.recurrence === HoursRecurrence.Interval && block.repeat.anchorDate === null) {
+            block.repeat.anchorDate = anchorChoices(block)[0] ?? null
+        }
+    }
+}, { deep: true, immediate: true })
+
 const dateFormat = computed(() => new Intl.DateTimeFormat(intlLocale(locale.value), {
     month: 'short',
     day: 'numeric',

@@ -4,6 +4,8 @@ import {
     EVERY_WEEK,
     hoursRepeatKey,
     LAST_WEEK_OF_MONTH,
+    MAX_INTERVAL_WEEKS,
+    MIN_INTERVAL_WEEKS,
     type CleanHoursRepeat,
     type HoursRepeatRule
 } from '@findadoc/utils'
@@ -106,6 +108,9 @@ export function anchorOptions(weekday: number, weeks: number, todayKey: string):
  * and the next day in its rhythm open on the same days from today on.
  */
 export function upcomingAnchor(anchor: string, weeks: number, todayKey: string): string {
+    if (!Number.isInteger(weeks) || weeks < 1) {
+        return anchor
+    }
     let next = anchor
     while (next < todayKey) {
         next = addDaysToKey(next, weeks * 7)
@@ -133,7 +138,8 @@ export function repeatFromChoice(
     const [kind, count] = choice.split(':')
     const bounds = { startsOn: block.repeat.startsOn, endsOn: block.repeat.endsOn }
     const value = Number(count)
-    if (kind === 'interval' && Number.isInteger(value)) {
+    // Only the intervals the API accepts, so anchorOptions always has a first day.
+    if (kind === 'interval' && Number.isInteger(value) && value >= MIN_INTERVAL_WEEKS && value <= MAX_INTERVAL_WEEKS) {
         const options = anchorOptions(block.weekday, value, todayKey)
         const current = block.repeat.anchorDate
         const anchorDate = current !== null && options.includes(current) ? current : options[0] ?? null
