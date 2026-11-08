@@ -222,6 +222,12 @@ const STATUS_COLORS: Record<BookingAppointmentStatus, EventColors> = {
         border: 'var(--color-warning)',
         text: 'var(--color-primary-text-inverted)'
     },
+    // Held for the patient, waiting on payment (spec §3.2).
+    [BookingAppointmentStatus.PendingPayment]: {
+        background: 'var(--color-info)',
+        border: 'var(--color-info)',
+        text: 'var(--color-primary-text-inverted)'
+    },
     [BookingAppointmentStatus.Confirmed]: {
         background: 'var(--color-success)',
         border: 'var(--color-success)',
@@ -285,6 +291,7 @@ const legend = computed(() => [
     },
     ...[
         BookingAppointmentStatus.Requested,
+        BookingAppointmentStatus.PendingPayment,
         BookingAppointmentStatus.Confirmed,
         BookingAppointmentStatus.Completed,
         BookingAppointmentStatus.Cancelled

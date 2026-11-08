@@ -32,6 +32,15 @@
             <p class="text-primary-text-muted">
                 {{ t('bookingPage.successBody') }}
             </p>
+            <!-- A form that asks how the patient pays: the visit is not confirmed until the clinic has the payment (§3.1). -->
+            <p
+                v-if="pendingPayment"
+                role="note"
+                class="rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-primary-text"
+                data-testid="clinic-booking-pending-payment"
+            >
+                {{ t('bookingPage.hints.paymentMethod') }}
+            </p>
             <p
                 v-if="submissionId"
                 class="text-sm text-primary-text-muted"
@@ -330,6 +339,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
+    BookingAppointmentStatus,
     BookingFormFieldType,
     type BookingForm,
     type BookingFormField,
@@ -390,6 +400,7 @@ const privacyPolicyPath = computed(() => localizedPath('/privacypolicy', String(
 const submitting = ref(false)
 const submitted = ref(false)
 const submissionId = ref('')
+const pendingPayment = ref(false)
 const manageUrl = ref('')
 const selectedStart = ref<string | null>(props.query.start ?? null)
 const durationMinutes = ref(resolveDuration(
@@ -959,6 +970,7 @@ async function onSubmit() {
         makeNonDirty()
         submitted.value = true
         submissionId.value = result.id
+        pendingPayment.value = result.appointmentStatus === BookingAppointmentStatus.PendingPayment
         manageUrl.value = result.manageToken
             ? `${localizedPath('/book/manage', String(locale.value))}#${result.manageToken}`
             : ''

@@ -7,6 +7,7 @@ import type {
     BookingPractitioner,
     BookingSettings,
     BookingSubmissionDetail,
+    BookingSubmissionExport,
     BookingSubmissionListItem,
     BookingSubmissionSearchFilters,
     BookingUploadDisposition,
@@ -47,6 +48,7 @@ const BOOKING_SUBMISSION_FIELDS = `
   endsAt
   appointmentId
   appointmentStatus
+  paymentMethod
   createdDate
   updatedDate
 `
@@ -170,6 +172,26 @@ const detailQuery = gql`
   query BookingSubmission($id: ID!) {
     bookingSubmission(id: $id) {
       ${BOOKING_DETAIL_FIELDS}
+    }
+  }
+`
+
+const exportQuery = gql`
+  query BookingSubmissionsExport($facilityId: ID!, $appointmentStatus: BookingAppointmentStatus) {
+    bookingSubmissionsExport(facilityId: $facilityId, appointmentStatus: $appointmentStatus) {
+      truncated
+      rows {
+        id
+        startsAt
+        endsAt
+        appointmentStatus
+        paymentMethod
+        consultationLanguage
+        patientName
+        email
+        phone
+        createdDate
+      }
     }
   }
 `
@@ -375,6 +397,22 @@ export async function fetchBookingSubmissions(filters: BookingSubmissionSearchFi
         rows: data?.bookingSubmissions ?? [],
         totalCount: data?.bookingSubmissionsTotalCount ?? 0
     }
+}
+
+/**
+ * Contact and scheduling rows for the owner CSV export (spec §3.2). Owners and admins only.
+ * Null when the API refused or failed; the caller shows an error and builds nothing.
+ */
+export async function fetchBookingSubmissionsExport(
+    facilityId: string,
+    appointmentStatus: BookingAppointmentStatus | null
+): Promise<BookingSubmissionExport | null> {
+    const data = await request<{ bookingSubmissionsExport: BookingSubmissionExport }>(
+        exportQuery,
+        { facilityId, appointmentStatus },
+        { retryAmount: 0, abortAfterMs: 20000 }
+    )
+    return data?.bookingSubmissionsExport ?? null
 }
 
 export async function fetchBookingSubmissionDetail(id: string): Promise<BookingSubmissionDetail | null> {

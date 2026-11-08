@@ -52,6 +52,9 @@ test('a request shows as Requested, the clinic confirms it, and the calendar sho
     const booking = await bookAsPatient(browser, baseURL, patient)
 
     await page.goto(`${dashboardPath}?tab=requests`)
+    // The list opens on Pending payment (spec §3.2). The standard form starts as Requested.
+    await expect(page.getByTestId('clinic-booking-filter-pending_payment')).toHaveAttribute('aria-pressed', 'true')
+    await page.getByTestId('clinic-booking-filter-requested').click()
     await expect(page.getByTestId(`clinic-booking-row-${booking.submissionId}`)).toBeVisible()
     await page.getByTestId(`clinic-booking-row-${booking.submissionId}`).click()
 
@@ -104,6 +107,28 @@ test('the clinic declines a request with a note, and the time is offered again',
     await expect(status).toContainText('E2E: fully booked that morning')
 
     expect(await startsOfferedToANewPatient(browser, baseURL)).toContain(booking.start)
+})
+
+test('the owner downloads the bookings as a UTF-8 CSV with contact columns only', async ({ page, browser, baseURL }) => {
+    const patient = newPatient('Export')
+    const booking = await bookAsPatient(browser, baseURL, patient)
+
+    await page.goto(`${dashboardPath}?tab=requests`)
+    await page.getByTestId('clinic-booking-filter-all').click()
+    const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.getByTestId('clinic-booking-export').click()
+    ])
+    expect(download.suggestedFilename()).toMatch(/^bookings-\d{4}-\d{2}-\d{2}\.csv$/)
+    const file = await download.path()
+    const text = readFileSync(file, 'utf8')
+    expect(text.charCodeAt(0)).toBe(0xFEFF)
+    expect(text).toContain('"Submission ID"')
+    expect(text).toContain(booking.submissionId)
+    expect(text).toContain(patient.email)
+    // The reason is a medical answer and is never exported.
+    expect(text).not.toContain('E2E check-up')
+    await expect(page.getByTestId('clinic-booking-export-message')).toBeVisible()
 })
 
 /** The `sub` of the Auth0 user the setup project signed in. */

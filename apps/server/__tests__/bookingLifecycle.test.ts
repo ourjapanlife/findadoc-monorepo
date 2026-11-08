@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import {
     APPOINTMENT_STATUS,
+    OPEN_REQUEST_STATUSES,
+    SLOT_HOLDING_STATUSES,
     canPatientCancel,
     canStaffMoveTo
 } from '../src/booking/lifecycle.js'
+import {
+    DEFAULT_BOOKING_FORM_ID,
+    SHOWCASE_BOOKING_FORM_ID,
+    formSourceById,
+    initialAppointmentStatus
+} from '../src/booking/formDefinitions.js'
 import { availableStarts, mergeWindows } from '../src/booking/schedule.js'
 import { hashPatientToken, newPatientToken } from '../src/booking/links.js'
 import {
@@ -63,7 +71,36 @@ describe('appointment lifecycle', () => {
         expect(canStaffMoveTo('held', APPOINTMENT_STATUS.CONFIRMED)).toBe(false)
     })
 
+    it('lets staff confirm, decline, or cancel a visit pending payment, but not complete it', () => {
+        const from = APPOINTMENT_STATUS.PENDING_PAYMENT
+        expect(canStaffMoveTo(from, APPOINTMENT_STATUS.CONFIRMED)).toBe(true)
+        expect(canStaffMoveTo(from, APPOINTMENT_STATUS.DECLINED)).toBe(true)
+        expect(canStaffMoveTo(from, APPOINTMENT_STATUS.CANCELLED)).toBe(true)
+        expect(canStaffMoveTo(from, APPOINTMENT_STATUS.COMPLETED)).toBe(false)
+    })
+
+    it('lets staff mark a confirmed visit as unpaid again, but not a request', () => {
+        expect(canStaffMoveTo(APPOINTMENT_STATUS.CONFIRMED, APPOINTMENT_STATUS.PENDING_PAYMENT)).toBe(true)
+        expect(canStaffMoveTo(APPOINTMENT_STATUS.REQUESTED, APPOINTMENT_STATUS.PENDING_PAYMENT)).toBe(false)
+        expect(canStaffMoveTo(APPOINTMENT_STATUS.CANCELLED, APPOINTMENT_STATUS.PENDING_PAYMENT)).toBe(false)
+    })
+
+    it('holds the slot and counts as open while payment is pending', () => {
+        expect(SLOT_HOLDING_STATUSES).toContain(APPOINTMENT_STATUS.PENDING_PAYMENT)
+        expect(OPEN_REQUEST_STATUSES).toEqual([APPOINTMENT_STATUS.REQUESTED, APPOINTMENT_STATUS.PENDING_PAYMENT])
+    })
+
+    it('starts a visit pending payment only on a form that asks how the patient pays', () => {
+        const showcase = formSourceById(SHOWCASE_BOOKING_FORM_ID)
+        const standard = formSourceById(DEFAULT_BOOKING_FORM_ID)
+        expect(showcase).toBeDefined()
+        expect(standard).toBeDefined()
+        expect(initialAppointmentStatus(showcase ?? { fields: [] })).toBe(APPOINTMENT_STATUS.PENDING_PAYMENT)
+        expect(initialAppointmentStatus(standard ?? { fields: [] })).toBe(APPOINTMENT_STATUS.REQUESTED)
+    })
+
     it('lets the patient cancel only a future request or confirmed visit', () => {
+        expect(canPatientCancel(APPOINTMENT_STATUS.PENDING_PAYMENT, at('02:00'), at('01:00'))).toBe(true)
         const now = at('01:00')
         expect(canPatientCancel(APPOINTMENT_STATUS.REQUESTED, at('02:00'), now)).toBe(true)
         expect(canPatientCancel(APPOINTMENT_STATUS.CONFIRMED, at('02:00'), now)).toBe(true)

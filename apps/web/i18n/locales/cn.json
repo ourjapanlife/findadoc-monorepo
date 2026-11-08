@@ -1028,6 +1028,7 @@
     "cancelledByClinic": "诊所已取消",
     "appointmentStatus": {
       "requested": "待确认",
+      "pendingPayment": "待付款",
       "confirmed": "已确认",
       "declined": "已拒绝",
       "cancelled": "已取消",
@@ -1035,9 +1036,11 @@
     },
     "actions": {
       "confirm": "确认",
+      "confirmPaid": "已收到付款，确认",
       "decline": "拒绝",
       "cancel": "取消预约",
-      "complete": "标记为已完成"
+      "complete": "标记为已完成",
+      "markUnpaid": "标记为未付款"
     },
     "doctor": "医生",
     "languagesRequested": "所需语言",
@@ -1171,7 +1174,25 @@
       "until": "截止（可选）",
       "datesInvalid": "结束日期早于开始日期。请修改其中一个。"
     },
-    "requestedCount": "待处理的预约请求：{count}"
+    "requestedCount": "待处理的预约请求：{count}",
+    "export": {
+      "button": "下载 CSV",
+      "working": "正在生成文件…",
+      "failed": "无法生成文件，请重试。",
+      "done": "已下载 {n} 条预约。",
+      "truncated": "已下载最新的 {n} 条预约。请选择状态以下载其余预约。",
+      "columns": {
+        "date": "日期",
+        "time": "时间（日本时间）",
+        "status": "状态",
+        "paymentMethod": "付款方式",
+        "consultationLanguage": "问诊语言",
+        "name": "姓名",
+        "email": "电子邮箱",
+        "phone": "电话",
+        "submissionId": "提交编号"
+      }
+    }
   },
   "patientBooking": {
     "heading": "您的预约申请",

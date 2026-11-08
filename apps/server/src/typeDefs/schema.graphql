@@ -1333,6 +1333,11 @@ type BookingSubmissionResult {
   facilityId: ID
   status: BookingSubmissionStatus!
   appointmentId: ID
+  """
+  The status the visit starts in. PENDING_PAYMENT on a form that asks for a payment method:
+  the confirmation screen then says the visit is not confirmed until the clinic has the payment.
+  """
+  appointmentStatus: BookingAppointmentStatus
   createdDate: String!
   """
   The private token for /book/manage#{token}, returned once to the submitter.
@@ -1349,15 +1354,24 @@ enum BookingSubmissionStatus {
 }
 
 """
-Appointment lifecycle. A submit creates REQUESTED. Staff confirm or decline it.
-Staff or the patient may cancel. REQUESTED and CONFIRMED hold the slot.
+Appointment lifecycle. A submit creates REQUESTED, or PENDING_PAYMENT on a form that asks for a
+payment method. Staff confirm or decline it, and may move a CONFIRMED visit back to PENDING_PAYMENT.
+Staff or the patient may cancel. REQUESTED, PENDING_PAYMENT, and CONFIRMED hold the slot.
 """
 enum BookingAppointmentStatus {
   REQUESTED
+  PENDING_PAYMENT
   CONFIRMED
   DECLINED
   CANCELLED
   COMPLETED
+}
+
+"""The patient's paymentMethod answer, on forms that ask it."""
+enum BookingPaymentMethod {
+  CREDIT_CARD
+  BANK_TRANSFER
+  PAY_PAY
 }
 
 enum BookingCancelledBy {
@@ -1403,7 +1417,7 @@ type BookingClinic {
   role: ClinicMemberRole
   """True when the user may change members and booking settings."""
   canManage: Boolean!
-  """Appointments still REQUESTED, waiting for the clinic to confirm or decline."""
+  """Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline."""
   requestedCount: Int!
 }
 
@@ -1485,6 +1499,8 @@ type BookingSubmissionListItem {
   appointmentId: ID
   appointmentStatus: BookingAppointmentStatus
   patientName: String
+  """The paymentMethod answer. Null when the form did not ask."""
+  paymentMethod: BookingPaymentMethod
   createdDate: String!
   updatedDate: String!
   hasIdentityUploads: Boolean!
@@ -1505,6 +1521,8 @@ type BookingSubmissionDetail {
   endsAt: String
   appointmentId: ID
   appointmentStatus: BookingAppointmentStatus
+  """The paymentMethod answer. Null when the form did not ask."""
+  paymentMethod: BookingPaymentMethod
   cancelledBy: BookingCancelledBy
   """Reason staff or the patient gave for a decline or cancel."""
   statusReason: String
@@ -1561,6 +1579,31 @@ input BookingSubmissionSearchFilters {
   limit: Int
   offset: Int
   orderBy: [OrderBy!]
+}
+
+"""
+One row of the owner export (spec §3.2). Contact and scheduling fields only: medical answers,
+the address, and files are never exported, so the file holds no health data.
+"""
+type BookingSubmissionExportRow {
+  id: ID!
+  startsAt: String
+  endsAt: String
+  appointmentStatus: BookingAppointmentStatus
+  paymentMethod: BookingPaymentMethod
+  """The consultationLanguage answer, a short language code such as ja or en."""
+  consultationLanguage: String
+  patientName: String
+  email: String
+  phone: String
+  createdDate: String!
+}
+
+type BookingSubmissionExport {
+  """Newest visits first, at most 1000."""
+  rows: [BookingSubmissionExportRow!]!
+  """True when more rows matched than the export returns."""
+  truncated: Boolean!
 }
 
 """Staff-painted availability. Boundaries are 30-minute aligned."""
@@ -1708,7 +1751,10 @@ input BookingAnswerInput {
 
 input UpdateBookingAppointmentStatusInput {
   appointmentId: ID!
-  """CONFIRMED, DECLINED, CANCELLED, or COMPLETED."""
+  """
+  CONFIRMED, DECLINED, CANCELLED, or COMPLETED. PENDING_PAYMENT marks a confirmed visit as unpaid
+  again, and sends the patient no email.
+  """
   status: BookingAppointmentStatus!
   reason: String
 }
@@ -1863,6 +1909,12 @@ type Query {
 
   """Staff read-only detail for one booking submission."""
   bookingSubmission(id: ID!): BookingSubmissionDetail
+
+  """
+  Contact and scheduling rows for one clinic's bookings, for a CSV the browser builds.
+  Owners and admins only. Each call is access-logged with ids only.
+  """
+  bookingSubmissionsExport(facilityId: ID!, appointmentStatus: BookingAppointmentStatus): BookingSubmissionExport!
 
   """Staff availability windows for the calendar editor."""
   clinicAvailabilityWindows(clinicSiteId: ID!, from: String!, to: String!): [ClinicAvailabilityWindow!]!
@@ -2138,7 +2190,7 @@ type Mutation {
   """Reopen a closed range."""
   deleteClinicAvailabilityClosure(id: ID!): DeleteResult!
 
-  """Staff confirm, decline, cancel, or complete an appointment. Declined and cancelled free the slot."""
+  """Staff confirm, decline, cancel, complete, or mark a confirmed visit unpaid. Declined and cancelled free the slot."""
   updateBookingAppointmentStatus(input: UpdateBookingAppointmentStatusInput!): BookingAppointment!
 
   """The patient cancels with the private token from the email link. Frees the slot."""

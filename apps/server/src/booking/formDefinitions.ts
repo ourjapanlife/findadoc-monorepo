@@ -6,6 +6,7 @@ import {
     type BookingFormField
 } from '@findadoc/graphql'
 import { formatJapanPhone, PHONE_DISPLAY } from '../../utils/stringUtils.js'
+import { APPOINTMENT_STATUS, type AppointmentStatus } from './lifecycle.js'
 import { BOOKING_UPLOAD_MAX_BYTES } from './limits.js'
 import { BOOKING_FIELD_SENSITIVITY, type BookingFieldSensitivity as StoredSensitivity } from './retention.js'
 import {
@@ -86,6 +87,15 @@ export const CONSULTATION_LANGUAGES = ['ja', 'en', 'zh', 'vi', 'id', 'tl', 'fr',
 
 /** How the patient will pay the initial fee. The clinic sends instructions for the chosen one. */
 export const PAYMENT_METHODS = ['creditCard', 'bankTransfer', 'payPay'] as const
+
+/** The answer that names the payment method. Staff lists and the export read it from the stored answers. */
+export const PAYMENT_METHOD_FIELD_ID = 'paymentMethod'
+
+export type PaymentMethod = typeof PAYMENT_METHODS[number]
+
+export function isPaymentMethod(value: unknown): value is PaymentMethod {
+    return PAYMENT_METHODS.some(method => method === value)
+}
 
 /** Oldest date of birth the form accepts, in calendar years before today. */
 export const OLDEST_BIRTH_DATE_YEARS = -120
@@ -495,6 +505,17 @@ export function assembleBookingForm(input: {
 
 export function fieldById(form: Pick<BookingForm, 'fields'>, fieldId: string): BookingFormField | undefined {
     return form.fields.find(item => item.id === fieldId)
+}
+
+/**
+ * The status a new visit starts in. A form that asks how the patient pays starts it as
+ * pending_payment, because the visit is not confirmed until the clinic has the payment
+ * (online consult v2 §3.2). Every other form still starts as requested.
+ */
+export function initialAppointmentStatus(form: Pick<BookingForm, 'fields'>): AppointmentStatus {
+    return fieldById(form, PAYMENT_METHOD_FIELD_ID) === undefined
+        ? APPOINTMENT_STATUS.REQUESTED
+        : APPOINTMENT_STATUS.PENDING_PAYMENT
 }
 
 export function storedSensitivity(bookingField: BookingFormField): StoredSensitivity {

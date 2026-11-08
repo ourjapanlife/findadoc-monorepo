@@ -25,7 +25,7 @@ import {
     setInterpretation
 } from '../booking/interpretation.js'
 import { clinicLanguages, facilityLanguagesFor, listFacilityPractitioners } from '../booking/practitioners.js'
-import { APPOINTMENT_STATUS } from '../booking/lifecycle.js'
+import { OPEN_REQUEST_STATUSES } from '../booking/lifecycle.js'
 import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedule.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
@@ -71,7 +71,7 @@ export function listBookingFormTypes(): BookingFormType[] {
     }))
 }
 
-/** Requested appointments per facility, in one query. A facility with none is absent. */
+/** Appointments still waiting on the clinic (requested or pending payment) per facility, in one query. */
 async function requestedCountsFor(facilityIds: string[]): Promise<Map<string, number>> {
     if (facilityIds.length === 0) {
         return new Map()
@@ -79,7 +79,7 @@ async function requestedCountsFor(facilityIds: string[]): Promise<Map<string, nu
     const rows = await db.selectFrom('booking_appointments')
         .select(['facility_id', eb => eb.fn.countAll<string>().as('count')])
         .where('facility_id', 'in', facilityIds)
-        .where('status', '=', APPOINTMENT_STATUS.REQUESTED)
+        .where('status', 'in', OPEN_REQUEST_STATUSES)
         .groupBy('facility_id')
         .execute()
     return new Map(rows

@@ -33,7 +33,8 @@
     "bookingPage.dateLabel",
     "bookingPage.durationMinutes",
     "modFacilitySection.japaneseInsuranceSourceLabel",
-    "bookingPage.options.consultationLanguage.tl"
+    "bookingPage.options.consultationLanguage.tl",
+    "clinicDashboard.export.columns.date"
   ],
   "de": [
     "submitPage.previewName",
@@ -43,7 +44,9 @@
     "moderationTable.status",
     "clinicPage.onlineBreadcrumb",
     "clinicDashboard.tabs.team",
-    "bookingPage.options.consultationLanguage.tl"
+    "bookingPage.options.consultationLanguage.tl",
+    "clinicDashboard.export.columns.status",
+    "clinicDashboard.export.columns.name"
   ],
   "it": [
     "common.menu",

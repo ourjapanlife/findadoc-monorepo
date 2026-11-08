@@ -1028,6 +1028,7 @@
     "cancelledByClinic": "Kinansela ng klinika",
     "appointmentStatus": {
       "requested": "Hiniling",
+      "pendingPayment": "Naghihintay ng bayad",
       "confirmed": "Kumpirmado",
       "declined": "Tinanggihan",
       "cancelled": "Kinansela",
@@ -1035,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Kumpirmahin",
+      "confirmPaid": "Natanggap ang bayad, kumpirmahin",
       "decline": "Tanggihan",
       "cancel": "Kanselahin ang appointment",
-      "complete": "Markahang tapos na"
+      "complete": "Markahang tapos na",
+      "markUnpaid": "Markahan bilang hindi pa bayad"
     },
     "doctor": "Doktor",
     "languagesRequested": "Mga hiniling na wika",
@@ -1171,7 +1174,25 @@
       "until": "Hanggang (opsyonal)",
       "datesInvalid": "Mas maaga ang huling araw kaysa sa unang araw. Baguhin ang isa."
     },
-    "requestedCount": "Mga naghihintay na kahilingan: {count}"
+    "requestedCount": "Mga naghihintay na kahilingan: {count}",
+    "export": {
+      "button": "I-download ang CSV",
+      "working": "Inihahanda ang file…",
+      "failed": "Hindi magawa ang file. Subukang muli.",
+      "done": "Na-download ang {n} na booking.",
+      "truncated": "Na-download ang {n} pinakabagong booking. Pumili ng status para makuha ang iba.",
+      "columns": {
+        "date": "Petsa",
+        "time": "Oras (Japan)",
+        "status": "Katayuan",
+        "paymentMethod": "Paraan ng pagbabayad",
+        "consultationLanguage": "Wika ng konsultasyon",
+        "name": "Pangalan",
+        "email": "Email address",
+        "phone": "Telepono",
+        "submissionId": "ID ng kahilingan"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Ang iyong kahilingan sa appointment",

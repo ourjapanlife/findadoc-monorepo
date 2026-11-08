@@ -1028,6 +1028,7 @@
     "cancelledByClinic": "クリニックがキャンセル",
     "appointmentStatus": {
       "requested": "リクエスト中",
+      "pendingPayment": "支払い待ち",
       "confirmed": "確定",
       "declined": "お断り",
       "cancelled": "キャンセル",
@@ -1035,9 +1036,11 @@
     },
     "actions": {
       "confirm": "確定する",
+      "confirmPaid": "入金を確認して確定する",
       "decline": "お断りする",
       "cancel": "予約をキャンセル",
-      "complete": "完了にする"
+      "complete": "完了にする",
+      "markUnpaid": "未払いに戻す"
     },
     "doctor": "医師",
     "languagesRequested": "希望言語",
@@ -1171,7 +1174,25 @@
       "until": "終了（任意）",
       "datesInvalid": "終了日が開始日より前になっています。どちらかを変更してください。"
     },
-    "requestedCount": "確認待ちのリクエスト: {count}件"
+    "requestedCount": "確認待ちのリクエスト: {count}件",
+    "export": {
+      "button": "CSVをダウンロード",
+      "working": "ファイルを作成しています…",
+      "failed": "ファイルを作成できませんでした。もう一度お試しください。",
+      "done": "{n}件の予約をダウンロードしました。",
+      "truncated": "新しい順に{n}件の予約をダウンロードしました。残りはステータスを選んでダウンロードしてください。",
+      "columns": {
+        "date": "日付",
+        "time": "時間（日本時間）",
+        "status": "ステータス",
+        "paymentMethod": "お支払い方法",
+        "consultationLanguage": "診察言語",
+        "name": "氏名",
+        "email": "メールアドレス",
+        "phone": "電話番号",
+        "submissionId": "受付ID"
+      }
+    }
   },
   "patientBooking": {
     "heading": "あなたの予約リクエスト",

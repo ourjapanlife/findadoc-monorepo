@@ -1028,6 +1028,7 @@
     "cancelledByClinic": "Cancelada pela clínica",
     "appointmentStatus": {
       "requested": "Solicitada",
+      "pendingPayment": "Pagamento pendente",
       "confirmed": "Confirmada",
       "declined": "Recusada",
       "cancelled": "Cancelada",
@@ -1035,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Confirmar",
+      "confirmPaid": "Pagamento recebido, confirmar",
       "decline": "Recusar",
       "cancel": "Cancelar consulta",
-      "complete": "Marcar como concluída"
+      "complete": "Marcar como concluída",
+      "markUnpaid": "Marcar como não pago"
     },
     "doctor": "Médico",
     "languagesRequested": "Idiomas pedidos",
@@ -1171,7 +1174,25 @@
       "until": "Até (opcional)",
       "datesInvalid": "Um último dia está antes do primeiro dia. Altere um deles."
     },
-    "requestedCount": "Pedidos pendentes: {count}"
+    "requestedCount": "Pedidos pendentes: {count}",
+    "export": {
+      "button": "Baixar CSV",
+      "working": "Preparando o arquivo…",
+      "failed": "Não foi possível criar o arquivo. Tente novamente.",
+      "done": "{n} reservas baixadas.",
+      "truncated": "As {n} reservas mais recentes foram baixadas. Escolha um status para obter as demais.",
+      "columns": {
+        "date": "Data",
+        "time": "Horário (Japão)",
+        "status": "Situação",
+        "paymentMethod": "Forma de pagamento",
+        "consultationLanguage": "Idioma da consulta",
+        "name": "Nome",
+        "email": "E-mail",
+        "phone": "Telefone",
+        "submissionId": "ID da solicitação"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Seu pedido de consulta",

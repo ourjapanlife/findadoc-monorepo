@@ -1028,6 +1028,7 @@
     "cancelledByClinic": "Phòng khám đã hủy",
     "appointmentStatus": {
       "requested": "Đang chờ",
+      "pendingPayment": "Chờ thanh toán",
       "confirmed": "Đã xác nhận",
       "declined": "Đã từ chối",
       "cancelled": "Đã hủy",
@@ -1035,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Xác nhận",
+      "confirmPaid": "Đã nhận thanh toán, xác nhận",
       "decline": "Từ chối",
       "cancel": "Hủy lịch hẹn",
-      "complete": "Đánh dấu hoàn thành"
+      "complete": "Đánh dấu hoàn thành",
+      "markUnpaid": "Đánh dấu chưa thanh toán"
     },
     "doctor": "Bác sĩ",
     "languagesRequested": "Ngôn ngữ yêu cầu",
@@ -1171,7 +1174,25 @@
       "until": "Đến (không bắt buộc)",
       "datesInvalid": "Ngày cuối trước ngày đầu. Hãy sửa một trong hai."
     },
-    "requestedCount": "Yêu cầu đang chờ: {count}"
+    "requestedCount": "Yêu cầu đang chờ: {count}",
+    "export": {
+      "button": "Tải xuống CSV",
+      "working": "Đang tạo tệp…",
+      "failed": "Không thể tạo tệp. Hãy thử lại.",
+      "done": "Đã tải xuống {n} lịch hẹn.",
+      "truncated": "Đã tải xuống {n} lịch hẹn mới nhất. Hãy chọn một trạng thái để tải phần còn lại.",
+      "columns": {
+        "date": "Ngày",
+        "time": "Giờ (Nhật Bản)",
+        "status": "Trạng thái",
+        "paymentMethod": "Phương thức thanh toán",
+        "consultationLanguage": "Ngôn ngữ khám",
+        "name": "Họ và tên",
+        "email": "Địa chỉ email",
+        "phone": "Số điện thoại",
+        "submissionId": "Mã yêu cầu"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Yêu cầu đặt lịch của bạn",

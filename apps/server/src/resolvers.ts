@@ -168,6 +168,22 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.BookingSubmissionDetail | null> =>
             staffBookingService.getBookingSubmissionDetail(args.id, await bookingAccessForContext(context))),
+        // The export is an owner action (spec §3.2), so it takes the owner settings scopes, not
+        // the read scopes staff hold. The service also checks canManageFacility for the clinic.
+        bookingSubmissionsExport: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+            _parent: unknown,
+            args: { facilityId: string, appointmentStatus?: gqlType.BookingAppointmentStatus | null },
+            context: UserContext
+        ): Promise<gqlType.BookingSubmissionExport> => {
+            const result = await staffBookingService.exportBookingSubmissions(
+                args.facilityId,
+                args.appointmentStatus,
+                await bookingAccessForContext(context),
+                context.user?.sub
+            )
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
         clinicAvailabilityWindows: withClinicScope(CLINIC_AVAILABILITY_SCOPES, async (
             _parent: unknown,
             args: { clinicSiteId: string, from: string, to: string },

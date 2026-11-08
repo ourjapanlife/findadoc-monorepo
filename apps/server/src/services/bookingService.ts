@@ -17,11 +17,12 @@ import {
     type AssembledBookingForm,
     fieldById,
     fieldIsShown,
+    initialAppointmentStatus,
     isOfferedFormId,
     phoneAnswer,
     storedSensitivity
 } from '../booking/formDefinitions.js'
-import { APPOINTMENT_STATUS, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
+import { OPEN_REQUEST_STATUSES, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
 import { clinicRequestEmail, isSiteLocale, patientRequestEmail } from '../booking/emailCopy.js'
 import { CURRENT_CONSENT_TEXT_VERSION } from '../booking/consentText.js'
 import {
@@ -69,10 +70,11 @@ import {
     newUploadId
 } from '../storage/objectStorage.js'
 import { asJsonb } from '../../utils/dbUtils.js'
+import { appointmentStatusFromRow } from './staffBookingService.js'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_UPLOAD_BYTES = BOOKING_UPLOAD_MAX_BYTES
-/** Upcoming `requested` appointments one email may hold at one clinic (#160). */
+/** Upcoming `requested` or `pending_payment` appointments one email may hold at one clinic (#160). */
 export const MAX_OPEN_REQUESTS_PER_EMAIL = 3
 const ALLOWED_UPLOAD_TYPES = new Set([
     'image/jpeg',
@@ -499,6 +501,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
     if (input.formVersion !== form.version) {
         return validationError('formVersion')
     }
+    const startStatus = initialAppointmentStatus(form)
 
     if (!isSiteLocale(input.locale)) {
         return validationError('locale')
@@ -631,7 +634,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                     starts_at: startsAt.toISOString(),
                     ends_at: endsAt.toISOString(),
                     duration_minutes: durationMinutes,
-                    status: APPOINTMENT_STATUS.REQUESTED
+                    status: startStatus
                 })
                 .returning(['id'])
                 .executeTakeFirstOrThrow()
@@ -678,6 +681,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
             facilityId: target.facilityId,
             status,
             appointmentId,
+            appointmentStatus: appointmentStatusFromRow(startStatus),
             createdDate: inserted.created_date,
             manageToken: patientToken.token
         },
@@ -696,7 +700,7 @@ async function countOpenRequestsForEmail(
     let query = executor.selectFrom('booking_appointments as appointment')
         .innerJoin('booking_submissions as booking', 'booking.id', 'appointment.booking_submission_id')
         .select(eb => eb.fn.countAll<string>().as('count'))
-        .where('appointment.status', '=', APPOINTMENT_STATUS.REQUESTED)
+        .where('appointment.status', 'in', OPEN_REQUEST_STATUSES)
         .where('appointment.ends_at', '>', new Date().toISOString())
         .where(sql<string>`lower(booking.answers->>'email')`, '=', email.toLowerCase())
 

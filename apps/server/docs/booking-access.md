@@ -36,7 +36,7 @@ after it is claimed, and a removed member loses the role on their next request.
 | `read:own_clinic_bookings` | yes | yes | clinic, requests, appointments, uploads, settings read |
 | `write:own_clinic_bookings` | yes | yes | appointment status |
 | `write:own_clinic_availability` | yes | yes | weekly hours, windows, closures, doctors |
-| `write:own_clinic_settings` | yes | no | booking settings |
+| `write:own_clinic_settings` | yes | no | booking settings, booking export |
 | `write:own_clinic_memberships` | yes | no | members, invite, remove |
 
 Clinic resolvers use `withClinicScope`, which accepts the admin's every-clinic
@@ -72,7 +72,7 @@ Open starts are, for one clinic:
 2. plus painted extra windows (`clinic_availability_windows`);
 3. minus closures (`clinic_availability_closures`): a holiday, a day off, or
    one weekly block staff closed on the calendar;
-4. minus `requested` and `confirmed` appointments.
+4. minus `requested`, `pending_payment`, and `confirmed` appointments.
 
 Each weekly block has a repeat (#203): every week (the default), every 2 to 12
 weeks from an anchor date on the block's weekday (the block opens on the anchor
@@ -130,15 +130,40 @@ data model, the matching rules, and examples.
 ## Appointment lifecycle
 
 ```
-requested ──confirm──▶ confirmed ──complete──▶ completed
-    │                      │
-    ├──decline──▶ declined │
-    └──cancel───▶ cancelled ◀──cancel (staff or patient)
+requested ─────────confirm──▶ confirmed ──complete──▶ completed
+pending_payment ───confirm──▶     │
+      ▲                           │
+      └────────mark unpaid────────┤
+requested or pending_payment      │
+    ├──decline──▶ declined        │
+    └──cancel───▶ cancelled ◀─────┴──cancel (staff or patient)
 ```
 
-`requested` and `confirmed` hold the slot. Every change is a compare-and-set on
-the current status. The patient may cancel until the visit starts. Each change
-emails the other side.
+A submit starts as `requested`, or as `pending_payment` on a form that asks for
+a payment method (online consult v2 §3.2, `initialAppointmentStatus` in
+`src/booking/formDefinitions.ts`). Staff confirm a `pending_payment` visit once
+the clinic has the payment, and may move a confirmed visit back to
+`pending_payment`. That move sends the patient no email.
+
+`requested`, `pending_payment`, and `confirmed` hold the slot. Every change is a
+compare-and-set on the current status. The patient may cancel until the visit
+starts. Each other change emails the other side. The dashboard badge counts
+`requested` and `pending_payment`.
+
+### Export
+
+Owners and admins can download one clinic's bookings as a CSV from the
+Requests tab (`bookingSubmissionsExport`, spec §3.2). The resolver takes the
+owner settings scopes and the service checks `canManageFacility`, so staff
+cannot export. The query filters by facility in SQL and returns at most 1000
+rows, newest visit first, with `truncated` when more matched. The browser
+builds the file as UTF-8 with a byte order mark, so Excel opens Japanese
+names correctly; nothing is stored on the server. The columns are visit
+date, time, status, payment method, consultation language, name, email,
+phone, and the submission id. Medical answers, the address, and files are
+never exported, so the file holds no health data. Each call logs
+`bookingExport` with the facility id, the status filter, the row count, and
+the actor's sub, never a patient field.
 
 The patient token is 32 random bytes in the URL fragment of
 `/book/manage#{token}`, so it is never in a server or CDN log. Only its sha256
@@ -196,7 +221,7 @@ A refused call answers `TOO_MANY_REQUESTS` and is not counted. The counts are
 in memory, one set per API instance, like the Maps lookup budget. They are
 generous because one mobile-carrier address can be many people.
 
-One email may hold 3 upcoming `requested` appointments at one clinic
+One email may hold 3 upcoming `requested` or `pending_payment` appointments at one clinic
 (`MAX_OPEN_REQUESTS_PER_EMAIL`, case-insensitive). A fourth answers
 `OPEN_REQUEST_LIMIT` until the clinic answers one, or one ends or is
 cancelled. The count runs inside the clinic's booking lock.

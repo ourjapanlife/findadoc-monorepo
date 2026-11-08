@@ -1028,6 +1028,7 @@
     "cancelledByClinic": "Cancelled by the clinic",
     "appointmentStatus": {
       "requested": "Requested",
+      "pendingPayment": "Pending payment",
       "confirmed": "Confirmed",
       "declined": "Declined",
       "cancelled": "Cancelled",
@@ -1035,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Confirm",
+      "confirmPaid": "Payment received, confirm",
       "decline": "Decline",
       "cancel": "Cancel appointment",
-      "complete": "Mark completed"
+      "complete": "Mark completed",
+      "markUnpaid": "Mark as unpaid"
     },
     "doctor": "Doctor",
     "languagesRequested": "Languages requested",
@@ -1171,7 +1174,25 @@
       "until": "Until (optional)",
       "datesInvalid": "A last day is before its first day. Change one of them."
     },
-    "requestedCount": "Requests waiting: {count}"
+    "requestedCount": "Requests waiting: {count}",
+    "export": {
+      "button": "Download CSV",
+      "working": "Preparing the file…",
+      "failed": "The file could not be created. Try again.",
+      "done": "Downloaded {n} bookings.",
+      "truncated": "Downloaded the newest {n} bookings. Choose a status to get the others.",
+      "columns": {
+        "date": "Date",
+        "time": "Time (Japan)",
+        "status": "Status",
+        "paymentMethod": "Payment method",
+        "consultationLanguage": "Consultation language",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "submissionId": "Submission ID"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Your appointment request",

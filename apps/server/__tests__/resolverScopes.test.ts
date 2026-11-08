@@ -30,6 +30,7 @@ const clinicFields = new Set([
     'bookingSubmissions',
     'bookingSubmissionsTotalCount',
     'bookingSubmission',
+    'bookingSubmissionsExport',
     'clinicAvailabilityWindows',
     'bookingUploadDownloadUrl',
     'createClinicAvailabilityWindow',

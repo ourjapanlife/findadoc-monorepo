@@ -139,7 +139,7 @@ export async function listClinicAppointments(
     return rows.map(appointmentFromRow)
 }
 
-/** Staff changes the patient hears about. Completed sends nothing. */
+/** Staff changes the patient hears about. Completed and a move back to pending payment send nothing (§3.2). */
 const PATIENT_NOTICE: Partial<Record<AppointmentStatus, PatientNoticeStatus>> = {
     [APPOINTMENT_STATUS.CONFIRMED]: 'confirmed',
     [APPOINTMENT_STATUS.DECLINED]: 'declined',

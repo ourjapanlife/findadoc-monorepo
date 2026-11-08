@@ -3,24 +3,47 @@
         class="flex flex-col gap-4"
         data-testid="clinic-booking-requests"
     >
-        <div
-            class="flex flex-wrap gap-2"
-            role="group"
-            :aria-label="t('clinicDashboard.statusFilter')"
-            data-testid="clinic-booking-status-filter"
-        >
-            <button
-                v-for="option in filterOptions"
-                :key="option.value"
-                type="button"
-                class="chip transition-colors hover:border-primary"
-                :class="statusFilter === option.value ? 'chip-primary' : 'text-primary-text-muted'"
-                :aria-pressed="statusFilter === option.value"
-                @click="statusFilter = option.value"
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div
+                class="flex flex-wrap gap-2"
+                role="group"
+                :aria-label="t('clinicDashboard.statusFilter')"
+                data-testid="clinic-booking-status-filter"
             >
-                {{ option.label }}
+                <button
+                    v-for="option in filterOptions"
+                    :key="option.value"
+                    type="button"
+                    class="chip transition-colors hover:border-primary"
+                    :class="statusFilter === option.value ? 'chip-primary' : 'text-primary-text-muted'"
+                    :aria-pressed="statusFilter === option.value"
+                    :data-testid="`clinic-booking-filter-${option.value === '' ? 'all' : option.value.toLowerCase()}`"
+                    @click="statusFilter = option.value"
+                >
+                    {{ option.label }}
+                </button>
+            </div>
+            <!-- Owners and admins only; the API refuses staff too (spec §3.2). -->
+            <button
+                v-if="canManage"
+                type="button"
+                class="btn btn-secondary btn-sm"
+                :disabled="exporting"
+                data-testid="clinic-booking-export"
+                @click="exportCsv"
+            >
+                {{ exporting ? t('clinicDashboard.export.working') : t('clinicDashboard.export.button') }}
             </button>
         </div>
+        <p
+            v-if="exportMessage"
+            class="text-sm"
+            :class="exportFailed ? 'field-error' : 'text-primary-text-muted'"
+            :role="exportFailed ? 'alert' : 'status'"
+            data-testid="clinic-booking-export-message"
+        >
+            {{ exportMessage }}
+        </p>
 
         <ul
             v-if="loading"
@@ -129,6 +152,12 @@
                                 {{ t('bookingDashboard.columns.created') }}: {{ formatCreated(row.createdDate) }}
                             </span>
                             <span
+                                v-if="row.paymentMethod"
+                                :data-testid="`clinic-booking-row-payment-${row.id}`"
+                            >
+                                {{ t('bookingPage.fields.paymentMethod') }}: {{ t(paymentMethodLabelKey(row.paymentMethod)) }}
+                            </span>
+                            <span
                                 v-if="row.hasIdentityUploads"
                                 class="rounded-full bg-accent-bg px-2 py-0.5 font-medium text-primary-text"
                             >
@@ -193,14 +222,16 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BookingAppointmentStatus, type BookingSubmissionListItem } from '@findadoc/graphql'
-import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
-import { fetchBookingSubmissions } from '~/utils/booking/staffQuery'
+import { appointmentStatusLabelKey, paymentMethodLabelKey } from '~/utils/booking/appointmentStatus'
+import { fetchBookingSubmissions, fetchBookingSubmissionsExport } from '~/utils/booking/staffQuery'
+import { bookingExportCsv, bookingExportFileName, downloadCsv } from '~/utils/booking/exportCsv'
 import { JAPAN_TIME_ZONE } from '~/utils/booking/japanTime'
 
 const PAGE_SIZE = 25
 
 // Open work first, then closed outcomes.
 const FILTER_ORDER = [
+    BookingAppointmentStatus.PendingPayment,
     BookingAppointmentStatus.Requested,
     BookingAppointmentStatus.Confirmed,
     BookingAppointmentStatus.Completed,
@@ -210,6 +241,7 @@ const FILTER_ORDER = [
 
 const STATUS_BADGE_CLASS: Record<BookingAppointmentStatus, string> = {
     [BookingAppointmentStatus.Requested]: 'border-warning/40 bg-warning/10 text-warning',
+    [BookingAppointmentStatus.PendingPayment]: 'border-info/40 bg-info/10 text-info',
     [BookingAppointmentStatus.Confirmed]: 'border-success/40 bg-success/10 text-success',
     [BookingAppointmentStatus.Completed]: 'border-primary/30 bg-primary/10 text-primary',
     [BookingAppointmentStatus.Declined]: 'border-accent-bg bg-primary-bg text-primary-text-muted',
@@ -218,19 +250,24 @@ const STATUS_BADGE_CLASS: Record<BookingAppointmentStatus, string> = {
 
 const props = defineProps<{
     facilityId: string
+    /** Owners and admins see the CSV export. */
+    canManage?: boolean
 }>()
 
 const emit = defineEmits<{
     'open-booking': [bookingSubmissionId: string]
 }>()
 
-const { t, locale } = useI18n()
-// New requests are what staff act on first.
-const statusFilter = ref<BookingAppointmentStatus | ''>(BookingAppointmentStatus.Requested)
+const { t, te, locale } = useI18n()
+// Visits waiting on payment are what staff act on first (spec §3.2).
+const statusFilter = ref<BookingAppointmentStatus | ''>(BookingAppointmentStatus.PendingPayment)
 const rows = ref<BookingSubmissionListItem[]>([])
 const totalCount = ref(0)
 const offset = ref(0)
 const loading = ref(true)
+const exporting = ref(false)
+const exportMessage = ref('')
+const exportFailed = ref(false)
 
 const filterOptions = computed(() => [
     ...FILTER_ORDER.map(status => ({ value: status, label: t(appointmentStatusLabelKey(status)) })),
@@ -280,6 +317,27 @@ async function load(): Promise<void> {
     rows.value = result.rows
     totalCount.value = result.totalCount
     loading.value = false
+}
+
+/** Downloads the bookings under the current status filter as a CSV. */
+async function exportCsv(): Promise<void> {
+    exporting.value = true
+    exportMessage.value = ''
+    exportFailed.value = false
+    const result = await fetchBookingSubmissionsExport(
+        props.facilityId,
+        statusFilter.value === '' ? null : statusFilter.value
+    )
+    exporting.value = false
+    if (result === null) {
+        exportFailed.value = true
+        exportMessage.value = t('clinicDashboard.export.failed')
+        return
+    }
+    downloadCsv(bookingExportCsv(result.rows, t, te), bookingExportFileName())
+    exportMessage.value = result.truncated
+        ? t('clinicDashboard.export.truncated', { n: result.rows.length })
+        : t('clinicDashboard.export.done', { n: result.rows.length })
 }
 
 watch(statusFilter, () => {

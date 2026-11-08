@@ -1028,6 +1028,7 @@
     "cancelledByClinic": "Annullato dalla clinica",
     "appointmentStatus": {
       "requested": "Richiesto",
+      "pendingPayment": "In attesa di pagamento",
       "confirmed": "Confermato",
       "declined": "Rifiutato",
       "cancelled": "Annullato",
@@ -1035,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Conferma",
+      "confirmPaid": "Pagamento ricevuto, conferma",
       "decline": "Rifiuta",
       "cancel": "Annulla appuntamento",
-      "complete": "Segna come completato"
+      "complete": "Segna come completato",
+      "markUnpaid": "Segna come non pagato"
     },
     "doctor": "Medico",
     "languagesRequested": "Lingue richieste",
@@ -1171,7 +1174,25 @@
       "until": "Al (facoltativo)",
       "datesInvalid": "Un ultimo giorno è prima del primo giorno. Modificane uno."
     },
-    "requestedCount": "Richieste in attesa: {count}"
+    "requestedCount": "Richieste in attesa: {count}",
+    "export": {
+      "button": "Scarica CSV",
+      "working": "Preparazione del file…",
+      "failed": "Impossibile creare il file. Riprova.",
+      "done": "{n} prenotazioni scaricate.",
+      "truncated": "Sono state scaricate le {n} prenotazioni più recenti. Scegli uno stato per ottenere le altre.",
+      "columns": {
+        "date": "Data",
+        "time": "Ora (Giappone)",
+        "status": "Stato",
+        "paymentMethod": "Metodo di pagamento",
+        "consultationLanguage": "Lingua della visita",
+        "name": "Nome",
+        "email": "Indirizzo email",
+        "phone": "Telefono",
+        "submissionId": "ID richiesta"
+      }
+    }
   },
   "patientBooking": {
     "heading": "La tua richiesta di appuntamento",

@@ -142,6 +142,7 @@ const submitBookingMutation = gql`
       facilityId
       status
       appointmentId
+      appointmentStatus
       createdDate
       manageToken
     }

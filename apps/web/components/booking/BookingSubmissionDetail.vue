@@ -50,6 +50,14 @@
                     </span>
                 </div>
                 <p
+                    v-if="detail.paymentMethod"
+                    class="flex flex-wrap items-baseline gap-2"
+                    data-testid="booking-payment-method"
+                >
+                    <span class="text-sm text-primary-text-muted">{{ t('bookingPage.fields.paymentMethod') }}</span>
+                    <span class="font-semibold">{{ t(paymentMethodLabelKey(detail.paymentMethod)) }}</span>
+                </p>
+                <p
                     v-if="detail.statusReason"
                     class="text-sm wrap-break-word whitespace-pre-wrap"
                 >
@@ -76,7 +84,7 @@
                             :data-testid="`booking-action-${next.toLowerCase()}`"
                             @click="changeStatus(next)"
                         >
-                            {{ t(staffActionLabelKey(next)) }}
+                            {{ t(staffActionLabelKey(next, detail.appointmentStatus)) }}
                         </button>
                     </div>
                 </template>
@@ -312,6 +320,7 @@ import { intlLocale } from '~/utils/intlLocale'
 import {
     actionTakesReason,
     appointmentStatusLabelKey,
+    paymentMethodLabelKey,
     staffActionLabelKey,
     staffActionsFor
 } from '~/utils/booking/appointmentStatus'

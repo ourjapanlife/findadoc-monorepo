@@ -59,6 +59,7 @@
                 <ClinicBookingRequests
                     v-else-if="tab === 'requests'"
                     :facility-id="facilityId"
+                    :can-manage="clinic.canManage"
                     @open-booking="openBooking"
                 />
                 <div

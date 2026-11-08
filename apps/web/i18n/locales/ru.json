@@ -1028,6 +1028,7 @@
     "cancelledByClinic": "Отменено клиникой",
     "appointmentStatus": {
       "requested": "Запрошено",
+      "pendingPayment": "Ожидает оплаты",
       "confirmed": "Подтверждено",
       "declined": "Отклонено",
       "cancelled": "Отменено",
@@ -1035,9 +1036,11 @@
     },
     "actions": {
       "confirm": "Подтвердить",
+      "confirmPaid": "Оплата получена, подтвердить",
       "decline": "Отклонить",
       "cancel": "Отменить приём",
-      "complete": "Отметить как завершённый"
+      "complete": "Отметить как завершённый",
+      "markUnpaid": "Отметить как неоплаченное"
     },
     "doctor": "Врач",
     "languagesRequested": "Запрошенные языки",
@@ -1171,7 +1174,25 @@
       "until": "По (необязательно)",
       "datesInvalid": "Последний день раньше первого. Измените один из них."
     },
-    "requestedCount": "Ожидающие запросы: {count}"
+    "requestedCount": "Ожидающие запросы: {count}",
+    "export": {
+      "button": "Скачать CSV",
+      "working": "Подготовка файла…",
+      "failed": "Не удалось создать файл. Попробуйте ещё раз.",
+      "done": "Скачано записей: {n}.",
+      "truncated": "Скачаны {n} самых новых записей. Выберите статус, чтобы получить остальные.",
+      "columns": {
+        "date": "Дата",
+        "time": "Время (Япония)",
+        "status": "Статус",
+        "paymentMethod": "Способ оплаты",
+        "consultationLanguage": "Язык консультации",
+        "name": "Имя",
+        "email": "Эл. почта",
+        "phone": "Телефон",
+        "submissionId": "ID заявки"
+      }
+    }
   },
   "patientBooking": {
     "heading": "Ваш запрос на приём",
