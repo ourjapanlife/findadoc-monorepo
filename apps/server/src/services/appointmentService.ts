@@ -18,7 +18,7 @@ import {
 import { clinicPatientCancelledEmail, patientStatusEmail, type PatientNoticeStatus } from '../booking/emailCopy.js'
 import { hashPatientToken } from '../booking/links.js'
 import { emailFromUnknown, noticeClinic, sendBookingNotice } from '../booking/notifications.js'
-import { resolveBookingTarget } from '../booking/target.js'
+import { clinicNameForLocale, resolveBookingTarget } from '../booking/target.js'
 import { purgeSubmissionUploads } from '../booking/uploadPurge.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
@@ -201,7 +201,7 @@ export async function updateAppointmentStatus(
             email: patientStatusEmail({
                 locale: current.locale,
                 status: notice,
-                clinicName: target?.clinicName ?? 'Find a Doc, Japan',
+                clinicName: target === undefined ? 'Find a Doc, Japan' : clinicNameForLocale(target, current.locale),
                 startsAt: new Date(current.starts_at),
                 durationMinutes: current.duration_minutes,
                 reference: current.booking_submission_id,
@@ -242,6 +242,7 @@ async function patientView(row: TokenRow): Promise<PatientBookingView> {
     const startsAt = row.starts_at === null ? null : new Date(row.starts_at)
     return {
         clinicName: target?.clinicName ?? '',
+        clinicNameJa: target?.clinicNameJa ?? '',
         branding: target?.branding ?? null,
         startsAt: startsAt?.toISOString() ?? null,
         endsAt: row.ends_at === null ? null : new Date(row.ends_at).toISOString(),

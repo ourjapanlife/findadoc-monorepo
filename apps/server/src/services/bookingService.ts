@@ -69,6 +69,7 @@ import {
 import {
     bookingLockKey,
     lockClinicBookings,
+    clinicNameForLocale,
     resolvePublicBookingTarget,
     type BookingTarget
 } from '../booking/target.js'
@@ -102,6 +103,7 @@ function bookingFormForTarget(target: BookingTarget, formDefinitionId?: string |
         clinicSiteId: target.clinicSiteId,
         clinicSiteSlug: target.clinicSiteSlug,
         clinicName: target.clinicName,
+        clinicNameJa: target.clinicNameJa,
         themePrimary: target.themePrimary,
         branding: target.branding,
         allowedDurations: target.allowedDurations,
@@ -432,7 +434,7 @@ type PatientEmailInput = {
 async function patientFirstEmail(input: PatientEmailInput): Promise<BookingEmail> {
     const common = {
         locale: input.locale,
-        clinicName: input.target.clinicName,
+        clinicName: clinicNameForLocale(input.target, input.locale),
         startsAt: input.startsAt,
         durationMinutes: input.durationMinutes,
         reference: input.bookingId,

@@ -152,7 +152,10 @@ export type BookingForm = {
   /** Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60. */
   allowedDurations: Array<Scalars['Int']['output']>;
   branding?: Maybe<ClinicBranding>;
+  /** The clinic's English name. Every reader who is not Japanese sees this. */
   clinicName: Scalars['String']['output'];
+  /** The clinic site's Japanese (ja-JP) name for Japanese readers, else clinicName. */
+  clinicNameJa: Scalars['String']['output'];
   /** Hosted clinic page id. Null when the clinic has no Find a Doc landing. */
   clinicSiteId?: Maybe<Scalars['ID']['output']>;
   clinicSiteSlug?: Maybe<Scalars['String']['output']>;
@@ -1826,7 +1829,10 @@ export type PatientBookingView = {
   __typename?: 'PatientBookingView';
   branding?: Maybe<ClinicBranding>;
   canCancel: Scalars['Boolean']['output'];
+  /** The clinic's English name. Every reader who is not Japanese sees this. */
   clinicName: Scalars['String']['output'];
+  /** The clinic site's Japanese (ja-JP) name for Japanese readers, else clinicName. */
+  clinicNameJa: Scalars['String']['output'];
   endsAt?: Maybe<Scalars['String']['output']>;
   startsAt?: Maybe<Scalars['String']['output']>;
   status?: Maybe<BookingAppointmentStatus>;
@@ -3054,6 +3060,7 @@ export type BookingFormResolvers<ContextType = any, ParentType extends Resolvers
   allowedDurations?: Resolver<Array<ResolversTypes['Int']>, ParentType, ContextType>;
   branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  clinicNameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   defaultDuration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -3622,6 +3629,7 @@ export type PatientBookingViewResolvers<ContextType = any, ParentType extends Re
   branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
   canCancel?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  clinicNameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   endsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   startsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['BookingAppointmentStatus']>, ParentType, ContextType>;

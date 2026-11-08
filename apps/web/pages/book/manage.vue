@@ -27,7 +27,7 @@
                         {{ t('bookingDashboard.columns.clinic') }}
                     </dt>
                     <dd class="font-medium">
-                        {{ booking.clinicName }}
+                        {{ patientClinicName(booking, String(locale)) }}
                     </dd>
                 </div>
                 <div>
@@ -122,6 +122,7 @@ import { BookingAppointmentStatus, type PatientBookingView } from '@findadoc/gra
 import { definePageMeta, useHead } from '#imports'
 import { useClinicBranding } from '~/composables/useClinicBranding'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
+import { patientClinicName } from '~/utils/booking/clinicBranding'
 import { cancelPatientBooking, fetchPatientBooking, isBookingRefusal } from '~/utils/booking/formQuery'
 import { formatJapanDateTime } from '~/utils/booking/japanTime'
 import { intlLocale } from '~/utils/intlLocale'

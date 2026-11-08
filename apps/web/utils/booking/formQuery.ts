@@ -55,6 +55,7 @@ const BOOKING_FORM_FIELDS = `
   clinicSiteId
   clinicSiteSlug
   clinicName
+  clinicNameJa
   themePrimary
   ${CLINIC_BRANDING_FIELDS}
   allowedDurations
@@ -298,6 +299,7 @@ export async function putBookingFile(
 
 const PATIENT_BOOKING_FIELDS = `
   clinicName
+  clinicNameJa
   ${CLINIC_BRANDING_FIELDS}
   startsAt
   endsAt

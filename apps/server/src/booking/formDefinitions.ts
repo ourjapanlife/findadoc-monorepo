@@ -482,6 +482,8 @@ export function assembleBookingForm(input: {
     clinicSiteId?: string | null
     clinicSiteSlug?: string | null
     clinicName: string
+    /** Japanese readers' name. Defaults to clinicName. */
+    clinicNameJa?: string | null
     themePrimary?: string | null
     branding?: ClinicBranding | null
     allowedDurations?: readonly number[]
@@ -497,6 +499,7 @@ export function assembleBookingForm(input: {
         clinicSiteId: input.clinicSiteId ?? null,
         clinicSiteSlug: input.clinicSiteSlug ?? null,
         clinicName: input.clinicName,
+        clinicNameJa: input.clinicNameJa ?? input.clinicName,
         themePrimary: input.themePrimary ?? null,
         branding: input.branding ?? null,
         allowedDurations,

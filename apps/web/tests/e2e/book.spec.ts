@@ -22,6 +22,7 @@ const bookingForm = {
     clinicSiteId: null,
     clinicSiteSlug: null,
     clinicName: 'Test Clinic',
+    clinicNameJa: 'テストクリニック',
     themePrimary: null,
     branding: null,
     allowedDurations: [30],
@@ -162,6 +163,15 @@ test('a visitor in Japan gets the form', async ({ page }) => {
 
     await expect(page.getByTestId('clinic-booking-form')).toBeVisible()
     await expect(page.getByTestId('clinic-booking-region-notice')).toHaveCount(0)
+})
+
+test('the Book page names the clinic in the reader\'s language', async ({ page }) => {
+    await mockBookingApi(page, true)
+    await page.goto(`/ja-JP/book/${FACILITY_ID}?preview=1`)
+    await expect(page.getByTestId('clinic-booking-heading')).toHaveText('テストクリニックの予約')
+
+    await page.goto(`/book/${FACILITY_ID}?preview=1`)
+    await expect(page.getByTestId('clinic-booking-heading')).toContainText('Test Clinic')
 })
 
 // A failed check is not a yes and not a region refusal (#188).

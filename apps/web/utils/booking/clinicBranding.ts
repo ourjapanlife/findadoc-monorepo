@@ -33,6 +33,19 @@ export function clinicWordmark(branding: ClinicBranding, localeCode: string): st
 }
 
 /**
+ * The clinic name a patient reads on the Book and manage pages. Japanese pages show the
+ * clinic site's Japanese name (the API falls back to the English one); every other locale
+ * shows the English name. Patient emails follow the same rule on the server.
+ */
+export function patientClinicName(
+    names: { clinicName: string, clinicNameJa?: string | null },
+    localeCode: string
+): string {
+    const japanese = names.clinicNameJa?.trim() ?? ''
+    return JAPANESE_LOCALE.test(localeCode) && japanese !== '' ? japanese : names.clinicName
+}
+
+/**
  * The logo src, or null to show the wordmark. Only a same-origin static path is used, so a
  * stored `//host/logo.png` or `javascript:` value never reaches an img src.
  */

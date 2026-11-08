@@ -12,7 +12,7 @@
                     class="page-title-sm"
                     data-testid="clinic-booking-heading"
                 >
-                    {{ t('bookingPage.heading', { clinic: form.clinicName }) }}
+                    {{ t('bookingPage.heading', { clinic: clinicName }) }}
                 </h1>
                 <p class="text-primary-text-muted">
                     {{ t('bookingPage.lead') }}
@@ -309,7 +309,7 @@
                                 data-testid="clinic-booking-health-consent"
                             >
                             <span>
-                                {{ t('bookingPage.healthDataConsent', { clinic: form.clinicName }) }}
+                                {{ t('bookingPage.healthDataConsent', { clinic: clinicName }) }}
                                 <NuxtLink
                                     :to="privacyPolicyPath"
                                     class="text-primary underline"
@@ -368,6 +368,7 @@ import {
     takeBookingDraft
 } from '~/utils/booking/draftMemory'
 import { localizedPath } from '~/utils/localePath'
+import { patientClinicName } from '~/utils/booking/clinicBranding'
 import { resolveDuration } from '~/utils/booking/durations'
 import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday, phoneAnswer } from '~/utils/booking/formFields'
 import type { BookingQuery } from '~/utils/booking/query'
@@ -397,6 +398,7 @@ const formError = ref('')
 const confirmations = reactive<BookingConfirmations>({ confirmedInJapan: false, healthDataConsent: false })
 const confirmationsComplete = computed(() => bookingConfirmationsComplete(confirmations))
 const privacyPolicyPath = computed(() => localizedPath('/privacypolicy', String(locale.value)))
+const clinicName = computed(() => patientClinicName(props.form, String(locale.value)))
 const submitting = ref(false)
 const submitted = ref(false)
 const submissionId = ref('')

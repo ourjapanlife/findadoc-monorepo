@@ -1294,7 +1294,10 @@ type BookingForm {
   """Hosted clinic page id. Null when the clinic has no Find a Doc landing."""
   clinicSiteId: ID
   clinicSiteSlug: String
+  """The clinic's English name. Every reader who is not Japanese sees this."""
   clinicName: String!
+  """The clinic site's Japanese (ja-JP) name for Japanese readers, else clinicName."""
+  clinicNameJa: String!
   themePrimary: String
   branding: ClinicBranding
   """Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60."""
@@ -1557,7 +1560,10 @@ type ClinicInterpreterHours {
 
 """What the patient sees on the private cancel page. No answers are returned."""
 type PatientBookingView {
+  """The clinic's English name. Every reader who is not Japanese sees this."""
   clinicName: String!
+  """The clinic site's Japanese (ja-JP) name for Japanese readers, else clinicName."""
+  clinicNameJa: String!
   branding: ClinicBranding
   startsAt: String
   endsAt: String

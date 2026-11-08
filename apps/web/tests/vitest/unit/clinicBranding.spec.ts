@@ -4,7 +4,7 @@ import { defineComponent, h, nextTick, onMounted } from 'vue'
 import type { ClinicBranding } from '@findadoc/graphql'
 import ClinicBrandedLayout from '~/layouts/clinic-branded.vue'
 import { useClinicBrandedChrome, useClinicBranding } from '~/composables/useClinicBranding'
-import { CLINIC_BRANDING_FIELDS, clinicLogoSrc, clinicWordmark } from '~/utils/booking/clinicBranding'
+import { CLINIC_BRANDING_FIELDS, clinicLogoSrc, clinicWordmark, patientClinicName } from '~/utils/booking/clinicBranding'
 import { SITE_ORIGIN } from '~/utils/site'
 
 const SHOWCASE: ClinicBranding = {
@@ -25,6 +25,21 @@ describe('clinicWordmark', () => {
     it('falls back to the other language, then the display name', () => {
         expect(clinicWordmark({ ...SHOWCASE, wordmark: { ja: '日本語だけ', en: null } }, 'fr_FR')).toBe('日本語だけ')
         expect(clinicWordmark({ ...SHOWCASE, wordmark: null, displayName: 'Sakura' }, 'ja_JP')).toBe('Sakura')
+    })
+})
+
+describe('patientClinicName', () => {
+    const names = { clinicName: 'Multilingual Online Clinic', clinicNameJa: '多言語オンラインクリニック' }
+
+    it('shows the Japanese name on Japanese pages and the English one everywhere else', () => {
+        expect(patientClinicName(names, 'ja_JP')).toBe('多言語オンラインクリニック')
+        expect(patientClinicName(names, 'en_US')).toBe('Multilingual Online Clinic')
+        expect(patientClinicName(names, 'zh_CN')).toBe('Multilingual Online Clinic')
+    })
+
+    it('falls back to the English name when there is no Japanese one', () => {
+        expect(patientClinicName({ clinicName: 'Sakura', clinicNameJa: ' ' }, 'ja_JP')).toBe('Sakura')
+        expect(patientClinicName({ clinicName: 'Sakura' }, 'ja_JP')).toBe('Sakura')
     })
 })
 
