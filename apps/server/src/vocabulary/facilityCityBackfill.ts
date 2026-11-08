@@ -12,6 +12,8 @@ export const PUBLISHED_CITY_RATE = 1
  * Decision for one stored facility (#1011).
  * A mapped row gets a city we already own. Anything unresolved stays put.
  * A moderator-confirmed row keeps its stored name and address.
+ * An online facility has no address and no city, so it is left alone and counted apart from the
+ * mapping rate: it cannot block the published-city bar.
  */
 
 export type CityRecord = {
@@ -29,10 +31,11 @@ export type FacilityCityInput = {
     cityJa: string
     addressLine1En?: string
     addressLine1Ja?: string
+    online?: boolean
 }
 
 export type FacilityCityPlan =
-    | { action: 'keep', reason: 'already_assigned' | 'needs_review', reviewReason?: string }
+    | { action: 'keep', reason: 'already_assigned' | 'needs_review' | 'online', reviewReason?: string }
     | {
         action: 'assign'
         cityId: string
@@ -82,6 +85,10 @@ function findCity(cities: CityRecord[], canonical: CanonicalCity): CityRecord | 
 }
 
 export function planFacilityCity(input: FacilityCityInput, cities: CityRecord[]): FacilityCityPlan {
+    if (input.online === true) {
+        return { action: 'keep', reason: 'online' }
+    }
+
     if (input.cityId) {
         return { action: 'keep', reason: 'already_assigned' }
     }
@@ -121,7 +128,9 @@ export function planFacilityCity(input: FacilityCityInput, cities: CityRecord[])
 export type WeightedFacilityCity = FacilityCityInput & { weight: number }
 
 export type FacilityCityReport = {
+    /** Facilities that need a city. Online facilities are not in it. */
     total: number
+    online: number
     mapped: number
     unmatched: number
     rate: number
@@ -136,6 +145,7 @@ export function reportFacilityCities(
     cities: CityRecord[]
 ): FacilityCityReport {
     let total = 0
+    let online = 0
     let mapped = 0
     let genericPublished = 0
     const tokyo: Record<string, number> = {}
@@ -144,8 +154,14 @@ export function reportFacilityCities(
 
     for (const row of rows) {
         const weight = row.weight
-        total += weight
         const plan = planFacilityCity(row, cities)
+
+        if (plan.action === 'keep' && plan.reason === 'online') {
+            online += weight
+            continue
+        }
+
+        total += weight
 
         if (plan.action === 'keep' && plan.reason === 'already_assigned') {
             mapped += weight
@@ -198,6 +214,7 @@ export function reportFacilityCities(
 
     return {
         total,
+        online,
         mapped,
         unmatched: total - mapped,
         rate: total === 0 ? 0 : mapped / total,

@@ -91,6 +91,38 @@ describe('planFacilityCity', () => {
         expect(report.reviewReasons).toEqual({ ambiguous_ward: 1 })
     })
 
+    it('leaves an online facility without a city', () => {
+        expect(planFacilityCity(row('', '', '', { online: true }), cities)).toEqual({
+            action: 'keep',
+            reason: 'online'
+        })
+    })
+
+    it('does not let an online facility block the published-city bar', () => {
+        const report = reportFacilityCities([
+            row('Tokyo', 'Minato City', '港区'),
+            row('', '', '', { online: true })
+        ], cities)
+
+        expect(report.total).toBe(1)
+        expect(report.online).toBe(1)
+        expect(report.mapped).toBe(1)
+        expect(report.unmatched).toBe(0)
+        expect(report.reviewReasons).toEqual({})
+        expect(meetsPublishedCityBar(report)).toBe(true)
+    })
+
+    it('still refuses the bar when a facility with an address does not map', () => {
+        const report = reportFacilityCities([
+            row('', '', '', { online: true }),
+            row('Osaka', 'North Ward', '北区')
+        ], cities)
+
+        expect(report.online).toBe(1)
+        expect(report.unmatched).toBe(1)
+        expect(meetsPublishedCityBar(report)).toBe(false)
+    })
+
     it('assigns a confirmed facility without rewriting its stored name', () => {
         const plan = planFacilityCity(row('Fukuoka', 'East Ward', '東区', {
             verificationStatus: 'CONFIRMED'
