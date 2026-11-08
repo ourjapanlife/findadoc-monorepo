@@ -24,6 +24,7 @@ import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
 import { ErrorCode, Result } from '../result.js'
 import { createBookingDownloadUrl } from '../storage/objectStorage.js'
+import { UUID_REGEX } from '../validation/validateFacility.js'
 
 const DEFAULT_LIMIT = 20
 const MAX_LIMIT = 100
@@ -412,7 +413,15 @@ export async function exportBookingSubmissions(
     access: BookingAccess,
     actorSub?: string
 ): Promise<Result<BookingSubmissionExport>> {
-    if (facilityId.trim() === '' || !canManageFacility(access, facilityId)) {
+    // A malformed id would reach Postgres as a uuid cast error for an admin, so it is refused here.
+    if (!UUID_REGEX.test(facilityId)) {
+        return {
+            data: undefined as never,
+            hasErrors: true,
+            errors: [{ field: 'facilityId', errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 }]
+        }
+    }
+    if (!canManageFacility(access, facilityId)) {
         return notFound('facilityId')
     }
 
@@ -436,7 +445,7 @@ export async function exportBookingSubmissions(
                 sql<string | null>`booking.answers->>'consultationLanguage'`.as('consultation_language'),
                 sql<string | null>`booking.answers->>${PAYMENT_METHOD_FIELD_ID}`.as('payment_method')
             ])
-            .orderBy('appointment.starts_at', sql`desc nulls last`)
+            .orderBy('appointment.starts_at', order => order.desc().nullsLast())
             .orderBy('booking.created_date', 'desc')
             .limit(EXPORT_MAX_ROWS + 1)
             .execute()

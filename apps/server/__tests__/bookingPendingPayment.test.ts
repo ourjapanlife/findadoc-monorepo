@@ -1,11 +1,13 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { BookingAppointmentStatus, BookingPaymentMethod } from '@findadoc/graphql'
 import { db } from '../src/kyselyClient.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
 import { DEFAULT_BOOKING_FORM_ID, SHOWCASE_BOOKING_FORM_ID } from '../src/booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, type AppointmentStatus } from '../src/booking/lifecycle.js'
 import { newPatientToken } from '../src/booking/links.js'
+import * as notifications from '../src/booking/notifications.js'
 import { generateRandomCreateFacilityInput } from '../src/fakeData/fakeFacilities.js'
+import { logger } from '../src/logger.js'
 import { ErrorCode } from '../src/result.js'
 import * as appointmentService from '../src/services/appointmentService.js'
 import * as availabilityService from '../src/services/availabilityService.js'
@@ -43,6 +45,10 @@ describe('pending payment bookings', () => {
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID, SHOWCASE_BOOKING_FORM_ID]
         }, admin)
         expect(settings.hasErrors).toBe(false)
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
     })
 
     afterAll(async () => {
@@ -154,6 +160,27 @@ describe('pending payment bookings', () => {
         expect(unpaid.data.status).toBe(BookingAppointmentStatus.PendingPayment)
     })
 
+    it('sends the patient no email when a confirmed visit is marked unpaid, but does on confirm', async () => {
+        const { appointmentId } = await storeConsult(270, APPOINTMENT_STATUS.CONFIRMED)
+        const notice = vi.spyOn(notifications, 'sendBookingNotice').mockResolvedValue(true)
+
+        const unpaid = await appointmentService.updateAppointmentStatus(
+            { appointmentId, status: BookingAppointmentStatus.PendingPayment },
+            admin,
+            'test|staff'
+        )
+        expect(unpaid.hasErrors).toBe(false)
+        expect(notice).not.toHaveBeenCalled()
+
+        const confirmed = await appointmentService.updateAppointmentStatus(
+            { appointmentId, status: BookingAppointmentStatus.Confirmed },
+            admin,
+            'test|staff'
+        )
+        expect(confirmed.hasErrors).toBe(false)
+        expect(notice).toHaveBeenCalledTimes(1)
+    })
+
     it('refuses a move to pending payment from a request, and from another clinic', async () => {
         const request = await storeConsult(300, APPOINTMENT_STATUS.REQUESTED)
         const refused = await appointmentService.updateAppointmentStatus(
@@ -249,6 +276,36 @@ describe('pending payment bookings', () => {
                 'appointmentStatus', 'consultationLanguage', 'createdDate', 'email', 'endsAt', 'id',
                 'patientName', 'paymentMethod', 'phone', 'startsAt'
             ])
+        })
+
+        it('logs ids and a count only, never a patient field', async () => {
+            await storeConsult(630, APPOINTMENT_STATUS.PENDING_PAYMENT, { email: 'logged@example.com' })
+            const info = vi.spyOn(logger, 'info')
+
+            const result = await staffBookingService.exportBookingSubmissions(
+                facilityId,
+                null,
+                memberOf(facilityId, MEMBERSHIP_ROLE.OWNER),
+                'test|owner'
+            )
+            expect(result.hasErrors).toBe(false)
+            // winston types info() by its single-object overload; the service calls (message, meta).
+            const calls: unknown[][] = info.mock.calls
+            const meta = calls.map(args => args[1]).find(item =>
+                typeof item === 'object' && item !== null && 'type' in item && item.type === 'bookingExport')
+            expect(meta).toBeDefined()
+            expect(Object.keys(meta ?? {}).sort()).toEqual([
+                'actor', 'appointmentStatus', 'facilityId', 'rowCount', 'truncated', 'type'
+            ])
+            const logged = JSON.stringify(calls)
+            for (const value of ['logged@example.com', 'Test Patient', '090-1234-5678', 'Headache', 'Shiba']) {
+                expect(logged).not.toContain(value)
+            }
+        })
+
+        it('refuses a malformed facility id before it reaches the database', async () => {
+            const result = await staffBookingService.exportBookingSubmissions('not-a-uuid', null, admin, 'test|admin')
+            expect(result.errors?.[0]?.errorCode).toBe(ErrorCode.INVALID_INPUT)
         })
 
         it('lets an admin export any clinic', async () => {

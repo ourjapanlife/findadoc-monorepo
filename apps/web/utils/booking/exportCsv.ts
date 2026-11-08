@@ -90,7 +90,10 @@ export function bookingExportFileName(now: Date = new Date()): string {
     return `bookings-${jstDateKey(now)}.csv`
 }
 
-/** Hands the file to the browser as a download. The object URL is released straight after. */
+// Safari and Firefox can drop a download whose object URL is revoked in the same tick as the click.
+const REVOKE_AFTER_MS = 10000
+
+/** Hands the file to the browser as a download. The object URL is released shortly after. */
 export function downloadCsv(text: string, fileName: string): void {
     const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }))
     const link = document.createElement('a')
@@ -100,5 +103,5 @@ export function downloadCsv(text: string, fileName: string): void {
     document.body.appendChild(link)
     link.click()
     link.remove()
-    URL.revokeObjectURL(url)
+    setTimeout(() => URL.revokeObjectURL(url), REVOKE_AFTER_MS)
 }
