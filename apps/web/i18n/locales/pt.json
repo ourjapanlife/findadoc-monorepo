@@ -1091,6 +1091,7 @@
     "noClinics": "Esta conta ainda não está vinculada a uma clínica.",
     "noClinicsHelp": "Peça ao Find a Doc, Japan para convidar o e-mail que você usa para entrar. O convite é vinculado no próximo acesso.",
     "noAccessHeading": "Você não tem acesso a esta clínica",
+    "switchClinic": "Trocar de clínica",
     "statusFilter": "Mostrar",
     "allStatuses": "Todos os pedidos",
     "saved": "Salvo",

@@ -1091,6 +1091,7 @@
     "noClinics": "Dieses Konto ist noch mit keiner Praxis verknüpft.",
     "noClinicsHelp": "Bitten Sie Find a Doc, Japan, die E-Mail-Adresse einzuladen, mit der Sie sich anmelden. Die Einladung wird bei der nächsten Anmeldung verknüpft.",
     "noAccessHeading": "Sie haben keinen Zugriff auf diese Praxis",
+    "switchClinic": "Praxis wechseln",
     "statusFilter": "Anzeigen",
     "allStatuses": "Alle Anfragen",
     "saved": "Gespeichert",

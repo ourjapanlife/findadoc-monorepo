@@ -7,6 +7,7 @@ import type {
     PatientBookingView
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
+import { CLINIC_BRANDING_FIELDS } from '~/utils/booking/clinicBranding'
 import { ErrorCode, type ServerResponse } from '~/typedefs/serverResponse'
 
 /**
@@ -55,6 +56,7 @@ const BOOKING_FORM_FIELDS = `
   clinicSiteSlug
   clinicName
   themePrimary
+  ${CLINIC_BRANDING_FIELDS}
   allowedDurations
   defaultDuration
   fields {
@@ -296,6 +298,7 @@ export async function putBookingFile(
 
 const PATIENT_BOOKING_FIELDS = `
   clinicName
+  ${CLINIC_BRANDING_FIELDS}
   startsAt
   endsAt
   status

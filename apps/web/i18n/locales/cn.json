@@ -1091,6 +1091,7 @@
     "noClinics": "此账户尚未关联诊所。",
     "noClinicsHelp": "请联系 Find a Doc, Japan 邀请您登录所用的邮箱。下次登录时邀请即会生效。",
     "noAccessHeading": "您无权访问此诊所",
+    "switchClinic": "切换诊所",
     "statusFilter": "显示",
     "allStatuses": "全部申请",
     "saved": "已保存",

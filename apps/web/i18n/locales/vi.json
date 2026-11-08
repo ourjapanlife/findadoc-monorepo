@@ -1091,6 +1091,7 @@
     "noClinics": "Tài khoản này chưa được liên kết với phòng khám nào.",
     "noClinicsHelp": "Hãy nhờ Find a Doc, Japan mời địa chỉ email bạn dùng để đăng nhập. Lời mời sẽ được liên kết ở lần đăng nhập tiếp theo.",
     "noAccessHeading": "Bạn không có quyền truy cập phòng khám này",
+    "switchClinic": "Đổi phòng khám",
     "statusFilter": "Hiển thị",
     "allStatuses": "Tất cả yêu cầu",
     "saved": "Đã lưu",

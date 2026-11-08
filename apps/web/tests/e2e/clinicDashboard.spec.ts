@@ -52,6 +52,9 @@ test('a request shows as Requested, the clinic confirms it, and the calendar sho
     const booking = await bookAsPatient(browser, baseURL, patient)
 
     await page.goto(`${dashboardPath}?tab=requests`)
+    // The showcase dashboard wears the clinic header and keeps sign-out (§4).
+    await expect(page.getByTestId('clinic-branded-wordmark')).toHaveText('Multilingual Online Clinic')
+    await expect(page.getByTestId('clinic-branded-sign-out')).toBeVisible()
     // The list opens on Pending payment (spec §3.2). The standard form starts as Requested.
     await expect(page.getByTestId('clinic-booking-filter-pending_payment')).toHaveAttribute('aria-pressed', 'true')
     await page.getByTestId('clinic-booking-filter-requested').click()

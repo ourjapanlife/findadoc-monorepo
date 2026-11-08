@@ -23,6 +23,7 @@ const bookingForm = {
     clinicSiteSlug: null,
     clinicName: 'Test Clinic',
     themePrimary: null,
+    branding: null,
     allowedDurations: [30],
     defaultDuration: 30,
     fields: [],

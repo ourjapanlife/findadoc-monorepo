@@ -1091,6 +1091,7 @@
     "noClinics": "Akun ini belum terhubung dengan klinik.",
     "noClinicsHelp": "Minta Find a Doc, Japan untuk mengundang alamat email yang Anda gunakan untuk masuk. Undangan akan terhubung saat Anda masuk berikutnya.",
     "noAccessHeading": "Anda tidak memiliki akses ke klinik ini",
+    "switchClinic": "Ganti klinik",
     "statusFilter": "Tampilkan",
     "allStatuses": "Semua permintaan",
     "saved": "Tersimpan",

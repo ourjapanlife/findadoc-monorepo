@@ -114,6 +114,7 @@ export enum BookingCardPaymentMode {
 /** A clinic the signed-in user may open in the booking dashboard. */
 export type BookingClinic = {
   __typename?: 'BookingClinic';
+  branding?: Maybe<ClinicBranding>;
   /** True when the user may change members and booking settings. */
   canManage: Scalars['Boolean']['output'];
   clinicName: Scalars['String']['output'];
@@ -145,6 +146,7 @@ export type BookingForm = {
   __typename?: 'BookingForm';
   /** Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60. */
   allowedDurations: Array<Scalars['Int']['output']>;
+  branding?: Maybe<ClinicBranding>;
   clinicName: Scalars['String']['output'];
   /** Hosted clinic page id. Null when the clinic has no Find a Doc landing. */
   clinicSiteId?: Maybe<Scalars['ID']['output']>;
@@ -553,6 +555,22 @@ export type ClinicAvailabilityWindow = {
 };
 
 /**
+ * How a clinic with a hosted clinic page brands its booking pages and dashboard (online consult v2 §4).
+ * Read from clinic_sites.theme. Null on a clinic with no clinic page, or a draft one: those pages keep
+ * the Find a Doc header.
+ */
+export type ClinicBranding = {
+  __typename?: 'ClinicBranding';
+  /** theme.displayName, or the clinic name. Alt text for the logo, and the header when there is no wordmark. */
+  displayName: Scalars['String']['output'];
+  /** A static site path such as /clinic-landings/{slug}/logo.svg. Shown instead of the wordmark when set. */
+  logoPath?: Maybe<Scalars['String']['output']>;
+  /** Brand color as #RRGGBB. Null keeps the Find a Doc primary. */
+  primary?: Maybe<Scalars['String']['output']>;
+  wordmark?: Maybe<ClinicWordmark>;
+};
+
+/**
  * An interpreter, team, or phone service at a clinic (#205). docs/booking-interpretation.md.
  * Each empty field means "all": every clinic language, every open time, no limit.
  */
@@ -814,6 +832,13 @@ export type ClinicWeeklyHoursInput = {
   endMinute: Scalars['Int']['input'];
   startMinute: Scalars['Int']['input'];
   weekday: Scalars['Int']['input'];
+};
+
+/** Clinic wordmark text (online consult v2 §4). Japanese pages show ja; every other locale shows en. */
+export type ClinicWordmark = {
+  __typename?: 'ClinicWordmark';
+  en?: Maybe<Scalars['String']['output']>;
+  ja?: Maybe<Scalars['String']['output']>;
 };
 
 /** Contact information for a facility. */
@@ -1789,6 +1814,7 @@ export enum OrderDirection {
 /** What the patient sees on the private cancel page. No answers are returned. */
 export type PatientBookingView = {
   __typename?: 'PatientBookingView';
+  branding?: Maybe<ClinicBranding>;
   canCancel: Scalars['Boolean']['output'];
   clinicName: Scalars['String']['output'];
   endsAt?: Maybe<Scalars['String']['output']>;
@@ -2765,6 +2791,7 @@ export type ResolversTypes = {
   CitySuggestion: ResolverTypeWrapper<CitySuggestion>;
   ClinicAvailabilityClosure: ResolverTypeWrapper<ClinicAvailabilityClosure>;
   ClinicAvailabilityWindow: ResolverTypeWrapper<ClinicAvailabilityWindow>;
+  ClinicBranding: ResolverTypeWrapper<ClinicBranding>;
   ClinicInterpreter: ResolverTypeWrapper<ClinicInterpreter>;
   ClinicInterpreterHours: ResolverTypeWrapper<ClinicInterpreterHours>;
   ClinicMember: ResolverTypeWrapper<ClinicMember>;
@@ -2786,6 +2813,7 @@ export type ResolversTypes = {
   ClinicSiteTheme: ResolverTypeWrapper<ClinicSiteTheme>;
   ClinicWeeklyHours: ResolverTypeWrapper<ClinicWeeklyHours>;
   ClinicWeeklyHoursInput: ClinicWeeklyHoursInput;
+  ClinicWordmark: ResolverTypeWrapper<ClinicWordmark>;
   Contact: ResolverTypeWrapper<Contact>;
   ContactInput: ContactInput;
   CreateBookingUploadUrlInput: CreateBookingUploadUrlInput;
@@ -2893,6 +2921,7 @@ export type ResolversParentTypes = {
   CitySuggestion: CitySuggestion;
   ClinicAvailabilityClosure: ClinicAvailabilityClosure;
   ClinicAvailabilityWindow: ClinicAvailabilityWindow;
+  ClinicBranding: ClinicBranding;
   ClinicInterpreter: ClinicInterpreter;
   ClinicInterpreterHours: ClinicInterpreterHours;
   ClinicMember: ClinicMember;
@@ -2911,6 +2940,7 @@ export type ResolversParentTypes = {
   ClinicSiteTheme: ClinicSiteTheme;
   ClinicWeeklyHours: ClinicWeeklyHours;
   ClinicWeeklyHoursInput: ClinicWeeklyHoursInput;
+  ClinicWordmark: ClinicWordmark;
   Contact: Contact;
   ContactInput: ContactInput;
   CreateBookingUploadUrlInput: CreateBookingUploadUrlInput;
@@ -3000,6 +3030,7 @@ export type BookingAppointmentResolvers<ContextType = any, ParentType extends Re
 };
 
 export type BookingClinicResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingClinic'] = ResolversParentTypes['BookingClinic']> = {
+  branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
   canManage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3010,6 +3041,7 @@ export type BookingClinicResolvers<ContextType = any, ParentType extends Resolve
 
 export type BookingFormResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingForm'] = ResolversParentTypes['BookingForm']> = {
   allowedDurations?: Resolver<Array<ResolversTypes['Int']>, ParentType, ContextType>;
+  branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3244,6 +3276,13 @@ export type ClinicAvailabilityWindowResolvers<ContextType = any, ParentType exte
   startsAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
+export type ClinicBrandingResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicBranding'] = ResolversParentTypes['ClinicBranding']> = {
+  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  logoPath?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  primary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  wordmark?: Resolver<Maybe<ResolversTypes['ClinicWordmark']>, ParentType, ContextType>;
+};
+
 export type ClinicInterpreterResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicInterpreter'] = ResolversParentTypes['ClinicInterpreter']> = {
   capacity?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -3411,6 +3450,11 @@ export type ClinicWeeklyHoursResolvers<ContextType = any, ParentType extends Res
   weekday?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
 
+export type ClinicWordmarkResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClinicWordmark'] = ResolversParentTypes['ClinicWordmark']> = {
+  en?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  ja?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
 export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = {
   address?: Resolver<Maybe<ResolversTypes['PhysicalAddress']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3563,6 +3607,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type PatientBookingViewResolvers<ContextType = any, ParentType extends ResolversParentTypes['PatientBookingView'] = ResolversParentTypes['PatientBookingView']> = {
+  branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
   canCancel?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   endsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3707,6 +3752,7 @@ export type Resolvers<ContextType = any> = {
   CitySuggestion?: CitySuggestionResolvers<ContextType>;
   ClinicAvailabilityClosure?: ClinicAvailabilityClosureResolvers<ContextType>;
   ClinicAvailabilityWindow?: ClinicAvailabilityWindowResolvers<ContextType>;
+  ClinicBranding?: ClinicBrandingResolvers<ContextType>;
   ClinicInterpreter?: ClinicInterpreterResolvers<ContextType>;
   ClinicInterpreterHours?: ClinicInterpreterHoursResolvers<ContextType>;
   ClinicMember?: ClinicMemberResolvers<ContextType>;
@@ -3723,6 +3769,7 @@ export type Resolvers<ContextType = any> = {
   ClinicSiteSummary?: ClinicSiteSummaryResolvers<ContextType>;
   ClinicSiteTheme?: ClinicSiteThemeResolvers<ContextType>;
   ClinicWeeklyHours?: ClinicWeeklyHoursResolvers<ContextType>;
+  ClinicWordmark?: ClinicWordmarkResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   CurrentUserAccess?: CurrentUserAccessResolvers<ContextType>;
   DeleteResult?: DeleteResultResolvers<ContextType>;

@@ -38,6 +38,10 @@ test('the clinic subdomain Book button opens the Book page on Find a Doc', async
 
     await expect(page).toHaveURL(new RegExp(`^${site.protocol}//localhost:${site.port}/book/${SHOWCASE_FACILITY_ID}\\?`))
     await expect(page.getByTestId('clinic-booking-heading')).toBeVisible()
+    // The showcase has a clinic page, so the Book page carries its wordmark, not the Find a Doc header (§4).
+    await expect(page.getByTestId('clinic-branded-wordmark')).toHaveText('Multilingual Online Clinic')
+    await expect(page.getByTestId('top-nav')).toHaveCount(0)
+    await expect(page.getByTestId('clinic-branded-credit')).toHaveAttribute('href', 'https://www.findadoc.jp')
 })
 
 test('a patient books, sees the manage link, and the time is no longer offered', async ({ page }) => {
@@ -52,6 +56,7 @@ test('a patient cancels from the manage link with a reason, and the time is offe
     const booking = await bookFirstOpenStart(page, day, newPatient('Cancel'))
 
     await cancelFromManageLink(page, booking.manageUrl, 'E2E: plans changed')
+    await expect(page.getByTestId('clinic-branded-header')).toBeVisible()
 
     await page.goto(bookPagePath(day))
     await fillContactStep(page, newPatient('After'))

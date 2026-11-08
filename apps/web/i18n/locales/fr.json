@@ -1091,6 +1091,7 @@
     "noClinics": "Ce compte n'est encore lié à aucune clinique.",
     "noClinicsHelp": "Demandez à Find a Doc, Japan d'inviter l'adresse e-mail avec laquelle vous vous connectez. L'invitation sera liée à votre prochaine connexion.",
     "noAccessHeading": "Vous n'avez pas accès à cette clinique",
+    "switchClinic": "Changer de clinique",
     "statusFilter": "Afficher",
     "allStatuses": "Toutes les demandes",
     "saved": "Enregistré",

@@ -242,6 +242,7 @@ async function patientView(row: TokenRow): Promise<PatientBookingView> {
     const startsAt = row.starts_at === null ? null : new Date(row.starts_at)
     return {
         clinicName: target?.clinicName ?? '',
+        branding: target?.branding ?? null,
         startsAt: startsAt?.toISOString() ?? null,
         endsAt: row.ends_at === null ? null : new Date(row.ends_at).toISOString(),
         status: appointmentStatusFromRow(row.status),

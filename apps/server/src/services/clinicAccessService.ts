@@ -106,7 +106,8 @@ async function bookingClinicFor(
         clinicSiteSlug: target.clinicSiteSlug,
         role: role === undefined ? null : roleToGql(role),
         canManage: canManageFacility(access, facilityId),
-        requestedCount
+        requestedCount,
+        branding: target.branding
     }
 }
 

@@ -27,6 +27,7 @@ import type {
     UpdateBookingSettingsInput
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from '~/utils/graphql'
+import { CLINIC_BRANDING_FIELDS } from '~/utils/booking/clinicBranding'
 
 /**
  * Staff booking reads and writes. The API limits every call to the clinics the
@@ -101,6 +102,7 @@ const CLINIC_FIELDS = `
   role
   canManage
   requestedCount
+  ${CLINIC_BRANDING_FIELDS}
 `
 
 const MEMBER_FIELDS = `

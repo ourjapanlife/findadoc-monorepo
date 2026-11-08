@@ -120,6 +120,7 @@ import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BookingAppointmentStatus, type PatientBookingView } from '@findadoc/graphql'
 import { definePageMeta, useHead } from '#imports'
+import { useClinicBranding } from '~/composables/useClinicBranding'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { cancelPatientBooking, fetchPatientBooking, isBookingRefusal } from '~/utils/booking/formQuery'
 import { formatJapanDateTime } from '~/utils/booking/japanTime'
@@ -129,9 +130,11 @@ import { formatPageTitle } from '~/utils/site'
 /**
  * `/book/manage#{token}`: the private link from the confirmation email.
  * The token is in the fragment, so it never reaches a server or CDN log.
+ * Once the booking loads, a clinic with a clinic page gets its own header (online consult v2 §4).
  */
 definePageMeta({
-    ssr: false
+    ssr: false,
+    layout: 'clinic-branded'
 })
 
 const { t, locale } = useI18n()
@@ -143,12 +146,24 @@ const cancelling = ref(false)
 const cancelError = ref(false)
 // The API refused the last call because this address made too many (#160).
 const rateLimited = ref(false)
+const clinicBranding = useClinicBranding()
 let token = ''
+
+function showBranding(view: PatientBookingView | null): void {
+    // An unknown or refused token keeps the branding of a booking already on screen.
+    if (view === null) {
+        return
+    }
+    clinicBranding.show(view.branding === null || view.branding === undefined
+        ? null
+        : { branding: view.branding, staff: false, canSwitchClinic: false, localeSelector: true })
+}
 
 async function loadBooking(): Promise<void> {
     const loaded = token === '' ? null : await fetchPatientBooking(token)
     rateLimited.value = loaded === 'rateLimited'
     booking.value = isBookingRefusal(loaded) ? null : loaded
+    showBranding(booking.value)
 }
 
 async function cancel(): Promise<void> {
@@ -169,6 +184,7 @@ async function cancel(): Promise<void> {
     }
     rateLimited.value = false
     booking.value = updated
+    showBranding(updated)
 }
 
 onMounted(async () => {

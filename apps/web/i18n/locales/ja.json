@@ -1091,6 +1091,7 @@
     "noClinics": "このアカウントはまだクリニックに紐づいていません。",
     "noClinicsHelp": "ログインに使うメールアドレスを Find a Doc, Japan から招待してもらってください。次回ログイン時に招待が紐づきます。",
     "noAccessHeading": "このクリニックへのアクセス権がありません",
+    "switchClinic": "クリニックを切り替え",
     "statusFilter": "表示",
     "allStatuses": "すべてのリクエスト",
     "saved": "保存しました",

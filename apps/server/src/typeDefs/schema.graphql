@@ -1146,6 +1146,27 @@ type ClinicSiteTheme {
   primary: String
 }
 
+"""Clinic wordmark text (online consult v2 §4). Japanese pages show ja; every other locale shows en."""
+type ClinicWordmark {
+  ja: String
+  en: String
+}
+
+"""
+How a clinic with a hosted clinic page brands its booking pages and dashboard (online consult v2 §4).
+Read from clinic_sites.theme. Null on a clinic with no clinic page, or a draft one: those pages keep
+the Find a Doc header.
+"""
+type ClinicBranding {
+  """theme.displayName, or the clinic name. Alt text for the logo, and the header when there is no wordmark."""
+  displayName: String!
+  wordmark: ClinicWordmark
+  """A static site path such as /clinic-landings/{slug}/logo.svg. Shown instead of the wordmark when set."""
+  logoPath: String
+  """Brand color as #RRGGBB. Null keeps the Find a Doc primary."""
+  primary: String
+}
+
 """
 A clinic-owned page. id is the id accounts and a future CRM attach to.
 facilityId is the directory listing, null until that facility exists.
@@ -1275,6 +1296,7 @@ type BookingForm {
   clinicSiteSlug: String
   clinicName: String!
   themePrimary: String
+  branding: ClinicBranding
   """Visit lengths the clinic offers, in minutes. Each value is 15, 30, 45, or 60."""
   allowedDurations: [Int!]!
   """The offered length the Book page preselects."""
@@ -1419,6 +1441,7 @@ type BookingClinic {
   canManage: Boolean!
   """Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline."""
   requestedCount: Int!
+  branding: ClinicBranding
 }
 
 """A person invited to, or signed in to, one clinic's booking dashboard."""
@@ -1525,6 +1548,7 @@ type ClinicInterpreterHours {
 """What the patient sees on the private cancel page. No answers are returned."""
 type PatientBookingView {
   clinicName: String!
+  branding: ClinicBranding
   startsAt: String
   endsAt: String
   status: BookingAppointmentStatus

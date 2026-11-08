@@ -1,7 +1,8 @@
 import { sql, type Transaction } from 'kysely'
 import { db } from '../kyselyClient.js'
 import type { Database } from '../typeDefs/kyselyTypes.js'
-import { clinicThemeFromRow } from '../services/clinicSiteService.js'
+import type { ClinicBranding } from '@findadoc/graphql'
+import { clinicBrandingFromRow, clinicThemeFromRow } from '../services/clinicSiteService.js'
 import { DEFAULT_BOOKING_FORM_ID, parseFormDefinitionIds } from './formDefinitions.js'
 import { DEFAULT_ALLOWED_DURATIONS, parseAllowedDurations, resolveDefaultDuration } from './schedule.js'
 
@@ -14,6 +15,8 @@ export type BookingTarget = {
     clinicSiteSlug: string | null
     clinicName: string
     themePrimary: string | null
+    /** Header and colour for the branded pages. Null without a non-draft clinic site (§4). */
+    branding: ClinicBranding | null
     allowedDurations: number[]
     /** The offered length the Book page preselects. */
     defaultDuration: number
@@ -106,6 +109,7 @@ async function targetFromFacility(facilityId: string): Promise<BookingTarget | u
         clinicSiteSlug: site?.slug ?? null,
         clinicName,
         themePrimary: theme?.primary ?? null,
+        branding: site === undefined ? null : clinicBrandingFromRow(site.theme, clinicName),
         allowedDurations: settings.allowedDurations,
         defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,
@@ -145,12 +149,14 @@ async function targetFromClinicSite(siteIdOrSlug: string, byId: boolean): Promis
 
     const settings = await settingsForFacility(site.facility_id)
     const theme = clinicThemeFromRow(site.theme)
+    const clinicName = site.name?.trim() || site.slug
     return {
         facilityId: site.facility_id,
         clinicSiteId: site.id,
         clinicSiteSlug: site.slug,
-        clinicName: site.name?.trim() || site.slug,
+        clinicName,
         themePrimary: theme.primary,
+        branding: clinicBrandingFromRow(site.theme, clinicName),
         allowedDurations: settings.allowedDurations,
         defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,

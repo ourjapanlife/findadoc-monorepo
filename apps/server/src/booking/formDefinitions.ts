@@ -3,7 +3,8 @@ import {
     BookingFormFieldType,
     BookingPhoneRegion,
     type BookingForm,
-    type BookingFormField
+    type BookingFormField,
+    type ClinicBranding
 } from '@findadoc/graphql'
 import { formatJapanPhone, PHONE_DISPLAY } from '../../utils/stringUtils.js'
 import { APPOINTMENT_STATUS, type AppointmentStatus } from './lifecycle.js'
@@ -482,6 +483,7 @@ export function assembleBookingForm(input: {
     clinicSiteSlug?: string | null
     clinicName: string
     themePrimary?: string | null
+    branding?: ClinicBranding | null
     allowedDurations?: readonly number[]
     defaultDuration?: number | null
 }): AssembledBookingForm {
@@ -496,6 +498,7 @@ export function assembleBookingForm(input: {
         clinicSiteSlug: input.clinicSiteSlug ?? null,
         clinicName: input.clinicName,
         themePrimary: input.themePrimary ?? null,
+        branding: input.branding ?? null,
         allowedDurations,
         defaultDuration: resolveDefaultDuration(allowedDurations, input.defaultDuration)
             ?? DEFAULT_APPOINTMENT_DURATION_MINUTES,

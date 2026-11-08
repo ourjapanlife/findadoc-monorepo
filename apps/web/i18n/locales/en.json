@@ -1091,6 +1091,7 @@
     "noClinics": "This account is not linked to a clinic yet.",
     "noClinicsHelp": "Ask Find a Doc, Japan to invite the email address you sign in with. The invitation links on your next sign-in.",
     "noAccessHeading": "You do not have access to this clinic",
+    "switchClinic": "Switch clinic",
     "statusFilter": "Show",
     "allStatuses": "All requests",
     "saved": "Saved",

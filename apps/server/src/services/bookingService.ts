@@ -103,6 +103,7 @@ function bookingFormForTarget(target: BookingTarget, formDefinitionId?: string |
         clinicSiteSlug: target.clinicSiteSlug,
         clinicName: target.clinicName,
         themePrimary: target.themePrimary,
+        branding: target.branding,
         allowedDurations: target.allowedDurations,
         defaultDuration: target.defaultDuration
     })
