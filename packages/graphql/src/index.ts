@@ -124,6 +124,11 @@ export type BookingClinic = {
   requestedCount: Scalars['Int']['output'];
   /** Null for admins, who reach every clinic without a membership. */
   role?: Maybe<ClinicMemberRole>;
+  /**
+   * True when the clinic offers a form that asks how the patient pays, so new visits
+   * start as PENDING_PAYMENT. The staff list opens on that status only then.
+   */
+  takesPayment: Scalars['Boolean']['output'];
 };
 
 /**
@@ -324,6 +329,11 @@ export type BookingSettings = {
   facilityId: Scalars['ID']['output'];
   /** Intake forms the clinic offers. The first is the default. */
   formDefinitionIds: Array<Scalars['String']['output']>;
+  /**
+   * Intake forms this user may offer at this clinic. The online consult form is
+   * limited to admins and preview clinic sites until its answers have a purge path.
+   */
+  offerableFormDefinitionIds: Array<Scalars['String']['output']>;
   /** The clinic may use interpreters (#205). Admins turn it on; it is meant to be a paid add-on. */
   offersInterpretation: Scalars['Boolean']['output'];
 };
@@ -3037,6 +3047,7 @@ export type BookingClinicResolvers<ContextType = any, ParentType extends Resolve
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   requestedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['ClinicMemberRole']>, ParentType, ContextType>;
+  takesPayment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
 export type BookingFormResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingForm'] = ResolversParentTypes['BookingForm']> = {
@@ -3129,6 +3140,7 @@ export type BookingSettingsResolvers<ContextType = any, ParentType extends Resol
   defaultDuration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   formDefinitionIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  offerableFormDefinitionIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   offersInterpretation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 

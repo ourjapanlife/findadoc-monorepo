@@ -60,6 +60,7 @@
                     v-else-if="tab === 'requests'"
                     :facility-id="facilityId"
                     :can-manage="clinic.canManage"
+                    :takes-payment="clinic.takesPayment"
                     @open-booking="openBooking"
                 />
                 <div

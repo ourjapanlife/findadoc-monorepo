@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect } from 'chai'
+import { createI18n } from 'vue-i18n'
 import { BookingAppointmentStatus, BookingPaymentMethod, type BookingSubmissionExportRow } from '@findadoc/graphql'
 import {
     CSV_BOM,
@@ -106,5 +107,20 @@ describe('pending payment actions', () => {
             .to.equal('Payment received, confirm')
         expect(t(staffActionLabelKey(BookingAppointmentStatus.Confirmed, BookingAppointmentStatus.Requested)))
             .to.equal('Confirm')
+    })
+})
+
+describe('the export status line', () => {
+    it('reads as a plural that agrees with the count in English', () => {
+        const message = lookup('clinicDashboard.export.done') ?? ''
+        const i18n = createI18n({
+            legacy: false,
+            locale: 'en-US',
+            messages: { 'en-US': { clinicDashboard: { export: { done: message } } } }
+        })
+        const done = (n: number) => i18n.global.t('clinicDashboard.export.done', { n }, n)
+        expect(done(0)).to.equal('No bookings to download.')
+        expect(done(1)).to.equal('Downloaded 1 booking.')
+        expect(done(3)).to.equal('Downloaded 3 bookings.')
     })
 })

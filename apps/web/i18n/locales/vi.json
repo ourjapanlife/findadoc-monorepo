@@ -1214,7 +1214,7 @@
       "button": "Tải xuống CSV",
       "working": "Đang tạo tệp…",
       "failed": "Không thể tạo tệp. Hãy thử lại.",
-      "done": "Đã tải xuống {n} lịch hẹn.",
+      "done": "Không có lịch hẹn nào để tải xuống. | Đã tải xuống 1 lịch hẹn. | Đã tải xuống {n} lịch hẹn.",
       "truncated": "Đã tải xuống {n} lịch hẹn mới nhất. Hãy chọn một trạng thái để tải phần còn lại.",
       "columns": {
         "date": "Ngày",

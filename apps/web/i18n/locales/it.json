@@ -1214,7 +1214,7 @@
       "button": "Scarica CSV",
       "working": "Preparazione del file…",
       "failed": "Impossibile creare il file. Riprova.",
-      "done": "{n} prenotazioni scaricate.",
+      "done": "Nessuna prenotazione da scaricare. | 1 prenotazione scaricata. | {n} prenotazioni scaricate.",
       "truncated": "Sono state scaricate le {n} prenotazioni più recenti. Scegli uno stato per ottenere le altre.",
       "columns": {
         "date": "Data",

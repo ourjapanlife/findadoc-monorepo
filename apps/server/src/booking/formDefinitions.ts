@@ -184,16 +184,6 @@ const showcaseFields: BookingFormField[] = [
         maxLength: 60,
         showWhen: { fieldId: 'gender', equals: 'selfDescribe' }
     }),
-    // Personal data, like the name and phone. It is never logged.
-    field({
-        id: 'addressInJapan',
-        stepKey: 'contact',
-        type: BookingFormFieldType.Textarea,
-        required: true,
-        labelKey: 'bookingPage.fields.addressInJapan',
-        placeholderKey: 'bookingPage.placeholders.addressInJapan',
-        maxLength: 300
-    }),
     field({
         id: 'backupContactChannel',
         stepKey: 'contact',
@@ -211,6 +201,16 @@ const showcaseFields: BookingFormField[] = [
         labelKey: 'bookingPage.fields.backupContactHandle',
         maxLength: 120,
         showWhen: { fieldId: 'backupContactChannel', equals: null, anyOf: [...BACKUP_CONTACT_CHANNELS] }
+    }),
+    // Personal data, like the name and phone. It is never logged.
+    field({
+        id: 'addressInJapan',
+        stepKey: 'contact',
+        type: BookingFormFieldType.Textarea,
+        required: true,
+        labelKey: 'bookingPage.fields.addressInJapan',
+        placeholderKey: 'bookingPage.placeholders.addressInJapan',
+        maxLength: 300
     }),
     field({
         id: 'japaneseLevel',
@@ -519,6 +519,15 @@ export function initialAppointmentStatus(form: Pick<BookingForm, 'fields'>): App
     return fieldById(form, PAYMENT_METHOD_FIELD_ID) === undefined
         ? APPOINTMENT_STATUS.REQUESTED
         : APPOINTMENT_STATUS.PENDING_PAYMENT
+}
+
+/**
+ * True when one of these forms asks how the patient pays, so the clinic's new visits can
+ * start as pending_payment. The staff list opens on that status only then.
+ */
+export function formsTakePayment(formDefinitionIds: string[]): boolean {
+    return formDefinitionIds.some(id =>
+        formSourceById(id)?.fields.some(item => item.id === PAYMENT_METHOD_FIELD_ID) === true)
 }
 
 export function storedSensitivity(bookingField: BookingFormField): StoredSensitivity {

@@ -55,7 +55,8 @@ test('a request shows as Requested, the clinic confirms it, and the calendar sho
     // The showcase dashboard wears the clinic header and keeps sign-out (§4).
     await expect(page.getByTestId('clinic-branded-wordmark')).toHaveText('Multilingual Online Clinic')
     await expect(page.getByTestId('clinic-branded-sign-out')).toBeVisible()
-    // The list opens on Pending payment (spec §3.2). The standard form starts as Requested.
+    // The showcase offers the payment form, so the list opens on Pending payment (spec §3.2).
+    // This booking used the standard form, which starts as Requested.
     await expect(page.getByTestId('clinic-booking-filter-pending_payment')).toHaveAttribute('aria-pressed', 'true')
     await page.getByTestId('clinic-booking-filter-requested').click()
     await expect(page.getByTestId(`clinic-booking-row-${booking.submissionId}`)).toBeVisible()
@@ -134,7 +135,6 @@ test('the owner downloads the bookings as a UTF-8 CSV with contact columns only'
     await expect(page.getByTestId('clinic-booking-export-message')).toBeVisible()
 })
 
-/** The `sub` of the Auth0 user the setup project signed in. */
 test('the owner sees the seeded payment settings with the PayPay QR, and an http link is refused', async ({ page }) => {
     await page.goto(`${dashboardPath}?tab=settings`)
     const payment = page.getByTestId('clinic-payment-settings')
@@ -150,8 +150,13 @@ test('the owner sees the seeded payment settings with the PayPay QR, and an http
     await page.getByTestId('clinic-payment-card-url').fill('http://example.com/pay')
     await page.getByTestId('clinic-payment-save').click()
     await expect(page.getByTestId('clinic-payment-card-url')).toHaveAttribute('aria-invalid', 'true')
+    // The refused field takes focus, and its error is announced.
+    await expect(page.getByTestId('clinic-payment-card-url')).toBeFocused()
+    await expect(page.getByTestId('clinic-payment-card-url'))
+        .toHaveAttribute('aria-describedby', 'payment-card-url-error')
 })
 
+/** The `sub` of the Auth0 user the setup project signed in. */
 function signedInSub(): string {
     const state = JSON.parse(readFileSync(STORAGE_STATE, 'utf8')) as { cookies: Array<{ name: string, value: string }> }
     const token = state.cookies.find(cookie => cookie.name === 'auth_token')?.value

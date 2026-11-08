@@ -108,7 +108,7 @@
                 </p>
                 <div class="grid gap-3 landscape:grid-cols-2">
                     <div
-                        v-for="formType in formTypes"
+                        v-for="formType in offerableFormTypes"
                         :key="formType.id"
                         class="flex flex-col gap-3 rounded-lg border p-4 transition-colors"
                         :class="formIds.includes(formType.id)
@@ -239,6 +239,11 @@ const interpretationHelpId = 'clinic-settings-interpretation-help'
 const interpretersKey = ref(0)
 
 const sortedDurations = computed(() => [...durations.value].sort((a, b) => a - b))
+// The server limits the online consult form to preview clinics until its answers have a purge path.
+const offerableFormTypes = computed(() => {
+    const offerable = settings.value?.offerableFormDefinitionIds ?? []
+    return formTypes.value.filter(formType => offerable.includes(formType.id))
+})
 
 async function load(): Promise<void> {
     const loaded = await fetchClinicAdmin(props.facilityId)

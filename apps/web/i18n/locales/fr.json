@@ -1214,7 +1214,7 @@
       "button": "Télécharger le CSV",
       "working": "Création du fichier…",
       "failed": "Le fichier n'a pas pu être créé. Réessayez.",
-      "done": "{n} réservations téléchargées.",
+      "done": "Aucune réservation à télécharger. | 1 réservation téléchargée. | {n} réservations téléchargées.",
       "truncated": "Les {n} réservations les plus récentes ont été téléchargées. Choisissez un statut pour obtenir les autres.",
       "columns": {
         "date": "Date",

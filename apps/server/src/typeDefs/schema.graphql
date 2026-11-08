@@ -1441,6 +1441,11 @@ type BookingClinic {
   canManage: Boolean!
   """Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline."""
   requestedCount: Int!
+  """
+  True when the clinic offers a form that asks how the patient pays, so new visits
+  start as PENDING_PAYMENT. The staff list opens on that status only then.
+  """
+  takesPayment: Boolean!
   branding: ClinicBranding
 }
 
@@ -1464,6 +1469,11 @@ type BookingSettings {
   defaultDuration: Int!
   """Intake forms the clinic offers. The first is the default."""
   formDefinitionIds: [String!]!
+  """
+  Intake forms this user may offer at this clinic. The online consult form is
+  limited to admins and preview clinic sites until its answers have a purge path.
+  """
+  offerableFormDefinitionIds: [String!]!
   """The clinic may use interpreters (#205). Admins turn it on; it is meant to be a paid add-on."""
   offersInterpretation: Boolean!
   """True when this user may turn offersInterpretation on or off. Clinic members may not."""

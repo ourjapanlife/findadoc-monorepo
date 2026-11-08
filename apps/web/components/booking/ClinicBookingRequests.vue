@@ -252,6 +252,8 @@ const props = defineProps<{
     facilityId: string
     /** Owners and admins see the CSV export. */
     canManage?: boolean
+    /** The clinic offers a form that asks how the patient pays, so new visits start as pending payment. */
+    takesPayment?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -259,8 +261,11 @@ const emit = defineEmits<{
 }>()
 
 const { t, te, locale } = useI18n()
-// Visits waiting on payment are what staff act on first (spec §3.2).
-const statusFilter = ref<BookingAppointmentStatus | ''>(BookingAppointmentStatus.PendingPayment)
+// Visits waiting on payment are what staff act on first (spec §3.2). A clinic with no payment
+// form never has them, so its list opens on Requested, the status its new visits start in.
+const statusFilter = ref<BookingAppointmentStatus | ''>(props.takesPayment === true
+    ? BookingAppointmentStatus.PendingPayment
+    : BookingAppointmentStatus.Requested)
 const rows = ref<BookingSubmissionListItem[]>([])
 const totalCount = ref(0)
 const offset = ref(0)
@@ -337,7 +342,7 @@ async function exportCsv(): Promise<void> {
     downloadCsv(bookingExportCsv(result.rows, t, te), bookingExportFileName())
     exportMessage.value = result.truncated
         ? t('clinicDashboard.export.truncated', { n: result.rows.length })
-        : t('clinicDashboard.export.done', { n: result.rows.length })
+        : t('clinicDashboard.export.done', { n: result.rows.length }, result.rows.length)
 }
 
 watch(statusFilter, () => {

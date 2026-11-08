@@ -55,7 +55,7 @@ describe('booking forms', () => {
 
         expect(contact.map(field => field.id)).toEqual([
             'email', 'phone', 'fullName', 'dateOfBirth', 'gender', 'genderSelfDescribed',
-            'addressInJapan', 'backupContactChannel', 'backupContactHandle'
+            'backupContactChannel', 'backupContactHandle', 'addressInJapan'
         ])
         expect(form?.fields.some(field => field.id === 'age')).toBe(false)
 

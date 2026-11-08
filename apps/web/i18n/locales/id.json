@@ -1214,7 +1214,7 @@
       "button": "Unduh CSV",
       "working": "Menyiapkan file…",
       "failed": "File tidak dapat dibuat. Coba lagi.",
-      "done": "{n} pemesanan telah diunduh.",
+      "done": "Tidak ada pemesanan untuk diunduh. | 1 pemesanan telah diunduh. | {n} pemesanan telah diunduh.",
       "truncated": "{n} pemesanan terbaru telah diunduh. Pilih status untuk mengunduh sisanya.",
       "columns": {
         "date": "Tanggal",

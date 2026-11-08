@@ -102,6 +102,7 @@ const CLINIC_FIELDS = `
   role
   canManage
   requestedCount
+  takesPayment
   ${CLINIC_BRANDING_FIELDS}
 `
 
@@ -119,6 +120,7 @@ const SETTINGS_FIELDS = `
   allowedDurations
   defaultDuration
   formDefinitionIds
+  offerableFormDefinitionIds
   offersInterpretation
   canChangeInterpretation
   clinicLanguages

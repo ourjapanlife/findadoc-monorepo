@@ -1214,7 +1214,7 @@
       "button": "I-download ang CSV",
       "working": "Inihahanda ang file…",
       "failed": "Hindi magawa ang file. Subukang muli.",
-      "done": "Na-download ang {n} na booking.",
+      "done": "Walang booking na mada-download. | Na-download ang 1 booking. | Na-download ang {n} na booking.",
       "truncated": "Na-download ang {n} pinakabagong booking. Pumili ng status para makuha ang iba.",
       "columns": {
         "date": "Petsa",

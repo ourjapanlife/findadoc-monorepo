@@ -1214,7 +1214,7 @@
       "button": "CSV herunterladen",
       "working": "Datei wird erstellt…",
       "failed": "Die Datei konnte nicht erstellt werden. Bitte erneut versuchen.",
-      "done": "{n} Buchungen heruntergeladen.",
+      "done": "Keine Buchungen zum Herunterladen. | 1 Buchung heruntergeladen. | {n} Buchungen heruntergeladen.",
       "truncated": "Die neuesten {n} Buchungen wurden heruntergeladen. Wählen Sie einen Status, um die übrigen zu erhalten.",
       "columns": {
         "date": "Datum",

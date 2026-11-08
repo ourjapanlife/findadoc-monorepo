@@ -1214,7 +1214,7 @@
       "button": "Download CSV",
       "working": "Preparing the file…",
       "failed": "The file could not be created. Try again.",
-      "done": "Downloaded {n} bookings.",
+      "done": "No bookings to download. | Downloaded 1 booking. | Downloaded {n} bookings.",
       "truncated": "Downloaded the newest {n} bookings. Choose a status to get the others.",
       "columns": {
         "date": "Date",

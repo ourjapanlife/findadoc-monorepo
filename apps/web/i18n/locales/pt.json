@@ -1214,7 +1214,7 @@
       "button": "Baixar CSV",
       "working": "Preparando o arquivo…",
       "failed": "Não foi possível criar o arquivo. Tente novamente.",
-      "done": "{n} reservas baixadas.",
+      "done": "Nenhuma reserva para baixar. | 1 reserva baixada. | {n} reservas baixadas.",
       "truncated": "As {n} reservas mais recentes foram baixadas. Escolha um status para obter as demais.",
       "columns": {
         "date": "Data",
