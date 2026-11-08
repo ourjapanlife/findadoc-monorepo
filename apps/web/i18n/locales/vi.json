@@ -925,7 +925,7 @@
     },
     "confirmationsLegend": "Trước khi gửi",
     "confirmInJapan": "Tôi hiện đang ở Nhật Bản.",
-    "healthDataConsent": "Tôi đồng ý để Find a Doc, Japan gửi lý do khám của tôi, là thông tin sức khỏe, đến {clinic}.",
+    "healthDataConsent": "Tôi đồng ý để Find a Doc, Japan thu thập thông tin sức khỏe tôi nhập vào biểu mẫu này (triệu chứng hiện tại và bệnh đã mắc hoặc bệnh mãn tính) và cung cấp cho {clinic} để sắp xếp buổi khám của tôi.",
     "privacyPolicyLink": "Chính sách quyền riêng tư",
     "availabilityError": {
       "heading": "Không thể kiểm tra xem có đặt lịch được hay không",

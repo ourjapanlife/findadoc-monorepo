@@ -163,10 +163,23 @@ the clinic's contact details instead of the form. Local development and tests
 have no CloudFront, so they skip the check.
 
 A VPN changes the country, so the patient also ticks "I am currently in
-Japan". A second box consents to the reason for the visit going to the
-clinic. `submitBooking` requires both (`confirmedInJapan`,
-`healthDataConsent`) and stores the consent time in
+Japan". A second box consents to Find a Doc, Japan collecting the health
+information in the form (current symptoms and past illnesses or chronic
+conditions) and providing it to the clinic to arrange the consultation. The
+clinic is the only named recipient. `submitBooking` requires both
+(`confirmedInJapan`, `healthDataConsent`) and stores the consent time in
 `booking_submissions.health_data_consented_at`.
+
+The server also stores which wording the patient saw in
+`booking_submissions.consent_text_version`. It stamps
+`CURRENT_CONSENT_TEXT_VERSION` from `src/booking/consentText.ts`; the client
+does not send it. Each version is frozen in English and Japanese in
+[`docs/consent-text/`](consent-text/README.md), and
+`__tests__/consentText.test.ts` fails when `bookingPage.healthDataConsent` in
+`en.json` or `ja.json` differs from the current copy. New wording is a new
+file and a new version, never an edit to a shipped one. Requests sent before
+versions were stored have a null version; a consent time places them under
+the #173 wording (`2026-10-30`).
 
 ## Limits on the signed-out endpoints
 

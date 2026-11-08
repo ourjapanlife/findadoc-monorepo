@@ -284,6 +284,8 @@ export interface BookingSubmissionsTable {
     cancel_token_hash: string | null
     /** When the patient ticked the health-data consent box (#173). Null on requests sent before it existed. */
     health_data_consented_at: string | null
+    /** Consent wording version the server stamped (docs/consent-text/). Null before spec §6. */
+    consent_text_version: string | null
     created_date: Generated<string>
     updated_date: Generated<string>
 }

@@ -2320,8 +2320,11 @@ export type SubmitBookingInput = {
   formDefinitionId: Scalars['String']['input'];
   formVersion: Scalars['Int']['input'];
   /**
-   * The patient consented to the reason for the visit being sent to the clinic.
-   * Must be true. The consent time is stored with the request.
+   * The patient consented to Find a Doc, Japan collecting the health information in this
+   * form (current symptoms and past illnesses or chronic conditions) and providing it to
+   * this clinic, the only named recipient, to arrange the consultation. Must be true. The
+   * consent time and the server's current consent wording version are stored with the
+   * request. The client does not send the version.
    */
   healthDataConsent: Scalars['Boolean']['input'];
   locale: Scalars['String']['input'];

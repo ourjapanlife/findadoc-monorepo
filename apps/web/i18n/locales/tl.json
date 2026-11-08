@@ -925,7 +925,7 @@
     },
     "confirmationsLegend": "Bago ipadala",
     "confirmInJapan": "Kasalukuyan akong nasa Japan.",
-    "healthDataConsent": "Pumapayag akong ipadala ng Find a Doc, Japan sa {clinic} ang dahilan ng aking pagpapatingin, na impormasyong pangkalusugan.",
+    "healthDataConsent": "Pumapayag akong kolektahin ng Find a Doc, Japan ang impormasyong pangkalusugan na inilagay ko sa form na ito (kasalukuyang sintomas at mga nakaraang sakit o malalang kondisyon) at ibigay ito sa {clinic} upang maisaayos ang aking konsultasyon.",
     "privacyPolicyLink": "Patakaran sa privacy",
     "availabilityError": {
       "heading": "Hindi namin ma-check kung puwedeng mag-book",

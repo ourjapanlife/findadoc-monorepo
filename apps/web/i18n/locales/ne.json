@@ -925,7 +925,7 @@
     },
     "confirmationsLegend": "पठाउनुअघि",
     "confirmInJapan": "म हाल जापानमा छु।",
-    "healthDataConsent": "मेरो भेटको कारण, जुन स्वास्थ्य जानकारी हो, Find a Doc, Japan ले {clinic} लाई पठाउन म सहमति दिन्छु।",
+    "healthDataConsent": "मैले यो फारममा भरेको स्वास्थ्य जानकारी (हालका लक्षणहरू र विगतका रोग वा दीर्घ रोगहरू) Find a Doc, Japan ले सङ्कलन गर्न र मेरो परामर्शको व्यवस्था गर्न {clinic} लाई उपलब्ध गराउन म सहमति दिन्छु।",
     "privacyPolicyLink": "गोपनीयता नीति",
     "availabilityError": {
       "heading": "बुकिङ उपलब्ध छ कि छैन भनेर हामीले जाँच गर्न सकेनौं",

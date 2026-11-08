@@ -925,7 +925,7 @@
     },
     "confirmationsLegend": "Sebelum mengirim",
     "confirmInJapan": "Saya sedang berada di Jepang.",
-    "healthDataConsent": "Saya menyetujui Find a Doc, Japan mengirimkan alasan kunjungan saya, yang merupakan informasi kesehatan, kepada {clinic}.",
+    "healthDataConsent": "Saya menyetujui Find a Doc, Japan mengumpulkan informasi kesehatan yang saya isi dalam formulir ini (gejala saat ini serta riwayat penyakit atau penyakit kronis) dan memberikannya kepada {clinic} untuk mengatur konsultasi saya.",
     "privacyPolicyLink": "Kebijakan privasi",
     "availabilityError": {
       "heading": "Kami tidak dapat memeriksa ketersediaan reservasi",

@@ -22,6 +22,7 @@ import {
 } from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
 import { clinicRequestEmail, isSiteLocale, patientRequestEmail } from '../booking/emailCopy.js'
+import { CURRENT_CONSENT_TEXT_VERSION } from '../booking/consentText.js'
 import {
     activeInterpreters,
     interpreterHolds,
@@ -473,7 +474,8 @@ function parseServiceKey(value: string | null | undefined): string | null {
 }
 
 export async function submitBooking(input: SubmitBookingInput): Promise<Result<BookingSubmissionResult>> {
-    // Both boxes on the Book page (#173). The consent time is stored with the request.
+    // Both boxes on the Book page (#173). The consent time and the server's wording version
+    // (spec §6) are stored with the request. The client does not send the version.
     if (input.confirmedInJapan !== true) {
         return validationError('confirmedInJapan')
     }
@@ -595,7 +597,8 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                     status: 'received',
                     notify_email_sent_at: null,
                     cancel_token_hash: patientToken.hash,
-                    health_data_consented_at: healthDataConsentedAt
+                    health_data_consented_at: healthDataConsentedAt,
+                    consent_text_version: CURRENT_CONSENT_TEXT_VERSION
                 })
                 .returning(['id', 'created_date', 'status'])
                 .executeTakeFirstOrThrow()

@@ -925,7 +925,7 @@
     },
     "confirmationsLegend": "发送前确认",
     "confirmInJapan": "我目前在日本。",
-    "healthDataConsent": "我同意 Find a Doc, Japan 将我的就诊原因（属于健康信息）发送给{clinic}。",
+    "healthDataConsent": "我同意 Find a Doc, Japan 收集我在本表单中填写的健康信息（目前的症状以及既往病史或慢性病），并为安排我的诊疗将其提供给{clinic}。",
     "privacyPolicyLink": "隐私政策",
     "availabilityError": {
       "heading": "无法确认是否可以预约",

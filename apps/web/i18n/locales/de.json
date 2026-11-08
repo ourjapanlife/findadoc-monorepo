@@ -925,7 +925,7 @@
     },
     "confirmationsLegend": "Vor dem Absenden",
     "confirmInJapan": "Ich befinde mich derzeit in Japan.",
-    "healthDataConsent": "Ich willige ein, dass Find a Doc, Japan den Grund meines Besuchs, eine Gesundheitsangabe, an {clinic} übermittelt.",
+    "healthDataConsent": "Ich willige ein, dass Find a Doc, Japan die Gesundheitsangaben, die ich in dieses Formular eingebe (aktuelle Symptome sowie frühere oder chronische Erkrankungen), erhebt und zur Vereinbarung meiner Konsultation an {clinic} weitergibt.",
     "privacyPolicyLink": "Datenschutzerklärung",
     "availabilityError": {
       "heading": "Wir konnten nicht prüfen, ob eine Terminanfrage möglich ist",

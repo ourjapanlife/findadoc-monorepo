@@ -925,7 +925,7 @@
     },
     "confirmationsLegend": "Antes de enviar",
     "confirmInJapan": "Estou no Japão neste momento.",
-    "healthDataConsent": "Consinto que o Find a Doc, Japan envie o motivo da minha consulta, que é uma informação de saúde, para {clinic}.",
+    "healthDataConsent": "Consinto que o Find a Doc, Japan colete as informações de saúde que eu inserir neste formulário (sintomas atuais e doenças anteriores ou condições crônicas) e as forneça a {clinic} para organizar a minha consulta.",
     "privacyPolicyLink": "Política de privacidade",
     "availabilityError": {
       "heading": "Não foi possível verificar se o agendamento está disponível",
