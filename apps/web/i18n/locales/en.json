@@ -163,6 +163,7 @@
     "nothingToSave": "There is nothing new to save.",
     "notAllowed": "You do not have permission to do that. Sign in again, or ask an administrator for access.",
     "network": "The request did not finish. Check your connection and try again.",
+    "writeOutcomeUnknown": "We did not get an answer, so your change may already be saved. Check before you send it again.",
     "prefectureMismatch": "The English and Japanese prefecture names have to match.",
     "prefectureRequired": "Add a prefecture in English and in Japanese."
   },
@@ -414,6 +415,7 @@
   "accessPanel": {
     "loading": "Loading permissions…",
     "loadError": "Could not load permissions from the server.",
+    "retry": "Try again",
     "signedInAs": "Signed in as",
     "roles": "Roles:",
     "sections": {

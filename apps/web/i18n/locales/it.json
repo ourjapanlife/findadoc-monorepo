@@ -126,6 +126,7 @@
     "nothingToSave": "Non c’è nulla di nuovo da salvare.",
     "notAllowed": "Non hai l’autorizzazione per farlo. Accedi di nuovo o chiedi l’accesso a un amministratore.",
     "network": "La richiesta non è stata completata. Controlla la connessione e riprova.",
+    "writeOutcomeUnknown": "Non abbiamo ricevuto risposta, quindi la modifica potrebbe essere già stata salvata. Controlla prima di inviarla di nuovo.",
     "prefectureMismatch": "Il nome inglese e quello giapponese della prefettura devono coincidere.",
     "prefectureRequired": "Aggiungi la prefettura in inglese e in giapponese."
   },
@@ -323,6 +324,7 @@
   "accessPanel": {
     "loading": "Caricamento autorizzazioni…",
     "loadError": "Impossibile caricare le autorizzazioni dal server.",
+    "retry": "Riprova",
     "signedInAs": "Accesso come",
     "roles": "Ruoli:",
     "none": "—",

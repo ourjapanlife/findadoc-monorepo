@@ -341,6 +341,7 @@
   "accessPanel": {
     "loading": "Berechtigungen werden geladen…",
     "loadError": "Berechtigungen konnten nicht vom Server geladen werden.",
+    "retry": "Erneut versuchen",
     "signedInAs": "Angemeldet als",
     "roles": "Rollen:",
     "none": "—",
@@ -577,6 +578,7 @@
     "nothingToSave": "Es gibt nichts Neues zu speichern.",
     "notAllowed": "Sie haben keine Berechtigung dafür. Melden Sie sich erneut an oder bitten Sie die Administration um Zugriff.",
     "network": "Die Anfrage wurde nicht abgeschlossen. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "writeOutcomeUnknown": "Wir haben keine Antwort erhalten. Ihre Änderung ist möglicherweise schon gespeichert. Prüfen Sie das, bevor Sie sie erneut senden.",
     "prefectureMismatch": "Der englische und der japanische Präfekturname müssen übereinstimmen.",
     "prefectureRequired": "Geben Sie die Präfektur auf Englisch und auf Japanisch an."
   },

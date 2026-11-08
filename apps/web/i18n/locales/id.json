@@ -163,6 +163,7 @@
     "nothingToSave": "Tidak ada perubahan baru untuk disimpan.",
     "notAllowed": "Anda tidak memiliki izin untuk melakukan itu. Masuk kembali, atau minta akses kepada administrator.",
     "network": "Permintaan tidak selesai. Periksa koneksi Anda, lalu coba lagi.",
+    "writeOutcomeUnknown": "Kami tidak menerima jawaban, jadi perubahan Anda mungkin sudah tersimpan. Periksa dulu sebelum mengirim lagi.",
     "prefectureMismatch": "Nama prefektur dalam bahasa Inggris dan bahasa Jepang harus sama.",
     "prefectureRequired": "Tambahkan prefektur dalam bahasa Inggris dan bahasa Jepang."
   },
@@ -414,6 +415,7 @@
   "accessPanel": {
     "loading": "Memuat izin…",
     "loadError": "Tidak dapat memuat izin dari server.",
+    "retry": "Coba lagi",
     "signedInAs": "Masuk sebagai",
     "roles": "Peran:",
     "sections": {

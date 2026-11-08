@@ -286,6 +286,7 @@
   "accessPanel": {
     "loading": "Chargement des autorisations…",
     "loadError": "Impossible de charger les autorisations depuis le serveur.",
+    "retry": "Réessayer",
     "signedInAs": "Connecté en tant que",
     "roles": "Rôles :",
     "none": "—",
@@ -526,6 +527,7 @@
     "nothingToSave": "Il n’y a rien de nouveau à enregistrer.",
     "notAllowed": "Vous n’avez pas l’autorisation de faire cela. Reconnectez-vous ou demandez l’accès à un administrateur.",
     "network": "La requête ne s’est pas terminée. Vérifiez la connexion et réessayez.",
+    "writeOutcomeUnknown": "Nous n’avons pas reçu de réponse. Votre modification est peut-être déjà enregistrée. Vérifiez avant de la renvoyer.",
     "prefectureMismatch": "Le nom anglais et le nom japonais de la préfecture doivent correspondre.",
     "prefectureRequired": "Ajoutez la préfecture en anglais et en japonais."
   },

@@ -500,7 +500,8 @@ export async function getHealthcareProfessionalById(id: string): Promise<Healthc
         const result = await graphQLClientRequestWithRetry<Query>(
             gqlClient.request.bind(gqlClient),
             getHealthcareProfessionalByIdGqlQuery,
-            queryData
+            queryData,
+            { retryAmount: 1 }
         )
 
         if (!result.data?.healthcareProfessional) {

@@ -15,7 +15,15 @@
             class="text-error"
             :class="collapsed ? 'md:text-center md:text-xs md:wrap-break-word' : ''"
         >
-            {{ t('accessPanel.loadError') }}
+            <p>{{ t('accessPanel.loadError') }}</p>
+            <button
+                type="button"
+                data-testid="mod-access-panel-retry"
+                class="mt-2 underline hover:text-primary-hover"
+                @click="accessStore.fetchAccess()"
+            >
+                {{ t('accessPanel.retry') }}
+            </button>
         </div>
         <template v-else>
             <div

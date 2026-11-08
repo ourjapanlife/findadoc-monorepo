@@ -39,7 +39,9 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     NO_UPDATES_FOUND: 'serverErrorMessages.nothingToSave',
     // withScope answers 403 both for a missing scope and for a request with no signed-in user.
     UNAUTHORIZED: 'serverErrorMessages.notAllowed',
-    NETWORK: 'serverErrorMessages.network'
+    NETWORK: 'serverErrorMessages.network',
+    // A write with no answer may have landed. Do not invite a second submit (#219).
+    WRITE_OUTCOME_UNKNOWN: 'serverErrorMessages.writeOutcomeUnknown'
 }
 
 /**

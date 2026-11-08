@@ -293,6 +293,7 @@
   "accessPanel": {
     "loading": "正在加载权限…",
     "loadError": "无法从服务器加载权限。",
+    "retry": "重试",
     "signedInAs": "登录身份",
     "roles": "角色:",
     "none": "—",
@@ -529,6 +530,7 @@
     "nothingToSave": "没有新的内容可保存。",
     "notAllowed": "您没有执行此操作的权限。请重新登录，或联系管理员获取权限。",
     "network": "请求没有完成。请检查网络连接后重试。",
+    "writeOutcomeUnknown": "没有收到回应，您的更改可能已经保存。再次提交前请先确认。",
     "prefectureMismatch": "英文和日文的都道府县名称必须一致。",
     "prefectureRequired": "请填写英文和日文的都道府县。"
   },

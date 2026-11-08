@@ -39,7 +39,8 @@ export const useCurrentUserAccessStore = defineStore('currentUserAccessStore', (
         const response = await graphQLClientRequestWithRetry<CurrentUserAccessQueryResult>(
             gqlClient.request.bind(gqlClient),
             currentUserAccessQuery,
-            {}
+            {},
+            { retryAmount: 1 }
         )
         if (response.hasErrors || !response.data?.currentUserAccess) {
             loadError.value = true

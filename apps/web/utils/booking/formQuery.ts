@@ -212,7 +212,7 @@ export async function requestBookingUploadUrl(input: {
         gqlClient.request.bind(gqlClient),
         createUploadMutation,
         { input },
-        { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }
+        { skipAuth: true, retryAmount: 0, abortAfterMs: 8000 }
     )
     if (response.hasErrors) {
         return bookingRefusal(response)
