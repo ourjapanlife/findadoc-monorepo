@@ -83,6 +83,7 @@ The web app is moving its reads to TanStack Query (#242). The search page uses i
 - Directory reads stay fresh for 5 minutes (`DIRECTORY_STALE_TIME_MS`). Every other read is stale at once, so moderation and booking always ask the server again.
 - Sign-out clears the whole cache. Server data stays in memory. It is never written to `localStorage` or `sessionStorage`.
 - Reads run in the browser only. A prerendered page ships its loading state, then loads.
+- `nuxi generate` writes the directory it already fetched to `/_directory/search.json`, only when it got every page. /search puts that file in the query cache with the build's time, unless the API answered first, and the API answer replaces it. Results show without waiting for the API, and they still show when the API is down. Change the file's shape and you bump `SEARCH_DIRECTORY_SNAPSHOT_VERSION` in `apps/web/utils/searchDirectorySnapshot.ts`.
 - A read on the API's public list (`PUBLIC_CACHEABLE_QUERY_FIELDS`) goes through `publicReadRequest()` in `apps/web/utils/graphql.ts`, or `publicRead: true` for `requestQueryData`. In the browser that is a GET with no token and no custom header, which CloudFront and the browser may cache for 60 seconds. A prerender keeps POST, so generated HTML is built from fresh data. Any other operation sent this way is refused by the API.
 
 ## Further Reading

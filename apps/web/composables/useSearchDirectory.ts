@@ -1,19 +1,28 @@
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed } from 'vue'
 import { SEARCH_RESULTS_PER_PAGE, useSearchResultsStore } from '~/stores/searchResultsStore'
 import { DIRECTORY_GC_TIME_MS, DIRECTORY_STALE_TIME_MS } from '~/utils/queryClient'
 import { queryKeys } from '~/utils/queryKeys'
 import { filterDirectory, type FacilitySearchResult } from '~/utils/searchDirectory'
 import { fetchSearchDirectory } from '~/utils/searchDirectoryQuery'
+import { seedSearchDirectoryFromSnapshot } from '~/utils/searchDirectorySnapshot'
 
 /**
  * The /search directory and the results built from it (#242).
  *
  * Every component that calls this shares one vue-query read, so the directory loads once and
  * a filter change runs no request. The store holds the filters; this holds the server data.
+ *
+ * The build's snapshot fills the results first when it arrives before the API does, and the
+ * API answer replaces it.
  */
 export function useSearchDirectory() {
     const store = useSearchResultsStore()
+    const queryClient = useQueryClient()
+
+    if (import.meta.client) {
+        void seedSearchDirectoryFromSnapshot(queryClient)
+    }
 
     const query = useQuery({
         queryKey: queryKeys.searchDirectory(),

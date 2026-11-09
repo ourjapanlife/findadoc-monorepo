@@ -84,6 +84,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - ディレクトリの読み込みは5分間新しいものとして扱います（`DIRECTORY_STALE_TIME_MS`）。それ以外の読み込みはすぐに古くなるので、モデレーションと予約は毎回サーバーに問い合わせます。
 - サインアウトするとキャッシュをすべて消します。サーバーデータはメモリにだけ置き、`localStorage`や`sessionStorage`には書きません。
 - 読み込みはブラウザでだけ行います。プリレンダーされたページは読み込み中の状態で届き、そのあと読み込みます。
+- `nuxi generate`は、すでに取得したディレクトリを`/_directory/search.json`に書き出します。すべてのページを取得できたときだけです。/searchは、APIが先に答えていなければ、このファイルをビルド時刻つきでクエリキャッシュに入れ、APIの答えで置き換えます。APIを待たずに結果が表示され、APIが止まっていても表示されます。ファイルの形を変えたら、`apps/web/utils/searchDirectorySnapshot.ts`の`SEARCH_DIRECTORY_SNAPSHOT_VERSION`を上げてください。
 - APIの公開リスト（`PUBLIC_CACHEABLE_QUERY_FIELDS`）にある読み込みは、`apps/web/utils/graphql.ts`の`publicReadRequest()`か、`requestQueryData`の`publicRead: true`で送ります。ブラウザでは、トークンもカスタムヘッダーも付けないGETになり、CloudFrontとブラウザが60秒キャッシュできます。プリレンダーはPOSTのままなので、生成されるHTMLは新しいデータから作られます。ほかの操作をこの方法で送ると、APIは拒否します。
 
 ## 関連資料
