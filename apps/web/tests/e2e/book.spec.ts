@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test'
+import { graphqlOperation } from './graphqlRequest'
 
 /**
  * Booking is offered only to people in Japan (#173). The Book page asks the API
@@ -112,7 +113,7 @@ async function mockBookingApiWithForm(
 ): Promise<void> {
     let availabilityCalls = 0
     await page.route(isApiRequest, async (route: Route) => {
-        const query = (route.request().postDataJSON() as { query?: string } | null)?.query ?? ''
+        const query = graphqlOperation(route.request())?.query ?? ''
         const reply = (data: unknown) => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ data }) })
 
         if (query.includes('BookingAvailable')) {

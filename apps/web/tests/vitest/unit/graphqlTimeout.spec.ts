@@ -81,6 +81,55 @@ describe('graphQLClientRequestWithRetry: per-attempt deadline', () => {
         await expect(result).resolves.toMatchObject({ errors: [{ code: 'WRITE_OUTCOME_UNKNOWN' }] })
     })
 
+    it('aborts the fetch when the caller cancels, and reports it as not worth a retry (#242)', async () => {
+        let signal: AbortSignal | undefined
+        const neverSettles = (options: { signal?: AbortSignal }) => {
+            signal = options.signal
+            return new Promise<never>(() => {})
+        }
+        const caller = new AbortController()
+        const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+        const result = graphQLClientRequestWithRetry(neverSettles, 'query Q { x }', {}, {
+            ...publicOptions,
+            signal: caller.signal
+        })
+        caller.abort()
+        await vi.advanceTimersByTimeAsync(1)
+
+        expect(signal?.aborted).toBe(true)
+        await expect(result).resolves.toMatchObject({ hasErrors: true, temporary: false })
+        // Nobody is waiting for a cancelled read, and it is not a failure to log.
+        expect(errorLog).not.toHaveBeenCalled()
+        errorLog.mockRestore()
+    })
+
+    it('does not send at all when the caller has already cancelled', async () => {
+        let signal: AbortSignal | undefined
+        const request = vi.fn((options: { signal?: AbortSignal }) => {
+            signal = options.signal
+            return new Promise<never>(() => {})
+        })
+        const caller = new AbortController()
+        caller.abort()
+
+        const result = graphQLClientRequestWithRetry(request, 'query Q { x }', {}, { skipAuth: true, signal: caller.signal })
+        await vi.advanceTimersByTimeAsync(1)
+
+        expect(signal?.aborted).toBe(true)
+        await expect(result).resolves.toMatchObject({ hasErrors: true, temporary: false })
+    })
+
+    it('marks a timeout as temporary, so a query may be tried again', async () => {
+        const result = graphQLClientRequestWithRetry(() => new Promise<never>(() => {}), 'query Q { x }', {}, {
+            skipAuth: true,
+            abortAfterMs: 1000
+        })
+        await vi.advanceTimersByTimeAsync(1001)
+
+        await expect(result).resolves.toMatchObject({ hasErrors: true, temporary: true })
+    })
+
     it('sends the document, variables, and signal in the object form', async () => {
         const request = vi.fn((_options: { document: unknown, variables?: unknown, signal?: AbortSignal }) =>
             Promise.resolve({ x: 1 }))
@@ -155,7 +204,8 @@ describe('graphQLClientRequestWithRetry: mutations', () => {
             await expect(result).resolves.toEqual({
                 data: {},
                 hasErrors: true,
-                errors: [{ message: 'The change may have been saved', code: 'WRITE_OUTCOME_UNKNOWN', field: undefined }]
+                errors: [{ message: 'The change may have been saved', code: 'WRITE_OUTCOME_UNKNOWN', field: undefined }],
+                temporary: true
             })
         } finally {
             vi.useRealTimers()

@@ -1,12 +1,12 @@
 <template>
     <section
         :aria-label="t('search.resultsRegion')"
-        :aria-busy="searchResultsStore.isLoading"
+        :aria-busy="isLoading"
         class="flex flex-col gap-4"
     >
         <!-- Failed load -->
         <div
-            v-if="searchResultsStore.hasLoadError"
+            v-if="hasLoadError"
             data-testid="search-load-error"
             role="alert"
             class="card flex flex-col items-start gap-4 p-6"
@@ -25,7 +25,7 @@
 
         <!-- Loading -->
         <ul
-            v-else-if="searchResultsStore.isLoading"
+            v-else-if="isLoading"
             data-testid="search-skeleton"
             class="m-0 flex list-none flex-col gap-4 p-0"
             aria-hidden="true"
@@ -47,7 +47,7 @@
 
         <!-- Nothing matched -->
         <div
-            v-else-if="!searchResultsStore.totalResults"
+            v-else-if="!totalResults"
             data-testid="search-empty"
             class="card flex flex-col items-center gap-4 p-8 text-center"
         >
@@ -81,7 +81,7 @@
                 class="m-0 flex list-none flex-col gap-4 p-0"
             >
                 <li
-                    v-for="(result, index) in searchResultsStore.paginatedResults"
+                    v-for="(result, index) in paginatedResults"
                     :key="result.id"
                     :data-testid="`search-result-list-item-${index}`"
                 >
@@ -94,7 +94,7 @@
             </ul>
 
             <div
-                v-if="searchResultsStore.hasMore"
+                v-if="hasMore"
                 class="flex flex-col items-center gap-2 py-2"
             >
                 <button
@@ -116,18 +116,29 @@ import { useI18n } from 'vue-i18n'
 import SVGNoSearchResults from '~/assets/icons/no-search-results-graphic.svg'
 import SearchResultCard from '~/components/search/SearchResultCard.vue'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
+import { useSearchDirectory } from '~/composables/useSearchDirectory'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { resultsShownProps } from '~/utils/analyticsEvents'
 import { hasActiveFilters } from '~/utils/searchDirectory'
 
 const { t } = useI18n()
 const searchResultsStore = useSearchResultsStore()
+const {
+    isLoading,
+    isReady,
+    hasLoadError,
+    reloadDirectory,
+    paginatedResults,
+    totalResults,
+    hasMore,
+    loadMore
+} = useSearchDirectory()
 const { track } = useUmami()
 
 const hasFilters = computed(() => hasActiveFilters(searchResultsStore.filters))
 
 const remainingResults = computed(() =>
-    searchResultsStore.totalResults - searchResultsStore.paginatedResults.length)
+    totalResults.value - paginatedResults.value.length)
 
 /*
  * One interpolated string, not three fragments glued together: "load more" + count +
@@ -137,17 +148,17 @@ const remainingResults = computed(() =>
 const loadMoreLabel = computed(() => t('searchResultsList.loadMoreCount', { n: remainingResults.value }))
 
 function handleLoadMore() {
-    searchResultsStore.loadMore()
+    loadMore()
 
     track('Load more results', {
-        shown: searchResultsStore.paginatedResults.length,
-        total: searchResultsStore.totalResults
+        shown: paginatedResults.value.length,
+        total: totalResults.value
     })
 }
 
 function retrySearch() {
     track('Search retried')
-    void searchResultsStore.reloadDirectory()
+    void reloadDirectory()
 }
 
 function clearFromEmpty() {
@@ -160,26 +171,26 @@ function clearFromEmpty() {
  * count still report separately. Those values are not part of the event.
  */
 const resultsSignature = computed(() => {
-    if (!searchResultsStore.isReady) return ''
+    if (!isReady.value) return ''
     const filters = searchResultsStore.filters
     return [
         filters.specialties?.[0] ?? '',
         filters.languages?.[0] ?? '',
         filters.prefecture ?? '',
         filters.city ?? '',
-        searchResultsStore.totalResults
+        totalResults.value
     ].join('|')
 })
 
 watch(resultsSignature, () => {
-    if (!searchResultsStore.isReady) return
+    if (!isReady.value) return
     track('Results shown', resultsShownProps(
-        searchResultsStore.totalResults ? 'some' : 'empty',
+        totalResults.value ? 'some' : 'empty',
         hasFilters.value
     ))
 }, { immediate: true })
 
-watch(() => searchResultsStore.hasLoadError, failed => {
+watch(hasLoadError, failed => {
     if (failed) track('Search failed')
 }, { immediate: true })
 </script>

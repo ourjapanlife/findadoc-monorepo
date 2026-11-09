@@ -1,8 +1,12 @@
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager'
 import {
     AllowedMethods,
+    CacheCookieBehavior,
+    CacheHeaderBehavior,
     CachePolicy,
+    CacheQueryStringBehavior,
     Distribution,
+    type ErrorResponse,
     FunctionCode,
     FunctionEventType,
     FunctionRuntime,
@@ -17,6 +21,7 @@ import { FunctionUrlAuthType, type IFunction, type FunctionUrl } from 'aws-cdk-l
 import { ARecord, AaaaRecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53'
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets'
 import type { Construct } from 'constructs'
+import { Duration } from 'aws-cdk-lib'
 import type { HostnameState } from './environment.js'
 
 export interface FunctionUrlEdgeProps {
@@ -38,13 +43,57 @@ export interface FunctionUrlEdgeProps {
     ids: {
         viewerIp: string
         distribution: string
+        // Needed with cachePublicReads.
+        cachePolicy?: string
     }
+    // Let CloudFront keep GET answers the origin marks public (#242). Off: nothing is cached.
+    cachePublicReads?: boolean
+}
+
+/**
+ * How long CloudFront may keep a GET answer the API marked `public` (#242). The API sets
+ * `max-age=60, stale-while-revalidate=300`; this ceiling stops a wrong header from pinning
+ * an answer for a day.
+ */
+export const PUBLIC_READ_MAX_TTL = Duration.minutes(10)
+
+/**
+ * The cache key for public GraphQL reads (#242).
+ * - The whole query string: `query` and `variables` are the request.
+ * - `Origin`: the API answers with that origin in Access-Control-Allow-Origin, so each site
+ *   gets its own copy.
+ * - `Authorization`: a request with a token never shares an entry with one without. The API
+ *   also marks every answer to a token `private, no-store`, so CloudFront does not store it.
+ * - No cookies. The default TTL is 0, so an answer without `Cache-Control: public` is not kept.
+ */
+/**
+ * CloudFront keeps a 4xx or 5xx for 10 seconds when the origin sends no Cache-Control, such as
+ * a Lambda 502. With caching on, one failure would then reach every visitor, and the client's
+ * retry would get the same copy. Keep none.
+ */
+const UNCACHED_ERROR_STATUSES = [400, 403, 404, 405, 414, 416, 500, 501, 502, 503, 504]
+const UNCACHED_ERRORS: ErrorResponse[] = UNCACHED_ERROR_STATUSES.map(httpStatus => ({ httpStatus, ttl: Duration.seconds(0) }))
+
+function publicReadCachePolicy(scope: Construct, id: string, name: string): CachePolicy {
+    return new CachePolicy(scope, id, {
+        cachePolicyName: `${name}-public-reads`,
+        comment: 'GET answers the API marks public. Keyed on the query, Origin, and Authorization.',
+        defaultTtl: Duration.seconds(0),
+        minTtl: Duration.seconds(0),
+        maxTtl: PUBLIC_READ_MAX_TTL,
+        queryStringBehavior: CacheQueryStringBehavior.all(),
+        headerBehavior: CacheHeaderBehavior.allowList('authorization', 'origin'),
+        cookieBehavior: CacheCookieBehavior.none(),
+        enableAcceptEncodingGzip: true,
+        enableAcceptEncodingBrotli: true,
+    })
 }
 
 /**
  * A Lambda Function URL behind CloudFront, with its hostnames attached as their states say
  * (see HostnameState in environment.ts).
- * Caching is off. The managed AllViewerExceptHostHeader policy sends every viewer header but
+ * Caching is off unless `cachePublicReads` is set: then a GET the origin marks public is kept
+ * (see publicReadCachePolicy). POST, OPTIONS, and every other answer still reach the origin. The managed AllViewerExceptHostHeader policy sends every viewer header but
  * Host (a Function URL only answers its own hostname), plus CloudFront's viewer location
  * headers. A custom policy cannot add those to "all but Host".
  * That policy also forwards cookies. The API reads none, so the function drops them all and the
@@ -83,6 +132,13 @@ export function addFunctionUrlEdge(scope: Construct, props: FunctionUrlEdgeProps
         .filter(([, state]) => state === 'live' || state === 'alias')
         .map(([name]) => name)
 
+    if (props.cachePublicReads && !props.ids.cachePolicy) {
+        throw new Error(`${props.label}: cachePublicReads needs ids.cachePolicy`)
+    }
+    const cachePolicy = props.cachePublicReads && props.ids.cachePolicy
+        ? publicReadCachePolicy(scope, props.ids.cachePolicy, props.name)
+        : CachePolicy.CACHING_DISABLED
+
     const distribution = new Distribution(scope, props.ids.distribution, {
         comment: `findadoc ${props.label} (${props.description})`,
         // A distribution with no hostnames uses its cloudfront.net name and no certificate.
@@ -91,12 +147,13 @@ export function addFunctionUrlEdge(scope: Construct, props: FunctionUrlEdgeProps
         priceClass: PriceClass.PRICE_CLASS_200,
         httpVersion: HttpVersion.HTTP2_AND_3,
         enableIpv6: true,
+        errorResponses: props.cachePublicReads ? UNCACHED_ERRORS : undefined,
         defaultBehavior: {
             origin: new FunctionUrlOrigin(functionUrl, {
                 customHeaders: { 'x-findadoc-edge': props.edgeSecret },
             }),
             allowedMethods: AllowedMethods.ALLOW_ALL,
-            cachePolicy: CachePolicy.CACHING_DISABLED,
+            cachePolicy,
             originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
             viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             compress: true,

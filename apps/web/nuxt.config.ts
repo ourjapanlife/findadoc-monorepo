@@ -11,9 +11,11 @@ import { consentBootstrapScript } from './utils/consent'
 import { CLINIC_HOST_BOOTSTRAP, CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
 import { writeClinicPreviewShells } from './utils/nuxt/clinicPreviewShell'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
+import { writeSearchDirectorySnapshot } from './utils/nuxt/searchDirectorySnapshot'
 import {
     applyEntityDirectoryToNitro,
     applyEntityDirectoryToNuxt,
+    entityDirectoryForGenerate,
     entityDirectoryVitePlugins
 } from './utils/nuxt/entityDirectoryGenerate'
 
@@ -313,6 +315,8 @@ export default defineNuxtConfig({
                 for (const slug of CLINIC_PREVIEW_SHELL_SLUGS) {
                     await writeClinicPreviewShells(publicDir, slug)
                 }
+                // The directory this build already fetched, for /search to show at once (#242).
+                await writeSearchDirectorySnapshot(publicDir, (await entityDirectoryForGenerate())?.rows)
             })
         }
     },

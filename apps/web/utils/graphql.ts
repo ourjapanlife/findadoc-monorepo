@@ -1,4 +1,5 @@
 import { GraphQLClient, type RequestDocument } from 'graphql-request'
+import { print, type DocumentNode } from 'graphql'
 import { useRuntimeConfig } from '#imports'
 import { ErrorCode, type ServerError, type ServerResponse } from '~/typedefs/serverResponse'
 import { serverErrorsFromGraphQL } from '~/utils/formErrorMessage'
@@ -20,6 +21,60 @@ export const initializeGqlClient = () => {
     gqlClient = new GraphQLClient(apiURL)
 }
 
+/**
+ * Sends one public read as a GET, with no token and no custom header, so CloudFront and the
+ * browser may cache it (#242). Only for operations on the API's public list
+ * (`PUBLIC_CACHEABLE_QUERY_FIELDS` in apps/server/src/publicCache.ts): the API refuses any
+ * other query sent this way. Failures look like graphql-request's, so retry rules still apply.
+ */
+export async function publicGetRequest<T>(options: {
+    document: RequestDocument
+    variables?: unknown
+    signal?: AbortSignal
+}): Promise<T> {
+    if (!gqlClientBaseUrl) {
+        initializeGqlClient()
+    }
+
+    const url = new URL(gqlClientBaseUrl ?? '')
+    url.searchParams.set('query', compactQuery(options.document))
+    if (options.variables !== undefined) {
+        url.searchParams.set('variables', JSON.stringify(options.variables))
+    }
+
+    const response = await fetch(url, { method: 'GET', headers: { accept: 'application/json' }, signal: options.signal })
+    const body = await response.json().catch(() => null) as {
+        data?: T
+        errors?: { message: string, extensions?: { [key: string]: unknown } }[]
+    } | null
+
+    if (!response.ok || !body || (body.errors?.length ?? 0) > 0 || body.data === undefined) {
+        // The same shape as graphql-request's ClientError, which classifyFailure reads.
+        throw Object.assign(new Error(`GraphQL GET failed with status ${response.status}`), {
+            response: { status: response.status, errors: body?.errors }
+        })
+    }
+
+    return body.data
+}
+
+/**
+ * The query text for a URL. Runs of whitespace become one space, so the URL is short and two
+ * spellings of the same query share a cache entry. A query with a string literal is left as is.
+ */
+function compactQuery(document: RequestDocument): string {
+    const text = typeof document === 'string' ? document : print(document as DocumentNode)
+    return text.includes('"') ? text : text.replace(/\s+/g, ' ').trim()
+}
+
+/**
+ * How to send a public read: a cacheable GET in the browser (#242). A prerender keeps POST,
+ * so the HTML it writes is built from the API, not from an edge copy up to minutes old.
+ */
+export function publicReadRequest<T>(): GraphQLRequestFunction<T> {
+    return import.meta.client ? publicGetRequest<T> : gqlClient.request.bind(gqlClient) as GraphQLRequestFunction<T>
+}
+
 /** An attempt passed `abortAfterMs`. The fetch is aborted, but a write the server already got may still land. */
 class RequestTimeoutError extends Error {
     constructor(abortAfterMs: number) {
@@ -39,16 +94,28 @@ export type GraphQLRequestFunction<T> = (options: {
     signal?: AbortSignal
 }) => Promise<T>
 
+/** The caller cancelled the request, such as vue-query when the page that asked for it is gone (#242). */
+class RequestCancelledError extends Error {
+    constructor() {
+        super('Request cancelled')
+        this.name = 'RequestCancelledError'
+    }
+}
+
 /**
  * Runs one attempt with a deadline. At the deadline the fetch is aborted, so the browser stops
  * waiting and drops the connection, and the attempt rejects with `RequestTimeoutError` (#219).
+ * When the caller's `callerSignal` aborts first, the fetch is aborted the same way and the
+ * attempt rejects with `RequestCancelledError` (#242).
  */
 async function withAbortDeadline<T>(
     send: (signal: AbortSignal) => Promise<T>,
-    abortAfterMs: number
+    abortAfterMs: number,
+    callerSignal?: AbortSignal
 ): Promise<T> {
     const controller = new AbortController()
     let timer: ReturnType<typeof setTimeout> | undefined
+    let cancelFromCaller: (() => void) | undefined
 
     try {
         return await Promise.race([
@@ -58,10 +125,21 @@ async function withAbortDeadline<T>(
                     reject(new RequestTimeoutError(abortAfterMs))
                     controller.abort()
                 }, abortAfterMs)
+
+                cancelFromCaller = () => {
+                    reject(new RequestCancelledError())
+                    controller.abort()
+                }
+                if (callerSignal?.aborted) {
+                    cancelFromCaller()
+                } else {
+                    callerSignal?.addEventListener('abort', cancelFromCaller, { once: true })
+                }
             })
         ])
     } finally {
         if (timer) clearTimeout(timer)
+        if (cancelFromCaller) callerSignal?.removeEventListener('abort', cancelFromCaller)
     }
 }
 
@@ -206,7 +284,8 @@ export const graphQLClientRequestWithRetry = async <T>(
              */
             const rawResponseData = await withAbortDeadline(
                 signal => gqlClientRequestFunction({ document: queryOrMutation, variables, requestHeaders, signal }),
-                abortAfterMs
+                abortAfterMs,
+                retryOptions?.signal
             )
 
             // If the request is successful, return the data in the standardized `ServerResponse` format
@@ -216,6 +295,16 @@ export const graphQLClientRequestWithRetry = async <T>(
                 hasErrors: false
             } satisfies ServerResponse<T>
         } catch (error) {
+            if (error instanceof RequestCancelledError) {
+                // Nobody is waiting for this answer, so there is nothing to retry or log.
+                return {
+                    data: {} as T,
+                    errors: [{ message: error.message, code: ErrorCode.NETWORK, field: undefined }],
+                    hasErrors: true,
+                    temporary: false
+                }
+            }
+
             const kind = classifyFailure(error)
             if (attempts < retryAmount && RETRYABLE_FAILURES.has(kind)) {
                 attempts++
@@ -230,7 +319,7 @@ export const graphQLClientRequestWithRetry = async <T>(
             const codes = [...new Set(errors.map(serverError => serverError.code))].join(',')
             console.error(`GraphQL request ${operationNameOf(queryOrMutation)} failed: ${codes}`)
 
-            return { data: {} as T, errors, hasErrors: true }
+            return { data: {} as T, errors, hasErrors: true, temporary: RETRYABLE_FAILURES.has(kind) }
         }
     }
     return executeGQLClientRequest()
@@ -243,6 +332,8 @@ export interface graphQLClientRequestWithRetryOptions {
     skipAuth?: boolean
     /** Abort an attempt that has not responded in this long. Default `DEFAULT_ABORT_AFTER_MS`. */
     abortAfterMs?: number
+    /** The caller's cancel signal, such as the one vue-query passes to a `queryFn` (#242). */
+    signal?: AbortSignal
 }
 export interface gqlMutation<T> extends gqlRequest {
     variables: {

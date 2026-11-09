@@ -13,7 +13,7 @@ import type { FacilitySearchFilters, HealthcareProfessionalSearchFilters,
 
 /**
  * Same cap the directory store uses. The API silently truncates or errors above this
- * (see `FACILITY_PAGE_SIZE` in `stores/searchResultsStore.ts`).
+ * (see `FACILITY_PAGE_SIZE` in `utils/searchDirectoryQuery.ts`).
  */
 export const SITEMAP_DIRECTORY_PAGE_SIZE = 100
 

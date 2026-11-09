@@ -119,8 +119,12 @@ test.describe('Home page', () => {
             expect(labels).toContain('한국어')
             expect(labels.indexOf('简体中文')).toBeLessThan(labels.indexOf('한국어'))
 
-            await localeSelect.selectOption('ko_KR')
-            await expect(page.getByTestId('home-heading')).toHaveText(koKR.home.heroHeading)
+            // The page is prerendered: a choice made before Vue hydrates the picker is lost,
+            // which made WebKit flaky. Pick again until the page answers.
+            await expect(async () => {
+                await localeSelect.selectOption('ko_KR')
+                await expect(page.getByTestId('home-heading')).toHaveText(koKR.home.heroHeading, { timeout: 2000 })
+            }).toPass({ timeout: 15000 })
         })
     })
 

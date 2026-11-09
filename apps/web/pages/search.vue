@@ -25,12 +25,12 @@
         </div>
 
         <SearchDetailsPanel
-            :open="!!searchResultsStore.activeFacility"
+            :open="!!activeFacility"
             @close="closeDetails"
         >
             <SearchResultDetails
-                v-if="searchResultsStore.activeFacility"
-                :facility="searchResultsStore.activeFacility"
+                v-if="activeFacility"
+                :facility="activeFacility"
             />
         </SearchDetailsPanel>
     </div>
@@ -41,6 +41,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter, type LocationQuery, type LocationQueryRaw } from 'vue-router'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
+import { useSearchDirectory } from '~/composables/useSearchDirectory'
 import { resetSearchDetailsContact, takeSearchDetailsActed, track } from '~/utils/analyticsEvents'
 import { buildSearchQuery, parseSearchQuery, sameSearchQueryState } from '~/utils/searchDirectory'
 
@@ -48,6 +49,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const searchResultsStore = useSearchResultsStore()
+const { activeFacility } = useSearchDirectory()
 
 const SHOW_MAP_STORAGE_KEY = 'search.showMap'
 const showMap = ref(false)
@@ -182,8 +184,6 @@ onMounted(() => {
     } catch {
         // Storage may be unavailable; the map simply starts hidden.
     }
-
-    searchResultsStore.loadDirectory()
 })
 
 watch(showMap, value => {

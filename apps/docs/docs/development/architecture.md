@@ -21,7 +21,8 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 
 - **Framework**: Nuxt 4, prerendered with `nuxi generate` and hosted on AWS Amplify
 - **UI**: Vue 3 Composition API with Tailwind CSS
-- **State**: Pinia stores
+- **State**: Pinia stores for UI state only (filters, modals, unsaved edits)
+- **Server data**: TanStack Query (`@tanstack/vue-query`). See [Fetching data in the web app](#fetching-data-in-the-web-app)
 - **API**: GraphQL via `graphql-request`
 - **Auth**: Auth0 (used for the moderation dashboard)
 - **Maps**: Google Maps API for provider locations
@@ -35,6 +36,10 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 - **Schema**: `apps/server/src/typeDefs/schema.graphql`, the only GraphQL schema in the repo
 - **Database**: Supabase (PostgreSQL), with migrations in `apps/server/supabase`. The API queries it with Kysely over a Postgres connection, not the Supabase client
 - **Production**: Docker containers managed by PM2
+- **Caching**: `apps/server/src/publicCache.ts` sets `Cache-Control` on every response (#242). A response is `public, max-age=60` only when the caller sent no token, every root field is on `PUBLIC_CACHEABLE_QUERY_FIELDS`, and nothing failed. Everything else is `private, no-store`. Add a field to that list only when its answer is the same for every signed-out visitor: it reads no user, IP, country, token, or rate limit. Booking, upload, moderation, and user fields never go there. `__tests__/publicCache.test.ts` checks the list
+- **CSRF**: Apollo's built-in check is off and `csrfPreventionPlugin` keeps its rule. A request without a preflight (a form post, or a GET with no `x-apollo-operation-name` header) may only run a query on the public list, so a public read can be a plain, cacheable GET
+- **Lookup tables**: prefecture and city lists stay in Lambda memory for 10 minutes (`src/lookupCache.ts`)
+- **Edge**: the API's CloudFront distribution caches a GET only when the API marked it `public` (`infra/lib/functionUrlEdge.ts`, `cachePublicReads`). The cache key is the query string, `Origin`, and `Authorization`. Error responses are never cached. POST, OPTIONS, booking, and signed-in reads always reach the API. The MCP server sends its reads as GET, so they share the cache
 
 ### MCP Server (`apps/mcp`)
 
@@ -55,7 +60,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 |-----------|---------|
 | `apps/web/components/` | Reusable Vue components |
 | `apps/web/pages/` | Route pages (auto-registered by Nuxt) |
-| `apps/web/stores/` | Pinia stores |
+| `apps/web/stores/` | Pinia stores (UI state) |
 | `apps/web/i18n/locales/` | Translation files, checked against `en.json` |
 | `apps/web/assets/` | Uncompiled assets (CSS, images, fonts) |
 | `apps/web/typedefs/` | TypeScript type definitions |
@@ -67,6 +72,19 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 2. The website sends GraphQL queries to the API
 3. The API resolves queries against the Supabase PostgreSQL database
 4. Results are returned and displayed on an interactive map with provider details
+
+## Fetching data in the web app
+
+The web app is moving its reads to TanStack Query (#242). The search page uses it now. Other pages still load data in their Pinia stores until they move over.
+
+- A read is a `useQuery` in a composable, such as `apps/web/composables/useSearchDirectory.ts`. Its `queryFn` calls `requestQueryData` in `apps/web/utils/queryClient.ts`, which sends the request through `graphQLClientRequestWithRetry` and passes vue-query's abort signal. A page that is gone cancels its requests.
+- Build keys with `apps/web/utils/queryKeys.ts`. Do not write a key array in a component. A write invalidates the keys it changes.
+- The defaults are in `createAppQueryClient`. A query is retried once, and only after a timeout, a dropped connection, or a 502/503/504. A mutation is never retried.
+- Directory reads stay fresh for 5 minutes (`DIRECTORY_STALE_TIME_MS`). Every other read is stale at once, so moderation and booking always ask the server again.
+- Sign-out clears the whole cache. Server data stays in memory. It is never written to `localStorage` or `sessionStorage`.
+- Reads run in the browser only. A prerendered page ships its loading state, then loads.
+- `nuxi generate` writes the directory it already fetched to `/_directory/search.json`, only when it got every page. /search puts that file in the query cache with the build's time, unless the API answered first, and the API answer replaces it. Results show without waiting for the API, and they still show when the API is down. Change the file's shape and you bump `SEARCH_DIRECTORY_SNAPSHOT_VERSION` in `apps/web/utils/searchDirectorySnapshot.ts`.
+- A read on the API's public list (`PUBLIC_CACHEABLE_QUERY_FIELDS`) goes through `publicReadRequest()` in `apps/web/utils/graphql.ts`, or `publicRead: true` for `requestQueryData`. In the browser that is a GET with no token and no custom header, which CloudFront and the browser may cache for 60 seconds. A prerender keeps POST, so generated HTML is built from fresh data. Any other operation sent this way is refused by the API.
 
 ## Further Reading
 

@@ -71,6 +71,18 @@ jobs:
           NUXT_PUBLIC_UMAMI_SITE_ID: ${{ secrets.NUXT_PUBLIC_UMAMI_SITE_ID }}
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
+      # /search shows this file before the API answers (#242). Previews skip the directory, so
+      # they have none. A production build without it still works, so this warns instead of failing.
+      - name: Check the search snapshot
+        if: github.event_name != 'pull_request'
+        run: |
+          snapshot=apps/web/.output/public/_directory/search.json
+          if [ -s "$snapshot" ]; then
+            echo "Search snapshot: $(wc -c < "$snapshot") bytes"
+          else
+            echo "::warning::No search snapshot was written. /search will wait for the API."
+          fi
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:

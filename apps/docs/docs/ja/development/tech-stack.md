@@ -27,7 +27,8 @@
 | [Nuxt 4](https://nuxt.com/) | Vueベースのメタフレームワーク（`nuxi generate`でプリレンダリング） |
 | [Vue 3](https://vuejs.org/) | UIフレームワーク（Composition API） |
 | [Tailwind CSS 4](https://tailwindcss.com/) | ユーティリティファーストCSSフレームワーク |
-| [Pinia](https://pinia.vuejs.org/) | 状態管理 |
+| [Pinia](https://pinia.vuejs.org/) | UIの状態 |
+| [TanStack Query](https://tanstack.com/query/latest/docs/framework/vue/overview) | サーバーデータ：リクエストのキャッシュ、再試行、取り消し |
 | [graphql-request](https://github.com/jasonkuhrt/graphql-request) | 軽量GraphQLクライアント |
 | [Nuxt i18n](https://i18n.nuxtjs.org/) | 国際化（13言語） |
 | [Auth0](https://auth0.com/) | モデレーション用の認証 |

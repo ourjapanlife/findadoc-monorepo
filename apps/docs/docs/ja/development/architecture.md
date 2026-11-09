@@ -21,7 +21,8 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 
 - **フレームワーク**：Nuxt 4（`nuxi generate`でプリレンダリングし、AWS Amplifyでホスティング）
 - **UI**：Vue 3 Composition API + Tailwind CSS
-- **状態管理**：Piniaストア
+- **状態管理**：UIの状態（フィルター、モーダル、未保存の編集）だけを持つPiniaストア
+- **サーバーデータ**：TanStack Query（`@tanstack/vue-query`）。下の「ウェブアプリのデータ取得」を参照
 - **API**：`graphql-request`によるGraphQL
 - **認証**：Auth0（モデレーションダッシュボード用）
 - **地図**：Google Maps API（医療機関の位置表示）
@@ -35,6 +36,10 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **スキーマ**：`apps/server/src/typeDefs/schema.graphql`（リポジトリ内で唯一のGraphQLスキーマ）
 - **データベース**：Supabase（PostgreSQL）。マイグレーションは `apps/server/supabase`。APIはSupabaseクライアントではなく、Postgres接続上のKyselyでクエリする
 - **本番環境**：PM2で管理されるDockerコンテナ
+- **キャッシュ**：`apps/server/src/publicCache.ts`がすべてのレスポンスに`Cache-Control`を付けます（#242）。トークンが送られておらず、ルートフィールドがすべて`PUBLIC_CACHEABLE_QUERY_FIELDS`にあり、エラーがないときだけ`public, max-age=60`になります。それ以外は`private, no-store`です。このリストに加えてよいのは、サインアウトしている訪問者全員に同じ答えを返すフィールドだけです。ユーザー、IP、国、トークン、レート制限を読まないものに限ります。予約、アップロード、モデレーション、ユーザーのフィールドは加えません。`__tests__/publicCache.test.ts`がリストを確認します
+- **CSRF**：Apolloの組み込みチェックは無効にし、`csrfPreventionPlugin`が同じルールを守ります。プリフライトのないリクエスト（フォームのPOSTや、`x-apollo-operation-name`ヘッダーのないGET）が実行できるのは、公開リストにあるクエリだけです。そのため公開の読み込みは、キャッシュできる普通のGETで送れます
+- **参照テーブル**：都道府県と市区町村の一覧は、Lambdaのメモリに10分間置きます（`src/lookupCache.ts`）
+- **エッジ**：APIのCloudFrontディストリビューションは、APIが`public`と付けたGETだけをキャッシュします（`infra/lib/functionUrlEdge.ts`の`cachePublicReads`）。キャッシュキーはクエリ文字列、`Origin`、`Authorization`です。エラーのレスポンスはキャッシュしません。POST、OPTIONS、予約、サインイン中の読み込みは、常にAPIまで届きます。MCPサーバーも読み込みをGETで送るので、同じキャッシュを使います
 
 ### MCPサーバー（`apps/mcp`）
 
@@ -55,7 +60,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 |-----------|---------|
 | `apps/web/components/` | 再利用可能なVueコンポーネント |
 | `apps/web/pages/` | ルートページ（Nuxtによる自動登録） |
-| `apps/web/stores/` | Piniaストア |
+| `apps/web/stores/` | Piniaストア（UIの状態） |
 | `apps/web/i18n/locales/` | 翻訳ファイル（`en.json`と照合） |
 | `apps/web/assets/` | 未コンパイルのアセット（CSS、画像、フォント） |
 | `apps/web/typedefs/` | TypeScript型定義 |
@@ -67,6 +72,20 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 2. ウェブサイトがAPIにGraphQLクエリを送信
 3. APIがSupabase PostgreSQLデータベースに対してクエリを実行
 4. 結果がインタラクティブな地図上に医療機関の詳細とともに表示される
+
+
+## ウェブアプリのデータ取得
+
+ウェブアプリの読み込みはTanStack Queryに移行中です（#242）。今は検索ページが使っています。ほかのページは、移行するまでPiniaストアでデータを読み込みます。
+
+- 読み込みはコンポーザブルの中の`useQuery`です（例：`apps/web/composables/useSearchDirectory.ts`）。`queryFn`は`apps/web/utils/queryClient.ts`の`requestQueryData`を呼びます。これは`graphQLClientRequestWithRetry`でリクエストを送り、vue-queryの中断シグナルを渡します。ページを離れると、そのリクエストは取り消されます。
+- キーは`apps/web/utils/queryKeys.ts`で作ります。コンポーネントにキーの配列を直接書かないでください。書き込みは、変更したキーを無効にします。
+- 既定値は`createAppQueryClient`にあります。クエリの再試行は1回だけで、タイムアウト、接続の切断、502/503/504のときに限ります。ミューテーションは再試行しません。
+- ディレクトリの読み込みは5分間新しいものとして扱います（`DIRECTORY_STALE_TIME_MS`）。それ以外の読み込みはすぐに古くなるので、モデレーションと予約は毎回サーバーに問い合わせます。
+- サインアウトするとキャッシュをすべて消します。サーバーデータはメモリにだけ置き、`localStorage`や`sessionStorage`には書きません。
+- 読み込みはブラウザでだけ行います。プリレンダーされたページは読み込み中の状態で届き、そのあと読み込みます。
+- `nuxi generate`は、すでに取得したディレクトリを`/_directory/search.json`に書き出します。すべてのページを取得できたときだけです。/searchは、APIが先に答えていなければ、このファイルをビルド時刻つきでクエリキャッシュに入れ、APIの答えで置き換えます。APIを待たずに結果が表示され、APIが止まっていても表示されます。ファイルの形を変えたら、`apps/web/utils/searchDirectorySnapshot.ts`の`SEARCH_DIRECTORY_SNAPSHOT_VERSION`を上げてください。
+- APIの公開リスト（`PUBLIC_CACHEABLE_QUERY_FIELDS`）にある読み込みは、`apps/web/utils/graphql.ts`の`publicReadRequest()`か、`requestQueryData`の`publicRead: true`で送ります。ブラウザでは、トークンもカスタムヘッダーも付けないGETになり、CloudFrontとブラウザが60秒キャッシュできます。プリレンダーはPOSTのままなので、生成されるHTMLは新しいデータから作られます。ほかの操作をこの方法で送ると、APIは拒否します。
 
 ## 関連資料
 
