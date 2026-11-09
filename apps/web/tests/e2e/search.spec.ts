@@ -1,5 +1,5 @@
 import enUS from '../../i18n/locales/en.json' with { type: 'json' }
-import { test, expect, type Page, type Route } from '@playwright/test'
+import { test, expect, type Page, type Request, type Route } from '@playwright/test'
 
 /*
  * The search page is exercised against a mocked API. The production API rejects CORS from
@@ -102,6 +102,18 @@ function isApiRequest(url: URL): boolean {
  */
 const MAX_SERVABLE_PAGE = 100
 
+type GraphQLBody = { query: string, variables?: { filters?: { limit?: number } } }
+
+/** The operation, whether it came as a POST body or as a GET query string (public reads, #242). */
+function graphqlBody(request: Request): GraphQLBody | null {
+    if (request.method() === 'GET') {
+        const params = new URL(request.url()).searchParams
+        const variables = params.get('variables')
+        return { query: params.get('query') ?? '', variables: variables ? JSON.parse(variables) : undefined }
+    }
+    return request.postDataJSON() as GraphQLBody | null
+}
+
 async function mockApi(page: Page, options: { fail?: boolean } = {}) {
     await page.route(isApiRequest, async (route: Route) => {
         if (options.fail) {
@@ -109,7 +121,7 @@ async function mockApi(page: Page, options: { fail?: boolean } = {}) {
             return
         }
 
-        const body = route.request().postDataJSON() as { query: string, variables?: { filters?: { limit?: number } } } | null
+        const body = graphqlBody(route.request())
         const query = body?.query ?? ''
         const requestedLimit = body?.variables?.filters?.limit
 
@@ -190,6 +202,24 @@ test.describe('Search page', () => {
 
             await expect(page.getByTestId('search-map-panel')).toBeVisible()
             await expect.poll(() => mapsRequests.length).toBeGreaterThan(0)
+        })
+
+        test('loads the directory with cacheable GETs that carry no token (#242)', async ({ page }) => {
+            const apiCalls: { method: string, authorization: string | undefined }[] = []
+            page.on('request', request => {
+                if (isApiRequest(new URL(request.url()))) {
+                    apiCalls.push({ method: request.method(), authorization: request.headers().authorization })
+                }
+            })
+
+            await page.goto('/search')
+            await expect(page.getByTestId('search-result-card')).toHaveCount(3)
+
+            expect(apiCalls.length).toBeGreaterThan(0)
+            apiCalls.forEach(call => {
+                expect(call.method).toBe('GET')
+                expect(call.authorization).toBeUndefined()
+            })
         })
 
         test('shows the top nav and footer', async ({ page }) => {

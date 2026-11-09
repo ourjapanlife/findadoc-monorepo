@@ -210,7 +210,7 @@ export class ApiStack extends Stack {
             executeBefore: [this.apiFunction, this.purgeFunction],
         })
 
-        // CloudFront calls the Function URL. CORS and auth stay in the app.
+        // CloudFront calls the Function URL. CORS and auth stay in the app. Public GETs may be cached.
         const { distribution, functionUrl } = addFunctionUrlEdge(this, {
             fn: this.apiFunction,
             label: 'API',
@@ -224,7 +224,10 @@ export class ApiStack extends Stack {
             ids: {
                 viewerIp: 'ViewerIp',
                 distribution: 'ApiDistribution',
+                cachePolicy: 'ApiPublicReadCache',
             },
+            // Public directory reads are GETs the API marks public (apps/server/src/publicCache.ts, #242).
+            cachePublicReads: true,
         })
 
         this.addAlarms(props.alerts)

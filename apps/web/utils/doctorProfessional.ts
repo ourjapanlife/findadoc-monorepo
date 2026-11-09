@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request'
-import { gqlClient, graphQLClientRequestWithRetry } from './graphql'
+import { graphQLClientRequestWithRetry, publicReadRequest } from './graphql'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import type { ProfessionalSearchResult } from './clinicPrerender'
 import { useRuntimeConfig } from '#imports'
@@ -88,7 +88,7 @@ export async function fetchDoctorById(id: string): Promise<ProfessionalSearchRes
     const response = await graphQLClientRequestWithRetry<{
         healthcareProfessional?: HealthcareProfessional | null
     }>(
-        gqlClient.request.bind(gqlClient),
+        publicReadRequest(),
         doctorProfessionalQuery,
         { id },
         PUBLIC_REQUEST_OPTIONS
@@ -100,7 +100,7 @@ export async function fetchDoctorById(id: string): Promise<ProfessionalSearchRes
     }
 
     const facilitiesResponse = await graphQLClientRequestWithRetry<{ facilities?: Facility[] }>(
-        gqlClient.request.bind(gqlClient),
+        publicReadRequest(),
         doctorFacilitiesQuery,
         { filters: { healthcareProfessionalIds: [id], limit: 100 } },
         PUBLIC_REQUEST_OPTIONS

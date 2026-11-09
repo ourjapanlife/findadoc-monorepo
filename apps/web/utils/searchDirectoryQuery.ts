@@ -30,11 +30,11 @@ export const PROFESSIONAL_PAGE_SIZE = 100
 const MAX_CONCURRENT_PAGE_REQUESTS = 6
 
 /**
- * Anonymous reads: no Auth0 wait, and a hard per-attempt deadline so a hung connection
+ * Anonymous, cacheable GET reads (#242): no Auth0 wait, and a hard per-attempt deadline so a hung connection
  * surfaces the error state instead of leaving the page on skeletons. vue-query owns the retry.
  */
 const PUBLIC_REQUEST_OPTIONS = {
-    skipAuth: true,
+    publicRead: true,
     abortAfterMs: 10000
 }
 
