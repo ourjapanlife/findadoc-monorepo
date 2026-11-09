@@ -166,7 +166,18 @@
                 <h2 class="text-lg font-semibold">
                     {{ t('bookingDashboard.answersHeading') }}
                 </h2>
-                <dl class="flex flex-col gap-3">
+                <!-- Erased answers (#212) read as a note, not as empty rows. -->
+                <p
+                    v-if="answersRemovedKey !== null"
+                    class="rounded-lg border border-dashed border-accent-bg p-4 text-sm text-primary-text-muted"
+                    data-testid="booking-answers-removed"
+                >
+                    {{ t(answersRemovedKey) }}
+                </p>
+                <dl
+                    v-else
+                    class="flex flex-col gap-3"
+                >
                     <div
                         v-for="answer in detail.answers"
                         :key="answer.fieldId"
@@ -319,6 +330,7 @@ import { formatJapanDateTime } from '~/utils/booking/japanTime'
 import { intlLocale } from '~/utils/intlLocale'
 import {
     actionTakesReason,
+    answersRemovedNoteKey,
     appointmentStatusLabelKey,
     paymentMethodLabelKey,
     staffActionLabelKey,
@@ -357,6 +369,7 @@ const actions = computed(() => staffActionsFor(detail.value?.appointmentStatus))
 const doctor = computed(() => practitionerName(detail.value?.practitionerNames, locale.value))
 const patientName = computed(() =>
     detail.value?.answers.find(answer => answer.fieldId === 'fullName')?.value ?? '')
+const answersRemovedKey = computed(() => answersRemovedNoteKey(detail.value))
 
 /**
  * The label the form used, such as "Current symptoms" for the online consult reason.

@@ -19,6 +19,7 @@ import { clinicPatientCancelledEmail, patientStatusEmail, type PatientNoticeStat
 import { hashPatientToken } from '../booking/links.js'
 import { emailFromUnknown, noticeClinic, sendBookingNotice } from '../booking/notifications.js'
 import { clinicNameForLocale, emailBrandFor, resolveBookingTarget } from '../booking/target.js'
+import { eraseSubmissionAnswers } from '../booking/answerPurge.js'
 import { purgeSubmissionUploads } from '../booking/uploadPurge.js'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
@@ -34,7 +35,7 @@ import { appointmentStatusFromRow, appointmentStatusToRow } from './staffBooking
 
 const PATIENT_TOKEN_PATTERN = /^[A-Za-z0-9_-]{32,64}$/
 
-/** A cancelled or declined visit will not happen, so its uploads are purged at once. */
+/** A cancelled or declined visit will not happen, so its answers and uploads are purged at once (#212). */
 function closesVisit(status: AppointmentStatus): boolean {
     return status === APPOINTMENT_STATUS.CANCELLED || status === APPOINTMENT_STATUS.DECLINED
 }
@@ -171,26 +172,37 @@ export async function updateAppointmentStatus(
         return invalid('status')
     }
 
-    const updated = await db.updateTable('booking_appointments')
-        .set({
-            status: next,
-            status_changed_at: sql`now()`,
-            status_changed_by: actorSub ?? null,
-            status_reason: reason,
-            cancelled_by: next === APPOINTMENT_STATUS.CANCELLED ? CANCELLED_BY.CLINIC : null,
-            updated_date: sql`now()`
-        })
-        .where('id', '=', current.id)
-        .where('status', '=', current.status)
-        .executeTakeFirst()
-    if (Number(updated.numUpdatedRows) !== 1) {
+    const bookingId = current.booking_submission_id
+    const changed = await db.transaction().execute(async transaction => {
+        const updated = await transaction.updateTable('booking_appointments')
+            .set({
+                status: next,
+                status_changed_at: sql`now()`,
+                status_changed_by: actorSub ?? null,
+                status_reason: reason,
+                cancelled_by: next === APPOINTMENT_STATUS.CANCELLED ? CANCELLED_BY.CLINIC : null,
+                updated_date: sql`now()`
+            })
+            .where('id', '=', current.id)
+            .where('status', '=', current.status)
+            .executeTakeFirst()
+        if (Number(updated.numUpdatedRows) !== 1) {
+            return false
+        }
+        if (closesVisit(next) && bookingId !== null) {
+            await eraseSubmissionAnswers(transaction, bookingId)
+        }
+        return true
+    })
+    if (!changed) {
         // Someone else changed it first.
         return invalid('status')
     }
-    if (closesVisit(next) && current.booking_submission_id !== null) {
-        await purgeSubmissionUploads(current.booking_submission_id)
+    if (closesVisit(next) && bookingId !== null) {
+        await purgeSubmissionUploads(bookingId)
     }
 
+    // The answers were read before the erase, so the patient still hears about it.
     const notice = PATIENT_NOTICE[next]
     const patientEmail = emailFromUnknown(answersRecord(current.answers).email)
     if (notice !== undefined && patientEmail !== undefined && current.booking_submission_id !== null) {
@@ -272,19 +284,28 @@ export async function cancelBookingByToken(input: CancelBookingByTokenInput): Pr
         return invalid('token')
     }
 
-    const updated = await db.updateTable('booking_appointments')
-        .set({
-            status: APPOINTMENT_STATUS.CANCELLED,
-            status_changed_at: sql`now()`,
-            status_changed_by: null,
-            status_reason: reason,
-            cancelled_by: CANCELLED_BY.PATIENT,
-            updated_date: sql`now()`
-        })
-        .where('id', '=', row.appointment_id)
-        .where('status', '=', row.status)
-        .executeTakeFirst()
-    if (Number(updated.numUpdatedRows) !== 1) {
+    const appointmentId = row.appointment_id
+    const currentStatus = row.status
+    const changed = await db.transaction().execute(async transaction => {
+        const updated = await transaction.updateTable('booking_appointments')
+            .set({
+                status: APPOINTMENT_STATUS.CANCELLED,
+                status_changed_at: sql`now()`,
+                status_changed_by: null,
+                status_reason: reason,
+                cancelled_by: CANCELLED_BY.PATIENT,
+                updated_date: sql`now()`
+            })
+            .where('id', '=', appointmentId)
+            .where('status', '=', currentStatus)
+            .executeTakeFirst()
+        if (Number(updated.numUpdatedRows) !== 1) {
+            return false
+        }
+        await eraseSubmissionAnswers(transaction, row.booking_id)
+        return true
+    })
+    if (!changed) {
         return invalid('token')
     }
     await purgeSubmissionUploads(row.booking_id)

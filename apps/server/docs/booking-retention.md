@@ -23,15 +23,43 @@ the マイナポータル API.
 | `standard` | 365 days | `BOOKING_STANDARD_RETENTION_DAYS` |
 | `medical` | 365 days (same as standard for files) | `BOOKING_STANDARD_RETENTION_DAYS` |
 
-Medical free-text answers on the submission row are not auto-purged here.
-That needs a separate policy once the CRM export path is decided.
+## Answers (#212)
+
+`booking_submissions.answers` holds the patient's name, email, phone, date of
+birth, gender, visit reason, and insurance type. The visit reason is special
+care-required information (要配慮個人情報). APPI Art. 22 asks us to delete
+personal data once it is no longer needed, so one rule covers every answer.
+Date of birth is not treated separately.
+
+| When | Answers erased | Env override |
+|---|---|---|
+| The visit ended, any status (completed, or confirmed and never marked) | 90 days after `ends_at` | `BOOKING_ANSWER_RETENTION_DAYS` |
+| Cancelled by either side, or declined | In the transaction that changes the status | — |
+| No appointment (for example, the notice failed) | 90 days after `created_date` | `BOOKING_ANSWER_RETENTION_DAYS` |
+
+Erasing sets `answers` to `{}` and `answers_purged_at` to now. A `CHECK`
+keeps a purged row empty. The cancel or decline note (`status_reason`) can be
+the patient's own words; the clinic still needs to see why, so it stays until
+the same 90 days after the visit time, then the daily purge clears it.
+
+What stays for disputes and counts: the request id, clinic, form id and
+version, locale, requested languages, the appointment times and status, who
+cancelled, the consent time, and timestamps. No patient answers. The open
+request cap reads the email from `answers`; there is no other copy of it.
+
+The clinic copies what it needs into its own chart. The 5-year medical record
+duty (医師法24条) is the clinic's, not Find a Doc's.
+
+After erasure, the staff request page says the answers were removed instead
+of showing empty rows (`answersPurgedAt` on `BookingSubmissionDetail`). The
+patient's manage link shows the clinic, time, and status, and never showed
+answers.
 
 Version 4 of the online consult form (`showcase-intake-v1`) adds more answers to
 `booking_submissions.answers`: `addressInJapan` and `backupContactHandle`
-(personal data), and `pastIllnesses` (medical, next to `reason`). They have no
-purge path yet, the same as the other answers on the row. A retention period
-and a purge for them are needed before the form takes real patients. Until then
-the form stays on the preview showcase clinic: `updateBookingSettings` refuses
+(personal data), and `pastIllnesses` (medical, next to `reason`). They are
+erased with the rest of the row under the rule above. The form still stays on
+the preview showcase clinic: `updateBookingSettings` refuses
 it for a clinic owner unless the clinic site is on `preview` or an admin already
 turned it on, and `BookingSettings.offerableFormDefinitionIds` leaves it out of
 that owner's settings panel. None of them is logged.
@@ -41,7 +69,9 @@ that owner's settings panel. None of them is logged.
 On AWS, `findadoc-booking-purge` (`apps/server/src/lambdaPurge.ts`) runs the
 write purge at 03:00 JST every day. An EventBridge rule in `FindadocApi`
 invokes it. It runs in the VPC as `findadoc_api`, like the API, and may only
-`s3:DeleteObject` under `uploads/booking/*`. Each run:
+`s3:DeleteObject` under `uploads/booking/*`. Each run erases the answers that
+are past the rule above (`src/booking/answerPurge.ts`), clears cancel and
+decline notes on visits 90 days past, and, for uploads:
 
 - deletes the object of every upload past `retain_until`, sets `purged_at`,
   replaces `object_key` with the marker `purged/{id}`, which no storage call
@@ -49,12 +79,14 @@ invokes it. It runs in the VPC as `findadoc_api`, like the API, and may only
 - deletes uploads that were never attached to a submission and are older than
   one day, object and row;
 - logs one line of counts (`type = "bookingPurge"`: `scanned`, `purged`,
-  `unclaimed`, `unclaimedDeleted`, `failed`, `overdue`). It never logs an
-  upload id, object key, file name, or error message. The key holds the
-  patient's file name, and an S3 error can repeat it.
+  `unclaimed`, `unclaimedDeleted`, `failed`, `overdue`, `answersDue`,
+  `answersErased`, `reasonsCleared`, `answersOverdue`). It never logs an
+  upload id, object key, file name, answer, or error message. The key holds
+  the patient's file name, and an S3 error can repeat it.
 
-A failed upload does not stop the run. If any upload failed, or an upload is
-still past `retain_until` when the run ends (`overdue`), the function throws.
+A failed upload does not stop the run. If any upload failed, an upload is
+still past `retain_until` when the run ends (`overdue`), or a submission still
+holds answers past the rule (`answersOverdue`), the function throws.
 That error posts `findadoc-booking-purge-failed` to Slack `#alerts`. The
 alarm returns to OK after 25 hours without an error. To run it now:
 
@@ -62,7 +94,8 @@ alarm returns to OK after 25 hours without an error. To run it now:
 aws lambda invoke --function-name findadoc-booking-purge out.json && cat out.json
 ```
 
-By hand, against the database in your environment. Dry-run (default):
+By hand, against the database in your environment. The script runs the
+upload purge and the answer erase. Dry-run (default):
 
 ```bash
 pnpm --filter @findadoc/server purge:booking-uploads
@@ -81,7 +114,8 @@ not happen, so its files are not needed. In the same call that changes the
 status, `src/booking/uploadPurge.ts` moves each file's `retain_until` to now
 and deletes it the same way the daily purge does. A file that call cannot
 delete is still past `retain_until`, so the next daily run takes it. A
-completed visit keeps its files until `retain_until`.
+completed visit keeps its files until `retain_until`. The same status change
+erases the answers in its own transaction (see Answers above).
 
 ## Preview and download
 
@@ -102,8 +136,9 @@ Number) must not be collected or kept from a card photo.
 ## Dashboard
 
 Booking submissions appear as a read-only table on my-page (same list pattern
-as directory submissions). Answers and metadata are visible; files stay behind
-the download mutation. There is no edit path for patient answers.
+as directory submissions). Answers and metadata are visible until the answers
+are erased; files stay behind the download mutation. There is no edit path for
+patient answers.
 
 ## Auth
 

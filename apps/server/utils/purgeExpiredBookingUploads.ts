@@ -1,13 +1,16 @@
 import { pathToFileURL } from 'node:url'
 import { closeDatabase, db, initializeKyselyClient } from '../src/kyselyClient.js'
 import { initializeLogger } from '../src/logger.js'
+import { purgeExpiredBookingAnswers } from '../src/booking/answerPurge.js'
 import { purgeBookingUpload } from '../src/booking/uploadPurge.js'
 import { deleteBookingObject } from '../src/storage/objectStorage.js'
 
 /**
  * Delete booking upload objects whose retain_until has passed.
  * Identity documents (insurance proofs and the patient's photo) default to 30 days.
- * Dry-run unless `--write` is passed. Does not delete answer rows.
+ * Dry-run unless `--write` is passed. Run directly, it also erases booking answers
+ * past the answer retention rule (src/booking/answerPurge.ts, #212), as the daily
+ * Lambda does.
  *
  * Reports counts only. An object key holds the patient's file name, and an S3
  * error message can repeat the key, so neither is logged.
@@ -117,14 +120,16 @@ async function main(): Promise<void> {
     await initializeKyselyClient()
 
     try {
-        const result = await purgeExpiredBookingUploads({ write })
+        const uploads = await purgeExpiredBookingUploads({ write })
+        const answers = await purgeExpiredBookingAnswers({ write })
+        const result = { ...uploads, ...answers }
         // eslint-disable-next-line no-console
         console.log(JSON.stringify({ write, ...result }, null, 2))
-        if (!write && (result.scanned > 0 || result.unclaimed > 0)) {
+        if (!write && (result.scanned > 0 || result.unclaimed > 0 || result.answersDue > 0)) {
             // eslint-disable-next-line no-console
-            console.log('Dry-run only. Re-run with --write to delete objects and mark rows purged.')
+            console.log('Dry-run only. Re-run with --write to delete objects, erase answers, and mark rows purged.')
         }
-        if (result.failed > 0 || (write && result.overdue > 0)) {
+        if (result.failed > 0 || (write && (result.overdue > 0 || result.answersOverdue > 0))) {
             process.exitCode = 1
         }
     } finally {

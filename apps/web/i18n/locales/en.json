@@ -195,7 +195,7 @@
   "privacyPage": {
     "heading": "Privacy Policy",
     "subheading": "What we collect, why we collect it, who we share it with, and how to reach us about your information.",
-    "date": "Effective date: October 29, 2026",
+    "date": "Effective date: November 8, 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Who we are",
@@ -223,7 +223,7 @@
       "retention": {
         "heading": "5. How long we keep it",
         "p1": "Photos of insurance cards and other identity documents uploaded with a booking are deleted 30 days after upload. Other booking files are deleted after one year, and files from a booking that was never sent are deleted after 24 hours.",
-        "p2": "Booking answers and appointment records are kept while the clinic needs them and as long as needed to resolve disputes or meet legal obligations. Account information is kept while the account is active. You can ask us to delete your information sooner (section 8)."
+        "p2": "Your booking answers, such as your name, contact details, date of birth, and the reason for your visit, are deleted 90 days after the appointment ends. If the appointment is cancelled or the clinic declines the request, they are deleted at once. Answers to a request with no appointment time are deleted 90 days after it was sent, and a note given with a cancellation is deleted 90 days after the appointment time. After that we keep the request without those answers: the clinic, the doctor and the service, the languages you asked for, the site language you used, the appointment time and status, and dates (such as when you gave consent). The clinic keeps its own medical records under its own legal duties. Account information is kept while the account is active. You can ask us to delete your information sooner (section 8)."
       },
       "cookies": {
         "heading": "6. Cookies and advertising measurement",
@@ -992,6 +992,8 @@
     "loadError": "Could not load this booking.",
     "empty": "No booking submissions yet",
     "answersHeading": "Answers",
+    "answersRemoved": "Answers removed after the retention period.",
+    "answersRemovedOnClose": "Answers removed when this request was cancelled or declined.",
     "uploadsHeading": "Uploads",
     "uploadsRetentionNote": "Identity and insurance photos are kept until their retain-until date. They are deleted as soon as the visit is cancelled or declined.",
     "download": "Download",

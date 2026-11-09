@@ -311,6 +311,8 @@ export interface BookingSubmissionsTable {
     health_data_consented_at: string | null
     /** Consent wording version the server stamped (docs/consent-text/). Null before spec §6. */
     consent_text_version: string | null
+    /** When answers was emptied under the retention rule (#212). Null while the answers are kept. */
+    answers_purged_at: ColumnType<string | null, string | null | undefined, string | null>
     created_date: Generated<string>
     updated_date: Generated<string>
 }
