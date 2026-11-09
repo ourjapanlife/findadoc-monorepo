@@ -1,5 +1,7 @@
 import enUS from '../../i18n/locales/en.json' with { type: 'json' }
-import { test, expect, type Page, type Request, type Route } from '@playwright/test'
+import { test, expect, type Page, type Route } from '@playwright/test'
+import { SEARCH_DIRECTORY_SNAPSHOT_PATH, SEARCH_DIRECTORY_SNAPSHOT_VERSION } from '../../utils/searchDirectorySnapshot'
+import { graphqlOperation } from './graphqlRequest'
 
 /*
  * The search page is exercised against a mocked API. The production API rejects CORS from
@@ -102,16 +104,27 @@ function isApiRequest(url: URL): boolean {
  */
 const MAX_SERVABLE_PAGE = 100
 
-type GraphQLBody = { query: string, variables?: { filters?: { limit?: number } } }
+/**
+ * The build's directory snapshot (#242). A generated site serves the seeded directory there,
+ * which would paint before this file's mock answers. Each test gets no snapshot unless it
+ * passes one, so the assertions stay about the mocked API.
+ */
+async function mockSnapshot(page: Page, snapshot?: unknown) {
+    await page.route(`**${SEARCH_DIRECTORY_SNAPSHOT_PATH}`, async (route: Route) => {
+        if (snapshot === undefined) {
+            await route.fulfill({ status: 404, body: '' })
+            return
+        }
+        await route.fulfill({ contentType: 'application/json', body: JSON.stringify(snapshot) })
+    })
+}
 
-/** The operation, whether it came as a POST body or as a GET query string (public reads, #242). */
-function graphqlBody(request: Request): GraphQLBody | null {
-    if (request.method() === 'GET') {
-        const params = new URL(request.url()).searchParams
-        const variables = params.get('variables')
-        return { query: params.get('query') ?? '', variables: variables ? JSON.parse(variables) : undefined }
+function requestedLimit(variables: Record<string, unknown> | undefined): number | undefined {
+    const filters = variables?.filters
+    if (filters === null || typeof filters !== 'object' || !('limit' in filters)) {
+        return undefined
     }
-    return request.postDataJSON() as GraphQLBody | null
+    return typeof filters.limit === 'number' ? filters.limit : undefined
 }
 
 async function mockApi(page: Page, options: { fail?: boolean } = {}) {
@@ -121,11 +134,11 @@ async function mockApi(page: Page, options: { fail?: boolean } = {}) {
             return
         }
 
-        const body = graphqlBody(route.request())
+        const body = graphqlOperation(route.request())
         const query = body?.query ?? ''
-        const requestedLimit = body?.variables?.filters?.limit
+        const limit = requestedLimit(body?.variables)
 
-        if (typeof requestedLimit === 'number' && requestedLimit > MAX_SERVABLE_PAGE) {
+        if (limit !== undefined && limit > MAX_SERVABLE_PAGE) {
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
@@ -170,6 +183,7 @@ test.describe('Search page', () => {
                 mapsRequests.push(request.url())
             }
         })
+        await mockSnapshot(page)
         await mockApi(page)
     })
 
@@ -371,6 +385,7 @@ test.describe('Search page', () => {
 
         test('shows an error state with a retry when the API is down', async ({ page }) => {
             await page.unrouteAll()
+            await mockSnapshot(page)
             await mockApi(page, { fail: true })
             await page.goto('/search')
 
@@ -379,8 +394,24 @@ test.describe('Search page', () => {
             await expect(error.getByRole('button', { name: enUS.search.retry })).toBeVisible()
         })
 
+        test('shows the build snapshot instead of the error when the API is down (#242)', async ({ page }) => {
+            await page.unrouteAll()
+            await mockSnapshot(page, {
+                version: SEARCH_DIRECTORY_SNAPSHOT_VERSION,
+                generatedAt: '2026-11-01T00:00:00.000Z',
+                facilities,
+                professionals
+            })
+            await mockApi(page, { fail: true })
+            await page.goto('/search')
+
+            await expect(page.getByTestId('search-result-card')).toHaveCount(3)
+            await expect(page.getByTestId('search-load-error')).toHaveCount(0)
+        })
+
         test('retry loads the results once the API is back', async ({ page }) => {
             await page.unrouteAll()
+            await mockSnapshot(page)
             await mockApi(page, { fail: true })
             await page.goto('/search')
 
@@ -388,6 +419,7 @@ test.describe('Search page', () => {
             await expect(error).toBeVisible({ timeout: 20000 })
 
             await page.unrouteAll()
+            await mockSnapshot(page)
             await mockApi(page)
             await error.getByRole('button', { name: enUS.search.retry }).click()
 
