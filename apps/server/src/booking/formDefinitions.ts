@@ -1,9 +1,13 @@
 import {
     BookingFieldSensitivity,
     BookingFormFieldType,
+    BookingPhoneRegion,
     type BookingForm,
-    type BookingFormField
+    type BookingFormField,
+    type ClinicBranding
 } from '@findadoc/graphql'
+import { formatJapanPhone, PHONE_DISPLAY } from '../../utils/stringUtils.js'
+import { APPOINTMENT_STATUS, type AppointmentStatus } from './lifecycle.js'
 import { BOOKING_UPLOAD_MAX_BYTES } from './limits.js'
 import { BOOKING_FIELD_SENSITIVITY, type BookingFieldSensitivity as StoredSensitivity } from './retention.js'
 import {
@@ -37,7 +41,7 @@ function field(
     partial: Omit<
         BookingFormField,
         'sensitivity' | 'label' | 'placeholderKey' | 'hintKey' | 'accept' | 'maxLength' | 'maxBytes' | 'min' | 'max'
-        | 'options' | 'showWhen'
+        | 'options' | 'showWhen' | 'phoneRegion'
     >
     & Partial<BookingFormField>
     & { sensitivity?: BookingFormField['sensitivity'] }
@@ -53,17 +57,46 @@ function field(
         max: null,
         options: null,
         showWhen: null,
+        phoneRegion: null,
         sensitivity: BookingFieldSensitivity.Standard,
         ...partial
     }
 }
 
 /**
- * Gender choices. `selfDescribe` shows a text field for the patient's own words.
+ * Gender choices on the online consult form: Male, Female, and Other. `selfDescribe` is
+ * labelled "Other" and shows a text field for the patient's own words. The stored values
+ * are the version 3 values, so older requests still read the same; `preferNotToSay` is
+ * no longer offered, but staff still see its label on a version 3 request.
  * Under the APPI this is ordinary personal information, not special care-required data;
- * the hint on the form says why it is asked, and `preferNotToSay` keeps it optional in effect.
+ * the hint on the form says why it is asked.
  */
-export const GENDER_OPTIONS = ['female', 'male', 'selfDescribe', 'preferNotToSay'] as const
+export const GENDER_OPTIONS = ['male', 'female', 'selfDescribe'] as const
+
+/** Apps a patient may name as a second way to reach them. */
+export const BACKUP_CONTACT_CHANNELS = ['line', 'whatsapp', 'messenger'] as const
+
+/** How much Japanese the patient speaks, so the coordinator can plan the call. */
+export const JAPANESE_LEVELS = ['none', 'greetings', 'little', 'conversational', 'fluent'] as const
+
+/**
+ * The language the patient wants the consultation in. A plain answer for the coordinator:
+ * it does not route doctors or interpreters, which the language chips still do. The values
+ * are short language codes, not site locales, because Burmese is not a site locale.
+ */
+export const CONSULTATION_LANGUAGES = ['ja', 'en', 'zh', 'vi', 'id', 'tl', 'fr', 'ne', 'my'] as const
+
+/** How the patient will pay the initial fee. The clinic sends instructions for the chosen one. */
+export const PAYMENT_METHODS = ['creditCard', 'bankTransfer', 'payPay'] as const
+
+/** The answer that names the payment method. Staff lists and the export read it from the stored answers. */
+export const PAYMENT_METHOD_FIELD_ID = 'paymentMethod'
+
+export type PaymentMethod = typeof PAYMENT_METHODS[number]
+
+export function isPaymentMethod(value: unknown): value is PaymentMethod {
+    return PAYMENT_METHODS.some(method => method === value)
+}
 
 /** Oldest date of birth the form accepts, in calendar years before today. */
 export const OLDEST_BIRTH_DATE_YEARS = -120
@@ -111,8 +144,16 @@ const contactAndVisitFields: BookingFormField[] = [
     })
 ]
 
+/** Select options labelled by `bookingPage.options.{fieldId}.{value}`, which staff detail also reads. */
+function selectOptions(fieldId: string, values: readonly string[]): BookingFormField['options'] {
+    return values.map(value => ({ value, labelKey: `bookingPage.options.${fieldId}.${value}`, label: null }))
+}
+
 const showcaseFields: BookingFormField[] = [
-    ...contactAndVisitFields.slice(0, 3),
+    contactAndVisitFields[0]!,
+    // The coordinator calls the patient in Japan, so this form takes a Japanese number only.
+    { ...contactAndVisitFields[1]!, phoneRegion: BookingPhoneRegion.Jp },
+    contactAndVisitFields[2]!,
     // Date of birth, not age: it identifies the patient, matches the insurance card, and
     // does not go stale. Version 2 requests still carry `age` and staff still see it.
     field({
@@ -132,11 +173,7 @@ const showcaseFields: BookingFormField[] = [
         required: true,
         labelKey: 'bookingPage.fields.gender',
         hintKey: 'bookingPage.hints.gender',
-        options: GENDER_OPTIONS.map(value => ({
-            value,
-            labelKey: `bookingPage.options.gender.${value}`,
-            label: null
-        }))
+        options: selectOptions('gender', GENDER_OPTIONS)
     }),
     field({
         id: 'genderSelfDescribed',
@@ -147,7 +184,67 @@ const showcaseFields: BookingFormField[] = [
         maxLength: 60,
         showWhen: { fieldId: 'gender', equals: 'selfDescribe' }
     }),
-    contactAndVisitFields[3]!,
+    field({
+        id: 'backupContactChannel',
+        stepKey: 'contact',
+        type: BookingFormFieldType.Select,
+        required: false,
+        labelKey: 'bookingPage.fields.backupContactChannel',
+        options: selectOptions('backupContactChannel', BACKUP_CONTACT_CHANNELS)
+    }),
+    // Required once any app is chosen; hidden and dropped when none is.
+    field({
+        id: 'backupContactHandle',
+        stepKey: 'contact',
+        type: BookingFormFieldType.Text,
+        required: true,
+        labelKey: 'bookingPage.fields.backupContactHandle',
+        maxLength: 120,
+        showWhen: { fieldId: 'backupContactChannel', equals: null, anyOf: [...BACKUP_CONTACT_CHANNELS] }
+    }),
+    // Personal data, like the name and phone. It is never logged.
+    field({
+        id: 'addressInJapan',
+        stepKey: 'contact',
+        type: BookingFormFieldType.Textarea,
+        required: true,
+        labelKey: 'bookingPage.fields.addressInJapan',
+        placeholderKey: 'bookingPage.placeholders.addressInJapan',
+        maxLength: 300
+    }),
+    field({
+        id: 'japaneseLevel',
+        stepKey: 'visit',
+        type: BookingFormFieldType.Select,
+        required: true,
+        labelKey: 'bookingPage.fields.japaneseLevel',
+        options: selectOptions('japaneseLevel', JAPANESE_LEVELS)
+    }),
+    field({
+        id: 'consultationLanguage',
+        stepKey: 'visit',
+        type: BookingFormFieldType.Select,
+        required: true,
+        labelKey: 'bookingPage.fields.consultationLanguage',
+        hintKey: 'bookingPage.hints.consultationLanguage',
+        options: selectOptions('consultationLanguage', CONSULTATION_LANGUAGES)
+    }),
+    // Same answer id as the default form's reason, so lists and exports read one key.
+    {
+        ...contactAndVisitFields[3]!,
+        labelKey: 'bookingPage.fields.currentSymptoms',
+        placeholderKey: 'bookingPage.placeholders.currentSymptoms'
+    },
+    field({
+        id: 'pastIllnesses',
+        stepKey: 'visit',
+        type: BookingFormFieldType.Textarea,
+        required: false,
+        labelKey: 'bookingPage.fields.pastIllnesses',
+        placeholderKey: 'bookingPage.placeholders.pastIllnesses',
+        maxLength: 2000,
+        sensitivity: BookingFieldSensitivity.Medical
+    }),
     // Which proof of insurance the patient has. The Book page shows a guide for each;
     // a My Number insurance card is shown as a マイナポータル screenshot, never the card.
     field({
@@ -181,6 +278,16 @@ const showcaseFields: BookingFormField[] = [
         accept: 'image/jpeg,image/png,image/webp',
         maxBytes: BOOKING_UPLOAD_MAX_BYTES,
         sensitivity: BookingFieldSensitivity.IdentityDocument
+    }),
+    // The hint under it says the visit is not confirmed until the clinic has the first payment.
+    field({
+        id: 'paymentMethod',
+        stepKey: 'payment',
+        type: BookingFormFieldType.Select,
+        required: true,
+        labelKey: 'bookingPage.fields.paymentMethod',
+        hintKey: 'bookingPage.hints.paymentMethod',
+        options: selectOptions('paymentMethod', PAYMENT_METHODS)
     })
 ]
 
@@ -195,7 +302,9 @@ const FORMS_BY_ID: Record<string, FormSource> = {
         id: SHOWCASE_BOOKING_FORM_ID,
         // 2 asks which proof of insurance the patient has.
         // 3 asks date of birth and gender instead of age.
-        version: 3,
+        // 4 adds address, backup contact, Japanese level, consultation language, past
+        // illnesses, and payment method, and takes a Japanese phone number only.
+        version: 4,
         labelKey: 'bookingForms.onlineConsultIntake',
         fields: showcaseFields
     }
@@ -203,15 +312,39 @@ const FORMS_BY_ID: Record<string, FormSource> = {
 
 /**
  * Whether a field is shown for these answers. A field with `showWhen` is shown only
- * while that other field's trimmed answer equals the value; otherwise it is not
- * required and its answer is dropped.
+ * while that other field's trimmed answer equals `equals` or is one of `anyOf`;
+ * otherwise it is not required and its answer is dropped.
  */
-export function fieldIsShown(formField: BookingFormField, answerFor: (fieldId: string) => string): boolean {
+export function fieldIsShown(
+    formField: Pick<BookingFormField, 'showWhen'>,
+    answerFor: (fieldId: string) => string
+): boolean {
     const condition = formField.showWhen
     if (condition === null || condition === undefined) {
         return true
     }
-    return answerFor(condition.fieldId) === condition.equals
+    const answer = answerFor(condition.fieldId)
+    if (answer === '') {
+        return false
+    }
+    return answer === condition.equals || (condition.anyOf ?? []).includes(answer)
+}
+
+/** A phone answer needs this many digits when the field takes any country. */
+const MIN_PHONE_DIGITS = 8
+
+/**
+ * The phone answer to store, or null when this field does not accept it. A JP field
+ * takes any spelling of a Japanese number (`09012345678`, `+81 90 1234 5678`, full-width)
+ * and stores the domestic form, `090-1234-5678`. Any other phone field needs
+ * MIN_PHONE_DIGITS digits and is stored as typed. The web copy is in
+ * `apps/web/utils/booking/formFields.ts`.
+ */
+export function phoneAnswer(formField: Pick<BookingFormField, 'phoneRegion'>, raw: string): string | null {
+    if (formField.phoneRegion === BookingPhoneRegion.Jp) {
+        return formatJapanPhone(raw, PHONE_DISPLAY.NATIONAL)
+    }
+    return raw.replace(/\D/g, '').length >= MIN_PHONE_DIGITS ? raw : null
 }
 
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/
@@ -279,7 +412,7 @@ export function staffAnswers(
     formDefinitionId: string,
     answers: Record<string, unknown>,
     uploadIds: ReadonlySet<string>
-): Array<{ fieldId: string, value: string | null }> {
+): Array<{ fieldId: string, value: string | null, labelKey: string | null }> {
     const fields = formSourceById(formDefinitionId)?.fields ?? []
     const fileFieldIds = new Set(fields
         .filter(formField => formField.type === BookingFormFieldType.File)
@@ -295,7 +428,12 @@ export function staffAnswers(
     return Object.entries(answers)
         .filter(([fieldId, value]) => !fileFieldIds.has(fieldId) && !(typeof value === 'string' && uploadIds.has(value)))
         .sort(([a], [b]) => rank(a) - rank(b))
-        .map(([fieldId, value]) => ({ fieldId, value: typeof value === 'string' ? value : null }))
+        .map(([fieldId, value]) => ({
+            fieldId,
+            value: typeof value === 'string' ? value : null,
+            // The form's own label, so the online consult reason reads "Current symptoms".
+            labelKey: fields.find(formField => formField.id === fieldId)?.labelKey ?? null
+        }))
 }
 
 export function resolveFormSource(formDefinitionId: string): FormSource {
@@ -344,7 +482,10 @@ export function assembleBookingForm(input: {
     clinicSiteId?: string | null
     clinicSiteSlug?: string | null
     clinicName: string
+    /** Japanese readers' name. Defaults to clinicName. */
+    clinicNameJa?: string | null
     themePrimary?: string | null
+    branding?: ClinicBranding | null
     allowedDurations?: readonly number[]
     defaultDuration?: number | null
 }): AssembledBookingForm {
@@ -358,7 +499,9 @@ export function assembleBookingForm(input: {
         clinicSiteId: input.clinicSiteId ?? null,
         clinicSiteSlug: input.clinicSiteSlug ?? null,
         clinicName: input.clinicName,
+        clinicNameJa: input.clinicNameJa ?? input.clinicName,
         themePrimary: input.themePrimary ?? null,
+        branding: input.branding ?? null,
         allowedDurations,
         defaultDuration: resolveDefaultDuration(allowedDurations, input.defaultDuration)
             ?? DEFAULT_APPOINTMENT_DURATION_MINUTES,
@@ -368,6 +511,26 @@ export function assembleBookingForm(input: {
 
 export function fieldById(form: Pick<BookingForm, 'fields'>, fieldId: string): BookingFormField | undefined {
     return form.fields.find(item => item.id === fieldId)
+}
+
+/**
+ * The status a new visit starts in. A form that asks how the patient pays starts it as
+ * pending_payment, because the visit is not confirmed until the clinic has the payment
+ * (online consult v2 §3.2). Every other form still starts as requested.
+ */
+export function initialAppointmentStatus(form: Pick<BookingForm, 'fields'>): AppointmentStatus {
+    return fieldById(form, PAYMENT_METHOD_FIELD_ID) === undefined
+        ? APPOINTMENT_STATUS.REQUESTED
+        : APPOINTMENT_STATUS.PENDING_PAYMENT
+}
+
+/**
+ * True when one of these forms asks how the patient pays, so the clinic's new visits can
+ * start as pending_payment. The staff list opens on that status only then.
+ */
+export function formsTakePayment(formDefinitionIds: string[]): boolean {
+    return formDefinitionIds.some(id =>
+        formSourceById(id)?.fields.some(item => item.id === PAYMENT_METHOD_FIELD_ID) === true)
 }
 
 export function storedSensitivity(bookingField: BookingFormField): StoredSensitivity {

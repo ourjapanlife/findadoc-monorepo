@@ -4,9 +4,9 @@ import { consentDeniedCookie } from './fixtures'
 
 /**
  * Helpers for the specs that book the seeded showcase clinic against the local API
- * (bookingFlow.spec.ts, clinicDashboard.spec.ts). They write real rows, so every patient
- * gets a new email and name, and each spec books on its own weekday so the two never
- * race for the same time.
+ * (bookingFlow.spec.ts, clinicDashboard.spec.ts, onlineConsultBooking.spec.ts). They write
+ * real rows, so every patient gets a new email and name, and each spec books on its own
+ * weekday so they never race for the same time.
  */
 
 export const SHOWCASE_FACILITY_ID = 'c32c316a-a368-499b-abaf-c5c973cb67e5'
@@ -14,6 +14,8 @@ export const SHOWCASE_SLUG = 'multilingual-online-clinic'
 
 // The seed offers this shorter form too. It has no uploads, so no storage is needed.
 const STANDARD_FORM_ID = 'findadoc-intake-v1'
+// The online consult form (version 4): Japanese phone, uploads, and a payment step.
+export const ONLINE_CONSULT_FORM_ID = 'showcase-intake-v1'
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000
 
 export type Patient = { name: string, email: string }
@@ -48,10 +50,13 @@ export async function newPatientContext(browser: Browser, baseURL: string | unde
     return browser.newContext({ storageState: { cookies: [consentDeniedCookie(hostname)], origins: [] } })
 }
 
-/** The Book page with the standard form, opened on the week of `day`. `?preview=1` passes the preview gate. */
-export function bookPagePath(day: string): string {
+/**
+ * The Book page with `formId` (the standard form by default), opened on the week of `day`.
+ * `?preview=1` passes the preview gate.
+ */
+export function bookPagePath(day: string, formId: string = STANDARD_FORM_ID): string {
     // Noon JST is the lunch break, so this only picks the week and never a time.
-    return `/book/${SHOWCASE_FACILITY_ID}?preview=1&form=${STANDARD_FORM_ID}&start=${day}T03:00:00.000Z`
+    return `/book/${SHOWCASE_FACILITY_ID}?preview=1&form=${formId}&start=${day}T03:00:00.000Z`
 }
 
 /** The open starts the Book page offers on `day`, once the picker has loaded. */
@@ -69,24 +74,56 @@ export async function offeredStarts(page: Page, day: string): Promise<string[]> 
     return ids.map(id => id.slice('booking-slot-'.length))
 }
 
-/** Fills the contact step and moves on to the visit step, where the times are. */
-export async function fillContactStep(page: Page, patient: Patient): Promise<void> {
+/** The email, phone, and name every form asks for on its contact step. */
+async function fillSharedContactFields(page: Page, patient: Patient): Promise<void> {
     await expect(page.getByTestId('clinic-booking-form')).toBeVisible()
     await page.getByTestId('clinic-booking-field-email').fill(patient.email)
     await page.getByTestId('clinic-booking-field-phone').fill('090-1234-5678')
     await page.getByTestId('clinic-booking-field-fullName').fill(patient.name)
+}
+
+/** Moves from the contact step to the visit step, where the times are. */
+async function nextToVisitStep(page: Page): Promise<void> {
     await page.getByTestId('stepper-next').click()
     await expect(page.getByTestId('booking-slot-picker')).toBeVisible()
 }
 
-/** Chooses `start` on the visit step, writes a reason, ticks both boxes, and sends the request. */
-export async function chooseStartAndSubmit(page: Page, start: string): Promise<void> {
+/** Fills the contact step and moves on to the visit step, where the times are. */
+export async function fillContactStep(page: Page, patient: Patient): Promise<void> {
+    await fillSharedContactFields(page, patient)
+    await nextToVisitStep(page)
+}
+
+/**
+ * Fills the online consult contact step (version 4) and moves on to the visit step. The date
+ * of birth, gender, and address are required there; the backup contact app stays empty.
+ */
+export async function fillOnlineConsultContactStep(page: Page, patient: Patient): Promise<void> {
+    await fillSharedContactFields(page, patient)
+    await page.getByTestId('clinic-booking-field-dateOfBirth').fill('1990-04-01')
+    await page.getByTestId('clinic-booking-field-gender').selectOption('female')
+    await page.getByTestId('clinic-booking-field-addressInJapan').fill('1-2-3 Example, Minato-ku, Tokyo')
+    await nextToVisitStep(page)
+}
+
+/** Chooses `start` on the visit step. */
+export async function chooseStart(page: Page, start: string): Promise<void> {
     await page.getByTestId(`booking-slot-${start}`).click()
     await expect(page.getByTestId(`booking-slot-${start}`)).toHaveAttribute('aria-pressed', 'true')
-    await page.getByTestId('clinic-booking-field-reason').fill('E2E check-up')
+}
+
+/** Ticks both boxes on the last step and sends the request. */
+export async function confirmAndSubmit(page: Page): Promise<void> {
     await page.getByTestId('clinic-booking-confirm-in-japan').check()
     await page.getByTestId('clinic-booking-health-consent').check()
     await page.getByTestId('clinic-booking-submit').click()
+}
+
+/** Chooses `start` on the visit step, writes a reason, ticks both boxes, and sends the request. */
+export async function chooseStartAndSubmit(page: Page, start: string): Promise<void> {
+    await chooseStart(page, start)
+    await page.getByTestId('clinic-booking-field-reason').fill('E2E check-up')
+    await confirmAndSubmit(page)
 }
 
 export type Booking = { start: string, submissionId: string, manageUrl: string }
@@ -112,6 +149,12 @@ export async function readSuccess(page: Page, start: string): Promise<Booking> {
     const href = await manageLink.getAttribute('href')
     expect(href).toMatch(/\/book\/manage#.+/)
     return { start, submissionId: submissionId!, manageUrl: href! }
+}
+
+/** Opens the patient's manage link and checks the status it shows. */
+export async function expectManageStatus(page: Page, manageUrl: string, status: RegExp): Promise<void> {
+    await page.goto(manageUrl)
+    await expect(page.getByTestId('patient-booking-status')).toHaveText(status)
 }
 
 /** Opens the patient's manage link and cancels with `reason`. */

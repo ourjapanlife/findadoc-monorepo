@@ -55,6 +55,15 @@ of showing empty rows (`answersPurgedAt` on `BookingSubmissionDetail`). The
 patient's manage link shows the clinic, time, and status, and never showed
 answers.
 
+Version 4 of the online consult form (`showcase-intake-v1`) adds more answers to
+`booking_submissions.answers`: `addressInJapan` and `backupContactHandle`
+(personal data), and `pastIllnesses` (medical, next to `reason`). They are
+erased with the rest of the row under the rule above. The form still stays on
+the preview showcase clinic: `updateBookingSettings` refuses
+it for a clinic owner unless the clinic site is on `preview` or an admin already
+turned it on, and `BookingSettings.offerableFormDefinitionIds` leaves it out of
+that owner's settings panel. None of them is logged.
+
 ## Purge
 
 On AWS, `findadoc-booking-purge` (`apps/server/src/lambdaPurge.ts`) runs the

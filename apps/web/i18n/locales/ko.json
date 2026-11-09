@@ -825,14 +825,25 @@
       "reason": "방문 사유",
       "insuranceDocument": "보험 증빙",
       "selfie": "본인 사진",
-      "insuranceType": "건강보험 확인에 무엇을 사용하나요?"
+      "insuranceType": "건강보험 확인에 무엇을 사용하나요?",
+      "addressInJapan": "일본 내 주소",
+      "backupContactChannel": "다른 연락 방법",
+      "backupContactHandle": "해당 앱의 ID 또는 번호",
+      "japaneseLevel": "일본어를 어느 정도 하시나요?",
+      "consultationLanguage": "진료 희망 언어",
+      "currentSymptoms": "현재 증상",
+      "pastIllnesses": "과거 병력 또는 지병",
+      "paymentMethod": "결제 방법"
     },
     "placeholders": {
       "email": "name{'@'}example.com",
       "phone": "090-0000-0000",
       "fullName": "신분증과 같은 이름",
       "age": "35",
-      "reason": "필요한 내용을 짧게 적어 주세요"
+      "reason": "필요한 내용을 짧게 적어 주세요",
+      "addressInJapan": "도도부현, 시구정촌, 번지, 건물명",
+      "currentSymptoms": "어떤 증상이 언제부터 있나요?",
+      "pastIllnesses": "예: 천식, 당뇨병, 과거 수술"
     },
     "errors": {
       "required": "필수 항목입니다",
@@ -849,7 +860,8 @@
       "tooManyRequests": "이 연결에서 요청이 너무 많습니다. 몇 분 후에 다시 시도하세요.",
       "openRequestLimit": "이 이메일로 이 병원에 답변을 기다리는 요청이 이미 있습니다. 병원의 답변을 기다리거나, 이메일의 링크에서 요청 하나를 취소하세요.",
       "confirmations": "요청을 보내기 전에 두 확인란에 모두 체크하세요",
-      "regionUnavailable": "예약은 현재 일본에 있는 분만 이용할 수 있습니다."
+      "regionUnavailable": "예약은 현재 일본에 있는 분만 이용할 수 있습니다.",
+      "phoneJapan": "일본 전화번호를 입력하세요 (예: 090-1234-5678)"
     },
     "slotLabel": "희망 시간",
     "slotLoading": "가능 시간 불러오는 중…",
@@ -861,7 +873,8 @@
     "steps": {
       "contact": "연락처",
       "visit": "진료 내용",
-      "documents": "서류"
+      "documents": "서류",
+      "payment": "결제"
     },
     "dateLabel": "날짜",
     "durationLabel": "진료 시간",
@@ -896,13 +909,43 @@
       "gender": {
         "female": "여성",
         "male": "남성",
-        "selfDescribe": "직접 입력",
+        "selfDescribe": "기타",
         "preferNotToSay": "답하지 않음"
+      },
+      "japaneseLevel": {
+        "none": "전혀 못 함",
+        "greetings": "인사 정도",
+        "little": "조금",
+        "conversational": "일상 회화 가능",
+        "fluent": "유창함"
+      },
+      "consultationLanguage": {
+        "ja": "일본어",
+        "en": "영어",
+        "zh": "중국어",
+        "vi": "베트남어",
+        "id": "인도네시아어",
+        "tl": "타갈로그어",
+        "fr": "프랑스어",
+        "ne": "네팔어",
+        "my": "버마어(미얀마어)"
+      },
+      "paymentMethod": {
+        "creditCard": "신용카드",
+        "bankTransfer": "계좌 이체",
+        "payPay": "PayPay"
+      },
+      "backupContactChannel": {
+        "line": "LINE",
+        "whatsapp": "WhatsApp",
+        "messenger": "Facebook Messenger"
       }
     },
     "hints": {
       "dateOfBirth": "본인 확인과 건강보험증 대조에 사용됩니다.",
-      "gender": "진료와 관련될 수 있습니다. 답하지 않아도 됩니다."
+      "gender": "진료와 관련될 수 있습니다.",
+      "consultationLanguage": "의사가 이 언어를 하지 못하는 경우 클리닉에서 통역을 준비하도록 노력합니다. 언어나 시간대에 따라 통역이 어려울 수 있습니다.",
+      "paymentMethod": "예약은 아직 확정되지 않았습니다. 클리닉이 첫 결제를 확인하면 예약이 확정됩니다. 결제 안내를 이메일로 보내 드립니다."
     },
     "insuranceUpload": {
       "insuranceCard": "건강보험증 사진",
@@ -925,7 +968,7 @@
     },
     "confirmationsLegend": "보내기 전 확인",
     "confirmInJapan": "현재 일본에 있습니다.",
-    "healthDataConsent": "Find a Doc, Japan이 건강 정보인 저의 진료 사유를 {clinic}에 보내는 데 동의합니다.",
+    "healthDataConsent": "Find a Doc, Japan이 진료 예약을 위해 제가 이 양식에 입력한 건강 정보(현재 증상 및 과거 병력 또는 지병)를 수집하여 {clinic}에 제공하는 데 동의합니다.",
     "privacyPolicyLink": "개인정보 처리방침",
     "availabilityError": {
       "heading": "예약 가능 여부를 확인하지 못했습니다",
@@ -987,6 +1030,7 @@
     "cancelledByClinic": "병원이 취소함",
     "appointmentStatus": {
       "requested": "요청됨",
+      "pendingPayment": "결제 대기",
       "confirmed": "확정됨",
       "declined": "거절됨",
       "cancelled": "취소됨",
@@ -994,9 +1038,11 @@
     },
     "actions": {
       "confirm": "확정",
+      "confirmPaid": "결제 확인 후 확정",
       "decline": "거절",
       "cancel": "예약 취소",
-      "complete": "완료로 표시"
+      "complete": "완료로 표시",
+      "markUnpaid": "미결제로 되돌리기"
     },
     "doctor": "의사",
     "languagesRequested": "요청 언어",
@@ -1047,6 +1093,7 @@
     "noClinics": "이 계정은 아직 병원과 연결되지 않았습니다.",
     "noClinicsHelp": "로그인에 사용하는 이메일 주소를 Find a Doc, Japan에 초대해 달라고 요청하세요. 다음 로그인 때 초대가 연결됩니다.",
     "noAccessHeading": "이 병원에 접근할 권한이 없습니다",
+    "switchClinic": "다른 병원으로 전환",
     "statusFilter": "표시",
     "allStatuses": "모든 요청",
     "saved": "저장됨",
@@ -1073,6 +1120,40 @@
       "interpretation": "통역/번역을 제공합니다: 모든 의사가 저희가 제공하는 모든 언어로 환자를 진료할 수 있습니다",
       "interpretationHelp": "켜면 모든 언어, 모든 진료 시간을 담당하는 통역사가 1명 추가됩니다. 아래에서 언어, 시간, 통역사별 동시 진료 수를 바꿀 수 있습니다.",
       "interpretationLocked": "이 설정은 Find a Doc이 클리닉에 켜 드립니다. 변경하려면 문의해 주세요."
+    },
+    "payment": {
+      "heading": "결제",
+      "help": "결제 방법을 묻는 양식으로 예약한 환자에게는 선택한 방법의 안내가 담긴 이메일이 발송됩니다. 정보가 부족한 방법은 클리닉에서 연락한다고 안내합니다.",
+      "fee": "초진 비용(엔)",
+      "feeHelp": "비워 두면 이메일에 비용을 적지 않습니다.",
+      "feeInvalid": "0 이상의 정수(엔)로 입력하세요.",
+      "card": "신용카드",
+      "cardFixedLink": "모든 환자가 하나의 링크로 결제",
+      "cardSentByStaff": "직원이 환자마다 결제 링크를 이메일로 발송",
+      "cardUrl": "결제 링크",
+      "cardUrlInvalid": "https://로 시작하는 링크를 입력하세요.",
+      "bank": "계좌 이체",
+      "bankHelp": "환자의 언어와 관계없이 이 정보는 일본어로 표시됩니다. 모든 항목을 입력하세요.",
+      "bankName": "은행명",
+      "bankBranch": "지점",
+      "bankAccountType": "계좌 종류",
+      "accountTypeNotSet": "설정 안 함",
+      "accountTypeOrdinary": "보통 예금(普通)",
+      "accountTypeChecking": "당좌 예금(当座)",
+      "bankAccountNumber": "계좌 번호",
+      "bankAccountNumberInvalid": "8자리 이하 숫자로 입력하세요.",
+      "bankAccountHolder": "예금주",
+      "payPay": "PayPay",
+      "payPayHelp": "PayPay QR 코드 이미지(PNG, JPEG, WebP, 최대 1 MB). 이메일 본문에 표시됩니다.",
+      "payPayQrAlt": "클리닉의 PayPay QR 코드",
+      "payPayFile": "QR 코드 이미지",
+      "payPayRemove": "QR 코드 삭제",
+      "payPayNone": "아직 QR 코드가 없습니다.",
+      "payPayFileInvalid": "최대 1 MB의 PNG, JPEG, WebP 이미지를 선택하세요.",
+      "payPayUploadFailed": "이미지를 업로드하지 못했습니다. 다시 시도하세요.",
+      "payPayPending": "새 QR 코드입니다. 저장하면 사용됩니다.",
+      "payPayRemoving": "저장하면 QR 코드가 삭제됩니다.",
+      "save": "결제 설정 저장"
     },
     "interpreters": {
       "heading": "통역사",
@@ -1130,7 +1211,25 @@
       "until": "종료 (선택)",
       "datesInvalid": "종료일이 시작일보다 앞서 있습니다. 둘 중 하나를 변경하세요."
     },
-    "requestedCount": "대기 중인 예약 요청: {count}"
+    "requestedCount": "대기 중인 예약 요청: {count}",
+    "export": {
+      "button": "CSV 다운로드",
+      "working": "파일을 만드는 중…",
+      "failed": "파일을 만들 수 없습니다. 다시 시도하세요.",
+      "done": "다운로드할 예약이 없습니다. | 예약 1건을 다운로드했습니다. | 예약 {n}건을 다운로드했습니다.",
+      "truncated": "최신 예약 {n}건을 다운로드했습니다. 나머지는 상태를 선택해 다운로드하세요.",
+      "columns": {
+        "date": "날짜",
+        "time": "시간(일본 시간)",
+        "status": "상태",
+        "paymentMethod": "결제 방법",
+        "consultationLanguage": "진료 언어",
+        "name": "성명",
+        "email": "이메일",
+        "phone": "전화번호",
+        "submissionId": "접수 ID"
+      }
+    }
   },
   "patientBooking": {
     "heading": "내 예약 요청",
@@ -1141,6 +1240,9 @@
     "yesCancel": "네, 취소합니다",
     "keep": "유지",
     "cancelled": "이 예약은 취소되었습니다.",
+    "nextSteps": "다음 단계",
+    "bookAgain": "다른 예약하기",
+    "backHome": "{site}(으)로 이동",
     "cancelFailed": "취소할 수 없습니다. 이미 시작되었거나 변경되었을 수 있어 최신 상태를 표시합니다.",
     "tooManyRequests": "이 연결에서 요청이 너무 많습니다. 몇 분 후에 다시 시도하세요."
   },

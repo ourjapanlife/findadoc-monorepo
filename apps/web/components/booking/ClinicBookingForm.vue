@@ -1,7 +1,7 @@
 <template>
     <div
         data-testid="clinic-booking"
-        class="mx-auto flex w-full max-w-xl flex-col gap-8 px-6 py-10 landscape:px-12"
+        class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-10 landscape:px-12"
     >
         <div class="flex flex-col-reverse gap-4 sm:flex-row sm:items-start sm:justify-between">
             <header class="flex min-w-0 flex-col gap-3">
@@ -12,7 +12,7 @@
                     class="page-title-sm"
                     data-testid="clinic-booking-heading"
                 >
-                    {{ t('bookingPage.heading', { clinic: form.clinicName }) }}
+                    {{ t('bookingPage.heading', { clinic: clinicName }) }}
                 </h1>
                 <p class="text-primary-text-muted">
                     {{ t('bookingPage.lead') }}
@@ -31,6 +31,15 @@
             </h2>
             <p class="text-primary-text-muted">
                 {{ t('bookingPage.successBody') }}
+            </p>
+            <!-- A form that asks how the patient pays: the visit is not confirmed until the clinic has the payment (§3.1). -->
+            <p
+                v-if="pendingPayment"
+                role="note"
+                class="rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-primary-text"
+                data-testid="clinic-booking-pending-payment"
+            >
+                {{ t('bookingPage.hints.paymentMethod') }}
             </p>
             <p
                 v-if="submissionId"
@@ -163,6 +172,7 @@
                             :maxlength="field.maxLength ?? undefined"
                             :placeholder="fieldPlaceholder(field)"
                             :autocomplete="autocompleteFor(field)"
+                            :aria-describedby="fieldHint(field) ? `booking-${field.id}-hint` : undefined"
                             :data-testid="`clinic-booking-field-${field.id}`"
                             @blur="touch(field.id)"
                         >
@@ -175,6 +185,8 @@
                             :required="field.required"
                             :maxlength="field.maxLength ?? undefined"
                             :placeholder="fieldPlaceholder(field)"
+                            :autocomplete="autocompleteFor(field)"
+                            :aria-describedby="fieldHint(field) ? `booking-${field.id}-hint` : undefined"
                             :data-testid="`clinic-booking-field-${field.id}`"
                             @blur="touch(field.id)"
                         />
@@ -243,6 +255,7 @@
                             v-if="fieldHint(field)"
                             :id="`booking-${field.id}-hint`"
                             class="field-hint mt-1.5"
+                            :data-testid="`clinic-booking-hint-${field.id}`"
                         >
                             {{ fieldHint(field) }}
                         </p>
@@ -296,7 +309,7 @@
                                 data-testid="clinic-booking-health-consent"
                             >
                             <span>
-                                {{ t('bookingPage.healthDataConsent', { clinic: form.clinicName }) }}
+                                {{ t('bookingPage.healthDataConsent', { clinic: clinicName }) }}
                                 <NuxtLink
                                     :to="privacyPolicyPath"
                                     class="text-primary underline"
@@ -326,6 +339,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
+    BookingAppointmentStatus,
     BookingFormFieldType,
     type BookingForm,
     type BookingFormField,
@@ -354,8 +368,9 @@ import {
     takeBookingDraft
 } from '~/utils/booking/draftMemory'
 import { localizedPath } from '~/utils/localePath'
+import { patientClinicName } from '~/utils/booking/clinicBranding'
 import { resolveDuration } from '~/utils/booking/durations'
-import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday } from '~/utils/booking/formFields'
+import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday, phoneAnswer } from '~/utils/booking/formFields'
 import type { BookingQuery } from '~/utils/booking/query'
 import { useRequestHost } from '~/composables/useClinicLanding'
 import Stepper from '~/components/common/Stepper.vue'
@@ -383,9 +398,11 @@ const formError = ref('')
 const confirmations = reactive<BookingConfirmations>({ confirmedInJapan: false, healthDataConsent: false })
 const confirmationsComplete = computed(() => bookingConfirmationsComplete(confirmations))
 const privacyPolicyPath = computed(() => localizedPath('/privacypolicy', String(locale.value)))
+const clinicName = computed(() => patientClinicName(props.form, String(locale.value)))
 const submitting = ref(false)
 const submitted = ref(false)
 const submissionId = ref('')
+const pendingPayment = ref(false)
 const manageUrl = ref('')
 const selectedStart = ref<string | null>(props.query.start ?? null)
 const durationMinutes = ref(resolveDuration(
@@ -419,7 +436,7 @@ const currentStepKey = computed(() => formSteps.value[stepIndex.value]?.key ?? '
 const visibleFields = computed(() =>
     props.form.fields.filter(field => field.stepKey === currentStepKey.value && isShown(field)))
 
-/** Self-described gender appears only after "Prefer to self-describe" (#202). */
+/** Self-described gender appears only after "Other" (#202); the backup handle after any app. */
 function isShown(field: BookingFormField): boolean {
     return fieldIsShown(field, fieldId => fieldText(values[fieldId]))
 }
@@ -674,6 +691,9 @@ function autocompleteFor(field: BookingFormField): string {
     if (field.id === 'gender') {
         return 'sex'
     }
+    if (field.id === 'addressInJapan') {
+        return 'street-address'
+    }
     return 'off'
 }
 
@@ -687,7 +707,20 @@ function onNumberInput(fieldId: string, event: Event): void {
 
 function touch(fieldId: string) {
     touched[fieldId] = true
+    showNormalisedPhone(fieldId)
     validateField(fieldId)
+}
+
+/** A JP phone is rewritten as 090-1234-5678 when the patient leaves it, the form the clinic stores. */
+function showNormalisedPhone(fieldId: string): void {
+    const field = props.form.fields.find(item => item.id === fieldId)
+    if (field?.type !== BookingFormFieldType.Phone || field.phoneRegion === null || field.phoneRegion === undefined) {
+        return
+    }
+    const normalised = phoneAnswer(field, fieldText(values[fieldId]))
+    if (normalised !== null) {
+        values[fieldId] = normalised
+    }
 }
 
 /** Age is kept as text. A number is accepted so an older value does not crash validation. */
@@ -699,6 +732,15 @@ function fieldText(value: unknown): string {
         return String(value)
     }
     return ''
+}
+
+/** The answer as sent. A phone goes in the form the field stores; the API checks it again. */
+function answerText(field: BookingFormField): string {
+    const raw = fieldText(values[field.id])
+    if (field.type === BookingFormFieldType.Phone && raw !== '') {
+        return phoneAnswer(field, raw) ?? raw
+    }
+    return raw
 }
 
 function validateField(fieldId: string): boolean {
@@ -735,8 +777,10 @@ function validateField(fieldId: string): boolean {
         fieldErrors[field.id] = t('bookingPage.errors.email')
         return false
     }
-    if (field.type === BookingFormFieldType.Phone && raw.replace(/\D/g, '').length < 8) {
-        fieldErrors[field.id] = t('bookingPage.errors.phone')
+    if (field.type === BookingFormFieldType.Phone && phoneAnswer(field, raw) === null) {
+        // A JP-only field says so, since a valid overseas number is still refused there.
+        const japanOnly = field.phoneRegion !== null && field.phoneRegion !== undefined
+        fieldErrors[field.id] = t(japanOnly ? 'bookingPage.errors.phoneJapan' : 'bookingPage.errors.phone')
         return false
     }
     if (field.type === BookingFormFieldType.Date && !dateAnswerIsValid(raw, field)) {
@@ -897,7 +941,7 @@ async function onSubmit() {
                 return { fieldId: field.id, uploadId: uploadIds[field.id] ?? null, value: null }
             }
             // A hidden field sends nothing, so an answer left from an earlier choice is not kept.
-            return { fieldId: field.id, value: isShown(field) ? fieldText(values[field.id]) : '', uploadId: null }
+            return { fieldId: field.id, value: isShown(field) ? answerText(field) : '', uploadId: null }
         })
 
         if (selectedStart.value === null) {
@@ -928,6 +972,7 @@ async function onSubmit() {
         makeNonDirty()
         submitted.value = true
         submissionId.value = result.id
+        pendingPayment.value = result.appointmentStatus === BookingAppointmentStatus.PendingPayment
         manageUrl.value = result.manageToken
             ? `${localizedPath('/book/manage', String(locale.value))}#${result.manageToken}`
             : ''

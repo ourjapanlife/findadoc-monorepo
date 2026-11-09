@@ -34,6 +34,18 @@ async function showcaseLocalesMigrationSql(): Promise<string> {
     throw new Error('no migration writes the showcase clinic locales')
 }
 
+/** The newest migration that writes the showcase clinic's theme. */
+async function showcaseThemeMigrationSql(): Promise<string> {
+    const files = await readMigrationFiles()
+    for (const file of [...files].reverse()) {
+        const sql = await readFile(file.file, 'utf8')
+        if (/theme = (EXCLUDED\.theme|\$showcase\$)/.test(sql) && sql.includes(`'${SHOWCASE_CLINIC_SITE_ID}'::uuid`)) {
+            return sql
+        }
+    }
+    throw new Error('no migration writes the showcase clinic theme')
+}
+
 async function showcaseMigrationSql(): Promise<string> {
     const files = await readMigrationFiles()
     const showcase = files.find(file => file.name === 'showcase_clinic_site')
@@ -80,7 +92,7 @@ describe('migration files', () => {
         const sql = await showcaseMigrationSql()
 
         expect(sql).toContain(`'${seed.slug}',\n    '${seed.status}',\n    '${seed.share_image_path}',\n    '${seed.hero_path}',`)
-        expect(sql).toContain(`$showcase$${JSON.stringify(seed.theme)}$showcase$::jsonb`)
+        expect(await showcaseThemeMigrationSql()).toContain(`$showcase$${JSON.stringify(seed.theme)}$showcase$::jsonb`)
 
         for (const [index, language] of seed.languages.entries()) {
             expect(sql).toContain(

@@ -17,7 +17,12 @@ import {
     type BookingAccess,
     type MembershipRole
 } from '../booking/access.js'
-import { formSourceById, listFormSources } from '../booking/formDefinitions.js'
+import {
+    SHOWCASE_BOOKING_FORM_ID,
+    formSourceById,
+    formsTakePayment,
+    listFormSources
+} from '../booking/formDefinitions.js'
 import {
     canChangeInterpretation,
     listInterpreters,
@@ -25,7 +30,7 @@ import {
     setInterpretation
 } from '../booking/interpretation.js'
 import { clinicLanguages, facilityLanguagesFor, listFacilityPractitioners } from '../booking/practitioners.js'
-import { APPOINTMENT_STATUS } from '../booking/lifecycle.js'
+import { OPEN_REQUEST_STATUSES } from '../booking/lifecycle.js'
 import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedule.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
@@ -71,7 +76,7 @@ export function listBookingFormTypes(): BookingFormType[] {
     }))
 }
 
-/** Requested appointments per facility, in one query. A facility with none is absent. */
+/** Appointments still waiting on the clinic (requested or pending payment) per facility, in one query. */
 async function requestedCountsFor(facilityIds: string[]): Promise<Map<string, number>> {
     if (facilityIds.length === 0) {
         return new Map()
@@ -79,7 +84,7 @@ async function requestedCountsFor(facilityIds: string[]): Promise<Map<string, nu
     const rows = await db.selectFrom('booking_appointments')
         .select(['facility_id', eb => eb.fn.countAll<string>().as('count')])
         .where('facility_id', 'in', facilityIds)
-        .where('status', '=', APPOINTMENT_STATUS.REQUESTED)
+        .where('status', 'in', OPEN_REQUEST_STATUSES)
         .groupBy('facility_id')
         .execute()
     return new Map(rows
@@ -106,7 +111,9 @@ async function bookingClinicFor(
         clinicSiteSlug: target.clinicSiteSlug,
         role: role === undefined ? null : roleToGql(role),
         canManage: canManageFacility(access, facilityId),
-        requestedCount
+        requestedCount,
+        takesPayment: formsTakePayment(target.formDefinitionIds),
+        branding: target.branding
     }
 }
 
@@ -270,19 +277,47 @@ export async function getBookingSettings(facilityId: string, access: BookingAcce
     return bookingSettingsFor(facilityId, access)
 }
 
+/** True when the facility's clinic site is on preview, which today is only the showcase clinic. */
+async function hasPreviewClinicSite(facilityId: string): Promise<boolean> {
+    const site = await db.selectFrom('clinic_sites')
+        .select('id')
+        .where('facility_id', '=', facilityId)
+        .where('status', '=', 'preview')
+        .executeTakeFirst()
+    return site !== undefined
+}
+
+/**
+ * Intake forms this user may offer at this clinic. The online consult form stores an
+ * address, a backup contact handle, and past illnesses that have no purge path yet
+ * (booking-retention.md), so only an admin, or a clinic whose site is still on
+ * preview, may turn it on. A form the clinic already offers stays offerable, so an
+ * owner can still save or remove it. Lift this once those answers have a retention period.
+ */
+async function offerableFormIds(facilityId: string, access: BookingAccess): Promise<string[]> {
+    const ids = listFormSources().map(source => source.id)
+    if (access.manageMembersAll || await hasPreviewClinicSite(facilityId)) {
+        return ids
+    }
+    const stored = (await settingsForFacility(facilityId)).formDefinitionIds
+    return ids.filter(id => id !== SHOWCASE_BOOKING_FORM_ID || stored.includes(id))
+}
+
 async function bookingSettingsFor(facilityId: string, access: BookingAccess): Promise<BookingSettings> {
-    const [settings, interpretation, practitioners, facilityLanguages, interpreters] = await Promise.all([
+    const [settings, interpretation, practitioners, facilityLanguages, interpreters, offerable] = await Promise.all([
         settingsForFacility(facilityId),
         offersInterpretation(facilityId),
         listFacilityPractitioners(facilityId),
         facilityLanguagesFor(facilityId),
-        listInterpreters(facilityId)
+        listInterpreters(facilityId),
+        offerableFormIds(facilityId, access)
     ])
     return {
         facilityId,
         allowedDurations: settings.allowedDurations,
         defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,
+        offerableFormDefinitionIds: offerable,
         offersInterpretation: interpretation,
         canChangeInterpretation: canChangeInterpretation(access),
         clinicLanguages: clinicLanguages(practitioners, facilityLanguages, interpreters.map(item => item.languages))
@@ -341,6 +376,10 @@ export async function updateBookingSettings(
         .executeTakeFirst()
     if (facility === undefined) {
         return invalid('facilityId')
+    }
+    const offerable = await offerableFormIds(input.facilityId, access)
+    if (!formIds.every(id => offerable.includes(id))) {
+        return forbidden('formDefinitionIds')
     }
     const site = await db.selectFrom('clinic_sites')
         .select('id')

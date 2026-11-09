@@ -22,7 +22,7 @@ const SHOWCASE_SEEDED_AT = '2026-10-26T00:00:00.000Z'
 export const showcaseClinicFacility: FacilitySeed = {
     id: SHOWCASE_FACILITY_ID,
     code: null,
-    name_en: 'Multilingual online clinic',
+    name_en: 'Multilingual Online Clinic',
     name_ja: '多言語オンラインクリニック',
     contact: {
         email: null,
@@ -166,7 +166,7 @@ const LANGUAGES: readonly ClinicLandingLanguage[] = [
 ]
 
 const en: ClinicLandingCopy = {
-    name: 'Multilingual online clinic',
+    name: 'Multilingual Online Clinic',
     description: 'An online clinic for foreign residents of Japan. Consultations in eight languages. You can be seen without a credit card.',
     book: 'Book',
     seeFees: 'See fees',
@@ -810,7 +810,13 @@ export type ClinicSiteSeed = {
     status: 'draft' | 'preview' | 'published'
     share_image_path: string
     hero_path: string
-    theme: { primary: string }
+    /** clinic_sites.theme: colour and branding (online consult v2 §4). */
+    theme: {
+        primary: string
+        displayName?: string
+        wordmark?: { ja: string, en: string }
+        logoPath?: string
+    }
     languages: readonly ClinicLandingLanguage[]
     doctors: readonly ClinicLandingDoctor[]
     copy: Record<string, ClinicLandingCopy>
@@ -824,7 +830,11 @@ export const clinicSiteSeeds: readonly ClinicSiteSeed[] = [
         status: 'preview',
         share_image_path: HERO,
         hero_path: HERO,
-        theme: { primary: '#177A80' },
+        // Same key order as the branding migration, which migrations.test.ts compares as text.
+        theme: {
+            primary: '#177A80',
+            wordmark: { ja: '多言語オンラインクリニック', en: 'Multilingual Online Clinic' }
+        },
         languages: LANGUAGES,
         doctors: DOCTORS,
         copy: COPY

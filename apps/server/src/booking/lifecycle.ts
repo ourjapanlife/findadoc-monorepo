@@ -1,13 +1,17 @@
 /**
  * Appointment lifecycle.
  *
- * A patient submit creates a `requested` appointment that holds its slot.
- * Staff confirm or decline it. Staff or the patient may cancel while it still
- * holds time. Declined and cancelled appointments free the slot.
+ * A patient submit creates a `requested` appointment that holds its slot. On a
+ * form that asks for a payment method it starts as `pending_payment` instead
+ * (online consult v2 §3.2), which also holds the slot until the clinic has the
+ * payment. Staff confirm or decline it. Staff may mark a confirmed visit as unpaid
+ * again. Staff or the patient may cancel while it still holds time. Declined and
+ * cancelled appointments free the slot.
  */
 
 export const APPOINTMENT_STATUS = {
     REQUESTED: 'requested',
+    PENDING_PAYMENT: 'pending_payment',
     CONFIRMED: 'confirmed',
     DECLINED: 'declined',
     CANCELLED: 'cancelled',
@@ -19,7 +23,14 @@ export type AppointmentStatus = typeof APPOINTMENT_STATUS[keyof typeof APPOINTME
 /** Statuses that occupy calendar time. */
 export const SLOT_HOLDING_STATUSES: AppointmentStatus[] = [
     APPOINTMENT_STATUS.REQUESTED,
+    APPOINTMENT_STATUS.PENDING_PAYMENT,
     APPOINTMENT_STATUS.CONFIRMED
+]
+
+/** Statuses still waiting on the clinic: the dashboard badge and the per-email open-request limit. */
+export const OPEN_REQUEST_STATUSES: AppointmentStatus[] = [
+    APPOINTMENT_STATUS.REQUESTED,
+    APPOINTMENT_STATUS.PENDING_PAYMENT
 ]
 
 export const CANCELLED_BY = {
@@ -31,7 +42,8 @@ export const MAX_STATUS_REASON_LENGTH = 500
 
 const STAFF_TRANSITIONS: Record<AppointmentStatus, AppointmentStatus[]> = {
     requested: [APPOINTMENT_STATUS.CONFIRMED, APPOINTMENT_STATUS.DECLINED, APPOINTMENT_STATUS.CANCELLED],
-    confirmed: [APPOINTMENT_STATUS.CANCELLED, APPOINTMENT_STATUS.COMPLETED],
+    pending_payment: [APPOINTMENT_STATUS.CONFIRMED, APPOINTMENT_STATUS.DECLINED, APPOINTMENT_STATUS.CANCELLED],
+    confirmed: [APPOINTMENT_STATUS.PENDING_PAYMENT, APPOINTMENT_STATUS.CANCELLED, APPOINTMENT_STATUS.COMPLETED],
     declined: [],
     cancelled: [],
     completed: []

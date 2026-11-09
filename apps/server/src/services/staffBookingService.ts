@@ -2,24 +2,34 @@ import {
     BookingAppointmentStatus,
     BookingCancelledBy,
     BookingFieldSensitivity,
+    BookingPaymentMethod,
     BookingSubmissionStatus,
     BookingUploadDisposition,
     type BookingSubmissionDetail,
+    type BookingSubmissionExport,
     type BookingSubmissionListItem,
     type BookingSubmissionSearchFilters,
     type BookingUploadDownloadUrl
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
-import { canReadFacility, readableFacilityIds, type BookingAccess } from '../booking/access.js'
-import { staffAnswers } from '../booking/formDefinitions.js'
+import { canManageFacility, canReadFacility, readableFacilityIds, type BookingAccess } from '../booking/access.js'
+import {
+    PAYMENT_METHOD_FIELD_ID,
+    isPaymentMethod,
+    staffAnswers,
+    type PaymentMethod
+} from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, CANCELLED_BY, type AppointmentStatus } from '../booking/lifecycle.js'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
 import { ErrorCode, Result } from '../result.js'
 import { createBookingDownloadUrl } from '../storage/objectStorage.js'
+import { UUID_REGEX } from '../validation/validateFacility.js'
 
 const DEFAULT_LIMIT = 20
 const MAX_LIMIT = 100
+/** Rows one export returns (spec §3.2). More than that reports truncated. */
+export const EXPORT_MAX_ROWS = 1000
 
 function statusFromRow(status: string): BookingSubmissionStatus {
     if (status === 'notified') {
@@ -33,6 +43,7 @@ function statusFromRow(status: string): BookingSubmissionStatus {
 
 const APPOINTMENT_STATUS_TO_GQL: Record<AppointmentStatus, BookingAppointmentStatus> = {
     [APPOINTMENT_STATUS.REQUESTED]: BookingAppointmentStatus.Requested,
+    [APPOINTMENT_STATUS.PENDING_PAYMENT]: BookingAppointmentStatus.PendingPayment,
     [APPOINTMENT_STATUS.CONFIRMED]: BookingAppointmentStatus.Confirmed,
     [APPOINTMENT_STATUS.DECLINED]: BookingAppointmentStatus.Declined,
     [APPOINTMENT_STATUS.CANCELLED]: BookingAppointmentStatus.Cancelled,
@@ -49,6 +60,17 @@ export function appointmentStatusFromRow(status: string | null | undefined): Boo
 export function appointmentStatusToRow(status: BookingAppointmentStatus): AppointmentStatus {
     const entry = Object.entries(APPOINTMENT_STATUS_TO_GQL).find(([, value]) => value === status)
     return entry![0] as AppointmentStatus
+}
+
+const PAYMENT_METHOD_TO_GQL: Record<PaymentMethod, BookingPaymentMethod> = {
+    creditCard: BookingPaymentMethod.CreditCard,
+    bankTransfer: BookingPaymentMethod.BankTransfer,
+    payPay: BookingPaymentMethod.PayPay
+}
+
+/** The stored paymentMethod answer as the GraphQL enum. Anything else reads as not asked. */
+export function paymentMethodFromAnswer(value: unknown): BookingPaymentMethod | null {
+    return isPaymentMethod(value) ? PAYMENT_METHOD_TO_GQL[value] : null
 }
 
 function cancelledByFromRow(value: string | null): BookingCancelledBy | null {
@@ -152,7 +174,8 @@ export async function searchBookingSubmissions(
             'appointment.status as appointment_status',
             'appointment.starts_at',
             'appointment.ends_at',
-            sql<string | null>`booking.answers->>'fullName'`.as('patient_name')
+            sql<string | null>`booking.answers->>'fullName'`.as('patient_name'),
+            sql<string | null>`booking.answers->>${PAYMENT_METHOD_FIELD_ID}`.as('payment_method')
         ])
         .orderBy('booking.created_date', 'desc')
         .limit(limit)
@@ -189,6 +212,7 @@ export async function searchBookingSubmissions(
         appointmentId: row.appointment_id,
         appointmentStatus: appointmentStatusFromRow(row.appointment_status),
         patientName: row.patient_name,
+        paymentMethod: paymentMethodFromAnswer(row.payment_method),
         createdDate: row.created_date,
         updatedDate: row.updated_date,
         hasIdentityUploads: identitySet.has(row.id)
@@ -289,6 +313,7 @@ export async function getBookingSubmissionDetail(
         endsAt: row.ends_at ? new Date(row.ends_at).toISOString() : null,
         appointmentId: row.appointment_id,
         appointmentStatus: appointmentStatusFromRow(row.appointment_status),
+        paymentMethod: paymentMethodFromAnswer(answersRecord[PAYMENT_METHOD_FIELD_ID]),
         cancelledBy: cancelledByFromRow(row.cancelled_by),
         statusReason: row.status_reason,
         practitionerId: row.practitioner_id,
@@ -371,5 +396,102 @@ export async function createStaffBookingDownloadUrl(
             expiresAt: signed.expiresAt
         },
         hasErrors: false
+    }
+}
+
+function answerText(value: unknown): string | null {
+    return typeof value === 'string' && value.trim() !== '' ? value : null
+}
+
+/**
+ * One clinic's bookings for the owner CSV export (spec §3.2). Owners and admins only
+ * (canManageFacility); staff and other clinics read as not found. The facility filter
+ * is in the query. Only contact and scheduling answers are read, never medical answers,
+ * the address, or files. The access log names ids and the row count, never a patient.
+ */
+export async function exportBookingSubmissions(
+    facilityId: string,
+    appointmentStatus: BookingAppointmentStatus | null | undefined,
+    access: BookingAccess,
+    actorSub?: string
+): Promise<Result<BookingSubmissionExport>> {
+    // A malformed id would reach Postgres as a uuid cast error for an admin, so it is refused here.
+    if (!UUID_REGEX.test(facilityId)) {
+        return {
+            data: undefined as never,
+            hasErrors: true,
+            errors: [{ field: 'facilityId', errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 }]
+        }
+    }
+    if (!canManageFacility(access, facilityId)) {
+        return notFound('facilityId')
+    }
+
+    try {
+        let query = db.selectFrom('booking_submissions as booking')
+            .leftJoin('booking_appointments as appointment', 'appointment.booking_submission_id', 'booking.id')
+            .where('booking.facility_id', '=', facilityId)
+        if (appointmentStatus !== null && appointmentStatus !== undefined) {
+            query = query.where('appointment.status', '=', appointmentStatusToRow(appointmentStatus))
+        }
+        const rows = await query
+            .select([
+                'booking.id',
+                'booking.created_date',
+                'appointment.status as appointment_status',
+                'appointment.starts_at',
+                'appointment.ends_at',
+                sql<string | null>`booking.answers->>'fullName'`.as('patient_name'),
+                sql<string | null>`booking.answers->>'email'`.as('email'),
+                sql<string | null>`booking.answers->>'phone'`.as('phone'),
+                sql<string | null>`booking.answers->>'consultationLanguage'`.as('consultation_language'),
+                sql<string | null>`booking.answers->>${PAYMENT_METHOD_FIELD_ID}`.as('payment_method')
+            ])
+            .orderBy('appointment.starts_at', order => order.desc().nullsLast())
+            .orderBy('booking.created_date', 'desc')
+            .limit(EXPORT_MAX_ROWS + 1)
+            .execute()
+
+        const truncated = rows.length > EXPORT_MAX_ROWS
+        const kept = rows.slice(0, EXPORT_MAX_ROWS)
+        logger.info('booking export', {
+            type: 'bookingExport',
+            facilityId,
+            appointmentStatus: appointmentStatus ?? 'all',
+            rowCount: kept.length,
+            truncated,
+            actor: actorSub ?? 'unknown'
+        })
+
+        return {
+            data: {
+                truncated,
+                rows: kept.map(row => ({
+                    id: row.id,
+                    startsAt: row.starts_at ? new Date(row.starts_at).toISOString() : null,
+                    endsAt: row.ends_at ? new Date(row.ends_at).toISOString() : null,
+                    appointmentStatus: appointmentStatusFromRow(row.appointment_status),
+                    paymentMethod: paymentMethodFromAnswer(row.payment_method),
+                    consultationLanguage: answerText(row.consultation_language),
+                    patientName: answerText(row.patient_name),
+                    email: answerText(row.email),
+                    phone: answerText(row.phone),
+                    createdDate: row.created_date
+                }))
+            },
+            hasErrors: false
+        }
+    } catch (error) {
+        logger.error('booking export failed', {
+            type: 'bookingExport',
+            facilityId,
+            errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+            errorName: error instanceof Error ? error.name : 'unknown'
+        })
+        return {
+            data: undefined as never,
+            hasErrors: true,
+            errors: [{ field: 'facilityId', errorCode: ErrorCode.INTERNAL_SERVER_ERROR, httpStatus: 500 }]
+        }
     }
 }

@@ -1,4 +1,11 @@
-import { ClinicSiteStatus, type ClinicSite, type ClinicSiteLocale, type ClinicSiteSummary } from '@findadoc/graphql'
+import {
+    ClinicSiteStatus,
+    type ClinicBranding,
+    type ClinicSite,
+    type ClinicSiteLocale,
+    type ClinicSiteSummary,
+    type ClinicWordmark
+} from '@findadoc/graphql'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
 
@@ -69,6 +76,54 @@ export function clinicThemeFromRow(theme: unknown): { primary: string | null } {
     }
 
     return { primary: record.primary.toUpperCase() }
+}
+
+/** Longest wordmark or display name the header shows. Longer stored text is ignored. */
+const MAX_BRAND_TEXT_LENGTH = 120
+const MAX_LOGO_PATH_LENGTH = 300
+/**
+ * A same-origin static path, like hero_path. `//host` would load from another site, so a
+ * second leading slash, a backslash, or whitespace is refused. There is no logo upload yet.
+ */
+const LOGO_PATH = /^\/[^/\\\s][^\\\s]*$/
+
+function brandText(value: unknown): string | null {
+    if (typeof value !== 'string') {
+        return null
+    }
+    const trimmed = value.trim()
+    return trimmed === '' || trimmed.length > MAX_BRAND_TEXT_LENGTH ? null : trimmed
+}
+
+function wordmarkFromRecord(value: unknown): ClinicWordmark | null {
+    if (!isRecord(value)) {
+        return null
+    }
+    const ja = brandText(value.ja)
+    const en = brandText(value.en)
+    return ja === null && en === null ? null : { ja, en }
+}
+
+function logoPathFrom(value: unknown): string | null {
+    if (typeof value !== 'string' || value.length > MAX_LOGO_PATH_LENGTH || !LOGO_PATH.test(value)) {
+        return null
+    }
+    return value
+}
+
+/**
+ * Clinic branding for the booking pages and dashboard (online consult v2 §4), from
+ * clinic_sites.theme. Every key is optional. A value of the wrong shape is ignored, so a bad
+ * row falls back to the clinic name and the Find a Doc colour instead of breaking the page.
+ */
+export function clinicBrandingFromRow(theme: unknown, clinicName: string): ClinicBranding {
+    const record = themeRecord(theme) ?? {}
+    return {
+        displayName: brandText(record.displayName) ?? clinicName,
+        wordmark: wordmarkFromRecord(record.wordmark),
+        logoPath: logoPathFrom(record.logoPath),
+        primary: clinicThemeFromRow(record).primary
+    }
 }
 
 function themeRecord(theme: unknown): Record<string, unknown> | undefined {

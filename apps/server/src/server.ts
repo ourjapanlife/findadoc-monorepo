@@ -19,9 +19,11 @@ import resolvers from './resolvers.js'
 import { logger } from './logger.js'
 import { isServerError, requestErrorFields } from './requestErrors.js'
 import { BOOKING_UPLOAD_MAX_BYTES } from './booking/limits.js'
+import { PAYMENT_QR_MAX_BYTES } from './storage/clinicAssetStorage.js'
 import {
     contentDisposition,
-    isSafeBookingObjectKey,
+    isSafeClinicAssetKey,
+    isSafeLocalObjectKey,
     localBookingContentType,
     readLocalBookingUpload,
     storeLocalBookingUpload
@@ -178,7 +180,7 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
             } catch {
                 return reply.code(400).send({ error: 'Invalid key' })
             }
-            if (!isSafeBookingObjectKey(objectKey)) {
+            if (!isSafeLocalObjectKey(objectKey)) {
                 return reply.code(400).send({ error: 'Invalid key' })
             }
 
@@ -193,6 +195,10 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
                 return reply.code(400).send({ error: 'Empty body' })
             }
             if (body.byteLength > BOOKING_UPLOAD_MAX_BYTES) {
+                return reply.code(413).send({ error: 'Too large' })
+            }
+            // A clinic asset (the PayPay QR) has its own smaller cap, as the S3 signature enforces.
+            if (isSafeClinicAssetKey(objectKey) && body.byteLength > PAYMENT_QR_MAX_BYTES) {
                 return reply.code(413).send({ error: 'Too large' })
             }
 
@@ -215,7 +221,7 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
             } catch {
                 return reply.code(400).send({ error: 'Invalid key' })
             }
-            if (!isSafeBookingObjectKey(objectKey)) {
+            if (!isSafeLocalObjectKey(objectKey)) {
                 return reply.code(400).send({ error: 'Invalid key' })
             }
             let body: Buffer

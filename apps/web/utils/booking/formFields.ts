@@ -1,10 +1,11 @@
-import type { BookingFormField } from '@findadoc/graphql'
+import { BookingPhoneRegion, type BookingFormField } from '@findadoc/graphql'
+import { formatJapanPhone, PHONE_DISPLAY } from '@findadoc/utils'
 
 /**
  * The same rules the API applies in `apps/server/src/booking/formDefinitions.ts`:
  * a field with `showWhen` is shown, required, and sent only while that other
- * answer matches, and a DATE's `min`/`max` are whole calendar years from today
- * in Japan time.
+ * answer matches, a DATE's `min`/`max` are whole calendar years from today
+ * in Japan time, and a JP phone field takes a Japanese number only.
  */
 
 /** Japan has no daylight saving time. */
@@ -19,7 +20,25 @@ export function fieldIsShown(
     if (condition === null || condition === undefined) {
         return true
     }
-    return answerFor(condition.fieldId) === condition.equals
+    const answer = answerFor(condition.fieldId)
+    if (answer === '') {
+        return false
+    }
+    return answer === condition.equals || (condition.anyOf ?? []).includes(answer)
+}
+
+/** A phone answer needs this many digits when the field takes any country. */
+const MIN_PHONE_DIGITS = 8
+
+/**
+ * The phone answer to send, or null when this field does not accept it. A JP field takes
+ * any spelling of a Japanese number and returns the domestic form, `090-1234-5678`.
+ */
+export function phoneAnswer(field: Pick<BookingFormField, 'phoneRegion'>, raw: string): string | null {
+    if (field.phoneRegion === BookingPhoneRegion.Jp) {
+        return formatJapanPhone(raw, PHONE_DISPLAY.NATIONAL)
+    }
+    return raw.replace(/\D/g, '').length >= MIN_PHONE_DIGITS ? raw : null
 }
 
 function isoDate(year: number, monthIndex: number, day: number): string {

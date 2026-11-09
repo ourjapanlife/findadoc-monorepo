@@ -17,7 +17,7 @@
                     class="page-title-sm"
                     data-testid="clinic-booking-heading"
                 >
-                    {{ t('bookingPage.heading', { clinic: form.clinicName }) }}
+                    {{ t('bookingPage.heading', { clinic: patientClinicName(form, String(locale)) }) }}
                 </h1>
             </header>
             <LocaleSelector class="shrink-0 self-end sm:self-auto" />
@@ -58,6 +58,8 @@ import { useI18n } from 'vue-i18n'
 import type { BookingForm } from '@findadoc/graphql'
 import ClinicBookingForm from '~/components/booking/ClinicBookingForm.vue'
 import BookingRegionNotice from '~/components/booking/BookingRegionNotice.vue'
+import { useClinicBranding } from '~/composables/useClinicBranding'
+import { patientClinicName } from '~/utils/booking/clinicBranding'
 import { fetchBookingAvailable, fetchBookingForm } from '~/utils/booking/formQuery'
 import { bookingClinicPath, bookingQueryFromRoute } from '~/utils/booking/paths'
 import { formatPageTitle } from '~/utils/site'
@@ -72,9 +74,11 @@ import { formatPageTitle } from '~/utils/site'
  * may book, and a visitor elsewhere sees a notice with the clinic's own contact details.
  * When that call fails there is no answer yet (#188): the page shows neither the form nor
  * the region notice, only a retry.
+ * A clinic with a clinic page gets its own header and colour (online consult v2 §4).
  */
 definePageMeta({
     ssr: false,
+    layout: 'clinic-branded',
     middleware: ['online-clinic-preview']
 })
 
@@ -85,6 +89,7 @@ const bookingAvailable = ref<boolean | null>(null)
 const checkingAvailability = ref(false)
 const clinicId = String(route.params.clinicId ?? '')
 const bookingQuery = bookingQueryFromRoute(route.query as Record<string, unknown>)
+const clinicBranding = useClinicBranding()
 
 async function loadForm(): Promise<void> {
     if (clinicId === '') {
@@ -99,6 +104,10 @@ async function loadForm(): Promise<void> {
     }
     form.value = loaded
     bookingAvailable.value = available
+    // The form and the region notice carry their own language picker.
+    clinicBranding.show(loaded.branding === null || loaded.branding === undefined
+        ? null
+        : { branding: loaded.branding, staff: false, canSwitchClinic: false, localeSelector: false })
     const canonicalId = loaded.facilityId ?? loaded.clinicSiteId
     if (canonicalId !== null && canonicalId !== undefined && canonicalId !== clinicId) {
         await navigateTo(
@@ -121,7 +130,7 @@ await loadForm()
 
 useHead(() => ({
     title: formatPageTitle(t('bookingPage.documentTitle', {
-        clinic: form.value?.clinicName ?? clinicId
+        clinic: form.value ? patientClinicName(form.value, String(locale.value)) : clinicId
     })),
     meta: [{ name: 'robots', content: 'noindex', key: 'robots' }]
 }))

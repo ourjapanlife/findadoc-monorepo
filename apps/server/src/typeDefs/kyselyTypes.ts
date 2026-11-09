@@ -236,6 +236,31 @@ export interface BookingSettingsTable {
     updated_date: Generated<string>
 }
 
+/**
+ * How a clinic takes the initial fee (online consult v2 §3.3). One row per facility.
+ * Clinic data, not patient data: the patient purge does not touch it.
+ */
+export interface BookingPaymentSettingsTable {
+    facility_id: string
+    /** fixed_link: card_url goes in the email. sent_by_staff: staff email a link by hand. */
+    card_mode: Generated<'fixed_link' | 'sent_by_staff'>
+    /** https only. Required when card_mode is fixed_link. */
+    card_url: string | null
+    bank_name: string | null
+    bank_branch: string | null
+    /** ordinary (普通) or checking (当座). */
+    bank_account_type: 'ordinary' | 'checking' | null
+    /** 1 to 8 digits. */
+    bank_account_number: string | null
+    bank_account_holder: string | null
+    /** uploads/clinic/{facility_id}/paypay/{uuid}.{ext}. PNG, JPEG, or WebP up to 1 MB. */
+    paypay_qr_object_key: string | null
+    /** Whole yen, 0 or more. Null leaves the fee out of the email. */
+    fee_jpy: number | null
+    created_date: Generated<string>
+    updated_date: Generated<string>
+}
+
 /** A facility that may use interpreters (#205). source is who turned it on. docs/booking-interpretation.md */
 export interface BookingInterpretationTable {
     facility_id: string
@@ -284,6 +309,8 @@ export interface BookingSubmissionsTable {
     cancel_token_hash: string | null
     /** When the patient ticked the health-data consent box (#173). Null on requests sent before it existed. */
     health_data_consented_at: string | null
+    /** Consent wording version the server stamped (docs/consent-text/). Null before spec §6. */
+    consent_text_version: string | null
     /** When answers was emptied under the retention rule (#212). Null while the answers are kept. */
     answers_purged_at: ColumnType<string | null, string | null | undefined, string | null>
     created_date: Generated<string>
@@ -403,6 +430,7 @@ export interface Database {
     clinic_site_doctors: ClinicSiteDoctorsTable
     clinic_site_locales: ClinicSiteLocalesTable
     booking_settings: BookingSettingsTable
+    booking_payment_settings: BookingPaymentSettingsTable
     booking_interpretation: BookingInterpretationTable
     clinic_interpreters: ClinicInterpretersTable
     clinic_interpreter_hours: ClinicInterpreterHoursTable

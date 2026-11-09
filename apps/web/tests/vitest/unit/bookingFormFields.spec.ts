@@ -1,5 +1,6 @@
 import { expect } from 'chai'
-import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday } from '~/utils/booking/formFields'
+import { BookingPhoneRegion } from '@findadoc/graphql'
+import { dateAnswerIsValid, fieldIsShown, japanDateYearsFromToday, phoneAnswer } from '~/utils/booking/formFields'
 
 describe('booking form fields', () => {
     // 00:30 on 31 October in Japan, still 30 October in UTC.
@@ -13,6 +14,26 @@ describe('booking form fields', () => {
         expect(fieldIsShown(selfDescribed, gender('selfDescribe'))).to.equal(true)
         expect(fieldIsShown(selfDescribed, gender('female'))).to.equal(false)
         expect(fieldIsShown({ showWhen: null }, gender(''))).to.equal(true)
+    })
+
+    it('shows a field for any value in anyOf, and never for an empty answer', () => {
+        const handle = { showWhen: { fieldId: 'backupContactChannel', equals: null, anyOf: ['line', 'whatsapp', 'messenger'] } }
+        const channel = (value: string) => (fieldId: string) => (fieldId === 'backupContactChannel' ? value : '')
+
+        expect(fieldIsShown(handle, channel('line'))).to.equal(true)
+        expect(fieldIsShown(handle, channel('messenger'))).to.equal(true)
+        expect(fieldIsShown(handle, channel('telegram'))).to.equal(false)
+        expect(fieldIsShown(handle, channel(''))).to.equal(false)
+    })
+
+    it('takes a Japanese phone only on a JP field, and sends it as 090-1234-5678', () => {
+        const japan = { phoneRegion: BookingPhoneRegion.Jp }
+        for (const raw of ['09012345678', '+81 90 1234 5678', '０９０－１２３４－５６７８']) {
+            expect(phoneAnswer(japan, raw)).to.equal('090-1234-5678')
+        }
+        expect(phoneAnswer(japan, '+1 212 555 0100')).to.equal(null)
+        expect(phoneAnswer({ phoneRegion: null }, '+1 212 555 0100')).to.equal('+1 212 555 0100')
+        expect(phoneAnswer({ phoneRegion: null }, '090-123')).to.equal(null)
     })
 
     it('bounds a date input by calendar years from today in Japan', () => {

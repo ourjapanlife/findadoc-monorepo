@@ -11,6 +11,7 @@ describe('clinic site seed', () => {
         expect(showcaseClinicFacility.city_id).toBe(null)
         expect(site?.status).toBe('preview')
         expect(site?.theme.primary).toBe('#177A80')
+        expect(site?.theme.wordmark).toEqual({ ja: '多言語オンラインクリニック', en: 'Multilingual Online Clinic' })
         expect(site?.copy['ja-JP']?.name).toBe('多言語オンラインクリニック')
         expect(site?.copy['fr-FR']?.book).not.toBe(site?.copy['en-US']?.book)
         // One site locale per consultation language, and none the clinic does not offer.

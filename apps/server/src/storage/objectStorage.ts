@@ -11,7 +11,7 @@ const LOCAL_UPLOAD_ROOT = join(process.cwd(), '.booking-uploads')
 const PRESIGN_TTL_SECONDS = 15 * 60
 const DOWNLOAD_TTL_SECONDS = 5 * 60
 
-function s3Client(): S3Client {
+export function s3Client(): S3Client {
     return new S3Client({
         region: envVariables.s3Region(),
         useDualstackEndpoint: true
@@ -25,7 +25,7 @@ export type SignedUpload = {
     expiresAt: string
 }
 
-function usesS3(): boolean {
+export function usesS3(): boolean {
     return envVariables.storageBackend() === 's3'
         && typeof envVariables.s3Bucket() === 'string'
         && envVariables.s3Bucket() !== ''
@@ -53,8 +53,29 @@ export function isSafeBookingObjectKey(objectKey: string): boolean {
     return parts[0] === 'uploads' && parts[1] === 'booking' && parts.length >= 3
 }
 
+/**
+ * True for a clinic asset key: uploads/clinic/{facilityId}/{kind}/{file}. Clinic assets
+ * (the PayPay QR) are clinic data, not patient data, so they sit outside uploads/booking/
+ * and outside the patient purge.
+ */
+export function isSafeClinicAssetKey(objectKey: string): boolean {
+    if (objectKey.includes('\\') || objectKey.includes('\0')) {
+        return false
+    }
+    const parts = objectKey.split('/')
+    if (parts.some(part => part === '' || part === '.' || part === '..')) {
+        return false
+    }
+    return parts[0] === 'uploads' && parts[1] === 'clinic' && parts.length === 5
+}
+
+/** Keys the local dev store accepts: booking files and clinic assets. */
+export function isSafeLocalObjectKey(objectKey: string): boolean {
+    return isSafeBookingObjectKey(objectKey) || isSafeClinicAssetKey(objectKey)
+}
+
 function localBookingFilePath(objectKey: string): string {
-    if (!isSafeBookingObjectKey(objectKey)) {
+    if (!isSafeLocalObjectKey(objectKey)) {
         throw new Error('Invalid booking upload key')
     }
     const root = resolve(LOCAL_UPLOAD_ROOT)
@@ -119,8 +140,8 @@ export async function storeLocalBookingUpload(objectKey: string, body: Buffer, c
     const absolute = localBookingFilePath(objectKey)
     await mkdir(dirname(absolute), { recursive: true })
     await writeFile(absolute, body)
+    // The key holds the patient's file name, so it is not logged.
     logger.info('Stored local booking upload', {
-        objectKey,
         contentType,
         byteSize: body.byteLength
     })

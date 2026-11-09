@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { clinicSiteSeeds } from '../scripts/seed/clinicSiteContent.js'
 import {
     assembleClinicSite,
+    clinicBrandingFromRow,
     clinicSiteStatusFromRow,
     clinicThemeFromRow,
     summarizeClinicSite
@@ -131,5 +132,44 @@ describe('clinicThemeFromRow', () => {
         expect(clinicThemeFromRow({ primary: '#fff' })).toEqual({ primary: null })
         expect(clinicThemeFromRow('not json')).toEqual({ primary: null })
         expect(clinicThemeFromRow(null)).toEqual({ primary: null })
+    })
+})
+
+describe('clinicBrandingFromRow', () => {
+    it('reads the showcase wordmark and colour, and falls back to the clinic name', () => {
+        expect(clinicBrandingFromRow(showcase.theme, 'Showcase')).toEqual({
+            displayName: 'Showcase',
+            wordmark: { ja: '多言語オンラインクリニック', en: 'Multilingual Online Clinic' },
+            logoPath: null,
+            primary: '#177A80'
+        })
+    })
+
+    it('keeps a display name, one wordmark language, and a static logo path', () => {
+        const theme = JSON.stringify({
+            displayName: '  Sakura Clinic ',
+            wordmark: { en: 'Sakura' },
+            logoPath: '/clinic-landings/sakura/logo.svg'
+        })
+        expect(clinicBrandingFromRow(theme, 'Fallback')).toEqual({
+            displayName: 'Sakura Clinic',
+            wordmark: { ja: null, en: 'Sakura' },
+            logoPath: '/clinic-landings/sakura/logo.svg',
+            primary: null
+        })
+    })
+
+    it('ignores a logo path that could load from another origin, and values of the wrong shape', () => {
+        for (const logoPath of ['//evil.example/logo.png', 'https://evil.example/logo.png', '/a b.png', '/a\\b.png', 5]) {
+            expect(clinicBrandingFromRow({ logoPath }, 'Clinic').logoPath, String(logoPath)).toBeNull()
+        }
+        expect(clinicBrandingFromRow({ wordmark: 'Sakura', displayName: 7 }, 'Clinic')).toEqual({
+            displayName: 'Clinic',
+            wordmark: null,
+            logoPath: null,
+            primary: null
+        })
+        expect(clinicBrandingFromRow({ wordmark: { ja: ' ', en: 'x'.repeat(121) } }, 'Clinic').wordmark).toBeNull()
+        expect(clinicBrandingFromRow('not json', 'Clinic').displayName).toBe('Clinic')
     })
 })
