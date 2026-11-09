@@ -27,7 +27,8 @@ One `renovate.json` at the repository root covers the workspace. Renovate opens 
 | [Nuxt 4](https://nuxt.com/) | Vue-based meta-framework, prerendered with `nuxi generate` |
 | [Vue 3](https://vuejs.org/) | UI framework (Composition API) |
 | [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first CSS framework |
-| [Pinia](https://pinia.vuejs.org/) | State management |
+| [Pinia](https://pinia.vuejs.org/) | UI state |
+| [TanStack Query](https://tanstack.com/query/latest/docs/framework/vue/overview) | Server data: request cache, retries, cancellation |
 | [graphql-request](https://github.com/jasonkuhrt/graphql-request) | Lightweight GraphQL client |
 | [Nuxt i18n](https://i18n.nuxtjs.org/) | Internationalization (13 languages) |
 | [Auth0](https://auth0.com/) | Authentication for moderation |

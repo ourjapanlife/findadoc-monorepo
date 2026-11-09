@@ -21,7 +21,8 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 
 - **Framework**: Nuxt 4, prerendered with `nuxi generate` and hosted on AWS Amplify
 - **UI**: Vue 3 Composition API with Tailwind CSS
-- **State**: Pinia stores
+- **State**: Pinia stores for UI state only (filters, modals, unsaved edits)
+- **Server data**: TanStack Query (`@tanstack/vue-query`). See [Fetching data in the web app](#fetching-data-in-the-web-app)
 - **API**: GraphQL via `graphql-request`
 - **Auth**: Auth0 (used for the moderation dashboard)
 - **Maps**: Google Maps API for provider locations
@@ -55,7 +56,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 |-----------|---------|
 | `apps/web/components/` | Reusable Vue components |
 | `apps/web/pages/` | Route pages (auto-registered by Nuxt) |
-| `apps/web/stores/` | Pinia stores |
+| `apps/web/stores/` | Pinia stores (UI state) |
 | `apps/web/i18n/locales/` | Translation files, checked against `en.json` |
 | `apps/web/assets/` | Uncompiled assets (CSS, images, fonts) |
 | `apps/web/typedefs/` | TypeScript type definitions |
@@ -67,6 +68,17 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 2. The website sends GraphQL queries to the API
 3. The API resolves queries against the Supabase PostgreSQL database
 4. Results are returned and displayed on an interactive map with provider details
+
+## Fetching data in the web app
+
+The web app is moving its reads to TanStack Query (#242). The search page uses it now. Other pages still load data in their Pinia stores until they move over.
+
+- A read is a `useQuery` in a composable, such as `apps/web/composables/useSearchDirectory.ts`. Its `queryFn` calls `requestQueryData` in `apps/web/utils/queryClient.ts`, which sends the request through `graphQLClientRequestWithRetry` and passes vue-query's abort signal. A page that is gone cancels its requests.
+- Build keys with `apps/web/utils/queryKeys.ts`. Do not write a key array in a component. A write invalidates the keys it changes.
+- The defaults are in `createAppQueryClient`. A query is retried once, and only after a timeout, a dropped connection, or a 502/503/504. A mutation is never retried.
+- Directory reads stay fresh for 5 minutes (`DIRECTORY_STALE_TIME_MS`). Every other read is stale at once, so moderation and booking always ask the server again.
+- Sign-out clears the whole cache. Server data stays in memory. It is never written to `localStorage` or `sessionStorage`.
+- Reads run in the browser only. A prerendered page ships its loading state, then loads.
 
 ## Further Reading
 

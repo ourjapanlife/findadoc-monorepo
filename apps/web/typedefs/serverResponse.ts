@@ -4,6 +4,11 @@ export type ServerResponse<T> = {
     data: T
     hasErrors: boolean
     errors?: ServerError[]
+    /**
+     * Set on a failure. True for a timeout, a dropped connection, or a 502/503/504: the same
+     * query may get through on another try (#219). A GraphQL error is the same answer next time.
+     */
+    temporary?: boolean
 }
 
 export type ServerError = {

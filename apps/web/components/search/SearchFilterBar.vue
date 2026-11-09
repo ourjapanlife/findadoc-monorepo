@@ -190,6 +190,7 @@ import { useI18n } from 'vue-i18n'
 import SVGFiltersIcon from '~/assets/icons/equalizer-icon.svg'
 import SVGMapPinIcon from '~/assets/icons/map-pin-icon.svg'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
+import { useSearchDirectory } from '~/composables/useSearchDirectory'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
 import { useUmami } from '~/composables/useUmamiTracking'
@@ -204,6 +205,7 @@ const emit = defineEmits<{ (e: 'update:showMap', value: boolean): void }>()
 
 const { t, locale } = useI18n()
 const searchResultsStore = useSearchResultsStore()
+const { isLoading, hasLoadError, totalResults } = useSearchDirectory()
 const specialtiesStore = useSpecialtiesStore()
 const { track } = useUmami()
 
@@ -308,8 +310,8 @@ const activeFilterCount = computed(() =>
     [specialty.value, language.value, prefecture.value, searchResultsStore.selectedCity].filter(Boolean).length)
 
 const countText = computed(() => {
-    if (searchResultsStore.isLoading) return t('search.loading')
-    if (searchResultsStore.hasLoadError) return ''
-    return t('searchBar.resultsFound', searchResultsStore.totalResults)
+    if (isLoading.value) return t('search.loading')
+    if (hasLoadError.value) return ''
+    return t('searchBar.resultsFound', totalResults.value)
 })
 </script>

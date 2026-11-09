@@ -45,7 +45,7 @@
                 }"
             >
                 <AdvancedMarker
-                    v-for="location in searchResultsStore.searchResultsList"
+                    v-for="location in searchResultsList"
                     :key="location.id"
                     :options="{
                         position: {
@@ -77,6 +77,7 @@ import { GoogleMap, AdvancedMarker, MarkerCluster } from 'vue3-google-map'
 import type { Renderer } from '@googlemaps/markerclusterer'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
+import { useSearchDirectory } from '~/composables/useSearchDirectory'
 import { useRuntimeConfig } from '#imports'
 import { useThemeColors } from '~/composables/useThemeColors'
 import pinTemplate from '~/assets/icons/map-pin-template.svg?raw'
@@ -97,6 +98,7 @@ const currentLocation = ref(defaultLocation)
 const currentZoom = ref(9)
 
 const searchResultsStore = useSearchResultsStore()
+const { searchResultsList, activeFacility } = useSearchDirectory()
 const mapRef = ref<{ map: google.maps.Map } | null>(null)
 const markerClusterRef = ref<typeof MarkerCluster | null>(null)
 const runtimeConfig = useRuntimeConfig()
@@ -154,10 +156,10 @@ const createMarkerIcon = (isActive: boolean): string => {
 const renderMarkerIcon = (locationId: string): string => markerIcons.value[locationId] ?? createMarkerIcon(false)
 
 const renderMarkerIcons = () => {
-    const activeId = searchResultsStore.activeFacility?.id
+    const activeId = activeFacility.value?.id
     const icons: Record<string, string> = {}
 
-    for (const location of searchResultsStore.searchResultsList) {
+    for (const location of searchResultsList.value) {
         icons[location.id] = createMarkerIcon(location.id === activeId)
     }
     markerIcons.value = icons
@@ -235,7 +237,7 @@ watch(themeChanged, () => {
     renderMarkerIcons()
     nextTick(renderClusterMarkerIcons)
 })
-watch(() => searchResultsStore.activeFacility, renderMarkerIcons)
+watch(activeFacility, renderMarkerIcons)
 
 const handlePinClick = (resultId: string) => {
     emit('select', resultId)
@@ -278,7 +280,7 @@ const handleZoomChanged = () => {
 }
 
 const adjustMapToActiveResult = () => {
-    const active = searchResultsStore.activeFacility
+    const active = activeFacility.value
     if (!active) {
         return
     }
@@ -309,7 +311,7 @@ const recenterMap = () => {
 }
 
 const getAllCurrentCoordinates = () => {
-    const currentLocations = searchResultsStore.searchResultsList
+    const currentLocations = searchResultsList.value
     if (!currentLocations || !currentLocations.length)
         return
 
@@ -362,8 +364,8 @@ const calculateZoomLevel = (coordinates: { lat: number, lng: number }[]) => {
  * initialization" and the map never mounted at all. Function declarations would hoist; these
  * do not.
  */
-watch(() => searchResultsStore.activeFacility, adjustMapToActiveResult)
+watch(activeFacility, adjustMapToActiveResult)
 
 // Fit the map to the results whenever they change, including the set already loaded on mount.
-watch(() => searchResultsStore.searchResultsList, recenterMap, { immediate: true })
+watch(searchResultsList, recenterMap, { immediate: true })
 </script>

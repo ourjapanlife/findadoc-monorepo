@@ -348,6 +348,22 @@ test.describe('Search page', () => {
             await expect(error).toBeVisible({ timeout: 20000 })
             await expect(error.getByRole('button', { name: enUS.search.retry })).toBeVisible()
         })
+
+        test('retry loads the results once the API is back', async ({ page }) => {
+            await page.unrouteAll()
+            await mockApi(page, { fail: true })
+            await page.goto('/search')
+
+            const error = page.getByTestId('search-load-error')
+            await expect(error).toBeVisible({ timeout: 20000 })
+
+            await page.unrouteAll()
+            await mockApi(page)
+            await error.getByRole('button', { name: enUS.search.retry }).click()
+
+            await expect(page.getByTestId('search-result-card')).toHaveCount(3)
+            await expect(error).toBeHidden()
+        })
     })
 
     test.describe('Portrait mode', () => {

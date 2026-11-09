@@ -4,12 +4,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { auth0 } from '../utils/auth0.js'
 import { getAuth0AuthorizationParams, resolveAuthReturnPath } from '~/utils/auth0Config'
 import { useLoadingStore } from './loadingStore.js'
-import { useCookie, useRuntimeConfig } from '#app'
+import { useCookie, useNuxtApp, useRuntimeConfig } from '#app'
 import { useTranslation } from '~/composables/useTranslation.js'
 import { localeCodeFromPath, localizedPath, unlocalizedPath } from '~/utils/localePath'
+import { clearQueryCache } from '~/utils/queryClient'
 
 export const useAuthStore = defineStore('authStore', () => {
     const runtimeConfig = useRuntimeConfig()
+    const { $queryClient } = useNuxtApp()
     const isTestingMode = !!runtimeConfig.public.isTestingMode
     const route = useRoute()
     const router = useRouter()
@@ -66,6 +68,9 @@ export const useAuthStore = defineStore('authStore', () => {
     }
 
     async function logout() {
+        // Before anything else: moderation and booking reads must not outlive the session (#242).
+        clearQueryCache($queryClient)
+
         //Clear the following cookies when they are used in testing
         useCookie('auth_token').value = null
         useCookie('id_token').value = null
