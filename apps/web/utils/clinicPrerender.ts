@@ -260,6 +260,8 @@ export async function buildClinicPrerenderDirectory(): Promise<{
     facetPaths: string[]
     /** Null when the city fetch failed. An empty array is a successful empty result. */
     officialCities: CityOption[] | null
+    /** The rows as fetched, for the /search snapshot (#242). */
+    rows: { facilities: Facility[], professionals: HealthcareProfessional[], complete: boolean }
 } | null> {
     const rows = await fetchDirectoryRows()
 
@@ -283,7 +285,8 @@ export async function buildClinicPrerenderDirectory(): Promise<{
         professionalPaths: Object.values(professionalDirectory).map(professional => professionalPath(professional)),
         hubPaths: hubPathsFromFacilities(Object.values(directory), officialCities ?? []),
         facetPaths: facetPathsFromFacilities(Object.values(directory)),
-        officialCities
+        officialCities,
+        rows
     }
 }
 
