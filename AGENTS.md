@@ -85,7 +85,7 @@ Find a Doc holds patient booking requests, insurance documents, and health infor
 ### Personal and health data
 
 - Do not log personal data. That includes names, emails, phone numbers, dates of birth, addresses, free-text answers, file names, object keys, booking tokens, and access tokens. Log ids that are not secret, counts, and error codes. `apps/server/docs/booking-retention.md` shows the pattern.
-- Do not log a whole input object, a whole row, a request body, or an `error` whose message can repeat the input. Log the error code and the field name.
+- Do not log a whole input object, a whole row, a request body, or an `error` whose message can repeat the input. Log the error code and the field name. `errorLogFields(error)` in `apps/server/src/logger.ts` gives the safe fields; do not interpolate `${error}`.
 - Sentry stays at `sendDefaultPii: false`. Do not attach user data to Sentry scopes or breadcrumbs.
 - Do not send personal data to analytics (Umami, Google tags). Event properties are fixed labels, not user input.
 - Collect only the fields the clinic needs. Never ask for a My Number or its card (`booking-retention.md`).

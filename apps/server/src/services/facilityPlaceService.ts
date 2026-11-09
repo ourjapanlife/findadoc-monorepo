@@ -1,5 +1,5 @@
 import { envVariables } from '../../utils/environmentVariables.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import { ErrorCode, Result } from '../result.js'
 import type { FacilityParent } from '../typeDefs/resolverParents.js'
 import { namesAgree } from '../places/facilityPlaceMatch.js'
@@ -57,7 +57,7 @@ export async function suggestFacilityPlaces(
     }
 
     if (!allowModeratorPreviewCall(clientIp)) {
-        logger.warn(`suggestFacilityPlaces skipped because the lookup limit was reached for ${clientIp}`)
+        logger.warn('suggestFacilityPlaces skipped because the lookup limit was reached')
         return { data: [], hasErrors: false }
     }
 
@@ -79,7 +79,7 @@ export async function suggestFacilityPlaces(
             hasErrors: false
         }
     } catch (error) {
-        logger.error(`ERROR: suggestFacilityPlaces ${error}`)
+        logger.error('ERROR: suggestFacilityPlaces', errorLogFields(error))
         return { data: [], hasErrors: false }
     }
 }
@@ -115,7 +115,7 @@ export async function confirmFacilityPlaceId(
     try {
         check = await confirmPlaceId(normalized, apiKey)
     } catch (error) {
-        logger.error(`ERROR: confirmFacilityPlaceId ${error}`)
+        logger.error('ERROR: confirmFacilityPlaceId', errorLogFields(error))
         return {
             data: null,
             hasErrors: true,

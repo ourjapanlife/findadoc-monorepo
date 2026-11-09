@@ -1616,6 +1616,11 @@ type BookingSubmissionDetail {
   cancelledBy: BookingCancelledBy
   """Reason staff or the patient gave for a decline or cancel."""
   statusReason: String
+  """
+  When the daily purge cleared statusReason (#236): 90 days after the visit, or after the
+  cancel or decline. Null: not cleared.
+  """
+  statusReasonPurgedAt: String
   practitionerId: ID
   """The chosen or assigned doctor's names. Empty when no doctor was named."""
   practitionerNames: [LocalizedName!]!

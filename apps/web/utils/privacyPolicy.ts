@@ -10,7 +10,7 @@ export const PRIVACY_SECTIONS: readonly PrivacySection[] = [
     { id: 'collect', paragraphs: 5 },
     { id: 'use', paragraphs: 1 },
     { id: 'share', paragraphs: 4 },
-    { id: 'retention', paragraphs: 2 },
+    { id: 'retention', paragraphs: 3 },
     { id: 'cookies', paragraphs: 3, anchor: 'cookies' },
     { id: 'security', paragraphs: 1 },
     { id: 'rights', paragraphs: 1 },

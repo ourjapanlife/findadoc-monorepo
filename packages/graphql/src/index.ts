@@ -377,6 +377,11 @@ export type BookingSubmissionDetail = {
   status: BookingSubmissionStatus;
   /** Reason staff or the patient gave for a decline or cancel. */
   statusReason?: Maybe<Scalars['String']['output']>;
+  /**
+   * When the daily purge cleared statusReason (#236): 90 days after the visit, or after the
+   * cancel or decline. Null: not cleared.
+   */
+  statusReasonPurgedAt?: Maybe<Scalars['String']['output']>;
   updatedDate: Scalars['String']['output'];
   uploads: Array<BookingUploadView>;
 };
@@ -3183,6 +3188,7 @@ export type BookingSubmissionDetailResolvers<ContextType = any, ParentType exten
   startsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['BookingSubmissionStatus'], ParentType, ContextType>;
   statusReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  statusReasonPurgedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   uploads?: Resolver<Array<ResolversTypes['BookingUploadView']>, ParentType, ContextType>;
 };

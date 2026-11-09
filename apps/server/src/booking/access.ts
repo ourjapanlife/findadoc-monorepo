@@ -1,7 +1,7 @@
 import { sql } from 'kysely'
 import { Scope, authorize, isAuthenticatedUser, type User } from '../auth.js'
 import { db } from '../kyselyClient.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 
 /**
  * Who may see and change a clinic's bookings.
@@ -63,7 +63,7 @@ async function claimPendingInvites(user: User): Promise<void> {
             )))
             .execute()
     } catch (error) {
-        logger.error(`Clinic invite claim failed for ${user.sub}: ${String(error)}`)
+        logger.error(`Clinic invite claim failed for ${user.sub}`, errorLogFields(error))
     }
 }
 

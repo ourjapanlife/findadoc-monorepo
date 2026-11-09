@@ -1,5 +1,5 @@
 import { envVariables } from '../../utils/environmentVariables.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import { Result } from '../result.js'
 import { allowSharedPreviewCall, resolveMapsPlace, type MapsPreviewTarget } from '../places/mapsLink.js'
 import {
@@ -71,7 +71,7 @@ async function lookupMapsPlace(
     }
 
     if (!allowSharedPreviewCall(clientIp)) {
-        logger.warn(`mapsPlacePreview skipped because the lookup limit was reached for ${clientIp}`)
+        logger.warn('mapsPlacePreview skipped because the lookup limit was reached')
         return { data: fromUrl, hasErrors: false }
     }
 
@@ -90,7 +90,7 @@ async function lookupMapsPlace(
         }
         return { data: preview ?? fromUrl, hasErrors: false }
     } catch (error) {
-        logger.error(`ERROR: mapsPlacePreview ${error}`)
+        logger.error('ERROR: mapsPlacePreview', errorLogFields(error))
         return { data: fromUrl, hasErrors: false }
     }
 }

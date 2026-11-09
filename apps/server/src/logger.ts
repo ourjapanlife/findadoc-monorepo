@@ -34,3 +34,21 @@ export const initializeLogger = () => {
         ]
     })
 }
+
+export type ErrorLogFields = { errorName: string, errorCode?: string }
+
+/**
+ * The parts of an error that are safe to log (#236): its class name, and the SQLSTATE or
+ * AWS error code when it has one. Never the message or the stack: a database error can
+ * repeat the value that failed ("invalid input syntax for type uuid: ..."), and an SES or
+ * S3 error can repeat an email address or an object key.
+ */
+export function errorLogFields(error: unknown): ErrorLogFields {
+    if (!(error instanceof Error)) {
+        return { errorName: 'unknown' }
+    }
+    const code = (error as { code?: unknown }).code
+    return typeof code === 'string' && /^[A-Za-z0-9_.-]{1,64}$/u.test(code)
+        ? { errorName: error.name, errorCode: code }
+        : { errorName: error.name }
+}

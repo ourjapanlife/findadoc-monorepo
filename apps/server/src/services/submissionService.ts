@@ -8,8 +8,10 @@ import {
     validateSubmissionSearchFilters,
     validateUpdateSubmissionInput
 } from '../validation/validateSubmissions.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
+import { submissionAuditValue } from './submissionAudit.js'
+import { submissionRetainUntil } from '../submissions/notesRetention.js'
 import { sql, type SelectQueryBuilder, type Transaction } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
 import { SUBMISSION_STATUS, type SubmissionStatusEnum, type SubmissionsTable } from '../typeDefs/kyselyTypes.js'
@@ -102,14 +104,20 @@ function resolveSubmissionStatusFilter(
 }
 
 function buildSubmissionUpdatePatch(
-    currentStatus: SubmissionStatusEnum,
+    current: Pick<Selectable<SubmissionsTable>, 'status' | 'created_date'>,
     fieldsToUpdate: Partial<gqlTypes.UpdateSubmissionInput>
 ): Record<string, unknown> {
+    const nextStatus = resolveSubmissionStatusFilter(fieldsToUpdate, () => {
+        throw new Error('INVALID_INPUT')
+    }) ?? current.status
     const patch: Record<string, unknown> = {
         updated_date: new Date().toISOString(),
-        status: resolveSubmissionStatusFilter(fieldsToUpdate, () => {
-            throw new Error('INVALID_INPUT')
-        }) ?? currentStatus
+        status: nextStatus
+    }
+
+    // A decision starts the notes clock, and a reopen puts the submit-time cap back (#236).
+    if (nextStatus !== current.status) {
+        patch.retain_until = submissionRetainUntil(nextStatus, current.created_date)
     }
 
     for (const [inputField, column] of SUBMISSION_SCALAR_UPDATE_FIELDS) {
@@ -318,7 +326,7 @@ export const getSubmissionById = async (
 
         return { data: gqlSubmission, hasErrors: false }
     } catch (err) {
-        logger.error(`ERROR: Error retrieving submission by id ${id}: ${err}`)
+        logger.error(`ERROR: Error retrieving submission by id ${id}`, errorLogFields(err))
         return {
             data: {} as gqlTypes.Submission,
             hasErrors: true,
@@ -377,7 +385,7 @@ export async function searchSubmissions(
 
         return { data: listSubmissions, hasErrors: false }
     } catch (err) {
-        logger.error(`ERROR: searchSubmissions ${JSON.stringify(filters)} -> ${err}`)
+        logger.error('ERROR: searchSubmissions', { ...errorLogFields(err), filterKeys: Object.keys(filters) })
         return {
             data: [],
             hasErrors: true,
@@ -413,7 +421,7 @@ export async function countSubmissions(
         // Postgres returns count(*) as a bigint string.
         return { data: Number(count), hasErrors: false }
     } catch (err) {
-        logger.error(`ERROR: countSubmissions ${JSON.stringify(filters)} -> ${err}`)
+        logger.error('ERROR: countSubmissions', { ...errorLogFields(err), filterKeys: Object.keys(filters) })
         return {
             data: 0,
             hasErrors: true,
@@ -448,6 +456,7 @@ export const createSubmission = async (
 
         const gqlSubmission = await db.transaction().execute(async transaction => {
             // Insert submission
+            const createdDate = new Date().toISOString()
             const insertedSubmission = await transaction
                 .insertInto('submissions')
                 .values({
@@ -460,8 +469,9 @@ export const createSubmission = async (
                     hps_id: null,
                     facilities_id: null,
                     notes: submissionInput.notes ?? null,
-                    created_date: new Date().toISOString(),
-                    updated_date: new Date().toISOString()
+                    created_date: createdDate,
+                    updated_date: createdDate,
+                    retain_until: submissionRetainUntil(SUBMISSION_STATUS.PENDING, createdDate)
                 })
                 .returningAll()
                 .executeTakeFirstOrThrow()
@@ -473,7 +483,7 @@ export const createSubmission = async (
                 actionType: gqlTypes.ActionType.Create,
                 objectType: gqlTypes.ObjectType.Submission,
                 updatedBy,
-                newValue: plainGqlSubmission
+                newValue: submissionAuditValue(plainGqlSubmission)
             })
 
             return plainGqlSubmission
@@ -482,7 +492,7 @@ export const createSubmission = async (
         logger.info(`DB-CREATE: submission ${gqlSubmission.id} created`)
         return { data: gqlSubmission, hasErrors: false }
     } catch (error) {
-        logger.error(`ERROR: Error creating submission: ${error}`)
+        logger.error('ERROR: Error creating submission', errorLogFields(error))
         return {
             data: {} as gqlTypes.Submission,
             hasErrors: true,
@@ -542,7 +552,7 @@ export const updateSubmission = async (
             }
 
             // Map boolean flags to status via SUBMISSION_STATUS_FILTERS
-            const patch = buildSubmissionUpdatePatch(currentSubmission.status, fields)
+            const patch = buildSubmissionUpdatePatch(currentSubmission, fields)
 
             const updatedSubmission = await transaction
                 .updateTable('submissions')
@@ -560,8 +570,8 @@ export const updateSubmission = async (
                 actionType: gqlTypes.ActionType.Update,
                 objectType: gqlTypes.ObjectType.Submission,
                 updatedBy,
-                oldValue: oldGqlSubmission,
-                newValue: newGqlSubmission
+                oldValue: submissionAuditValue(oldGqlSubmission),
+                newValue: submissionAuditValue(newGqlSubmission)
             })
 
             return newGqlSubmission
@@ -594,7 +604,7 @@ export const updateSubmission = async (
         }
 
         // Generic error
-        logger.error(`ERROR: Error updating submission ${submissionId}: ${error}`)
+        logger.error(`ERROR: Error updating submission ${submissionId}`, errorLogFields(error))
         return {
             data: {} as gqlTypes.Submission,
             hasErrors: true,
@@ -662,7 +672,9 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
                 degrees: [],
                 specialties: [],
                 spokenLanguages: sanitizeLocales(current.spoken_languages as (gqlTypes.Locale | null | undefined)[]),
-                additionalInfoForPatients: current.notes ?? null,
+                // Notes are the submitter's private text, not the doctor's public profile (#236).
+                // The moderator writes additionalInfoForPatients by hand.
+                additionalInfoForPatients: null,
                 facilityIds: [finalFacilityId]
             }
         }
@@ -681,7 +693,8 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
             degrees: [],
             specialties: [],
             spokenLanguages: sanitizeLocales(current.spoken_languages as (gqlTypes.Locale | null | undefined)[]),
-            additionalInfoForPatients: current.notes ?? null,
+            // Notes stay private; the moderator writes the public text by hand (#236).
+            additionalInfoForPatients: null,
             facilityIds: [finalFacilityId]
         }
     }
@@ -878,7 +891,8 @@ export const approveSubmission = async (
                     status: SUBMISSION_STATUS.APPROVED,
                     facilities_id: finalFacilityId,
                     hps_id: createdHpId ?? currentSubmission.hps_id,
-                    updated_date: new Date().toISOString()
+                    updated_date: new Date().toISOString(),
+                    retain_until: submissionRetainUntil(SUBMISSION_STATUS.APPROVED, currentSubmission.created_date)
                 })
                 .where('id', '=', submissionId)
                 .returningAll()
@@ -893,8 +907,8 @@ export const approveSubmission = async (
                 actionType: gqlTypes.ActionType.Update,
                 objectType: gqlTypes.ObjectType.Submission,
                 updatedBy,
-                oldValue: oldGqlSubmission,
-                newValue: newGqlSubmission
+                oldValue: submissionAuditValue(oldGqlSubmission),
+                newValue: submissionAuditValue(newGqlSubmission)
             })
 
             return newGqlSubmission
@@ -928,7 +942,7 @@ export const approveSubmission = async (
             }
         }
 
-        logger.error(`Error approving submission ${submissionId}: ${error}`)
+        logger.error(`Error approving submission ${submissionId}`, errorLogFields(error))
         return {
             data: {} as gqlTypes.Submission,
             hasErrors: true,
@@ -982,7 +996,7 @@ export async function deleteSubmission(
                 actionType: gqlTypes.ActionType.Delete,
                 objectType: gqlTypes.ObjectType.Submission,
                 updatedBy,
-                oldValue: oldGqlSubmission
+                oldValue: submissionAuditValue(oldGqlSubmission)
             })
         })
 
@@ -1008,7 +1022,7 @@ export async function deleteSubmission(
             }
         }
 
-        logger.error(`ERROR: Error deleting submission ${id}: ${error}`)
+        logger.error(`ERROR: Error deleting submission ${id}`, errorLogFields(error))
         return {
             data: { isSuccessful: false },
             hasErrors: true,

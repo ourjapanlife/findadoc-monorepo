@@ -1,7 +1,7 @@
  
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import { db } from '../kyselyClient.js'
 
 /**
@@ -35,7 +35,7 @@ export async function getUserById(id: string)
             hasErrors: false
         }
     } catch (error) {
-        logger.error(`Error getting user by id: ${error}`)
+        logger.error('Error getting user by id', errorLogFields(error))
 
         return {
             data: {} as gqlTypes.User,
@@ -94,7 +94,7 @@ export async function createUser(
             hasErrors: false
         }
     } catch (error) {
-        logger.error(`Error creating user: ${error}`)
+        logger.error('Error creating user', errorLogFields(error))
 
         return {
             data: {} as gqlTypes.User,
@@ -154,7 +154,7 @@ export async function updateUser(
             hasErrors: false
         } 
     } catch (error) {
-        logger.error(`Error updating user: ${error}`)
+        logger.error('Error updating user', errorLogFields(error))
 
         return {
             data: {} as gqlTypes.User,

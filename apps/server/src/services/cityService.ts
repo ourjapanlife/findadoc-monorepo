@@ -1,6 +1,6 @@
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import type { City, Prefecture } from '@findadoc/graphql'
 
@@ -70,7 +70,7 @@ export async function listPrefectures(): Promise<Result<Prefecture[]>> {
             hasErrors: false
         }
     } catch (error) {
-        logger.error(`ERROR: listPrefectures ${error}`)
+        logger.error('ERROR: listPrefectures', errorLogFields(error))
         return {
             data: [],
             hasErrors: true,
@@ -105,7 +105,7 @@ export async function listCities(prefecture?: string | null): Promise<Result<Cit
 
         return { data: rows.map(row => mapCity(row)), hasErrors: false }
     } catch (error) {
-        logger.error(`ERROR: listCities ${error}`)
+        logger.error('ERROR: listCities', errorLogFields(error))
         return {
             data: [],
             hasErrors: true,

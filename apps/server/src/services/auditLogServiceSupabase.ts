@@ -3,7 +3,7 @@
 import type { Transaction } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
 import * as gqlTypes from '@findadoc/graphql'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import { db } from '../kyselyClient.js'
 
 type InsertAuditLog = {
@@ -50,7 +50,7 @@ export async function createAuditLog(
 
         logger.info(`Audit log created: ${actionType} ${objectType}`)
     } catch (error) {
-        logger.error(`ERROR: Error creating audit log: ${error}`)
+        logger.error('ERROR: Error creating audit log', errorLogFields(error))
         throw error // Re-throw to trigger transaction rollback
     }
 }

@@ -63,6 +63,13 @@
                 >
                     {{ t('bookingDashboard.reasonShown', { reason: detail.statusReason }) }}
                 </p>
+                <p
+                    v-else-if="detail.statusReasonPurgedAt"
+                    class="text-sm text-primary-text-muted"
+                    data-testid="booking-status-reason-removed"
+                >
+                    {{ t('bookingDashboard.reasonRemoved') }}
+                </p>
                 <template v-if="actions.length > 0">
                     <label class="flex flex-col gap-1 text-sm">
                         <span>{{ t('bookingDashboard.reasonLabel') }}</span>

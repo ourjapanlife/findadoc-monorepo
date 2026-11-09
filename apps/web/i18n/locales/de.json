@@ -121,7 +121,7 @@
   "privacyPage": {
     "heading": "Datenschutzerklärung",
     "subheading": "Was wir erheben, warum, an wen wir es weitergeben und wie Sie uns zu Ihren Daten erreichen.",
-    "date": "Gültig ab: 8. November 2026",
+    "date": "Gültig ab: 9. November 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Wer wir sind",
@@ -149,7 +149,8 @@
       "retention": {
         "heading": "5. Wie lange wir sie speichern",
         "p1": "Fotos von Versicherungskarten und anderen Ausweisdokumenten, die mit einer Terminanfrage hochgeladen werden, löschen wir 30 Tage nach dem Hochladen. Andere Dateien einer Terminanfrage löschen wir nach einem Jahr, Dateien einer nie abgesendeten Anfrage nach 24 Stunden.",
-        "p2": "Ihre Antworten bei der Buchung, etwa Name, Kontaktdaten, Geburtsdatum und Grund des Besuchs, löschen wir 90 Tage nach dem Ende des Termins. Wird der Termin abgesagt oder lehnt die Praxis die Anfrage ab, löschen wir sie sofort. Antworten zu einer Anfrage ohne Terminzeit löschen wir 90 Tage nach dem Absenden, eine Notiz zu einer Absage 90 Tage nach der Terminzeit. Danach behalten wir die Anfrage ohne diese Antworten: die Praxis, die Ärztin oder den Arzt und die Leistung, die gewünschten Sprachen, die Sprache der Website, die Sie genutzt haben, Zeit und Status des Termins sowie Datumsangaben (etwa wann Sie eingewilligt haben). Die Praxis führt ihre eigenen Patientenakten nach ihren eigenen gesetzlichen Pflichten. Kontodaten speichern wir, solange das Konto besteht. Sie können eine frühere Löschung verlangen (Abschnitt 8)."
+        "p2": "Ihre Antworten bei der Buchung, etwa Name, Kontaktdaten, Geburtsdatum und Grund des Besuchs, löschen wir 90 Tage nach dem Ende des Termins. Wird der Termin abgesagt oder lehnt die Praxis die Anfrage ab, löschen wir sie sofort. Antworten zu einer Anfrage ohne Terminzeit löschen wir 90 Tage nach dem Absenden, eine Notiz zu einer Absage oder Ablehnung 90 Tage nach der Absage oder Ablehnung, spätestens 90 Tage nach der Terminzeit. Danach behalten wir die Anfrage ohne diese Antworten: die Praxis, die Ärztin oder den Arzt und die Leistung, die gewünschten Sprachen, die Sprache der Website, die Sie genutzt haben, Zeit und Status des Termins sowie Datumsangaben (etwa wann Sie eingewilligt haben). Die Praxis führt ihre eigenen Patientenakten nach ihren eigenen gesetzlichen Pflichten. Kontodaten speichern wir, solange das Konto besteht. Sie können eine frühere Löschung verlangen (Abschnitt 8).",
+        "p3": "Notizen, die Sie beim Vorschlag einer Praxis oder eines Arztes angeben, löschen wir 180 Tage, nachdem eine Moderatorin oder ein Moderator den Vorschlag angenommen oder abgelehnt hat. Wird nicht entschieden, löschen wir sie ein Jahr nach dem Absenden. Der übrige Vorschlag, etwa die Angaben zur Praxis und zum Arzt, bleibt erhalten."
       },
       "cookies": {
         "heading": "6. Cookies und Werbemessung",
@@ -1027,6 +1028,7 @@
     "actionFailed": "Der Termin konnte nicht aktualisiert werden. Er hat sich möglicherweise geändert; der aktuelle Stand wird angezeigt.",
     "reasonLabel": "Hinweis für die Patientin oder den Patienten (optional, wird bei Absage oder Stornierung gesendet)",
     "reasonShown": "Hinweis: {reason}",
+    "reasonRemoved": "Hinweis nach Ablauf der Aufbewahrungsfrist entfernt.",
     "cancelledByPatient": "Von der Patientin oder dem Patienten storniert",
     "cancelledByClinic": "Von der Praxis storniert",
     "appointmentStatus": {

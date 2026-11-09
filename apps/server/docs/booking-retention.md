@@ -38,9 +38,27 @@ Date of birth is not treated separately.
 | No appointment (for example, the notice failed) | 90 days after `created_date` | `BOOKING_ANSWER_RETENTION_DAYS` |
 
 Erasing sets `answers` to `{}` and `answers_purged_at` to now. A `CHECK`
-keeps a purged row empty. The cancel or decline note (`status_reason`) can be
-the patient's own words; the clinic still needs to see why, so it stays until
-the same 90 days after the visit time, then the daily purge clears it.
+keeps a purged row empty.
+
+## Cancel and decline notes (#236)
+
+`booking_appointments.status_reason` is free text. Staff write it on a decline
+or cancel (`updateAppointmentStatus`), and the patient writes it on a cancel
+from the manage link (`cancelBookingByToken`). A patient's note can name a
+symptom or a person. The clinic still needs to read why, so the call that
+writes the note does not clear it. The daily purge clears it on the first of:
+
+| When | Note cleared |
+|---|---|
+| The visit ended | 90 days after `ends_at` (the answer clock above) |
+| Cancelled or declined | 90 days after `status_changed_at` |
+
+Clearing sets `status_reason` to null and `status_reason_purged_at` to now. A
+`CHECK` keeps a cleared note empty. `status`, `status_changed_at`, and
+`cancelled_by` stay: they are not free text. The staff request page then says
+"Note removed after the retention period" (`statusReasonPurgedAt` on
+`BookingSubmissionDetail`). The patient's manage link never shows the note.
+Both days follow `BOOKING_ANSWER_RETENTION_DAYS`.
 
 What stays for disputes and counts: the request id, clinic, form id and
 version, locale, requested languages, the appointment times and status, who
@@ -71,7 +89,8 @@ write purge at 03:00 JST every day. An EventBridge rule in `FindadocApi`
 invokes it. It runs in the VPC as `findadoc_api`, like the API, and may only
 `s3:DeleteObject` under `uploads/booking/*`. Each run erases the answers that
 are past the rule above (`src/booking/answerPurge.ts`), clears cancel and
-decline notes on visits 90 days past, and, for uploads:
+decline notes past their rule, clears submission notes past `retain_until`
+(`submission-retention.md`), and, for uploads:
 
 - deletes the object of every upload past `retain_until`, sets `purged_at`,
   replaces `object_key` with the marker `purged/{id}`, which no storage call
@@ -82,7 +101,8 @@ decline notes on visits 90 days past, and, for uploads:
   `unclaimed`, `unclaimedDeleted`, `failed`, `overdue`, `answersDue`,
   `answersErased`, `reasonsCleared`, `answersOverdue`). It never logs an
   upload id, object key, file name, answer, or error message. The key holds
-  the patient's file name, and an S3 error can repeat it.
+  the patient's file name, and an S3 error can repeat it. The submission
+  notes purge logs its own line (`submissionNotesPurge`).
 
 A failed upload does not stop the run. If any upload failed, an upload is
 still past `retain_until` when the run ends (`overdue`), or a submission still
