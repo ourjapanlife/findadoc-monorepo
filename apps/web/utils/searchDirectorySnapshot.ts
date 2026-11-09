@@ -37,9 +37,9 @@ export function parseSearchDirectorySnapshot(value: unknown): SearchDirectorySna
     const file = value as Partial<SearchDirectorySnapshotFile>
     const updatedAt = typeof file.generatedAt === 'string' ? Date.parse(file.generatedAt) : Number.NaN
     if (file.version !== SEARCH_DIRECTORY_SNAPSHOT_VERSION
-        || !Array.isArray(file.facilities)
-        || !Array.isArray(file.professionals)
-        || !Number.isFinite(updatedAt)) {
+      || !Array.isArray(file.facilities)
+      || !Array.isArray(file.professionals)
+      || !Number.isFinite(updatedAt)) {
         return null
     }
 

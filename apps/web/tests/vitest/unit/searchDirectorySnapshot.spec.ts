@@ -153,7 +153,11 @@ describe('the search page with a snapshot (#242)', () => {
 
     it('shows the snapshot instead of the error when the API is down', async () => {
         vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(JSON.stringify(snapshotFile), { status: 200 }))))
-        graphQLClientRequestWithRetry.mockResolvedValue({ data: {}, errors: [{ message: 'down', code: 'NETWORK' }], hasErrors: true })
+        graphQLClientRequestWithRetry.mockResolvedValue({
+            data: {},
+            errors: [{ message: 'down', code: 'NETWORK' }],
+            hasErrors: true
+        })
 
         const directory = mount()
 
