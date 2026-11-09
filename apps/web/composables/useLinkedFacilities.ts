@@ -25,7 +25,8 @@ export async function fetchFacilitiesByIds(ids: readonly string[]): Promise<Link
         }>(
             gqlClient.request.bind(gqlClient),
             linkedFacilityQuery,
-            { id }
+            { id },
+            { retryAmount: 1, abortAfterMs: 10000 }
         )
         const facility = response.hasErrors ? null : response.data?.facility
         return {

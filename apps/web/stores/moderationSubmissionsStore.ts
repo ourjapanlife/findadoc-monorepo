@@ -259,7 +259,8 @@ export const useModerationSubmissionsStore = defineStore(
             const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
                 gqlClient.request.bind(gqlClient),
                 updateFacilitySubmissionGqlMutation,
-                updateSubmissionInput
+                updateSubmissionInput,
+                { abortAfterMs: 15000 }
             )
 
             if (hasServerErrors(serverResponse)) {
@@ -338,7 +339,8 @@ export const useModerationSubmissionsStore = defineStore(
             const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
                 gqlClient.request.bind(gqlClient),
                 updateFacilitySubmissionGqlMutation,
-                { id, input }
+                { id, input },
+                { abortAfterMs: 15000 }
             )
             const updatedSubmission = serverResponse.data?.updateSubmission
             return !hasServerErrors(serverResponse)

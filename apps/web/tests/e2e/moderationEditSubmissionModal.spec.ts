@@ -50,7 +50,8 @@ test.describe('Moderation edit submission topbar modals', () => {
         await failUpdateSubmission(page, 'network')
         await page.getByTestId('submission-topNav-update').click()
 
-        await expect(toastWithText(page, enUS.serverErrorMessages.network)).toBeVisible()
+        // A save that lost its connection may have landed, so it says so instead of inviting a resend (#219).
+        await expect(toastWithText(page, enUS.serverErrorMessages.writeOutcomeUnknown)).toBeVisible()
         await expect(page.getByText(enUS.modSubmissionForm.successMessageUpdated)).toHaveCount(0)
         await expect(facilityName).toHaveValue(keptName)
         await expect(page).toHaveURL(/\/my-page\/edit-submission\//)

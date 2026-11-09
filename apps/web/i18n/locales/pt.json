@@ -529,6 +529,7 @@
     "nothingToSave": "Não há nada novo para salvar.",
     "notAllowed": "Você não tem permissão para fazer isso. Entre novamente ou peça acesso a um administrador.",
     "network": "A solicitação não foi concluída. Verifique a conexão e tente novamente.",
+    "writeOutcomeUnknown": "Não recebemos resposta, então sua alteração pode já ter sido salva. Verifique antes de enviar de novo.",
     "prefectureMismatch": "O nome da prefeitura em inglês e em japonês precisa ser o mesmo.",
     "prefectureRequired": "Informe a prefeitura em inglês e em japonês."
   },

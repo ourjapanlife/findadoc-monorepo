@@ -59,5 +59,7 @@ export enum ErrorCode {
     INTERPRETER_HAS_BOOKINGS = 'INTERPRETER_HAS_BOOKINGS',
     PLACE_ID_REQUIRED = 'PLACE_ID_REQUIRED',
     /** The request never produced GraphQL errors: a timeout, a dropped connection, or an empty failure. */
-    NETWORK = 'NETWORK'
+    NETWORK = 'NETWORK',
+    /** A mutation got no answer: a timeout, a dropped connection, or a 502/503/504. It may have been saved (#219). */
+    WRITE_OUTCOME_UNKNOWN = 'WRITE_OUTCOME_UNKNOWN'
 }

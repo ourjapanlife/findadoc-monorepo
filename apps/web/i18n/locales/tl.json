@@ -478,6 +478,7 @@
     "nothingToSave": "Walang bago na ise-save.",
     "notAllowed": "Wala kang pahintulot na gawin ito. Mag-sign in muli, o humingi ng access sa isang administrator.",
     "network": "Hindi natapos ang request. Suriin ang koneksyon at subukan muli.",
+    "writeOutcomeUnknown": "Walang natanggap na sagot, kaya maaaring na-save na ang iyong pagbabago. Suriin muna bago ito ipadala muli.",
     "prefectureMismatch": "Dapat magkatugma ang Ingles at Japanese na pangalan ng prepektura.",
     "prefectureRequired": "Ilagay ang prepektura sa Ingles at sa Japanese."
   },

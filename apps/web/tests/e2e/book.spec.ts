@@ -188,8 +188,10 @@ test('a failed availability check shows a retry, not the form or the region noti
     await expect(page.getByTestId('clinic-booking-form')).toHaveCount(0)
 })
 
+// A server error with GraphQL errors is not retried on its own (#219), so the page load
+// makes one call and the retry button makes the next.
 test('a retry that gets a yes shows the form', async ({ page }) => {
-    await mockBookingApi(page, 'error', 'error', true)
+    await mockBookingApi(page, 'error', true)
     await page.goto(`/book/${FACILITY_ID}?preview=1`)
 
     await page.getByTestId('clinic-booking-availability-retry').click()
@@ -198,7 +200,7 @@ test('a retry that gets a yes shows the form', async ({ page }) => {
 })
 
 test('a retry that gets a no shows the region notice', async ({ page }) => {
-    await mockBookingApi(page, 'error', 'error', false)
+    await mockBookingApi(page, 'error', false)
     await page.goto(`/book/${FACILITY_ID}?preview=1`)
 
     await page.getByTestId('clinic-booking-availability-retry').click()
