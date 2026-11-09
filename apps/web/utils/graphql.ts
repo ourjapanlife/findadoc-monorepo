@@ -39,16 +39,28 @@ export type GraphQLRequestFunction<T> = (options: {
     signal?: AbortSignal
 }) => Promise<T>
 
+/** The caller cancelled the request, such as vue-query when the page that asked for it is gone (#242). */
+class RequestCancelledError extends Error {
+    constructor() {
+        super('Request cancelled')
+        this.name = 'RequestCancelledError'
+    }
+}
+
 /**
  * Runs one attempt with a deadline. At the deadline the fetch is aborted, so the browser stops
  * waiting and drops the connection, and the attempt rejects with `RequestTimeoutError` (#219).
+ * When the caller's `callerSignal` aborts first, the fetch is aborted the same way and the
+ * attempt rejects with `RequestCancelledError` (#242).
  */
 async function withAbortDeadline<T>(
     send: (signal: AbortSignal) => Promise<T>,
-    abortAfterMs: number
+    abortAfterMs: number,
+    callerSignal?: AbortSignal
 ): Promise<T> {
     const controller = new AbortController()
     let timer: ReturnType<typeof setTimeout> | undefined
+    let cancelFromCaller: (() => void) | undefined
 
     try {
         return await Promise.race([
@@ -58,10 +70,21 @@ async function withAbortDeadline<T>(
                     reject(new RequestTimeoutError(abortAfterMs))
                     controller.abort()
                 }, abortAfterMs)
+
+                cancelFromCaller = () => {
+                    reject(new RequestCancelledError())
+                    controller.abort()
+                }
+                if (callerSignal?.aborted) {
+                    cancelFromCaller()
+                } else {
+                    callerSignal?.addEventListener('abort', cancelFromCaller, { once: true })
+                }
             })
         ])
     } finally {
         if (timer) clearTimeout(timer)
+        if (cancelFromCaller) callerSignal?.removeEventListener('abort', cancelFromCaller)
     }
 }
 
@@ -206,7 +229,8 @@ export const graphQLClientRequestWithRetry = async <T>(
              */
             const rawResponseData = await withAbortDeadline(
                 signal => gqlClientRequestFunction({ document: queryOrMutation, variables, requestHeaders, signal }),
-                abortAfterMs
+                abortAfterMs,
+                retryOptions?.signal
             )
 
             // If the request is successful, return the data in the standardized `ServerResponse` format
@@ -216,6 +240,16 @@ export const graphQLClientRequestWithRetry = async <T>(
                 hasErrors: false
             } satisfies ServerResponse<T>
         } catch (error) {
+            if (error instanceof RequestCancelledError) {
+                // Nobody is waiting for this answer, so there is nothing to retry or log.
+                return {
+                    data: {} as T,
+                    errors: [{ message: error.message, code: ErrorCode.NETWORK, field: undefined }],
+                    hasErrors: true,
+                    temporary: false
+                }
+            }
+
             const kind = classifyFailure(error)
             if (attempts < retryAmount && RETRYABLE_FAILURES.has(kind)) {
                 attempts++
@@ -230,7 +264,7 @@ export const graphQLClientRequestWithRetry = async <T>(
             const codes = [...new Set(errors.map(serverError => serverError.code))].join(',')
             console.error(`GraphQL request ${operationNameOf(queryOrMutation)} failed: ${codes}`)
 
-            return { data: {} as T, errors, hasErrors: true }
+            return { data: {} as T, errors, hasErrors: true, temporary: RETRYABLE_FAILURES.has(kind) }
         }
     }
     return executeGQLClientRequest()
@@ -243,6 +277,8 @@ export interface graphQLClientRequestWithRetryOptions {
     skipAuth?: boolean
     /** Abort an attempt that has not responded in this long. Default `DEFAULT_ABORT_AFTER_MS`. */
     abortAfterMs?: number
+    /** The caller's cancel signal, such as the one vue-query passes to a `queryFn` (#242). */
+    signal?: AbortSignal
 }
 export interface gqlMutation<T> extends gqlRequest {
     variables: {

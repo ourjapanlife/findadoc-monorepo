@@ -1,7 +1,8 @@
 import { setActivePinia, createPinia } from 'pinia'
 import { expect } from 'chai'
-import { vi, beforeEach, describe, it } from 'vitest'
-import { nextTick } from 'vue'
+import { vi, beforeEach, afterEach, describe, it } from 'vitest'
+import { createApp, effectScope, nextTick } from 'vue'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 import { Locale, Specialty, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
 
 const graphQLClientRequestWithRetry = vi.fn()
@@ -11,12 +12,9 @@ vi.mock('~/utils/graphql', () => ({
     graphQLClientRequestWithRetry: (...args: unknown[]) => graphQLClientRequestWithRetry(...args)
 }))
 
-vi.mock('../../../utils/graphql.js', () => ({
-    gqlClient: { request: vi.fn() },
-    graphQLClientRequestWithRetry: (...args: unknown[]) => graphQLClientRequestWithRetry(...args)
-}))
-
+const { useSearchDirectory } = await import('~/composables/useSearchDirectory')
 const { useSearchResultsStore } = await import('~/stores/searchResultsStore')
+const { createAppQueryClient } = await import('~/utils/queryClient')
 
 const TOTAL_FACILITIES = 250
 const TARGET_CITY = 'Meguro'
@@ -107,7 +105,37 @@ function facilityRequestOffsets(): number[] {
         .sort((a, b) => a - b)
 }
 
-describe('searchResultsStore', () => {
+type QueryClient = ReturnType<typeof createAppQueryClient>
+type Directory = ReturnType<typeof useSearchDirectory>
+
+/** Runs the composable the way a component would: inside an app with the query client installed. */
+function mountDirectory(queryClient: QueryClient) {
+    const app = createApp({})
+    app.use(VueQueryPlugin, { queryClient })
+    const scope = effectScope()
+    const directory = app.runWithContext(() => scope.run(() => useSearchDirectory()))
+    if (!directory) throw new Error('useSearchDirectory did not run')
+    return { directory, store: useSearchResultsStore(), unmount: () => scope.stop() }
+}
+
+/** Waits until the directory has loaded or failed. */
+async function settled(directory: Directory, timeout = 1000) {
+    await vi.waitFor(() => {
+        if (!directory.isReady.value && !directory.hasLoadError.value) throw new Error('still loading')
+    }, { timeout })
+}
+
+const failure = (temporary: boolean) =>
+    Promise.resolve({ data: {}, errors: [{ message: 'boom', code: 'NETWORK' }], hasErrors: true, temporary })
+
+describe('useSearchDirectory', () => {
+    const mounted: (() => void)[] = []
+    const mount = (queryClient: QueryClient = createAppQueryClient()) => {
+        const result = mountDirectory(queryClient)
+        mounted.push(result.unmount)
+        return result
+    }
+
     beforeEach(() => {
         setActivePinia(createPinia())
         graphQLClientRequestWithRetry.mockReset()
@@ -115,6 +143,10 @@ describe('searchResultsStore', () => {
             (_requestFn: unknown, queryDocument: string, variables: Variables) =>
                 Promise.resolve(respondTo(queryDocument, variables))
         )
+    })
+
+    afterEach(() => {
+        mounted.splice(0).forEach(unmount => unmount())
     })
 
     describe('loading the directory', () => {
@@ -125,36 +157,45 @@ describe('searchResultsStore', () => {
          * the server's reported total and the size of what it actually returned.
          */
         it('pages through every facility batch the server caps, not just the first', async () => {
-            const store = useSearchResultsStore()
-
-            await store.search()
+            const { directory } = mount()
+            await settled(directory)
 
             expect(facilityRequestOffsets()).to.deep.equal([0, 100, 200])
-            expect(store.totalResults).to.equal(TOTAL_FACILITIES)
+            expect(directory.totalResults.value).to.equal(TOTAL_FACILITIES)
         })
 
         it('sends no bearer token lookup for anonymous search', async () => {
-            const store = useSearchResultsStore()
-
-            await store.search()
+            const { directory } = mount()
+            await settled(directory)
 
             const options = graphQLClientRequestWithRetry.mock.calls.map(call => call[3] as { skipAuth?: boolean })
             expect(options.length).to.be.greaterThan(0)
             options.forEach(option => expect(option?.skipAuth).to.equal(true))
         })
 
-        it('shares one load between concurrent callers and never reloads once ready', async () => {
-            const store = useSearchResultsStore()
+        it('leaves the retry to vue-query, so each page is one attempt per send', async () => {
+            const { directory } = mount()
+            await settled(directory)
 
-            await Promise.all([store.loadDirectory(), store.loadDirectory(), store.search()])
+            const options = graphQLClientRequestWithRetry.mock.calls.map(call => call[3] as { retryAmount?: number })
+            options.forEach(option => expect(option?.retryAmount).to.equal(0))
+        })
+
+        it('shares one load between components and does not reload a fresh directory', async () => {
+            const queryClient = createAppQueryClient()
+            const first = mount(queryClient)
+            const second = mount(queryClient)
+            await settled(first.directory)
+            await settled(second.directory)
             const callsAfterFirstLoad = graphQLClientRequestWithRetry.mock.calls.length
 
-            await store.search()
+            const third = mount(queryClient)
+            await settled(third.directory)
 
             // 250 of each at 100 a page: 3 facility pages + 3 professionals pages, fetched once.
             expect(callsAfterFirstLoad).to.equal(6)
             expect(graphQLClientRequestWithRetry.mock.calls.length).to.equal(callsAfterFirstLoad)
-            expect(store.isReady).to.equal(true)
+            expect(third.directory.totalResults.value).to.equal(TOTAL_FACILITIES)
         })
 
         /*
@@ -164,9 +205,8 @@ describe('searchResultsStore', () => {
          * and back off from. Never request a page the endpoint cannot serve.
          */
         it('never asks either endpoint for more than 100 rows in one page', async () => {
-            const store = useSearchResultsStore()
-
-            await store.search()
+            const { directory } = mount()
+            await settled(directory)
 
             const limits = graphQLClientRequestWithRetry.mock.calls
                 .map(call => (call[2] as { filters?: { limit?: number } }).filters?.limit)
@@ -177,9 +217,8 @@ describe('searchResultsStore', () => {
         })
 
         it('pages through every professional, not just the first page', async () => {
-            const store = useSearchResultsStore()
-
-            await store.search()
+            const { directory } = mount()
+            await settled(directory)
 
             const professionalOffsets = graphQLClientRequestWithRetry.mock.calls
                 .filter(call => String(call[1]).includes('SearchProfessionalsPage'))
@@ -188,70 +227,102 @@ describe('searchResultsStore', () => {
 
             expect(professionalOffsets).to.deep.equal([0, 100, 200])
             // Every facility's professional resolves, so nothing is dropped from the join.
-            expect(store.totalResults).to.equal(TOTAL_FACILITIES)
+            expect(directory.totalResults.value).to.equal(TOTAL_FACILITIES)
         })
 
-        it('surfaces a failed load as an error state with no results', async () => {
-            graphQLClientRequestWithRetry.mockImplementation(() =>
-                Promise.resolve({ data: {}, errors: [{ message: 'boom' }], hasErrors: true }))
-            const store = useSearchResultsStore()
+        it('shows the skeleton until the directory arrives', () => {
+            graphQLClientRequestWithRetry.mockImplementation(() => new Promise(() => {}))
+            const { directory } = mount()
 
-            await store.search()
+            expect(directory.isLoading.value).to.equal(true)
+            expect(directory.hasLoadError.value).to.equal(false)
+        })
 
-            expect(store.hasLoadError).to.equal(true)
-            expect(store.totalResults).to.equal(0)
+        it('surfaces a failed load as an error state with no results, and does not retry it', async () => {
+            graphQLClientRequestWithRetry.mockImplementation(() => failure(false))
+            const { directory } = mount()
+
+            await settled(directory)
+
+            expect(directory.hasLoadError.value).to.equal(true)
+            expect(directory.isLoading.value).to.equal(false)
+            expect(directory.totalResults.value).to.equal(0)
+            // The first facility page and the first professionals page, once each.
+            expect(graphQLClientRequestWithRetry.mock.calls.length).to.equal(2)
+        })
+
+        it('retries a temporary failure once and then shows the results (#219)', async () => {
+            graphQLClientRequestWithRetry.mockImplementationOnce(() => failure(true))
+            const { directory } = mount()
+
+            await settled(directory, 3000)
+
+            expect(directory.isReady.value).to.equal(true)
+            expect(directory.totalResults.value).to.equal(TOTAL_FACILITIES)
         })
 
         it('can retry after a failed load', async () => {
-            graphQLClientRequestWithRetry.mockImplementationOnce(() =>
-                Promise.resolve({ data: {}, errors: [{ message: 'boom' }], hasErrors: true }))
-            const store = useSearchResultsStore()
+            graphQLClientRequestWithRetry.mockImplementationOnce(() => failure(false))
+            const { directory } = mount()
 
-            await store.search()
-            expect(store.hasLoadError).to.equal(true)
+            await settled(directory)
+            expect(directory.hasLoadError.value).to.equal(true)
 
-            await store.reloadDirectory()
+            await directory.reloadDirectory()
 
-            expect(store.isReady).to.equal(true)
-            expect(store.totalResults).to.equal(TOTAL_FACILITIES)
+            expect(directory.isReady.value).to.equal(true)
+            expect(directory.totalResults.value).to.equal(TOTAL_FACILITIES)
+        })
+
+        it('aborts the requests in flight when no component needs the directory any more', async () => {
+            graphQLClientRequestWithRetry.mockImplementation(() => new Promise(() => {}))
+            const { unmount } = mount()
+            await vi.waitFor(() => expect(graphQLClientRequestWithRetry.mock.calls.length).to.be.greaterThan(0))
+
+            unmount()
+
+            const signals = graphQLClientRequestWithRetry.mock.calls
+                .map(call => (call[3] as { signal?: AbortSignal }).signal)
+            expect(signals.length).to.be.greaterThan(0)
+            signals.forEach(signal => expect(signal?.aborted).to.equal(true))
         })
     })
 
     describe('filtering', () => {
         it('finds facilities in a city that appears only after the first batch', async () => {
-            const store = useSearchResultsStore()
+            const { directory, store } = mount()
             store.selectedCity = TARGET_CITY
 
-            await store.search()
+            await settled(directory)
 
-            expect(store.totalResults).to.equal(TARGET_CITY_COUNT)
-            store.searchResultsList.forEach(facility => {
+            expect(directory.totalResults.value).to.equal(TARGET_CITY_COUNT)
+            directory.searchResultsList.value.forEach(facility => {
                 expect(facility.contact?.address?.cityEn).to.equal(TARGET_CITY)
             })
         })
 
         it('matches on the Japanese city name as well as the English one', async () => {
-            const store = useSearchResultsStore()
+            const { directory, store } = mount()
             store.selectedCity = '目黒'
 
-            await store.search()
+            await settled(directory)
 
-            expect(store.totalResults).to.equal(TARGET_CITY_COUNT)
+            expect(directory.totalResults.value).to.equal(TARGET_CITY_COUNT)
         })
 
         it('applies filter changes instantly without another request', async () => {
-            const store = useSearchResultsStore()
-            await store.search()
+            const { directory, store } = mount()
+            await settled(directory)
             const requestCount = graphQLClientRequestWithRetry.mock.calls.length
 
             store.selectedPrefecture = 'Tokyo'
-            expect(store.totalResults).to.equal(TOTAL_FACILITIES / 2)
+            expect(directory.totalResults.value).to.equal(TOTAL_FACILITIES / 2)
 
             store.selectedSpecialties = [Specialty.Dentistry]
-            expect(store.totalResults).to.equal(25) // even indices that are multiples of 5 → multiples of 10
+            expect(directory.totalResults.value).to.equal(25) // even indices that are multiples of 5 → multiples of 10
 
             store.selectedLanguages = [Locale.EnUs]
-            store.searchResultsList.forEach(facility => {
+            directory.searchResultsList.value.forEach(facility => {
                 facility.healthcareProfessionals.forEach(professional => {
                     expect(professional.spokenLanguages).to.include(Locale.EnUs)
                     expect(professional.specialties).to.include(Specialty.Dentistry)
@@ -262,51 +333,51 @@ describe('searchResultsStore', () => {
         })
 
         it('resets to the first page when the filters change', async () => {
-            const store = useSearchResultsStore()
-            await store.search()
+            const { directory, store } = mount()
+            await settled(directory)
 
-            store.loadMore()
-            expect(store.paginatedResults).to.have.lengthOf(50)
+            directory.loadMore()
+            expect(directory.paginatedResults.value).to.have.lengthOf(50)
 
             store.selectedPrefecture = 'Osaka'
             await nextTick()
 
-            expect(store.paginatedResults).to.have.lengthOf(25)
+            expect(directory.paginatedResults.value).to.have.lengthOf(25)
         })
 
         it('clears every filter at once', async () => {
-            const store = useSearchResultsStore()
+            const { directory, store } = mount()
             store.selectedCity = TARGET_CITY
             store.selectedSpecialties = [Specialty.Dentistry]
-            await store.search()
+            await settled(directory)
 
             store.clearFilters()
 
-            expect(store.totalResults).to.equal(TOTAL_FACILITIES)
+            expect(directory.totalResults.value).to.equal(TOTAL_FACILITIES)
         })
     })
 
     describe('active facility', () => {
         it('resolves the active facility from the results', async () => {
-            const store = useSearchResultsStore()
-            await store.search()
+            const { directory, store } = mount()
+            await settled(directory)
 
             store.setActiveFacility('facility-3')
 
-            expect(store.activeFacility?.nameEn).to.equal('Clinic 3')
-            expect(store.activeFacility?.healthcareProfessionals).to.have.lengthOf(1)
+            expect(directory.activeFacility.value?.nameEn).to.equal('Clinic 3')
+            expect(directory.activeFacility.value?.healthcareProfessionals).to.have.lengthOf(1)
         })
 
         it('still opens a facility the current filters exclude, showing everyone there', async () => {
-            const store = useSearchResultsStore()
+            const { directory, store } = mount()
             store.selectedSpecialties = [Specialty.Dentistry]
-            await store.search()
+            await settled(directory)
 
             store.setActiveFacility('facility-1') // professional-1 is internal medicine
 
-            expect(store.searchResultsList.some(facility => facility.id === 'facility-1')).to.equal(false)
-            expect(store.activeFacility?.id).to.equal('facility-1')
-            expect(store.activeFacility?.healthcareProfessionals).to.have.lengthOf(1)
+            expect(directory.searchResultsList.value.some(facility => facility.id === 'facility-1')).to.equal(false)
+            expect(directory.activeFacility.value?.id).to.equal('facility-1')
+            expect(directory.activeFacility.value?.healthcareProfessionals).to.have.lengthOf(1)
         })
     })
 })
