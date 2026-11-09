@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request'
 import type { ClinicSite } from '@findadoc/graphql'
-import { gqlClient, graphQLClientRequestWithRetry, initializeGqlClient } from './graphql'
+import { graphQLClientRequestWithRetry, initializeGqlClient, publicReadRequest } from './graphql'
 
 const LOCALE_FIELDS = `
   locale
@@ -82,7 +82,7 @@ export async function fetchClinicSite(slug: string): Promise<ClinicSite | null> 
 
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ clinicSite: ClinicSite | null }>(
-        gqlClient.request.bind(gqlClient),
+        publicReadRequest(),
         clinicSiteQuery,
         { slug },
         { skipAuth: true, retryAmount: 1, abortAfterMs: 8000 }

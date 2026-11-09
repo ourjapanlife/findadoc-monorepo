@@ -9,6 +9,7 @@ const graphQLClientRequestWithRetry = vi.fn()
 
 vi.mock('~/utils/graphql', () => ({
     gqlClient: { request: vi.fn() },
+    publicReadRequest: () => vi.fn(),
     graphQLClientRequestWithRetry: (...args: unknown[]) => graphQLClientRequestWithRetry(...args)
 }))
 

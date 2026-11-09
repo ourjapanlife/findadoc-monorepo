@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/vue-query'
 import type { RequestDocument } from 'graphql-request'
 import type { ServerError } from '~/typedefs/serverResponse'
-import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
+import { gqlClient, graphQLClientRequestWithRetry, publicReadRequest } from '~/utils/graphql'
 
 /**
  * Directory data changes when a moderator approves something, a few times a week (#242).
@@ -76,6 +76,11 @@ export interface QueryRequestOptions {
     skipAuth?: boolean
     /** Abort an attempt that has not responded in this long. */
     abortAfterMs?: number
+    /**
+     * A read on the API's public list: send it as a cacheable GET in the browser (#242).
+     * Implies `skipAuth`.
+     */
+    publicRead?: boolean
 }
 
 /**
@@ -87,11 +92,12 @@ export async function requestQueryData<T>(
     variables: unknown,
     options: QueryRequestOptions = {}
 ): Promise<T> {
+    const { publicRead, ...requestOptions } = options
     const response = await graphQLClientRequestWithRetry<T>(
-        gqlClient.request.bind(gqlClient),
+        publicRead ? publicReadRequest<T>() : gqlClient.request.bind(gqlClient),
         document,
         variables,
-        { ...options, retryAmount: 0 }
+        { ...requestOptions, skipAuth: publicRead === true || requestOptions.skipAuth, retryAmount: 0 }
     )
 
     if (response.hasErrors) {

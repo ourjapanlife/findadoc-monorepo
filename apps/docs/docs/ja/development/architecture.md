@@ -39,6 +39,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **キャッシュ**：`apps/server/src/publicCache.ts`がすべてのレスポンスに`Cache-Control`を付けます（#242）。トークンが送られておらず、ルートフィールドがすべて`PUBLIC_CACHEABLE_QUERY_FIELDS`にあり、エラーがないときだけ`public, max-age=60`になります。それ以外は`private, no-store`です。このリストに加えてよいのは、サインアウトしている訪問者全員に同じ答えを返すフィールドだけです。ユーザー、IP、国、トークン、レート制限を読まないものに限ります。予約、アップロード、モデレーション、ユーザーのフィールドは加えません。`__tests__/publicCache.test.ts`がリストを確認します
 - **CSRF**：Apolloの組み込みチェックは無効にし、`csrfPreventionPlugin`が同じルールを守ります。プリフライトのないリクエスト（フォームのPOSTや、`x-apollo-operation-name`ヘッダーのないGET）が実行できるのは、公開リストにあるクエリだけです。そのため公開の読み込みは、キャッシュできる普通のGETで送れます
 - **参照テーブル**：都道府県と市区町村の一覧は、Lambdaのメモリに10分間置きます（`src/lookupCache.ts`）
+- **エッジ**：APIのCloudFrontディストリビューションは、APIが`public`と付けたGETだけをキャッシュします（`infra/lib/functionUrlEdge.ts`の`cachePublicReads`）。キャッシュキーはクエリ文字列、`Origin`、`Authorization`です。エラーのレスポンスはキャッシュしません。POST、OPTIONS、予約、サインイン中の読み込みは、常にAPIまで届きます。MCPサーバーも読み込みをGETで送るので、同じキャッシュを使います
 
 ### MCPサーバー（`apps/mcp`）
 
@@ -83,6 +84,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - ディレクトリの読み込みは5分間新しいものとして扱います（`DIRECTORY_STALE_TIME_MS`）。それ以外の読み込みはすぐに古くなるので、モデレーションと予約は毎回サーバーに問い合わせます。
 - サインアウトするとキャッシュをすべて消します。サーバーデータはメモリにだけ置き、`localStorage`や`sessionStorage`には書きません。
 - 読み込みはブラウザでだけ行います。プリレンダーされたページは読み込み中の状態で届き、そのあと読み込みます。
+- APIの公開リスト（`PUBLIC_CACHEABLE_QUERY_FIELDS`）にある読み込みは、`apps/web/utils/graphql.ts`の`publicReadRequest()`か、`requestQueryData`の`publicRead: true`で送ります。ブラウザでは、トークンもカスタムヘッダーも付けないGETになり、CloudFrontとブラウザが60秒キャッシュできます。プリレンダーはPOSTのままなので、生成されるHTMLは新しいデータから作られます。ほかの操作をこの方法で送ると、APIは拒否します。
 
 ## 関連資料
 

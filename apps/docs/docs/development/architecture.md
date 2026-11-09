@@ -39,6 +39,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 - **Caching**: `apps/server/src/publicCache.ts` sets `Cache-Control` on every response (#242). A response is `public, max-age=60` only when the caller sent no token, every root field is on `PUBLIC_CACHEABLE_QUERY_FIELDS`, and nothing failed. Everything else is `private, no-store`. Add a field to that list only when its answer is the same for every signed-out visitor: it reads no user, IP, country, token, or rate limit. Booking, upload, moderation, and user fields never go there. `__tests__/publicCache.test.ts` checks the list
 - **CSRF**: Apollo's built-in check is off and `csrfPreventionPlugin` keeps its rule. A request without a preflight (a form post, or a GET with no `x-apollo-operation-name` header) may only run a query on the public list, so a public read can be a plain, cacheable GET
 - **Lookup tables**: prefecture and city lists stay in Lambda memory for 10 minutes (`src/lookupCache.ts`)
+- **Edge**: the API's CloudFront distribution caches a GET only when the API marked it `public` (`infra/lib/functionUrlEdge.ts`, `cachePublicReads`). The cache key is the query string, `Origin`, and `Authorization`. Error responses are never cached. POST, OPTIONS, booking, and signed-in reads always reach the API. The MCP server sends its reads as GET, so they share the cache
 
 ### MCP Server (`apps/mcp`)
 
@@ -82,6 +83,7 @@ The web app is moving its reads to TanStack Query (#242). The search page uses i
 - Directory reads stay fresh for 5 minutes (`DIRECTORY_STALE_TIME_MS`). Every other read is stale at once, so moderation and booking always ask the server again.
 - Sign-out clears the whole cache. Server data stays in memory. It is never written to `localStorage` or `sessionStorage`.
 - Reads run in the browser only. A prerendered page ships its loading state, then loads.
+- A read on the API's public list (`PUBLIC_CACHEABLE_QUERY_FIELDS`) goes through `publicReadRequest()` in `apps/web/utils/graphql.ts`, or `publicRead: true` for `requestQueryData`. In the browser that is a GET with no token and no custom header, which CloudFront and the browser may cache for 60 seconds. A prerender keeps POST, so generated HTML is built from fresh data. Any other operation sent this way is refused by the API.
 
 ## Further Reading
 
