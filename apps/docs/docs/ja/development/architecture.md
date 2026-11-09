@@ -36,6 +36,9 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **スキーマ**：`apps/server/src/typeDefs/schema.graphql`（リポジトリ内で唯一のGraphQLスキーマ）
 - **データベース**：Supabase（PostgreSQL）。マイグレーションは `apps/server/supabase`。APIはSupabaseクライアントではなく、Postgres接続上のKyselyでクエリする
 - **本番環境**：PM2で管理されるDockerコンテナ
+- **キャッシュ**：`apps/server/src/publicCache.ts`がすべてのレスポンスに`Cache-Control`を付けます（#242）。トークンが送られておらず、ルートフィールドがすべて`PUBLIC_CACHEABLE_QUERY_FIELDS`にあり、エラーがないときだけ`public, max-age=60`になります。それ以外は`private, no-store`です。このリストに加えてよいのは、サインアウトしている訪問者全員に同じ答えを返すフィールドだけです。ユーザー、IP、国、トークン、レート制限を読まないものに限ります。予約、アップロード、モデレーション、ユーザーのフィールドは加えません。`__tests__/publicCache.test.ts`がリストを確認します
+- **CSRF**：Apolloの組み込みチェックは無効にし、`csrfPreventionPlugin`が同じルールを守ります。プリフライトのないリクエスト（フォームのPOSTや、`x-apollo-operation-name`ヘッダーのないGET）が実行できるのは、公開リストにあるクエリだけです。そのため公開の読み込みは、キャッシュできる普通のGETで送れます
+- **参照テーブル**：都道府県と市区町村の一覧は、Lambdaのメモリに10分間置きます（`src/lookupCache.ts`）
 
 ### MCPサーバー（`apps/mcp`）
 

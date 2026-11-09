@@ -1,6 +1,7 @@
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import { logger, errorLogFields } from '../logger.js'
+import { createLookupCache } from '../lookupCache.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import type { City, Prefecture } from '@findadoc/graphql'
 
@@ -53,7 +54,16 @@ function cityQuery() {
         ])
 }
 
-export async function listPrefectures(): Promise<Result<Prefecture[]>> {
+// Kept in container memory, so a warm Lambda answers these lists without a query (#242).
+const prefectureLists = createLookupCache<Prefecture[]>()
+const cityLists = createLookupCache<City[]>()
+
+/** Every prefecture, sorted by English name. Served from memory for `LOOKUP_TTL_MS`. */
+export function listPrefectures(): Promise<Result<Prefecture[]>> {
+    return prefectureLists.get('all', loadPrefectures)
+}
+
+async function loadPrefectures(): Promise<Result<Prefecture[]>> {
     try {
         const rows = await db.selectFrom('prefectures')
             .select(['id', 'slug', 'name_en', 'name_ja'])
@@ -79,22 +89,27 @@ export async function listPrefectures(): Promise<Result<Prefecture[]>> {
     }
 }
 
+/** Every city, or one prefecture's, sorted by English name. Served from memory for `LOOKUP_TTL_MS`. */
 export async function listCities(prefecture?: string | null): Promise<Result<City[]>> {
-    try {
-        let prefectureKey: string | undefined
+    let prefectureKey: string | undefined
 
-        if (prefecture?.trim()) {
-            prefectureKey = resolvePrefectureKey(prefecture)
+    if (prefecture?.trim()) {
+        prefectureKey = resolvePrefectureKey(prefecture)
 
-            if (!prefectureKey) {
-                return {
-                    data: [],
-                    hasErrors: true,
-                    errors: [{ field: 'prefecture', errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 }]
-                }
+        if (!prefectureKey) {
+            return {
+                data: [],
+                hasErrors: true,
+                errors: [{ field: 'prefecture', errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 }]
             }
         }
+    }
 
+    return cityLists.get(prefectureKey ?? '', () => loadCities(prefectureKey))
+}
+
+async function loadCities(prefectureKey: string | undefined): Promise<Result<City[]>> {
+    try {
         let query = cityQuery().orderBy('cities.name_en')
 
         if (prefectureKey) {
