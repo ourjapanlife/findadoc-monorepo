@@ -9,11 +9,13 @@ import compressionPlugin from '@fastify/compress'
 import healthcheck from 'fastify-healthcheck'
 import { ApolloServer, GraphQLRequestContext } from '@apollo/server'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
+import { ApolloServerPluginCacheControlDisabled } from '@apollo/server/plugin/disabled'
 import { envVariables } from '../utils/environmentVariables.js'
 import { isAllowedApiOrigin } from './apiCors.js'
 import { apiRateLimitOptions } from './apiRateLimit.js'
 import { buildUserContext, initializeAuth } from './auth.js'
 import { createLoaders, type ApiContext } from './loaders.js'
+import { PREFLIGHT_HEADERS, csrfPreventionPlugin, publicCachePlugin } from './publicCache.js'
 import loadSchema from './schema.js'
 import resolvers from './resolvers.js'
 import { logger } from './logger.js'
@@ -50,9 +52,11 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
                 websiteURL: envVariables.websiteURL()
             }))
         },
-        allowedHeaders: ['content-type', 'authorization'],
+        allowedHeaders: ['content-type', 'authorization', ...PREFLIGHT_HEADERS],
         methods: ['GET', 'HEAD', 'POST', 'PUT', 'OPTIONS'],
-        credentials: true
+        credentials: true,
+        // The browser reuses a preflight answer this long, instead of asking before every request.
+        maxAge: 600
     })
 
     //add rate limiting to prevent abuse
@@ -78,8 +82,14 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
         resolvers,
         //allows the sandbox to be used in production as well as locally
         introspection: true,
+        // csrfPreventionPlugin keeps Apollo's rule, except that a public read needs no preflight (#242).
+        csrfPrevention: false,
         plugins: [
             fastifyApolloDrainPlugin(fastify),
+            // Cache-Control comes from publicCachePlugin's root-field list, not from schema hints (#242).
+            ApolloServerPluginCacheControlDisabled(),
+            csrfPreventionPlugin(),
+            publicCachePlugin(),
             //enables the apollo sandbox as the landing page
             ApolloServerPluginLandingPageLocalDefault(),
             {
