@@ -1,7 +1,7 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import {
     hasUsableMapPin,
@@ -344,7 +344,7 @@ export async function getFacilityByGooglePlaceId(
 
         return { data: facility.data, hasErrors: false }
     } catch (error) {
-        logger.error(`ERROR: Error retrieving facility by place id: ${error}`)
+        logger.error('ERROR: Error retrieving facility by place id', errorLogFields(error))
         return {
             data: null,
             hasErrors: true,
@@ -406,7 +406,7 @@ export async function getFacilityMatchingMapsUrl(
         }
         return { data: facility.data, hasErrors: false }
     } catch (error) {
-        logger.error(`ERROR: Error matching facility from maps url: ${error}`)
+        logger.error('ERROR: Error matching facility from maps url', errorLogFields(error))
         return {
             data: null,
             hasErrors: true,
@@ -478,7 +478,7 @@ export const getFacilityById = async (
             hasErrors: false
         }
     } catch (error) {
-        logger.error(`ERROR: Error retrieving facility by id: ${error}`)
+        logger.error('ERROR: Error retrieving facility by id', errorLogFields(error))
         return {
             data: {} as gqlTypes.Facility,
             hasErrors: true,
@@ -743,7 +743,7 @@ export async function createFacility(
         // - gqlFacility is a plain JavaScript object (safe for GraphQL)
         // - All three operations (insert, relations, audit) succeeded atomically
 
-        logger.info(`\nDB-CREATE: CREATE facility ${gqlFacility.id}.\nEntity: ${JSON.stringify(gqlFacility)}`)
+        logger.info(`DB-CREATE: CREATE facility ${gqlFacility.id}.`)
 
         return {
             data: gqlFacility,
@@ -753,7 +753,7 @@ export async function createFacility(
         // If we reach here, the transaction was automatically rolled back
         // No manual cleanup needed - PostgreSQL guarantees consistency
         // The database state is exactly as it was before the transaction started
-        logger.error(`ERROR: Error creating facility: ${error}`)
+        logger.error('ERROR: Error creating facility', errorLogFields(error))
 
         return {
             data: {} as gqlTypes.Facility,
@@ -825,7 +825,7 @@ export async function searchFacilities(
 
         return { data: paginationRows.map(row => facilityFromRow(row)), hasErrors: false }
     } catch (err) {
-        logger.error(`ERROR: searchFacilities ${JSON.stringify(filters)} -> ${err}`)
+        logger.error('ERROR: searchFacilities', { ...errorLogFields(err), filterKeys: Object.keys(filters) })
         return {
             data: [],
             hasErrors: true,
@@ -877,7 +877,7 @@ export async function countFacilities(
 
         return { data: Number(count), hasErrors: false }
     } catch (err) {
-        logger.error(`ERROR: countFacilities ${JSON.stringify(filters)} -> ${err}`)
+        logger.error('ERROR: countFacilities', { ...errorLogFields(err), filterKeys: Object.keys(filters) })
         return {
             data: 0,
             hasErrors: true,
@@ -1185,7 +1185,7 @@ export const updateFacility = async (
             }
         }
 
-        logger.error(`ERROR: Error updating facility ${facilityId}: ${error}`)
+        logger.error(`ERROR: Error updating facility ${facilityId}`, errorLogFields(error))
         return {
             data: {} as gqlTypes.Facility,
             hasErrors: true,
@@ -1407,7 +1407,7 @@ export async function deleteFacility(
             }
         }
 
-        logger.error(`ERROR: Error deleting facility ${id}: ${error}`)
+        logger.error(`ERROR: Error deleting facility ${id}`, errorLogFields(error))
 
         return {
             data: { isSuccessful: false },
@@ -1448,7 +1448,7 @@ export async function listPublishedCityFacilities(
 
         return { data: rows.map(row => facilityFromRow(row)), hasErrors: false }
     } catch (error) {
-        logger.error(`ERROR: listPublishedCityFacilities ${error}`)
+        logger.error('ERROR: listPublishedCityFacilities', errorLogFields(error))
         return {
             data: [],
             hasErrors: true,

@@ -137,11 +137,13 @@ async function runSeed() {
                 `INSERT INTO submissions (
                     id, status, created_date, updated_date, hps_id, facilities_id,
                     google_maps_url, healthcare_professional_name, spoken_languages,
-                    notes, facility_partial, healthcare_professionals_partial, firestore_id
+                    notes, facility_partial, healthcare_professionals_partial, firestore_id,
+                    retain_until
                 ) VALUES (
                     $1, $2, $3, $4, $5, $6,
                     $7, $8, $9::jsonb,
-                    $10, $11::jsonb, $12::jsonb, $13
+                    $10, $11::jsonb, $12::jsonb, $13,
+                    $14
                 )`,
                 [
                     submission.id,
@@ -156,7 +158,8 @@ async function runSeed() {
                     submission.notes,
                     JSON.stringify(submission.facility_partial),
                     JSON.stringify(submission.healthcare_professionals_partial),
-                    submission.firestore_id
+                    submission.firestore_id,
+                    submission.retain_until
                 ]
             )
         }

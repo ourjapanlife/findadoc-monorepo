@@ -195,7 +195,7 @@
   "privacyPage": {
     "heading": "Kebijakan Privasi",
     "subheading": "Data apa yang kami kumpulkan, mengapa kami mengumpulkannya, dengan siapa kami membagikannya, dan cara menghubungi kami tentang informasi Anda.",
-    "date": "Tanggal berlaku: 8 November 2026",
+    "date": "Tanggal berlaku: 9 November 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Siapa kami",
@@ -223,7 +223,8 @@
       "retention": {
         "heading": "5. Berapa lama kami menyimpannya",
         "p1": "Foto kartu asuransi dan dokumen identitas lain yang diunggah bersama reservasi dihapus 30 hari setelah diunggah. File reservasi lainnya dihapus setelah satu tahun, dan file dari reservasi yang tidak pernah dikirim dihapus setelah 24 jam.",
-        "p2": "Jawaban reservasi Anda, seperti nama, kontak, tanggal lahir, dan alasan kunjungan, dihapus 90 hari setelah janji temu selesai. Jika janji temu dibatalkan atau klinik menolak permintaan, jawaban langsung dihapus. Jawaban untuk permintaan tanpa waktu janji temu dihapus 90 hari setelah dikirim, dan catatan yang diberikan saat pembatalan dihapus 90 hari setelah waktu janji temu. Setelah itu, kami menyimpan permintaan tanpa jawaban tersebut: klinik, dokter dan layanan, bahasa yang Anda minta, bahasa situs yang Anda gunakan, waktu dan status janji temu, serta tanggal (misalnya kapan Anda memberi persetujuan). Klinik menyimpan rekam medisnya sendiri sesuai kewajiban hukumnya sendiri. Informasi akun disimpan selama akun masih aktif. Anda dapat meminta kami menghapus informasi Anda lebih awal (bagian 8)."
+        "p2": "Jawaban reservasi Anda, seperti nama, kontak, tanggal lahir, dan alasan kunjungan, dihapus 90 hari setelah janji temu selesai. Jika janji temu dibatalkan atau klinik menolak permintaan, jawaban langsung dihapus. Jawaban untuk permintaan tanpa waktu janji temu dihapus 90 hari setelah dikirim, dan catatan yang diberikan saat pembatalan atau penolakan dihapus 90 hari setelah catatan itu diberikan, atau 90 hari setelah waktu janji temu jika itu lebih awal. Setelah itu, kami menyimpan permintaan tanpa jawaban tersebut: klinik, dokter dan layanan, bahasa yang Anda minta, bahasa situs yang Anda gunakan, waktu dan status janji temu, serta tanggal (misalnya kapan Anda memberi persetujuan). Klinik menyimpan rekam medisnya sendiri sesuai kewajiban hukumnya sendiri. Informasi akun disimpan selama akun masih aktif. Anda dapat meminta kami menghapus informasi Anda lebih awal (bagian 8).",
+        "p3": "Catatan yang Anda tambahkan saat mengusulkan klinik atau dokter dihapus 180 hari setelah moderator menyetujui atau menolak usulan tersebut. Jika tidak ada keputusan, catatan dihapus satu tahun setelah dikirim. Bagian lain dari usulan, seperti informasi klinik dan dokter, tetap disimpan."
       },
       "cookies": {
         "heading": "6. Cookie dan pengukuran iklan",
@@ -1027,6 +1028,7 @@
     "actionFailed": "Janji temu ini tidak dapat diperbarui. Mungkin sudah berubah; status terbaru ditampilkan.",
     "reasonLabel": "Catatan untuk pasien (opsional, dikirim bersama penolakan atau pembatalan)",
     "reasonShown": "Catatan: {reason}",
+    "reasonRemoved": "Catatan dihapus setelah masa penyimpanan berakhir.",
     "cancelledByPatient": "Dibatalkan oleh pasien",
     "cancelledByClinic": "Dibatalkan oleh klinik",
     "appointmentStatus": {

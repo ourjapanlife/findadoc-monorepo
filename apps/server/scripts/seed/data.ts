@@ -10,6 +10,7 @@ import {
 } from '@findadoc/graphql'
 import { CLINICAL_LICENSES } from '@findadoc/utils'
 import { licenseColumnsForDegrees } from '../../src/licenses/professionalLicense.js'
+import { submissionRetainUntil } from '../../src/submissions/notesRetention.js'
 import { prefectureTranslations } from '../../utils/japanesePrefectures.js'
 import { showcaseClinicFacility } from './clinicSiteContent.js'
 import { validateSeed, type SeedFile } from './schema.js'
@@ -255,7 +256,8 @@ function buildSeed(): SeedFile {
                 additionalInfoForPatients: faker.lorem.sentence(),
                 facilityIds: linked ? [facilityId] : []
             }],
-            firestore_id: null
+            firestore_id: null,
+            retain_until: submissionRetainUntil(status, created, new Date(created))
         })
     }
 

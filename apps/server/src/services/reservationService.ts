@@ -1,6 +1,6 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import * as userService from './userService.js'
 
 // temporarily using in-memory database for testing reservation service before using Supabase
@@ -24,7 +24,7 @@ export async function getReservationById(id: string)
             hasErrors: false
         }
     } catch (error) {
-        logger.error(`ERROR: Error getting user by id: ${error}`)
+        logger.error('ERROR: Error getting user by id', errorLogFields(error))
 
         return {
             data: {} as gqlTypes.Reservation,
@@ -74,7 +74,7 @@ export async function createReservation(
             hasErrors: false
         }
     } catch (error) {
-        logger.error(`ERROR: Error creating reservation: ${error}`)
+        logger.error('ERROR: Error creating reservation', errorLogFields(error))
 
         return {
             data: {} as gqlTypes.Reservation,

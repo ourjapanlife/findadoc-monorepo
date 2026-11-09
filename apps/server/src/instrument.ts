@@ -5,12 +5,26 @@ import { envVariables } from '../utils/environmentVariables.js'
 
 const dsn = envVariables.sentryDsn()
 
+/** Drops the request body, query string, and cookies from an event before it leaves. */
+function withoutRequestData<T extends Sentry.Event>(event: T): T {
+    if (event.request !== undefined) {
+        delete event.request.data
+        delete event.request.query_string
+        delete event.request.cookies
+    }
+    return event
+}
+
 if (dsn) {
     Sentry.init({
         dsn,
         environment: envVariables.sentryEnvironment(),
         tracesSampleRate: envVariables.sentryTracesSampleRate(),
-        sendDefaultPii: false
+        sendDefaultPii: false,
+        // A request body is a GraphQL document with its variables, and a query string can
+        // carry the same. Neither goes to Sentry (#236).
+        beforeSend: withoutRequestData,
+        beforeSendTransaction: withoutRequestData
     })
     // eslint-disable-next-line no-console
     console.log('🛰️  Sentry initialized')

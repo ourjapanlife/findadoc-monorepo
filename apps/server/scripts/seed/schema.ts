@@ -127,6 +127,7 @@ export type SubmissionSeed = {
     facility_partial: FacilitySubmissionSeed | null
     healthcare_professionals_partial: HpSubmissionSeed[] | null
     firestore_id: string | null
+    retain_until: string | null
 }
 
 export type RelationSeed = {

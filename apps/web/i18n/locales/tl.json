@@ -121,7 +121,7 @@
   "privacyPage": {
     "heading": "Patakaran sa Privacy",
     "subheading": "Ano ang kinokolekta namin, bakit, kanino namin ito ibinabahagi, at paano kami makakausap tungkol sa iyong impormasyon.",
-    "date": "Petsa ng bisa: Nobyembre 8, 2026",
+    "date": "Petsa ng bisa: Nobyembre 9, 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Sino kami",
@@ -149,7 +149,8 @@
       "retention": {
         "heading": "5. Gaano katagal namin ito itinatago",
         "p1": "Binubura ang mga larawan ng insurance card at iba pang identity document na na-upload kasama ng booking 30 araw matapos i-upload. Binubura ang iba pang file ng booking pagkalipas ng isang taon, at ang mga file mula sa booking na hindi naipadala ay binubura pagkalipas ng 24 oras.",
-        "p2": "Binubura ang mga sagot mo sa booking, gaya ng pangalan, contact details, petsa ng kapanganakan, at dahilan ng pagbisita, 90 araw matapos ang appointment. Kapag kinansela ang appointment o tinanggihan ng klinika ang request, binubura agad ang mga ito. Ang mga sagot sa request na walang oras ng appointment ay binubura 90 araw matapos itong ipadala, at ang tala na kasama ng pagkansela ay binubura 90 araw matapos ang oras ng appointment. Pagkatapos nito, itinatago namin ang request nang wala ang mga sagot na iyon: ang klinika, ang doktor at serbisyo, ang mga wikang hiniling mo, ang wika ng site na ginamit mo, ang oras at status ng appointment, at mga petsa (gaya ng kung kailan ka pumayag). Ang klinika ang nagtatago ng sarili nitong medical records ayon sa sarili nitong mga legal na tungkulin. Itinatago ang impormasyon ng account habang aktibo ang account. Maaari mong hilinging burahin namin nang mas maaga ang iyong impormasyon (seksyon 8)."
+        "p2": "Binubura ang mga sagot mo sa booking, gaya ng pangalan, contact details, petsa ng kapanganakan, at dahilan ng pagbisita, 90 araw matapos ang appointment. Kapag kinansela ang appointment o tinanggihan ng klinika ang request, binubura agad ang mga ito. Ang mga sagot sa request na walang oras ng appointment ay binubura 90 araw matapos itong ipadala, at ang tala na kasama ng pagkansela o pagtanggi ay binubura 90 araw matapos itong ibigay, o 90 araw matapos ang oras ng appointment kung mas maaga iyon. Pagkatapos nito, itinatago namin ang request nang wala ang mga sagot na iyon: ang klinika, ang doktor at serbisyo, ang mga wikang hiniling mo, ang wika ng site na ginamit mo, ang oras at status ng appointment, at mga petsa (gaya ng kung kailan ka pumayag). Ang klinika ang nagtatago ng sarili nitong medical records ayon sa sarili nitong mga legal na tungkulin. Itinatago ang impormasyon ng account habang aktibo ang account. Maaari mong hilinging burahin namin nang mas maaga ang iyong impormasyon (seksyon 8).",
+        "p3": "Ang mga tala na idinagdag mo sa pagmumungkahi ng klinika o doktor ay binubura 180 araw matapos aprubahan o tanggihan ng moderator ang mungkahi. Kung walang desisyon, binubura ang mga ito isang taon matapos ipadala. Nananatili ang iba pang bahagi ng mungkahi, gaya ng impormasyon ng klinika at doktor."
       },
       "cookies": {
         "heading": "6. Mga Cookie at Pagsukat ng Advertising",
@@ -1027,6 +1028,7 @@
     "actionFailed": "Hindi ma-update ang appointment na ito. Maaaring nagbago ito; ipinapakita ang pinakabagong katayuan.",
     "reasonLabel": "Paalala para sa pasyente (opsyonal, ipinapadala kapag tinanggihan o kinansela)",
     "reasonShown": "Paalala: {reason}",
+    "reasonRemoved": "Inalis ang paalala pagkatapos ng panahon ng pag-iingat.",
     "cancelledByPatient": "Kinansela ng pasyente",
     "cancelledByClinic": "Kinansela ng klinika",
     "appointmentStatus": {

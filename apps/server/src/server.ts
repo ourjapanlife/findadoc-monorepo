@@ -89,7 +89,7 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
 
                     return {
                         // One line per request: which operation, how long, and whether it failed.
-                        // The query text and variables stay out of the logs. Sentry gets them on errors.
+                        // The query text and variables stay out of the logs and out of Sentry (#236).
                         // searchFailed drives the search-failure alarm (a metric filter on this line).
                         async willSendResponse(ctx) {
                             //we want to skip logging requests from the apollo query explorer internal introspection query
@@ -113,12 +113,14 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
                                 if (!isServerError(err)) {
                                     continue
                                 }
+                                // Variables hold patient answers, notes, and emails, and a query can
+                                // inline them as literals. Sentry gets the operation and the variable
+                                // names only (#236).
                                 Sentry.captureException(err, {
                                     tags: { source: 'graphql' },
                                     extra: {
                                         operationName: ctx.request.operationName,
-                                        query: ctx.request.query,
-                                        variables: ctx.request.variables
+                                        variableNames: Object.keys(ctx.request.variables ?? {})
                                     }
                                 })
                             }

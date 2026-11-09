@@ -139,6 +139,8 @@ export interface SubmissionsTable {
     healthcare_professionals_partial: ColumnType<gqlTypes.HealthcareProfessionalSubmission[]
         | null, gqlTypes.HealthcareProfessionalSubmission[] | null, gqlTypes.HealthcareProfessionalSubmission[] | null>
     firestore_id: string | null
+    /** When the daily purge clears notes (#236): 365 days after submit, 180 after a decision. */
+    retain_until: ColumnType<string | null, string | null | undefined, string | null>
 }
 
 /**
@@ -406,6 +408,8 @@ export interface BookingAppointmentsTable {
     status_changed_by: string | null
     cancelled_by: string | null
     status_reason: string | null
+    /** When the daily purge cleared status_reason (#236). Null: not cleared. */
+    status_reason_purged_at: ColumnType<string | null, string | null | undefined, string | null>
     created_date: Generated<string>
     updated_date: Generated<string>
 }

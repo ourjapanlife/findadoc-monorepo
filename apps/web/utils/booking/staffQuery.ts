@@ -65,6 +65,7 @@ const BOOKING_DETAIL_FIELDS = `
   ${BOOKING_SUBMISSION_FIELDS}
   cancelledBy
   statusReason
+  statusReasonPurgedAt
   practitionerId
   practitionerNames { firstName middleName lastName locale }
   spokenLanguages

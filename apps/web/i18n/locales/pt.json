@@ -121,7 +121,7 @@
   "privacyPage": {
     "heading": "Política de Privacidade",
     "subheading": "O que coletamos, por que coletamos, com quem compartilhamos e como falar conosco sobre suas informações.",
-    "date": "Data de vigência: 8 de novembro de 2026",
+    "date": "Data de vigência: 9 de novembro de 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Quem somos",
@@ -149,7 +149,8 @@
       "retention": {
         "heading": "5. Por quanto tempo guardamos",
         "p1": "Fotos de cartões de seguro e outros documentos de identidade enviados com um agendamento são excluídas 30 dias após o envio. Outros arquivos de agendamento são excluídos após um ano, e arquivos de um agendamento que nunca foi enviado são excluídos após 24 horas.",
-        "p2": "Suas respostas no agendamento, como nome, contatos, data de nascimento e motivo da consulta, são excluídas 90 dias depois do fim da consulta. Se a consulta for cancelada ou a clínica recusar o pedido, elas são excluídas na hora. As respostas de um pedido sem horário marcado são excluídas 90 dias depois do envio, e uma observação deixada num cancelamento, 90 dias depois do horário da consulta. Depois disso, guardamos o pedido sem essas respostas: a clínica, o médico e o serviço, os idiomas que você pediu, o idioma do site que você usou, o horário e a situação da consulta e as datas (por exemplo, quando você deu consentimento). A clínica guarda os próprios prontuários conforme as próprias obrigações legais. Informações de conta são guardadas enquanto a conta estiver ativa. Você pode pedir que excluamos suas informações antes (seção 8)."
+        "p2": "Suas respostas no agendamento, como nome, contatos, data de nascimento e motivo da consulta, são excluídas 90 dias depois do fim da consulta. Se a consulta for cancelada ou a clínica recusar o pedido, elas são excluídas na hora. As respostas de um pedido sem horário marcado são excluídas 90 dias depois do envio, e uma observação deixada num cancelamento ou numa recusa, 90 dias depois do cancelamento ou da recusa, ou 90 dias depois do horário da consulta, se isso vier antes. Depois disso, guardamos o pedido sem essas respostas: a clínica, o médico e o serviço, os idiomas que você pediu, o idioma do site que você usou, o horário e a situação da consulta e as datas (por exemplo, quando você deu consentimento). A clínica guarda os próprios prontuários conforme as próprias obrigações legais. Informações de conta são guardadas enquanto a conta estiver ativa. Você pode pedir que excluamos suas informações antes (seção 8).",
+        "p3": "As observações que você adiciona ao sugerir uma clínica ou um médico são excluídas 180 dias depois que um moderador aprova ou recusa a sugestão. Se não houver decisão, elas são excluídas um ano depois do envio. O restante da sugestão, como os dados da clínica e do médico, é mantido."
       },
       "cookies": {
         "heading": "6. Cookies e medição de publicidade",
@@ -1027,6 +1028,7 @@
     "actionFailed": "Não foi possível atualizar esta consulta. Ela pode ter mudado; o status mais recente está sendo exibido.",
     "reasonLabel": "Observação para o paciente (opcional, enviada ao recusar ou cancelar)",
     "reasonShown": "Observação: {reason}",
+    "reasonRemoved": "Observação removida após o período de retenção.",
     "cancelledByPatient": "Cancelada pelo paciente",
     "cancelledByClinic": "Cancelada pela clínica",
     "appointmentStatus": {

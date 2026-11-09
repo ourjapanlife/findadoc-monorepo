@@ -2,7 +2,7 @@ import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
 import { validateProfessionalsSearchInput, validateUpdateProfessionalInput, validateCreateProfessionalInput } from '../validation/validationHealthcareProfessional.js'
 import { validateIdInput } from '../validation/validateFacility.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import { db } from '../kyselyClient.js'
 import { sql } from 'kysely'
@@ -212,7 +212,7 @@ export async function getHealthcareProfessionalById(
             hasErrors: false
         }
     } catch (error) {
-        logger.error(`ERROR: Error retrieving healthcareProfessional by id ${id}: ${error}`)
+        logger.error(`ERROR: Error retrieving healthcareProfessional by id ${id}`, errorLogFields(error))
 
         return {
             data: {} as gqlTypes.HealthcareProfessional,
@@ -285,7 +285,7 @@ export async function searchProfessionals(
 
         return { data: result, hasErrors: false }
     } catch (err) {
-        logger.error(`ERROR: searchProfessionals ${JSON.stringify(filters)} -> ${err instanceof Error ? err.message : JSON.stringify(err)}`)
+        logger.error('ERROR: searchProfessionals', { ...errorLogFields(err), filterKeys: Object.keys(filters) })
         return {
             data: [],
             hasErrors: true,
@@ -326,7 +326,7 @@ export async function countProfessionals(
 
         return { data: Number(count), hasErrors: false }
     } catch (err) {
-        logger.error(`ERROR: countProfessionals ${JSON.stringify(filters)} -> ${err}`)
+        logger.error('ERROR: countProfessionals', { ...errorLogFields(err), filterKeys: Object.keys(filters) })
         return {
             data: 0,
             hasErrors: true,
@@ -458,7 +458,7 @@ export async function createHealthcareProfessional(
     } catch (error) {
         // Transaction was automatically rolled back
         // No HP, no relations, no audit log were created
-        logger.error(`ERROR: Error creating healthcare professional: ${error}`)
+        logger.error('ERROR: Error creating healthcare professional', errorLogFields(error))
 
         return {
             data: {} as gqlTypes.HealthcareProfessional,
@@ -653,7 +653,7 @@ export const updateHealthcareProfessional = async (
         }
 
         // Generic error
-        logger.error(`ERROR: Error updating healthcareProfessional ${id}: ${error}`)
+        logger.error(`ERROR: Error updating healthcareProfessional ${id}`, errorLogFields(error))
         return {
             data: {} as gqlTypes.HealthcareProfessional,
             hasErrors: true,
@@ -764,7 +764,7 @@ export async function deleteHealthcareProfessional(
         }
 
         // Generic error
-        logger.error(`ERROR: Error deleting professional ${id}: ${error}`)
+        logger.error(`ERROR: Error deleting professional ${id}`, errorLogFields(error))
         return {
             data: { isSuccessful: false },
             hasErrors: true,
@@ -893,7 +893,7 @@ export async function updateHealthcareProfessionalsWithFacilityIdChanges(
         }
 
         // Generic error
-        logger.error(`Error updating healthcareProfessional facilityId list: ${error}`)
+        logger.error('Error updating healthcareProfessional facilityId list', errorLogFields(error))
         return {
             data: undefined,
             hasErrors: true,

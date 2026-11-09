@@ -1,6 +1,6 @@
 import { envVariables } from '../../utils/environmentVariables.js'
 import { ErrorCode, Result } from '../result.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 import type { City, CitySuggestion } from '@findadoc/graphql'
 import { matchCitySuggestion } from '../places/matchCitySuggestion.js'
 import {
@@ -65,7 +65,7 @@ export async function suggestCities(input: string): Promise<Result<CitySuggestio
 
         return { data: suggestions, hasErrors: false }
     } catch (error) {
-        logger.error(`ERROR: suggestCities ${error}`)
+        logger.error('ERROR: suggestCities', errorLogFields(error))
         return placesError('suggestCities')
     }
 }
@@ -122,7 +122,7 @@ export async function recordCityPlaceId(cityId: string, placeId: string): Promis
         const city = await setCityPlaceId(cityId, normalized, checkedAt)
         return { data: city, hasErrors: false }
     } catch (error) {
-        logger.error(`ERROR: recordCityPlaceId ${error}`)
+        logger.error('ERROR: recordCityPlaceId', errorLogFields(error))
         return placesError('recordCityPlaceId')
     }
 }
@@ -145,7 +145,7 @@ async function refreshStoredPlaceId(record: CityPlaceRecord, apiKey: string): Pr
             )
         }
     } catch (error) {
-        logger.error(`ERROR: refreshStoredPlaceId ${error}`)
+        logger.error('ERROR: refreshStoredPlaceId', errorLogFields(error))
     }
 }
 

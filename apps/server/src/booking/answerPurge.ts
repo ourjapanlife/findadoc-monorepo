@@ -1,4 +1,4 @@
-import { sql, type Kysely } from 'kysely'
+import { sql, type ExpressionBuilder, type Kysely } from 'kysely'
 import { db } from '../kyselyClient.js'
 import type { Database } from '../typeDefs/kyselyTypes.js'
 import { asJsonb } from '../../utils/dbUtils.js'
@@ -36,7 +36,7 @@ export type BookingAnswerPurgeResult = {
     // Submissions whose answers were due when the run started.
     answersDue: number
     answersErased: number
-    // Cancel and decline notes cleared because the visit time is past the retention period.
+    // Cancel and decline notes cleared: the visit, or the cancel or decline, is past the period.
     reasonsCleared: number
     // Still due after the run. Always `answersDue` on a dry-run.
     answersOverdue: number
@@ -69,6 +69,25 @@ async function countDue(cutoffIso: string): Promise<number> {
     return Number(row.count)
 }
 
+/**
+ * Cancel and decline notes past the rule (#236). The note can be the patient's own words,
+ * so it goes 90 days after the visit, like the answers. A cancel or decline keeps it 90
+ * days after the status change, so staff can still read why; it is written in that call,
+ * so that call does not clear it.
+ */
+function reasonPastRule(cutoffIso: string) {
+    return (eb: ExpressionBuilder<Database, 'booking_appointments'>) => eb.and([
+        eb('status_reason', 'is not', null),
+        eb.or([
+            eb('ends_at', '<=', cutoffIso),
+            eb.and([
+                eb('status', 'in', CLOSED_STATUSES),
+                eb('status_changed_at', '<=', cutoffIso)
+            ])
+        ])
+    ])
+}
+
 /** The cutoff the daily purge uses: the retention period before `now`. */
 export function answerCutoff(now: Date): Date {
     return new Date(now.getTime() - answerRetentionDays() * DAY_MS)
@@ -85,8 +104,7 @@ export async function purgeExpiredBookingAnswers(options: {
     if (!options.write) {
         const reasons = await db.selectFrom('booking_appointments')
             .select(eb => eb.fn.countAll<string>().as('count'))
-            .where('status_reason', 'is not', null)
-            .where('ends_at', '<=', cutoffIso)
+            .where(reasonPastRule(cutoffIso))
             .executeTakeFirstOrThrow()
         return { answersDue, answersErased: 0, reasonsCleared: Number(reasons.count), answersOverdue: answersDue }
     }
@@ -97,11 +115,9 @@ export async function purgeExpiredBookingAnswers(options: {
         .where('answers_purged_at', 'is', null)
         .executeTakeFirst()
 
-    // A patient's cancel reason is their own words, so it goes at the same point.
     const cleared = await db.updateTable('booking_appointments')
-        .set({ status_reason: null })
-        .where('status_reason', 'is not', null)
-        .where('ends_at', '<=', cutoffIso)
+        .set({ status_reason: null, status_reason_purged_at: sql`now()` })
+        .where(reasonPastRule(cutoffIso))
         .executeTakeFirst()
 
     return {

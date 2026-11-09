@@ -180,6 +180,7 @@ export async function updateAppointmentStatus(
                 status_changed_at: sql`now()`,
                 status_changed_by: actorSub ?? null,
                 status_reason: reason,
+                status_reason_purged_at: null,
                 cancelled_by: next === APPOINTMENT_STATUS.CANCELLED ? CANCELLED_BY.CLINIC : null,
                 updated_date: sql`now()`
             })
@@ -293,6 +294,7 @@ export async function cancelBookingByToken(input: CancelBookingByTokenInput): Pr
                 status_changed_at: sql`now()`,
                 status_changed_by: null,
                 status_reason: reason,
+                status_reason_purged_at: null,
                 cancelled_by: CANCELLED_BY.PATIENT,
                 updated_date: sql`now()`
             })

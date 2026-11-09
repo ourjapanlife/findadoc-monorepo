@@ -2,7 +2,7 @@ import { Kysely, PostgresDialect } from 'kysely'
 import { Signer } from '@aws-sdk/rds-signer'
 import { Pool, types, type PoolConfig } from 'pg'
 import type { Database } from './typeDefs/kyselyTypes.js'
-import { logger } from './logger.js'
+import { logger, errorLogFields } from './logger.js'
 import { envVariables } from '../utils/environmentVariables.js'
 
 let pool: Pool | null = null
@@ -98,7 +98,7 @@ export async function initializeKyselyClient(): Promise<void> {
  * Without this handler, pool errors could crash the entire application.
  */
     pool.on('error', err => {
-        logger.error('Unexpected error on idle PostgreSQL client', err)
+        logger.error('Unexpected error on idle PostgreSQL client', errorLogFields(err))
     })
 
     // Create Kysely instance
@@ -118,7 +118,7 @@ export async function initializeKyselyClient(): Promise<void> {
     
         logger.info('✅ Kysely client initialized and connected successfully!')
     } catch (error) {
-        logger.error('❌ Kysely connection test failed:', error)
+        logger.error('❌ Kysely connection test failed', errorLogFields(error))
 
         const failedClient = kyselyInstance
         const failedPool = pool
@@ -184,7 +184,7 @@ export async function closeDatabase(): Promise<void> {
         await client.destroy()
         logger.info('✅ Database connection pool closed successfully')
     } catch (error) {
-        logger.error('Error closing database connection pool:', error)
+        logger.error('Error closing database connection pool', errorLogFields(error))
         throw error
     }
 }
@@ -208,7 +208,7 @@ export async function checkDatabaseHealth(): Promise<boolean> {
         await kyselyInstance.selectFrom('facilities').select('id').limit(1).execute()
         return true
     } catch (error) {
-        logger.error('Database health check failed:', error)
+        logger.error('Database health check failed', errorLogFields(error))
         return false
     }
 }

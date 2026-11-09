@@ -3,7 +3,7 @@ import { GraphQLError, type GraphQLResolveInfo } from 'graphql'
 import fastifyJwt from '@fastify/jwt'
 import buildGetJwks from 'get-jwks'
 
-import { logger } from './logger.js'
+import { logger, errorLogFields } from './logger.js'
 import { clientIpFrom, viewerCountryFrom } from '@findadoc/utils'
 import { envVariables } from '../utils/environmentVariables.js'
 // import { envVariables } from '../utils/environmentVariables.js'
@@ -224,7 +224,8 @@ export function authorize(user: User, requiredScopes: Scope[]): boolean {
 
         return hasRequiredScopes
     } catch (err) {
-        logger.error('Error parsing user object. Have we updated roles in Auth0 that don\'t match our required scopes above?:', err)
+        // Have we updated roles in Auth0 that don't match our required scopes?
+        logger.error('Error parsing user object', errorLogFields(err))
         return false
     }
 }
@@ -387,7 +388,7 @@ export async function initializeAuth(fastify: FastifyInstance) {
                 return
             } catch (err) {
                 // Token is invalid
-                logger.error('Invalid token:', err) 
+                logger.error('Invalid token', errorLogFields(err)) 
                 return
             }
         }

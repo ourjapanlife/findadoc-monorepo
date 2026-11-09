@@ -1,7 +1,7 @@
 import { sendTransactionalEmail } from '../email/sesClient.js'
 import type { BookingEmail } from './emailCopy.js'
 import { db } from '../kyselyClient.js'
-import { logger } from '../logger.js'
+import { logger, errorLogFields } from '../logger.js'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -56,7 +56,7 @@ export async function sendBookingNotice(input: {
         })
         return true
     } catch (error) {
-        logger.error(`Booking notice failed for ${input.bookingId}: ${String(error)}`)
+        logger.error(`Booking notice failed for ${input.bookingId}`, errorLogFields(error))
         return false
     }
 }

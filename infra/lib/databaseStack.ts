@@ -72,7 +72,13 @@ export class DatabaseStack extends Stack {
             caCertificate: CaCertificate.RDS_CA_RSA2048_G1,
             parameterGroup: new ParameterGroup(this, 'Parameters', {
                 engine,
-                parameters: { 'rds.force_ssl': '1' },
+                parameters: {
+                    'rds.force_ssl': '1',
+                    // A constraint error's DETAIL line ("Failing row contains ...") repeats the
+                    // row, which can be a patient's answers or a visitor's note. Terse logs leave
+                    // DETAIL out of the exported postgresql log (#236). Dynamic: no reboot.
+                    'log_error_verbosity': 'terse'
+                },
             }),
             backupRetention: Duration.days(7),
             preferredBackupWindow: '18:00-18:30', // 03:00-03:30 in Japan

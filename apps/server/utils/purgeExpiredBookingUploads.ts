@@ -3,14 +3,16 @@ import { closeDatabase, db, initializeKyselyClient } from '../src/kyselyClient.j
 import { initializeLogger } from '../src/logger.js'
 import { purgeExpiredBookingAnswers } from '../src/booking/answerPurge.js'
 import { purgeBookingUpload } from '../src/booking/uploadPurge.js'
+import { purgeExpiredSubmissionNotes } from '../src/submissions/notesPurge.js'
 import { deleteBookingObject } from '../src/storage/objectStorage.js'
 
 /**
  * Delete booking upload objects whose retain_until has passed.
  * Identity documents (insurance proofs and the patient's photo) default to 30 days.
  * Dry-run unless `--write` is passed. Run directly, it also erases booking answers
- * past the answer retention rule (src/booking/answerPurge.ts, #212), as the daily
- * Lambda does.
+ * past the answer retention rule (src/booking/answerPurge.ts, #212), and clears
+ * submission notes past retain_until (src/submissions/notesPurge.ts, #236), as the
+ * daily Lambda does.
  *
  * Reports counts only. An object key holds the patient's file name, and an S3
  * error message can repeat the key, so neither is logged.
@@ -122,12 +124,14 @@ async function main(): Promise<void> {
     try {
         const uploads = await purgeExpiredBookingUploads({ write })
         const answers = await purgeExpiredBookingAnswers({ write })
-        const result = { ...uploads, ...answers }
+        const notes = await purgeExpiredSubmissionNotes({ write })
+        const result = { ...uploads, ...answers, ...notes }
         // eslint-disable-next-line no-console
         console.log(JSON.stringify({ write, ...result }, null, 2))
-        if (!write && (result.scanned > 0 || result.unclaimed > 0 || result.answersDue > 0)) {
+        const due = result.scanned + result.unclaimed + result.answersDue + result.notesDue + result.auditEntriesDue
+        if (!write && due > 0) {
             // eslint-disable-next-line no-console
-            console.log('Dry-run only. Re-run with --write to delete objects, erase answers, and mark rows purged.')
+            console.log('Dry-run only. Re-run with --write to delete objects, erase answers and notes, and mark rows purged.')
         }
         if (result.failed > 0 || (write && (result.overdue > 0 || result.answersOverdue > 0))) {
             process.exitCode = 1

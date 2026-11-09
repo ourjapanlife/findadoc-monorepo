@@ -268,6 +268,7 @@ export async function getBookingSubmissionDetail(
             'appointment.status as appointment_status',
             'appointment.cancelled_by',
             'appointment.status_reason',
+            'appointment.status_reason_purged_at',
             'appointment.starts_at',
             'appointment.ends_at',
             'interpreter.label as interpreter_label'
@@ -316,6 +317,9 @@ export async function getBookingSubmissionDetail(
         paymentMethod: paymentMethodFromAnswer(answersRecord[PAYMENT_METHOD_FIELD_ID]),
         cancelledBy: cancelledByFromRow(row.cancelled_by),
         statusReason: row.status_reason,
+        statusReasonPurgedAt: row.status_reason_purged_at === null
+            ? null
+            : new Date(row.status_reason_purged_at).toISOString(),
         practitionerId: row.practitioner_id,
         practitionerNames: row.practitioner_names ?? [],
         spokenLanguages: (row.spoken_languages ?? []) as BookingSubmissionDetail['spokenLanguages'],
