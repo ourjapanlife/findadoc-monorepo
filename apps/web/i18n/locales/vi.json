@@ -149,7 +149,7 @@
       "retention": {
         "heading": "5. Thời gian lưu giữ",
         "p1": "Ảnh thẻ bảo hiểm và các giấy tờ tùy thân khác tải lên khi đặt lịch sẽ bị xóa 30 ngày sau khi tải lên. Các tệp đặt lịch khác bị xóa sau một năm, và tệp của lượt đặt lịch chưa được gửi bị xóa sau 24 giờ.",
-        "p2": "Câu trả lời khi đặt lịch của bạn, như họ tên, thông tin liên lạc, ngày sinh và lý do khám, được xóa 90 ngày sau khi buổi hẹn kết thúc. Nếu lịch hẹn bị hủy hoặc phòng khám từ chối yêu cầu, chúng được xóa ngay. Câu trả lời của yêu cầu không có giờ hẹn được xóa 90 ngày sau khi gửi, và ghi chú kèm theo khi hủy được xóa 90 ngày sau giờ hẹn. Chúng tôi chỉ giữ bản ghi rằng đã có yêu cầu: phòng khám, giờ và trạng thái lịch hẹn, và các ngày. Phòng khám tự lưu hồ sơ bệnh án theo nghĩa vụ pháp lý của mình. Thông tin tài khoản được lưu khi tài khoản còn hoạt động. Bạn có thể yêu cầu chúng tôi xóa sớm hơn (mục 8)."
+        "p2": "Câu trả lời khi đặt lịch của bạn, như họ tên, thông tin liên lạc, ngày sinh và lý do khám, được xóa 90 ngày sau khi buổi hẹn kết thúc. Nếu lịch hẹn bị hủy hoặc phòng khám từ chối yêu cầu, chúng được xóa ngay. Câu trả lời của yêu cầu không có giờ hẹn được xóa 90 ngày sau khi gửi, và ghi chú kèm theo khi hủy được xóa 90 ngày sau giờ hẹn. Sau đó, chúng tôi giữ yêu cầu nhưng không có các câu trả lời đó: phòng khám, bác sĩ và dịch vụ, các ngôn ngữ bạn yêu cầu, ngôn ngữ trang web bạn dùng, giờ và trạng thái lịch hẹn, và các ngày (như thời điểm bạn đồng ý). Phòng khám tự lưu hồ sơ bệnh án theo nghĩa vụ pháp lý của mình. Thông tin tài khoản được lưu khi tài khoản còn hoạt động. Bạn có thể yêu cầu chúng tôi xóa sớm hơn (mục 8)."
       },
       "cookies": {
         "heading": "6. Cookie và đo lường quảng cáo",
