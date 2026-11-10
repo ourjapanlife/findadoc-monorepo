@@ -4,11 +4,12 @@ import { facilityIdFromSlugParam } from '../../utils/clinicPath'
 import { isFacetSecondSegment } from '../../utils/facetPath'
 import { hubSitemapUrls } from '../../utils/hubIndex'
 import { unlocalizedPath } from '../../utils/localePath'
-import { canonicalUrl } from '../../utils/seo'
+import { canonicalUrl, socialImageForPath } from '../../utils/seo'
 import {
     CONTACT_EMAIL,
     NPO_LEGAL_NAME,
     NPO_REGISTRATION_NUMBER,
+    PAGE_SOCIAL_IMAGES,
     SITE_SITEMAP_URL,
     SITE_SOCIAL_IMAGE,
     SITE_TITLE
@@ -104,10 +105,12 @@ test.describe('Discovery and social meta', () => {
         expect(body).not.toContain('/moderation')
     })
 
-    test('the social preview image is reachable', async ({ request }) => {
-        const response = await request.get('/findadoc-social.jpg')
-        expect(response.status()).toBe(200)
-        expect(response.headers()['content-type']).toMatch(/image\/jpeg/)
+    test('every social preview image is reachable', async ({ request }) => {
+        for (const url of [SITE_SOCIAL_IMAGE, ...Object.values(PAGE_SOCIAL_IMAGES).map(image => image.url)]) {
+            const response = await request.get(new URL(url).pathname)
+            expect(response.status()).toBe(200)
+            expect(response.headers()['content-type']).toMatch(/image\/jpeg/)
+        }
         expect(new URL(SITE_SOCIAL_IMAGE).pathname).toBe('/findadoc-social.jpg')
     })
 
@@ -123,7 +126,10 @@ test.describe('Discovery and social meta', () => {
             await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'website')
             await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', SITE_TITLE)
             await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute('content', 'en_US')
-            await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', SITE_SOCIAL_IMAGE)
+            await expect(page.locator('meta[property="og:image"]')).toHaveCount(1)
+            await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', socialImageForPath(path).url)
+            await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200')
+            await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630')
             await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
             await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(0)
 

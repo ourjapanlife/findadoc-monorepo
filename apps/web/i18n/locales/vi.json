@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Dịch vụ y tế tại Nhật Bản",
-    "aboutTitle": "Về chúng tôi",
+    "aboutTitle": "Giới thiệu: y tế bằng ngôn ngữ của bạn",
     "submitTitle": "Thêm bác sĩ",
     "termsTitle": "Điều khoản dịch vụ",
     "privacyTitle": "Chính sách bảo mật",
@@ -9,6 +9,9 @@
     "insuranceTitle": "Chi trả viện phí tại Nhật Bản",
     "searchTitle": "Tìm phòng khám",
     "contactTitle": "Liên hệ"
+  },
+  "pageMetaDescription": {
+    "about": "Find a Doc, Japan là tổ chức phi lợi nhuận tại Tokyo giúp bạn tìm bác sĩ nói ngôn ngữ của bạn. Hãy đọc câu chuyện của chúng tôi và gặp gỡ đội ngũ."
   },
   "contactPage": {
     "heading": "Liên hệ",

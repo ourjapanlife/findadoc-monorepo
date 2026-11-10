@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Gesundheitsdienste in Japan",
-    "aboutTitle": "Über uns",
+    "aboutTitle": "Über uns: Gesundheit in deiner Sprache",
     "submitTitle": "Arzt hinzufügen",
     "termsTitle": "Nutzungsbedingungen",
     "privacyTitle": "Datenschutzerklärung",
@@ -9,6 +9,9 @@
     "insuranceTitle": "Die Kosten der Behandlung in Japan",
     "searchTitle": "Kliniken suchen",
     "contactTitle": "Kontakt"
+  },
+  "pageMetaDescription": {
+    "about": "Find a Doc, Japan ist ein gemeinnütziger Verein in Tokio, der dir hilft, Ärztinnen und Ärzte zu finden, die deine Sprache sprechen. Lies unsere Geschichte und mach mit."
   },
   "contactPage": {
     "heading": "Kontakt",

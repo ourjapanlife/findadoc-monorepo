@@ -10,9 +10,19 @@ import {
     openGraphLocale,
     robotsDisallowPaths,
     robotsTxt,
-    ROBOTS_DISALLOW_PATHS
+    ROBOTS_DISALLOW_PATHS,
+    socialImageForPath
 } from '@/utils/seo'
-import { SITE_ORIGIN, SITE_SITEMAP_URL, SITE_SOCIAL_IMAGE } from '@/utils/site'
+import {
+    PAGE_SOCIAL_IMAGES,
+    SITE_DEFAULT_TITLE,
+    SITE_DESCRIPTION,
+    SITE_ORIGIN,
+    SITE_SITEMAP_URL,
+    SITE_SOCIAL_IMAGE,
+    SITE_SOCIAL_IMAGE_HEIGHT,
+    SITE_SOCIAL_IMAGE_WIDTH
+} from '@/utils/site'
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '../../..')
 
@@ -119,10 +129,52 @@ describe('robots.txt', () => {
     })
 })
 
+/** Width and height from a baseline or progressive JPEG's start-of-frame marker. */
+function jpegSize(bytes: Buffer): { width: number, height: number } {
+    let offset = 2
+    while (offset < bytes.length) {
+        const marker = bytes.readUInt16BE(offset)
+        const length = bytes.readUInt16BE(offset + 2)
+        if (marker === 0xFFC0 || marker === 0xFFC2) {
+            return { height: bytes.readUInt16BE(offset + 5), width: bytes.readUInt16BE(offset + 7) }
+        }
+        offset += 2 + length
+    }
+    throw new Error('no start-of-frame marker')
+}
+
 describe('social preview assets', () => {
+    const imageUrls = [SITE_SOCIAL_IMAGE, ...Object.values(PAGE_SOCIAL_IMAGES).map(image => image.url)]
+
     it('serves the Open Graph image from the publish root', () => {
         expect(existsSync(join(rootDir, 'public', 'findadoc-social.jpg'))).to.equal(true)
         expect(SITE_SOCIAL_IMAGE).to.equal(`${SITE_ORIGIN}/findadoc-social.jpg`)
+    })
+
+    it('ships every card at exactly 1200×630, the size social platforms expect', () => {
+        for (const url of imageUrls) {
+            const file = join(rootDir, 'public', new URL(url).pathname)
+            expect(jpegSize(readFileSync(file)), url).to.deep.equal({
+                width: SITE_SOCIAL_IMAGE_WIDTH,
+                height: SITE_SOCIAL_IMAGE_HEIGHT
+            })
+        }
+    })
+
+    it('gives /about and /submit their own card in every locale, and every other page the site card', () => {
+        expect(socialImageForPath('/about').url).to.equal(`${SITE_ORIGIN}/findadoc-social-about.jpg`)
+        expect(socialImageForPath('/ja-JP/about').url).to.equal(`${SITE_ORIGIN}/findadoc-social-about.jpg`)
+        expect(socialImageForPath('/submit/').url).to.equal(`${SITE_ORIGIN}/findadoc-social-submit.jpg`)
+        expect(socialImageForPath('/').url).to.equal(SITE_SOCIAL_IMAGE)
+        expect(socialImageForPath('/search?lang=en').url).to.equal(SITE_SOCIAL_IMAGE)
+    })
+
+    it('keeps the shell description short enough for a social preview', () => {
+        expect(SITE_DESCRIPTION.length).to.be.at.most(125)
+    })
+
+    it('gives the shell a 50–60 character title that already carries the brand', () => {
+        expect(SITE_DEFAULT_TITLE.length).to.be.within(50, 60)
     })
 })
 

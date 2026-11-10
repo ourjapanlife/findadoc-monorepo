@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "日本的医疗服务",
-    "aboutTitle": "关于我们",
+    "aboutTitle": "关于我们：用您的语言获得医疗服务",
     "submitTitle": "添加医师",
     "termsTitle": "服务条款",
     "privacyTitle": "隐私政策",
@@ -9,6 +9,9 @@
     "insuranceTitle": "在日本就医付费",
     "searchTitle": "搜索诊所",
     "contactTitle": "联系我们"
+  },
+  "pageMetaDescription": {
+    "about": "Find a Doc, Japan 是一家位于东京的非营利组织，帮助人们找到会说自己语言的医生。了解我们的故事，认识我们的团队，并参与其中。"
   },
   "contactPage": {
     "heading": "联系我们",

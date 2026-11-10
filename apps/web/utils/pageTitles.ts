@@ -39,7 +39,7 @@ export const PAGE_META_TITLE_ROUTES = {
  */
 const PAGE_META_DESCRIPTION_KEYS = {
     homeTitle: 'home.heroLead',
-    aboutTitle: 'about.heroSubheading',
+    aboutTitle: 'pageMetaDescription.about',
     submitTitle: 'home.contributeBody',
     npoTitle: 'npoPage.intro',
     insuranceTitle: 'insurancePage.intro',

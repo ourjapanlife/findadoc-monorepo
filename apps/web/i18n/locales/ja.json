@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "日本の医療サービス",
-    "aboutTitle": "私たちについて",
+    "aboutTitle": "私たちについて：あなたの言語で受けられる医療",
     "submitTitle": "医師を追加",
     "termsTitle": "利用規約",
     "privacyTitle": "プライバシーポリシー",
@@ -9,6 +9,9 @@
     "insuranceTitle": "日本での医療費の支払い",
     "searchTitle": "クリニックを探す",
     "contactTitle": "お問い合わせ"
+  },
+  "pageMetaDescription": {
+    "about": "Find a Doc, Japanは、あなたの言語を話す医師探しを支援する東京のNPO法人です。私たちの歩み、チーム、参加の方法を紹介します。"
   },
   "contactPage": {
     "heading": "お問い合わせ",

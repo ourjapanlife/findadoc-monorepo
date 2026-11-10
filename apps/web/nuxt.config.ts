@@ -5,7 +5,14 @@ import { VIEWPORT_BREAKPOINTS, VIEWPORT_FALLBACK_BREAKPOINT } from './utils/view
 import { withLocaleVariants } from './utils/localePath'
 import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
-import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
+import {
+    SITE_DEFAULT_TITLE,
+    SITE_DESCRIPTION,
+    SITE_ORIGIN,
+    SITE_SOCIAL_IMAGE,
+    SITE_SOCIAL_IMAGE_ALT,
+    SITE_TITLE
+} from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
 import { consentBootstrapScript } from './utils/consent'
 import { CLINIC_HOST_BOOTSTRAP, CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
@@ -54,7 +61,8 @@ export default defineNuxtConfig({
         head: {
             // Descriptive titles come from PAGE_META_TITLE_ROUTES via app.vue, which also
             // wraps them with the brand. Untitled routes fall back to the brand alone.
-            title: 'Health services in Japan',
+            // This default is what the SPA shell (/search, /login, /book) shows a crawler.
+            title: SITE_DEFAULT_TITLE,
             // `lang` is set per locale in app.vue. A hardcoded `en` here wins over
             // that and marks Japanese pages as English.
             meta: [
@@ -90,7 +98,7 @@ export default defineNuxtConfig({
                 },
                 {
                     name: 'twitter:image:alt',
-                    content: `${SITE_TITLE} mascots`,
+                    content: SITE_SOCIAL_IMAGE_ALT,
                     key: 'twitter:image:alt'
                 },
                 {
@@ -123,7 +131,7 @@ export default defineNuxtConfig({
                 },
                 {
                     property: 'og:image:alt',
-                    content: `${SITE_TITLE} mascots`,
+                    content: SITE_SOCIAL_IMAGE_ALT,
                     key: 'og:image:alt'
                 }
             ],
