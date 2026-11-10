@@ -180,6 +180,10 @@ Before a change is done:
 
 `facilities.supported_languages` is language support with no named professional. Do not create a healthcare professional to hold a hospital-level language. A language-only search matches that list or one professional who speaks every requested language. A specialty filter still requires the same professional to match both. Existing `spoken_languages` stay on the professional, including `en_US` and `ja_JP`. A Locale that is not on the allowlist is not a facet.
 
+## Institutions list
+
+`apps/server/docs/institution-import.md` is the rule for the multilingual institutions spreadsheet (#21). Every row is staged in `institution_import_rows`. Green rows are already listed, and red rows are skipped. A match fills empty fields only, and a new facility is `UNVERIFIED` with one Places id from an id-only search. The import writes no professional, payment, or insurance. `utils/checkInstitutionList.py` checks rows against the ministry open data, Japan Post, and the live website first; only a working https link is stored.
+
 ## Licenses
 
 A professional has one primary clinical license. PhD, MPH, and DSc are additional credentials. DVM, EdD, and DSW stay in the enum and stay hidden from the moderation picker.
