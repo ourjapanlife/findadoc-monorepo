@@ -117,7 +117,7 @@ pnpm --filter @findadoc/web build
 
 This prerenders the site into `apps/web/.output/public`.
 
-Production splits the prerender. The `Web` workflow fetches the directory once into a file, prerenders four shares of the clinic, doctor, hub, and facet pages in parallel jobs from that same file, then merges them and publishes. Shard 0 also renders the pages every build has (home, about, sitemap) and writes the search snapshot. You can run the same steps locally:
+Production splits the prerender. The `Web` workflow fetches the directory once into a file, prerenders five shares of the clinic, doctor, hub, and facet pages in parallel jobs from that same file, then merges them and publishes. Shard 0 also renders the pages every build has (home, about, sitemap) and writes the search snapshot. You can run the same steps locally:
 
 ```bash
 pnpm --filter @findadoc/web prerender:directory /tmp/prerender-directory.json
@@ -130,7 +130,7 @@ Build the other shard with `NUXT_PRERENDER_SHARD=1/2`, copy each `apps/web/.outp
 pnpm --filter @findadoc/web prerender:merge /tmp/site /tmp/shard-0 /tmp/shard-1
 ```
 
-How many shards: each `Prerender N of M` job writes one line to the run's summary page, with its routes and seconds. A shard also spends about a minute on setup and building the app, whatever its share. In November 2026, 5,134 routes took 25 to 31 seconds a shard with four shards. Add shards when the slowest one nears about 10 minutes, well inside the 45-minute job limit; use fewer when every shard takes seconds, since each one pays the minute of setup. `PRERENDER_SHARD_MAX` in `apps/web/utils/prerenderShard.ts` caps the count at 16. The count is the list of shards in `.github/workflows/web.yml`.
+How many shards: each `Prerender N of M` job writes one line to the run's summary page, with its routes and seconds. A shard also spends about a minute on setup and building the app, whatever its share. In November 2026, 5,134 routes took 25 to 31 seconds a shard with four shards; production uses five, to keep the build quick as the directory grows. Add shards when the slowest one nears about 10 minutes, well inside the 45-minute job limit; use fewer when every shard takes seconds, since each one pays the minute of setup. `PRERENDER_SHARD_MAX` in `apps/web/utils/prerenderShard.ts` caps the count at 16. The count is the list of shards in `.github/workflows/web.yml`.
 
 `NUXT_PRERENDER_SHARD` is `index/count`. Every shard of one build needs the same directory file and the same `NUXT_BUILD_ID`. With neither set, one build fetches the directory and renders every page. The directory is bundled into the server build as modules, not runtime config: Nitro copies runtime config for every page it renders, so a directory there makes every page slower as the directory grows.
 
