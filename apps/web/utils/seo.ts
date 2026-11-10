@@ -9,7 +9,7 @@ import {
 } from './localePath'
 import { CLINIC_LANDING_MODE, clinicLandingMode, isClinicLandingPath } from './clinicLanding'
 import { isEntityRoute } from './pageTitles'
-import { SITE_ORIGIN, SITE_SITEMAP_URL } from './site'
+import { PAGE_SOCIAL_IMAGES, SITE_ORIGIN, SITE_SITEMAP_URL, SITE_SOCIAL_IMAGE, SITE_SOCIAL_IMAGE_ALT } from './site'
 
 /**
  * Paths crawlers must not index. `public/robots.txt` Disallow lines are kept in
@@ -43,6 +43,21 @@ function normalisePagePath(path: string): string {
 export function canonicalUrl(path: string): string {
     const normalised = normalisePagePath(path)
     return normalised === '/' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${normalised}`
+}
+
+export type SocialImage = {
+    url: string
+    alt: string
+}
+
+/**
+ * The share card for a route. `/about` and `/submit` have their own card in every
+ * locale; every other page uses the site card. Clinic landings set their own image.
+ */
+export function socialImageForPath(path: string): SocialImage {
+    const page = unlocalizedPath(normalisePagePath(path))
+    const pageImages: Partial<Record<string, SocialImage>> = PAGE_SOCIAL_IMAGES
+    return pageImages[page] ?? { url: SITE_SOCIAL_IMAGE, alt: SITE_SOCIAL_IMAGE_ALT }
 }
 
 /** Open Graph wants `en_US`; vue-i18n ships `en-US`. */

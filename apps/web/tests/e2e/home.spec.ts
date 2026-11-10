@@ -1,5 +1,6 @@
 import enUS from '../../i18n/locales/en.json' with { type: 'json' }
 import koKR from '../../i18n/locales/ko.json' with { type: 'json' }
+import ruRU from '../../i18n/locales/ru.json' with { type: 'json' }
 import { test, expect } from '@playwright/test'
 
 test.describe('Home page', () => {
@@ -31,6 +32,17 @@ test.describe('Home page', () => {
             await expect(page.getByTestId('npo-link')).toBeVisible()
             // Contribute points at the docs site, not at one of several repos.
             await expect(page.getByTestId('contribute-link')).toHaveAttribute('href', /docs\.findadoc\.jp/)
+        })
+
+        test('links the insurance guide from the desktop header, in the visitor\'s locale', async ({ page }) => {
+            const link = page.getByTestId('top-nav-insurance-link')
+            await expect(link).toBeVisible()
+            await expect(link).toHaveText(enUS.topNav.insurance)
+            await expect(link).toHaveAttribute('href', '/insurance')
+
+            await page.goto('/ko-KR')
+            await expect(link).toHaveText(koKR.topNav.insurance)
+            await expect(link).toHaveAttribute('href', '/ko-KR/insurance')
         })
 
         test('navigates to privacy policy', async ({ page }) => {
@@ -125,6 +137,46 @@ test.describe('Home page', () => {
                 await localeSelect.selectOption('ko_KR')
                 await expect(page.getByTestId('home-heading')).toHaveText(koKR.home.heroHeading, { timeout: 2000 })
             }).toPass({ timeout: 15000 })
+        })
+    })
+
+    // Below 1280px the desktop links do not fit in every locale, so a landscape window
+    // that narrow gets the hamburger. Portuguese has the longest labels.
+    test.describe('Narrow landscape', () => {
+        for (const width of [820, 1024]) {
+            test(`uses the hamburger and never scrolls sideways at ${width}px`, async ({ page }) => {
+                await page.setViewportSize({ width, height: 700 })
+
+                for (const path of ['/', '/pt-BR', '/ru-RU']) {
+                    await page.goto(path)
+                    await expect(page.getByTestId('hamburger-menu-icon')).toBeVisible()
+                    await expect(page.getByTestId('top-nav-desktop-links')).toBeHidden()
+                    const overflows = await page.evaluate(() =>
+                        document.documentElement.scrollWidth > window.innerWidth)
+                    expect(overflows, path).toBe(false)
+                }
+
+                // The page is prerendered: a click before Vue hydrates the button does nothing.
+                const insuranceLink = page.getByTestId('hamburger-menu-items')
+                    .getByRole('link', { name: ruRU.pageMeta.insuranceTitle })
+                await expect(async () => {
+                    await page.getByTestId('hamburger-menu-icon').click()
+                    await expect(insuranceLink).toBeVisible({ timeout: 2000 })
+                }).toPass({ timeout: 15000 })
+            })
+        }
+
+        test('shows every desktop link, Insurance included, at 1280px without scrolling sideways', async ({ page }) => {
+            await page.setViewportSize({ width: 1280, height: 720 })
+
+            for (const path of ['/', '/pt-BR', '/ru-RU']) {
+                await page.goto(path)
+                await expect(page.getByTestId('hamburger-menu-icon')).toBeHidden()
+                await expect(page.getByTestId('top-nav-insurance-link')).toBeVisible()
+                const overflows = await page.evaluate(() =>
+                    document.documentElement.scrollWidth > window.innerWidth)
+                expect(overflows, path).toBe(false)
+            }
         })
     })
 

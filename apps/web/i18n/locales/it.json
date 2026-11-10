@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Servizi sanitari in Giappone",
-    "aboutTitle": "Chi siamo",
+    "aboutTitle": "Chi siamo: cure nella tua lingua",
     "submitTitle": "Aggiungi un medico",
     "termsTitle": "Termini di servizio",
     "privacyTitle": "Informativa sulla privacy",
@@ -9,6 +9,11 @@
     "insuranceTitle": "Pagare le cure in Giappone",
     "searchTitle": "Cerca cliniche",
     "contactTitle": "Contatti"
+  },
+  "pageMetaDescription": {
+    "about": "Non profit di Tokyo che ti aiuta a trovare medici che parlano la tua lingua. Scopri la nostra storia e il nostro team.",
+    "insurance": "Come funziona l'assicurazione sanitaria giapponese in clinica, cosa vuol dire pagare in proprio e l'assicurazione di viaggio.",
+    "npo": "Find a Doc, Japan è un ente non profit registrato in Giappone. Qui pubblichiamo i documenti richiesti dalla legge."
   },
   "contactPage": {
     "heading": "Contatti",
@@ -289,7 +294,8 @@
     "login": "Accedi",
     "myPage": "La mia pagina",
     "logoutToast": "Disconnessione riuscita",
-    "search": "Cerca"
+    "search": "Cerca",
+    "insurance": "Assicurazione"
   },
   "login": {
     "checkingauth": "Verifica autenticazione...",

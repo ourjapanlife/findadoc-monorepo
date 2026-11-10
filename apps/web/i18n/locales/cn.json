@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "日本的医疗服务",
-    "aboutTitle": "关于我们",
+    "aboutTitle": "关于我们：用您的语言获得医疗服务",
     "submitTitle": "添加医师",
     "termsTitle": "服务条款",
     "privacyTitle": "隐私政策",
@@ -9,6 +9,11 @@
     "insuranceTitle": "在日本就医付费",
     "searchTitle": "搜索诊所",
     "contactTitle": "联系我们"
+  },
+  "pageMetaDescription": {
+    "about": "东京的非营利组织，帮助人们找到会说自己语言的医生。了解我们的故事，认识团队，一起参与。",
+    "insurance": "日本公共医疗保险在诊所如何使用、什么是自费，以及海外或旅行保险该怎么办。",
+    "npo": "Find a Doc, Japan 是日本注册的非营利法人。我们在此公开法律要求的信息披露文件。"
   },
   "contactPage": {
     "heading": "联系我们",
@@ -258,7 +263,8 @@
     "login": "登录",
     "myPage": "我的页面",
     "logoutToast": "已退出登录",
-    "search": "搜索"
+    "search": "搜索",
+    "insurance": "保险"
   },
   "login": {
     "checkingauth": "正在认证...",

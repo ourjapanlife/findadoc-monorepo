@@ -50,9 +50,16 @@ import {
     markClinicHostReady
 } from '~/utils/clinicLanding'
 import { isEntityRoute, pageDescriptionKeyForPath, pageMetaI18nKey, pageTitleKeyForPath } from '~/utils/pageTitles'
-import { canonicalUrl, hreflangLinkTags, indexableLocaleCodes, isNoindexRoute, openGraphLocale } from '~/utils/seo'
+import {
+    canonicalUrl,
+    hreflangLinkTags,
+    indexableLocaleCodes,
+    isNoindexRoute,
+    openGraphLocale,
+    socialImageForPath
+} from '~/utils/seo'
 import { jsonLdScript, organizationJsonLd } from '~/utils/structuredData'
-import { formatPageTitle } from '~/utils/site'
+import { formatPageTitle, SITE_SOCIAL_IMAGE_HEIGHT, SITE_SOCIAL_IMAGE_WIDTH } from '~/utils/site'
 import { useHead, useRoute } from '#imports'
 
 initializeGqlClient()
@@ -101,8 +108,17 @@ useHead(() => {
     const seoPath = slug === undefined ? route.path : clinicLandingPath(slug)
     const noindex = isNoindexRoute(seoPath, route.query, clinicMode)
     const meta: Array<
-      | { property: 'og:url' | 'og:locale' | 'og:locale:alternate' | 'og:description', content: string, key: string }
-      | { name: 'robots' | 'description' | 'twitter:description', content: string, key: string }
+      | {
+          property: 'og:url' | 'og:locale' | 'og:locale:alternate' | 'og:description' | 'og:image'
+            | 'og:image:secure_url' | 'og:image:alt' | 'og:image:type' | 'og:image:width' | 'og:image:height'
+          content: string
+          key: string
+      }
+      | {
+          name: 'robots' | 'description' | 'twitter:description' | 'twitter:image' | 'twitter:image:alt'
+          content: string
+          key: string
+      }
     > = [
         { property: 'og:url', content: canonical.value, key: 'og:url' },
         { property: 'og:locale', content: openGraphLocale(String(locale.value)), key: 'og:locale' }
@@ -124,6 +140,23 @@ useHead(() => {
 
     if (noindex) {
         meta.push({ name: 'robots', content: 'noindex', key: 'robots' })
+    }
+
+    // Clinic landings set their own share image, whose size we do not know. Every
+    // other page gets a 1200×630 card. Declaring the size lets LinkedIn and Facebook
+    // lay out the preview before they fetch the image.
+    if (!clinicPage) {
+        const image = socialImageForPath(route.path)
+        meta.push(
+            { property: 'og:image', content: image.url, key: 'og:image' },
+            { property: 'og:image:secure_url', content: image.url, key: 'og:image:secure_url' },
+            { property: 'og:image:alt', content: image.alt, key: 'og:image:alt' },
+            { property: 'og:image:type', content: 'image/jpeg', key: 'og:image:type' },
+            { property: 'og:image:width', content: String(SITE_SOCIAL_IMAGE_WIDTH), key: 'og:image:width' },
+            { property: 'og:image:height', content: String(SITE_SOCIAL_IMAGE_HEIGHT), key: 'og:image:height' },
+            { name: 'twitter:image', content: image.url, key: 'twitter:image' },
+            { name: 'twitter:image:alt', content: image.alt, key: 'twitter:image:alt' }
+        )
     }
 
     // Entity routes set their own title from the record. Omitting `title` lets that

@@ -5,13 +5,21 @@ import { VIEWPORT_BREAKPOINTS, VIEWPORT_FALLBACK_BREAKPOINT } from './utils/view
 import { withLocaleVariants } from './utils/localePath'
 import { applyPublishedClinicSites } from './utils/nuxt/clinicSitePrerender'
 import { publicSitemapUrls, SITEMAP_EXCLUDE } from './utils/sitemap'
-import { SITE_DESCRIPTION, SITE_ORIGIN, SITE_SOCIAL_IMAGE, SITE_TITLE } from './utils/site'
+import {
+    SITE_DEFAULT_TITLE,
+    SITE_DESCRIPTION,
+    SITE_ORIGIN,
+    SITE_SOCIAL_IMAGE,
+    SITE_SOCIAL_IMAGE_ALT,
+    SITE_TITLE
+} from './utils/site'
 import { COLOR_SCHEME_BOOTSTRAP, umamiScript } from './utils/nuxt/appHead'
 import { consentBootstrapScript } from './utils/consent'
 import { CLINIC_HOST_BOOTSTRAP, CLINIC_LANDING_MODE, CLINIC_PREVIEW_SHELL_SLUGS } from './utils/clinicLanding'
 import { writeClinicPreviewShells } from './utils/nuxt/clinicPreviewShell'
 import { writeUmamiProxyRedirects } from './utils/nuxt/umamiProxy'
 import { writeSearchDirectorySnapshot } from './utils/nuxt/searchDirectorySnapshot'
+import { isPrimaryPrerenderShard, prerenderShardFromEnv } from './utils/prerenderShard'
 import {
     applyEntityDirectoryToNitro,
     applyEntityDirectoryToNuxt,
@@ -21,12 +29,21 @@ import {
 
 // Google tag ids for production builds: Ads always, Analytics only with ENABLE_GOOGLE_ANALYTICS.
 // They load only after the visitor accepts (utils/consent.ts). Dev builds have none.
+// Shard 0 of a split prerender writes the pages and files every build has once (#21).
+const PRIMARY_PRERENDER_SHARD = isPrimaryPrerenderShard(prerenderShardFromEnv())
+
 const GOOGLE_TAG_IDS = process.env.NODE_ENV === 'production'
     ? ['AW-18541704359', ...(process.env.ENABLE_GOOGLE_ANALYTICS === 'true' ? ['G-T0RE9B3PRG'] : [])]
     : []
 
 export default defineNuxtConfig({
 
+    /*
+     * The shards of one split prerender share a build id. With a random id each, a page from one
+     * shard would find another shard's `_nuxt/builds/latest.json` and reload on every navigation.
+     * Unset, Nuxt picks a random id as before.
+     */
+    buildId: process.env.NUXT_BUILD_ID?.trim() || undefined,
     modules: [
         '@nuxtjs/i18n',
         '@nuxtjs/sitemap',
@@ -54,7 +71,8 @@ export default defineNuxtConfig({
         head: {
             // Descriptive titles come from PAGE_META_TITLE_ROUTES via app.vue, which also
             // wraps them with the brand. Untitled routes fall back to the brand alone.
-            title: 'Health services in Japan',
+            // This default is what the SPA shell (/search, /login, /book) shows a crawler.
+            title: SITE_DEFAULT_TITLE,
             // `lang` is set per locale in app.vue. A hardcoded `en` here wins over
             // that and marks Japanese pages as English.
             meta: [
@@ -90,7 +108,7 @@ export default defineNuxtConfig({
                 },
                 {
                     name: 'twitter:image:alt',
-                    content: `${SITE_TITLE} mascots`,
+                    content: SITE_SOCIAL_IMAGE_ALT,
                     key: 'twitter:image:alt'
                 },
                 {
@@ -123,7 +141,7 @@ export default defineNuxtConfig({
                 },
                 {
                     property: 'og:image:alt',
-                    content: `${SITE_TITLE} mascots`,
+                    content: SITE_SOCIAL_IMAGE_ALT,
                     key: 'og:image:alt'
                 }
             ],
@@ -164,21 +182,9 @@ export default defineNuxtConfig({
     },
 
     runtimeConfig: {
-        // Filled during `nuxi generate` so clinic and doctor pages prerender from memory.
-        // Private: not sent to the browser. Empty in `nuxi dev` (live GraphQL).
-        clinicPrerenderDirectory: {},
-        doctorPrerenderDirectory: {},
-        // `baked` stays false until generate. Nuxt types a null default as a string env override.
-        prerenderCities: {
-            baked: false,
-            cities: [] as Array<{
-                id: string
-                nameEn: string
-                nameJa: string
-                slug: string
-                prefectureEn: string
-            }>
-        },
+        // The generate-time directory and city list are bundled modules (#clinic-directory,
+        // #doctor-directory, #prerender-cities), not runtime config. Nitro deep-copies runtime
+        // config for every request, so a directory here made each prerendered route slower (#21).
         public: {
             isTestingMode: process.env.NUXT_IS_TESTING_MODE,
 
@@ -299,17 +305,22 @@ export default defineNuxtConfig({
     telemetry: false,
 
     hooks: {
-        async ready(nuxt) {
-            await applyEntityDirectoryToNuxt(nuxt)
+        async ready() {
+            await applyEntityDirectoryToNuxt()
         },
         async 'nitro:config'(nitroConfig) {
             await applyEntityDirectoryToNitro(nitroConfig)
-            await applyPublishedClinicSites(nitroConfig)
+            if (PRIMARY_PRERENDER_SHARD) {
+                await applyPublishedClinicSites(nitroConfig)
+            }
         },
         'nitro:init'(nitro) {
             // Generate is static, so the proxy destinations have to be baked into
             // the publish dir. Dev never has the env vars in the browser tag.
             nitro.hooks.hook('close', async () => {
+                if (!PRIMARY_PRERENDER_SHARD) {
+                    return
+                }
                 const publicDir = nitro.options.output.publicDir
                 await writeUmamiProxyRedirects(publicDir)
                 for (const slug of CLINIC_PREVIEW_SHELL_SLUGS) {

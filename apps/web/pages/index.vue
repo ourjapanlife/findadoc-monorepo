@@ -9,7 +9,7 @@
             <div
                 class="page-container flex flex-col gap-8 landscape:flex-row landscape:items-center landscape:gap-12"
             >
-                <div class="flex flex-col gap-5 landscape:max-w-xl landscape:flex-1">
+                <div class="flex min-w-0 flex-col gap-5 landscape:max-w-xl landscape:flex-1">
                     <h1
                         data-testid="home-heading"
                         class="page-title"
@@ -34,7 +34,7 @@
                     height="1024"
                     fetchpriority="high"
                     decoding="async"
-                    class="h-auto w-full self-center landscape:max-w-lg landscape:flex-1"
+                    class="h-auto w-full min-w-0 self-center landscape:max-w-lg landscape:flex-1"
                 >
             </div>
         </section>

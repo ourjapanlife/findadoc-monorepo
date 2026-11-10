@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "일본의 의료 서비스",
-    "aboutTitle": "소개",
+    "aboutTitle": "소개: 당신의 언어로 받는 의료 서비스",
     "submitTitle": "의사 추가",
     "termsTitle": "이용약관",
     "privacyTitle": "개인정보 처리방침",
@@ -9,6 +9,11 @@
     "insuranceTitle": "일본에서 진료비 내기",
     "searchTitle": "병원 검색",
     "contactTitle": "문의"
+  },
+  "pageMetaDescription": {
+    "about": "당신의 언어를 쓰는 의사를 찾도록 돕는 도쿄의 비영리 단체입니다. 우리의 이야기와 팀, 참여 방법을 소개합니다.",
+    "insurance": "병원에서 일본 공적 의료보험이 적용되는 방식, 자비 진료의 의미, 해외·여행자 보험 이용 방법을 안내합니다.",
+    "npo": "Find a Doc, Japan은 일본에 등록된 비영리 법인입니다. 법으로 정해진 공개 서류를 여기에 게시합니다."
   },
   "contactPage": {
     "heading": "문의",
@@ -332,7 +337,8 @@
     "login": "로그인",
     "myPage": "마이페이지",
     "logoutToast": "로그아웃되었습니다",
-    "search": "검색"
+    "search": "검색",
+    "insurance": "보험"
   },
   "login": {
     "checkingauth": "인증 확인 중…",

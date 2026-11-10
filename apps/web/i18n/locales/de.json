@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Gesundheitsdienste in Japan",
-    "aboutTitle": "Über uns",
+    "aboutTitle": "Über uns: Gesundheit in deiner Sprache",
     "submitTitle": "Arzt hinzufügen",
     "termsTitle": "Nutzungsbedingungen",
     "privacyTitle": "Datenschutzerklärung",
@@ -9,6 +9,11 @@
     "insuranceTitle": "Die Kosten der Behandlung in Japan",
     "searchTitle": "Kliniken suchen",
     "contactTitle": "Kontakt"
+  },
+  "pageMetaDescription": {
+    "about": "Gemeinnütziger Verein aus Tokio, der dir hilft, Ärzte zu finden, die deine Sprache sprechen. Lerne unser Team kennen.",
+    "insurance": "So funktioniert die japanische Krankenversicherung in der Praxis, dazu Selbstzahlung und Reiseversicherung.",
+    "npo": "Find a Doc, Japan ist ein eingetragener gemeinnütziger Verein in Japan. Hier stehen unsere Pflichtveröffentlichungen."
   },
   "contactPage": {
     "heading": "Kontakt",
@@ -258,7 +263,8 @@
     "login": "Anmelden",
     "myPage": "Meine Seite",
     "logoutToast": "Erfolgreich abgemeldet",
-    "search": "Suche"
+    "search": "Suche",
+    "insurance": "Versicherung"
   },
   "login": {
     "checkingauth": "Authentifizierung wird überprüft...",

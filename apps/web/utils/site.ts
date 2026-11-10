@@ -10,11 +10,54 @@ export const SITE_TITLE = 'Find a Doc, Japan'
 
 export const SITE_ORIGIN = 'https://www.findadoc.jp'
 
+/**
+ * The fallback description, and the only one /search and the other SPA routes show a
+ * crawler, because they ship the shared shell. Keep it at or under 125 characters so a
+ * social preview does not cut it off, which also keeps it under Google's ~155.
+ */
 export const SITE_DESCRIPTION
     = 'Find English-speaking and multilingual doctors and clinics in Japan. '
-      + 'Search by language, medical specialty, and location to find healthcare providers who speak your language. Free to use.'
+      + 'Search by language, specialty, and location. It\'s free.'
 
-export const SITE_SOCIAL_IMAGE = `${SITE_ORIGIN}/findadoc-social.jpg`
+/**
+ * The fallback document title for routes whose head has not run yet: the SPA shell that
+ * /search, /login, and /book ship to crawlers. It already carries the brand, so
+ * `formatPageTitle` does not add it twice.
+ */
+export const SITE_DEFAULT_TITLE = `English-speaking doctors in Japan · ${SITE_TITLE}`
+
+/**
+ * A new card gets a new file name. LinkedIn, preview checkers, and the CDN cache an image
+ * by URL, so replacing the bytes at the old name keeps showing the old picture.
+ * `findadoc-social.jpg` stays in public/ for links that already point at it.
+ */
+export const SITE_SOCIAL_IMAGE = `${SITE_ORIGIN}/findadoc-social-home.jpg`
+
+/** Every social card is 1200×630, the size LinkedIn, Facebook, and X expect. */
+export const SITE_SOCIAL_IMAGE_WIDTH = 1200
+
+export const SITE_SOCIAL_IMAGE_HEIGHT = 630
+
+export const SITE_SOCIAL_IMAGE_ALT = `${SITE_TITLE}: find doctors in Japan who speak your language`
+
+/**
+ * Pages with their own share card. Every other page uses `SITE_SOCIAL_IMAGE`. The
+ * cards are English only; one image serves every locale of the page.
+ */
+export const PAGE_SOCIAL_IMAGES = {
+    '/about': {
+        url: `${SITE_ORIGIN}/findadoc-social-about.jpg`,
+        alt: `${SITE_TITLE}: healthcare in Japan, in your language`
+    },
+    '/insurance': {
+        url: `${SITE_ORIGIN}/findadoc-social-insurance.jpg`,
+        alt: `${SITE_TITLE}: paying for a doctor in Japan? Read the guide`
+    },
+    '/submit': {
+        url: `${SITE_ORIGIN}/findadoc-social-submit.jpg`,
+        alt: `${SITE_TITLE}: know a doctor who speaks your language? Add a doctor`
+    }
+} as const satisfies Record<string, { url: string, alt: string }>
 
 export const SITE_SITEMAP_URL = `${SITE_ORIGIN}/sitemap.xml`
 

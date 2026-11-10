@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Services de santé au Japon",
-    "aboutTitle": "À propos",
+    "aboutTitle": "À propos : des soins dans votre langue",
     "submitTitle": "Ajouter un médecin",
     "termsTitle": "Conditions d'utilisation",
     "privacyTitle": "Politique de confidentialité",
@@ -9,6 +9,11 @@
     "insuranceTitle": "Payer ses soins au Japon",
     "searchTitle": "Rechercher des cliniques",
     "contactTitle": "Contact"
+  },
+  "pageMetaDescription": {
+    "about": "Association de Tokyo qui aide à trouver des médecins parlant votre langue. Découvrez notre histoire et notre équipe.",
+    "insurance": "Comment l'assurance maladie japonaise fonctionne en clinique, ce que signifie payer soi-même, et l'assurance voyage.",
+    "npo": "Find a Doc, Japan est une association enregistrée au Japon. Nos documents publiés par obligation légale sont ici."
   },
   "contactPage": {
     "heading": "Contact",
@@ -258,7 +263,8 @@
     "login": "Connexion",
     "myPage": "Ma page",
     "logoutToast": "Déconnexion réussie",
-    "search": "Recherche"
+    "search": "Recherche",
+    "insurance": "Assurance"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Quitter sans enregistrer",

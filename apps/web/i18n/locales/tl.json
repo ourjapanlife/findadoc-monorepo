@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Serbisyong pangkalusugan sa Japan",
-    "aboutTitle": "Tungkol sa amin",
+    "aboutTitle": "Tungkol sa amin: kalusugan sa iyong wika",
     "submitTitle": "Magdagdag ng doktor",
     "termsTitle": "Mga tuntunin",
     "privacyTitle": "Patakaran sa privacy",
@@ -9,6 +9,11 @@
     "insuranceTitle": "Pagbabayad ng gamutan sa Japan",
     "searchTitle": "Maghanap ng klinika",
     "contactTitle": "Makipag-ugnayan"
+  },
+  "pageMetaDescription": {
+    "about": "Non-profit sa Tokyo na tumutulong sa iyong makahanap ng doktor na nagsasalita ng iyong wika. Kilalanin ang aming team.",
+    "insurance": "Paano gumagana ang health insurance ng Japan sa klinika, ano ang self-pay, at ano ang gagawin sa travel insurance.",
+    "npo": "Ang Find a Doc, Japan ay rehistradong non-profit sa Japan. Narito ang mga dokumentong hinihingi ng batas."
   },
   "contactPage": {
     "heading": "Makipag-ugnayan",
@@ -258,7 +263,8 @@
     "login": "Mag-login",
     "myPage": "Aking Pahina",
     "logoutToast": "Naka-logout na",
-    "search": "Hanapin"
+    "search": "Hanapin",
+    "insurance": "Seguro"
   },
   "login": {
     "checkingauth": "Sinusuri ang Authentication...",

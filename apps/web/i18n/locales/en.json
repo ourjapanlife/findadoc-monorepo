@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Health services in Japan",
-    "aboutTitle": "About us",
+    "aboutTitle": "About us: healthcare in your language",
     "submitTitle": "Add a doctor",
     "termsTitle": "Terms of service",
     "privacyTitle": "Privacy policy",
@@ -9,6 +9,11 @@
     "insuranceTitle": "Paying for care in Japan",
     "searchTitle": "Search clinics",
     "contactTitle": "Contact"
+  },
+  "pageMetaDescription": {
+    "about": "A Tokyo non-profit helping people find doctors who speak their language. Read our story, meet the team, and get involved.",
+    "insurance": "How Japanese health insurance works at a clinic, what self-pay means, and what to do with travel or overseas insurance.",
+    "npo": "Find a Doc, Japan is a registered non-profit in Japan. Our legally required disclosure documents are published here."
   },
   "contactPage": {
     "heading": "Contact",
@@ -332,7 +337,8 @@
     "login": "Login",
     "myPage": "My Page",
     "logoutToast": "Successfully logged out",
-    "search": "Search"
+    "search": "Search",
+    "insurance": "Insurance"
   },
   "login": {
     "checkingauth": "Checking Authentication...",

@@ -12,6 +12,14 @@ declare module '#doctor-directory' {
     export default directory
 }
 
+declare module '#prerender-cities' {
+    import type { CityOption } from './utils/cityOptions'
+
+    /** The official city list fetched for this generate. `baked` is false outside generate and in the browser. */
+    const cities: { baked: boolean, cities: CityOption[] }
+    export default cities
+}
+
 declare module '#generated-prefecture-hubs' {
     /** Prefecture hub paths for this generate, or `null` outside generate. */
     const hubs: string[] | null

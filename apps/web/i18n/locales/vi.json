@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Dịch vụ y tế tại Nhật Bản",
-    "aboutTitle": "Về chúng tôi",
+    "aboutTitle": "Giới thiệu: y tế bằng ngôn ngữ của bạn",
     "submitTitle": "Thêm bác sĩ",
     "termsTitle": "Điều khoản dịch vụ",
     "privacyTitle": "Chính sách bảo mật",
@@ -9,6 +9,11 @@
     "insuranceTitle": "Chi trả viện phí tại Nhật Bản",
     "searchTitle": "Tìm phòng khám",
     "contactTitle": "Liên hệ"
+  },
+  "pageMetaDescription": {
+    "about": "Tổ chức phi lợi nhuận tại Tokyo giúp bạn tìm bác sĩ nói ngôn ngữ của bạn. Đọc câu chuyện và gặp gỡ đội ngũ của chúng tôi.",
+    "insurance": "Cách bảo hiểm y tế công của Nhật áp dụng tại phòng khám, tự chi trả là gì và cách dùng bảo hiểm du lịch hoặc nước ngoài.",
+    "npo": "Find a Doc, Japan là tổ chức phi lợi nhuận đã đăng ký tại Nhật Bản. Các tài liệu công khai theo luật được đăng tại đây."
   },
   "contactPage": {
     "heading": "Liên hệ",
@@ -258,7 +263,8 @@
     "login": "Đăng nhập",
     "myPage": "Trang của tôi",
     "logoutToast": "Đã đăng xuất",
-    "search": "Tìm kiếm"
+    "search": "Tìm kiếm",
+    "insurance": "Bảo hiểm"
   },
   "login": {
     "checkingauth": "Đang kiểm tra xác thực...",

@@ -2,7 +2,6 @@ import { gql } from 'graphql-request'
 import { graphQLClientRequestWithRetry, publicReadRequest } from './graphql'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import type { FacilitySearchResult } from './searchDirectory'
-import { useRuntimeConfig } from '#imports'
 import { facilitySelection, professionalSelection } from './graphqlSelection'
 
 const PUBLIC_REQUEST_OPTIONS = {
@@ -68,17 +67,6 @@ async function fetchProfessionalsByIds(ids: readonly string[]): Promise<Healthca
         .filter((professional): professional is HealthcareProfessional => !!professional)
 }
 
-function clinicFromRuntimeConfig(id: string): FacilitySearchResult | null | undefined {
-    const directory = useRuntimeConfig().clinicPrerenderDirectory as
-        Record<string, FacilitySearchResult> | undefined
-
-    if (!directory || Object.keys(directory).length === 0) {
-        return undefined
-    }
-
-    return directory[id] ?? null
-}
-
 async function clinicFromBundledDirectory(id: string): Promise<FacilitySearchResult | null | undefined> {
     try {
         const mod = await import('#clinic-directory')
@@ -114,11 +102,8 @@ export async function fetchFacilityFromApi(id: string): Promise<Facility | null>
 
 export async function fetchClinicById(id: string): Promise<FacilitySearchResult | null> {
     if (import.meta.server) {
-        const fromConfig = clinicFromRuntimeConfig(id)
-        if (fromConfig !== undefined) {
-            return fromConfig
-        }
-
+        // The generate-time directory is a bundled module, not runtime config: Nitro deep-copies
+        // runtime config for every prerendered route, and the directory grows with every clinic (#21).
         const fromBundle = await clinicFromBundledDirectory(id)
         if (fromBundle !== undefined) {
             return fromBundle
