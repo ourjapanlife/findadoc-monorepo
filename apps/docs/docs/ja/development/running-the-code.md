@@ -130,6 +130,8 @@ NUXT_PRERENDER_DIRECTORY_FILE=/tmp/prerender-directory.json NUXT_PRERENDER_SHARD
 pnpm --filter @findadoc/web prerender:merge /tmp/site /tmp/shard-0 /tmp/shard-1
 ```
 
+シャードの数の決め方：`Prerender N of M` の各ジョブは、ルート数と秒数をワークフロー実行のサマリーに1行書きます。シャードは担当の量にかかわらず、セットアップとアプリのビルドに約1分かかります。2026年11月は、5,134ルートを4シャードで、1シャードあたり25〜31秒でした。いちばん遅いシャードが約10分に近づいたらシャードを増やします。ジョブの上限45分より十分短く保つためです。どのシャードも数秒で終わるなら減らします。シャードごとに約1分のセットアップがかかるからです。上限は `apps/web/utils/prerenderShard.ts` の `PRERENDER_SHARD_MAX`（16）です。数は `.github/workflows/web.yml` のシャードの一覧で決まります。
+
 `NUXT_PRERENDER_SHARD` は `index/count` の形です。同じビルドのシャードは、同じディレクトリファイルと同じ `NUXT_BUILD_ID` を使います。どちらも設定しないと、1回のビルドがディレクトリを取得してすべてのページを書き出します。ディレクトリはランタイム設定ではなく、モジュールとしてサーバービルドに含めます。Nitroはページを1つ書き出すたびにランタイム設定をコピーするため、ディレクトリをそこに置くと、ディレクトリが大きくなるほどすべてのページが遅くなります。
 
 ## API（`apps/server`）
