@@ -107,8 +107,10 @@ jobs:
           NUXT_SKIP_DIRECTORY_PRERENDER: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
           NUXT_PRERENDER_DIRECTORY_FILE: ${{ github.event_name != 'pull_request' && format('{0}/prerender-directory.json', runner.temp) || '' }}
           NUXT_PRERENDER_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
-          # One build id for every shard, so the merged site has one app manifest.
-          NUXT_BUILD_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          # One build id for every shard, so the merged site has one app manifest. Set here on every
+          # run, nothing to configure. The run id, not the attempt: "Re-run failed jobs" rebuilds only
+          # the failed shards, and they must match the shards kept from the first attempt.
+          NUXT_BUILD_ID: ${{ github.run_id }}
           # Baked into the static site by nuxi generate. Amplify only hosts the zip.
           NUXT_PUBLIC_SENTRY_DSN: ${{ secrets.NUXT_PUBLIC_SENTRY_DSN }}
           NUXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ secrets.NUXT_PUBLIC_SENTRY_ENVIRONMENT }}
