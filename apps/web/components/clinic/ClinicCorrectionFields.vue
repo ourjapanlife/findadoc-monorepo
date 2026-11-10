@@ -25,7 +25,7 @@
                         class="field"
                         autocomplete="off"
                         inputmode="numeric"
-                        maxlength="18"
+                        :maxlength="FIELD_LIMITS.postalCode"
                         @input="setAddress('postalCode', inputValue($event))"
                     >
                 </div>
@@ -61,7 +61,7 @@
                     type="text"
                     class="field"
                     autocomplete="off"
-                    maxlength="64"
+                    :maxlength="FIELD_LIMITS.city"
                     @input="setAddress(addressKeys.city, inputValue($event))"
                 >
             </div>
@@ -76,7 +76,7 @@
                     type="text"
                     class="field"
                     autocomplete="off"
-                    maxlength="128"
+                    :maxlength="FIELD_LIMITS.addressLine"
                     @input="setAddress(addressKeys.line1, inputValue($event))"
                 >
             </div>
@@ -91,7 +91,7 @@
                     type="text"
                     class="field"
                     autocomplete="off"
-                    maxlength="128"
+                    :maxlength="FIELD_LIMITS.addressLine"
                     :aria-invalid="errors.address ? 'true' : undefined"
                     :aria-describedby="errors.address ? 'clinic-correction-address-error' : undefined"
                     @input="setAddress(addressKeys.line2, inputValue($event))"
@@ -197,7 +197,7 @@
                     type="tel"
                     class="field"
                     autocomplete="off"
-                    maxlength="32"
+                    :maxlength="FIELD_LIMITS.phone"
                     data-testid="clinic-correction-phone"
                     :aria-invalid="errors.phone ? 'true' : undefined"
                     :aria-describedby="errors.phone ? 'clinic-correction-phone-error' : undefined"
@@ -222,7 +222,7 @@
                     type="url"
                     class="field"
                     autocomplete="off"
-                    maxlength="512"
+                    :maxlength="FIELD_LIMITS.website"
                     data-testid="clinic-correction-website"
                     :aria-invalid="errors.website ? 'true' : undefined"
                     :aria-describedby="errors.website ? 'clinic-correction-website-error' : 'clinic-correction-website-hint'"
@@ -266,7 +266,7 @@
                 type="url"
                 class="field"
                 autocomplete="off"
-                maxlength="512"
+                :maxlength="FIELD_LIMITS.listingUrl"
                 placeholder="https://findadoc.jp/clinic/…"
                 data-testid="clinic-correction-duplicate"
                 :aria-invalid="errors.duplicateListingUrl ? 'true' : undefined"
@@ -297,6 +297,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { FacilityCorrectionReason, type Locale, type PaymentType, type PhysicalAddressInput } from '@findadoc/graphql'
+import { FIELD_LIMITS } from '@findadoc/utils'
 import { localeDisplayOptions } from '~/stores/localeStore'
 import { listPrefectureJapanEn, listPrefectureJapanJa } from '~/stores/locationsStore'
 import { isJapaneseLocale } from '~/utils/activeLocale'

@@ -9,6 +9,7 @@ import {
     type PaymentOptionsInput,
     type PhysicalAddressInput
 } from '@findadoc/graphql'
+import { fitsFieldLimit } from '@findadoc/utils'
 import { pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
 import { ErrorCode, type ServerError } from '~/typedefs/serverResponse'
 import { validatePhoneNumber } from '~/utils/formValidations'
@@ -23,13 +24,7 @@ import { SEARCHABLE_LANGUAGES } from '~/utils/homeDirectory'
  * sent: "the phone is wrong" with no new number is useful to a moderator.
  */
 
-/** Matches CORRECTION_NOTES_MAX in apps/server/src/corrections/facilityCorrection.ts. */
-export const CORRECTION_NOTES_MAX = 1000
-
-/** The same limits as the API (validateFacilityCorrection.ts and validateAddressInput). */
-const WEBSITE_MAX = 512
-const ADDRESS_LINE_MAX = 128
-const CITY_MAX = 64
+/* Lengths come from FIELD_LIMITS in @findadoc/utils, the same numbers the API checks. */
 
 /** Matches the server's listing hosts: the apex or www, never a clinic subdomain. */
 const LISTING_HOSTS: ReadonlySet<string> = new Set(['findadoc.jp', 'www.findadoc.jp'])
@@ -266,7 +261,7 @@ export function isValidListingUrl(value: string): boolean {
     if (trimmed === '') {
         return true
     }
-    const url = httpsUrl(trimmed)
+    const url = fitsFieldLimit('listingUrl', trimmed) ? httpsUrl(trimmed) : null
     return url !== null && LISTING_HOSTS.has(url.hostname)
 }
 
@@ -308,7 +303,7 @@ export function correctionRefusal(errors: readonly Pick<ServerError, 'code'>[] |
 /** Empty clears the website. Anything else must be https, like every stored website. */
 export function isValidCorrectionWebsite(value: string): boolean {
     const trimmed = value.trim()
-    return trimmed === '' || (trimmed.length <= WEBSITE_MAX && httpsUrl(trimmed) !== null)
+    return trimmed === '' || (fitsFieldLimit('website', trimmed) && httpsUrl(trimmed) !== null)
 }
 
 export type CorrectionDraftField = 'reasons' | 'phone' | 'website' | 'duplicateListingUrl' | 'address'
@@ -341,7 +336,7 @@ export function correctionDraftErrors(
         const address = trimmedAddress(draft.address)
         const lines = [address.addressLine1En, address.addressLine2En, address.addressLine1Ja, address.addressLine2Ja]
         const cities = [address.cityEn, address.cityJa]
-        if (lines.some(line => line.length > ADDRESS_LINE_MAX) || cities.some(city => city.length > CITY_MAX)) {
+        if (lines.some(line => !fitsFieldLimit('addressLine', line)) || cities.some(city => !fitsFieldLimit('city', city))) {
             errors.address = 'clinicCorrection.addressTooLong'
         }
     }

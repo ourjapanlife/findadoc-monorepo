@@ -7,6 +7,7 @@ import {
     Locale,
     PaymentType
 } from '@findadoc/graphql'
+import { FIELD_LIMITS } from '@findadoc/utils'
 import {
     addressWithPrefecture,
     correctionDraftErrors,
@@ -98,6 +99,14 @@ describe('clinic correction form', () => {
             FacilityCorrectionReason.WrongContact,
             FacilityCorrectionReason.WrongCity
         ])).to.deep.equal(['address', 'contact', 'duplicate'])
+    })
+
+    it('uses the shared field limits for the website and the duplicate link', () => {
+        const longWebsite = `https://clinic.example.com/${'a'.repeat(FIELD_LIMITS.website)}`
+        const longListing = `https://findadoc.jp/clinic/${'a'.repeat(FIELD_LIMITS.listingUrl)}`
+
+        expect(isValidCorrectionWebsite(longWebsite)).to.equal(false)
+        expect(isValidListingUrl(longListing)).to.equal(false)
     })
 
     it('toggles a reason and keeps the form order', () => {

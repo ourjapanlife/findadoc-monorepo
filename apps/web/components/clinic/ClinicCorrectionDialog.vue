@@ -159,7 +159,7 @@
                             v-model="draft.notes"
                             data-testid="clinic-correction-notes"
                             class="field field-textarea"
-                            :maxlength="CORRECTION_NOTES_MAX"
+                            :maxlength="FIELD_LIMITS.correctionNotes"
                             aria-describedby="clinic-correction-notes-hint"
                         />
                         <p
@@ -167,7 +167,7 @@
                             class="field-hint flex justify-between gap-4"
                         >
                             <span>{{ t('clinicCorrection.notesHint') }}</span>
-                            <span class="shrink-0">{{ draft.notes.length }}/{{ CORRECTION_NOTES_MAX }}</span>
+                            <span class="shrink-0">{{ draft.notes.length }}/{{ FIELD_LIMITS.correctionNotes }}</span>
                         </p>
                     </div>
 
@@ -232,6 +232,7 @@
 import { computed, onMounted, ref, useId } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FacilityCorrectionReason } from '@findadoc/graphql'
+import { FIELD_LIMITS } from '@findadoc/utils'
 import SvgHeartIcon from '~/assets/icons/heart-icon.svg'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useScrollLock } from '~/composables/useScrollLock'
@@ -240,7 +241,6 @@ import { useFacilityCorrectionStore } from '~/stores/facilityCorrectionStore'
 import { isJapaneseLocale } from '~/utils/activeLocale'
 import { correctionSubmittedProps } from '~/utils/analyticsEvents'
 import {
-    CORRECTION_NOTES_MAX,
     CORRECTION_REASON_OPTIONS,
     CORRECTION_RELATION_OPTIONS,
     correctionDraftFromBaseline,
