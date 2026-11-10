@@ -57,7 +57,7 @@ export const MCP_GRAPHQL_ENDPOINT = 'https://api.findadoc.jp'
 
 // CloudFormation reads the findadoc/api secret only when the function changes. After
 // editing a value in Secrets Manager, bump this so the next deploy picks it up.
-export const API_SECRETS_REVISION = '2'
+export const API_SECRETS_REVISION = '3'
 
 export const GITHUB_REPOSITORY = 'ourjapanlife/findadoc-monorepo'
 
