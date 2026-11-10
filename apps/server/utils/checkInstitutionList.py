@@ -270,38 +270,64 @@ def first_url(value):
     return match.group(0) if match else ''
 
 
-def fetch(url, cache):
+# curl exit codes that say the TLS certificate is wrong for a browser too. An incomplete chain
+# ("unable to get local issuer certificate") is not one: browsers fetch the missing intermediate.
+CERTIFICATE_ERRORS = ('no alternative certificate subject name', 'certificate has expired', 'self-signed certificate',
+                      'self signed certificate', 'certificate subject name', 'unable to verify the first certificate')
+INCOMPLETE_CHAIN = 'unable to get local issuer certificate'
+# Answers that say nothing about the site from inside Japan: many clinic and hospital sites refuse
+# traffic from abroad, rate-limit, or time out for a crawler.
+BLOCKED_STATUSES = {0, 403, 405, 429, 500, 502, 503, 504}
+
+
+def fetch(url, cache, retry=False):
     digest = hashlib.sha1(url.encode()).hexdigest()
     meta_path, body_path = cache / f'{digest}.json', cache / digest
     if meta_path.exists():
-        return json.loads(meta_path.read_text())
-    command = ['curl', '-sS', '-L', '--max-redirs', '6', '-m', '25', '--connect-timeout', '12', '-A', USER_AGENT,
+        cached = json.loads(meta_path.read_text())
+        if not (retry and classify(cached) == 'blocked'):
+            return cached
+    command = ['curl', '-sS', '-L', '--max-redirs', '6', '-m', '30', '--connect-timeout', '15', '-A', USER_AGENT,
                '--max-filesize', '3000000', '-o', str(body_path), '-w', '%{http_code} %{url_effective}', url]
     proxy = os.environ.get('HTTPS_PROXY')
     if proxy:
         command[1:1] = ['--proxytunnel', '-x', proxy]
     try:
-        done = subprocess.run(command, capture_output=True, text=True, timeout=45)
+        done = subprocess.run(command, capture_output=True, text=True, timeout=50)
         code, _, final = done.stdout.strip().partition(' ')
-        error = done.stderr.strip().splitlines()[-1][:160] if done.stderr.strip() else ''
-        result = {'status': int(code) if code.isdigit() else 0, 'final': final, 'error': error}
+        errors = [line for line in done.stderr.splitlines() if line.startswith('curl:')]
+        result = {'status': int(code) if code.isdigit() else 0, 'final': final,
+                  'exit': done.returncode, 'error': errors[0][:200] if errors else ''}
     except subprocess.TimeoutExpired:
-        result = {'status': 0, 'final': '', 'error': 'timeout'}
+        result = {'status': 0, 'final': '', 'exit': 28, 'error': 'timeout'}
     result['body'] = str(body_path) if body_path.exists() else None
     meta_path.write_text(json.dumps(result))
     return result
 
 
-def check_site(url, cache):
-    """https first. The http answer only tells us the site exists without https."""
+def classify(result):
+    """ok, incomplete_chain, bad_certificate, not_found, dns, or blocked (cannot tell from here)."""
+    status, error = result['status'], result.get('error', '')
+    if 200 <= status < 400:
+        return 'ok'
+    if INCOMPLETE_CHAIN in error:
+        return 'incomplete_chain'
+    if any(text in error for text in CERTIFICATE_ERRORS):
+        return 'bad_certificate'
+    if status in (404, 410):
+        return 'not_found'
+    if result.get('exit') == 6 or 'Could not resolve host' in error:
+        return 'dns'
+    return 'blocked'
+
+
+def check_site(url, cache, retry=False):
+    """The https answer, and the http answer when https did not work."""
     https = 'https://' + url.split('://', 1)[1]
-    first = fetch(https, cache)
-    if 200 <= first['status'] < 400:
-        return 'https', first
-    second = fetch('http://' + https.split('://', 1)[1], cache)
-    if 200 <= second['status'] < 400:
-        return 'http', second
-    return None, first
+    first = fetch(https, cache, retry)
+    if classify(first) in ('ok', 'incomplete_chain'):
+        return first, None
+    return first, fetch('http://' + https.split('://', 1)[1], cache, retry)
 
 
 def page_text(path):
@@ -338,24 +364,47 @@ def host(url):
         return ''
 
 
-def site_evidence(row, registry_url, cache):
-    """The https link to store and why, or an empty link."""
+def site_evidence(row, registry_url, cache, retry=False):
+    """The https link to store (None: the sheet had none), why, and what the page names.
+
+    - https works: store where it ended, unless it left for another host that names neither the
+      clinic nor its phone.
+    - The certificate only lacks an intermediate: browsers open it, so store it.
+    - https is refused for a reason a browser shows too (wrong name, expired) and http answers, or the
+      page is gone (404, no such host): store none.
+    - Nothing answers from here (blocked abroad, rate limit, timeout): keep the link only when the
+      clinic itself published https, since nobody saw https work for an http link.
+    When the sheet's link is not stored, the registry's link is used if it works and names the clinic.
+    """
     sheet_url = first_url(row['raw'].get('WEBサイト', ''))
-    status = 'none'
+    status, keep = 'none', None
     if sheet_url:
-        scheme, result = check_site(sheet_url, cache)
-        if scheme == 'https':
-            named = mentions(result, row)
-            if named or host(result['final']) == host(sheet_url):
-                return result['final'], 'https_ok', named
+        https, http = check_site(sheet_url, cache, retry)
+        kind = classify(https)
+        if kind == 'ok':
+            named = mentions(https, row)
+            if named or host(https['final']) == host(sheet_url):
+                return https['final'], 'https_ok', named
             status = 'redirects_elsewhere'
+        elif kind == 'incomplete_chain':
+            return 'https://' + sheet_url.split('://', 1)[1], 'https_incomplete_chain', []
+        elif http is not None and classify(http) == 'ok':
+            status = 'http_only'
+        elif kind in ('not_found', 'dns') or (http is not None and classify(http) in ('not_found', 'dns')):
+            status = 'gone'
+        elif kind == 'bad_certificate':
+            status = 'bad_certificate'
         else:
-            status = 'http_only' if scheme == 'http' else 'unreachable'
-    if registry_url and registry_url != sheet_url:
-        scheme, result = check_site(registry_url, cache)
-        named = mentions(result, row) if scheme == 'https' else []
-        if scheme == 'https' and named:
-            return result['final'], 'from_registry', named
+            status = 'unverified'
+            if sheet_url.lower().startswith('https://'):
+                keep = sheet_url
+    if registry_url and registry_url != sheet_url and keep is None:
+        https, _ = check_site(registry_url, cache, retry)
+        named = mentions(https, row) if classify(https) == 'ok' else []
+        if named:
+            return https['final'], 'from_registry', named
+    if keep:
+        return keep, 'unverified_https_kept', []
     return ('', status, []) if sheet_url else (None, status, [])
 
 
@@ -370,6 +419,8 @@ def main():
     parser.add_argument('--cache', required=True)
     parser.add_argument('--out', required=True)
     parser.add_argument('--skip-websites', action='store_true')
+    parser.add_argument('--retry-blocked', action='store_true',
+                        help='fetch again, slowly, every cached answer that said nothing (blocked, timeout)')
     args = parser.parse_args()
 
     document = json.loads(Path(args.rows).read_text(encoding='utf-8'))
@@ -397,9 +448,9 @@ def main():
     if not args.skip_websites:
         def work(key):
             row, registry_url = sites[key]
-            return key, site_evidence(row, registry_url, cache)
+            return key, site_evidence(row, registry_url, cache, args.retry_blocked)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=24) as pool:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4 if args.retry_blocked else 24) as pool:
             for done, (key, (url, status, named)) in enumerate(pool.map(work, sites), start=1):
                 if url is not None:
                     evidence[key]['website'] = url
