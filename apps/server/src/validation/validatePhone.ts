@@ -1,14 +1,12 @@
+import { fitsFieldLimit } from '@findadoc/utils'
 import { isValidJapanPhone, toJapanE164 } from '../../utils/stringUtils.js'
-
-/** Longest phone text the API will read. A real number with spacing is well under this. */
-const PHONE_INPUT_MAX = 40
 
 /**
  * True when a facility phone parses as a Japanese number. Any spacing, hyphens, or full-width
  * digits are fine; a foreign number, an extension, or a note is not.
  */
 export function isStorablePhone(phone: string): boolean {
-    return phone.length <= PHONE_INPUT_MAX && isValidJapanPhone(phone)
+    return fitsFieldLimit('phone', phone) && isValidJapanPhone(phone)
 }
 
 /**

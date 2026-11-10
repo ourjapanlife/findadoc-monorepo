@@ -13,6 +13,7 @@ import {
     type ContactInput,
     type FacilityCorrectionInput
 } from '@findadoc/graphql'
+import { FIELD_LIMITS } from '@findadoc/utils'
 import { db } from '../src/kyselyClient.js'
 import { ErrorCode } from '../src/result.js'
 import { gqlApiUrl } from './testSetup.test.js'
@@ -21,7 +22,6 @@ import type { UserContext } from '../src/auth.js'
 import { submitFacilityCorrection } from '../src/services/facilityCorrectionService.js'
 import { searchSubmissions, updateSubmission } from '../src/services/submissionService.js'
 import { validateFacilityCorrectionInput } from '../src/validation/validateFacilityCorrection.js'
-import { CORRECTION_NOTES_MAX } from '../src/corrections/facilityCorrection.js'
 import {
     DECIDED_NOTES_RETENTION_DAYS,
     UNDECIDED_NOTES_RETENTION_DAYS
@@ -158,7 +158,7 @@ describe('validateFacilityCorrectionInput', () => {
         const long = validateFacilityCorrectionInput({
             facilityId,
             reasons: [FacilityCorrectionReason.Other],
-            notes: 'a'.repeat(CORRECTION_NOTES_MAX + 1)
+            notes: 'a'.repeat(FIELD_LIMITS.correctionNotes + 1)
         })
         const script = validateFacilityCorrectionInput({
             facilityId,
@@ -200,6 +200,22 @@ describe('validateFacilityCorrectionInput', () => {
         expect(errorCodes(other)).toContain(ErrorCode.INVALID_LISTING_URL)
         expect(errorCodes(script)).toContain(ErrorCode.INVALID_LISTING_URL)
         expect(listing.hasErrors).toBe(false)
+    })
+
+    it('refuses a payment brand outside the controlled list', () => {
+        const free = validateFacilityCorrectionInput({
+            facilityId,
+            reasons: [FacilityCorrectionReason.WrongPayment],
+            paymentOptions: [{ paymentType: PaymentType.CreditCard, paymentBrands: ['My Card'] }]
+        })
+        const listed = validateFacilityCorrectionInput({
+            facilityId,
+            reasons: [FacilityCorrectionReason.WrongPayment],
+            paymentOptions: [{ paymentType: PaymentType.CreditCard, paymentBrands: ['Visa'] }]
+        })
+
+        expect(errorCodes(free)).toEqual([ErrorCode.INVALID_INPUT])
+        expect(listed.hasErrors).toBe(false)
     })
 
     it('refuses a language that is not published', () => {

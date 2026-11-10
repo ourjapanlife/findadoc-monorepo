@@ -9,9 +9,6 @@ import type { CorrectionChanges } from '../typeDefs/kyselyTypes.js'
  * keys present in correction_changes.
  */
 
-/** Longest free-text note a visitor may send. */
-export const CORRECTION_NOTES_MAX = 1000
-
 /** The input fields a visitor may change, and the reason each one needs. */
 export const CORRECTION_FIELD_REASON = {
     address: gqlTypes.FacilityCorrectionReason.WrongCity,

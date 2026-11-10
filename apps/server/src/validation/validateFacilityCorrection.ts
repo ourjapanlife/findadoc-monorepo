@@ -1,21 +1,20 @@
-import * as gqlTypes from '@findadoc/graphql'
+import type * as gqlTypes from '@findadoc/graphql'
+import { fitsFieldLimit } from '@findadoc/utils'
 import { ErrorCode, type Error as ValidationError, type Result } from '../result.js'
 import { hasScriptTags, isValidWebsite } from '../../utils/stringUtils.js'
 import { isStorablePhone } from './validatePhone.js'
-import { UUID_REGEX, validateAddressInput, validateSupportedLanguages } from './validateFacility.js'
+import {
+    UUID_REGEX,
+    validateAddressInput,
+    validatePaymentOptions,
+    validateSupportedLanguages
+} from './validateFacility.js'
 import {
     CORRECTION_FIELD_REASON,
     CORRECTION_FIELDS,
-    CORRECTION_NOTES_MAX,
     isCorrectionReporterRelation,
     isFacilityCorrectionReason
 } from '../corrections/facilityCorrection.js'
-
-const WEBSITE_MAX = 512
-const LISTING_URL_MAX = 512
-const PAYMENT_OPTIONS_MAX = Object.keys(gqlTypes.PaymentType).length
-const PAYMENT_BRANDS_MAX = 16
-const PAYMENT_BRAND_MAX = 64
 
 // The apex or www. A clinic subdomain is a clinic site, not a directory listing.
 const LISTING_HOSTS: ReadonlySet<string> = new Set(['findadoc.jp', 'www.findadoc.jp'])
@@ -71,39 +70,21 @@ function contactErrors(input: gqlTypes.FacilityCorrectionInput): ValidationError
         errors.push(invalid('phone', ErrorCode.INVALID_PHONE_NUMBER))
     }
     if (website !== undefined && website !== ''
-        && (website.length > WEBSITE_MAX || httpsUrl(website) === null || !isValidWebsite(website))) {
+        && (!fitsFieldLimit('website', website) || httpsUrl(website) === null || !isValidWebsite(website))) {
         errors.push(invalid('website', ErrorCode.INVALID_WEBSITE))
     }
     return errors
 }
 
+/** The controlled payment list, the same check as a facility update (#20). */
 function paymentErrors(options: gqlTypes.PaymentOptionsInput[]): ValidationError[] {
-    if (options.length > PAYMENT_OPTIONS_MAX) {
-        return [invalid('paymentOptions', ErrorCode.MAX_LIMIT)]
-    }
-    if (new Set(options.map(option => option.paymentType)).size !== options.length) {
-        return [invalid('paymentOptions', ErrorCode.INVALID_INPUT)]
-    }
-
-    const errors: ValidationError[] = []
-
-    options.forEach((option, index) => {
-        const brands = option.paymentBrands ?? []
-        if (brands.length > PAYMENT_BRANDS_MAX) {
-            errors.push(invalid(`paymentOptions[${index}].paymentBrands`, ErrorCode.MAX_LIMIT))
-        }
-        if (brands.some(brand => brand.length > PAYMENT_BRAND_MAX)) {
-            errors.push(invalid(`paymentOptions[${index}].paymentBrands`, ErrorCode.INVALID_LENGTH_TOO_LONG))
-        }
-        if (brands.some(brand => hasScriptTags(brand))) {
-            errors.push(invalid(`paymentOptions[${index}].paymentBrands`, ErrorCode.INVALID_INPUT))
-        }
-    })
-    return errors
+    const result: Result<unknown> = { data: undefined, hasErrors: false, errors: [] }
+    validatePaymentOptions(options, result)
+    return result.errors ?? []
 }
 
 function listingUrlErrors(value: string): ValidationError[] {
-    const url = value.length > LISTING_URL_MAX ? null : httpsUrl(value.trim())
+    const url = fitsFieldLimit('listingUrl', value) ? httpsUrl(value.trim()) : null
 
     if (url === null || !LISTING_HOSTS.has(url.hostname)) {
         return [invalid('duplicateListingUrl', ErrorCode.INVALID_LISTING_URL)]
@@ -112,7 +93,7 @@ function listingUrlErrors(value: string): ValidationError[] {
 }
 
 function notesErrors(notes: string): ValidationError[] {
-    if (notes.length > CORRECTION_NOTES_MAX) {
+    if (!fitsFieldLimit('correctionNotes', notes)) {
         return [invalid('notes', ErrorCode.INVALID_LENGTH_TOO_LONG)]
     }
     if (hasScriptTags(notes)) {

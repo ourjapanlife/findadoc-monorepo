@@ -19,9 +19,11 @@ visitor changed. Each field belongs to one reason, and the API refuses a field s
 | `DUPLICATE` | `duplicateListingUrl` (`https://findadoc.jp` or `https://www.findadoc.jp`) |
 | `CLOSED`, `OTHER` | none |
 
-Optional: `notes` (up to 1000 characters) and `reporterRelation` (`PATIENT`, `STAFF`, `CALLED`,
-`WEBSITE`). There is no name, email, or phone of the visitor. The facility must be published: a
-city, and not `UNVERIFIED_LOCATION`.
+Optional: `notes` (up to `FIELD_LIMITS.correctionNotes` characters, from `@findadoc/utils`) and `reporterRelation` (`PATIENT`, `STAFF`, `CALLED`,
+`WEBSITE`). There is no name, email, or phone of the visitor. Lengths come from `FIELD_LIMITS`,
+the same numbers the form uses. Payment options follow the controlled list in
+`@findadoc/utils` (`paymentOptionsProblem`). The facility must be published: a city, and not
+`UNVERIFIED_LOCATION`.
 
 The changed fields go in `correction_changes`, not `facility_partial`. Listing approval and the
 moderation edit form read `facility_partial` as a whole new facility.
