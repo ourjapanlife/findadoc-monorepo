@@ -14,6 +14,8 @@
         "build": "nuxi generate",
         "prepare:ci": "nuxi prepare",
         "check:directory-drift": "tsx scripts/checkDirectoryDrift.ts",
+        "prerender:directory": "tsx scripts/fetchPrerenderDirectory.ts",
+        "prerender:merge": "tsx scripts/mergePrerenderShards.ts",
         "test": "pnpm test:unit",
         "test:unit": "nuxi prepare && vitest run -c vitest.unit.config.ts --coverage",
         "test:unit:coverage": "nuxi prepare && vitest run -c vitest.unit.config.ts --coverage",

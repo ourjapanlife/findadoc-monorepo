@@ -2,7 +2,6 @@ import { gql } from 'graphql-request'
 import { graphQLClientRequestWithRetry, publicReadRequest } from './graphql'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import type { ProfessionalSearchResult } from './clinicPrerender'
-import { useRuntimeConfig } from '#imports'
 import { facilitySelection, professionalSelection } from './graphqlSelection'
 
 const PUBLIC_REQUEST_OPTIONS = {
@@ -39,13 +38,6 @@ function doctorFromPrerenderDirectory(
     return directory[id] ?? null
 }
 
-function doctorFromRuntimeConfig(id: string): ProfessionalSearchResult | null | undefined {
-    const directory = useRuntimeConfig().doctorPrerenderDirectory as
-        Record<string, ProfessionalSearchResult> | undefined
-
-    return doctorFromPrerenderDirectory(directory, id)
-}
-
 async function doctorFromBundledDirectory(id: string): Promise<ProfessionalSearchResult | null | undefined> {
     try {
         const mod = await import('#doctor-directory')
@@ -74,11 +66,7 @@ function facilitiesInListedOrder(
 
 export async function fetchDoctorById(id: string): Promise<ProfessionalSearchResult | null> {
     if (import.meta.server) {
-        const fromConfig = doctorFromRuntimeConfig(id)
-        if (fromConfig !== undefined) {
-            return fromConfig
-        }
-
+        // Bundled, not runtime config, so a prerendered route does not copy the directory (#21).
         const fromBundle = await doctorFromBundledDirectory(id)
         if (fromBundle !== undefined) {
             return fromBundle
