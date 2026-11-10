@@ -964,7 +964,7 @@ export type CreateFacilityInput = {
    * When true, address, city, and map may be omitted.
    */
   online?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Payment options for the facility, Type and Brand */
+  /** Payment types and brands from the controlled list. Each type once. An empty list is unknown. */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
   /** Where this facility record came from. */
   source?: InputMaybe<FacilitySource>;
@@ -1134,7 +1134,10 @@ export type Facility = {
    * Default is false. Address, city, and map are not required when true.
    */
   online: Scalars['Boolean']['output'];
-  /** The payment methods accepted by this facility. */
+  /**
+   * Payment methods this facility accepts (#20). An empty list is unknown, not cash only.
+   * Brands come from a controlled list for each type.
+   */
   paymentOptions?: Maybe<Array<PaymentOption>>;
   /** Where the facility record came from. Null on rows that have not been classified. */
   source?: Maybe<FacilitySource>;
@@ -1853,13 +1856,16 @@ export type PatientBookingView = {
 /** Represents a payment method accepted at a healthcare facility. */
 export type PaymentOption = {
   __typename?: 'PaymentOption';
-  /** Specific brands or networks accepted (e.g., 'Visa', 'Mastercard', 'Suica', 'PayPay'). */
+  /**
+   * Brands accepted for this type: Visa, Mastercard, American Express, JCB, Diners Club,
+   * UnionPay, IC (Suica, PASMO), PayPay, or Other. Empty when the type has no brand or none is known.
+   */
   paymentBrands?: Maybe<Array<Scalars['String']['output']>>;
   /** The general category of payment (e.g., 'Credit Card', 'Cash', 'Electronic Money'). */
   paymentType: PaymentType;
 };
 
-/** Payment Options input for adding facility  */
+/** One payment type and its brands from the controlled list (#20). */
 export type PaymentOptionsInput = {
   paymentBrands?: InputMaybe<Array<Scalars['String']['input']>>;
   paymentType: PaymentType;
@@ -1875,13 +1881,15 @@ export type PaymentQrUploadUrl = {
   uploadUrl: Scalars['String']['output'];
 };
 
-/** List of payment types for healthcare facilities */
+/**
+ * Payment types a healthcare facility accepts (#20). Japanese public insurance is
+ * Facility.japaneseInsurance, not a payment type.
+ */
 export enum PaymentType {
   Cash = 'CASH',
   CreditCard = 'CREDIT_CARD',
   DebitCard = 'DEBIT_CARD',
   ElectronicMoney = 'ELECTRONIC_MONEY',
-  Insurance = 'INSURANCE',
   QrCode = 'QR_CODE'
 }
 
@@ -2624,7 +2632,7 @@ export type UpdateFacilityInput = {
    * Omit to leave the stored value unchanged.
    */
   online?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Payment options for the facility, Type and Brand */
+  /** Payment types and brands from the controlled list. Each type once. An empty list is unknown. */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
   /** Where this facility record came from. */
   source?: InputMaybe<FacilitySource>;

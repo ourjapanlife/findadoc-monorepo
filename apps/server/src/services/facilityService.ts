@@ -1,4 +1,5 @@
 import * as gqlTypes from '@findadoc/graphql'
+import { normalizePaymentOptions } from '@findadoc/utils'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import { logger, errorLogFields } from '../logger.js'
@@ -227,7 +228,7 @@ export function buildFacilityUpdatePatch(
         }
     }
     if (fields.paymentOptions !== undefined) {
-        updatePatch.payment_options = JSON.stringify(fields.paymentOptions)
+        updatePatch.payment_options = JSON.stringify(normalizePaymentOptions(fields.paymentOptions))
     }
     if (fields.source !== undefined) {
         updatePatch.source = fields.source
@@ -679,7 +680,7 @@ export async function createFacility(
                     contact: canonicalContact.contact,
                     map_latitude: isOnline ? null : (facilityInput.mapLatitude ?? null),
                     map_longitude: isOnline ? null : (facilityInput.mapLongitude ?? null),
-                    payment_options: JSON.stringify(facilityInput.paymentOptions ?? []),
+                    payment_options: JSON.stringify(normalizePaymentOptions(facilityInput.paymentOptions)),
                     city_id: cityId,
                     google_place_id: googlePlaceId,
                     source: facilityInput.source ?? FacilitySource.Manual,

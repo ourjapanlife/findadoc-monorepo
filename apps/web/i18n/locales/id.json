@@ -603,7 +603,9 @@
     "japaneseInsuranceHint": "Biarkan tidak diketahui sampai situs klinik, daftar biro kesehatan regional, atau telepon memastikannya. Ada klinik yang hanya melayani pasien mandiri, jadi jangan menebak.",
     "japaneseInsuranceNotAccepted": "Tidak menerima asuransi kesehatan publik Jepang. Kunjungan dibayar mandiri.",
     "japaneseInsuranceSourceLabel": "Sumber",
-    "japaneseInsuranceSourcePlaceholder": "Tautan, atau catatan seperti: menelepon klinik pada 2 Nov 2026"
+    "japaneseInsuranceSourcePlaceholder": "Tautan, atau catatan seperti: menelepon klinik pada 2 Nov 2026",
+    "paymentLabel": "Metode pembayaran",
+    "paymentHint": "Centang hanya yang dikonfirmasi oleh situs web klinik atau lewat telepon. Jika tidak tahu, biarkan semuanya kosong. Pembaca tidak akan melihat apa pun, bukan \"hanya tunai\"."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",
@@ -737,7 +739,8 @@
     "professionalsAtFacility": "Tidak ada tenaga kesehatan yang tercantum | 1 tenaga kesehatan | {n} tenaga kesehatan",
     "pageHeading": "Temukan dokter di Jepang",
     "mapUnavailable": "Peta tidak dapat dimuat.",
-    "mapUnavailableHint": "Hasil lainnya tidak terpengaruh."
+    "mapUnavailableHint": "Hasil lainnya tidak terpengaruh.",
+    "payment": "Pembayaran"
   },
   "breadcrumbs": {
     "navLabel": "Navigasi jalur",
@@ -1265,5 +1268,25 @@
     "submissions": "Pengajuan tidak dapat dimuat. Coba lagi.",
     "facilities": "Klinik tidak dapat dimuat. Coba lagi.",
     "professionals": "Tenaga kesehatan tidak dapat dimuat. Coba lagi."
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "Tunai",
+      "creditCard": "Kartu kredit",
+      "debitCard": "Kartu debit",
+      "electronicMoney": "Uang elektronik",
+      "qrCode": "Pembayaran kode QR"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "Kartu IC (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "Lainnya"
+    }
   }
 }

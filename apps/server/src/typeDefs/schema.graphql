@@ -41,7 +41,10 @@ type Facility {
   createdDate: String!
   """ISO 8601 timestamp of the last update to this facility."""
   updatedDate: String!
-  """The payment methods accepted by this facility."""
+  """
+  Payment methods this facility accepts (#20). An empty list is unknown, not cash only.
+  Brands come from a controlled list for each type.
+  """
   paymentOptions: [PaymentOption!]
   """City this facility is published under. Null until a city we own is chosen."""
   cityId: ID
@@ -90,7 +93,7 @@ input CreateFacilityInput {
   healthcareProfessionalIds: [ID!]
   """Published languages this facility advertises. Does not create a professional."""
   supportedLanguages: [Locale!]
-  """Payment options for the facility, Type and Brand"""
+  """Payment types and brands from the controlled list. Each type once. An empty list is unknown."""
   paymentOptions: [PaymentOptionsInput!]
   """Id of a city in the vocabulary. Publishing under a city requires this."""
   cityId: ID
@@ -127,7 +130,7 @@ input UpdateFacilityInput {
   healthcareProfessionalIds: [Relationship!]
   """Replacement published language list. An empty list clears it. Does not create a professional."""
   supportedLanguages: [Locale!]
-  """Payment options for the facility, Type and Brand"""
+  """Payment types and brands from the controlled list. Each type once. An empty list is unknown."""
   paymentOptions: [PaymentOptionsInput!]
   """Id of a city in the vocabulary. Null clears the city and marks the row unresolved."""
   cityId: ID
@@ -2210,7 +2213,7 @@ enum FacilityVerificationStatus {
 }
 
 """
-Payment Options input for adding facility 
+One payment type and its brands from the controlled list (#20).
 """
 input PaymentOptionsInput {
     paymentType: PaymentType!
@@ -2218,16 +2221,16 @@ input PaymentOptionsInput {
 }
 
 """
-List of payment types for healthcare facilities
+Payment types a healthcare facility accepts (#20). Japanese public insurance is
+Facility.japaneseInsurance, not a payment type.
 """
- enum PaymentType{
+enum PaymentType {
   CASH
   CREDIT_CARD
   DEBIT_CARD
-  ELECTRONIC_MONEY    
-  QR_CODE             
-  INSURANCE  
-  }
+  ELECTRONIC_MONEY
+  QR_CODE
+}
 
 """
 Represents a payment method accepted at a healthcare facility.
@@ -2236,7 +2239,10 @@ type PaymentOption {
   """The general category of payment (e.g., 'Credit Card', 'Cash', 'Electronic Money')."""
   paymentType: PaymentType!
   
-  """Specific brands or networks accepted (e.g., 'Visa', 'Mastercard', 'Suica', 'PayPay')."""
+  """
+  Brands accepted for this type: Visa, Mastercard, American Express, JCB, Diners Club,
+  UnionPay, IC (Suica, PASMO), PayPay, or Other. Empty when the type has no brand or none is known.
+  """
   paymentBrands: [String!]
 }
 

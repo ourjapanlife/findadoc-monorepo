@@ -1,4 +1,5 @@
 import * as gqlTypes from '@findadoc/graphql'
+import { normalizePaymentOptions } from '@findadoc/utils'
 import { ErrorCode, Result, type Error as ValidationError } from '../result.js'
 import {
     isValidHpInput,
@@ -856,7 +857,7 @@ export const approveSubmission = async (
                         map_longitude: isOnline ? null : (facilityInput.mapLongitude ?? null),
                         created_date: new Date().toISOString(),
                         updated_date: new Date().toISOString(),
-                        payment_options: JSON.stringify(facilityInput.paymentOptions ?? []),
+                        payment_options: JSON.stringify(normalizePaymentOptions(facilityInput.paymentOptions)),
                         city_id: null,
                         google_place_id: googlePlaceId,
                         source: null,

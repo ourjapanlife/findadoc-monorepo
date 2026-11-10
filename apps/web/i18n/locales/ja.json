@@ -486,7 +486,9 @@
     "japaneseInsuranceHint": "クリニックのサイト、地方厚生局の一覧、または電話で確認できるまでは「不明」のままにする。自由診療のみのクリニックもあるので、推測しない。",
     "japaneseInsuranceNotAccepted": "公的医療保険を扱っていない。受診は自費になる。",
     "japaneseInsuranceSourceLabel": "情報源",
-    "japaneseInsuranceSourcePlaceholder": "リンク、または「2026年11月2日にクリニックに電話で確認」などのメモ"
+    "japaneseInsuranceSourcePlaceholder": "リンク、または「2026年11月2日にクリニックに電話で確認」などのメモ",
+    "paymentLabel": "支払い方法",
+    "paymentHint": "クリニックのウェブサイトか電話で確認できたものだけをチェックしてください。わからない場合は何もチェックしないでください。その場合、閲覧者には何も表示されず、現金のみとは扱われません。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新して終了",
@@ -737,7 +739,8 @@
     "professionalsAtFacility": "医療従事者の掲載なし | 医療従事者 1 名 | 医療従事者 {n} 名",
     "pageHeading": "日本で医師を探す",
     "mapUnavailable": "地図を読み込めませんでした。",
-    "mapUnavailableHint": "検索結果の表示には影響ありません。"
+    "mapUnavailableHint": "検索結果の表示には影響ありません。",
+    "payment": "支払い方法"
   },
   "clinicPage": {
     "backToSearch": "検索に戻る",
@@ -1265,5 +1268,25 @@
     "submissions": "申請を読み込めませんでした。もう一度お試しください。",
     "facilities": "医療機関を読み込めませんでした。もう一度お試しください。",
     "professionals": "医療従事者を読み込めませんでした。もう一度お試しください。"
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "現金",
+      "creditCard": "クレジットカード",
+      "debitCard": "デビットカード",
+      "electronicMoney": "電子マネー",
+      "qrCode": "QRコード決済"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "交通系ICカード（Suica、PASMO）",
+      "payPay": "PayPay",
+      "other": "その他"
+    }
   }
 }

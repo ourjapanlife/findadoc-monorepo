@@ -42,6 +42,7 @@ function section(fields: Partial<FacilitySectionFields>): FacilitySectionFields 
         online: true,
         japaneseInsurance: '',
         japaneseInsuranceSource: '',
+        paymentOptions: [],
         healthcareProfessionalIds: [],
         healthProfessionalsRelations: [],
         ...fields

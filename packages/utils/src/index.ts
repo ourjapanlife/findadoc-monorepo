@@ -55,3 +55,14 @@ export {
     type CleanHoursRepeat,
     type HoursRepeatRule
 } from './hoursRepeat.js'
+export {
+    isPaymentBrand,
+    isPaymentType,
+    normalizePaymentOptions,
+    PAYMENT_BRANDS,
+    PAYMENT_TYPE_BRANDS,
+    PAYMENT_TYPES,
+    paymentOptionsProblem,
+    type PaymentBrand,
+    type PaymentOptionsProblem
+} from './paymentOptions.js'

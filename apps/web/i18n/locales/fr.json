@@ -483,7 +483,9 @@
     "japaneseInsuranceHint": "Laissez « Inconnu » tant que le site de la clinique, la liste du bureau régional de santé ou un appel ne l'a pas confirmé. Certaines cliniques sont uniquement privées : ne devinez pas.",
     "japaneseInsuranceNotAccepted": "N'accepte pas l'assurance maladie publique japonaise. La consultation est à vos frais.",
     "japaneseInsuranceSourceLabel": "Source",
-    "japaneseInsuranceSourcePlaceholder": "Un lien, ou une note comme : clinique appelée le 2 nov. 2026"
+    "japaneseInsuranceSourcePlaceholder": "Un lien, ou une note comme : clinique appelée le 2 nov. 2026",
+    "paymentLabel": "Moyens de paiement",
+    "paymentHint": "Cochez seulement ce que le site de la clinique ou un appel confirme. Si vous ne savez pas, ne cochez rien. Les lecteurs ne verront alors rien, et non « espèces uniquement »."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",
@@ -731,7 +733,8 @@
     "professionalsAtFacility": "Aucun professionnel | 1 professionnel | {n} professionnels",
     "pageHeading": "Trouver un médecin au Japon",
     "mapUnavailable": "La carte n’a pas pu être chargée.",
-    "mapUnavailableHint": "Les autres résultats ne sont pas affectés."
+    "mapUnavailableHint": "Les autres résultats ne sont pas affectés.",
+    "payment": "Paiement"
   },
   "clinicPage": {
     "backToSearch": "Retour à la recherche",
@@ -1265,5 +1268,25 @@
     "submissions": "Les soumissions n’ont pas pu être chargées. Réessayez.",
     "facilities": "Les établissements n’ont pas pu être chargés. Réessayez.",
     "professionals": "Les professionnels de santé n’ont pas pu être chargés. Réessayez."
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "Espèces",
+      "creditCard": "Carte de crédit",
+      "debitCard": "Carte de débit",
+      "electronicMoney": "Monnaie électronique",
+      "qrCode": "Paiement par QR code"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "Carte IC (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "Autre"
+    }
   }
 }

@@ -84,6 +84,7 @@
             v-model:choice="facilityStore.createFacilityFields.japaneseInsurance"
             v-model:source="facilityStore.createFacilityFields.japaneseInsuranceSource"
         />
+        <ModPaymentOptionsField v-model="facilityStore.createFacilityFields.paymentOptions" />
         <ModAccordion
             v-if="!facilityStore.createFacilityFields.online"
             tone="facility"

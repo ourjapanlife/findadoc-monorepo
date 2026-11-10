@@ -430,7 +430,9 @@
     "japaneseInsuranceHint": "Iwanang hindi alam hangga't hindi ito nakukumpirma ng website ng klinika, listahan ng regional health bureau, o tawag. May mga klinikang pribado lang, kaya huwag manghula.",
     "japaneseInsuranceNotAccepted": "Hindi tumatanggap ng pampublikong health insurance ng Japan. Self-pay ang konsultasyon.",
     "japaneseInsuranceSourceLabel": "Pinagmulan",
-    "japaneseInsuranceSourcePlaceholder": "Isang link, o tala gaya ng: tinawagan ang klinika noong 2 Nob 2026"
+    "japaneseInsuranceSourcePlaceholder": "Isang link, o tala gaya ng: tinawagan ang klinika noong 2 Nob 2026",
+    "paymentLabel": "Paraan ng pagbabayad",
+    "paymentHint": "Lagyan lang ng tsek ang kinumpirma ng website ng klinika o ng isang tawag. Kung hindi mo alam, iwanang walang tsek ang lahat. Walang makikita ang mga mambabasa, hindi \"cash lang\"."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",
@@ -731,7 +733,8 @@
     "professionalsAtFacility": "Walang propesyonal | 1 propesyonal | {n} propesyonal",
     "pageHeading": "Maghanap ng doktor sa Japan",
     "mapUnavailable": "Hindi ma-load ang mapa.",
-    "mapUnavailableHint": "Hindi apektado ang iba pang resulta."
+    "mapUnavailableHint": "Hindi apektado ang iba pang resulta.",
+    "payment": "Bayad"
   },
   "clinicPage": {
     "backToSearch": "Bumalik sa paghahanap",
@@ -1265,5 +1268,25 @@
     "submissions": "Hindi ma-load ang mga pagsusumite. Subukan muli.",
     "facilities": "Hindi ma-load ang mga klinika. Subukan muli.",
     "professionals": "Hindi ma-load ang mga propesyonal sa kalusugan. Subukan muli."
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "Cash",
+      "creditCard": "Credit card",
+      "debitCard": "Debit card",
+      "electronicMoney": "Elektronikong pera",
+      "qrCode": "Bayad gamit ang QR code"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "Kard na IC (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "Iba pa"
+    }
   }
 }

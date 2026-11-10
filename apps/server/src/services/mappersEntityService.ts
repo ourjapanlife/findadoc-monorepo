@@ -2,6 +2,7 @@ import * as gqlTypes from '@findadoc/graphql'
 import { SUBMISSION_STATUS, type HpsTable, type FacilitiesTable, type SubmissionsTable } from '../typeDefs/kyselyTypes.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import type { Insertable, Selectable } from 'kysely'
+import { normalizePaymentOptions } from '@findadoc/utils'
 import type { FacilityParent, ProfessionalParent } from '../typeDefs/resolverParents.js'
 
 function toLicenseReview(value: string | null | undefined): gqlTypes.LicenseReviewStatus | null {
@@ -97,8 +98,9 @@ export function paymentOptionFields(row: {
         }
     }
 
+    // Only known types and controlled brands reach a reader (#20). Empty is unknown.
     return {
-        paymentOptions: Array.isArray(stored) ? stored as gqlTypes.PaymentOption[] : []
+        paymentOptions: normalizePaymentOptions(stored)
     }
 }
 

@@ -10,6 +10,7 @@ import {
     Specialty,
     type ContactInput
 } from '@findadoc/graphql'
+import { isPaymentBrand } from '@findadoc/utils'
 import type {
     ClinicSiteDoctorsTable,
     ClinicSiteLanguagesTable,
@@ -270,6 +271,10 @@ export function parseSeed(value: unknown): SeedFile {
                 }
 
                 readEnum(option.paymentType, paymentTypeValues, `${facility.id} payment option ${index}`, problems)
+                const brands: unknown = option.paymentBrands
+                if (Array.isArray(brands) && brands.some(brand => !isPaymentBrand(brand))) {
+                    problems.push(`${facility.id} payment option ${index} has a brand outside the controlled list`)
+                }
             })
         }
     }

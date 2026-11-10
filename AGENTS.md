@@ -194,6 +194,10 @@ Japanese public health insurance is one fact on the facility (#18): `facilities.
 
 The #18 insurance backfill has run on production, and `20261108120000_drop_hps_accepted_insurance.sql` drops the old per-professional codes. Do not bring back a professional insurance column.
 
+## Payment
+
+Payment is `facilities.payment_options` (#20). An empty list is unknown, not cash only, and readers see nothing. A moderator fills it only from the clinic's site or a call. Types are `CASH`, `CREDIT_CARD`, `DEBIT_CARD`, `ELECTRONIC_MONEY`, and `QR_CODE`, each at most once. Brands come from the controlled list in `packages/utils/src/paymentOptions.ts`, filed under the type that names them: Suica and PASMO are `IC`. The API refuses anything else, and the mapper drops a legacy entry instead of showing it. Search does not filter on payment. Insurance is not a payment type (see Insurance).
+
 ## Places
 
 `apps/server/docs/places-storage.md` is the storage rule. Follow it. Do not open a Places write path that contradicts it.

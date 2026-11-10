@@ -84,7 +84,7 @@
             </div>
 
             <dl
-                v-if="phone || website"
+                v-if="phone || website || payment"
                 class="m-0 flex flex-col gap-1 text-sm text-primary-text-muted"
             >
                 <div
@@ -107,6 +107,18 @@
                     </dt>
                     <dd class="m-0 min-w-0 truncate">
                         {{ websiteLabel }}
+                    </dd>
+                </div>
+                <div
+                    v-if="payment"
+                    class="flex gap-2"
+                    data-testid="facility-payment-options"
+                >
+                    <dt class="shrink-0 font-semibold">
+                        {{ t('search.payment') }}
+                    </dt>
+                    <dd class="m-0">
+                        {{ payment }}
                     </dd>
                 </div>
             </dl>
@@ -195,6 +207,7 @@ import { formatToReadableDate } from '~/utils/dateUtils'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { noteSearchDetailsContact, type EventProps } from '~/utils/analyticsEvents'
 import { professionalPath } from '~/utils/doctorPath'
+import { formatPaymentOptions } from '~/utils/paymentOptions'
 import { facilityEmail,
     facilityMapsUrl,
     facilityPhone,
@@ -259,6 +272,8 @@ const websiteLabel = computed(() => facilityWebsiteLabel(props.facility))
 const phone = computed(() => facilityPhone(props.facility, isJapanese.value))
 const phoneHref = computed(() => facilityPhoneHref(props.facility))
 const email = computed(() => facilityEmail(props.facility))
+// Unknown payment is an empty list and shows nothing (#20).
+const payment = computed(() => formatPaymentOptions(props.facility.paymentOptions, t))
 
 const professionals = computed(() => props.facility.healthcareProfessionals.map(professional => ({
     id: professional.id,

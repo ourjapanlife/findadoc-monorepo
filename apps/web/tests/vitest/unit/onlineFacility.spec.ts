@@ -55,6 +55,7 @@ function section(online: boolean, map = ''): FacilitySectionFields {
         online,
         japaneseInsurance: '',
         japaneseInsuranceSource: '',
+        paymentOptions: [],
         healthcareProfessionalIds: [],
         healthProfessionalsRelations: []
     }

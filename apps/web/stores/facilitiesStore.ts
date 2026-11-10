@@ -16,7 +16,8 @@ import type {
     PhysicalAddress,
     PhysicalAddressInput,
     UpdateFacilityInput,
-    MutationCreateFacilityArgs
+    MutationCreateFacilityArgs,
+    PaymentOption
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import type { ServerResponse } from '~/typedefs/serverResponse'
@@ -38,6 +39,7 @@ import {
     japaneseInsuranceInput,
     type JapaneseInsuranceChoice
 } from '~/utils/japaneseInsurance'
+import { changedPaymentOptions, paymentOptionsInput } from '~/utils/paymentOptions'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -68,6 +70,9 @@ export type FacilitySectionFields = {
     // Japanese public health insurance. Empty is unknown.
     japaneseInsurance: JapaneseInsuranceChoice
     japaneseInsuranceSource: string
+
+    // Payment types and brands (#20). Empty is unknown.
+    paymentOptions: PaymentOption[]
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -128,6 +133,11 @@ export function getChangedFacilityFieldsForUpdate(
     if (nextInsurance.japaneseInsurance !== previousInsurance.japaneseInsurance
       || nextInsurance.japaneseInsuranceSource !== previousInsurance.japaneseInsuranceSource) {
         Object.assign(updatedFields, nextInsurance)
+    }
+
+    const nextPayment = changedPaymentOptions(current.paymentOptions, original.paymentOptions)
+    if (nextPayment) {
+        updatedFields.paymentOptions = nextPayment
     }
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
@@ -263,6 +273,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         online: false,
         japaneseInsurance: '' as JapaneseInsuranceChoice,
         japaneseInsuranceSource: '',
+        paymentOptions: [] as PaymentOption[],
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -294,7 +305,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         online: false,
         // Unknown until the moderator chooses an answer (#18). Private-only clinics exist.
         japaneseInsurance: '' as JapaneseInsuranceChoice,
-        japaneseInsuranceSource: ''
+        japaneseInsuranceSource: '',
+        // Unknown until the moderator checks a payment type (#20).
+        paymentOptions: [] as PaymentOption[]
     })
 
     /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
@@ -337,6 +350,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.online = data.online === true
         facilitySectionFields.value.japaneseInsurance = japaneseInsuranceChoice(data.japaneseInsurance)
         facilitySectionFields.value.japaneseInsuranceSource = data.japaneseInsuranceSource ?? ''
+        facilitySectionFields.value.paymentOptions = paymentOptionsInput(data.paymentOptions ?? [])
     }
 
     function resetFacilitySectionFields() {
@@ -362,6 +376,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             online: false,
             japaneseInsurance: '' as JapaneseInsuranceChoice,
             japaneseInsuranceSource: '',
+            paymentOptions: [] as PaymentOption[],
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }
@@ -462,6 +477,10 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                 // Sent only when the moderator chose an answer. Otherwise the clinic stays unknown.
                 ...(createFacilityFields.japaneseInsurance
                     ? japaneseInsuranceInput(createFacilityFields.japaneseInsurance, createFacilityFields.japaneseInsuranceSource)
+                    : {}),
+                // Sent only when known. An empty list stays unknown.
+                ...(createFacilityFields.paymentOptions.length
+                    ? { paymentOptions: paymentOptionsInput(createFacilityFields.paymentOptions) }
                     : {}),
                 // Online is opt-in: only send when the moderator checked it.
                 ...(isOnline ? { online: true } : {}),
@@ -594,6 +613,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.online = false
         createFacilityFields.japaneseInsurance = ''
         createFacilityFields.japaneseInsuranceSource = ''
+        createFacilityFields.paymentOptions = []
     }
 
     async function deleteFacility(
