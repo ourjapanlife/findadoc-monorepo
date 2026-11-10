@@ -10,6 +10,7 @@
                     to="/"
                     :aria-label="t('common.siteName')"
                     data-testid="site-logo"
+                    :aria-current="isActive('/') ? 'page' : undefined"
                     class="group flex shrink-0 items-center gap-2 rounded-lg"
                     @click="handleHomeClick"
                 >
@@ -27,20 +28,23 @@
                     </span>
                 </NuxtLink>
 
-                <!-- Primary navigation (landscape) -->
+                <!--
+                    Primary navigation (landscape, from xl). The header row is the 1024px page width, and
+                    Portuguese, French, and Russian need nearly all of it, so narrower windows use the hamburger.
+                -->
                 <nav
                     id="desktop-menu-items"
+                    data-testid="top-nav-desktop-links"
                     :aria-label="t('common.menu')"
-                    class="flex items-center gap-1 portrait:hidden"
+                    class="hidden min-w-0 items-center gap-1 landscape:xl:flex"
                 >
                     <NuxtLink
                         v-for="item in navItems"
                         :key="item.to"
                         :to="item.href ?? item.to"
                         :data-testid="item.testId"
-                        :class="navLinkClass(item.to, item.wideOnly)"
+                        :class="navLinkClass(item.to)"
                         :aria-current="isActive(item.to) ? 'page' : undefined"
-                        @click="item.to === '/' ? handleHomeClick($event) : undefined"
                     >
                         {{ item.label }}
                     </NuxtLink>
@@ -52,32 +56,33 @@
                             onOutside: closeProfileMenu,
                             when: () => profileMenuIsOpen,
                         }"
-                        class="relative ml-1"
+                        class="relative ml-1 min-w-0"
                     >
                         <button
                             type="button"
                             data-testid="topnav-profile-section"
                             :aria-expanded="profileMenuIsOpen"
                             aria-controls="topnav-profile-menu"
-                            class="inline-flex h-10 items-center gap-2 rounded-lg px-3 font-medium text-primary-text
-                               transition-colors hover:bg-accent-bg/60"
+                            class="inline-flex h-10 max-w-full items-center gap-2 rounded-lg px-3 font-medium
+                               text-primary-text transition-colors hover:bg-accent-bg/60"
                             @click="toggleProfileMenu"
                         >
                             <img
                                 v-if="authStore.userProfileImage"
                                 :src="authStore.userProfileImage"
                                 alt=""
-                                class="size-7 rounded-full object-cover"
+                                class="size-7 shrink-0 rounded-full object-cover"
                             >
                             <SVGUserIcon
                                 v-else
-                                class="size-6 text-user-icon"
+                                class="size-6 shrink-0 text-user-icon"
                                 aria-hidden="true"
                             />
-                            <span class="max-w-40 truncate">{{ profileMenuLabel }}</span>
+                            <!-- The name gives up its width first, so a long user id never pushes the header wider. -->
+                            <span class="max-w-40 min-w-0 truncate">{{ profileMenuLabel }}</span>
                             <ClinicRequestCountBadge :count="myBookingClinicsStore.requestedCount" />
                             <SVGAccordionArrow
-                                class="size-4 fill-primary-text transition-transform"
+                                class="size-4 shrink-0 fill-primary-text transition-transform"
                                 :class="profileMenuIsOpen ? 'rotate-180' : ''"
                                 aria-hidden="true"
                             />
@@ -144,8 +149,8 @@
                 </nav>
 
                 <div class="flex items-center gap-2">
-                    <LocaleSelector class="portrait:hidden" />
-                    <HamburgerMenu class="landscape:hidden" />
+                    <LocaleSelector class="hidden landscape:xl:block" />
+                    <HamburgerMenu class="landscape:xl:hidden" />
                 </div>
             </div>
         </div>
@@ -193,8 +198,9 @@ const loginRoute = computed(() => buildLoginRoute(
     routeMatchesPath(route.path, '/login') ? resolveAuthReturnPath(route.fullPath) : route.fullPath
 ))
 
+// No Home link: the logo is the home link, and the header row has no room to spare in
+// Portuguese or Russian. The hamburger keeps Home.
 const navItems = computed(() => [
-    { to: '/', label: t('topNav.home') },
     { to: '/search', label: t('topNav.search') },
     { to: '/about', label: t('topNav.about') },
     { to: '/submit', label: t('topNav.submit') },
@@ -203,10 +209,7 @@ const navItems = computed(() => [
         to: INSURANCE_GUIDE_PATH,
         href: localizedPath(INSURANCE_GUIDE_PATH, localeCodeFromPath(route.path)),
         label: t('topNav.insurance'),
-        testId: 'top-nav-insurance-link',
-        // Five links need about 1170px in Portuguese, the longest locale. Narrower
-        // windows keep the guide in the footer.
-        wideOnly: true
+        testId: 'top-nav-insurance-link'
     }
 ])
 
@@ -214,10 +217,9 @@ function isActive(path: string): boolean {
     return routeMatchesPath(route.path, path)
 }
 
-function navLinkClass(path: string, wideOnly = false): string {
+function navLinkClass(path: string): string {
     // whitespace-nowrap: German and Portuguese labels wrap inside the fixed-height link without it.
-    const display = wideOnly ? 'hidden xl:inline-flex' : 'inline-flex'
-    const base = `${display} h-10 items-center whitespace-nowrap rounded-lg px-3 font-medium transition-colors`
+    const base = 'inline-flex h-10 items-center whitespace-nowrap rounded-lg px-3 font-medium transition-colors'
 
     return isActive(path)
         ? `${base} bg-primary/10 text-primary-hover`
