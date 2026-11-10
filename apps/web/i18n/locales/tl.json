@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Serbisyong pangkalusugan sa Japan",
-    "aboutTitle": "Tungkol sa amin",
+    "aboutTitle": "Tungkol sa amin: kalusugan sa iyong wika",
     "submitTitle": "Magdagdag ng doktor",
     "termsTitle": "Mga tuntunin",
     "privacyTitle": "Patakaran sa privacy",
@@ -9,6 +9,9 @@
     "insuranceTitle": "Pagbabayad ng gamutan sa Japan",
     "searchTitle": "Maghanap ng klinika",
     "contactTitle": "Makipag-ugnayan"
+  },
+  "pageMetaDescription": {
+    "about": "Ang Find a Doc, Japan ay isang non-profit sa Tokyo na tumutulong sa iyong makahanap ng doktor na nagsasalita ng iyong wika. Basahin ang aming kuwento at kilalanin ang aming team."
   },
   "contactPage": {
     "heading": "Makipag-ugnayan",

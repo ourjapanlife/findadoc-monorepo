@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Health services in Japan",
-    "aboutTitle": "About us",
+    "aboutTitle": "About us: healthcare in your language",
     "submitTitle": "Add a doctor",
     "termsTitle": "Terms of service",
     "privacyTitle": "Privacy policy",
@@ -9,6 +9,9 @@
     "insuranceTitle": "Paying for care in Japan",
     "searchTitle": "Search clinics",
     "contactTitle": "Contact"
+  },
+  "pageMetaDescription": {
+    "about": "Find a Doc, Japan is a Tokyo non-profit that helps people find doctors who speak their language. Read our story, meet the team, and get involved."
   },
   "contactPage": {
     "heading": "Contact",

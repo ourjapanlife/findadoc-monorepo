@@ -1,7 +1,7 @@
 {
   "pageMeta": {
     "homeTitle": "Layanan kesehatan di Jepang",
-    "aboutTitle": "Tentang kami",
+    "aboutTitle": "Tentang kami: berobat dalam bahasa Anda",
     "submitTitle": "Tambahkan dokter",
     "termsTitle": "Ketentuan layanan",
     "privacyTitle": "Kebijakan privasi",
@@ -9,6 +9,9 @@
     "insuranceTitle": "Membayar biaya berobat di Jepang",
     "searchTitle": "Cari klinik",
     "contactTitle": "Kontak"
+  },
+  "pageMetaDescription": {
+    "about": "Find a Doc, Japan adalah organisasi nirlaba di Tokyo yang membantu Anda menemukan dokter yang berbicara dalam bahasa Anda. Baca kisah kami dan kenali tim kami."
   },
   "contactPage": {
     "heading": "Kontak",
