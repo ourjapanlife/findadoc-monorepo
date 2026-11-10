@@ -21,8 +21,6 @@
         "test:dockerstop": "docker compose -f docker/docker-compose-test.yml down",
         "build": "rimraf dist && copyfiles -a src/typeDefs/schema.graphql src/vocabulary/municipalities.json .env.prod dist && tsc",
         "db:push": "cross-env NODE_ENV=production node --loader ts-node/esm scripts/db/migrate.ts",
-        "backfill:submission-retention": "node --loader ts-node/esm utils/backfillSubmissionRetention.ts",
-        "backfill:submission-retention:write": "node --loader ts-node/esm utils/backfillSubmissionRetention.ts --write",
         "purge:booking-uploads": "node --loader ts-node/esm utils/purgeExpiredBookingUploads.ts",
         "purge:booking-uploads:write": "node --loader ts-node/esm utils/purgeExpiredBookingUploads.ts --write",
         "prod": "pnpm db:push && pnpm prod:dockerstop && pnpm prod:dockerstart",
