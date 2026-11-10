@@ -184,6 +184,12 @@ export async function applyEntityDirectoryToNuxt() {
 
 export async function applyEntityDirectoryToNitro(nitroConfig: NitroConfig) {
     if (nitroConfig.dev || !isNuxtGenerateCommand()) {
+        // Nitro bundles server routes without the Vite plugins, and the sitemap route imports the
+        // city list. Outside generate it is the unbaked module, so the route fetches cities live.
+        nitroConfig.virtual = {
+            ...nitroConfig.virtual,
+            '#prerender-cities': 'export default { baked: false, cities: [] }'
+        }
         return
     }
 

@@ -60,6 +60,22 @@ describe('generate-time directory', () => {
         expect(nitroConfig.virtual?.['#prerender-cities']).to.include('"baked":true').and.include('港区')
     })
 
+    it('gives Nitro an unbaked city list outside generate, so the sitemap route still resolves it', async () => {
+        const { applyEntityDirectoryToNitro } = await import('@/utils/nuxt/entityDirectoryGenerate')
+        const devConfig: NitroConfig = { dev: true }
+        process.argv = ['node', 'nuxi', 'dev']
+        const buildConfig: NitroConfig = {}
+
+        await applyEntityDirectoryToNitro(devConfig)
+        await applyEntityDirectoryToNitro(buildConfig)
+
+        for (const config of [devConfig, buildConfig]) {
+            expect(config.virtual?.['#prerender-cities']).to.include('baked: false')
+            expect(config.prerender?.routes).to.equal(undefined)
+        }
+        expect(fetchDirectory.mock.calls).to.have.length(0)
+    })
+
     it('lists every directory page in both locales when the build is not split', async () => {
         const routes = (await generateConfig()).prerender?.routes ?? []
 
