@@ -98,6 +98,7 @@
                             :columns="visibleColumns"
                             :row-number="offset + index + 1"
                             :selectable="selectable"
+                            :row-selectable="row.selectable !== false"
                             :selected="selectedIds.includes(row.id)"
                             @toggle="emit('toggle-row', row)"
                             @open="emit('open', row)"

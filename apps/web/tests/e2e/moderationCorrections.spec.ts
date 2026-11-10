@@ -52,6 +52,14 @@ test.describe('Moderation user feedback', () => {
         await expect(page.getByTestId('mod-submission-tab-USER_FEEDBACK')).toBeVisible()
     })
 
+    test('keeps corrections out of bulk selection', async ({ page }) => {
+        await openFeedbackQueue(page)
+        await expect(page.getByTestId('mod-submission-list-item-1')).toBeVisible()
+
+        await expect(page.getByTestId('mod-table-select-page')).toHaveCount(0)
+        await expect(page.locator('[data-testid^="mod-table-select-"]')).toHaveCount(0)
+    })
+
     test('approves a wrong-languages report and changes only the languages', async ({ page, request }) => {
         await openFeedbackQueue(page)
         await page.getByRole('link', { name: enUS.clinicCorrection.reasonWrongLanguages, exact: true }).first().click()

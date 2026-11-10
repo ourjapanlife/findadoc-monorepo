@@ -10,6 +10,7 @@
             @click.stop
         >
             <input
+                v-if="rowSelectable"
                 type="checkbox"
                 :checked="selected"
                 :aria-label="t('moderationTable.selectRow', { name: row.cells[row.linkColumn] ?? '' })"
@@ -68,6 +69,8 @@ const props = defineProps<{
     columns: ModerationTableColumn[]
     rowNumber: number
     selectable: boolean
+    /** The column stays for alignment; only the checkbox is left out. */
+    rowSelectable: boolean
     selected: boolean
 }>()
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { OrderDirection } from '@findadoc/graphql'
 import {
+    bulkSelectableRows,
     columnOrder,
     loadPageInRange,
     nextListOrder,
@@ -114,5 +115,13 @@ describe('moderation table', () => {
         })
         expect(requested).toEqual([50, 25])
         expect(page).toEqual({ rows: ['last'], totalCount: 30, offset: 25 })
+    })
+})
+
+describe('bulkSelectableRows', () => {
+    it('leaves out a row marked not selectable, such as a correction', () => {
+        const rows = [{ id: 'listing' }, { id: 'correction', selectable: false }, { id: 'other', selectable: true }]
+
+        expect(bulkSelectableRows(rows).map(row => row.id)).toEqual(['listing', 'other'])
     })
 })

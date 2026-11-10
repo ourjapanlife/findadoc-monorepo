@@ -30,17 +30,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import type { BookingSubmissionListItem, HealthcareProfessional, Submission } from '@findadoc/graphql'
-import {
-    SelectedModerationListView,
-    SelectedSubmissionListViewTab,
-    useModerationSubmissionsStore
-} from '~/stores/moderationSubmissionsStore'
+import { SelectedModerationListView, useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useBookingSubmissionsStore } from '~/stores/bookingSubmissionsStore'
 import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { formatToReadableDate } from '~/utils/dateUtils'
 import {
+    bulkSelectableRows,
     pageSelectionState,
     type ModerationTableBadge,
     type ModerationTableColumn,
@@ -73,9 +70,10 @@ const submissionsModerationListViewChosen = computed(() => modSubmissionsStore.s
 const bookingsModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
   === SelectedModerationListView.Bookings)
 
-// A correction is approved from its review screen, after the moderator has seen before and after (#22).
+// A correction is checked on its own, from its review screen, never in bulk. A page of
+// corrections only, such as User feedback, has no selection column at all.
 const bulkSelectable = computed(() => submissionsModerationListViewChosen.value
-  && modSubmissionsStore.selectedModerationListViewTabChosen !== SelectedSubmissionListViewTab.UserFeedback)
+  && bulkSelectableRows(rows.value).length > 0)
 
 const columnStorageKey = computed(() => {
     if (facilitiesModerationListViewChosen.value) {
@@ -184,6 +182,7 @@ const rows = computed((): ModerationTableRow[] => {
         testId: `mod-submission-list-item-${index + 1}`,
         linkColumn: 'name',
         badges: submissionBadges(submission),
+        selectable: !isCorrection(submission),
         cells: {
             name: submissionTitle(submission),
             facility: facilityCell(submission),
@@ -289,7 +288,7 @@ const listSearchQuery = computed({
 const selectedIds = computed(() => Object.keys(selectedSubmissions.value))
 const selectedNames = computed(() => Object.values(selectedSubmissions.value))
 const pageSelection = computed(() => pageSelectionState(
-    rows.value.map(row => row.id),
+    bulkSelectableRows(rows.value).map(row => row.id),
     new Set(selectedIds.value)
 ))
 
@@ -442,10 +441,10 @@ function toggleRow(row: ModerationTableRow) {
 
 function togglePage() {
     if (pageSelection.value === 'all') {
-        selectedSubmissions.value = omitSelected(new Set(rows.value.map(row => row.id)))
+        selectedSubmissions.value = omitSelected(new Set(bulkSelectableRows(rows.value).map(row => row.id)))
     } else {
         const next = { ...selectedSubmissions.value }
-        for (const row of rows.value) {
+        for (const row of bulkSelectableRows(rows.value)) {
             next[row.id] = rowLabel(row)
         }
         selectedSubmissions.value = next

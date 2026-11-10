@@ -26,6 +26,13 @@ export interface ModerationTableRow {
     linkColumn: string
     cells: Record<string, string>
     badges: ModerationTableBadge[]
+    /** False leaves the row out of bulk selection. A correction is always decided on its own. */
+    selectable?: boolean
+}
+
+/** The rows bulk selection may pick. */
+export function bulkSelectableRows<T extends Pick<ModerationTableRow, 'selectable'>>(rows: readonly T[]): T[] {
+    return rows.filter(row => row.selectable !== false)
 }
 
 export interface BulkSubmissionTarget {
