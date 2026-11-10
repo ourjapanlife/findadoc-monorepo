@@ -117,6 +117,15 @@ pnpm --filter @findadoc/web build
 
 This prerenders the site into `apps/web/.output/public`.
 
+Production splits the prerender. The `Web` workflow fetches the directory once into a file, prerenders four shares of the clinic, doctor, hub, and facet pages in parallel jobs from that same file, then merges them and publishes. Shard 0 also renders the pages every build has (home, about, sitemap) and writes the search snapshot. You can run the same steps locally:
+
+```bash
+pnpm --filter @findadoc/web prerender:directory /tmp/prerender-directory.json
+NUXT_PRERENDER_DIRECTORY_FILE=/tmp/prerender-directory.json NUXT_PRERENDER_SHARD=0/2 NUXT_BUILD_ID=local pnpm --filter @findadoc/web build
+```
+
+`NUXT_PRERENDER_SHARD` is `index/count`. Every shard of one build needs the same directory file and the same `NUXT_BUILD_ID`. With neither set, one build fetches the directory and renders every page. The directory is bundled into the server build as modules, not runtime config: Nitro copies runtime config for every page it renders, so a directory there makes every page slower as the directory grows.
+
 ## API (`apps/server`)
 
 !!! note

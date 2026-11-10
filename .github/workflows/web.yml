@@ -34,25 +34,67 @@ on:
 permissions:
   contents: read
 
+# One run per pull request or branch. A newer push to a pull request cancels the older run.
+concurrency:
+  group: web-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  deploy:
-    name: Publish site
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+  directory:
+    # Production fetches the directory once, so every prerender shard renders from the same clinics
+    # and doctors (#21). Previews skip directory pages and need none.
+    name: Fetch the directory
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    concurrency:
-      group: web-${{ github.event.pull_request.number || github.ref }}
-      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-    permissions:
-      contents: read
-      id-token: write
-      pull-requests: write
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      - name: Fetch
+        run: |
+          pnpm --filter @findadoc/graphql build
+          pnpm --filter @findadoc/utils build
+          pnpm --filter @findadoc/web prerender:directory "$RUNNER_TEMP/prerender-directory.json"
+
+      - name: Keep it for the shards
+        uses: actions/upload-artifact@v7
+        with:
+          name: prerender-directory
+          path: ${{ runner.temp }}/prerender-directory.json
+          retention-days: 1
+          if-no-files-found: error
+
+  prerender:
+    # Each shard renders its share of the clinic, doctor, hub, and facet pages. Shard 0 also renders
+    # the pages every build has. Previews have no directory pages, so one shard is enough.
+    name: Prerender ${{ matrix.shard }}
+    needs: directory
+    if: >-
+      always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+      && (needs.directory.result == 'success' || needs.directory.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: true
+      matrix:
+        shard: ${{ fromJSON(github.event_name == 'pull_request' && '[0]' || '[0, 1, 2, 3]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Get the directory
+        if: github.event_name != 'pull_request'
+        uses: actions/download-artifact@v8
+        with:
+          name: prerender-directory
+          path: ${{ runner.temp }}
 
       - name: Build
         run: |
@@ -63,6 +105,10 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
           # Previews skip clinic, doctor, hub, and facet HTML. Production on main does not.
           NUXT_SKIP_DIRECTORY_PRERENDER: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+          NUXT_PRERENDER_DIRECTORY_FILE: ${{ github.event_name != 'pull_request' && format('{0}/prerender-directory.json', runner.temp) || '' }}
+          NUXT_PRERENDER_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
+          # One build id for every shard, so the merged site has one app manifest.
+          NUXT_BUILD_ID: ${{ github.run_id }}-${{ github.run_attempt }}
           # Baked into the static site by nuxi generate. Amplify only hosts the zip.
           NUXT_PUBLIC_SENTRY_DSN: ${{ secrets.NUXT_PUBLIC_SENTRY_DSN }}
           NUXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ secrets.NUXT_PUBLIC_SENTRY_ENVIRONMENT }}
@@ -70,6 +116,52 @@ jobs:
           NUXT_PUBLIC_UMAMI_URL: ${{ secrets.NUXT_PUBLIC_UMAMI_URL }}
           NUXT_PUBLIC_UMAMI_SITE_ID: ${{ secrets.NUXT_PUBLIC_UMAMI_SITE_ID }}
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      - name: Pack the shard
+        run: tar -C apps/web/.output/public -cf "$RUNNER_TEMP/site-shard-${{ matrix.shard }}.tar" .
+
+      - name: Keep the shard
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-shard-${{ matrix.shard }}
+          path: ${{ runner.temp }}/site-shard-${{ matrix.shard }}.tar
+          retention-days: 1
+          if-no-files-found: error
+
+  deploy:
+    name: Publish site
+    needs: prerender
+    if: always() && needs.prerender.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Get the shards
+        uses: actions/download-artifact@v8
+        with:
+          pattern: site-shard-*
+          path: ${{ runner.temp }}/shards
+          merge-multiple: true
+
+      # Shard files never overlap except the app shell, 404, and build assets, which every shard
+      # writes the same. Shard 0 goes last, so its copy is the one published.
+      - name: Merge the shards
+        run: |
+          site=apps/web/.output/public
+          mkdir -p "$site"
+          shards=("$RUNNER_TEMP"/shards/site-shard-*.tar)
+          echo "Merging ${#shards[@]} shards"
+          for tar in "${shards[@]}"; do
+            [ "$(basename "$tar")" = "site-shard-0.tar" ] || tar -C "$site" -xf "$tar"
+          done
+          tar -C "$site" -xf "$RUNNER_TEMP/shards/site-shard-0.tar"
+          echo "Site: $(find "$site" -name '*.html' | wc -l) HTML files"
 
       # /search shows this file before the API answers (#242). Previews skip the directory, so
       # they have none. A production build without it still works, so this warns instead of failing.

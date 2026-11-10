@@ -1,4 +1,4 @@
-import { useRuntimeConfig } from '#imports'
+import prerenderCities from '#prerender-cities'
 import { graphqlEndpoint } from './graphqlEndpoint'
 import { buildFacetIndex, type FacetPage } from './facetIndex'
 import type { FacetIndexByPrefecture } from './directoryLinks'
@@ -174,13 +174,7 @@ async function fetchFacilitiesLive(): Promise<FacilitySearchResult[] | null> {
 
 export async function loadFacilityDirectory(): Promise<FacilitySearchResult[] | null> {
     if (import.meta.server) {
-        const fromConfig = directoryValues(
-            useRuntimeConfig().clinicPrerenderDirectory as Record<string, FacilitySearchResult> | undefined
-        )
-        if (fromConfig?.length) {
-            return fromConfig
-        }
-
+        // Bundled, not runtime config, so a prerendered route does not copy the directory (#21).
         const fromBundle = await directoryFromBundle()
         if (fromBundle?.length) {
             return fromBundle
@@ -202,11 +196,7 @@ function prerenderedCities(): CityOption[] | undefined {
     if (!import.meta.server) {
         return undefined
     }
-    const baked = useRuntimeConfig().prerenderCities
-    if (!baked?.baked) {
-        return undefined
-    }
-    return baked.cities
+    return prerenderCities.baked ? prerenderCities.cities : undefined
 }
 
 async function loadDirectoryIndexes(): Promise<DirectoryIndexes | null> {

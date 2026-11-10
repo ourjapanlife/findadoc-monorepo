@@ -1,5 +1,5 @@
 import { gql, GraphQLClient } from 'graphql-request'
-import { useRuntimeConfig } from '#imports'
+import prerenderCities from '#prerender-cities'
 import { facilityPath } from './clinicPath'
 import { withLocaleAlternates } from './sitemap'
 import { professionalPath } from './doctorPath'
@@ -226,15 +226,7 @@ function bakedPrerenderCities(): CityOption[] | undefined {
     if (!import.meta.server) {
         return undefined
     }
-    try {
-        const baked = useRuntimeConfig().prerenderCities
-        if (!baked?.baked) {
-            return undefined
-        }
-        return baked.cities
-    } catch {
-        return undefined
-    }
+    return prerenderCities.baked ? prerenderCities.cities : undefined
 }
 
 async function officialCitiesForSitemap(): Promise<CityOption[]> {

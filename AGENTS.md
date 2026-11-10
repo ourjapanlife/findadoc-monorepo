@@ -212,6 +212,8 @@ Payment is `facilities.payment_options` (#20). An empty list is unknown, not cas
 
 Clinic, doctor, hub, and facet pages are generated for English and Japanese only. `apps/web/utils/localePath.ts` names that set as `DIRECTORY_PRERENDER_LOCALE_CODES`. Marketing pages still generate for every locale. A directory URL in another locale renders in the browser, stays `noindex`, and stays out of hreflang and the sitemap. Do not add a `/ja-JP/*` rewrite. Unknown Japanese clinics stay a real 404.
 
+The generate-time directory and city list are bundled modules (`#clinic-directory`, `#doctor-directory`, `#prerender-cities`). Do not put them in `runtimeConfig`: Nitro deep-copies runtime config for every prerendered route. Production fetches the directory once (`prerender:directory`) and prerenders it in shards from that file (`NUXT_PRERENDER_SHARD`, `apps/web/utils/prerenderShard.ts`), all with one `NUXT_BUILD_ID`. Shard 0 alone renders the pages every build has and writes the once-only files.
+
 Moderation forms that already have saved data open in preview. Create forms stay editable. A Maps link that matches a clinic disables Submit on the public form. The same match is a warning in moderation, and update, approve, and create stay available.
 
 ## Clinic hostnames

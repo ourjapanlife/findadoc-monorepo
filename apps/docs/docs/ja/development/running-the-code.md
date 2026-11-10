@@ -117,6 +117,15 @@ pnpm --filter @findadoc/web build
 
 サイトを `apps/web/.output/public` にプリレンダリングします。
 
+本番ではプリレンダリングを分割します。`Web` ワークフローはディレクトリを1回だけファイルに取得し、同じファイルからクリニック、医師、ハブ、ファセットのページを4つに分けて並列のジョブでプリレンダリングし、最後にまとめて公開します。シャード0は、どのビルドにもあるページ（トップ、概要、サイトマップ）も書き出し、検索用スナップショットも書き出します。ローカルでも同じ手順を実行できます。
+
+```bash
+pnpm --filter @findadoc/web prerender:directory /tmp/prerender-directory.json
+NUXT_PRERENDER_DIRECTORY_FILE=/tmp/prerender-directory.json NUXT_PRERENDER_SHARD=0/2 NUXT_BUILD_ID=local pnpm --filter @findadoc/web build
+```
+
+`NUXT_PRERENDER_SHARD` は `index/count` の形です。同じビルドのシャードは、同じディレクトリファイルと同じ `NUXT_BUILD_ID` を使います。どちらも設定しないと、1回のビルドがディレクトリを取得してすべてのページを書き出します。ディレクトリはランタイム設定ではなく、モジュールとしてサーバービルドに含めます。Nitroはページを1つ書き出すたびにランタイム設定をコピーするため、ディレクトリをそこに置くと、ディレクトリが大きくなるほどすべてのページが遅くなります。
+
 ## API（`apps/server`）
 
 !!! note
