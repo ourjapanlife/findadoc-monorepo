@@ -57,6 +57,25 @@ export function correctionChangesFromInput(input: gqlTypes.FacilityCorrectionInp
     return changes
 }
 
+/** The phone, email, and website kept from a stored contact when a correction rebuilds it. */
+export type StoredContactText = { phone: string, email: string, website: string }
+
+/**
+ * Reads the text fields of facilities.contact. The column is jsonb, so its shape is checked
+ * here instead of cast: a missing contact, or a field that is not a string, reads as ''.
+ */
+export function storedContactText(contact: unknown): StoredContactText {
+    const record: Record<string, unknown> = typeof contact === 'object' && contact !== null && !Array.isArray(contact)
+        ? Object.fromEntries(Object.entries(contact))
+        : {}
+    const text = (key: keyof StoredContactText): string => {
+        const value = record[key]
+        return typeof value === 'string' ? value : ''
+    }
+
+    return { phone: text('phone'), email: text('email'), website: text('website') }
+}
+
 /**
  * The facility update an approved correction applies. Only keys the visitor changed are set.
  * Contact is rebuilt from the stored contact so an untouched phone, email, or website stays.
@@ -64,16 +83,16 @@ export function correctionChangesFromInput(input: gqlTypes.FacilityCorrectionInp
  */
 export function facilityUpdateFromCorrection(
     changes: CorrectionChanges,
-    storedContact: gqlTypes.Contact | gqlTypes.ContactInput | null | undefined
+    storedContact: StoredContactText
 ): Partial<gqlTypes.UpdateFacilityInput> {
     const update: Partial<gqlTypes.UpdateFacilityInput> = {}
 
     if (changes.address !== undefined || changes.phone !== undefined || changes.website !== undefined) {
         // An omitted address and Maps URL keep the stored values (contactUpdateForStorage).
         update.contact = {
-            phone: changes.phone ?? storedContact?.phone ?? '',
-            email: storedContact?.email ?? '',
-            website: changes.website ?? storedContact?.website ?? '',
+            phone: changes.phone ?? storedContact.phone,
+            email: storedContact.email,
+            website: changes.website ?? storedContact.website,
             ...(changes.address === undefined ? {} : { address: changes.address })
         }
     }

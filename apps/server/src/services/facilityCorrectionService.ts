@@ -14,7 +14,8 @@ import { validateFacilityCorrectionInput } from '../validation/validateFacilityC
 import { validateUpdateFacilityInput } from '../validation/validateFacility.js'
 import {
     correctionChangesFromInput,
-    facilityUpdateFromCorrection
+    facilityUpdateFromCorrection,
+    storedContactText
 } from '../corrections/facilityCorrection.js'
 import { FacilityUpdateRejected, updateFacilityInTransaction } from './facilityService.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
@@ -159,7 +160,7 @@ export async function approveCorrectionInTransaction(
         throw new CorrectionApprovalRejected([{ field: 'facilityId', errorCode: ErrorCode.NOT_FOUND, httpStatus: 404 }])
     }
 
-    const update = facilityUpdateFromCorrection(changes, stored.contact as gqlTypes.ContactInput | null)
+    const update = facilityUpdateFromCorrection(changes, storedContactText(stored.contact))
 
     if (Object.keys(update).length > 0) {
         const validation = validateUpdateFacilityInput(update)

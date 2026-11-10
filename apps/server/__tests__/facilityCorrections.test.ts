@@ -22,6 +22,7 @@ import type { UserContext } from '../src/auth.js'
 import { submitFacilityCorrection } from '../src/services/facilityCorrectionService.js'
 import { searchSubmissions, updateSubmission } from '../src/services/submissionService.js'
 import { validateFacilityCorrectionInput } from '../src/validation/validateFacilityCorrection.js'
+import { storedContactText } from '../src/corrections/facilityCorrection.js'
 import {
     DECIDED_NOTES_RETENTION_DAYS,
     UNDECIDED_NOTES_RETENTION_DAYS
@@ -226,6 +227,18 @@ describe('validateFacilityCorrectionInput', () => {
         })
 
         expect(result.hasErrors).toBe(true)
+    })
+})
+
+describe('storedContactText', () => {
+    it('reads the text fields of a stored contact and treats anything else as empty', () => {
+        expect(storedContactText({ phone: '+81355550100', email: 7, website: null })).toEqual({
+            phone: '+81355550100',
+            email: '',
+            website: ''
+        })
+        expect(storedContactText(null)).toEqual({ phone: '', email: '', website: '' })
+        expect(storedContactText(['+81355550100'])).toEqual({ phone: '', email: '', website: '' })
     })
 })
 
