@@ -54,15 +54,22 @@ so color is never the only signal.
 
 | Tab | What it shows |
 | --- | --- |
-| New | Listings nobody has opened (`pending`) |
+| New | Listings nobody has opened (`pending`, filter `isPending`) |
 | For Review | Listings a moderator is working on (`under_review`) |
 | Approved | Approved listings and corrections |
 | Rejected | Rejected listings and corrections (`rejected`) |
-| User feedback | Corrections that are `pending` or `under_review` |
+| User feedback | Corrections that are `pending` or `under_review` (filter `isOpen`) |
 
-A correction in Approved or Rejected carries a Feedback tag. New and For Review show listings
-only, so User feedback is the one place to look for open corrections. Bulk approve is off in
-User feedback: each correction is approved from its review screen.
+Every tab is one server filter, so each one pages and counts on the server. A correction in
+Approved or Rejected carries a Feedback tag. New and For Review show listings only, so User
+feedback is the one place to look for open corrections.
+
+A correction is never in bulk selection, on any tab: each one is approved from its review screen.
+
+A clinic can get several reports. `openCorrectionCounts(facilityIds)` returns the open corrections
+per clinic for the rows on a page, in one grouped query (at most 100 ids), and a row shows
+"+N on this clinic". The review screen lists the clinic's other open reports
+(`facilityId` and `isOpen` filters), so a moderator checks them together.
 
 A correction opens a review screen, not the listing edit form. It shows the reasons, then the
 clinic's current value next to the visitor's value for each field the visitor sent. A `WRONG_CITY`
