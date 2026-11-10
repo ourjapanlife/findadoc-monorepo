@@ -21,7 +21,14 @@
     "footer.npo",
     "hamburgerMenu.copyright",
     "modFacilitySection.citySuggestionAttribution",
-    "privacyPage.sections.contact.p1"
+    "privacyPage.sections.contact.p1",
+    "paymentOptions.brands.visa",
+    "paymentOptions.brands.mastercard",
+    "paymentOptions.brands.americanExpress",
+    "paymentOptions.brands.jcb",
+    "paymentOptions.brands.dinersClub",
+    "paymentOptions.brands.unionPay",
+    "paymentOptions.brands.payPay"
   ],
   "fr": [
     "common.menu",
@@ -69,7 +76,10 @@
     "bookingPage.regionNotice.website",
     "bookingPage.options.consultationLanguage.tl",
     "bookingPage.options.paymentMethod.creditCard",
-    "clinicDashboard.payment.card"
+    "clinicDashboard.payment.card",
+    "paymentOptions.types.cash",
+    "paymentOptions.types.creditCard",
+    "paymentOptions.types.debitCard"
   ],
   "vi": [
     "common.menu",

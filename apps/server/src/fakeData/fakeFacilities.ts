@@ -1,5 +1,6 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { faker, fakerJA } from '@faker-js/faker'
+import { normalizePaymentOptions, PAYMENT_TYPE_BRANDS, PAYMENT_TYPES } from '@findadoc/utils'
 
 /**
  * Generates random data for a CreateFacilityInput GraphQL object.
@@ -83,24 +84,23 @@ export function generateRandomCreateFacilityInput()
                 prefectureJa: selectedLocation.prefectureJa
             }
         },
-        paymentOptions: faker.helpers.multiple(
-            () => ({
-                paymentType: faker.helpers.arrayElement([
-                    gqlTypes.PaymentType.Cash,
-                    gqlTypes.PaymentType.CreditCard,
-                    gqlTypes.PaymentType.DebitCard,
-                    gqlTypes.PaymentType.ElectronicMoney,
-                    gqlTypes.PaymentType.Insurance,
-                    gqlTypes.PaymentType.QrCode
-                ]),
-                paymentBrands: faker.helpers.multiple(
-                    () => faker.company.name(),
-                    { count: { min: 1, max: 3 } }
-                )
-            }),
-            { count: { min: 1, max: 3 } }
-        )
+        paymentOptions: fakePaymentOptions()
     }
+}
+
+/** Payment from the controlled list (#20). Some facilities stay unknown, like most real ones. */
+function fakePaymentOptions(): gqlTypes.PaymentOptionsInput[] {
+    if (faker.datatype.boolean()) {
+        return []
+    }
+
+    const types = faker.helpers.arrayElements([...PAYMENT_TYPES], { min: 1, max: 3 })
+
+    // Stored lists come back in display order, so fake input uses that order too.
+    return normalizePaymentOptions(types.map(paymentType => ({
+        paymentType,
+        paymentBrands: faker.helpers.arrayElements([...PAYMENT_TYPE_BRANDS[paymentType]])
+    })))
 }
 
 export function generateRandomCreateFacilityInputArray({ count }: { count: number } = { count: 30 })

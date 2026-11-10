@@ -486,7 +486,9 @@
     "japaneseInsuranceHint": "Оставьте «Неизвестно», пока сайт клиники, список регионального бюро здравоохранения или звонок не подтвердят ответ. Бывают только частные клиники, поэтому не угадывайте.",
     "japaneseInsuranceNotAccepted": "Не принимает японскую государственную медицинскую страховку. Прием оплачивается за свой счет.",
     "japaneseInsuranceSourceLabel": "Источник",
-    "japaneseInsuranceSourcePlaceholder": "Ссылка или заметка, например: позвонили в клинику 2 нояб. 2026"
+    "japaneseInsuranceSourcePlaceholder": "Ссылка или заметка, например: позвонили в клинику 2 нояб. 2026",
+    "paymentLabel": "Способы оплаты",
+    "paymentHint": "Отмечайте только то, что подтверждено сайтом клиники или звонком. Если не знаете, ничего не отмечайте. Тогда читатели ничего не увидят, а не «только наличные»."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Обновить и выйти",
@@ -731,7 +733,8 @@
     "professionalsAtFacility": "Нет специалистов | 1 специалист | {n} специалистов",
     "pageHeading": "Найти врача в Японии",
     "mapUnavailable": "Не удалось загрузить карту.",
-    "mapUnavailableHint": "Остальные результаты без изменений."
+    "mapUnavailableHint": "Остальные результаты без изменений.",
+    "payment": "Оплата"
   },
   "clinicPage": {
     "backToSearch": "К поиску",
@@ -1265,5 +1268,25 @@
     "submissions": "Не удалось загрузить заявки. Попробуйте снова.",
     "facilities": "Не удалось загрузить клиники. Попробуйте снова.",
     "professionals": "Не удалось загрузить медицинских специалистов. Попробуйте снова."
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "Наличные",
+      "creditCard": "Кредитная карта",
+      "debitCard": "Дебетовая карта",
+      "electronicMoney": "Электронные деньги",
+      "qrCode": "Оплата по QR-коду"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "IC-карта (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "Другое"
+    }
   }
 }

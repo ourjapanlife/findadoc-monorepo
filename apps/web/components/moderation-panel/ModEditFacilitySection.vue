@@ -90,6 +90,10 @@
             v-model:choice="facilityStore.facilitySectionFields.japaneseInsurance"
             v-model:source="facilityStore.facilitySectionFields.japaneseInsuranceSource"
         />
+        <ModPaymentOptionsField
+            v-if="moderationScreenStore.editFacilityScreenIsActive()"
+            v-model="facilityStore.facilitySectionFields.paymentOptions"
+        />
         <ModAccordion
             v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"

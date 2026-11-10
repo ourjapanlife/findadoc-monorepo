@@ -481,7 +481,9 @@
     "japaneseInsuranceHint": "Để chưa rõ cho đến khi trang web phòng khám, danh sách của cục y tế khu vực hoặc một cuộc gọi xác nhận. Có những phòng khám chỉ khám tự chi trả, vì vậy đừng đoán.",
     "japaneseInsuranceNotAccepted": "Không nhận bảo hiểm y tế công của Nhật. Lần khám là tự chi trả.",
     "japaneseInsuranceSourceLabel": "Nguồn",
-    "japaneseInsuranceSourcePlaceholder": "Đường dẫn, hoặc ghi chú như: đã gọi cho phòng khám ngày 2/11/2026"
+    "japaneseInsuranceSourcePlaceholder": "Đường dẫn, hoặc ghi chú như: đã gọi cho phòng khám ngày 2/11/2026",
+    "paymentLabel": "Phương thức thanh toán",
+    "paymentHint": "Chỉ đánh dấu những gì trang web của phòng khám hoặc một cuộc gọi xác nhận. Nếu không biết, hãy để trống tất cả. Khi đó người đọc sẽ không thấy gì, chứ không phải là chỉ nhận tiền mặt."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Mã cơ sở vật chất là bắt buộc để cập nhật cơ sở vật chất.",
@@ -731,7 +733,8 @@
     "professionalsAtFacility": "Không có nhân viên | 1 nhân viên | {n} nhân viên",
     "pageHeading": "Tìm bác sĩ ở Nhật Bản",
     "mapUnavailable": "Không tải được bản đồ.",
-    "mapUnavailableHint": "Các kết quả còn lại không bị ảnh hưởng."
+    "mapUnavailableHint": "Các kết quả còn lại không bị ảnh hưởng.",
+    "payment": "Thanh toán"
   },
   "clinicPage": {
     "backToSearch": "Về tìm kiếm",
@@ -1265,5 +1268,25 @@
     "submissions": "Không tải được danh sách gửi. Hãy thử lại.",
     "facilities": "Không tải được danh sách cơ sở. Hãy thử lại.",
     "professionals": "Không tải được danh sách nhân viên y tế. Hãy thử lại."
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "Tiền mặt",
+      "creditCard": "Thẻ tín dụng",
+      "debitCard": "Thẻ ghi nợ",
+      "electronicMoney": "Tiền điện tử",
+      "qrCode": "Thanh toán mã QR"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "Thẻ IC (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "Khác"
+    }
   }
 }

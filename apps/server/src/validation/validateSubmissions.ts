@@ -1,7 +1,7 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
 import { hasScriptTags, isInvalidName } from '../../utils/stringUtils.js'
-import { validateContactInput, validateGooglePlaceId } from './validateFacility.js'
+import { validateContactInput, validateGooglePlaceId, validatePaymentOptions } from './validateFacility.js'
 import { validateNames, validateDegrees, validateSpecialties, validateSpokenLanguages } from './validationHealthcareProfessional.js'
 
 export function validateIdInput(id: string): Result<unknown> {
@@ -401,6 +401,7 @@ export function validateUpdateSubmissionInput(
         }
 
         validateGooglePlaceId(input.facility.googlePlaceId, validationResults, 'facility.googlePlaceId')
+        validatePaymentOptions(input.facility.paymentOptions, validationResults, 'facility.paymentOptions')
     }
 
     if (input.healthcareProfessionals && input.healthcareProfessionals.length > 0) {

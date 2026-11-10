@@ -603,7 +603,9 @@
     "japaneseInsuranceHint": "क्लिनिकको वेबसाइट, क्षेत्रीय स्वास्थ्य ब्युरोको सूची, वा फोनबाट पुष्टि नभएसम्म यसलाई 'थाहा छैन' मै राख्नुहोस्। निजी भुक्तानी मात्र लिने क्लिनिकहरू पनि छन्, त्यसैले अनुमान नगर्नुहोस्।",
     "japaneseInsuranceNotAccepted": "जापानको सार्वजनिक स्वास्थ्य बीमा स्वीकार्दैन। भेट सेल्फ-पे हुन्छ।",
     "japaneseInsuranceSourceLabel": "स्रोत",
-    "japaneseInsuranceSourcePlaceholder": "लिङ्क, वा यस्तो टिप्पणी: 2 नोभेम्बर 2026 मा क्लिनिकमा फोन गरेर पुष्टि गरियो"
+    "japaneseInsuranceSourcePlaceholder": "लिङ्क, वा यस्तो टिप्पणी: 2 नोभेम्बर 2026 मा क्लिनिकमा फोन गरेर पुष्टि गरियो",
+    "paymentLabel": "भुक्तानी विधि",
+    "paymentHint": "क्लिनिकको वेबसाइट वा फोनले पुष्टि गरेको कुरा मात्र छान्नुहोस्। थाहा छैन भने सबै खाली छोड्नुहोस्। त्यसपछि पाठकले केही देख्दैनन्, \"नगद मात्र\" होइन।"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "संस्था अद्यावधिक गर्न संस्थाको ID आवश्यक छ",
@@ -737,7 +739,8 @@
     "professionalsAtFacility": "कुनै स्वास्थ्यकर्मी सूचीमा छैनन् | 1 स्वास्थ्यकर्मी | {n} स्वास्थ्यकर्मी",
     "pageHeading": "जापानमा डाक्टर खोज्नुहोस्",
     "mapUnavailable": "नक्सा लोड गर्न सकिएन।",
-    "mapUnavailableHint": "बाँकी नतिजाहरूमा कुनै असर परेको छैन।"
+    "mapUnavailableHint": "बाँकी नतिजाहरूमा कुनै असर परेको छैन।",
+    "payment": "भुक्तानी"
   },
   "breadcrumbs": {
     "navLabel": "ब्रेडक्रम्ब",
@@ -1265,5 +1268,25 @@
     "submissions": "आवेदनहरू लोड हुन सकेनन्। फेरि प्रयास गर्नुहोस्।",
     "facilities": "क्लिनिकहरू लोड हुन सकेनन्। फेरि प्रयास गर्नुहोस्।",
     "professionals": "स्वास्थ्यकर्मीहरू लोड हुन सकेनन्। फेरि प्रयास गर्नुहोस्।"
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "नगद",
+      "creditCard": "क्रेडिट कार्ड",
+      "debitCard": "डेबिट कार्ड",
+      "electronicMoney": "इलेक्ट्रोनिक मुद्रा",
+      "qrCode": "QR कोड भुक्तानी"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "IC कार्ड (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "अन्य"
+    }
   }
 }

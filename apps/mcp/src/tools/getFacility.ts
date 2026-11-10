@@ -6,7 +6,7 @@ export function registerGetFacility(server: McpServer): void {
     server.registerTool(
         'get_facility',
         {
-            description: 'Get full details for a single healthcare facility (clinic or hospital) in Japan by its ID. Typically called after search_facilities. Returns name, address, contact details, location, payment options, whether the clinic takes Japanese public health insurance (ACCEPTED, NOT_ACCEPTED, or null when unknown), and the IDs of healthcare professionals at the facility.',
+            description: 'Get full details for a single healthcare facility (clinic or hospital) in Japan by its ID. Typically called after search_facilities. Returns name, address, contact details, location, payment options (an empty list means unknown, not cash only), whether the clinic takes Japanese public health insurance (ACCEPTED, NOT_ACCEPTED, or null when unknown), and the IDs of healthcare professionals at the facility.',
             inputSchema: {
                 facilityId: z.string().describe('The unique ID of the facility (UUID)')
             }

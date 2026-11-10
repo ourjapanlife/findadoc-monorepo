@@ -5,6 +5,7 @@ import { isStorablePhone } from './validatePhone.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 import { isPublishedLocale } from '../languages/publishedLocales.js'
+import { paymentOptionsProblem } from '@findadoc/utils'
 
 /** A Places id token, as Google writes it. 256 characters is far above any real id. */
 const GOOGLE_PLACE_ID = /^[A-Za-z0-9_-]{8,256}$/
@@ -163,6 +164,31 @@ export function validateSupportedLanguages(
     }
 }
 
+/**
+ * Payment is optional (#20). Each type appears once, and each brand is on the controlled list
+ * for its type. Null or an empty list clears the answer back to unknown.
+ */
+export function validatePaymentOptions(
+    options: readonly gqlTypes.PaymentOptionsInput[] | null | undefined,
+    validationResults: Result<unknown>,
+    field = 'paymentOptions'
+): void {
+    if (!options) {
+        return
+    }
+
+    const problem = paymentOptionsProblem(options)
+
+    if (problem) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field,
+            errorCode: problem === 'too_many' ? ErrorCode.INVALID_LENGTH_TOO_LONG : ErrorCode.INVALID_INPUT,
+            httpStatus: 400
+        })
+    }
+}
+
 export interface UpdateFacilityValidationOptions {
     /**
      * The caller checks a phone that does not parse against the stored value with
@@ -278,6 +304,7 @@ export function validateUpdateFacilityInput(
     validateSupportedLanguages(input.supportedLanguages, validationResults)
     validateGooglePlaceId(input.googlePlaceId, validationResults)
     validateJapaneseInsurance(input, validationResults)
+    validatePaymentOptions(input.paymentOptions, validationResults)
 
     return validationResults
 }
@@ -361,6 +388,7 @@ export function validateCreateFacilityInput(input: gqlTypes.CreateFacilityInput)
     validateSupportedLanguages(input.supportedLanguages, validationResults)
     validateGooglePlaceId(input.googlePlaceId, validationResults)
     validateJapaneseInsurance(input, validationResults)
+    validatePaymentOptions(input.paymentOptions, validationResults)
 
     return validationResults
 }

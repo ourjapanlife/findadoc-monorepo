@@ -486,7 +486,9 @@
     "japaneseInsuranceHint": "Deixe como desconhecido até que o site da clínica, a lista do escritório regional de saúde ou uma ligação confirme. Existem clínicas só particulares, então não adivinhe.",
     "japaneseInsuranceNotAccepted": "Não aceita o seguro de saúde público japonês. A consulta é particular.",
     "japaneseInsuranceSourceLabel": "Fonte",
-    "japaneseInsuranceSourcePlaceholder": "Um link, ou uma nota como: liguei para a clínica em 2 nov. 2026"
+    "japaneseInsuranceSourcePlaceholder": "Um link, ou uma nota como: liguei para a clínica em 2 nov. 2026",
+    "paymentLabel": "Formas de pagamento",
+    "paymentHint": "Marque apenas o que o site da clínica ou uma ligação confirmar. Se não souber, deixe tudo desmarcado. Assim os leitores não veem nada, e não «apenas dinheiro»."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",
@@ -731,7 +733,8 @@
     "professionalsAtFacility": "Nenhum profissional | 1 profissional | {n} profissionais",
     "pageHeading": "Encontrar um médico no Japão",
     "mapUnavailable": "Não foi possível carregar o mapa.",
-    "mapUnavailableHint": "Os demais resultados não foram afetados."
+    "mapUnavailableHint": "Os demais resultados não foram afetados.",
+    "payment": "Pagamento"
   },
   "clinicPage": {
     "backToSearch": "Voltar à pesquisa",
@@ -1265,5 +1268,25 @@
     "submissions": "Não foi possível carregar os envios. Tente novamente.",
     "facilities": "Não foi possível carregar as clínicas. Tente novamente.",
     "professionals": "Não foi possível carregar os profissionais de saúde. Tente novamente."
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "Dinheiro",
+      "creditCard": "Cartão de crédito",
+      "debitCard": "Cartão de débito",
+      "electronicMoney": "Dinheiro eletrônico",
+      "qrCode": "Pagamento por QR code"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "Cartão IC (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "Outro"
+    }
   }
 }

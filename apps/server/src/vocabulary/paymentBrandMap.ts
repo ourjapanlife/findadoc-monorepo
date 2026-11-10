@@ -1,20 +1,7 @@
+import type { PaymentBrand } from '@findadoc/utils'
 import { mapped, needsReview, type MapOutcome } from './types.js'
 
-/** Controlled brand list from the approved data-cleaning plan. Suica and PASMO share IC. */
-export const PAYMENT_BRANDS = [
-    'Visa',
-    'Mastercard',
-    'American Express',
-    'JCB',
-    'Diners Club',
-    'UnionPay',
-    'IC',
-    'PayPay',
-    'Other'
-] as const
-
-export type PaymentBrand = typeof PAYMENT_BRANDS[number]
-
+// The controlled brand list lives in @findadoc/utils, so the API and the forms share it (#20).
 export type PaymentBrandMatch = {
     brand: PaymentBrand
     /** Set when the source is a real brand we file under Other, so the source is not lost. */

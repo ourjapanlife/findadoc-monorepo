@@ -603,7 +603,9 @@
     "japaneseInsuranceHint": "클리닉 웹사이트, 지방후생국 목록 또는 전화로 확인될 때까지 '알 수 없음'으로 두세요. 자유진료만 하는 클리닉도 있으니 추측하지 마세요.",
     "japaneseInsuranceNotAccepted": "일본 공적 건강보험을 취급하지 않음. 진료는 자비입니다.",
     "japaneseInsuranceSourceLabel": "출처",
-    "japaneseInsuranceSourcePlaceholder": "링크 또는 메모 (예: 2026년 11월 2일 클리닉에 전화로 확인)"
+    "japaneseInsuranceSourcePlaceholder": "링크 또는 메모 (예: 2026년 11월 2일 클리닉에 전화로 확인)",
+    "paymentLabel": "결제 수단",
+    "paymentHint": "병원 웹사이트나 전화로 확인한 항목만 체크하세요. 모르면 모두 비워 두세요. 그러면 이용자에게는 아무것도 표시되지 않으며 현금 전용으로 처리되지 않습니다."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "의료기관을 업데이트하려면 의료기관 ID가 필요합니다",
@@ -731,7 +733,8 @@
     "professionalsAtFacility": "등록된 의료인 없음 | 의료인 1명 | 의료인 {n}명",
     "pageHeading": "일본에서 의사 찾기",
     "mapUnavailable": "지도를 불러오지 못했습니다.",
-    "mapUnavailableHint": "나머지 검색 결과에는 영향이 없습니다."
+    "mapUnavailableHint": "나머지 검색 결과에는 영향이 없습니다.",
+    "payment": "결제 수단"
   },
   "breadcrumbs": {
     "navLabel": "탐색 경로",
@@ -1265,5 +1268,25 @@
     "submissions": "제출 목록을 불러오지 못했습니다. 다시 시도해 주세요.",
     "facilities": "의료기관을 불러오지 못했습니다. 다시 시도해 주세요.",
     "professionals": "의료인을 불러오지 못했습니다. 다시 시도해 주세요."
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "현금",
+      "creditCard": "신용카드",
+      "debitCard": "체크카드",
+      "electronicMoney": "전자화폐",
+      "qrCode": "QR코드 결제"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "교통 IC카드 (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "기타"
+    }
   }
 }

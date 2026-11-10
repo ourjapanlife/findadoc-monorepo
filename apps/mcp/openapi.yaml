@@ -357,15 +357,20 @@ components:
             type: string
         paymentOptions:
           type: array
+          description: >-
+            Payment methods the clinic accepts. An empty list is unknown, not
+            cash only.
           items:
             type: object
             properties:
               paymentType:
                 type: string
+                enum: ['CASH', 'CREDIT_CARD', 'DEBIT_CARD', 'ELECTRONIC_MONEY', 'QR_CODE']
               paymentBrands:
                 type: ['array', 'null']
                 items:
                   type: string
+                  enum: ['Visa', 'Mastercard', 'American Express', 'JCB', 'Diners Club', 'UnionPay', 'IC', 'PayPay', 'Other']
         japaneseInsurance:
           type: ['string', 'null']
           enum: ['ACCEPTED', 'NOT_ACCEPTED', null]

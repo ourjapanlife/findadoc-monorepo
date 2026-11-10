@@ -90,11 +90,21 @@ const extraLanguages = [
 
 const statuses = ['pending', 'under_review', 'approved', 'rejected'] as const
 
+// Payment from the controlled list (#20). Most rows stay unknown, as most real clinics do.
 const paymentSets: Array<SeedFile['facilities'][number]['payment_options']> = [
-    [{ paymentType: PaymentType.Cash, paymentBrands: [] }, { paymentType: PaymentType.CreditCard, paymentBrands: ['Visa', 'Mastercard', 'JCB'] }],
-    [{ paymentType: PaymentType.CreditCard, paymentBrands: ['Visa', 'JCB', 'American Express'] }],
-    [{ paymentType: PaymentType.Cash, paymentBrands: [] }, { paymentType: PaymentType.ElectronicMoney, paymentBrands: ['Suica', 'Pasmo'] }, { paymentType: PaymentType.QrCode, paymentBrands: ['PayPay'] }],
-    [{ paymentType: PaymentType.Insurance, paymentBrands: ['Japanese health insurance'] }, { paymentType: PaymentType.CreditCard, paymentBrands: ['Visa', 'Mastercard'] }]
+    [
+        { paymentType: PaymentType.Cash, paymentBrands: [] },
+        { paymentType: PaymentType.CreditCard, paymentBrands: ['Visa', 'Mastercard', 'JCB'] }
+    ],
+    [],
+    [{ paymentType: PaymentType.CreditCard, paymentBrands: ['Visa', 'American Express', 'JCB'] }],
+    [],
+    [
+        { paymentType: PaymentType.Cash, paymentBrands: [] },
+        { paymentType: PaymentType.ElectronicMoney, paymentBrands: ['IC'] },
+        { paymentType: PaymentType.QrCode, paymentBrands: ['PayPay'] }
+    ],
+    []
 ]
 
 function iso(day: number): string {

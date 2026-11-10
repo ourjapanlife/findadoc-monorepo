@@ -603,7 +603,9 @@
     "japaneseInsuranceHint": "Leave this unknown until the clinic's website, the regional health bureau list, or a call answers it. Private-only clinics exist, so do not guess.",
     "japaneseInsuranceNotAccepted": "Does not take Japanese public health insurance. The visit is self-pay.",
     "japaneseInsuranceSourceLabel": "Source",
-    "japaneseInsuranceSourcePlaceholder": "A link, or a note such as: called the clinic on Nov 2, 2026"
+    "japaneseInsuranceSourcePlaceholder": "A link, or a note such as: called the clinic on Nov 2, 2026",
+    "paymentLabel": "Payment methods",
+    "paymentHint": "Check only what the clinic's website or a call confirms. If you do not know, leave everything unchecked. Readers then see nothing, not cash only."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",
@@ -737,7 +739,8 @@
     "professionalsAtFacility": "No professionals listed | 1 professional | {n} professionals",
     "pageHeading": "Find a doctor in Japan",
     "mapUnavailable": "The map could not be loaded.",
-    "mapUnavailableHint": "The rest of the results are unaffected."
+    "mapUnavailableHint": "The rest of the results are unaffected.",
+    "payment": "Payment"
   },
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
@@ -1265,5 +1268,25 @@
     "submissions": "Submissions could not be loaded. Try again.",
     "facilities": "Clinics could not be loaded. Try again.",
     "professionals": "Healthcare professionals could not be loaded. Try again."
+  },
+  "paymentOptions": {
+    "types": {
+      "cash": "Cash",
+      "creditCard": "Credit card",
+      "debitCard": "Debit card",
+      "electronicMoney": "Electronic money",
+      "qrCode": "QR code payment"
+    },
+    "brands": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "americanExpress": "American Express",
+      "jcb": "JCB",
+      "dinersClub": "Diners Club",
+      "unionPay": "UnionPay",
+      "ic": "IC card (Suica, PASMO)",
+      "payPay": "PayPay",
+      "other": "Other"
+    }
   }
 }
