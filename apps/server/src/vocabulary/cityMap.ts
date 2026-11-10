@@ -274,7 +274,8 @@ function squash(value: string): string {
 function cleanJa(value: string): string {
     const squashed = squash(value).normalize('NFKC')
 
-    return squashed.replace(/^[府県](?=.*[市区町村])/, '')
+    // A leftover 府 or 県 from the prefecture goes, but not the 府 of 府中市 or 府中町.
+    return squashed.replace(/^[府県](?!中[市町])(?=.*[市区町村])/, '')
 }
 
 function englishKey(value: string): string {

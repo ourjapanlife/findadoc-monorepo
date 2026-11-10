@@ -135,6 +135,14 @@ describe('resolveSearchCity', () => {
         })).toMatchObject({ status: 'mapped', value: { nameEn: 'Nozawaonsen', nameJa: '野沢温泉村' } })
     })
 
+    it('keeps the 府 of 府中 when it starts the address (#21)', () => {
+        expect(resolveFacilityLocation({ prefectureEn: 'Tokyo', cityEn: '', cityJa: '', addressLine1Ja: '府中市武蔵台2-6-1' }))
+            .toMatchObject({ status: 'mapped', value: { nameEn: 'Fuchu', nameJa: '府中市' } })
+        expect(resolveFacilityLocation({ prefectureEn: 'Hiroshima', cityEn: '', cityJa: '', addressLine1Ja: '府中町青崎南2-15' }))
+            .toMatchObject({ status: 'mapped', value: { nameJa: '府中町' } })
+        expect(mappedCity('Osaka', 'Osaka', '府大阪市')).toMatchObject({ nameJa: '大阪市' })
+    })
+
     it('refuses a municipality that is not in the official list', () => {
         expect(city('Hokkaido', 'Foo', 'フー市')).toEqual({ status: 'needs_review', reason: 'unmapped' })
         expect(city('Hokkaido', 'Esashi', '枝幸町')).toEqual({ status: 'needs_review', reason: 'unmapped' })
