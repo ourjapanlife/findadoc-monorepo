@@ -11,7 +11,9 @@
     "contactTitle": "联系我们"
   },
   "pageMetaDescription": {
-    "about": "Find a Doc, Japan 是一家位于东京的非营利组织，帮助人们找到会说自己语言的医生。了解我们的故事，认识我们的团队，并参与其中。"
+    "about": "东京的非营利组织，帮助人们找到会说自己语言的医生。了解我们的故事，认识团队，一起参与。",
+    "insurance": "日本公共医疗保险在诊所如何使用、什么是自费，以及海外或旅行保险该怎么办。",
+    "npo": "Find a Doc, Japan 是日本注册的非营利法人。我们在此公开法律要求的信息披露文件。"
   },
   "contactPage": {
     "heading": "联系我们",
@@ -261,7 +263,8 @@
     "login": "登录",
     "myPage": "我的页面",
     "logoutToast": "已退出登录",
-    "search": "搜索"
+    "search": "搜索",
+    "insurance": "保险"
   },
   "login": {
     "checkingauth": "正在认证...",

@@ -147,8 +147,10 @@ describe('social preview assets', () => {
     const imageUrls = [SITE_SOCIAL_IMAGE, ...Object.values(PAGE_SOCIAL_IMAGES).map(image => image.url)]
 
     it('serves the Open Graph image from the publish root', () => {
+        expect(existsSync(join(rootDir, 'public', 'findadoc-social-home.jpg'))).to.equal(true)
+        expect(SITE_SOCIAL_IMAGE).to.equal(`${SITE_ORIGIN}/findadoc-social-home.jpg`)
+        // Kept so links that already point at the old name still get an image.
         expect(existsSync(join(rootDir, 'public', 'findadoc-social.jpg'))).to.equal(true)
-        expect(SITE_SOCIAL_IMAGE).to.equal(`${SITE_ORIGIN}/findadoc-social.jpg`)
     })
 
     it('ships every card at exactly 1200×630, the size social platforms expect', () => {
@@ -161,10 +163,11 @@ describe('social preview assets', () => {
         }
     })
 
-    it('gives /about and /submit their own card in every locale, and every other page the site card', () => {
+    it('gives /about, /submit, and /insurance their own card in every locale, and every other page the site card', () => {
         expect(socialImageForPath('/about').url).to.equal(`${SITE_ORIGIN}/findadoc-social-about.jpg`)
         expect(socialImageForPath('/ja-JP/about').url).to.equal(`${SITE_ORIGIN}/findadoc-social-about.jpg`)
         expect(socialImageForPath('/submit/').url).to.equal(`${SITE_ORIGIN}/findadoc-social-submit.jpg`)
+        expect(socialImageForPath('/ko-KR/insurance').url).to.equal(`${SITE_ORIGIN}/findadoc-social-insurance.jpg`)
         expect(socialImageForPath('/').url).to.equal(SITE_SOCIAL_IMAGE)
         expect(socialImageForPath('/search?lang=en').url).to.equal(SITE_SOCIAL_IMAGE)
     })

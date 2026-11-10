@@ -33,16 +33,17 @@ export const PAGE_META_TITLE_ROUTES = {
 } as const satisfies Record<PageMetaTitleKey, string>
 
 /**
- * Translated blurbs that already exist for pages whose body is localised.
- * Terms and privacy stay on the English site description: that copy is still
- * hardcoded English.
+ * Translated blurbs that already exist for pages whose body is localised. A page whose
+ * body intro is longer than a social preview shows (~125 characters) gets its own
+ * `pageMetaDescription` key instead. Terms and privacy stay on the English site
+ * description: that copy is still hardcoded English.
  */
 const PAGE_META_DESCRIPTION_KEYS = {
     homeTitle: 'home.heroLead',
     aboutTitle: 'pageMetaDescription.about',
     submitTitle: 'home.contributeBody',
-    npoTitle: 'npoPage.intro',
-    insuranceTitle: 'insurancePage.intro',
+    npoTitle: 'pageMetaDescription.npo',
+    insuranceTitle: 'pageMetaDescription.insurance',
     searchTitle: 'home.heroLead',
     contactTitle: 'contactPage.intro'
 } as const satisfies Partial<Record<PageMetaTitleKey, string>>

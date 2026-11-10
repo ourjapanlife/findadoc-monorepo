@@ -11,7 +11,9 @@
     "contactTitle": "Kontakt"
   },
   "pageMetaDescription": {
-    "about": "Find a Doc, Japan ist ein gemeinnütziger Verein in Tokio, der dir hilft, Ärztinnen und Ärzte zu finden, die deine Sprache sprechen. Lies unsere Geschichte und mach mit."
+    "about": "Gemeinnütziger Verein aus Tokio, der dir hilft, Ärzte zu finden, die deine Sprache sprechen. Lerne unser Team kennen.",
+    "insurance": "So funktioniert die japanische Krankenversicherung in der Praxis, dazu Selbstzahlung und Reiseversicherung.",
+    "npo": "Find a Doc, Japan ist ein eingetragener gemeinnütziger Verein in Japan. Hier stehen unsere Pflichtveröffentlichungen."
   },
   "contactPage": {
     "heading": "Kontakt",
@@ -261,7 +263,8 @@
     "login": "Anmelden",
     "myPage": "Meine Seite",
     "logoutToast": "Erfolgreich abgemeldet",
-    "search": "Suche"
+    "search": "Suche",
+    "insurance": "Versicherung"
   },
   "login": {
     "checkingauth": "Authentifizierung wird überprüft...",

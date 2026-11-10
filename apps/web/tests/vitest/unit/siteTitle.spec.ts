@@ -6,6 +6,7 @@ import {
     isEntityRoute,
     isUntitledRoute,
     PAGE_META_TITLE_ROUTES,
+    pageDescriptionKeyForPath,
     pageMetaI18nKey,
     pageTitleKeyForPath
 } from '@/utils/pageTitles'
@@ -75,6 +76,22 @@ describe('pageMeta titles', () => {
                     `${fileName} ${key}: ${formatPageTitle(title)}`
                 ).to.be.at.most(60)
             }
+        }
+    })
+
+    it('keeps every English page description short enough for a social preview', () => {
+        const messages: unknown = JSON.parse(readFileSync(join(localesDir, 'en.json'), 'utf-8'))
+        for (const [key, path] of Object.entries(PAGE_META_TITLE_ROUTES)) {
+            const descriptionKey = pageDescriptionKeyForPath(path)
+            if (descriptionKey === undefined) {
+                continue
+            }
+            const description = descriptionKey.split('.').reduce<unknown>(
+                (node, part) => (typeof node === 'object' && node !== null ? Reflect.get(node, part) : undefined),
+                messages
+            )
+            expect(description, `${key}: ${descriptionKey}`).to.be.a('string')
+            expect(String(description).length, `${key}: ${String(description)}`).to.be.at.most(125)
         }
     })
 
