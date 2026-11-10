@@ -22,7 +22,7 @@ import {
     type SubmissionStatusEnum,
     type SubmissionsTable
 } from '../typeDefs/kyselyTypes.js'
-import type { Selectable } from 'kysely'
+import type { Selectable, UpdateObject } from 'kysely'
 import { db } from '../kyselyClient.js'
 import { submissionFromRow } from '../services/mappersEntityService.js'
 import { asJsonb } from '../../utils/dbUtils.js'
@@ -332,11 +332,12 @@ function refuseUpdate(field: string, errorCode: ErrorCode, httpStatus = 400): ne
 /**
  * The extra patch for a correction update: the city a moderator chose. retain_until comes from
  * buildSubmissionUpdatePatch, as on a listing. A listing refuses correctionCityId.
+ * Typed as the table's update object, so a misspelled column fails typecheck.
  */
 async function correctionUpdatePatch(
     current: Selectable<SubmissionsTable>,
     fields: Partial<gqlTypes.UpdateSubmissionInput>
-): Promise<Record<string, unknown>> {
+): Promise<UpdateObject<Database, 'submissions'>> {
     const cityId = fields.correctionCityId
 
     if (current.kind !== SUBMISSION_KIND.CORRECTION) {
@@ -351,7 +352,7 @@ async function correctionUpdatePatch(
         refuseUpdate(listingField, ErrorCode.SUBMISSION_KIND_MISMATCH)
     }
 
-    const patch: Record<string, unknown> = {}
+    const patch: UpdateObject<Database, 'submissions'> = {}
 
     if (cityId !== undefined && cityId !== null) {
         if (!(current.correction_reasons ?? []).includes(gqlTypes.FacilityCorrectionReason.WrongCity)) {
