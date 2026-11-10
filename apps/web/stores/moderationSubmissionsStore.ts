@@ -13,6 +13,7 @@ import { hasServerErrors } from '~/utils/moderationUtils'
 import { isCorrection } from '~/utils/moderationSubmissionStatus'
 import {
     fetchCorrectionFacilityNames,
+    fetchOpenCorrectionCounts,
     fetchSubmissionById,
     type CorrectionFacilityName
 } from '~/utils/moderationCorrections'
@@ -112,6 +113,8 @@ export const useModerationSubmissionsStore = defineStore(
         })
         // A correction row stores only the facility id. The list shows the clinic's name.
         const correctionFacilityNames: Ref<Record<string, CorrectionFacilityName>> = ref({})
+        // Open corrections per clinic, so a row shows that its clinic has other reports.
+        const openCorrectionCounts: Ref<Record<string, number>> = ref({})
 
         const totalSubmissionsCount: Ref<number> = ref(0)
         const currentOffset = usePersistentFilters('submissions', 'offset', 0)
@@ -175,6 +178,29 @@ export const useModerationSubmissionsStore = defineStore(
             }
         }
 
+        /** Counts for the clinics on this page. A failure leaves the counts out, not the list. */
+        async function loadOpenCorrectionCounts(submissions: readonly Submission[]) {
+            const facilityIds = submissions
+                .filter(isCorrection)
+                .map(submission => submission.correction?.facilityId)
+                .filter((id): id is string => id !== undefined)
+            if (facilityIds.length === 0) {
+                return
+            }
+            try {
+                const counts = await fetchOpenCorrectionCounts(facilityIds)
+                const refreshed = Object.fromEntries(facilityIds.map(id => [id, counts[id] ?? 0]))
+                openCorrectionCounts.value = { ...openCorrectionCounts.value, ...refreshed }
+            } catch (error) {
+                console.error(`Error fetching open correction counts: ${JSON.stringify(error)}`)
+            }
+        }
+
+        /** Open corrections on this clinic, the shown one included. Zero while unknown. */
+        function openCorrectionCount(facilityId: string | undefined): number {
+            return facilityId === undefined ? 0 : openCorrectionCounts.value[facilityId] ?? 0
+        }
+
         function applySubmissionPage(offset: number, rows: Submission[], totalCount: number) {
             currentOffset.value = offset
             submissionsData.value = rows
@@ -200,7 +226,7 @@ export const useModerationSubmissionsStore = defineStore(
                     }
                 )
                 // Names first: the search box matches a correction by its clinic's name.
-                await loadCorrectionFacilityNames(page.rows)
+                await Promise.all([loadCorrectionFacilityNames(page.rows), loadOpenCorrectionCounts(page.rows)])
                 applySubmissionPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
                 console.error(`Error fetching submissions: ${JSON.stringify(error)}`)
@@ -389,6 +415,7 @@ export const useModerationSubmissionsStore = defineStore(
             selectedSubmissionData,
             correctionFacilityNames,
             submissionFacilityName,
+            openCorrectionCount,
             didMutationFail,
             setDidMutationFail,
             selectedModerationListViewChosen,

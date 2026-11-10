@@ -513,7 +513,10 @@
     "declineConfirm": "Tolak koreksi ini? Halaman klinik tidak berubah.",
     "declineConfirmButton": "Ya, tolak",
     "declined": "Koreksi ditolak.",
-    "submissionMissing": "Pengajuan ini tidak dapat dimuat."
+    "submissionMissing": "Pengajuan ini tidak dapat dimuat.",
+    "otherReportsHeading": "Laporan terbuka lain untuk klinik ini",
+    "otherReportsHint": "Tinjau bersama agar perubahan yang sama tidak diperiksa dua kali.",
+    "openOtherReport": "Laporan dari {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Tidak ada pengajuan yang tertunda"
@@ -706,7 +709,8 @@
     "rejectedSubmission": "Ditolak",
     "createdDate": "Dibuat pada",
     "updatedDate": "Terakhir diperbarui",
-    "feedbackSubmission": "Masukan"
+    "feedbackSubmission": "Masukan",
+    "moreReportsOnClinic": "+{count} di klinik ini"
   },
   "pagination": {
     "of": "dari",

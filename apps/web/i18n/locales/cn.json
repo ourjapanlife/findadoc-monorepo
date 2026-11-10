@@ -355,7 +355,10 @@
     "declineConfirm": "驳回此修正吗？诊所页面不会有任何变化。",
     "declineConfirmButton": "确认驳回",
     "declined": "修正已驳回。",
-    "submissionMissing": "无法加载此提交。"
+    "submissionMissing": "无法加载此提交。",
+    "otherReportsHeading": "该诊所的其他待处理报告",
+    "otherReportsHint": "请一并审核，避免重复检查同一处修改。",
+    "openOtherReport": "{date} 的报告"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "暂无待审核的已提交项目"
@@ -691,7 +694,8 @@
     "rejectedSubmission": "已驳回",
     "createdDate": "创建于",
     "updatedDate": "最近更新",
-    "feedbackSubmission": "反馈"
+    "feedbackSubmission": "反馈",
+    "moreReportsOnClinic": "该诊所另有 {count} 条"
   },
   "settingsPage": {
     "heading": "设置",

@@ -388,7 +388,10 @@
     "declineConfirm": "Tanggihan ang pagwawastong ito? Walang magbabago sa pahina ng klinika.",
     "declineConfirmButton": "Oo, tanggihan",
     "declined": "Tinanggihan ang pagwawasto.",
-    "submissionMissing": "Hindi ma-load ang pagsusumiteng ito."
+    "submissionMissing": "Hindi ma-load ang pagsusumiteng ito.",
+    "otherReportsHeading": "Iba pang bukas na ulat sa klinikang ito",
+    "otherReportsHint": "Suriin ang mga ito nang sabay para hindi masuri nang dalawang beses ang parehong pagbabago.",
+    "openOtherReport": "Ulat mula {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Walang nakabinbing mga isinumite."
@@ -691,7 +694,8 @@
     "rejectedSubmission": "Hindi na-aprubahan",
     "createdDate": "Ginawa noong",
     "updatedDate": "Huling na-update",
-    "feedbackSubmission": "Puna"
+    "feedbackSubmission": "Puna",
+    "moreReportsOnClinic": "+{count} sa klinikang ito"
   },
   "settingsPage": {
     "heading": "Mga setting",

@@ -348,7 +348,10 @@
     "declineConfirm": "Recusar esta correção? Nada muda na página da clínica.",
     "declineConfirmButton": "Sim, recusar",
     "declined": "Correção recusada.",
-    "submissionMissing": "Não foi possível carregar este envio."
+    "submissionMissing": "Não foi possível carregar este envio.",
+    "otherReportsHeading": "Outros relatos abertos sobre esta clínica",
+    "otherReportsHint": "Revise-os juntos, para não verificar a mesma alteração duas vezes.",
+    "openOtherReport": "Relato de {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Não existem novos envios"
@@ -691,7 +694,8 @@
     "rejectedSubmission": "Rejeitado",
     "createdDate": "Criado em",
     "updatedDate": "Atualizado por último",
-    "feedbackSubmission": "Retorno"
+    "feedbackSubmission": "Retorno",
+    "moreReportsOnClinic": "+{count} nesta clínica"
   },
   "settingsPage": {
     "heading": "Configurações",

@@ -62,6 +62,11 @@
             </button>
         </section>
 
+        <ModCorrectionOtherReports
+            :facility-id="correction.facilityId"
+            :current-id="submission.id"
+        />
+
         <section
             class="mod-sheet flex flex-col gap-3"
             aria-labelledby="mod-correction-reasons-heading"

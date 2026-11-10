@@ -422,7 +422,10 @@
     "declineConfirm": "Rifiutare questa correzione? Sulla pagina della clinica non cambia nulla.",
     "declineConfirmButton": "Sì, rifiuta",
     "declined": "Correzione rifiutata.",
-    "submissionMissing": "Impossibile caricare questo invio."
+    "submissionMissing": "Impossibile caricare questo invio.",
+    "otherReportsHeading": "Altre segnalazioni aperte su questa clinica",
+    "otherReportsHint": "Rivedile insieme, così la stessa modifica non viene controllata due volte.",
+    "openOtherReport": "Segnalazione del {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Non ci sono richieste in attesa"
@@ -698,7 +701,8 @@
     "rejectedSubmission": "Rifiutato",
     "createdDate": "Creato il",
     "updatedDate": "Ultimo aggiornamento",
-    "feedbackSubmission": "Segnalazione"
+    "feedbackSubmission": "Segnalazione",
+    "moreReportsOnClinic": "+{count} su questa clinica"
   },
   "profile": {
     "edit": "Modifica profilo",

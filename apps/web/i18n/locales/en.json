@@ -513,7 +513,10 @@
     "declineConfirm": "Decline this correction? Nothing changes on the clinic page.",
     "declineConfirmButton": "Yes, decline",
     "declined": "Correction declined.",
-    "submissionMissing": "This submission could not be loaded."
+    "submissionMissing": "This submission could not be loaded.",
+    "otherReportsHeading": "Other open reports on this clinic",
+    "otherReportsHint": "Review them together, so the same change is not checked twice.",
+    "openOtherReport": "Report from {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "There are no pending submissions"
@@ -706,7 +709,8 @@
     "rejectedSubmission": "Rejected",
     "createdDate": "Created on",
     "updatedDate": "Updated last",
-    "feedbackSubmission": "Feedback"
+    "feedbackSubmission": "Feedback",
+    "moreReportsOnClinic": "+{count} on this clinic"
   },
   "pagination": {
     "of": "of",

@@ -74,6 +74,10 @@ function answer(variables: Record<string, unknown>) {
           && (!listFilters.isRejected || row.isRejected))
         return { data: { submissions: rows, submissionsTotalCount: rows.length }, errors: [], hasErrors: false }
     }
+    if ('facilityIds' in variables) {
+        const count = ROWS.filter(row => row.kind === SubmissionKind.Correction && isOpen(row)).length
+        return { data: { openCorrectionCounts: [{ facilityId: FACILITY_ID, count }] }, errors: [], hasErrors: false }
+    }
     // The aliased facility-name query: one alias per id variable.
     const names = Object.fromEntries(Object.values(variables).map((id, index) => [
         `f${index}`,
@@ -131,6 +135,14 @@ describe('moderationSubmissionsStore queues (#22)', () => {
         store.setSubmissionSearchQuery('港サンプル')
 
         expect(store.filteredSubmissionDataForListComponent).to.have.length(2)
+    })
+
+    it('knows how many open reports the clinic of each row has', async () => {
+        const store = useModerationSubmissionsStore()
+        await store.setSelectedModerationListViewTabChosen(SelectedSubmissionListViewTab.UserFeedback)
+
+        expect(store.openCorrectionCount(FACILITY_ID)).to.equal(2)
+        expect(store.openCorrectionCount(undefined)).to.equal(0)
     })
 
     it('counts open corrections for the User feedback tab', async () => {

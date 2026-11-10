@@ -403,7 +403,10 @@
     "declineConfirm": "Diese Korrektur ablehnen? Auf der Klinikseite ändert sich nichts.",
     "declineConfirmButton": "Ja, ablehnen",
     "declined": "Korrektur abgelehnt.",
-    "submissionMissing": "Diese Einreichung konnte nicht geladen werden."
+    "submissionMissing": "Diese Einreichung konnte nicht geladen werden.",
+    "otherReportsHeading": "Weitere offene Meldungen zu dieser Klinik",
+    "otherReportsHint": "Prüfen Sie sie gemeinsam, damit dieselbe Änderung nicht zweimal geprüft wird.",
+    "openOtherReport": "Meldung vom {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Es gibt keine ausstehenden Einreichungen"
@@ -691,7 +694,8 @@
     "rejectedSubmission": "Abgelehnt",
     "createdDate": "Erstellt am",
     "updatedDate": "Zuletzt aktualisiert",
-    "feedbackSubmission": "Rückmeldung"
+    "feedbackSubmission": "Rückmeldung",
+    "moreReportsOnClinic": "+{count} zu dieser Klinik"
   },
   "settingsPage": {
     "heading": "Einstellungen",

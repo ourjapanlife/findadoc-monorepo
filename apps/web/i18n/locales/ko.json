@@ -513,7 +513,10 @@
     "declineConfirm": "이 수정을 거절하시겠습니까? 병원 페이지는 바뀌지 않습니다.",
     "declineConfirmButton": "예, 거절합니다",
     "declined": "수정을 거절했습니다.",
-    "submissionMissing": "이 제출을 불러올 수 없습니다."
+    "submissionMissing": "이 제출을 불러올 수 없습니다.",
+    "otherReportsHeading": "이 클리닉의 다른 미처리 신고",
+    "otherReportsHint": "같은 변경을 두 번 확인하지 않도록 함께 검토하세요.",
+    "openOtherReport": "{date} 신고"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "대기 중인 제보가 없습니다"
@@ -700,7 +703,8 @@
     "rejectedSubmission": "거절됨",
     "createdDate": "작성일",
     "updatedDate": "최종 수정일",
-    "feedbackSubmission": "피드백"
+    "feedbackSubmission": "피드백",
+    "moreReportsOnClinic": "이 클리닉에 {count}건 더"
   },
   "pagination": {
     "of": "/",

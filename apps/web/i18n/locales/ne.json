@@ -513,7 +513,10 @@
     "declineConfirm": "यो सुधार अस्वीकार गर्ने? क्लिनिकको पृष्ठमा केही परिवर्तन हुँदैन।",
     "declineConfirmButton": "हो, अस्वीकार गर्नुहोस्",
     "declined": "सुधार अस्वीकार गरियो।",
-    "submissionMissing": "यो आवेदन लोड गर्न सकिएन।"
+    "submissionMissing": "यो आवेदन लोड गर्न सकिएन।",
+    "otherReportsHeading": "यस क्लिनिकका अन्य खुला रिपोर्टहरू",
+    "otherReportsHint": "एउटै परिवर्तन दुई पटक नजाँचियोस् भनेर सँगै समीक्षा गर्नुहोस्।",
+    "openOtherReport": "{date} को रिपोर्ट"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "बाँकी रहेका कुनै विवरण छैनन्"
@@ -706,7 +709,8 @@
     "rejectedSubmission": "अस्वीकृत",
     "createdDate": "बनाइएको मिति",
     "updatedDate": "अन्तिम अद्यावधिक",
-    "feedbackSubmission": "प्रतिक्रिया"
+    "feedbackSubmission": "प्रतिक्रिया",
+    "moreReportsOnClinic": "यस क्लिनिकमा +{count}"
   },
   "pagination": {
     "of": "मध्ये",

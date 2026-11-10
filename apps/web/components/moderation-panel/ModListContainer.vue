@@ -332,11 +332,18 @@ function bookingStatusLabel(booking: BookingSubmissionListItem): string {
 }
 
 function submissionBadges(submission: Submission): ModerationTableBadge[] {
-    return moderationPills(submission).map(pill => ({
+    const pills: ModerationTableBadge[] = moderationPills(submission).map(pill => ({
         label: t(MODERATION_PILL_LABEL_KEYS[pill]),
         className: '',
         pill
     }))
+    // Other open reports on the same clinic, so the moderator handles them together.
+    const others = isCorrection(submission)
+        ? modSubmissionsStore.openCorrectionCount(submission.correction?.facilityId) - 1
+        : 0
+    return others > 0
+        ? [...pills, { label: t('modListContainerItem.moreReportsOnClinic', { count: others }), className: 'bg-info/80' }]
+        : pills
 }
 
 /** A listing names the professional. A correction names what the visitor says is wrong (#22). */

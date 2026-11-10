@@ -348,7 +348,10 @@
     "declineConfirm": "Отклонить это исправление? На странице клиники ничего не изменится.",
     "declineConfirmButton": "Да, отклонить",
     "declined": "Исправление отклонено.",
-    "submissionMissing": "Не удалось загрузить эту заявку."
+    "submissionMissing": "Не удалось загрузить эту заявку.",
+    "otherReportsHeading": "Другие открытые сообщения об этой клинике",
+    "otherReportsHint": "Проверьте их вместе, чтобы не проверять одно изменение дважды.",
+    "openOtherReport": "Сообщение от {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Нет заявок на рассмотрении"
@@ -691,7 +694,8 @@
     "rejectedSubmission": "Отклонено",
     "createdDate": "Создано",
     "updatedDate": "Обновлено",
-    "feedbackSubmission": "Отзыв"
+    "feedbackSubmission": "Отзыв",
+    "moreReportsOnClinic": "+{count} по этой клинике"
   },
   "settingsPage": {
     "heading": "Настройки",

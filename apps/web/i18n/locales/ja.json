@@ -355,7 +355,10 @@
     "declineConfirm": "この修正を見送りますか？クリニックのページは変わりません。",
     "declineConfirmButton": "見送る",
     "declined": "修正を見送りました。",
-    "submissionMissing": "この申請を読み込めませんでした。"
+    "submissionMissing": "この申請を読み込めませんでした。",
+    "otherReportsHeading": "このクリニックへの未処理の報告",
+    "otherReportsHint": "同じ変更を二度確認しないよう、まとめて確認してください。",
+    "openOtherReport": "{date}の報告"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "確認待ちの投稿はありません"
@@ -697,7 +700,8 @@
     "rejectedSubmission": "却下",
     "createdDate": "作成日",
     "updatedDate": "最終更新",
-    "feedbackSubmission": "報告"
+    "feedbackSubmission": "報告",
+    "moreReportsOnClinic": "このクリニックに他{count}件"
   },
   "settingsPage": {
     "heading": "設定",

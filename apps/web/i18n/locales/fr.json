@@ -348,7 +348,10 @@
     "declineConfirm": "Refuser cette correction ? Rien ne change sur la page de la clinique.",
     "declineConfirmButton": "Oui, refuser",
     "declined": "Correction refusée.",
-    "submissionMissing": "Impossible de charger cette soumission."
+    "submissionMissing": "Impossible de charger cette soumission.",
+    "otherReportsHeading": "Autres signalements ouverts sur cette clinique",
+    "otherReportsHint": "Examinez-les ensemble, pour ne pas vérifier deux fois la même modification.",
+    "openOtherReport": "Signalement du {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Il n'y a pas de soumissions en attente"
@@ -691,7 +694,8 @@
     "rejectedSubmission": "Rejeté",
     "createdDate": "Créé le",
     "updatedDate": "Dernière mise à jour",
-    "feedbackSubmission": "Retour"
+    "feedbackSubmission": "Retour",
+    "moreReportsOnClinic": "+{count} sur cette clinique"
   },
   "settingsPage": {
     "heading": "Réglages",
