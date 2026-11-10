@@ -142,6 +142,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Setup
+        uses: ./.github/actions/setup
+
       - name: Get the shards
         uses: actions/download-artifact@v8
         with:
@@ -149,19 +152,21 @@ jobs:
           path: ${{ runner.temp }}/shards
           merge-multiple: true
 
-      # Shard files never overlap except the app shell, 404, and build assets, which every shard
-      # writes the same. Shard 0 goes last, so its copy is the one published.
+      # Shard files do not overlap except the app shell, 404, and build assets, which every shard
+      # writes the same. The merge keeps shard 0's copy and lists every shard's pages in the one
+      # build manifest, so the browser loads each page's payload on navigation.
       - name: Merge the shards
         run: |
-          site=apps/web/.output/public
-          mkdir -p "$site"
-          shards=("$RUNNER_TEMP"/shards/site-shard-*.tar)
-          echo "Merging ${#shards[@]} shards"
-          for tar in "${shards[@]}"; do
-            [ "$(basename "$tar")" = "site-shard-0.tar" ] || tar -C "$site" -xf "$tar"
+          for tar in "$RUNNER_TEMP"/shards/site-shard-*.tar; do
+            name=$(basename "$tar" .tar)
+            mkdir -p "$RUNNER_TEMP/unpacked/$name"
+            tar -C "$RUNNER_TEMP/unpacked/$name" -xf "$tar"
           done
-          tar -C "$site" -xf "$RUNNER_TEMP/shards/site-shard-0.tar"
-          echo "Site: $(find "$site" -name '*.html' | wc -l) HTML files"
+          others=$(find "$RUNNER_TEMP/unpacked" -mindepth 1 -maxdepth 1 -type d ! -name site-shard-0 | sort)
+          # shellcheck disable=SC2086
+          pnpm --filter @findadoc/web prerender:merge "$GITHUB_WORKSPACE/apps/web/.output/public" \
+            "$RUNNER_TEMP/unpacked/site-shard-0" $others
+          echo "Site: $(find apps/web/.output/public -name '*.html' | wc -l) HTML files"
 
       # /search shows this file before the API answers (#242). Previews skip the directory, so
       # they have none. A production build without it still works, so this warns instead of failing.

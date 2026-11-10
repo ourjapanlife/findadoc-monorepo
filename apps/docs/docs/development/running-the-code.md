@@ -124,6 +124,12 @@ pnpm --filter @findadoc/web prerender:directory /tmp/prerender-directory.json
 NUXT_PRERENDER_DIRECTORY_FILE=/tmp/prerender-directory.json NUXT_PRERENDER_SHARD=0/2 NUXT_BUILD_ID=local pnpm --filter @findadoc/web build
 ```
 
+Build the other shard with `NUXT_PRERENDER_SHARD=1/2`, copy each `apps/web/.output/public` aside, then merge them, shard 0 first. The merge also joins the build manifest, so the browser loads each page's payload:
+
+```bash
+pnpm --filter @findadoc/web prerender:merge /tmp/site /tmp/shard-0 /tmp/shard-1
+```
+
 `NUXT_PRERENDER_SHARD` is `index/count`. Every shard of one build needs the same directory file and the same `NUXT_BUILD_ID`. With neither set, one build fetches the directory and renders every page. The directory is bundled into the server build as modules, not runtime config: Nitro copies runtime config for every page it renders, so a directory there makes every page slower as the directory grows.
 
 ## API (`apps/server`)

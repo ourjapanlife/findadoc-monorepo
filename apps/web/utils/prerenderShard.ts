@@ -66,3 +66,23 @@ export function pathsForShard(paths: readonly string[], shard: PrerenderShard | 
     }
     return paths.filter(path => pathHash(path) % shard.count === shard.index)
 }
+
+/** `_nuxt/builds/meta/<buildId>.json`: the routes the browser may load a `_payload.json` for. */
+export type BuildMeta = { id: string, timestamp: number, prerendered: string[], [key: string]: unknown }
+
+/**
+ * One build manifest for the merged site. Each shard lists only the routes it rendered, so the
+ * merged list is the union; without it the browser would fetch live data for the other shards'
+ * pages on client navigation. Shards from different builds are refused.
+ */
+export function mergeBuildMeta(shards: readonly BuildMeta[]): BuildMeta {
+    const [primary] = shards
+    if (!primary) {
+        throw new Error('No shard build manifest to merge.')
+    }
+    if (shards.some(shard => shard.id !== primary.id)) {
+        throw new Error('The shards come from different builds. Give every shard the same NUXT_BUILD_ID.')
+    }
+    const prerendered = [...new Set(shards.flatMap(shard => shard.prerendered))].sort()
+    return { ...primary, prerendered }
+}

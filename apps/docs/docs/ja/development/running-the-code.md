@@ -124,6 +124,12 @@ pnpm --filter @findadoc/web prerender:directory /tmp/prerender-directory.json
 NUXT_PRERENDER_DIRECTORY_FILE=/tmp/prerender-directory.json NUXT_PRERENDER_SHARD=0/2 NUXT_BUILD_ID=local pnpm --filter @findadoc/web build
 ```
 
+もう1つのシャードは `NUXT_PRERENDER_SHARD=1/2` でビルドします。それぞれの `apps/web/.output/public` を別の場所に移してから、シャード0を先頭にしてまとめます。まとめるときにビルドマニフェストも結合するので、ブラウザは各ページのペイロードを読み込めます。
+
+```bash
+pnpm --filter @findadoc/web prerender:merge /tmp/site /tmp/shard-0 /tmp/shard-1
+```
+
 `NUXT_PRERENDER_SHARD` は `index/count` の形です。同じビルドのシャードは、同じディレクトリファイルと同じ `NUXT_BUILD_ID` を使います。どちらも設定しないと、1回のビルドがディレクトリを取得してすべてのページを書き出します。ディレクトリはランタイム設定ではなく、モジュールとしてサーバービルドに含めます。Nitroはページを1つ書き出すたびにランタイム設定をコピーするため、ディレクトリをそこに置くと、ディレクトリが大きくなるほどすべてのページが遅くなります。
 
 ## API（`apps/server`）

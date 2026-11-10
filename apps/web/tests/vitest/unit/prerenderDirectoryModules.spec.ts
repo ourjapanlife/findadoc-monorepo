@@ -100,7 +100,8 @@ describe('generate-time directory', () => {
         for (const shard of ['0/3', '1/3', '2/3']) {
             vi.resetModules()
             vi.stubEnv('NUXT_PRERENDER_SHARD', shard)
-            perShard.push((await generateConfig()).prerender?.routes ?? [])
+            const routes = (await generateConfig()).prerender?.routes ?? []
+            perShard.push(routes.filter((route): route is string => typeof route === 'string'))
         }
 
         const all = perShard.flat()

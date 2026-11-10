@@ -1,6 +1,6 @@
 /// <reference types="vitest/globals" />
 import { expect } from 'chai'
-import { isPrimaryPrerenderShard, parsePrerenderShard, pathsForShard } from '@/utils/prerenderShard'
+import { isPrimaryPrerenderShard, mergeBuildMeta, parsePrerenderShard, pathsForShard } from '@/utils/prerenderShard'
 
 function throws(run: () => unknown): boolean {
     try {
@@ -49,5 +49,24 @@ describe('pathsForShard', () => {
         expect(isPrimaryPrerenderShard(null)).to.equal(true)
         expect(isPrimaryPrerenderShard({ index: 0, count: 4 })).to.equal(true)
         expect(isPrimaryPrerenderShard({ index: 1, count: 4 })).to.equal(false)
+    })
+})
+
+describe('mergeBuildMeta', () => {
+    it('lists every shard\'s prerendered routes, so the browser loads each page\'s payload', () => {
+        const merged = mergeBuildMeta([
+            { id: 'run-1', timestamp: 2, prerendered: ['/', '/tokyo'] },
+            { id: 'run-1', timestamp: 3, prerendered: ['/osaka', '/tokyo'] }
+        ])
+
+        expect(merged).to.deep.equal({ id: 'run-1', timestamp: 2, prerendered: ['/', '/osaka', '/tokyo'] })
+    })
+
+    it('refuses shards from different builds', () => {
+        expect(throws(() => mergeBuildMeta([
+            { id: 'run-1', timestamp: 1, prerendered: [] },
+            { id: 'run-2', timestamp: 1, prerendered: [] }
+        ]))).to.equal(true)
+        expect(throws(() => mergeBuildMeta([]))).to.equal(true)
     })
 })
