@@ -102,6 +102,14 @@ async function submitAndFind(input: FacilityCorrectionInput): Promise<string> {
     return row.id
 }
 
+/** What a moderator does to a clinic page: no city, and back to UNVERIFIED_LOCATION. */
+async function unpublish(facilityId: string): Promise<void> {
+    await db.updateTable('facilities')
+        .set({ city_id: null, verification_status: FacilityVerificationStatus.UnverifiedLocation })
+        .where('id', '=', facilityId)
+        .execute()
+}
+
 /** Whole days from now until a stored retain_until. */
 function daysUntil(retainUntil: string | null): number {
     return Math.round((Date.parse(retainUntil ?? '') - Date.now()) / DAY_MS)
@@ -440,6 +448,32 @@ describe('approving a correction', () => {
         expect(after.city_id).toBe(cityIds[1])
         expect(after.contact.address).toEqual(address)
         expect(after.contact.phone).toBe(CONTACT.phone)
+    })
+
+    it('refuses to change a facility that was unpublished after the report', async () => {
+        const facilityId = await insertFacility({ published: true })
+        const submissionId = await submitAndFind({
+            facilityId,
+            reasons: [FacilityCorrectionReason.WrongLanguages],
+            supportedLanguages: [Locale.JaJp]
+        })
+        await unpublish(facilityId)
+
+        const result = await updateSubmission(submissionId, { isApproved: true }, MODERATOR)
+
+        expect(errorCodes(result)).toEqual([ErrorCode.FACILITY_NOT_PUBLISHED])
+        expect((await facilityRow(facilityId)).supported_languages).toEqual([Locale.EnUs])
+    })
+
+    it('still approves a closed report after the moderator unpublished the clinic', async () => {
+        const facilityId = await insertFacility({ published: true })
+        const submissionId = await submitAndFind({ facilityId, reasons: [FacilityCorrectionReason.Closed] })
+        await unpublish(facilityId)
+
+        const result = await updateSubmission(submissionId, { isApproved: true }, MODERATOR)
+
+        expect(result.errors).toBeUndefined()
+        expect(result.data.isApproved).toBe(true)
     })
 })
 

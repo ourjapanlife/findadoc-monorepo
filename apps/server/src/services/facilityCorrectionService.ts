@@ -40,13 +40,10 @@ function refused(field: string, errorCode: ErrorCode, httpStatus: number): Resul
     return { data: { isSuccessful: false }, hasErrors: true, errors: [{ field, errorCode, httpStatus }] }
 }
 
-/** Published means the clinic page exists: a city, and not UNVERIFIED_LOCATION. */
-async function facilityPublication(facilityId: string): Promise<'missing' | 'unpublished' | 'published'> {
-    const facility = await db.selectFrom('facilities')
-        .select(['city_id', 'verification_status'])
-        .where('id', '=', facilityId)
-        .executeTakeFirst()
+type Publication = 'missing' | 'unpublished' | 'published'
 
+/** Published means the clinic page exists: a city, and not UNVERIFIED_LOCATION. */
+function publicationOf(facility: { city_id: string | null, verification_status: string } | undefined): Publication {
     if (facility === undefined) {
         return 'missing'
     }
@@ -55,6 +52,20 @@ async function facilityPublication(facilityId: string): Promise<'missing' | 'unp
         return 'unpublished'
     }
     return 'published'
+}
+
+/**
+ * Reads publication inside the caller's transaction. FOR SHARE holds the row, so a moderator
+ * cannot unpublish the facility between this check and the caller's write.
+ */
+async function lockedPublication(transaction: Transaction<Database>, facilityId: string): Promise<Publication> {
+    const facility = await transaction.selectFrom('facilities')
+        .select(['city_id', 'verification_status'])
+        .where('id', '=', facilityId)
+        .forShare()
+        .executeTakeFirst()
+
+    return publicationOf(facility)
 }
 
 /**
@@ -72,17 +83,13 @@ export async function submitFacilityCorrection(
     }
 
     try {
-        const publication = await facilityPublication(input.facilityId)
-
-        if (publication === 'missing') {
-            return refused('facilityId', ErrorCode.NOT_FOUND, 404)
-        }
-        if (publication === 'unpublished') {
-            return refused('facilityId', ErrorCode.FACILITY_NOT_PUBLISHED, 400)
-        }
-
         const now = new Date().toISOString()
-        const submissionId = await db.transaction().execute(async transaction => {
+        const outcome = await db.transaction().execute(async transaction => {
+            const publication = await lockedPublication(transaction, input.facilityId)
+            if (publication !== 'published') {
+                return { publication, submissionId: null }
+            }
+
             const inserted = await transaction
                 .insertInto('submissions')
                 .values({
@@ -115,9 +122,17 @@ export async function submitFacilityCorrection(
                 newValue: submissionAuditValue(submissionFromRow(inserted))
             })
 
-            return inserted.id
+            return { publication, submissionId: inserted.id }
         })
 
+        if (outcome.publication === 'missing') {
+            return refused('facilityId', ErrorCode.NOT_FOUND, 404)
+        }
+        if (outcome.submissionId === null) {
+            return refused('facilityId', ErrorCode.FACILITY_NOT_PUBLISHED, 400)
+        }
+
+        const submissionId = outcome.submissionId
         logger.info(`DB-CREATE: correction ${submissionId} created`)
         return { data: { isSuccessful: true }, hasErrors: false }
     } catch (error) {
@@ -152,9 +167,11 @@ export async function approveCorrectionInTransaction(
         ])
     }
 
+    // Locked for the rest of the approval, so publication cannot change before the write.
     const stored = await transaction.selectFrom('facilities')
-        .select('contact')
+        .select(['contact', 'city_id', 'verification_status'])
         .where('id', '=', facilityId)
+        .forUpdate()
         .executeTakeFirst()
     if (stored === undefined) {
         throw new CorrectionApprovalRejected([{ field: 'facilityId', errorCode: ErrorCode.NOT_FOUND, httpStatus: 404 }])
@@ -163,6 +180,13 @@ export async function approveCorrectionInTransaction(
     const update = facilityUpdateFromCorrection(changes, storedContactText(stored.contact))
 
     if (Object.keys(update).length > 0) {
+        // The visitor reported on a published page. A moderator may unpublish a CLOSED clinic
+        // and then approve the report, so only a correction that changes fields is refused.
+        if (publicationOf(stored) !== 'published') {
+            throw new CorrectionApprovalRejected([
+                { field: 'facilityId', errorCode: ErrorCode.FACILITY_NOT_PUBLISHED, httpStatus: 409 }
+            ])
+        }
         const validation = validateUpdateFacilityInput(update)
         if (validation.hasErrors) {
             throw new CorrectionApprovalRejected(validation.errors ?? [])

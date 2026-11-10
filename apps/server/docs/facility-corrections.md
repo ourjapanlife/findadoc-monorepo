@@ -23,7 +23,7 @@ Optional: `notes` (up to `FIELD_LIMITS.correctionNotes` characters, from `@finda
 `WEBSITE`). There is no name, email, or phone of the visitor. Lengths come from `FIELD_LIMITS`,
 the same numbers the form uses. Payment options follow the controlled list in
 `@findadoc/utils` (`paymentOptionsProblem`). The facility must be published: a city, and not
-`UNVERIFIED_LOCATION`.
+`UNVERIFIED_LOCATION`. The check reads the row `FOR SHARE` in the insert's transaction.
 
 The changed fields go in `correction_changes`, not `facility_partial`. Listing approval and the
 moderation edit form read `facility_partial` as a whole new facility.
@@ -41,6 +41,9 @@ no id.
 - Approval writes only the keys in `correction_changes`, through `updateFacilityInTransaction`,
   in the same transaction as the status change. The city rules and the facility audit trail apply.
 - `CLOSED` and `DUPLICATE` change nothing on approval. Unpublishing or merging is a separate action.
+- A correction that changes fields is refused when the facility is no longer published
+  (`FACILITY_NOT_PUBLISHED`). One that changes nothing, such as `CLOSED`, is still approved, so a
+  moderator can unpublish the clinic first.
 - A status change is a compare-and-set on the current status (`SUBMISSION_STATUS_CHANGED`).
 
 ## Retention
