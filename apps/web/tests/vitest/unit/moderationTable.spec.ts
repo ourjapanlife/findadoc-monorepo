@@ -5,7 +5,6 @@ import {
     loadPageInRange,
     nextListOrder,
     orderByInput,
-    orderedPage,
     pageOffsetInRange,
     pageSelectionState,
     paginationIsCompact,
@@ -15,28 +14,6 @@ import {
 } from '~/utils/moderationTable'
 
 describe('moderation table', () => {
-    it('sorts the whole list before cutting the page', () => {
-        const rows = [
-            { name: 'C' },
-            { name: 'A' },
-            { name: 'B' }
-        ]
-        const page = orderedPage(
-            rows,
-            { field: 'name', direction: 'asc' },
-            0,
-            2,
-            (row, field) => row[field as 'name']
-        )
-        expect(page.map(row => row.name)).toEqual(['A', 'B'])
-    })
-
-    it('leaves an unsorted list in server order', () => {
-        const rows = [{ name: 'C' }, { name: 'A' }]
-        const page = orderedPage(rows, null, 0, 1, row => row.name)
-        expect(page.map(row => row.name)).toEqual(['C'])
-    })
-
     it('flips the same column and starts a new column ascending', () => {
         expect(nextListOrder(null, 'createdDate')).toEqual({ field: 'createdDate', direction: 'asc' })
         expect(nextListOrder({ field: 'createdDate', direction: 'asc' }, 'createdDate')).toEqual({

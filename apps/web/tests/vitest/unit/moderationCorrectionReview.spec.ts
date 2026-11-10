@@ -16,7 +16,6 @@ import {
     type CorrectionReviewFacility
 } from '@/utils/facilityCorrectionReview'
 import {
-    isOpenCorrection,
     moderationPills,
     moderationStatus,
     MODERATION_STATUS
@@ -77,15 +76,6 @@ describe('moderation status (#22)', () => {
     it('tags a correction as Feedback after its status, and a listing with its status only', () => {
         expect(moderationPills({ ...PENDING, kind: SubmissionKind.Correction })).to.deep.equal(['NEW', 'FEEDBACK'])
         expect(moderationPills({ ...PENDING, isApproved: true, kind: SubmissionKind.Listing })).to.deep.equal(['APPROVED'])
-    })
-
-    it('keeps new and under-review corrections in User feedback, and nothing that is decided', () => {
-        const kind = SubmissionKind.Correction
-        expect(isOpenCorrection({ ...PENDING, kind })).to.equal(true)
-        expect(isOpenCorrection({ ...PENDING, isUnderReview: true, kind })).to.equal(true)
-        expect(isOpenCorrection({ ...PENDING, isApproved: true, kind })).to.equal(false)
-        expect(isOpenCorrection({ ...PENDING, isRejected: true, kind })).to.equal(false)
-        expect(isOpenCorrection({ ...PENDING, kind: SubmissionKind.Listing })).to.equal(false)
     })
 })
 

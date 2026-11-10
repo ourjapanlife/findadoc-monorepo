@@ -9,8 +9,8 @@ import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql.js'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { usePersistentFilters } from '~/composables/usePersistentFilters'
 import { useTranslation } from '~/composables/useTranslation'
-import { hasServerErrors, isNewSubmission } from '~/utils/moderationUtils'
-import { isCorrection, isOpenCorrection } from '~/utils/moderationSubmissionStatus'
+import { hasServerErrors } from '~/utils/moderationUtils'
+import { isCorrection } from '~/utils/moderationSubmissionStatus'
 import {
     fetchCorrectionFacilityNames,
     fetchSubmissionById,
@@ -23,8 +23,6 @@ import {
     MODERATION_PAGE_SIZES,
     nextListOrder,
     orderByInput,
-    orderedPage,
-    pageOffsetInRange,
     type ListOrder
 } from '~/utils/moderationTable'
 
@@ -45,7 +43,10 @@ export enum SelectedModerationListView {
     Availability = 'AVAILABILITY'
 }
 
-type SubmissionStatusFilter = Pick<SubmissionSearchFilters, 'isUnderReview' | 'isApproved' | 'isRejected'>
+type SubmissionStatusFilter = Pick<
+    SubmissionSearchFilters,
+    'isPending' | 'isOpen' | 'isUnderReview' | 'isApproved' | 'isRejected'
+>
 
 // Visitor corrections (#22) wait in User feedback, so New and Under review show listings only.
 // Approved and Declined show both kinds, and a correction row carries the Feedback tag.
@@ -54,32 +55,29 @@ const CORRECTIONS_ONLY = { kind: SubmissionKind.Correction } as const satisfies 
 
 type ServerTabFilter = SubmissionStatusFilter & Pick<SubmissionSearchFilters, 'kind'>
 
+// Every tab is one server filter, so each pages and counts on the server, however long the queue.
+const NEW_FILTER: ServerTabFilter = { ...LISTINGS_ONLY, isPending: true }
 const FOR_REVIEW_FILTER: ServerTabFilter = { ...LISTINGS_ONLY, isUnderReview: true }
 const APPROVED_FILTER: ServerTabFilter = { isApproved: true }
 const DECLINED_FILTER: ServerTabFilter = { isRejected: true }
+// User feedback is every correction nobody has decided: new or under review.
+const FEEDBACK_FILTER: ServerTabFilter = { ...CORRECTIONS_ONLY, isOpen: true }
 
-const SUBMISSION_TAB_FILTERS: Partial<Record<SelectedSubmissionListViewTab, ServerTabFilter>> = {
+const SUBMISSION_TAB_FILTERS: Record<SelectedSubmissionListViewTab, ServerTabFilter> = {
+    [SelectedSubmissionListViewTab.New]: NEW_FILTER,
     [SelectedSubmissionListViewTab.ForReview]: FOR_REVIEW_FILTER,
     [SelectedSubmissionListViewTab.Approved]: APPROVED_FILTER,
-    [SelectedSubmissionListViewTab.Rejected]: DECLINED_FILTER
+    [SelectedSubmissionListViewTab.Rejected]: DECLINED_FILTER,
+    [SelectedSubmissionListViewTab.UserFeedback]: FEEDBACK_FILTER
 }
 
 const SUBMISSION_STATUS_COUNT_QUERIES = [
+    { countKey: 'newCount', filter: NEW_FILTER },
     { countKey: 'forReviewCount', filter: FOR_REVIEW_FILTER },
     { countKey: 'approvedCount', filter: APPROVED_FILTER },
-    { countKey: 'rejectedCount', filter: DECLINED_FILTER }
+    { countKey: 'rejectedCount', filter: DECLINED_FILTER },
+    { countKey: 'feedbackCount', filter: FEEDBACK_FILTER }
 ] as const
-
-/**
- * New and User feedback are not one server status: New is `pending`, User feedback is `pending`
- * or `under_review`. These tabs load the queue once and page it in the browser.
- */
-const CLIENT_QUEUE_FETCH_LIMIT = 1000
-
-const CLIENT_QUEUE_TABS: ReadonlySet<SelectedSubmissionListViewTab> = new Set([
-    SelectedSubmissionListViewTab.New,
-    SelectedSubmissionListViewTab.UserFeedback
-])
 
 interface SubmissionStatusCounts {
     newCount: number
@@ -124,7 +122,6 @@ export const useModerationSubmissionsStore = defineStore(
             MODERATION_PAGE_SIZES
         )
         const listOrder: Ref<ListOrder | null> = ref(null)
-        const cachedQueueSubmissions: Ref<Submission[]> = ref([])
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalSubmissionsCount.value)
         const hasPrevPage = computed(() => currentOffset.value > 0)
 
@@ -178,63 +175,6 @@ export const useModerationSubmissionsStore = defineStore(
             }
         }
 
-        async function fetchNewSubmissions() {
-            const { filteredSearchResults } = await fetchSubmissionsWithCount({
-                ...LISTINGS_ONLY,
-                limit: CLIENT_QUEUE_FETCH_LIMIT,
-                offset: 0
-            })
-            return filteredSearchResults.filter(isNewSubmission)
-        }
-
-        async function fetchOpenCorrections() {
-            const { filteredSearchResults } = await fetchSubmissionsWithCount({
-                ...CORRECTIONS_ONLY,
-                limit: CLIENT_QUEUE_FETCH_LIMIT,
-                offset: 0
-            })
-            return filteredSearchResults.filter(isOpenCorrection)
-        }
-
-        function fetchClientQueue(tab: SelectedSubmissionListViewTab) {
-            return tab === SelectedSubmissionListViewTab.UserFeedback ? fetchOpenCorrections() : fetchNewSubmissions()
-        }
-
-        function submissionSortValue(submission: Submission, field: string): string {
-            if (field === 'healthcareProfessionalName') {
-                return submission.healthcareProfessionalName
-            }
-            if (field === 'createdDate') {
-                return submission.createdDate
-            }
-            if (field === 'updatedDate') {
-                return submission.updatedDate
-            }
-            return ''
-        }
-
-        function applyClientQueueListView(queue: Submission[]) {
-            cachedQueueSubmissions.value = queue
-            const searchFiltered = applySearchFilter(queue)
-            const nextOffset = pageOffsetInRange(
-                currentOffset.value,
-                itemsPerPage.value,
-                searchFiltered.length
-            )
-            currentOffset.value = nextOffset
-            totalSubmissionsCount.value = searchFiltered.length
-            // New and User feedback are not one server status, so the queue is sorted before the page is cut.
-            const page = orderedPage(
-                searchFiltered,
-                listOrder.value,
-                nextOffset,
-                itemsPerPage.value,
-                submissionSortValue
-            )
-            submissionsData.value = page
-            filteredSubmissionDataForListComponent.value = page
-        }
-
         function applySubmissionPage(offset: number, rows: Submission[], totalCount: number) {
             currentOffset.value = offset
             submissionsData.value = rows
@@ -244,17 +184,6 @@ export const useModerationSubmissionsStore = defineStore(
 
         async function getSubmissions() {
             try {
-                const tab = selectedModerationListViewTabChosen.value
-                if (CLIENT_QUEUE_TABS.has(tab)) {
-                    const queue = await fetchClientQueue(tab)
-                    // Names first: the search box matches a correction by its clinic's name.
-                    await loadCorrectionFacilityNames(queue)
-                    applyClientQueueListView(queue)
-                    return
-                }
-
-                cachedQueueSubmissions.value = []
-
                 const orderBy = orderByInput(listOrder.value)
                 const page = await loadPageInRange(
                     currentOffset.value,
@@ -270,6 +199,7 @@ export const useModerationSubmissionsStore = defineStore(
                         return { rows: filteredSearchResults, totalCount }
                     }
                 )
+                // Names first: the search box matches a correction by its clinic's name.
                 await loadCorrectionFacilityNames(page.rows)
                 applySubmissionPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
@@ -283,12 +213,8 @@ export const useModerationSubmissionsStore = defineStore(
 
         async function fetchStatusCounts() {
             try {
-                const [newSubmissions, openCorrections, ...countResults] = await Promise.all([
-                    fetchNewSubmissions(),
-                    fetchOpenCorrections(),
-                    ...SUBMISSION_STATUS_COUNT_QUERIES.map(({ filter }) =>
-                        fetchSubmissionsWithCount({ ...filter, limit: 1, offset: 0 }))
-                ])
+                const countResults = await Promise.all(SUBMISSION_STATUS_COUNT_QUERIES.map(({ filter }) =>
+                    fetchSubmissionsWithCount({ ...filter, limit: 1, offset: 0 })))
 
                 statusTotalCounts.value = SUBMISSION_STATUS_COUNT_QUERIES.reduce(
                     (counts, { countKey }, index) => {
@@ -296,11 +222,11 @@ export const useModerationSubmissionsStore = defineStore(
                         return counts
                     },
                     {
-                        newCount: newSubmissions.length,
+                        newCount: 0,
                         forReviewCount: 0,
                         approvedCount: 0,
                         rejectedCount: 0,
-                        feedbackCount: openCorrections.length
+                        feedbackCount: 0
                     }
                 )
             } catch (error) {
@@ -352,10 +278,6 @@ export const useModerationSubmissionsStore = defineStore(
 
         function setSubmissionSearchQuery(newQuery: string) {
             submissionSearchQuery.value = newQuery
-            if (CLIENT_QUEUE_TABS.has(selectedModerationListViewTabChosen.value)) {
-                applyClientQueueListView(cachedQueueSubmissions.value)
-                return
-            }
             filteredSubmissionDataForListComponent.value = applySearchFilter(submissionsData.value)
         }
 

@@ -43,11 +43,6 @@ export function isCorrection(submission: Pick<Submission, 'kind'>): boolean {
     return submission.kind === SubmissionKind.Correction
 }
 
-/** The User feedback queue: corrections nobody has approved or declined yet. */
-export function isOpenCorrection(submission: Pick<Submission, 'kind'> & StatusFlags): boolean {
-    return isCorrection(submission) && !submission.isApproved && !submission.isRejected
-}
-
 /** The status pill first, then the Feedback tag on a correction. Color is never the only signal. */
 export function moderationPills(submission: Pick<Submission, 'kind'> & StatusFlags): ModerationPill[] {
     const status = moderationStatus(submission)

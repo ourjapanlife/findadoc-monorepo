@@ -118,26 +118,6 @@ export function orderByInput(order: ListOrder | null): OrderBy[] | null {
     }]
 }
 
-/**
- * Sort the full loaded set, then cut the page.
- * A header click must not rearrange only the rows already on screen.
- */
-export function orderedPage<T>(
-    rows: readonly T[],
-    order: ListOrder | null,
-    offset: number,
-    limit: number,
-    valueAt: (row: T, field: string) => string
-): T[] {
-    const sorted = order === null
-        ? rows
-        : [...rows].sort((left, right) => {
-            const compared = valueAt(left, order.field).localeCompare(valueAt(right, order.field))
-            return order.direction === 'asc' ? compared : -compared
-        })
-    return sorted.slice(offset, offset + limit)
-}
-
 export function paginationIsCompact(width: number): boolean {
     return width < PAGINATION_COMPACT_BELOW
 }

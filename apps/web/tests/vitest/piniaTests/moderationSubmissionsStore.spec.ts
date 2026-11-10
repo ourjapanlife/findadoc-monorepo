@@ -59,12 +59,16 @@ type SubmissionsVariables = { listFilters: SubmissionSearchFilters }
 
 const requestedFilters: SubmissionSearchFilters[] = []
 
+const isOpen = (row: Submission) => !row.isApproved && !row.isRejected
+
 /** A tiny stand-in for the API: it filters by kind and status like submissionService does. */
 function answer(variables: Record<string, unknown>) {
     if ('listFilters' in variables) {
         const { listFilters } = variables as SubmissionsVariables
         requestedFilters.push(listFilters)
         const rows = ROWS.filter(row => (listFilters.kind === undefined || listFilters.kind === row.kind)
+          && (!listFilters.isPending || (isOpen(row) && !row.isUnderReview))
+          && (!listFilters.isOpen || isOpen(row))
           && (!listFilters.isUnderReview || row.isUnderReview)
           && (!listFilters.isApproved || row.isApproved)
           && (!listFilters.isRejected || row.isRejected))
@@ -94,7 +98,13 @@ describe('moderationSubmissionsStore queues (#22)', () => {
 
         expect(store.filteredSubmissionDataForListComponent.map(row => row.id))
             .to.have.members(['correction-new', 'correction-review'])
-        expect(requestedFilters.at(-1)?.kind).to.equal(SubmissionKind.Correction)
+        // The server filters and pages the queue: one page, never a 1000-row download.
+        expect(requestedFilters.at(-1)).to.include({
+            kind: SubmissionKind.Correction,
+            isOpen: true,
+            limit: store.itemsPerPage,
+            offset: 0
+        })
         const first = store.filteredSubmissionDataForListComponent[0]
         expect(first && store.submissionFacilityName(first)?.nameEn).to.equal('Example Minato Clinic')
     })
@@ -104,7 +114,7 @@ describe('moderationSubmissionsStore queues (#22)', () => {
         await store.setSelectedModerationListViewTabChosen(SelectedSubmissionListViewTab.New)
 
         expect(store.filteredSubmissionDataForListComponent.map(row => row.id)).to.deep.equal(['listing-new'])
-        expect(requestedFilters.at(-1)?.kind).to.equal(SubmissionKind.Listing)
+        expect(requestedFilters.at(-1)).to.include({ kind: SubmissionKind.Listing, isPending: true })
     })
 
     it('shows decided corrections in Approved next to listings', async () => {
