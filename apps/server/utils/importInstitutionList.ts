@@ -5,6 +5,7 @@ import pg from 'pg'
 import { envVariables } from './environmentVariables.js'
 import { assertScriptWriteAllowed, describeScriptTarget, scriptDatabaseConfig } from './scriptDatabase.js'
 import {
+    applyEvidence,
     IMPORT_OUTCOME,
     indexFacilities,
     isRowColour,
@@ -16,8 +17,10 @@ import {
     type FacilityFill,
     type InstitutionRecord,
     type PlaceLookup,
+    type RowEvidence,
     type RowPlan,
-    type SheetRow
+    type SheetRow,
+    toRowEvidence
 } from '../src/vocabulary/institutionList.js'
 import { canonicalMapsLink } from '../src/places/mapsLink.js'
 import { searchPlaceIds } from '../src/places/placesClient.js'
@@ -28,7 +31,7 @@ import type { Database } from '../src/typeDefs/kyselyTypes.js'
  *
  * 1. python3 utils/exportInstitutionList.py list.xlsx rows.json
  * 2. node --loader ts-node/esm utils/importInstitutionList.ts --input rows.json [--places] [--place-cache ids.json]
- *    [--report report.json]
+ *    [--report report.json] [--evidence evidence.json]
  * 3. Read the summary and the report. Then add --write (and --confirm-production through pnpm db:prod).
  *
  * Dry-run is the default and writes nothing to the database. Every row is staged in
@@ -41,6 +44,10 @@ import type { Database } from '../src/typeDefs/kyselyTypes.js'
  * `--places` calls Places Text Search for the id field only, which needs GOOGLE_API_KEY. Without it,
  * rows that need a place come back as `place_lookup_not_run`. `--place-cache` keeps the ids between
  * dry-runs so the next run does not ask again; a place id is the one Places value we may store.
+ *
+ * `--evidence` reads the checks from utils/checkInstitutionList.py (ministry open data, Japan Post,
+ * and the live website). The checked website replaces the sheet's, and the registry fills a missing
+ * city. The checks are stored on each staged row.
  */
 
 const SOURCE = 'MHLW_MULTILINGUAL_INSTITUTIONS'
@@ -49,7 +56,14 @@ const PLACES_CONCURRENCY = 5
 type InputDocument = { sourceFile: string, rows: SheetRow[] }
 type PlaceCache = Record<string, string[]>
 type StagedRow = { outcome: string, facilityId: string | null, googlePlaceId: string | null }
-type PlannedRow = { row: SheetRow, record: InstitutionRecord, plan: RowPlan, alreadyImported: boolean }
+type PlannedRow = {
+    row: SheetRow
+    record: InstitutionRecord
+    plan: RowPlan
+    alreadyImported: boolean
+    evidence: RowEvidence
+}
+type EvidenceMap = ReadonlyMap<string, RowEvidence>
 
 function print(line: string): void {
     process.stdout.write(`${line}\n`)
@@ -109,6 +123,23 @@ function readCache(path: string | null): PlaceCache {
         }
     }
     return cache
+}
+
+/** Evidence keyed by `sheet#rowNumber`, from utils/checkInstitutionList.py. */
+export function readEvidence(path: string | null): Map<string, RowEvidence> {
+    const evidence = new Map<string, RowEvidence>()
+    if (!path) {
+        return evidence
+    }
+    const parsed: unknown = JSON.parse(readFileSync(path, 'utf8'))
+    const rows = parsed && typeof parsed === 'object' ? (parsed as { rows?: unknown }).rows : null
+    if (!rows || typeof rows !== 'object' || Array.isArray(rows)) {
+        throw new Error('The evidence file needs a rows object. Re-run checkInstitutionList.py.')
+    }
+    for (const [key, value] of Object.entries(rows as Record<string, unknown>)) {
+        evidence.set(key, toRowEvidence(value))
+    }
+    return evidence
 }
 
 async function loadFacilities(db: Kysely<Database>): Promise<ExistingFacility[]> {
@@ -184,7 +215,8 @@ export function planAll(
     input: InputDocument,
     facilities: readonly ExistingFacility[],
     cache: PlaceCache,
-    staged: ReadonlyMap<string, StagedRow>
+    staged: ReadonlyMap<string, StagedRow>,
+    evidenceByRow: EvidenceMap = new Map()
 ): PlannedRow[] {
     const index = indexFacilities(facilities)
     const claimed = new Set<string>()
@@ -192,7 +224,8 @@ export function planAll(
 
     for (const row of input.rows) {
         const key = rowKey(input.sourceFile, row)
-        const record = parseInstitutionRow(row)
+        const evidence = evidenceByRow.get(`${row.sheet}#${row.rowNumber}`) ?? {}
+        const record = applyEvidence(parseInstitutionRow(row), evidence)
         const previous = staged.get(key)
         const plan = planRow(row, record, lookupFor(key, cache, previous), index, claimed)
         const alreadyImported = previous?.outcome === IMPORT_OUTCOME.CREATED
@@ -200,7 +233,7 @@ export function planAll(
         if (plan.outcome === IMPORT_OUTCOME.CREATED && plan.placeId) {
             claimed.add(plan.placeId)
         }
-        planned.push({ row, record, plan, alreadyImported })
+        planned.push({ row, record, plan, alreadyImported, evidence })
     }
     return planned
 }
@@ -347,7 +380,7 @@ async function writeRow(
     item: PlannedRow,
     cityIds: ReadonlyMap<string, string>
 ): Promise<void> {
-    const { row, record, plan } = item
+    const { row, record, plan, evidence } = item
     await db.transaction().execute(async transaction => {
         let facilityId = plan.match?.facility.id ?? null
         if (plan.outcome === IMPORT_OUTCOME.CREATED && plan.placeId) {
@@ -364,7 +397,8 @@ async function writeRow(
             match_method: plan.match?.method ?? null,
             facility_id: facilityId,
             google_place_id: plan.placeId,
-            warnings: JSON.stringify(record.warnings)
+            warnings: JSON.stringify(record.warnings),
+            evidence: JSON.stringify(evidence)
         }
         await transaction.insertInto('institution_import_rows')
             .values({ source_file: sourceFile, sheet_name: row.sheet, row_number: row.rowNumber, ...values })
@@ -388,6 +422,7 @@ export async function main(argv: readonly string[] = process.argv) {
     const input = readInput(inputPath)
     const cachePath = argValue(argv, '--place-cache')
     const cache = readCache(cachePath)
+    const evidence = readEvidence(argValue(argv, '--evidence'))
     const db = new Kysely<Database>({ dialect: new PostgresDialect({ pool: new pg.Pool(scriptDatabaseConfig()) }) })
 
     try {
@@ -412,7 +447,7 @@ export async function main(argv: readonly string[] = process.argv) {
             }
         }
 
-        const planned = planAll(input, facilities, cache, staged)
+        const planned = planAll(input, facilities, cache, staged, evidence)
         const summary = summarize(planned)
         print(JSON.stringify({ write, sourceFile: input.sourceFile, ...summary }, null, 2))
 

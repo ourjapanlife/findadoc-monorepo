@@ -128,7 +128,7 @@ pnpm db:prod --places-key node --loader ts-node/esm utils/<script>.ts
 
 市区町村、Place ID、Mapsリンク、資格、電話番号、保険のバックフィルは2026年11月に本番で実行し、削除しました。新しいバックフィルは`apps/server/utils/scriptDatabase.ts`を使って書き、実行後に削除します。
 
-実行待ちのインポートが1つあります。多言語対応医療機関リスト（`utils/importInstitutionList.ts`、#21）です。スプレッドシートの全行をステージングし、掲載済みの施設は空の項目だけを埋め、残りは未確認の施設として追加します。`--places-key`と`--input`ファイルが必要です。手順は[`apps/server/docs/institution-import.md`](https://github.com/ourjapanlife/findadoc-monorepo/blob/main/apps/server/docs/institution-import.md)にあります。
+実行待ちのインポートが1つあります。多言語対応医療機関リスト（`utils/importInstitutionList.ts`、#21）です。スプレッドシートの全行をステージングし、掲載済みの施設は空の項目だけを埋め、残りは未確認の施設として追加します。`--places-key`、`--input`ファイル、`utils/checkInstitutionList.py`が作る`--evidence`ファイルが必要です。このスクリプトは各行を厚生労働省のオープンデータ、日本郵便の郵便番号、医療機関のウェブサイトと照合します。手順は[`apps/server/docs/institution-import.md`](https://github.com/ourjapanlife/findadoc-monorepo/blob/main/apps/server/docs/institution-import.md)にあります。
 
 ## Claude Codeなど、AIアシスタントと使う
 
