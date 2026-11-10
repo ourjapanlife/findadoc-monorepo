@@ -475,7 +475,6 @@
     "noHPSelected": "Chưa chọn nhân viên y tế",
     "placeholderTextFacilityAddressLine1En": "Địa chỉ đường",
     "noHealthcareProfessionalFound": "Không có nhân viên y tế khớp",
-    "openMaps": "Mở trong Google Maps",
     "fillFromMaps": "Điền các ô trống từ liên kết này",
     "fillFromMapsHint": "Điền tên, địa chỉ và ghim còn trống từ liên kết Maps. Ô đã có nội dung được giữ nguyên.",
     "fillFromMapsDone": "Đã điền {count} ô trống từ liên kết Maps.",

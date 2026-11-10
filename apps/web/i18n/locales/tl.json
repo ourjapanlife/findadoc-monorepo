@@ -424,7 +424,6 @@
     "addHealthcareProfessional": "Idagdag ang kasalukuyang propesyonal",
     "noHPSelected": "Walang napiling propesyonal",
     "noHealthcareProfessionalFound": "Walang tugmang propesyonal",
-    "openMaps": "Buksan sa Google Maps",
     "fillFromMaps": "Punan ang mga walang laman na field mula sa link na ito",
     "fillFromMapsHint": "Pinupunan ang walang laman na pangalan, address, at pin mula sa link ng Maps. Ang mga field na may laman ay hindi babaguhin.",
     "fillFromMapsDone": "Napunan ang {count} na walang laman na field mula sa link ng Maps.",

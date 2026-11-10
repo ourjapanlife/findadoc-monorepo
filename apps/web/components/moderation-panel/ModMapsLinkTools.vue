@@ -5,15 +5,10 @@
         data-testid="mod-maps-link-tools"
     >
         <div class="flex flex-wrap gap-2">
-            <a
+            <OpenMapsButton
                 :href="url"
-                class="btn btn-secondary btn-sm"
-                target="_blank"
-                rel="noopener noreferrer"
                 data-testid="mod-open-maps-link"
-            >
-                {{ t('modFacilitySection.openMaps') }}
-            </a>
+            />
             <button
                 type="button"
                 class="btn btn-secondary btn-sm mod-edit-only"
@@ -41,6 +36,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from '#imports'
+import OpenMapsButton from '~/components/common/OpenMapsButton.vue'
 import { fetchCities } from '~/utils/cityOptions'
 import { parseMapsPlace, validateGoogleMapsUrlInput } from '~/utils/formValidations'
 import {

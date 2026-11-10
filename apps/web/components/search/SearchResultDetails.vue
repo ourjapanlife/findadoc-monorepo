@@ -55,20 +55,11 @@
                     />
                     {{ t('search.website') }}
                 </a>
-                <a
+                <OpenMapsButton
                     v-if="mapsUrl"
                     :href="mapsUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="btn btn-secondary btn-sm"
                     @click="trackContact('Maps clicked')"
-                >
-                    <SVGMapPinIcon
-                        class="size-4 stroke-current"
-                        aria-hidden="true"
-                    />
-                    {{ t('search.openInMaps') }}
-                </a>
+                />
                 <a
                     v-if="email"
                     :href="`mailto:${email}`"
@@ -195,7 +186,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import SVGMapPinIcon from '~/assets/icons/map-pin-icon.svg'
+import OpenMapsButton from '~/components/common/OpenMapsButton.vue'
 import SVGGlobeIcon from '~/assets/icons/globe-icon.svg'
 import SVGPhoneIcon from '~/assets/icons/phone-icon.svg'
 import SVGEmailIcon from '~/assets/icons/email-icon.svg'

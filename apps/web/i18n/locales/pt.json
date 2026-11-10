@@ -480,7 +480,6 @@
     "addHealthcareProfessional": "Adicionar profissional de saúde existente",
     "noHPSelected": "Nenhum profissional de saúde selecionado",
     "noHealthcareProfessionalFound": "Nenhum profissional de saúde correspondente",
-    "openMaps": "Abrir no Google Maps",
     "fillFromMaps": "Preencher os campos vazios a partir deste link",
     "fillFromMapsHint": "Preenche nome, endereço e pin vazios a partir do link do Maps. Campos que já têm valor permanecem como estão.",
     "fillFromMapsDone": "{count} campos vazios foram preenchidos a partir do link do Maps.",

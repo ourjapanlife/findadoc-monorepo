@@ -528,7 +528,6 @@
     "addHealthcareProfessional": "Vorhandene Gesundheitsfachkraft hinzufügen",
     "noHPSelected": "Keine Gesundheitsfachkraft ausgewählt",
     "noHealthcareProfessionalFound": "Keine passende Gesundheitsfachkraft gefunden",
-    "openMaps": "In Google Maps öffnen",
     "fillFromMaps": "Leere Felder aus diesem Link füllen",
     "fillFromMapsHint": "Füllt leere Namens-, Adress- und Pin-Felder aus dem Maps-Link. Felder mit einem Wert bleiben unverändert.",
     "fillFromMapsDone": "{count} leere Felder wurden aus dem Maps-Link gefüllt.",

@@ -414,7 +414,6 @@
     "contactInformation": "連絡先",
     "facilityHeading": "医療機関の情報",
     "googleMapsInformation": "Google マップの情報",
-    "openMaps": "Google マップで開く",
     "fillFromMaps": "空の欄をこのリンクから入力",
     "fillFromMapsHint": "空の名称、住所、ピンを Maps のリンクから入れます。すでに入っている欄はそのままです。",
     "fillFromMapsDone": "Maps のリンクから空の欄を {count} 件入力しました。",
