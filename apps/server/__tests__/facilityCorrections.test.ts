@@ -21,7 +21,11 @@ import type { UserContext } from '../src/auth.js'
 import { submitFacilityCorrection } from '../src/services/facilityCorrectionService.js'
 import { searchSubmissions, updateSubmission } from '../src/services/submissionService.js'
 import { validateFacilityCorrectionInput } from '../src/validation/validateFacilityCorrection.js'
-import { CORRECTION_NOTES_MAX, CORRECTION_NOTES_RETENTION_DAYS } from '../src/corrections/facilityCorrection.js'
+import { CORRECTION_NOTES_MAX } from '../src/corrections/facilityCorrection.js'
+import {
+    DECIDED_NOTES_RETENTION_DAYS,
+    UNDECIDED_NOTES_RETENTION_DAYS
+} from '../src/submissions/notesRetention.js'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const MODERATOR = 'test|moderator'
@@ -95,6 +99,11 @@ async function submitAndFind(input: FacilityCorrectionInput): Promise<string> {
         .orderBy('created_date', 'desc')
         .executeTakeFirstOrThrow()
     return row.id
+}
+
+/** Whole days from now until a stored retain_until. */
+function daysUntil(retainUntil: string | null): number {
+    return Math.round((Date.parse(retainUntil ?? '') - Date.now()) / DAY_MS)
 }
 
 function errorCodes(result: { errors?: Array<{ errorCode: ErrorCode }> }): ErrorCode[] {
@@ -236,7 +245,7 @@ describe('submitFacilityCorrection', () => {
         expect(row.correction_changes).toEqual({ supportedLanguages: [Locale.EnUs, Locale.JaJp] })
         expect(row.reporter_relation).toBe(CorrectionReporterRelation.Patient)
         expect(row.facility_partial).toBeNull()
-        expect(row.retain_until).toBeNull()
+        expect(daysUntil(row.retain_until)).toBe(UNDECIDED_NOTES_RETENTION_DAYS)
     })
 
     it('reads back through the moderation query without a null in a non-null field', async () => {
@@ -359,8 +368,7 @@ describe('approving a correction', () => {
 
         const submission = await db.selectFrom('submissions').selectAll()
             .where('id', '=', submissionId).executeTakeFirstOrThrow()
-        const retainDays = (Date.parse(submission.retain_until ?? '') - Date.now()) / DAY_MS
-        expect(Math.round(retainDays)).toBe(CORRECTION_NOTES_RETENTION_DAYS)
+        expect(daysUntil(submission.retain_until)).toBe(DECIDED_NOTES_RETENTION_DAYS)
     })
 
     it('changes nothing on the facility for a closed or duplicate report', async () => {
@@ -422,7 +430,7 @@ describe('moderating a correction', () => {
         expect(errorCodes(city)).toEqual([ErrorCode.CORRECTION_FIELD_WITHOUT_REASON])
     })
 
-    it('starts the notes clock on decline and stops it on reopen', async () => {
+    it('starts the decided notes clock on decline and puts the submit cap back on reopen', async () => {
         const facilityId = await insertFacility({ published: true })
         const submissionId = await submitAndFind({
             facilityId,
@@ -433,10 +441,10 @@ describe('moderating a correction', () => {
             .where('id', '=', submissionId).executeTakeFirstOrThrow()).retain_until
 
         expect((await updateSubmission(submissionId, { isRejected: true }, MODERATOR)).errors).toBeUndefined()
-        expect(await retainUntil()).not.toBeNull()
+        expect(daysUntil(await retainUntil())).toBe(DECIDED_NOTES_RETENTION_DAYS)
 
         expect((await updateSubmission(submissionId, { isUnderReview: true }, MODERATOR)).errors).toBeUndefined()
-        expect(await retainUntil()).toBeNull()
+        expect(daysUntil(await retainUntil())).toBe(UNDECIDED_NOTES_RETENTION_DAYS)
     })
 
     it('lists corrections apart from listings', async () => {

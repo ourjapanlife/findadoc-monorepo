@@ -1,7 +1,7 @@
 import * as gqlTypes from '@findadoc/graphql'
 import type { Selectable, Transaction } from 'kysely'
 import { db } from '../kyselyClient.js'
-import { logger } from '../logger.js'
+import { errorLogFields, logger } from '../logger.js'
 import { ErrorCode, type Error as ValidationError, type Result } from '../result.js'
 import {
     SUBMISSION_KIND,
@@ -14,13 +14,13 @@ import { validateFacilityCorrectionInput } from '../validation/validateFacilityC
 import { validateUpdateFacilityInput } from '../validation/validateFacility.js'
 import {
     correctionChangesFromInput,
-    correctionRetainUntil,
     facilityUpdateFromCorrection
 } from '../corrections/facilityCorrection.js'
 import { FacilityUpdateRejected, updateFacilityInTransaction } from './facilityService.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import { submissionAuditValue } from './submissionAudit.js'
 import { submissionFromRow } from './mappersEntityService.js'
+import { submissionRetainUntil } from '../submissions/notesRetention.js'
 
 /** An expected refusal while approving a correction. The errors go back to the moderator. */
 export class CorrectionApprovalRejected extends Error {
@@ -100,7 +100,7 @@ export async function submitFacilityCorrection(
                     reporter_relation: input.reporterRelation ?? null,
                     duplicate_listing_url: input.duplicateListingUrl?.trim() ?? null,
                     notes: input.notes?.trim() ? input.notes.trim() : null,
-                    retain_until: null,
+                    retain_until: submissionRetainUntil(SUBMISSION_STATUS.PENDING, now),
                     created_date: now,
                     updated_date: now
                 })
@@ -120,8 +120,7 @@ export async function submitFacilityCorrection(
         logger.info(`DB-CREATE: correction ${submissionId} created`)
         return { data: { isSuccessful: true }, hasErrors: false }
     } catch (error) {
-        // The error name only. A database error can repeat the values in the row.
-        logger.error('submitFacilityCorrection failed', { errorName: error instanceof Error ? error.name : 'unknown' })
+        logger.error('submitFacilityCorrection failed', errorLogFields(error))
         return FAILED
     }
 }
@@ -182,7 +181,7 @@ export async function approveCorrectionInTransaction(
         .updateTable('submissions')
         .set({
             status: SUBMISSION_STATUS.APPROVED,
-            retain_until: correctionRetainUntil(now),
+            retain_until: submissionRetainUntil(SUBMISSION_STATUS.APPROVED, submission.created_date, now),
             updated_date: now.toISOString()
         })
         .where('id', '=', submission.id)

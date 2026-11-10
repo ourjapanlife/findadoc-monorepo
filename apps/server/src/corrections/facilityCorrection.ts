@@ -12,11 +12,6 @@ import type { CorrectionChanges } from '../typeDefs/kyselyTypes.js'
 /** Longest free-text note a visitor may send. */
 export const CORRECTION_NOTES_MAX = 1000
 
-/** Days a decided correction keeps its notes before the purge clears them. */
-export const CORRECTION_NOTES_RETENTION_DAYS = 180
-
-const DAY_MS = 24 * 60 * 60 * 1000
-
 /** The input fields a visitor may change, and the reason each one needs. */
 export const CORRECTION_FIELD_REASON = {
     address: gqlTypes.FacilityCorrectionReason.WrongCity,
@@ -40,11 +35,6 @@ export function isFacilityCorrectionReason(value: unknown): value is gqlTypes.Fa
 
 export function isCorrectionReporterRelation(value: unknown): value is gqlTypes.CorrectionReporterRelation {
     return typeof value === 'string' && RELATIONS.has(value)
-}
-
-/** When the purge may clear the notes of a correction decided at `from`. */
-export function correctionRetainUntil(from: Date = new Date()): string {
-    return new Date(from.getTime() + CORRECTION_NOTES_RETENTION_DAYS * DAY_MS).toISOString()
 }
 
 /** The changes to store: only the fields the visitor sent. cityId is never taken from a visitor. */

@@ -43,23 +43,12 @@ no id.
 
 ## Retention
 
-Notes are free text and can hold personal data.
+Notes are free text and can hold personal data. A correction follows the same notes rule as
+every submission (`src/submissions/notesRetention.ts`).
 
-- Approving or declining a correction sets `retain_until` to 180 days later. Reopening it clears
-  `retain_until`.
-- The daily `findadoc-booking-purge` Lambda also clears `notes` on corrections past `retain_until`.
-  Reasons, changed fields, and status stay.
-- Audit log entries for a correction leave the notes out, because `audit_logs` is not purged.
-- Logs carry the submission id and error codes only, never the input.
-
-By hand, against the database in your environment. Dry-run (default):
-
-```bash
-pnpm --filter @findadoc/server purge:correction-notes
-```
-
-Write:
-
-```bash
-pnpm --filter @findadoc/server purge:correction-notes:write
-```
+- Submitting sets `retain_until` to 365 days after the submit. Approving or declining moves it to
+  180 days after the decision. Reopening puts the 365-day submit cap back.
+- The daily `findadoc-booking-purge` Lambda clears `notes` past `retain_until`
+  (`src/submissions/notesPurge.ts`). Reasons, changed fields, and status stay.
+- Audit log entries leave the notes out (`src/services/submissionAudit.ts`).
+- Logs carry the submission id and `errorLogFields(error)`, never the input.
