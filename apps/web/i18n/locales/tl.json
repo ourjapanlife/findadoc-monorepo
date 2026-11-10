@@ -11,7 +11,9 @@
     "contactTitle": "Makipag-ugnayan"
   },
   "pageMetaDescription": {
-    "about": "Ang Find a Doc, Japan ay isang non-profit sa Tokyo na tumutulong sa iyong makahanap ng doktor na nagsasalita ng iyong wika. Basahin ang aming kuwento at kilalanin ang aming team."
+    "about": "Non-profit sa Tokyo na tumutulong sa iyong makahanap ng doktor na nagsasalita ng iyong wika. Kilalanin ang aming team.",
+    "insurance": "Paano gumagana ang health insurance ng Japan sa klinika, ano ang self-pay, at ano ang gagawin sa travel insurance.",
+    "npo": "Ang Find a Doc, Japan ay rehistradong non-profit sa Japan. Narito ang mga dokumentong hinihingi ng batas."
   },
   "contactPage": {
     "heading": "Makipag-ugnayan",
@@ -261,7 +263,8 @@
     "login": "Mag-login",
     "myPage": "Aking Pahina",
     "logoutToast": "Naka-logout na",
-    "search": "Hanapin"
+    "search": "Hanapin",
+    "insurance": "Seguro"
   },
   "login": {
     "checkingauth": "Sinusuri ang Authentication...",

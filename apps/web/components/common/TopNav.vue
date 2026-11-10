@@ -36,8 +36,9 @@
                     <NuxtLink
                         v-for="item in navItems"
                         :key="item.to"
-                        :to="item.to"
-                        :class="navLinkClass(item.to)"
+                        :to="item.href ?? item.to"
+                        :data-testid="item.testId"
+                        :class="navLinkClass(item.to, item.wideOnly)"
                         :aria-current="isActive(item.to) ? 'page' : undefined"
                         @click="item.to === '/' ? handleHomeClick($event) : undefined"
                     >
@@ -170,6 +171,7 @@ import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { vCloseOnOutsideClick } from '~/composables/closeOnOutsideClick'
 import { buildLoginRoute, resolveAuthReturnPath } from '~/utils/auth0Config'
+import { INSURANCE_GUIDE_PATH } from '~/utils/japaneseInsurance'
 import { localeCodeFromPath, localizedPath, routeMatchesPath } from '~/utils/localePath'
 import { isMyPageFormRoute, leaveToAppHome } from '~/utils/moderationUtils'
 
@@ -195,16 +197,27 @@ const navItems = computed(() => [
     { to: '/', label: t('topNav.home') },
     { to: '/search', label: t('topNav.search') },
     { to: '/about', label: t('topNav.about') },
-    { to: '/submit', label: t('topNav.submit') }
+    { to: '/submit', label: t('topNav.submit') },
+    // /insurance is a marketing page in every locale, so the link keeps the visitor's locale.
+    {
+        to: INSURANCE_GUIDE_PATH,
+        href: localizedPath(INSURANCE_GUIDE_PATH, localeCodeFromPath(route.path)),
+        label: t('topNav.insurance'),
+        testId: 'top-nav-insurance-link',
+        // Five links need about 1170px in Portuguese, the longest locale. Narrower
+        // windows keep the guide in the footer.
+        wideOnly: true
+    }
 ])
 
 function isActive(path: string): boolean {
     return routeMatchesPath(route.path, path)
 }
 
-function navLinkClass(path: string): string {
+function navLinkClass(path: string, wideOnly = false): string {
     // whitespace-nowrap: German and Portuguese labels wrap inside the fixed-height link without it.
-    const base = 'inline-flex h-10 items-center whitespace-nowrap rounded-lg px-3 font-medium transition-colors'
+    const display = wideOnly ? 'hidden xl:inline-flex' : 'inline-flex'
+    const base = `${display} h-10 items-center whitespace-nowrap rounded-lg px-3 font-medium transition-colors`
 
     return isActive(path)
         ? `${base} bg-primary/10 text-primary-hover`

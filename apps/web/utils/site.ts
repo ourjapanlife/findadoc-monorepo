@@ -26,7 +26,12 @@ export const SITE_DESCRIPTION
  */
 export const SITE_DEFAULT_TITLE = `English-speaking doctors in Japan · ${SITE_TITLE}`
 
-export const SITE_SOCIAL_IMAGE = `${SITE_ORIGIN}/findadoc-social.jpg`
+/**
+ * A new card gets a new file name. LinkedIn, preview checkers, and the CDN cache an image
+ * by URL, so replacing the bytes at the old name keeps showing the old picture.
+ * `findadoc-social.jpg` stays in public/ for links that already point at it.
+ */
+export const SITE_SOCIAL_IMAGE = `${SITE_ORIGIN}/findadoc-social-home.jpg`
 
 /** Every social card is 1200×630, the size LinkedIn, Facebook, and X expect. */
 export const SITE_SOCIAL_IMAGE_WIDTH = 1200
@@ -43,6 +48,10 @@ export const PAGE_SOCIAL_IMAGES = {
     '/about': {
         url: `${SITE_ORIGIN}/findadoc-social-about.jpg`,
         alt: `${SITE_TITLE}: healthcare in Japan, in your language`
+    },
+    '/insurance': {
+        url: `${SITE_ORIGIN}/findadoc-social-insurance.jpg`,
+        alt: `${SITE_TITLE}: paying for a doctor in Japan? Read the guide`
     },
     '/submit': {
         url: `${SITE_ORIGIN}/findadoc-social-submit.jpg`,

@@ -11,7 +11,9 @@
     "contactTitle": "Kontak"
   },
   "pageMetaDescription": {
-    "about": "Find a Doc, Japan adalah organisasi nirlaba di Tokyo yang membantu Anda menemukan dokter yang berbicara dalam bahasa Anda. Baca kisah kami dan kenali tim kami."
+    "about": "Organisasi nirlaba di Tokyo yang membantu Anda menemukan dokter yang berbahasa sama. Kenali kisah dan tim kami.",
+    "insurance": "Cara kerja asuransi kesehatan Jepang di klinik, arti bayar sendiri, dan apa yang dilakukan dengan asuransi perjalanan.",
+    "npo": "Find a Doc, Japan adalah organisasi nirlaba terdaftar di Jepang. Dokumen wajib kami diterbitkan di sini."
   },
   "contactPage": {
     "heading": "Kontak",
@@ -335,7 +337,8 @@
     "login": "Masuk",
     "myPage": "Halaman Saya",
     "logoutToast": "Berhasil keluar",
-    "search": "Cari"
+    "search": "Cari",
+    "insurance": "Asuransi"
   },
   "login": {
     "checkingauth": "Memeriksa Autentikasi...",

@@ -11,7 +11,9 @@
     "contactTitle": "Contact"
   },
   "pageMetaDescription": {
-    "about": "Find a Doc, Japan est une association à but non lucratif de Tokyo qui aide à trouver des médecins parlant votre langue. Découvrez notre histoire et notre équipe."
+    "about": "Association de Tokyo qui aide à trouver des médecins parlant votre langue. Découvrez notre histoire et notre équipe.",
+    "insurance": "Comment l'assurance maladie japonaise fonctionne en clinique, ce que signifie payer soi-même, et l'assurance voyage.",
+    "npo": "Find a Doc, Japan est une association enregistrée au Japon. Nos documents publiés par obligation légale sont ici."
   },
   "contactPage": {
     "heading": "Contact",
@@ -261,7 +263,8 @@
     "login": "Connexion",
     "myPage": "Ma page",
     "logoutToast": "Déconnexion réussie",
-    "search": "Recherche"
+    "search": "Recherche",
+    "insurance": "Assurance"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Quitter sans enregistrer",

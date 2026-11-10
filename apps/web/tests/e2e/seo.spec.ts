@@ -111,7 +111,7 @@ test.describe('Discovery and social meta', () => {
             expect(response.status()).toBe(200)
             expect(response.headers()['content-type']).toMatch(/image\/jpeg/)
         }
-        expect(new URL(SITE_SOCIAL_IMAGE).pathname).toBe('/findadoc-social.jpg')
+        expect(new URL(SITE_SOCIAL_IMAGE).pathname).toBe('/findadoc-social-home.jpg')
     })
 
     test('every public page has one canonical, Open Graph type/site/locale, and a large Twitter card', async ({ page }) => {

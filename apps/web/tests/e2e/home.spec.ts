@@ -33,6 +33,17 @@ test.describe('Home page', () => {
             await expect(page.getByTestId('contribute-link')).toHaveAttribute('href', /docs\.findadoc\.jp/)
         })
 
+        test('links the insurance guide from the desktop header, in the visitor\'s locale', async ({ page }) => {
+            const link = page.getByTestId('top-nav-insurance-link')
+            await expect(link).toBeVisible()
+            await expect(link).toHaveText(enUS.topNav.insurance)
+            await expect(link).toHaveAttribute('href', '/insurance')
+
+            await page.goto('/ko-KR')
+            await expect(link).toHaveText(koKR.topNav.insurance)
+            await expect(link).toHaveAttribute('href', '/ko-KR/insurance')
+        })
+
         test('navigates to privacy policy', async ({ page }) => {
             await page.getByRole('link', { name: /privacy/i }).click()
             await expect(page).toHaveURL(/\/privacypolicy/)

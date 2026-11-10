@@ -11,7 +11,9 @@
     "contactTitle": "お問い合わせ"
   },
   "pageMetaDescription": {
-    "about": "Find a Doc, Japanは、あなたの言語を話す医師探しを支援する東京のNPO法人です。私たちの歩み、チーム、参加の方法を紹介します。"
+    "about": "あなたの言語を話す医師探しを支援する東京のNPO法人です。私たちの歩み、チーム、参加の方法を紹介します。",
+    "insurance": "クリニックでの日本の公的医療保険の使い方、自費診療の意味、海外旅行保険や海外の保険の扱いを説明します。",
+    "npo": "Find a Doc, Japanは東京都の認証を受けたNPO法人です。法律で定められた情報公開書類をこちらで公開しています。"
   },
   "contactPage": {
     "heading": "お問い合わせ",
@@ -261,7 +263,8 @@
     "login": "ログイン",
     "myPage": "マイページ",
     "logoutToast": "ログアウトしました",
-    "search": "検索"
+    "search": "検索",
+    "insurance": "保険"
   },
   "login": {
     "checkingauth": "認証の確認...",
