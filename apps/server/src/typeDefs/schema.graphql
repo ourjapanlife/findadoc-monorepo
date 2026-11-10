@@ -387,6 +387,14 @@ type FacilityCorrection {
   duplicateListingUrl: String
 }
 
+"""How many open corrections (new or under review) one facility has."""
+type OpenCorrectionCount {
+  """The facility the corrections are about."""
+  facilityId: ID!
+  """Open corrections on that facility."""
+  count: Int!
+}
+
 """
 A visitor's report from a clinic page. No name, email, or phone of the visitor.
 Each changed field belongs to one reason and is refused without it.
@@ -513,8 +521,14 @@ input SubmissionSearchFilters {
   isApproved: Boolean
   """Filter to rejected submissions."""
   isRejected: Boolean
+  """Filter to new submissions: sent, and not yet under review or decided."""
+  isPending: Boolean
+  """Filter to open submissions: new or under review. Use one status filter at a time."""
+  isOpen: Boolean
   """Filter to listings or to corrections. Omit for both."""
   kind: SubmissionKind
+  """Filter to submissions about this facility, such as every report on one clinic."""
+  facilityId: ID
   """Filter by creation date (ISO 8601)."""
   createdDate: String
   """Filter by last updated date (ISO 8601)."""
@@ -2238,6 +2252,12 @@ type Query {
 
   """Get the total count of submissions matching the given filters. Useful for pagination."""
   submissionsTotalCount(filters: SubmissionSearchFilters!): Int!
+
+  """
+  Open corrections (new or under review) on each of these facilities, so the moderation queue
+  can show that a clinic has more than one report. At most 100 ids. A facility with none is left out.
+  """
+  openCorrectionCounts(facilityIds: [ID!]!): [OpenCorrectionCount!]!
 
   """Look up a single audit log entry by its ID. Returns null if not found."""
   auditLog(id: ID): AuditLog

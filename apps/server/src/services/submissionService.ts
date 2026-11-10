@@ -6,6 +6,7 @@ import {
     validateApprovalProfessionalFields,
     validateCreateSubmissionInputs,
     validateIdInput,
+    validateOpenCorrectionCountIds,
     validateSubmissionSearchFilters,
     validateUpdateSubmissionInput
 } from '../validation/validateSubmissions.js'
@@ -291,8 +292,21 @@ function applySubmissionQueryFilters<O>(
         query = query.where('status', '=', status)
     }
 
+    // New and open are filters only: an update still sets one status flag.
+    if (filters.isPending) {
+        query = query.where('status', '=', SUBMISSION_STATUS.PENDING)
+    }
+
+    if (filters.isOpen) {
+        query = query.where('status', 'in', OPEN_SUBMISSION_STATUSES)
+    }
+
     if (filters.kind) {
         query = query.where('kind', '=', storedSubmissionKind(filters.kind))
+    }
+
+    if (filters.facilityId) {
+        query = query.where('facilities_id', '=', filters.facilityId)
     }
 
     for (const { flag, column } of SUBMISSION_EQ_QUERY_FILTERS) {
@@ -304,6 +318,47 @@ function applySubmissionQueryFilters<O>(
     }
 
     return query
+}
+
+/** A submission nobody has decided yet: new, or under review. */
+const OPEN_SUBMISSION_STATUSES: SubmissionStatusEnum[] = [SUBMISSION_STATUS.PENDING, SUBMISSION_STATUS.UNDER_REVIEW]
+
+/**
+ * Open corrections per facility, in one grouped query. The moderation queue uses it to show
+ * that a clinic has several reports, so a moderator handles them together.
+ */
+export async function countOpenCorrectionsByFacility(
+    facilityIds: readonly string[]
+): Promise<Result<gqlTypes.OpenCorrectionCount[]>> {
+    const validation = validateOpenCorrectionCountIds(facilityIds)
+    if (validation.hasErrors) {
+        return { data: [], hasErrors: true, errors: validation.errors }
+    }
+    if (facilityIds.length === 0) {
+        return { data: [], hasErrors: false }
+    }
+
+    try {
+        const rows = await db.selectFrom('submissions')
+            .select(['facilities_id', eb => eb.fn.countAll<string>().as('count')])
+            .where('kind', '=', SUBMISSION_KIND.CORRECTION)
+            .where('status', 'in', OPEN_SUBMISSION_STATUSES)
+            .where('facilities_id', 'in', [...new Set(facilityIds)])
+            .groupBy('facilities_id')
+            .execute()
+
+        const counts = rows.flatMap(row => (row.facilities_id === null
+            ? []
+            : [{ facilityId: row.facilities_id, count: Number(row.count) }]))
+        return { data: counts, hasErrors: false }
+    } catch (error) {
+        logger.error('ERROR: countOpenCorrectionsByFacility', errorLogFields(error))
+        return {
+            data: [],
+            hasErrors: true,
+            errors: [{ field: 'openCorrectionCounts', errorCode: ErrorCode.INTERNAL_SERVER_ERROR, httpStatus: 500 }]
+        }
+    }
 }
 
 function storedSubmissionKind(kind: gqlTypes.SubmissionKind): SubmissionKindEnum {
