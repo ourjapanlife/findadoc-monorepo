@@ -415,6 +415,30 @@ export interface BookingAppointmentsTable {
 }
 
 /**
+ * Staging rows from the multilingual institutions spreadsheet (#21).
+ * One row per sheet row. `raw` keeps every column keyed by header text.
+ */
+export interface InstitutionImportRowsTable {
+    id: Generated<string>
+    source_file: string
+    sheet_name: string
+    row_number: number
+    /** green, red, yellow, none: the volunteer progress mark. */
+    colour: string
+    raw: ColumnType<Record<string, string>, string, string>
+    /** staged, matched, created, needs_review, skipped. */
+    outcome: ColumnType<string, string | undefined, string>
+    reason: string | null
+    /** place_id, maps_url, name_postal_code, phone. */
+    match_method: string | null
+    facility_id: string | null
+    google_place_id: string | null
+    warnings: ColumnType<string[], string | undefined, string>
+    created_at: Generated<string>
+    updated_at: Generated<string>
+}
+
+/**
  * Database interface - combines all tables
  */
 export interface Database {
@@ -444,6 +468,7 @@ export interface Database {
     clinic_weekly_hours: ClinicWeeklyHoursTable
     clinic_availability_closures: ClinicAvailabilityClosuresTable
     booking_appointments: BookingAppointmentsTable
+    institution_import_rows: InstitutionImportRowsTable
 }
 
 /**
