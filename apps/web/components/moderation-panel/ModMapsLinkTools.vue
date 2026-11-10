@@ -4,21 +4,13 @@
         class="mod-span-2 flex flex-col gap-2 rounded-lg border border-accent-bg bg-secondary-bg p-3"
         data-testid="mod-maps-link-tools"
     >
-        <a
-            :href="url"
-            class="link inline-flex min-h-11 items-center break-all"
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="mod-open-maps-link"
-        >
-            {{ url }}
-        </a>
         <div class="flex flex-wrap gap-2">
             <a
                 :href="url"
                 class="btn btn-secondary btn-sm"
                 target="_blank"
                 rel="noopener noreferrer"
+                data-testid="mod-open-maps-link"
             >
                 {{ t('modFacilitySection.openMaps') }}
             </a>
