@@ -123,6 +123,15 @@ export function visibleCorrectionFields(reasons: readonly FacilityCorrectionReas
         .map(option => option.field as CorrectionFieldGroup)
 }
 
+/**
+ * True while the visitor has changed nothing: no reason, no note, no relation, no field.
+ * Only then may the dialog swap in the live clinic values, so typed text is never lost.
+ * Both drafts come from correctionDraftFromBaseline and its spreads, so the key order matches.
+ */
+export function isUntouchedDraft(draft: CorrectionDraft, baseline: CorrectionBaseline): boolean {
+    return JSON.stringify(draft) === JSON.stringify(correctionDraftFromBaseline(baseline))
+}
+
 /** Picks or unpicks a reason, keeping the form's reason order. */
 export function toggleCorrectionReason(
     reasons: readonly FacilityCorrectionReason[],

@@ -248,6 +248,7 @@ import {
     correctionInputFromDraft,
     correctionLanguageOptions,
     correctionRefusal,
+    isUntouchedDraft,
     toggleCorrectionReason,
     visibleCorrectionFields,
     type CorrectionBaseline,
@@ -311,13 +312,13 @@ function toggleReason(reason: FacilityCorrectionReason) {
 }
 
 /*
- * The page values can be days old. Swap in the live ones only while the visitor has not
- * picked a reason yet, so a slow answer never overwrites something they already typed.
+ * The page values can be days old. Swap in the live ones only while the draft is still the
+ * one the dialog opened with, so a slow answer never overwrites a note or anything typed.
  */
 onMounted(async () => {
     try {
         const current = await correctionStore.fetchCurrentFacility(props.facility.id)
-        if (current && draft.value.reasons.length === 0) {
+        if (current && isUntouchedDraft(draft.value, props.facility)) {
             baseline.value = current
             draft.value = correctionDraftFromBaseline(current)
         }

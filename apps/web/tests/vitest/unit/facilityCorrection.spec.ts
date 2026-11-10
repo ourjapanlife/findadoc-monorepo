@@ -16,6 +16,7 @@ import {
     correctionLanguageOptions,
     correctionPromptVariant,
     correctionRefusal,
+    isUntouchedDraft,
     isValidCorrectionWebsite,
     isValidListingUrl,
     toggleCorrectionReason,
@@ -99,6 +100,17 @@ describe('clinic correction form', () => {
             FacilityCorrectionReason.WrongContact,
             FacilityCorrectionReason.WrongCity
         ])).to.deep.equal(['address', 'contact', 'duplicate'])
+    })
+
+    it('treats a draft as untouched only until the visitor types or picks anything', () => {
+        const draft = correctionDraftFromBaseline(BASELINE)
+
+        expect(isUntouchedDraft(draft, BASELINE)).to.equal(true)
+        // A note typed before any reason is picked must survive the live values arriving.
+        expect(isUntouchedDraft({ ...draft, notes: 'Closed on Wednesdays' }, BASELINE)).to.equal(false)
+        expect(isUntouchedDraft({ ...draft, reporterRelation: CorrectionReporterRelation.Patient }, BASELINE))
+            .to.equal(false)
+        expect(isUntouchedDraft({ ...draft, phone: '03-5555-0199' }, BASELINE)).to.equal(false)
     })
 
     it('uses the shared field limits for the website and the duplicate link', () => {
