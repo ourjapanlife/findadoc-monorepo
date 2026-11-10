@@ -34,7 +34,8 @@ no id.
 
 ## Moderation
 
-- `updateSubmission` refuses listing fields on a correction (`SUBMISSION_KIND_MISMATCH`).
+- `updateSubmission` refuses listing fields on a correction (`SUBMISSION_KIND_MISMATCH`). It
+  refuses `notes` too, including `null`: the note is the visitor's text.
 - A `WRONG_CITY` report needs a city from the vocabulary before approval. The moderator sends it
   as `correctionCityId`. Approval without it is `CORRECTION_CITY_REQUIRED`. A visitor never sets
   the city, and free text is never a city (`city-rules.md`).

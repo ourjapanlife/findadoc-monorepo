@@ -331,7 +331,8 @@ function refuseUpdate(field: string, errorCode: ErrorCode, httpStatus = 400): ne
 
 /**
  * The extra patch for a correction update: the city a moderator chose. retain_until comes from
- * buildSubmissionUpdatePatch, as on a listing. A listing refuses correctionCityId.
+ * buildSubmissionUpdatePatch, as on a listing. A listing refuses correctionCityId. A correction
+ * refuses notes: they are the visitor's text, and a moderator must not overwrite or clear them.
  * Typed as the table's update object, so a misspelled column fails typecheck.
  */
 async function correctionUpdatePatch(
@@ -350,6 +351,10 @@ async function correctionUpdatePatch(
     const listingField = LISTING_ONLY_UPDATE_FIELDS.find(field => fields[field] !== undefined && fields[field] !== null)
     if (listingField !== undefined) {
         refuseUpdate(listingField, ErrorCode.SUBMISSION_KIND_MISMATCH)
+    }
+    // Null would clear the note too, so any value is refused.
+    if (fields.notes !== undefined) {
+        refuseUpdate('notes', ErrorCode.SUBMISSION_KIND_MISMATCH)
     }
 
     const patch: UpdateObject<Database, 'submissions'> = {}

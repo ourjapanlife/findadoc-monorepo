@@ -493,6 +493,24 @@ describe('moderating a correction', () => {
         expect(errorCodes(city)).toEqual([ErrorCode.CORRECTION_FIELD_WITHOUT_REASON])
     })
 
+    it('keeps the visitor note: a moderator cannot overwrite or clear it', async () => {
+        const facilityId = await insertFacility({ published: true })
+        const submissionId = await submitAndFind({
+            facilityId,
+            reasons: [FacilityCorrectionReason.Other],
+            notes: 'Closed on Wednesdays now.'
+        })
+
+        const overwrite = await updateSubmission(submissionId, { notes: 'Moderator text' }, MODERATOR)
+        const clear = await updateSubmission(submissionId, { notes: null }, MODERATOR)
+        const stored = await db.selectFrom('submissions').select('notes')
+            .where('id', '=', submissionId).executeTakeFirstOrThrow()
+
+        expect(errorCodes(overwrite)).toEqual([ErrorCode.SUBMISSION_KIND_MISMATCH])
+        expect(errorCodes(clear)).toEqual([ErrorCode.SUBMISSION_KIND_MISMATCH])
+        expect(stored.notes).toBe('Closed on Wednesdays now.')
+    })
+
     it('starts the decided notes clock on decline and puts the submit cap back on reopen', async () => {
         const facilityId = await insertFacility({ published: true })
         const submissionId = await submitAndFind({
