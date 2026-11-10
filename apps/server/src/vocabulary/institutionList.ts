@@ -607,3 +607,98 @@ export function planRow(
 export function verificationStatusFor(record: InstitutionRecord): 'UNVERIFIED' | 'UNVERIFIED_LOCATION' {
     return record.city ? 'UNVERIFIED' : 'UNVERIFIED_LOCATION'
 }
+
+/**
+ * Checks from utils/checkInstitutionList.py for one row: the ministry open data (医療情報ネット),
+ * Japan Post postal codes, and a live fetch of the website. Every field is optional.
+ */
+export type RowEvidence = {
+    /** How the row matched the ministry registry, such as `name_address` or `not_found`. */
+    registry?: string
+    registryId?: string
+    /** The registry's municipality, sent only for a match on both name and address. */
+    city?: CanonicalCity
+    /** `ok`, `ok_business_code`, `town_differs`, `city_differs`, `unknown_code`, or `invalid`. */
+    postal?: string
+    /** The https link to store after the live check. Empty means store none. */
+    website?: string
+    /** `https_ok`, `http_only`, `unreachable`, or `from_registry`. */
+    websiteCheck?: string
+}
+
+const REGISTRY_FOUND = /^(name_address|name_only|address_only)/
+
+function isCanonicalCity(value: unknown): value is CanonicalCity {
+    if (!value || typeof value !== 'object') {
+        return false
+    }
+    const city = value as Record<string, unknown>
+    return typeof city.prefectureEn === 'string' && typeof city.nameEn === 'string' && typeof city.nameJa === 'string'
+}
+
+/** Read one row's evidence from untrusted JSON, keeping only fields of the right type. */
+export function toRowEvidence(value: unknown): RowEvidence {
+    if (!value || typeof value !== 'object') {
+        return {}
+    }
+    const source = value as Record<string, unknown>
+    const evidence: RowEvidence = {}
+    for (const key of ['registry', 'registryId', 'postal', 'websiteCheck'] as const) {
+        const field = source[key]
+        if (typeof field === 'string') {
+            evidence[key] = field
+        }
+    }
+    if (typeof source.website === 'string') {
+        evidence.website = websiteForStorage(source.website).website
+    }
+    if (isCanonicalCity(source.city)) {
+        const { prefectureEn, nameEn, nameJa } = source.city
+        evidence.city = { prefectureEn, nameEn, nameJa }
+    }
+    return evidence
+}
+
+function sameCity(left: CanonicalCity, right: CanonicalCity): boolean {
+    return left.prefectureEn === right.prefectureEn && left.nameJa === right.nameJa
+}
+
+/**
+ * Apply the checks to a parsed row, and note each one as a warning.
+ *
+ * - The checked website replaces the sheet's. A site that answers only over http, or not at all, is
+ *   not stored, because a stored link must be https.
+ * - A row with no city takes the registry's municipality when name and address both matched. A row
+ *   whose city the registry contradicts loses it: two sources that name two places are not guessed.
+ * - Not being in the registry is only a note. The open data covers part of each prefecture.
+ */
+export function applyEvidence(record: InstitutionRecord, evidence: RowEvidence): InstitutionRecord {
+    const warnings = [...record.warnings]
+    let { city, website, addressLine1Ja } = record
+
+    if (evidence.website !== undefined) {
+        website = evidence.website
+        warnings.push(`website_check:${evidence.websiteCheck ?? (website ? 'https_ok' : 'unreachable')}`)
+    }
+
+    if (evidence.city && evidence.city.prefectureEn === record.prefectureEn) {
+        if (!city) {
+            city = evidence.city
+            addressLine1Ja = addressLineJa(record.addressJa, record.prefectureJa, city)
+            warnings.push('city_from_registry')
+        } else if (!sameCity(city, evidence.city)) {
+            city = null
+            addressLine1Ja = addressLineJa(record.addressJa, record.prefectureJa, null)
+            warnings.push('city_registry_disagrees')
+        }
+    }
+
+    if (evidence.registry && !REGISTRY_FOUND.test(evidence.registry)) {
+        warnings.push(`registry:${evidence.registry}`)
+    }
+    if (evidence.postal && !evidence.postal.startsWith('ok')) {
+        warnings.push(`postal:${evidence.postal}`)
+    }
+
+    return { ...record, city, website, addressLine1Ja, warnings }
+}

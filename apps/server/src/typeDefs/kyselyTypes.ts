@@ -434,6 +434,8 @@ export interface InstitutionImportRowsTable {
     facility_id: string | null
     google_place_id: string | null
     warnings: ColumnType<string[], string | undefined, string>
+    /** Registry, postal, and website checks for the row (#21). */
+    evidence: ColumnType<Record<string, unknown>, string | undefined, string>
     created_at: Generated<string>
     updated_at: Generated<string>
 }

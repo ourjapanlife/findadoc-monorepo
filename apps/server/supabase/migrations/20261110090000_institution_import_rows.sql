@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS institution_import_rows (
   facility_id uuid REFERENCES facilities (id) ON DELETE SET NULL,
   google_place_id text,
   warnings jsonb NOT NULL DEFAULT '[]'::jsonb CHECK (jsonb_typeof(warnings) = 'array'),
+  -- Checks against the ministry open data, Japan Post, and the live website (checkInstitutionList.py).
+  evidence jsonb NOT NULL DEFAULT '{}'::jsonb CHECK (jsonb_typeof(evidence) = 'object'),
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT institution_import_rows_source_row UNIQUE (source_file, sheet_name, row_number),

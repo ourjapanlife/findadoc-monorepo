@@ -25,6 +25,18 @@ Each prefecture used its own shade of green, red, and yellow. `utils/exportInsti
 - A run-together English name such as `IdeEyeHospital` gets spaces, and the row notes it.
 - A row an earlier write already matched or created is left alone, so the import can run again after the Places step or after a fix.
 
+## Checks
+
+`utils/checkInstitutionList.py` checks each row before the import, and the import stores what it found in `institution_import_rows.evidence`.
+
+| Source | Check | What the import does with it |
+| --- | --- | --- |
+| Ministry open data (医療情報ネット, e-Gov, CC BY) | Is the institution listed, by name and address in the prefecture? | A match on name and address gives the municipality: it fills a missing city, and a different city leaves the row unresolved. Not being listed is only noted: the open data holds part of each prefecture (about 94% of hospitals, 73% of clinics, 79% of dental clinics in the December 2025 file). |
+| Japan Post (`utf_ken_all.csv`, `jigyosyo.csv`) | Does the postal code belong to the address, or is it the institution's own business code? | Noted as `postal:<result>` when it does not fit. |
+| The website, fetched once | Does https work? Does the page name the clinic or its phone? | Only a working https link is stored. A site that only answers over http, does not answer, or redirects to another host that names neither, is not stored. When the sheet's site fails, the registry's site is used if it works and names the clinic. |
+
+Nothing from these sources replaces the name, address, or phone from the sheet.
+
 The list is public institution data (names, addresses, clinic phone numbers, websites). It holds no patient or personal data. The staging table is open to the `db:prod` roles like the directory tables.
 
 ## Run
@@ -35,24 +47,33 @@ The list is public institution data (names, addresses, clinic phone numbers, web
     python3 utils/exportInstitutionList.py ~/Downloads/list.xlsx /tmp/institutions.json
     ```
 
-2. Dry-run. `--places` looks up ids and needs `GOOGLE_API_KEY`; `--place-cache` keeps them for the next run; `--report` writes one line per row.
+2. Check the rows against public sources. This writes the evidence file the import reads. It needs the ministry open data and the two Japan Post files (download links are at the top of the script), and it fetches every website once. `--cache` keeps the fetches, so a second run is quick.
+
+    ```bash
+    python3 utils/checkInstitutionList.py --rows /tmp/institutions.json --registry ~/Downloads/e-gov20251201.zip \
+      --postal ~/Downloads/utf_ken_all.csv --business ~/Downloads/jigyosyo.csv \
+      --cache /tmp/institution-sites --out /tmp/institution-evidence.json
+    ```
+
+3. Dry-run. `--places` looks up ids and needs `GOOGLE_API_KEY`; `--place-cache` keeps them for the next run; `--report` writes one line per row.
 
     ```bash
     node --loader ts-node/esm utils/importInstitutionList.ts --input /tmp/institutions.json --places \
-      --place-cache /tmp/institution-place-ids.json --report /tmp/institution-report.json
+      --evidence /tmp/institution-evidence.json --place-cache /tmp/institution-place-ids.json \
+      --report /tmp/institution-report.json
     ```
 
     On production, run it through `pnpm db:prod --places-key` (see `apps/docs/docs/development/production-database.md`).
 
-3. Read the counts by colour and outcome, the match methods, the fills, the review reasons, and the warnings. Check a few rows in the report.
+4. Read the counts by colour and outcome, the match methods, the fills, the review reasons, and the warnings. Check a few rows in the report.
 
-4. Write. A production write also needs `--confirm-production` and the operator role.
+5. Write. A production write also needs `--confirm-production` and the operator role.
 
     ```bash
     node --loader ts-node/esm utils/importInstitutionList.ts --input /tmp/institutions.json \
-      --place-cache /tmp/institution-place-ids.json --write
+      --evidence /tmp/institution-evidence.json --place-cache /tmp/institution-place-ids.json --write
     ```
 
-5. Dry-run again. `alreadyImported` should be every matched and created row.
+6. Dry-run again. `alreadyImported` should be every matched and created row.
 
 Rows in `needs_review` stay in the staging table for a moderator. Delete the scripts once the import has run on production; keep the table and its rows as the record of where each facility came from.

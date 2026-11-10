@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+    applyEvidence,
     indexFacilities,
     languagesFromDepartments,
     matchFacility,
@@ -11,6 +12,7 @@ import {
     planRow,
     postalCodeForStorage,
     spacedEnglishName,
+    toRowEvidence,
     verificationStatusFor,
     websiteForStorage,
     type ExistingFacility,
@@ -334,5 +336,75 @@ describe('searchPlaceIds', () => {
         expect(parsePlaceIds({ places: [{ id: 'short' }, { displayName: 'x' }, { id: 'ChIJFakeNew1' }] }))
             .toEqual(['ChIJFakeNew1'])
         expect(parsePlaceIds(null)).toEqual([])
+    })
+})
+
+describe('applyEvidence', () => {
+    const morioka = { prefectureEn: 'Iwate', nameEn: 'Morioka', nameJa: '盛岡市' }
+    const hanamaki = { prefectureEn: 'Iwate', nameEn: 'Hanamaki', nameJa: '花巻市' }
+
+    it('stores the checked website in place of the sheet one', () => {
+        const record = applyEvidence(parseInstitutionRow(sheetRow()), {
+            website: 'https://clinic.example.jp/home/',
+            websiteCheck: 'https_ok'
+        })
+
+        expect(record.website).toBe('https://clinic.example.jp/home/')
+        expect(record.warnings).toContain('website_check:https_ok')
+    })
+
+    it('stores no website when the site only answers over http or not at all', () => {
+        const record = applyEvidence(parseInstitutionRow(sheetRow()), { website: '', websiteCheck: 'http_only' })
+
+        expect(record.website).toBe('')
+        expect(record.warnings).toContain('website_check:http_only')
+    })
+
+    it('takes the registry city when the address named none', () => {
+        const row = sheetRow({ 住所: '岩手県テスト町1丁目2-3盛岡', '住所(英語)': '' })
+        const parsed = parseInstitutionRow(sheetRow({ 住所: 'テスト町1丁目2-3', '住所(英語)': '' }))
+        const record = applyEvidence(parsed, { registry: 'name_address', city: morioka })
+
+        expect(row.raw.住所).toContain('テスト町')
+        expect(record.city).toEqual(morioka)
+        expect(verificationStatusFor(record)).toBe('UNVERIFIED')
+        expect(record.warnings).toContain('city_from_registry')
+    })
+
+    it('drops a city the registry contradicts instead of picking one', () => {
+        const record = applyEvidence(parseInstitutionRow(sheetRow()), { registry: 'name_address', city: hanamaki })
+
+        expect(record.city).toBeNull()
+        expect(verificationStatusFor(record)).toBe('UNVERIFIED_LOCATION')
+        expect(record.warnings).toContain('city_registry_disagrees')
+    })
+
+    it('keeps a city the registry agrees with, and ignores another prefecture', () => {
+        const agreed = applyEvidence(parseInstitutionRow(sheetRow()), { city: morioka })
+        const elsewhere = applyEvidence(parseInstitutionRow(sheetRow()), {
+            city: { prefectureEn: 'Akita', nameEn: 'Akita', nameJa: '秋田市' }
+        })
+
+        expect(agreed.city).toEqual(morioka)
+        expect(elsewhere.city).toEqual(morioka)
+    })
+
+    it('only notes a row the registry does not list, and a postal code that does not fit', () => {
+        const record = applyEvidence(parseInstitutionRow(sheetRow()), { registry: 'not_found', postal: 'town_differs' })
+
+        expect(record.city).toEqual(morioka)
+        expect(record.warnings).toEqual(expect.arrayContaining(['registry:not_found', 'postal:town_differs']))
+    })
+})
+
+describe('toRowEvidence', () => {
+    it('keeps typed fields and refuses a non-https website', () => {
+        expect(toRowEvidence({
+            registry: 'name_address',
+            website: 'javascript:alert(1)',
+            city: { prefectureEn: 'Iwate', nameEn: 'Morioka' },
+            postal: 7
+        })).toEqual({ registry: 'name_address', website: '' })
+        expect(toRowEvidence('nope')).toEqual({})
     })
 })

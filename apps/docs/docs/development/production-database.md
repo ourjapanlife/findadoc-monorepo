@@ -128,7 +128,7 @@ pnpm db:prod --places-key node --loader ts-node/esm utils/<script>.ts
 
 The city, place id, Maps link, license, phone, and insurance backfills ran on production in November 2026 and were deleted. A new one is written with `apps/server/utils/scriptDatabase.ts` and deleted after it runs.
 
-One import is waiting to run: the multilingual institutions list (`utils/importInstitutionList.ts`, #21). It stages every row of the spreadsheet, fills empty fields on the facilities that are already listed, and adds the rest as unverified facilities. It needs `--places-key` and an `--input` file. The steps are in [`apps/server/docs/institution-import.md`](https://github.com/ourjapanlife/findadoc-monorepo/blob/main/apps/server/docs/institution-import.md).
+One import is waiting to run: the multilingual institutions list (`utils/importInstitutionList.ts`, #21). It stages every row of the spreadsheet, fills empty fields on the facilities that are already listed, and adds the rest as unverified facilities. It needs `--places-key`, an `--input` file, and the `--evidence` file from `utils/checkInstitutionList.py`, which checks each row against the ministry open data, Japan Post, and the clinic's website. The steps are in [`apps/server/docs/institution-import.md`](https://github.com/ourjapanlife/findadoc-monorepo/blob/main/apps/server/docs/institution-import.md).
 
 ## With Claude Code or another AI assistant
 
