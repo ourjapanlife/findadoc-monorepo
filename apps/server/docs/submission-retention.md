@@ -83,15 +83,7 @@ copied there in the first place.
 
 ## Existing rows
 
-`utils/backfillSubmissionRetention.ts` sets `retain_until` on rows from before
-#236: 180 days after `updated_date` for approved and rejected rows, and the
-submit-time cap for the rest. It leaves rows that already have one. Dry-run by
-default, counts only:
-
-```bash
-pnpm --filter @findadoc/server backfill:submission-retention
-```
-
-On production, run the dry-run through `pnpm db:prod`, then the write with
-`--role operator` and `--confirm-production`. The next daily purge clears the
-notes that are already past. Delete the script once it has run on production.
+Rows from before #236 got `retain_until` from a one-time backfill, which ran on
+production on November 10, 2026: 180 days after `updated_date` for approved and
+rejected rows, and the submit-time cap for the rest. Every submission now has
+one, and the script is gone. A new submission gets `retain_until` on submit.
