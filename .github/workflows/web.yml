@@ -86,7 +86,8 @@ jobs:
         shard: >-
           ${{ fromJSON(github.event_name == 'pull_request'
           && '[{"index": 0, "part": 1}]'
-          || '[{"index": 0, "part": 1}, {"index": 1, "part": 2}, {"index": 2, "part": 3}, {"index": 3, "part": 4}]') }}
+          || '[{"index": 0, "part": 1}, {"index": 1, "part": 2}, {"index": 2, "part": 3}, {"index": 3, "part": 4},
+          {"index": 4, "part": 5}]') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
