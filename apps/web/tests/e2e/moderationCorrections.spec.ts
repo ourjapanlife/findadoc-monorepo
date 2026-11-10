@@ -52,6 +52,19 @@ test.describe('Moderation user feedback', () => {
         await expect(page.getByTestId('mod-submission-tab-USER_FEEDBACK')).toBeVisible()
     })
 
+    test('opens a listing straight from its link, as a shared link or a reload does', async ({ page }) => {
+        // The review screen waits for the submission to load, so a listing opened by URL must still
+        // reach its edit form when the list does not hold it.
+        await page.getByTestId('mod-submission-tab-NEW').click()
+        const href = await page.getByTestId('mod-submission-list-item-1').getAttribute('href')
+        expect(href).toMatch(/\/edit-submission\//)
+
+        await page.goto(href ?? '')
+
+        await expect(page.getByTestId('submission-form-notes')).toBeVisible({ timeout: 30_000 })
+        await expect(page.getByTestId('mod-correction-review')).toHaveCount(0)
+    })
+
     test('keeps corrections out of bulk selection', async ({ page }) => {
         await openFeedbackQueue(page)
         await expect(page.getByTestId('mod-submission-list-item-1')).toBeVisible()
