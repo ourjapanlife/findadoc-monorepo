@@ -541,3 +541,31 @@ describe('moderating a correction', () => {
     })
 })
 
+describe('the submissions table', () => {
+    it('refuses a correction with no reasons, null or empty, even outside the service', async () => {
+        const facilityId = await insertFacility({ published: true })
+        const insert = (reasons: FacilityCorrectionReason[] | null) => {
+            const now = new Date().toISOString()
+            return db.insertInto('submissions').values({
+                kind: 'correction',
+                status: 'pending',
+                facilities_id: facilityId,
+                hps_id: null,
+                google_maps_url: null,
+                healthcare_professional_name: null,
+                spoken_languages: null,
+                facility_partial: null,
+                healthcare_professionals_partial: null,
+                firestore_id: null,
+                correction_reasons: reasons,
+                notes: null,
+                retain_until: null,
+                created_date: now,
+                updated_date: now
+            }).execute()
+        }
+
+        await expect(insert(null)).rejects.toThrow(/submissions_correction_has_reasons_check/)
+        await expect(insert([])).rejects.toThrow(/submissions_correction_has_reasons_check/)
+    })
+})

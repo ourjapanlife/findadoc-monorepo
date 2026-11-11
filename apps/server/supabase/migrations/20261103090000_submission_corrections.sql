@@ -28,7 +28,8 @@ ALTER TABLE submissions
       ]::text[]
     ),
   ADD CONSTRAINT submissions_correction_has_reasons_check
-    CHECK (kind <> 'correction' OR cardinality(correction_reasons) > 0),
+    -- cardinality(NULL) is NULL, and a CHECK that is NULL passes, so NULL is refused by name.
+    CHECK (kind <> 'correction' OR (correction_reasons IS NOT NULL AND cardinality(correction_reasons) > 0)),
   ADD CONSTRAINT submissions_correction_changes_check
     CHECK (correction_changes IS NULL OR jsonb_typeof(correction_changes) = 'object'),
   ADD CONSTRAINT submissions_reporter_relation_check
