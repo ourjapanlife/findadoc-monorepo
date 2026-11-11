@@ -125,12 +125,20 @@ const addressSummary = computed(() => {
         : [address.cityEn, address.prefectureEn].filter(Boolean).join(', ')
 })
 
-/** Every language spoken by any matching professional here, most common first. */
+/**
+ * Every language spoken by any matching professional here, most common first, then the
+ * languages the clinic itself lists (#19). A clinic with no named doctor still shows them (#21).
+ */
 const languages = computed(() => {
     const counts = new Map<string, number>()
     for (const professional of props.result.healthcareProfessionals) {
         for (const code of professional.spokenLanguages ?? []) {
             counts.set(code, (counts.get(code) ?? 0) + 1)
+        }
+    }
+    for (const code of props.result.supportedLanguages ?? []) {
+        if (!counts.has(code)) {
+            counts.set(code, 0)
         }
     }
 

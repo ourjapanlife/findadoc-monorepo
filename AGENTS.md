@@ -178,7 +178,7 @@ Before a change is done:
 
 `apps/server/src/languages/publishedLocales.ts` is the search-facet allowlist (#1015). Spreadsheet codes map through `apps/server/src/vocabulary/languageMap.ts`. Services do not import that map.
 
-`facilities.supported_languages` is language support with no named professional. Do not create a healthcare professional to hold a hospital-level language. A language-only search matches that list or one professional who speaks every requested language. A specialty filter still requires the same professional to match both. Existing `spoken_languages` stay on the professional, including `en_US` and `ja_JP`. A Locale that is not on the allowlist is not a facet.
+`facilities.supported_languages` is language support with no named professional. Do not create a healthcare professional to hold a hospital-level language. A language-only search matches that list or one professional who speaks every requested language. A specialty filter still requires the same professional to match both. Existing `spoken_languages` stay on the professional, including `en_US` and `ja_JP`. A Locale that is not on the allowlist is not a facet. `/search` follows the same rule in the browser (`filterDirectory` in `apps/web/utils/searchDirectory.ts`): a facility with no listed doctor is still a result, and the clinic page and search card show its own languages (#21).
 
 ## Licenses
 

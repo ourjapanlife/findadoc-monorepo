@@ -78,10 +78,24 @@ function matchesProfessional(professional: HealthcareProfessional, filters: Sear
       && intersects(filters.languages, professional.spokenLanguages)
 }
 
+/** True when the facility itself lists every requested language (#19). Facility languages name no doctor. */
+function facilitySpeaksAll(facility: Facility, languages: readonly Locale[]): boolean {
+    const supported = facility.supportedLanguages ?? []
+    return languages.every(language => supported.includes(language))
+}
+
 /**
  * Facilities matching the location filters, each carrying the professionals who match the
- * specialty and language filters. A facility with no matching professional is not a result:
- * the listing is about who you can see, not which buildings exist.
+ * specialty and language filters.
+ *
+ * A facility with no listed doctor is still a result (#21): many come from the ministry's list
+ * of institutions that accept foreign patients, and feedback fills in the doctors later.
+ * - No specialty or language: every facility in the location, with whatever doctors it has.
+ * - Language only: a facility that lists every requested language itself, or one with a
+ *   matching doctor.
+ * - A specialty: only facilities with a matching doctor, since a facility has no specialty.
+ *   Facility languages do not count there.
+ * Facilities with a matching doctor come first, in directory order.
  */
 export function filterDirectory(
     facilities: readonly Facility[],
@@ -95,7 +109,10 @@ export function filterDirectory(
         }
     }
 
-    const results: FacilitySearchResult[] = []
+    const languages = filters.languages ?? []
+    const needsDoctor = (filters.specialties?.length ?? 0) > 0
+    const withDoctors: FacilitySearchResult[] = []
+    const withoutDoctors: FacilitySearchResult[] = []
     for (const facility of facilities) {
         if (!matchesLocation(facility, filters)) continue
 
@@ -104,11 +121,13 @@ export function filterDirectory(
             .filter((professional): professional is HealthcareProfessional => !!professional)
 
         if (healthcareProfessionals.length) {
-            results.push({ ...facility, healthcareProfessionals })
+            withDoctors.push({ ...facility, healthcareProfessionals })
+        } else if (!needsDoctor && facilitySpeaksAll(facility, languages)) {
+            withoutDoctors.push({ ...facility, healthcareProfessionals })
         }
     }
 
-    return results
+    return [...withDoctors, ...withoutDoctors]
 }
 
 const SPECIALTY_VALUES = Object.values(Specialty) as Specialty[]
