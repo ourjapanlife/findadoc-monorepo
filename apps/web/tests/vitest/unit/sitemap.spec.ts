@@ -1,3 +1,4 @@
+/// <reference types="vitest/globals" />
 import { expect } from 'chai'
 import { DIRECTORY_PRERENDER_LOCALE_CODES, LOCALE_CODES, localizedPath, unlocalizedPath } from '@/utils/localePath'
 import { hreflangAlternates, isNoindexRoute, ROBOTS_DISALLOW_PATHS } from '@/utils/seo'
@@ -11,6 +12,13 @@ import {
     sitemapUrlFromEntry
 } from '@/utils/sitemapDirectory'
 import { Locale, Specialty } from '@findadoc/graphql'
+
+// The sitemap reads the official city list for hub names. Outside generate that is a live API call,
+// which made these tests depend on the network and time out on a slow runner. No city is official here.
+vi.mock('@/utils/cityOptions', async importOriginal => ({
+    ...await importOriginal<typeof import('@/utils/cityOptions')>(),
+    fetchCities: async () => []
+}))
 
 function defaultLocaleEntries<T extends { loc: string, lastmod?: string }>(
     urls: readonly T[]
