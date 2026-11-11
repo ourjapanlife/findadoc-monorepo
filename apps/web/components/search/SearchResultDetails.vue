@@ -84,7 +84,7 @@
             </div>
 
             <dl
-                v-if="phone || website || payment"
+                v-if="phone || website || payment || facilityLanguages"
                 class="m-0 flex flex-col gap-1 text-sm text-primary-text-muted"
             >
                 <div
@@ -107,6 +107,18 @@
                     </dt>
                     <dd class="m-0 min-w-0 truncate">
                         {{ websiteLabel }}
+                    </dd>
+                </div>
+                <div
+                    v-if="facilityLanguages"
+                    class="flex gap-2"
+                    data-testid="facility-languages"
+                >
+                    <dt class="shrink-0 font-semibold">
+                        {{ t('search.languagesSpoken') }}
+                    </dt>
+                    <dd class="m-0">
+                        {{ facilityLanguages }}
                     </dd>
                 </div>
                 <div
@@ -274,6 +286,12 @@ const phoneHref = computed(() => facilityPhoneHref(props.facility))
 const email = computed(() => facilityEmail(props.facility))
 // Unknown payment is an empty list and shows nothing (#20).
 const payment = computed(() => formatPaymentOptions(props.facility.paymentOptions, t))
+
+// Languages the clinic itself supports, with or without a named doctor (#19, #21). Empty shows nothing.
+const facilityLanguages = computed(() => (props.facility.supportedLanguages ?? [])
+    .map(code => localeDisplayOptions.find(option => option.code === code)?.simpleText)
+    .filter((name): name is string => !!name)
+    .join(', '))
 
 const professionals = computed(() => props.facility.healthcareProfessionals.map(professional => ({
     id: professional.id,

@@ -12,12 +12,18 @@ import { buildSearchQuery,
     parseSearchQuery } from '~/utils/searchDirectory'
 import { normalizePhoneInput, validatePhoneNumber } from '~/utils/formValidations'
 
-function facility(id: string, professionalIds: string[], address: Partial<Facility['contact']['address']> = {}): Facility {
+function facility(
+    id: string,
+    professionalIds: string[],
+    address: Partial<Facility['contact']['address']> = {},
+    supportedLanguages: Locale[] = []
+): Facility {
     return {
         id,
         nameEn: id,
         nameJa: id,
         healthcareProfessionalIds: professionalIds,
+        supportedLanguages,
         contact: {
             address: { cityEn: 'Shibuya', cityJa: '渋谷', prefectureEn: 'Tokyo', prefectureJa: '東京都', ...address }
         }
@@ -40,11 +46,38 @@ const facilities = [
 const professionals = [dentistEn, gpJa, derm]
 
 describe('filterDirectory', () => {
-    it('returns every facility with at least one professional when nothing is selected', () => {
+    it('returns every facility when nothing is selected, a clinic with no listed doctor included (#21)', () => {
         const results = filterDirectory(facilities, professionals, {})
 
-        expect(results.map(result => result.id)).toEqual(['tokyo-clinic', 'osaka-clinic'])
+        expect(results.map(result => result.id)).toEqual(['tokyo-clinic', 'osaka-clinic', 'empty-clinic'])
         expect(results[0]?.healthcareProfessionals.map(hp => hp.id)).toEqual(['p1', 'p2'])
+        expect(results[2]?.healthcareProfessionals).toEqual([])
+    })
+
+    it('lists clinics with a doctor before clinics with none', () => {
+        const results = filterDirectory([facility('no-doctor', []), facility('with-doctor', ['p1'])], professionals, {})
+
+        expect(results.map(result => result.id)).toEqual(['with-doctor', 'no-doctor'])
+    })
+
+    it('matches a language on the clinic itself when no doctor is listed', () => {
+        const english = facility('english-clinic', [], {}, [Locale.EnUs, Locale.JaJp])
+        const japanese = facility('japanese-clinic', [], {}, [Locale.JaJp])
+
+        expect(filterDirectory([english, japanese], professionals, { languages: [Locale.EnUs] }).map(r => r.id))
+            .toEqual(['english-clinic'])
+        expect(filterDirectory([english, japanese], professionals, { languages: [Locale.EnUs, Locale.FrFr] }))
+            .toEqual([])
+    })
+
+    it('needs a matching doctor for a specialty, so clinic languages do not count there', () => {
+        const english = facility('english-clinic', [], {}, [Locale.EnUs])
+
+        expect(filterDirectory([english], professionals, { specialties: [Specialty.Dentistry] })).toEqual([])
+        expect(filterDirectory([english], professionals, {
+            specialties: [Specialty.Dentistry],
+            languages: [Locale.EnUs]
+        })).toEqual([])
     })
 
     it('keeps only professionals matching the specialty, and drops facilities left with none', () => {
@@ -70,18 +103,21 @@ describe('filterDirectory', () => {
 
     it('filters by city in either language', () => {
         expect(filterDirectory(facilities, professionals, { city: 'Kita' }).map(r => r.id)).toEqual(['osaka-clinic'])
-        expect(filterDirectory(facilities, professionals, { city: '渋谷' }).map(r => r.id)).toEqual(['tokyo-clinic'])
+        expect(filterDirectory(facilities, professionals, { city: '渋谷' }).map(r => r.id))
+            .toEqual(['tokyo-clinic', 'empty-clinic'])
     })
 
     it('filters location by slug so URL params match display names', () => {
-        expect(filterDirectory(facilities, professionals, { city: 'shibuya' }).map(r => r.id)).toEqual(['tokyo-clinic'])
+        expect(filterDirectory(facilities, professionals, { city: 'shibuya' }).map(r => r.id))
+            .toEqual(['tokyo-clinic', 'empty-clinic'])
         expect(filterDirectory(facilities, professionals, { prefecture: 'osaka' }).map(r => r.id)).toEqual(['osaka-clinic'])
     })
 
     it('ignores professional IDs the directory does not contain', () => {
         const results = filterDirectory([facility('ghost', ['missing'])], professionals, {})
 
-        expect(results).toEqual([])
+        expect(results.map(result => result.id)).toEqual(['ghost'])
+        expect(results[0]?.healthcareProfessionals).toEqual([])
     })
 })
 
