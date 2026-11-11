@@ -40,6 +40,14 @@ export {
     isValidUrl,
     isValidWebsite
 } from './string.js'
+export {
+    isJapaneseName,
+    isNamePartValidForLocale,
+    isPersonNameLocale,
+    isRomajiName,
+    PERSON_NAME_LOCALES,
+    type PersonNameLocale
+} from './personName.js'
 export type { OptionalsRemoved } from './types.js'
 export {
     cleanHoursRepeat,

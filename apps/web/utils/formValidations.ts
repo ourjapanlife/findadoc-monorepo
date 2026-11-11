@@ -1,5 +1,5 @@
 import { Locale, type LocalizedNameInput } from '@findadoc/graphql'
-import { validateGoogleMapsUrlInput } from '@findadoc/utils'
+import { isNamePartValidForLocale, validateGoogleMapsUrlInput } from '@findadoc/utils'
 import { hasJapaneseCharacters,
     hasOnlyValidJapaneseAndLatinCharacters,
     isValidEmail,
@@ -398,22 +398,15 @@ export function validateSecondSpokenLanguage(localeCode: string): boolean {
     return false
 }
 
+/**
+ * A name is English (romaji) or Japanese (kanji, hiragana, or katakana), and every part
+ * is written in that script. Other locales are refused, as the API does.
+ */
 export function validateNameLocaleMatchesLanguage(
-  nameLocale: LocalizedNameInput
+    nameLocale: LocalizedNameInput
 ): boolean {
-    const fullName = nameLocale.lastName
-      + (nameLocale.middleName || '')
-      + nameLocale.firstName
+    const parts = [nameLocale.lastName, nameLocale.middleName ?? '', nameLocale.firstName]
+        .filter(part => part.trim())
 
-    switch (nameLocale.locale) {
-        case Locale.JaJp:
-            return hasJapaneseCharacters(fullName)
-
-        case Locale.EnUs:
-            return hasLatinCharacters(fullName)
-
-        default:
-            // Defaults to true for locales that have yet to be added
-            return true
-    }
+    return parts.every(part => isNamePartValidForLocale(part, nameLocale.locale))
 }

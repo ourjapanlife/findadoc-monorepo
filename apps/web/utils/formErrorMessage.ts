@@ -27,8 +27,10 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     PLACE_ID_REQUIRED: 'serverErrorMessages.placeIdRequired',
     CREATEPROFFESIONAL_FACILITYIDS_REQUIRED: 'serverErrorMessages.clinicRequired',
     UPDATEPROFFESIONAL_FACILITYIDS_REQUIRED: 'serverErrorMessages.clinicRequired',
-    CONTAINS_JAPANESE_CHARACTER: 'serverErrorMessages.japaneseInEnglishField',
-    CONTAINS_LATIN_CHARACTER: 'serverErrorMessages.latinInJapaneseField',
+    // A professional's name is English (romaji) or Japanese only.
+    UNSUPPORTED_NAME_LOCALE: 'serverErrorMessages.nameLocaleNotSupported',
+    INVALID_ROMAJI_NAME: 'serverErrorMessages.romajiNameOnly',
+    INVALID_JAPANESE_NAME: 'serverErrorMessages.japaneseNameOnly',
     CONTAINS_INVALID_CHARACTER: 'serverErrorMessages.invalidCharacter',
     CONTAINS_DUPLICATE_LOCAL: 'serverErrorMessages.duplicateLanguage',
     INVALID_LANGUAGE_INPUT: 'serverErrorMessages.invalidLanguage',

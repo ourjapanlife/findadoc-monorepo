@@ -1516,7 +1516,7 @@ export type LocalizedName = {
   firstName: Scalars['String']['output'];
   /** Last (family) name. */
   lastName: Scalars['String']['output'];
-  /** The locale this name is written in. */
+  /** The locale this name is written in: en_US (romaji) or ja_JP (kanji, hiragana, or katakana). */
   locale: Locale;
   /** Middle name, if applicable. */
   middleName?: Maybe<Scalars['String']['output']>;
@@ -1528,7 +1528,7 @@ export type LocalizedNameInput = {
   firstName: Scalars['String']['input'];
   /** Last (family) name. */
   lastName: Scalars['String']['input'];
-  /** The locale this name is written in. */
+  /** The locale this name is written in: en_US (romaji) or ja_JP (kanji, hiragana, or katakana). */
   locale: Locale;
   /** Middle name, if applicable. */
   middleName?: InputMaybe<Scalars['String']['input']>;

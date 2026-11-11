@@ -39,7 +39,7 @@
                 class="field"
             >
                 <option
-                    v-for="(locale, index) in Locale"
+                    v-for="(locale, index) in NAME_LOCALE_OPTIONS"
                     :key="`${locale}-${index}`"
                     :value="locale"
                 >
@@ -79,4 +79,7 @@ const name = defineModel<LocalizedNameInput>({ required: true })
 const { t } = useI18n()
 const localesStore = useLocaleStore()
 const selectId = useId()
+
+// Und keeps a new row blank until a language is chosen. Names are English (romaji) or Japanese only.
+const NAME_LOCALE_OPTIONS = [Locale.Und, Locale.EnUs, Locale.JaJp] as const
 </script>

@@ -41,6 +41,26 @@ describe('validateLocalizedNameDrafts', () => {
             .toEqual([latinJapanese])
     })
 
+    it('accepts a Japanese name in kanji, hiragana or katakana', () => {
+        const kana = { firstName: 'はなこ', lastName: 'タナカ', middleName: '', locale: Locale.JaJp }
+        expect(validateLocalizedNameDrafts([kana], [], { checkCharacters: true }).names).toEqual([kana])
+    })
+
+    it('refuses a name that mixes scripts', () => {
+        const mixedJapanese = { ...ja, firstName: '花子Hana' }
+        const mixedEnglish = { ...en, lastName: 'Tanaka田中' }
+        expect(validateLocalizedNameDrafts([mixedJapanese], [], { checkCharacters: true }).error)
+            .toBe('charactersOfLanguageDoNotMatchNameLocale')
+        expect(validateLocalizedNameDrafts([mixedEnglish], [], { checkCharacters: true }).error)
+            .toBe('charactersOfLanguageDoNotMatchNameLocale')
+    })
+
+    it('refuses a name in a language other than English or Japanese', () => {
+        const chinese = { ...ja, locale: Locale.ZhCn }
+        expect(validateLocalizedNameDrafts([chinese], [], { checkCharacters: true }).error)
+            .toBe('charactersOfLanguageDoNotMatchNameLocale')
+    })
+
     it('trims the saved name', () => {
         const result = validateLocalizedNameDrafts(
             [{ firstName: ' Hanako ', lastName: 'Tanaka ', middleName: ' ', locale: Locale.EnUs }],

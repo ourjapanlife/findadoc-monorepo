@@ -678,7 +678,7 @@ type LocalizedName {
   middleName: String
   """Last (family) name."""
   lastName: String!
-  """The locale this name is written in."""
+  """The locale this name is written in: en_US (romaji) or ja_JP (kanji, hiragana, or katakana)."""
   locale: Locale!
 }
 
@@ -690,7 +690,7 @@ input LocalizedNameInput {
   middleName: String
   """Last (family) name."""
   lastName: String!
-  """The locale this name is written in."""
+  """The locale this name is written in: en_US (romaji) or ja_JP (kanji, hiragana, or katakana)."""
   locale: Locale!
 }
 

@@ -1,5 +1,6 @@
 import * as gqlTypes from '@findadoc/graphql'
-import { isInvalidName, hasJapaneseCharacters, hasLatinCharacters } from '../../utils/stringUtils.js'
+import { isNamePartValidForLocale, isPersonNameLocale, PERSON_NAME_LOCALES } from '@findadoc/utils'
+import { isInvalidName } from '../../utils/stringUtils.js'
 import { ErrorCode, Result } from '../result.js'
 import { UUID_REGEX } from './validateFacility.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
@@ -18,7 +19,8 @@ export function validateNames(
         return
     }
 
-    if (names.length > 16) {
+    // One name per locale, and only English and Japanese names are stored.
+    if (names.length > PERSON_NAME_LOCALES.length) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'names',
@@ -135,81 +137,46 @@ export function validateNames(
     })
 }
 
+/**
+ * A name is English (romaji) or Japanese (kanji, hiragana, or katakana). Every other locale is refused,
+ * and each name part must be written in its locale's script.
+ */
 function validateNameLocaleCharacters(
     nameObject: gqlTypes.LocalizedNameInput,
     index: number,
     validationResults: Result<unknown>
 ): void {
-    switch (nameObject.locale) {
-        case gqlTypes.Locale.EnUs: {
-            const containsJapaneseCharFirstName = hasJapaneseCharacters(nameObject.firstName)
-            const containsJapaneseCharLastName = hasJapaneseCharacters(nameObject.lastName)
-            const containsJapaneseCharMiddleName = nameObject.middleName
-                ? hasJapaneseCharacters(nameObject.middleName)
-                : false
+    if (!isPersonNameLocale(nameObject.locale)) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: `names[${index}].locale`,
+            errorCode: ErrorCode.UNSUPPORTED_NAME_LOCALE,
+            httpStatus: 400
+        })
+        return
+    }
 
-            if (containsJapaneseCharFirstName) {
-                validationResults.hasErrors = true
-                validationResults.errors?.push({
-                    field: `names[${index}].firstName`,
-                    errorCode: ErrorCode.CONTAINS_JAPANESE_CHARACTER,
-                    httpStatus: 400
-                })
-            }
+    const errorCode = nameObject.locale === gqlTypes.Locale.JaJp
+        ? ErrorCode.INVALID_JAPANESE_NAME
+        : ErrorCode.INVALID_ROMAJI_NAME
+    const parts = [
+        { field: 'firstName', value: nameObject.firstName },
+        { field: 'middleName', value: nameObject.middleName },
+        { field: 'lastName', value: nameObject.lastName }
+    ] as const
 
-            if (containsJapaneseCharMiddleName) {
-                validationResults.hasErrors = true
-                validationResults.errors?.push({
-                    field: `names[${index}].middleName`,
-                    errorCode: ErrorCode.CONTAINS_JAPANESE_CHARACTER,
-                    httpStatus: 400
-                })
-            }
+    for (const part of parts) {
+        // An empty part is already MISSING_INPUT or an omitted middle name, and a part with
+        // digits or symbols is already CONTAINS_INVALID_CHARACTER.
+        if (!part.value?.trim() || isInvalidName(part.value)) { continue }
+        if (isNamePartValidForLocale(part.value, nameObject.locale)) { continue }
 
-            if (containsJapaneseCharLastName) {
-                validationResults.hasErrors = true
-                validationResults.errors?.push({
-                    field: `names[${index}].lastName`,
-                    errorCode: ErrorCode.CONTAINS_JAPANESE_CHARACTER,
-                    httpStatus: 400
-                })
-            }
-            break
-        }
-        case gqlTypes.Locale.JaJp: {
-            const containsLatinCharFirstName = hasLatinCharacters(nameObject.firstName)
-            const containsLatinCharLastName = hasLatinCharacters(nameObject.lastName)
-            const containsLatinCharMiddleName = nameObject.middleName
-                ? hasLatinCharacters(nameObject.middleName)
-                : false
-
-            if (containsLatinCharFirstName) {
-                validationResults.hasErrors = true
-                validationResults.errors?.push({
-                    field: `names[${index}].firstName`,
-                    errorCode: ErrorCode.CONTAINS_LATIN_CHARACTER,
-                    httpStatus: 400
-                })
-            }
-
-            if (containsLatinCharMiddleName) {
-                validationResults.hasErrors = true
-                validationResults.errors?.push({
-                    field: `names[${index}].middleName`,
-                    errorCode: ErrorCode.CONTAINS_LATIN_CHARACTER,
-                    httpStatus: 400
-                })
-            }
-
-            if (containsLatinCharLastName) {
-                validationResults.hasErrors = true
-                validationResults.errors?.push({
-                    field: `names[${index}].lastName`,
-                    errorCode: ErrorCode.CONTAINS_LATIN_CHARACTER,
-                    httpStatus: 400
-                })
-            }
-        }
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: `names[${index}].${part.field}`,
+            errorCode,
+            httpStatus: 400
+        })
     }
 }
 

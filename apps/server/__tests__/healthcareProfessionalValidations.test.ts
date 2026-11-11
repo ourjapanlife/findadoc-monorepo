@@ -41,18 +41,74 @@ describe('error path: validations healthcare professionals', () => {
             const errorlMiddleName = createProfessionalResult.body?.errors[0].extensions.errors[1] as Error
             const errorlLastName = createProfessionalResult.body?.errors[0].extensions.errors[2] as Error
 
+            const expectedCode = locale === gqlTypes.Locale.JaJp
+                ? ErrorCode.INVALID_JAPANESE_NAME
+                : ErrorCode.INVALID_ROMAJI_NAME
+
             expect(errorFirstName.field).toBe('names[0].firstName')
-            expect(errorFirstName.errorCode).toBeDefined()
+            expect(errorFirstName.errorCode).toBe(expectedCode)
             expect(errorFirstName.httpStatus).toBe(400)
 
             expect(errorlMiddleName.field).toBe('names[0].middleName')
-            expect(errorlMiddleName.errorCode).toBeDefined()
+            expect(errorlMiddleName.errorCode).toBe(expectedCode)
             expect(errorlMiddleName.httpStatus).toBe(400)
 
             expect(errorlLastName.field).toBe('names[0].lastName')
-            expect(errorlLastName.errorCode).toBeDefined()
+            expect(errorlLastName.errorCode).toBe(expectedCode)
             expect(errorlLastName.httpStatus).toBe(400)
         } 
+    })
+
+    test('failing: refuses a name in a language other than English or Japanese', async () => {
+        const createFailingHealthcareProfessional = {
+            query: createHealthcareProfessionalMutation,
+            variables: {
+                input: {
+                    facilityIds: sharedFacilityIds,
+                    names: [{ firstName: 'Wei', lastName: 'Wang', locale: gqlTypes.Locale.ZhCn }],
+                    degrees: testData.generateDegrees(),
+                    specialties: testData.generateSpecialties(),
+                    spokenLanguages: testData.generateSpokenLanguages(),
+                    additionalInfoForPatients: ''
+                }
+            }
+        } as gqlMutation<CreateHealthcareProfessionalInput>
+
+        const createProfessionalResult = await request(gqlApiUrl).post('').send(createFailingHealthcareProfessional)
+        const errors = createProfessionalResult.body?.errors[0].extensions.errors as Error[]
+
+        expect(createProfessionalResult.body.data).toBeFalsy()
+        expect(errors).toContainEqual({
+            field: 'names[0].locale',
+            errorCode: ErrorCode.UNSUPPORTED_NAME_LOCALE,
+            httpStatus: 400
+        })
+    })
+
+    test('failing: refuses an English name in a script that is not romaji', async () => {
+        const createFailingHealthcareProfessional = {
+            query: createHealthcareProfessionalMutation,
+            variables: {
+                input: {
+                    facilityIds: sharedFacilityIds,
+                    names: [{ firstName: 'Иван', lastName: 'Petrov', locale: gqlTypes.Locale.EnUs }],
+                    degrees: testData.generateDegrees(),
+                    specialties: testData.generateSpecialties(),
+                    spokenLanguages: testData.generateSpokenLanguages(),
+                    additionalInfoForPatients: ''
+                }
+            }
+        } as gqlMutation<CreateHealthcareProfessionalInput>
+
+        const createProfessionalResult = await request(gqlApiUrl).post('').send(createFailingHealthcareProfessional)
+        const errors = createProfessionalResult.body?.errors[0].extensions.errors as Error[]
+
+        expect(createProfessionalResult.body.data).toBeFalsy()
+        expect(errors).toEqual([{
+            field: 'names[0].firstName',
+            errorCode: ErrorCode.INVALID_ROMAJI_NAME,
+            httpStatus: 400
+        }])
     })
 
     test('failing: throws an error if same local is is used more than ones in name field', async () => {
