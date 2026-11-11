@@ -43,7 +43,12 @@ import {
     type ModerationTableColumn,
     type ModerationTableRow
 } from '~/utils/moderationTable'
-import { isCorrection, MODERATION_PILL_LABEL_KEYS, moderationPills } from '~/utils/moderationSubmissionStatus'
+import {
+    isCorrection,
+    MODERATION_PILL_LABEL_KEYS,
+    moderationPills,
+    otherOpenReportsOnClinic
+} from '~/utils/moderationSubmissionStatus'
 import { CORRECTION_REASON_OPTIONS } from '~/utils/facilityCorrection'
 import { runBulkSubmissionAction } from '~/utils/moderationTable'
 
@@ -337,9 +342,10 @@ function submissionBadges(submission: Submission): ModerationTableBadge[] {
         pill
     }))
     // Other open reports on the same clinic, so the moderator handles them together.
-    const others = isCorrection(submission)
-        ? modSubmissionsStore.openCorrectionCount(submission.correction?.facilityId) - 1
-        : 0
+    const others = otherOpenReportsOnClinic(
+        submission,
+        modSubmissionsStore.openCorrectionCount(submission.correction?.facilityId)
+    )
     return others > 0
         ? [...pills, { label: t('modListContainerItem.moreReportsOnClinic', { count: others }), className: 'bg-info/80' }]
         : pills

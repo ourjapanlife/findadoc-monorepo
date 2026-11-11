@@ -17,6 +17,7 @@ import {
 } from '@/utils/facilityCorrectionReview'
 import {
     moderationPills,
+    otherOpenReportsOnClinic,
     moderationStatus,
     MODERATION_STATUS
 } from '@/utils/moderationSubmissionStatus'
@@ -64,6 +65,26 @@ function correction(overrides: Partial<FacilityCorrection> = {}): FacilityCorrec
 }
 
 const PENDING = { isUnderReview: false, isApproved: false, isRejected: false }
+
+describe('other open reports on the same clinic', () => {
+    const openCorrection = { ...PENDING, kind: SubmissionKind.Correction }
+
+    it('leaves out this row only when it is open itself', () => {
+        expect(otherOpenReportsOnClinic(openCorrection, 2)).to.equal(1)
+        expect(otherOpenReportsOnClinic({ ...openCorrection, isUnderReview: true }, 3)).to.equal(2)
+        expect(otherOpenReportsOnClinic(openCorrection, 1)).to.equal(0)
+    })
+
+    it('counts every open report for a decided correction in Approved or Rejected', () => {
+        expect(otherOpenReportsOnClinic({ ...openCorrection, isRejected: true }, 1)).to.equal(1)
+        expect(otherOpenReportsOnClinic({ ...openCorrection, isApproved: true }, 3)).to.equal(3)
+        expect(otherOpenReportsOnClinic({ ...openCorrection, isRejected: true }, 0)).to.equal(0)
+    })
+
+    it('shows nothing on a listing', () => {
+        expect(otherOpenReportsOnClinic({ ...PENDING, kind: SubmissionKind.Listing }, 4)).to.equal(0)
+    })
+})
 
 describe('moderation status (#22)', () => {
     it('reads the database status', () => {

@@ -48,3 +48,19 @@ export function moderationPills(submission: Pick<Submission, 'kind'> & StatusFla
     const status = moderationStatus(submission)
     return isCorrection(submission) ? [status, 'FEEDBACK'] : [status]
 }
+
+/**
+ * Open reports on the same clinic besides this one. `openOnClinic` counts open corrections only,
+ * so this row is taken off only when it is open itself: a decided correction in Approved or
+ * Declined is not one of them.
+ */
+export function otherOpenReportsOnClinic(
+    submission: Pick<Submission, 'kind'> & StatusFlags,
+    openOnClinic: number
+): number {
+    if (!isCorrection(submission)) {
+        return 0
+    }
+    const isOpen = !submission.isApproved && !submission.isRejected
+    return Math.max(0, openOnClinic - (isOpen ? 1 : 0))
+}
