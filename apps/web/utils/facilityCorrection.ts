@@ -9,7 +9,7 @@ import {
     type PaymentOptionsInput,
     type PhysicalAddressInput
 } from '@findadoc/graphql'
-import { fitsFieldLimit, PUBLISHED_LOCALE_VALUES } from '@findadoc/utils'
+import { fitsFieldLimit, isValidWebsite, PUBLISHED_LOCALE_VALUES } from '@findadoc/utils'
 import { pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
 import { ErrorCode, type ServerError } from '~/typedefs/serverResponse'
 import { validatePhoneNumber } from '~/utils/formValidations'
@@ -308,10 +308,14 @@ export function correctionRefusal(errors: readonly Pick<ServerError, 'code'>[] |
     return 'failed'
 }
 
-/** Empty clears the website. Anything else must be https, like every stored website. */
+/**
+ * Empty clears the website. Anything else gets the API's checks (validateFacilityCorrection.ts):
+ * the length limit, https, and the same isValidWebsite.
+ */
 export function isValidCorrectionWebsite(value: string): boolean {
     const trimmed = value.trim()
-    return trimmed === '' || (fitsFieldLimit('website', trimmed) && httpsUrl(trimmed) !== null)
+    return trimmed === ''
+      || (fitsFieldLimit('website', trimmed) && httpsUrl(trimmed) !== null && isValidWebsite(trimmed))
 }
 
 export type CorrectionDraftField = 'reasons' | 'phone' | 'website' | 'duplicateListingUrl' | 'address'
@@ -336,7 +340,10 @@ export function correctionDraftErrors(
         if (phoneChanged && !validatePhoneNumber(phone)) {
             errors.phone = 'clinicCorrection.phoneInvalid'
         }
-        if (!isValidCorrectionWebsite(draft.website)) {
+        // Like the phone, only a changed website is checked: a stored one the rules now refuse must
+        // not block a report about something else.
+        const websiteChanged = draft.website.trim() !== (baseline.contact?.website ?? '').trim()
+        if (websiteChanged && !isValidCorrectionWebsite(draft.website)) {
             errors.website = 'clinicCorrection.websiteInvalid'
         }
     }

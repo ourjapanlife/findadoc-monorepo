@@ -264,6 +264,21 @@ describe('clinic correction form', () => {
         expect(isValidCorrectionWebsite('example-clinic')).to.equal(false)
     })
 
+    it('refuses the websites the API refuses, so the error shows next to the field', () => {
+        expect(isValidCorrectionWebsite('https://example.jp/About')).to.equal(false)
+        expect(isValidCorrectionWebsite('https://example.jp/%E3%81%82')).to.equal(false)
+        expect(isValidCorrectionWebsite('https://example.jp:8443/')).to.equal(false)
+    })
+
+    it('does not block a phone-only report when the stored website no longer passes', () => {
+        const stored = { ...BASELINE, contact: { ...BASELINE.contact, website: 'https://Example.jp/' } }
+        const draft = { ...correctionDraftFromBaseline(stored), reasons: [FacilityCorrectionReason.WrongContact] }
+
+        expect(correctionDraftErrors({ ...draft, phone: '03-5555-0199' }, stored)).to.deep.equal({})
+        expect(correctionDraftErrors({ ...draft, website: 'https://Other.jp/' }, stored))
+            .to.have.property('website')
+    })
+
     it('needs a reason, a valid changed phone, and a findadoc.jp duplicate link', () => {
         expect(correctionDraftErrors(draftWith([]), BASELINE)).to.have.property('reasons')
 
