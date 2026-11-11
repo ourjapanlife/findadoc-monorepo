@@ -20,6 +20,12 @@ export {
 export { FIELD_LIMITS, fitsFieldLimit, type FieldLimit } from './fieldLimits.js'
 export { MapDefinedFields } from './object.js'
 export {
+    isPublishedLocale,
+    PUBLISHED_LOCALE_VALUES,
+    PUBLISHED_LOCALES,
+    type PublishedLocale
+} from './publishedLocales.js'
+export {
     formatJapanPhone,
     isValidJapanPhone,
     PHONE_DISPLAY,

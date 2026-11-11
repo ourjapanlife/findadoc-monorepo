@@ -236,12 +236,15 @@ describe('clinic correction form', () => {
         expect(blank).not.to.have.property('reporterRelation')
     })
 
-    it('offers every searchable language and keeps one the clinic already lists', () => {
-        const options = correctionLanguageOptions([Locale.RuRu])
+    it('offers every language the API accepts and keeps one the clinic already lists', () => {
+        const options = correctionLanguageOptions([Locale.Und])
 
         expect(options[0]).to.equal(Locale.EnUs)
         expect(options[1]).to.equal(Locale.JaJp)
+        // Both are published but were missing from the search facet list.
+        expect(options).to.include(Locale.ViVn)
         expect(options).to.include(Locale.RuRu)
+        expect(options).to.include(Locale.Und)
         expect(new Set(options).size).to.equal(options.length)
     })
 

@@ -9,11 +9,10 @@ import {
     type PaymentOptionsInput,
     type PhysicalAddressInput
 } from '@findadoc/graphql'
-import { fitsFieldLimit } from '@findadoc/utils'
+import { fitsFieldLimit, PUBLISHED_LOCALE_VALUES } from '@findadoc/utils'
 import { pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
 import { ErrorCode, type ServerError } from '~/typedefs/serverResponse'
 import { validatePhoneNumber } from '~/utils/formValidations'
-import { SEARCHABLE_LANGUAGES } from '~/utils/homeDirectory'
 
 /**
  * The clinic page correction form (#22). Pure functions only: the component keeps the draft,
@@ -147,11 +146,11 @@ export function toggleCorrectionReason(
 }
 
 /**
- * The languages the form offers: the searchable list, plus any the clinic already lists so a
- * visitor can remove it. English first, Japanese next, as in search.
+ * The languages the form offers: every language the API accepts (PUBLISHED_LOCALES), plus any
+ * the clinic already lists so a visitor can remove it. English first, Japanese next, as in search.
  */
 export function correctionLanguageOptions(current: readonly Locale[]): Locale[] {
-    const options: Locale[] = [...SEARCHABLE_LANGUAGES]
+    const options: Locale[] = [...PUBLISHED_LOCALE_VALUES]
     for (const language of current) {
         if (!options.includes(language)) {
             options.push(language)
