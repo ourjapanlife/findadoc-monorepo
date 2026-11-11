@@ -125,6 +125,8 @@ export const useModerationSubmissionsStore = defineStore(
             MODERATION_PAGE_SIZES
         )
         const listOrder: Ref<ListOrder | null> = ref(null)
+        // Counts loadSelectedSubmission calls, so a slow answer for an older id is dropped.
+        let selectedSubmissionLoads = 0
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalSubmissionsCount.value)
         const hasPrevPage = computed(() => currentOffset.value > 0)
 
@@ -288,18 +290,30 @@ export const useModerationSubmissionsStore = defineStore(
          * not on the current tab's page, so it is read by id when the list does not have it.
          */
         async function loadSelectedSubmission(submissionId: string): Promise<Submission | undefined> {
+            // Only the latest load may set the screen. Approve and Decline act on selectedSubmissionId,
+            // so an older answer that lands last must not show a different submission.
+            const load = ++selectedSubmissionLoads
             const fromList = submissionsData.value.find(submission => submission.id === submissionId)
             if (fromList !== undefined) {
                 selectedSubmissionData.value = fromList
                 return fromList
             }
-            try {
-                selectedSubmissionData.value = await fetchSubmissionById(submissionId) ?? undefined
-            } catch (error) {
-                console.error(`Error fetching submission: ${JSON.stringify(error)}`)
+            // Never leave another submission on screen while this one loads.
+            if (selectedSubmissionData.value?.id !== submissionId) {
                 selectedSubmissionData.value = undefined
             }
-            return selectedSubmissionData.value
+            let loaded: Submission | undefined
+            try {
+                loaded = await fetchSubmissionById(submissionId) ?? undefined
+            } catch (error) {
+                console.error(`Error fetching submission: ${JSON.stringify(error)}`)
+            }
+            if (load !== selectedSubmissionLoads || selectedSubmissionId.value !== submissionId) {
+                return undefined
+            }
+            // eslint-disable-next-line require-atomic-updates -- the load counter above drops a stale answer
+            selectedSubmissionData.value = loaded
+            return loaded
         }
 
         function setSubmissionSearchQuery(newQuery: string) {

@@ -153,3 +153,39 @@ describe('moderationSubmissionsStore queues (#22)', () => {
         expect(store.statusTotalCounts.newCount).to.equal(1)
     })
 })
+
+describe('moderationSubmissionsStore selected submission', () => {
+    beforeEach(() => {
+        setActivePinia(createPinia())
+        graphQLClientRequestWithRetry.mockReset()
+    })
+
+    it('keeps the latest submission when an older load answers last', async () => {
+        const answers = new Map<string, (value: unknown) => void>()
+        graphQLClientRequestWithRetry.mockImplementation(
+            (_request: unknown, _query: unknown, variables: { id: string }) => new Promise(resolve => {
+                answers.set(variables.id, resolve)
+            })
+        )
+        const store = useModerationSubmissionsStore()
+        const answerLoad = (id: string) => answers.get(id)?.({
+            data: { submission: submission(id, SubmissionKind.Correction) },
+            errors: [],
+            hasErrors: false
+        })
+
+        store.selectedSubmissionId = 'first-report'
+        const first = store.loadSelectedSubmission('first-report')
+        store.selectedSubmissionId = 'second-report'
+        const second = store.loadSelectedSubmission('second-report')
+
+        answerLoad('second-report')
+        await second
+        answerLoad('first-report')
+        await first
+
+        // Approve acts on selectedSubmissionId, so the screen must show that same submission.
+        expect(store.selectedSubmissionData?.id).to.equal('second-report')
+        expect(await first).to.equal(undefined)
+    })
+})

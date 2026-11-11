@@ -101,10 +101,16 @@ const selectedSubmissionIsCorrection = computed(() => selectedSubmissionChecked.
   && moderationSubmissionsStore.selectedSubmissionData !== undefined
   && isCorrection(moderationSubmissionsStore.selectedSubmissionData))
 
+// Two quick clicks start two loads. Only the last one may mark the screen as loaded.
+let submissionLoads = 0
+
 async function loadSelectedSubmission(submissionId: string) {
+    const load = ++submissionLoads
     selectedSubmissionChecked.value = false
     await moderationSubmissionsStore.loadSelectedSubmission(submissionId)
-    selectedSubmissionChecked.value = true
+    if (load === submissionLoads) {
+        selectedSubmissionChecked.value = true
+    }
 }
 
 function syncSelectedModerationViewFromQuery() {
