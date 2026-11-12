@@ -554,7 +554,6 @@
     "placeholderTextFacilityPostalCode": "es. 186-0000",
     "placeholderTextFacilityWebsite": "es. http://www.example.com/",
     "noHealthcareProfessionalFound": "Nessun professionista sanitario corrispondente",
-    "openMaps": "Apri in Google Maps",
     "fillFromMaps": "Compila i campi vuoti da questo link",
     "fillFromMapsHint": "Compila nome, indirizzo e pin vuoti dal link di Maps. I campi che hanno già un valore restano invariati.",
     "fillFromMapsDone": "Compilati {count} campi vuoti dal link di Maps.",

@@ -581,7 +581,6 @@
     "existingHPHeading": "संस्थामा हाल रहेका स्वास्थ्यकर्मीहरू",
     "facilityHeading": "संस्थाको जानकारी",
     "googleMapsInformation": "Google Maps को जानकारी",
-    "openMaps": "Google Maps मा खोल्नुहोस्",
     "fillFromMaps": "यो लिंकबाट खाली फिल्डहरू भर्नुहोस्",
     "fillFromMapsHint": "Maps लिंकबाट खाली नाम, ठेगाना र पिन फिल्डहरू भर्छ। पहिले नै मान भएका फिल्डहरू जस्ताको तस्तै रहन्छन्।",
     "fillFromMapsDone": "Maps लिंकबाट {count} खाली फिल्ड भरियो।",

@@ -581,7 +581,6 @@
     "existingHPHeading": "Tenaga Kesehatan Saat Ini di Fasilitas",
     "facilityHeading": "Informasi Fasilitas",
     "googleMapsInformation": "Informasi Google Maps",
-    "openMaps": "Buka di Google Maps",
     "fillFromMaps": "Isi kolom kosong dari tautan ini",
     "fillFromMapsHint": "Mengisi kolom nama, alamat, dan penanda yang masih kosong dari tautan Maps. Kolom yang sudah berisi tidak diubah.",
     "fillFromMapsDone": "{count} kolom kosong telah diisi dari tautan Maps.",

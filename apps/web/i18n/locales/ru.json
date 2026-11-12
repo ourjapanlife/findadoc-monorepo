@@ -525,7 +525,6 @@
     "addHealthcareProfessional": "Добавить существующего специалиста",
     "noHPSelected": "Специалист не выбран",
     "noHealthcareProfessionalFound": "Подходящие специалисты не найдены",
-    "openMaps": "Открыть в Google Maps",
     "fillFromMaps": "Заполнить пустые поля по этой ссылке",
     "fillFromMapsHint": "Заполняет пустые название, адрес и метку из ссылки Maps. Поля, в которых уже есть значение, не меняются.",
     "fillFromMapsDone": "Из ссылки Maps заполнено пустых полей: {count}.",

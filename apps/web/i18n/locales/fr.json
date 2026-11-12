@@ -522,7 +522,6 @@
     "addHealthcareProfessional": "Ajouter un professionnel de santé existant",
     "noHPSelected": "Aucun professionnel de santé sélectionné",
     "noHealthcareProfessionalFound": "Aucun professionnel de santé correspondant",
-    "openMaps": "Ouvrir dans Google Maps",
     "fillFromMaps": "Remplir les champs vides à partir de ce lien",
     "fillFromMapsHint": "Remplit le nom, l’adresse et le repère vides à partir du lien Maps. Les champs déjà remplis restent inchangés.",
     "fillFromMapsDone": "{count} champs vides ont été remplis à partir du lien Maps.",
