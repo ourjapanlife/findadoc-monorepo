@@ -38,21 +38,3 @@ export function japaneseInsuranceInput(choice: JapaneseInsuranceChoice, source: 
     const note = choice === JapaneseInsurance.NotAccepted ? (source ?? '').trim() || null : null
     return { japaneseInsurance: choice, japaneseInsuranceSource: note }
 }
-
-/** The current answer for each facility id, read in the browser after a prerendered page loads. */
-export type LiveJapaneseInsurance = ReadonlyMap<string, JapaneseInsurance | null>
-
-/**
- * The facility with its live answer, or unchanged when the browser has no live answer for it
- * (not loaded yet, or the request failed). The built value is the fallback, never a guess.
- */
-export function withLiveJapaneseInsurance<T extends { id: string, japaneseInsurance?: JapaneseInsurance | null }>(
-    facility: T,
-    live: LiveJapaneseInsurance
-): T {
-    if (!live.has(facility.id)) {
-        return facility
-    }
-
-    return { ...facility, japaneseInsurance: live.get(facility.id) ?? null }
-}

@@ -4,8 +4,7 @@ import { getChangedFacilityFieldsForUpdate, type FacilitySectionFields } from '~
 import {
     isValidJapaneseInsuranceSource,
     japaneseInsuranceChoice,
-    japaneseInsuranceInput,
-    withLiveJapaneseInsurance
+    japaneseInsuranceInput
 } from '~/utils/japaneseInsurance'
 
 const original = {
@@ -112,25 +111,5 @@ describe('facility update diff', () => {
         const update = getChangedFacilityFieldsForUpdate(section({}), answered)
         expect(update.japaneseInsurance).toBeNull()
         expect(update.japaneseInsuranceSource).toBeNull()
-    })
-})
-
-describe('withLiveJapaneseInsurance', () => {
-    const built = { id: 'facility-1', japaneseInsurance: null }
-
-    it('shows a self-pay answer set after the build', () => {
-        const live = new Map([['facility-1', JapaneseInsurance.NotAccepted]])
-        expect(withLiveJapaneseInsurance(built, live).japaneseInsurance).toBe(JapaneseInsurance.NotAccepted)
-    })
-
-    it('clears an answer that went back to unknown after the build', () => {
-        const answered = { id: 'facility-1', japaneseInsurance: JapaneseInsurance.NotAccepted }
-        const live = new Map([['facility-1', null]])
-        expect(withLiveJapaneseInsurance(answered, live).japaneseInsurance).toBeNull()
-    })
-
-    it('keeps the built answer when the browser has no live answer', () => {
-        const answered = { id: 'facility-1', japaneseInsurance: JapaneseInsurance.NotAccepted }
-        expect(withLiveJapaneseInsurance(answered, new Map())).toBe(answered)
     })
 })
