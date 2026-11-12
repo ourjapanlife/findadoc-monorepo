@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs'
 import type { ColumnType } from 'kysely'
 import {
+    CorrectionReporterRelation,
     Degree,
+    FacilityCorrectionReason,
     FacilitySource,
     FacilityVerificationStatus,
     LicenseReviewStatus,
@@ -13,12 +15,14 @@ import {
 import { isPaymentBrand } from '@findadoc/utils'
 import type {
     ClinicSiteDoctorsTable,
+    CorrectionChanges,
     ClinicSiteLanguagesTable,
     ClinicSiteLocalesTable,
     ClinicSitesTable,
     FacilitiesTable,
     HpsFacilitiesTable,
     HpsTable,
+    SubmissionKindEnum,
     SubmissionStatusEnum,
     SubmissionsTable
 } from '../../src/typeDefs/kyselyTypes.js'
@@ -129,6 +133,11 @@ export type SubmissionSeed = {
     healthcare_professionals_partial: HpSubmissionSeed[] | null
     firestore_id: string | null
     retain_until: string | null
+    /** Omitted on a listing. A correction names its facility, reasons, and changes. */
+    kind?: SubmissionKindEnum
+    correction_reasons?: EnumValue<FacilityCorrectionReason>[] | null
+    correction_changes?: CorrectionChanges | null
+    reporter_relation?: EnumValue<CorrectionReporterRelation> | null
 }
 
 export type RelationSeed = {
@@ -211,6 +220,9 @@ const verificationValues = enumValues(FacilityVerificationStatus)
 const sourceValues = enumValues(FacilitySource)
 const licenseReviewValues = enumValues(LicenseReviewStatus)
 const submissionStatuses = new Set<SubmissionStatusEnum>(['pending', 'under_review', 'approved', 'rejected'])
+const submissionKinds = new Set<SubmissionKindEnum>(['listing', 'correction'])
+const correctionReasonValues = enumValues(FacilityCorrectionReason)
+const reporterRelationValues = enumValues(CorrectionReporterRelation)
 
 function readEnum<T extends string>(
     value: unknown,
@@ -314,6 +326,14 @@ export function parseSeed(value: unknown): SeedFile {
 
         readEnum(submission.status, submissionStatuses, `${submission.id} status`, problems)
         readEnumList(submission.spoken_languages, localeValues, `${submission.id} spoken_languages`, problems)
+
+        if (readEnum(submission.kind, submissionKinds, `${submission.id} kind`, problems) === 'correction') {
+            readEnumList(submission.correction_reasons, correctionReasonValues, `${submission.id} correction_reasons`, problems)
+            readEnum(submission.reporter_relation, reporterRelationValues, `${submission.id} reporter_relation`, problems)
+            if (typeof submission.facilities_id !== 'string') {
+                problems.push(`${submission.id} is a correction with no facilities_id`)
+            }
+        }
 
         if (Array.isArray(submission.healthcare_professionals_partial)) {
             submission.healthcare_professionals_partial.forEach((hp, index) => {

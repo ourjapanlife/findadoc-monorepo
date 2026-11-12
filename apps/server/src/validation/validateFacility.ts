@@ -5,7 +5,7 @@ import { isStorablePhone } from './validatePhone.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 import { isPublishedLocale } from '../languages/publishedLocales.js'
-import { paymentOptionsProblem } from '@findadoc/utils'
+import { fitsFieldLimit, paymentOptionsProblem } from '@findadoc/utils'
 
 /** A Places id token, as Google writes it. 256 characters is far above any real id. */
 const GOOGLE_PLACE_ID = /^[A-Za-z0-9_-]{8,256}$/
@@ -495,7 +495,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         errors: []
     }
 
-    if (input.addressLine1En && input.addressLine1En.length > 128) {
+    if (input.addressLine1En && !fitsFieldLimit('addressLine', input.addressLine1En)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'addressLine1En',
@@ -504,7 +504,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         })
     }
 
-    if (input.addressLine2En && input.addressLine2En.length > 128) {
+    if (input.addressLine2En && !fitsFieldLimit('addressLine', input.addressLine2En)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'addressLine2En',
@@ -513,7 +513,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         })
     }
 
-    if (input.addressLine1Ja && input.addressLine1Ja.length > 128) {
+    if (input.addressLine1Ja && !fitsFieldLimit('addressLine', input.addressLine1Ja)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'addressLine1Ja',
@@ -522,7 +522,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         })
     }
 
-    if (input.addressLine2Ja && input.addressLine2Ja.length > 128) {
+    if (input.addressLine2Ja && !fitsFieldLimit('addressLine', input.addressLine2Ja)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'addressLine2Ja',
@@ -531,7 +531,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         })
     }
 
-    if (input.cityEn && input.cityEn.length > 64) {
+    if (input.cityEn && !fitsFieldLimit('city', input.cityEn)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'cityEn',
@@ -540,7 +540,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         })
     }
 
-    if (input.cityJa && input.cityJa.length > 64) {
+    if (input.cityJa && !fitsFieldLimit('city', input.cityJa)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'cityJa',
@@ -549,7 +549,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         })
     }
 
-    if (input.postalCode && input.postalCode.length > 18) {
+    if (input.postalCode && !fitsFieldLimit('postalCode', input.postalCode)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'postalCode',
@@ -558,7 +558,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         })
     }
 
-    if (input.prefectureEn && input.prefectureEn.length > 128) {
+    if (input.prefectureEn && !fitsFieldLimit('prefecture', input.prefectureEn)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'prefectureEn',
@@ -567,7 +567,7 @@ export function validateAddressInput(input: gqlTypes.PhysicalAddress): Result<un
         })
     }
 
-    if (input.prefectureJa && input.prefectureJa.length > 128) {
+    if (input.prefectureJa && !fitsFieldLimit('prefecture', input.prefectureJa)) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'prefectureJa',

@@ -2,6 +2,8 @@ import type {
     City,
     Contact,
     Facility,
+    FacilityCorrection,
+    FacilityCorrectionChanges,
     FacilitySubmission,
     HealthcareProfessional,
     HealthcareProfessionalSubmission,
@@ -140,7 +142,25 @@ export const professionalSubmissionSelection = selection<HealthcareProfessionalS
     spokenLanguages: true
 })
 
+const correctionChangesSelection = selection<FacilityCorrectionChanges>({
+    address: block('address', addressSelection),
+    cityId: true,
+    paymentOptions: block('paymentOptions', paymentOptionSelection),
+    phone: true,
+    supportedLanguages: true,
+    website: true
+})
+
+const correctionSelection = selection<FacilityCorrection>({
+    changes: block('changes', correctionChangesSelection),
+    duplicateListingUrl: true,
+    facilityId: true,
+    reasons: true,
+    reporterRelation: true
+})
+
 export const submissionSelection = selection<Submission>({
+    correction: block('correction', correctionSelection),
     createdDate: true,
     facility: block('facility', facilitySubmissionSelection),
     googleMapsUrl: true,
@@ -150,6 +170,7 @@ export const submissionSelection = selection<Submission>({
     isApproved: true,
     isRejected: true,
     isUnderReview: true,
+    kind: true,
     notes: true,
     spokenLanguages: true,
     updatedDate: true

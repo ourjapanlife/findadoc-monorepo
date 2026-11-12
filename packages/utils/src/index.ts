@@ -17,6 +17,7 @@ export {
     isShortMapsUrl,
     validateGoogleMapsUrlInput
 } from './mapsUrl.js'
+export { FIELD_LIMITS, fitsFieldLimit, type FieldLimit } from './fieldLimits.js'
 export { MapDefinedFields } from './object.js'
 export {
     formatJapanPhone,

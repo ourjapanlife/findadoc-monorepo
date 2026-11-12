@@ -33,7 +33,10 @@ const BUDGETS = {
     // submitBooking.
     submit: budget(10, HOUR_MS),
     // patientBooking and cancelBookingByToken share one budget.
-    token: budget(30, 10 * MINUTE_MS)
+    token: budget(30, 10 * MINUTE_MS),
+    // submitFacilityCorrection (#22). Not a booking call, but the same kind of signed-out
+    // write, so it keeps its budget here. A visitor rarely reports more than one clinic an hour.
+    correction: budget(5, HOUR_MS)
 } as const
 
 export type BookingBudget = keyof typeof BUDGETS
