@@ -51,8 +51,8 @@ import { doctorViewedProps } from '~/utils/analyticsEvents'
 import { localeDisplayOptions } from '~/stores/localeStore'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { Locale } from '@findadoc/graphql'
-import { useLiveJapaneseInsurance } from '~/composables/useLiveJapaneseInsurance'
-import { withLiveJapaneseInsurance } from '~/utils/japaneseInsurance'
+import { useLiveFacility } from '~/composables/useLiveFacility'
+import { withLiveFacility } from '~/utils/liveFacility'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -91,13 +91,13 @@ if (!canonicalPathMatches(route.path, canonicalPath)) {
     })
 }
 
-// Each clinic's insurance answer is re-read in the browser so a post-build change shows (#18).
-const liveInsurance = useLiveJapaneseInsurance(() => (data.value?.facilities ?? []).map(facility => facility.id))
+// Each clinic's insurance answer and confirmation are re-read in the browser so a post-build change shows (#18, #22).
+const liveFacilities = useLiveFacility(() => (data.value?.facilities ?? []).map(facility => facility.id))
 const professional = computed(() => {
     const record = data.value!
     return {
         ...record,
-        facilities: record.facilities.map(facility => withLiveJapaneseInsurance(facility, liveInsurance.value))
+        facilities: record.facilities.map(facility => withLiveFacility(facility, liveFacilities.value))
     }
 })
 
