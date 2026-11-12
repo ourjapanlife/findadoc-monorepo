@@ -54,7 +54,8 @@
     "clinicDashboard.tabs.team",
     "bookingPage.options.consultationLanguage.tl",
     "clinicDashboard.export.columns.status",
-    "clinicDashboard.export.columns.name"
+    "clinicDashboard.export.columns.name",
+    "clinicCorrection.optional"
   ],
   "it": [
     "common.menu",
@@ -79,7 +80,14 @@
     "clinicDashboard.payment.card",
     "paymentOptions.types.cash",
     "paymentOptions.types.creditCard",
-    "paymentOptions.types.debitCard"
+    "paymentOptions.types.debitCard",
+    "clinicCorrection.postalCode",
+    "clinicCorrection.prefecture",
+    "clinicCorrection.paymentCash",
+    "clinicCorrection.paymentCreditCard",
+    "clinicCorrection.paymentDebitCard",
+    "clinicCorrection.paymentElectronicMoney",
+    "clinicCorrection.website"
   ],
   "vi": [
     "common.menu",
