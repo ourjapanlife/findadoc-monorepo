@@ -6,9 +6,9 @@ submission is `kind = 'listing'`.
 
 A `CONFIRMED` clinic shows a small "See an error? Let us know" link. Any other clinic shows the
 "Help us confirm this listing" card. The clinics entered by hand before the government data import
-are confirmed by `backfill:confirm-facilities` (`utils/backfillConfirmFacilities.ts`). It only
-moves `UNVERIFIED` rows that have a city and a `MANUAL` or empty source, so imported rows stay
-unverified and get the card. `UNVERIFIED_LOCATION` rows are left alone.
+were confirmed by a one-off backfill, which has run on production and is removed. It moved only
+`UNVERIFIED` rows that had a city and a `MANUAL` or empty source, so imported rows stay unverified
+and get the card. `UNVERIFIED_LOCATION` rows were left alone.
 
 ## What the visitor sends
 
