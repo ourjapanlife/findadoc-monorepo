@@ -26,6 +26,12 @@ export {
     type PublishedLocale
 } from './publishedLocales.js'
 export {
+    categoriesOfSpecialty,
+    SPECIALTY_CATEGORY_DISPLAY_ORDER,
+    SPECIALTY_CATEGORY_MEMBERS,
+    SPECIALTY_DISPLAY_ORDER
+} from './specialties.js'
+export {
     formatJapanPhone,
     isValidJapanPhone,
     PHONE_DISPLAY,
