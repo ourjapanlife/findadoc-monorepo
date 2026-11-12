@@ -1474,6 +1474,18 @@ export enum JapaneseInsurance {
   NotAccepted = 'NOT_ACCEPTED'
 }
 
+/** A spoken-language code with its labels. A label names the language, not the region. */
+export type LanguageDefinition = {
+  __typename?: 'LanguageDefinition';
+  code: Locale;
+  nameEn: Scalars['String']['output'];
+  nameJa: Scalars['String']['output'];
+  /** The language's own name, for example 日本語 or Español. */
+  nameNative: Scalars['String']['output'];
+  /** True when the code is a search facet (publishedLanguages). Only these are useful as search filters. */
+  published: Scalars['Boolean']['output'];
+};
+
 /** Moderator queue for a professional license. CONFIRMED keeps a dual license. */
 export enum LicenseReviewStatus {
   /** A moderator confirmed that more than one clinical license should stay. */
@@ -2159,6 +2171,11 @@ export type Query = {
   /** Get the total count of healthcare professionals matching the given filters. Useful for pagination. */
   healthcareProfessionalsTotalCount: Scalars['Int']['output'];
   /**
+   * Spoken-language codes with labels. By default only the search facets (publishedLanguages), in that
+   * order. With publishedOnly false, every Locale value, the facets first.
+   */
+  languages: Array<LanguageDefinition>;
+  /**
    * Live place details for a Maps link on an open form.
    * Nothing in this response is saved.
    */
@@ -2178,6 +2195,13 @@ export type Query = {
   publishedLanguages: Array<Locale>;
   /** Look up a single reservation by its unique ID. Returns null if not found. */
   reservation?: Maybe<Reservation>;
+  /**
+   * Every Specialty value with English and Japanese labels and its categories, in display order.
+   * Use it instead of introspecting the enum.
+   */
+  specialties: Array<SpecialtyDefinition>;
+  /** Every SpecialtyCategory value with English and Japanese labels and the specialties it holds. */
+  specialtyCategories: Array<SpecialtyCategoryDefinition>;
   /** Look up a single submission by its unique ID. Returns null if not found. */
   submission?: Maybe<Submission>;
   /** Search for submissions matching the given filters. Returns an empty list if no matches. */
@@ -2350,6 +2374,11 @@ export type QueryHealthcareProfessionalsArgs = {
 
 export type QueryHealthcareProfessionalsTotalCountArgs = {
   filters: HealthcareProfessionalSearchFilters;
+};
+
+
+export type QueryLanguagesArgs = {
+  publishedOnly?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -2589,6 +2618,26 @@ export enum SpecialtyCategory {
   /** Women's health specialties. */
   WomensHealth = 'WOMENS_HEALTH'
 }
+
+/** A browse category and the specialties it holds. */
+export type SpecialtyCategoryDefinition = {
+  __typename?: 'SpecialtyCategoryDefinition';
+  code: SpecialtyCategory;
+  nameEn: Scalars['String']['output'];
+  nameJa: Scalars['String']['output'];
+  /** The specialties in this category. The first is the one the site's category tile links to. */
+  specialties: Array<Specialty>;
+};
+
+/** A medical specialty with its labels and the categories it is filed under. */
+export type SpecialtyDefinition = {
+  __typename?: 'SpecialtyDefinition';
+  /** Categories this specialty is grouped under on the site. May be empty, and may hold more than one. */
+  categories: Array<SpecialtyCategory>;
+  code: Specialty;
+  nameEn: Scalars['String']['output'];
+  nameJa: Scalars['String']['output'];
+};
 
 /** A community-submitted suggestion for adding or updating a healthcare professional or facility. */
 export type Submission = {
@@ -3032,6 +3081,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   InviteClinicMemberInput: InviteClinicMemberInput;
   JapaneseInsurance: JapaneseInsurance;
+  LanguageDefinition: ResolverTypeWrapper<LanguageDefinition>;
   LicenseReviewStatus: LicenseReviewStatus;
   Locale: Locale;
   LocalizedName: ResolverTypeWrapper<LocalizedName>;
@@ -3062,6 +3112,8 @@ export type ResolversTypes = {
   SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   Specialty: Specialty;
   SpecialtyCategory: SpecialtyCategory;
+  SpecialtyCategoryDefinition: ResolverTypeWrapper<SpecialtyCategoryDefinition>;
+  SpecialtyDefinition: ResolverTypeWrapper<SpecialtyDefinition>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Submission: ResolverTypeWrapper<Submission>;
   SubmissionKind: SubmissionKind;
@@ -3160,6 +3212,7 @@ export type ResolversParentTypes = {
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   InviteClinicMemberInput: InviteClinicMemberInput;
+  LanguageDefinition: LanguageDefinition;
   LocalizedName: LocalizedName;
   LocalizedNameInput: LocalizedNameInput;
   MapsPlacePreview: MapsPlacePreview;
@@ -3179,6 +3232,8 @@ export type ResolversParentTypes = {
   SaveClinicInterpreterInput: SaveClinicInterpreterInput;
   SetBookingInterpretationInput: SetBookingInterpretationInput;
   SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
+  SpecialtyCategoryDefinition: SpecialtyCategoryDefinition;
+  SpecialtyDefinition: SpecialtyDefinition;
   String: Scalars['String']['output'];
   Submission: Submission;
   SubmissionSearchFilters: SubmissionSearchFilters;
@@ -3770,6 +3825,14 @@ export type HoursRepeatResolvers<ContextType = any, ParentType extends Resolvers
   weekOfMonth?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 };
 
+export type LanguageDefinitionResolvers<ContextType = any, ParentType extends ResolversParentTypes['LanguageDefinition'] = ResolversParentTypes['LanguageDefinition']> = {
+  code?: Resolver<ResolversTypes['Locale'], ParentType, ContextType>;
+  nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nameNative?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+};
+
 export type LocalizedNameResolvers<ContextType = any, ParentType extends ResolversParentTypes['LocalizedName'] = ResolversParentTypes['LocalizedName']> = {
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3908,6 +3971,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   healthcareProfessional?: Resolver<Maybe<ResolversTypes['HealthcareProfessional']>, ParentType, ContextType, RequireFields<QueryHealthcareProfessionalArgs, 'id'>>;
   healthcareProfessionals?: Resolver<Array<ResolversTypes['HealthcareProfessional']>, ParentType, ContextType, RequireFields<QueryHealthcareProfessionalsArgs, 'filters'>>;
   healthcareProfessionalsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<QueryHealthcareProfessionalsTotalCountArgs, 'filters'>>;
+  languages?: Resolver<Array<ResolversTypes['LanguageDefinition']>, ParentType, ContextType, RequireFields<QueryLanguagesArgs, 'publishedOnly'>>;
   mapsPlacePreview?: Resolver<Maybe<ResolversTypes['MapsPlacePreview']>, ParentType, ContextType, RequireFields<QueryMapsPlacePreviewArgs, 'url'>>;
   myBookingClinics?: Resolver<Array<ResolversTypes['BookingClinic']>, ParentType, ContextType>;
   openCorrectionCounts?: Resolver<Array<ResolversTypes['OpenCorrectionCount']>, ParentType, ContextType, RequireFields<QueryOpenCorrectionCountsArgs, 'facilityIds'>>;
@@ -3915,6 +3979,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   prefectures?: Resolver<Array<ResolversTypes['Prefecture']>, ParentType, ContextType>;
   publishedLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
   reservation?: Resolver<Maybe<ResolversTypes['Reservation']>, ParentType, ContextType, RequireFields<QueryReservationArgs, 'id'>>;
+  specialties?: Resolver<Array<ResolversTypes['SpecialtyDefinition']>, ParentType, ContextType>;
+  specialtyCategories?: Resolver<Array<ResolversTypes['SpecialtyCategoryDefinition']>, ParentType, ContextType>;
   submission?: Resolver<Maybe<ResolversTypes['Submission']>, ParentType, ContextType, RequireFields<QuerySubmissionArgs, 'id'>>;
   submissions?: Resolver<Array<ResolversTypes['Submission']>, ParentType, ContextType, RequireFields<QuerySubmissionsArgs, 'filters'>>;
   submissionsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<QuerySubmissionsTotalCountArgs, 'filters'>>;
@@ -3929,6 +3995,20 @@ export type ReservationResolvers<ContextType = any, ParentType extends Resolvers
   status?: Resolver<ResolversTypes['ReservationStatus'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type SpecialtyCategoryDefinitionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SpecialtyCategoryDefinition'] = ResolversParentTypes['SpecialtyCategoryDefinition']> = {
+  code?: Resolver<ResolversTypes['SpecialtyCategory'], ParentType, ContextType>;
+  nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  specialties?: Resolver<Array<ResolversTypes['Specialty']>, ParentType, ContextType>;
+};
+
+export type SpecialtyDefinitionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SpecialtyDefinition'] = ResolversParentTypes['SpecialtyDefinition']> = {
+  categories?: Resolver<Array<ResolversTypes['SpecialtyCategory']>, ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['Specialty'], ParentType, ContextType>;
+  nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type SubmissionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Submission'] = ResolversParentTypes['Submission']> = {
@@ -4013,6 +4093,7 @@ export type Resolvers<ContextType = any> = {
   HealthcareProfessional?: HealthcareProfessionalResolvers<ContextType>;
   HealthcareProfessionalSubmission?: HealthcareProfessionalSubmissionResolvers<ContextType>;
   HoursRepeat?: HoursRepeatResolvers<ContextType>;
+  LanguageDefinition?: LanguageDefinitionResolvers<ContextType>;
   LocalizedName?: LocalizedNameResolvers<ContextType>;
   MapsPlacePreview?: MapsPlacePreviewResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
@@ -4024,6 +4105,8 @@ export type Resolvers<ContextType = any> = {
   Prefecture?: PrefectureResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Reservation?: ReservationResolvers<ContextType>;
+  SpecialtyCategoryDefinition?: SpecialtyCategoryDefinitionResolvers<ContextType>;
+  SpecialtyDefinition?: SpecialtyDefinitionResolvers<ContextType>;
   Submission?: SubmissionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };

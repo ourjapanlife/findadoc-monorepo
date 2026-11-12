@@ -2273,6 +2273,21 @@ type Query {
   """
   publishedLanguages: [Locale!]!
 
+  """
+  Every Specialty value with English and Japanese labels and its categories, in display order.
+  Use it instead of introspecting the enum.
+  """
+  specialties: [SpecialtyDefinition!]!
+
+  """Every SpecialtyCategory value with English and Japanese labels and the specialties it holds."""
+  specialtyCategories: [SpecialtyCategoryDefinition!]!
+
+  """
+  Spoken-language codes with labels. By default only the search facets (publishedLanguages), in that
+  order. With publishedOnly false, every Locale value, the facets first.
+  """
+  languages(publishedOnly: Boolean = true): [LanguageDefinition!]!
+
   """Prefectures this server owns. One row per prefecture in the frozen key list."""
   prefectures: [Prefecture!]!
 
@@ -2297,6 +2312,35 @@ type CitySuggestion {
   label: String!
   """Our city when the suggestion maps onto exactly one municipality."""
   city: City
+}
+
+"""A medical specialty with its labels and the categories it is filed under."""
+type SpecialtyDefinition {
+  code: Specialty!
+  nameEn: String!
+  nameJa: String!
+  """Categories this specialty is grouped under on the site. May be empty, and may hold more than one."""
+  categories: [SpecialtyCategory!]!
+}
+
+"""A browse category and the specialties it holds."""
+type SpecialtyCategoryDefinition {
+  code: SpecialtyCategory!
+  nameEn: String!
+  nameJa: String!
+  """The specialties in this category. The first is the one the site's category tile links to."""
+  specialties: [Specialty!]!
+}
+
+"""A spoken-language code with its labels. A label names the language, not the region."""
+type LanguageDefinition {
+  code: Locale!
+  nameEn: String!
+  nameJa: String!
+  """The language's own name, for example 日本語 or Español."""
+  nameNative: String!
+  """True when the code is a search facet (publishedLanguages). Only these are useful as search filters."""
+  published: Boolean!
 }
 
 """A prefecture from the frozen key list."""
