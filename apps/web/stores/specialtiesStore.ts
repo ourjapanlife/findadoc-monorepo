@@ -5,7 +5,7 @@ import { Specialty, SpecialtyCategory } from '@findadoc/graphql'
 import { SPECIALTY_CATEGORY_DISPLAY_ORDER, SPECIALTY_CATEGORY_MEMBERS, SPECIALTY_DISPLAY_ORDER } from '@findadoc/utils'
 
 /** A Record, so a new Specialty fails typecheck until it has a label key (#24). */
-const SPECIALTY_LABEL_KEYS: Readonly<Record<Specialty, string>> = {
+export const SPECIALTY_LABEL_KEYS: Readonly<Record<Specialty, string>> = {
     [Specialty.AllergyAndImmunology]: 'specialties.allergyAndImmunology',
     [Specialty.Anesthesiology]: 'specialties.anesthesiology',
     [Specialty.Cardiology]: 'specialties.cardiology',
@@ -44,7 +44,7 @@ const SPECIALTY_LABEL_KEYS: Readonly<Record<Specialty, string>> = {
     [Specialty.Urology]: 'specialties.urology'
 }
 
-const CATEGORY_LABEL_KEYS: Readonly<Record<SpecialtyCategory, string>> = {
+export const CATEGORY_LABEL_KEYS: Readonly<Record<SpecialtyCategory, string>> = {
     [SpecialtyCategory.ChildrensHealth]: 'specialtyCategories.childrensHealth',
     [SpecialtyCategory.CosmeticAndPlasticSurgery]: 'specialtyCategories.cosmeticAndPlasticSurgery',
     [SpecialtyCategory.Dental]: 'specialtyCategories.dental',

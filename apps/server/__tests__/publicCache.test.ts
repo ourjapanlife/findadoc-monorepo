@@ -27,6 +27,9 @@ const typeDefs = `#graphql
         facilities: [Facility!]!
         facilitiesTotalCount(fail: Boolean): Int!
         submissions: [Submission!]!
+        specialties: [String!]!
+        specialtyCategories: [String!]!
+        languages(publishedOnly: Boolean): [String!]!
     }
     type Mutation { createSubmission: Submission! }
 `
@@ -40,7 +43,10 @@ const testResolvers = {
             }
             return 1
         },
-        submissions: () => [{ id: 'submission-1' }]
+        submissions: () => [{ id: 'submission-1' }],
+        specialties: () => ['DENTISTRY'],
+        specialtyCategories: () => ['DENTAL'],
+        languages: () => ['ja_JP']
     },
     Facility: {
         japaneseInsuranceSource: (_parent: unknown, _args: unknown, context: UserContext) =>
@@ -112,6 +118,13 @@ describe('Cache-Control on GraphQL responses (#242)', () => {
         expect(response.statusCode).toBe(200)
         expect(response.headers['cache-control']).toBe(PUBLIC_CACHE_CONTROL)
         expect(response.headers.vary).toContain('Authorization')
+    })
+
+    it('marks a read of only the filter vocabulary public (#24)', async () => {
+        const response = await getQuery('{ specialties specialtyCategories languages(publishedOnly: false) }')
+
+        expect(response.statusCode).toBe(200)
+        expect(response.headers['cache-control']).toBe(PUBLIC_CACHE_CONTROL)
     })
 
     it('never marks a request with a bearer token public, even for a public field', async () => {

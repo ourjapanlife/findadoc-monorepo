@@ -3,8 +3,10 @@ import { Specialty, SpecialtyCategory } from '@findadoc/graphql'
 import {
     categoriesOfSpecialty,
     SPECIALTY_CATEGORY_DISPLAY_ORDER,
+    SPECIALTY_CATEGORY_LABELS,
     SPECIALTY_CATEGORY_MEMBERS,
-    SPECIALTY_DISPLAY_ORDER
+    SPECIALTY_DISPLAY_ORDER,
+    SPECIALTY_LABELS
 } from './specialties.js'
 
 describe('specialty vocabulary', () => {
@@ -33,6 +35,15 @@ describe('specialty vocabulary', () => {
                 expect(categoriesOfSpecialty(specialty)).toContain(category)
             }
         }
+    })
+
+    it('gives every specialty and category an English and a Japanese label', () => {
+        for (const labels of [...Object.values(SPECIALTY_LABELS), ...Object.values(SPECIALTY_CATEGORY_LABELS)]) {
+            expect(labels.nameEn.trim()).not.toBe('')
+            expect(labels.nameJa.trim()).not.toBe('')
+        }
+        expect(Object.keys(SPECIALTY_LABELS).sort()).toEqual(Object.values(Specialty).sort())
+        expect(Object.keys(SPECIALTY_CATEGORY_LABELS).sort()).toEqual(Object.values(SpecialtyCategory).sort())
     })
 
     it('leaves a specialty with no category with an empty list', () => {

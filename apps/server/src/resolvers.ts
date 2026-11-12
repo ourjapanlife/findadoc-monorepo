@@ -30,6 +30,7 @@ import * as appointmentService from './services/appointmentService.js'
 import * as clinicAccessService from './services/clinicAccessService.js'
 import * as interpreterService from './services/interpreterService.js'
 import * as paymentSettingsService from './services/paymentSettingsService.js'
+import * as taxonomyService from './services/taxonomyService.js'
 import { envVariables } from '../utils/environmentVariables.js'
 import { ErrorCode, Result } from './result.js'
 import { logger } from './logger.js'
@@ -374,6 +375,25 @@ const resolvers = {
         }),
         publishedLanguages: withScope(Scope['read:facilities'], (): gqlType.Locale[] =>
             PUBLISHED_LOCALES.map(locale => locale as gqlType.Locale)),
+        specialties: withScope(Scope['read:facilities'], (): gqlType.SpecialtyDefinition[] => {
+            const result = taxonomyService.listSpecialties()
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+        specialtyCategories: withScope(Scope['read:facilities'], (): gqlType.SpecialtyCategoryDefinition[] => {
+            const result = taxonomyService.listSpecialtyCategories()
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+        languages: withScope(Scope['read:facilities'], (_parent: unknown, args: gqlType.QueryLanguagesArgs)
+        : gqlType.LanguageDefinition[] => {
+            const result = taxonomyService.listLanguages(args.publishedOnly)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
         prefectures: withScope(Scope['read:facilities'], async ()
         : Promise<gqlType.Prefecture[]> => {
             const result = await cityService.listPrefectures()
