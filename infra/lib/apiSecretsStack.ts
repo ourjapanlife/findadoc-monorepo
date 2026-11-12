@@ -8,6 +8,10 @@ import type { Construct } from 'constructs'
 // reaches the function on the next deploy. EDGE_SHARED_SECRET is generated here and
 // sent by CloudFront on every request (see apps/server/src/clientIp.ts).
 //
+// GOOGLE_API_KEY is the server Places key. In Google Cloud, limit it to Places API (New)
+// and do not limit it to one IP: the API Lambda leaves over IPv6 from the findadoc VPC
+// and has no fixed address. Allowing the VPC's IPv6 CIDR is the only IP rule that works.
+//
 // It is its own stack because a deploy-time reference needs the secret to exist first.
 export class ApiSecretsStack extends Stack {
     readonly secret: Secret
