@@ -9,7 +9,14 @@ import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql.js'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { usePersistentFilters } from '~/composables/usePersistentFilters'
 import { useTranslation } from '~/composables/useTranslation'
-import { hasServerErrors, isNewSubmission } from '~/utils/moderationUtils'
+import { hasServerErrors } from '~/utils/moderationUtils'
+import { isCorrection } from '~/utils/moderationSubmissionStatus'
+import {
+    fetchCorrectionFacilityNames,
+    fetchOpenCorrectionCounts,
+    fetchSubmissionById,
+    type CorrectionFacilityName
+} from '~/utils/moderationCorrections'
 import { toastModerationLoadError } from '~/utils/moderationListToast'
 import {
     DEFAULT_MODERATION_PAGE_SIZE,
@@ -17,16 +24,16 @@ import {
     MODERATION_PAGE_SIZES,
     nextListOrder,
     orderByInput,
-    orderedPage,
-    pageOffsetInRange,
     type ListOrder
 } from '~/utils/moderationTable'
 
+/** The stored values stay as they were, so a saved tab still opens. Rejected reads as Declined. */
 export enum SelectedSubmissionListViewTab {
     New = 'NEW',
     ForReview = 'FOR_REVIEW',
     Approved = 'APPROVED',
-    Rejected = 'REJECTED'
+    Rejected = 'REJECTED',
+    UserFeedback = 'USER_FEEDBACK'
 }
 
 export enum SelectedModerationListView {
@@ -37,30 +44,48 @@ export enum SelectedModerationListView {
     Availability = 'AVAILABILITY'
 }
 
-type SubmissionStatusFilter = Pick<SubmissionSearchFilters, 'isUnderReview' | 'isApproved' | 'isRejected'>
+type SubmissionStatusFilter = Pick<
+    SubmissionSearchFilters,
+    'isPending' | 'isOpen' | 'isUnderReview' | 'isApproved' | 'isRejected'
+>
 
-const SUBMISSION_TAB_FILTERS: Partial<Record<SelectedSubmissionListViewTab, SubmissionStatusFilter>> = {
-    [SelectedSubmissionListViewTab.ForReview]: { isUnderReview: true },
-    [SelectedSubmissionListViewTab.Approved]: { isApproved: true },
-    [SelectedSubmissionListViewTab.Rejected]: { isRejected: true }
+// Visitor corrections (#22) wait in User feedback, so New and Under review show listings only.
+// Approved and Declined show both kinds, and a correction row carries the Feedback tag.
+const LISTINGS_ONLY = { kind: SubmissionKind.Listing } as const satisfies SubmissionSearchFilters
+const CORRECTIONS_ONLY = { kind: SubmissionKind.Correction } as const satisfies SubmissionSearchFilters
+
+type ServerTabFilter = SubmissionStatusFilter & Pick<SubmissionSearchFilters, 'kind'>
+
+// Every tab is one server filter, so each pages and counts on the server, however long the queue.
+const NEW_FILTER: ServerTabFilter = { ...LISTINGS_ONLY, isPending: true }
+const FOR_REVIEW_FILTER: ServerTabFilter = { ...LISTINGS_ONLY, isUnderReview: true }
+const APPROVED_FILTER: ServerTabFilter = { isApproved: true }
+const DECLINED_FILTER: ServerTabFilter = { isRejected: true }
+// User feedback is every correction nobody has decided: new or under review.
+const FEEDBACK_FILTER: ServerTabFilter = { ...CORRECTIONS_ONLY, isOpen: true }
+
+const SUBMISSION_TAB_FILTERS: Record<SelectedSubmissionListViewTab, ServerTabFilter> = {
+    [SelectedSubmissionListViewTab.New]: NEW_FILTER,
+    [SelectedSubmissionListViewTab.ForReview]: FOR_REVIEW_FILTER,
+    [SelectedSubmissionListViewTab.Approved]: APPROVED_FILTER,
+    [SelectedSubmissionListViewTab.Rejected]: DECLINED_FILTER,
+    [SelectedSubmissionListViewTab.UserFeedback]: FEEDBACK_FILTER
 }
 
 const SUBMISSION_STATUS_COUNT_QUERIES = [
-    { countKey: 'forReviewCount', filter: { isUnderReview: true } },
-    { countKey: 'approvedCount', filter: { isApproved: true } },
-    { countKey: 'rejectedCount', filter: { isRejected: true } }
+    { countKey: 'newCount', filter: NEW_FILTER },
+    { countKey: 'forReviewCount', filter: FOR_REVIEW_FILTER },
+    { countKey: 'approvedCount', filter: APPROVED_FILTER },
+    { countKey: 'rejectedCount', filter: DECLINED_FILTER },
+    { countKey: 'feedbackCount', filter: FEEDBACK_FILTER }
 ] as const
-
-const NEW_SUBMISSIONS_FETCH_LIMIT = 1000
-
-// Visitor corrections (#22) get their own User feedback queue. Until it ships, these tabs show listings only.
-const LISTINGS_ONLY = { kind: SubmissionKind.Listing } as const satisfies SubmissionSearchFilters
 
 interface SubmissionStatusCounts {
     newCount: number
     forReviewCount: number
     approvedCount: number
     rejectedCount: number
+    feedbackCount: number
 }
 
 export const useModerationSubmissionsStore = defineStore(
@@ -83,8 +108,13 @@ export const useModerationSubmissionsStore = defineStore(
             newCount: 0,
             forReviewCount: 0,
             approvedCount: 0,
-            rejectedCount: 0
+            rejectedCount: 0,
+            feedbackCount: 0
         })
+        // A correction row stores only the facility id. The list shows the clinic's name.
+        const correctionFacilityNames: Ref<Record<string, CorrectionFacilityName>> = ref({})
+        // Open corrections per clinic, so a row shows that its clinic has other reports.
+        const openCorrectionCounts: Ref<Record<string, number>> = ref({})
 
         const totalSubmissionsCount: Ref<number> = ref(0)
         const currentOffset = usePersistentFilters('submissions', 'offset', 0)
@@ -95,7 +125,8 @@ export const useModerationSubmissionsStore = defineStore(
             MODERATION_PAGE_SIZES
         )
         const listOrder: Ref<ListOrder | null> = ref(null)
-        const cachedNewSubmissions: Ref<Submission[]> = ref([])
+        // Counts loadSelectedSubmission calls, so a slow answer for an older id is dropped.
+        let selectedSubmissionLoads = 0
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalSubmissionsCount.value)
         const hasPrevPage = computed(() => currentOffset.value > 0)
 
@@ -111,8 +142,9 @@ export const useModerationSubmissionsStore = defineStore(
             return submissions.filter((submission: Submission) => {
                 const submissionId = submission.id.toLowerCase()
                 const healthcareProfessionalName = submission.healthcareProfessionalName.toLowerCase()
-                const facilityNameEn = submission.facility?.nameEn?.toLowerCase() || ''
-                const facilityNameJa = submission.facility?.nameJa?.toLowerCase() || ''
+                const facility = submissionFacilityName(submission)
+                const facilityNameEn = facility?.nameEn?.toLowerCase() || ''
+                const facilityNameJa = facility?.nameJa?.toLowerCase() || ''
                 return submissionId.includes(query)
                   || healthcareProfessionalName.includes(query)
                   || facilityNameEn.includes(query)
@@ -120,48 +152,55 @@ export const useModerationSubmissionsStore = defineStore(
             })
         }
 
-        async function fetchNewSubmissions() {
-            const { filteredSearchResults } = await fetchSubmissionsWithCount({
-                ...LISTINGS_ONLY,
-                limit: NEW_SUBMISSIONS_FETCH_LIMIT,
-                offset: 0
-            })
-            return filteredSearchResults.filter(isNewSubmission)
+        /** The submitted clinic on a listing, or the clinic a correction is about. */
+        function submissionFacilityName(
+            submission: Submission
+        ): { nameEn?: string | null, nameJa?: string | null } | undefined {
+            if (isCorrection(submission)) {
+                const facilityId = submission.correction?.facilityId
+                return facilityId === undefined ? undefined : correctionFacilityNames.value[facilityId]
+            }
+            return submission.facility ?? undefined
         }
 
-        function submissionSortValue(submission: Submission, field: string): string {
-            if (field === 'healthcareProfessionalName') {
-                return submission.healthcareProfessionalName
+        /** Loads the names the list does not have yet. A failure leaves the cell empty, not the list. */
+        async function loadCorrectionFacilityNames(submissions: readonly Submission[]) {
+            const missing = submissions
+                .filter(isCorrection)
+                .map(submission => submission.correction?.facilityId)
+                .filter((id): id is string => id !== undefined && correctionFacilityNames.value[id] === undefined)
+            if (missing.length === 0) {
+                return
             }
-            if (field === 'createdDate') {
-                return submission.createdDate
+            try {
+                const names = await fetchCorrectionFacilityNames(missing)
+                correctionFacilityNames.value = { ...correctionFacilityNames.value, ...names }
+            } catch (error) {
+                console.error(`Error fetching correction facility names: ${JSON.stringify(error)}`)
             }
-            if (field === 'updatedDate') {
-                return submission.updatedDate
-            }
-            return ''
         }
 
-        function applyNewTabListView(newSubmissions: Submission[]) {
-            cachedNewSubmissions.value = newSubmissions
-            const searchFiltered = applySearchFilter(newSubmissions)
-            const nextOffset = pageOffsetInRange(
-                currentOffset.value,
-                itemsPerPage.value,
-                searchFiltered.length
-            )
-            currentOffset.value = nextOffset
-            totalSubmissionsCount.value = searchFiltered.length
-            // New is not a server status, so the loaded queue is sorted before the page is cut.
-            const page = orderedPage(
-                searchFiltered,
-                listOrder.value,
-                nextOffset,
-                itemsPerPage.value,
-                submissionSortValue
-            )
-            submissionsData.value = page
-            filteredSubmissionDataForListComponent.value = page
+        /** Counts for the clinics on this page. A failure leaves the counts out, not the list. */
+        async function loadOpenCorrectionCounts(submissions: readonly Submission[]) {
+            const facilityIds = submissions
+                .filter(isCorrection)
+                .map(submission => submission.correction?.facilityId)
+                .filter((id): id is string => id !== undefined)
+            if (facilityIds.length === 0) {
+                return
+            }
+            try {
+                const counts = await fetchOpenCorrectionCounts(facilityIds)
+                const refreshed = Object.fromEntries(facilityIds.map(id => [id, counts[id] ?? 0]))
+                openCorrectionCounts.value = { ...openCorrectionCounts.value, ...refreshed }
+            } catch (error) {
+                console.error(`Error fetching open correction counts: ${JSON.stringify(error)}`)
+            }
+        }
+
+        /** Open corrections on this clinic, the shown one included. Zero while unknown. */
+        function openCorrectionCount(facilityId: string | undefined): number {
+            return facilityId === undefined ? 0 : openCorrectionCounts.value[facilityId] ?? 0
         }
 
         function applySubmissionPage(offset: number, rows: Submission[], totalCount: number) {
@@ -173,20 +212,12 @@ export const useModerationSubmissionsStore = defineStore(
 
         async function getSubmissions() {
             try {
-                if (selectedModerationListViewTabChosen.value === SelectedSubmissionListViewTab.New) {
-                    applyNewTabListView(await fetchNewSubmissions())
-                    return
-                }
-
-                cachedNewSubmissions.value = []
-
                 const orderBy = orderByInput(listOrder.value)
                 const page = await loadPageInRange(
                     currentOffset.value,
                     itemsPerPage.value,
                     async offset => {
                         const filters: SubmissionSearchFilters = {
-                            ...LISTINGS_ONLY,
                             offset,
                             limit: itemsPerPage.value,
                             ...SUBMISSION_TAB_FILTERS[selectedModerationListViewTabChosen.value],
@@ -196,6 +227,8 @@ export const useModerationSubmissionsStore = defineStore(
                         return { rows: filteredSearchResults, totalCount }
                     }
                 )
+                // Names first: the search box matches a correction by its clinic's name.
+                await Promise.all([loadCorrectionFacilityNames(page.rows), loadOpenCorrectionCounts(page.rows)])
                 applySubmissionPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
                 console.error(`Error fetching submissions: ${JSON.stringify(error)}`)
@@ -208,11 +241,8 @@ export const useModerationSubmissionsStore = defineStore(
 
         async function fetchStatusCounts() {
             try {
-                const [newSubmissions, ...countResults] = await Promise.all([
-                    fetchNewSubmissions(),
-                    ...SUBMISSION_STATUS_COUNT_QUERIES.map(({ filter }) =>
-                        fetchSubmissionsWithCount({ ...LISTINGS_ONLY, ...filter, limit: 1, offset: 0 }))
-                ])
+                const countResults = await Promise.all(SUBMISSION_STATUS_COUNT_QUERIES.map(({ filter }) =>
+                    fetchSubmissionsWithCount({ ...filter, limit: 1, offset: 0 })))
 
                 statusTotalCounts.value = SUBMISSION_STATUS_COUNT_QUERIES.reduce(
                     (counts, { countKey }, index) => {
@@ -220,10 +250,11 @@ export const useModerationSubmissionsStore = defineStore(
                         return counts
                     },
                     {
-                        newCount: newSubmissions.length,
+                        newCount: 0,
                         forReviewCount: 0,
                         approvedCount: 0,
-                        rejectedCount: 0
+                        rejectedCount: 0,
+                        feedbackCount: 0
                     }
                 )
             } catch (error) {
@@ -247,15 +278,46 @@ export const useModerationSubmissionsStore = defineStore(
         }
 
         function filterSelectedSubmission(submissionId: string | undefined) {
-            selectedSubmissionData.value = submissionsData.value.find(submission => submission.id === submissionId)
+            const fromList = submissionsData.value.find(submission => submission.id === submissionId)
+            // A submission loaded by id is kept when the current tab's page does not hold it.
+            if (fromList !== undefined || selectedSubmissionData.value?.id !== submissionId) {
+                selectedSubmissionData.value = fromList
+            }
+        }
+
+        /**
+         * The submission an edit or review screen opens. A link or a reload can open one that is
+         * not on the current tab's page, so it is read by id when the list does not have it.
+         */
+        async function loadSelectedSubmission(submissionId: string): Promise<Submission | undefined> {
+            // Only the latest load may set the screen. Approve and Decline act on selectedSubmissionId,
+            // so an older answer that lands last must not show a different submission.
+            const load = ++selectedSubmissionLoads
+            const fromList = submissionsData.value.find(submission => submission.id === submissionId)
+            if (fromList !== undefined) {
+                selectedSubmissionData.value = fromList
+                return fromList
+            }
+            // Never leave another submission on screen while this one loads.
+            if (selectedSubmissionData.value?.id !== submissionId) {
+                selectedSubmissionData.value = undefined
+            }
+            let loaded: Submission | undefined
+            try {
+                loaded = await fetchSubmissionById(submissionId) ?? undefined
+            } catch (error) {
+                console.error(`Error fetching submission: ${JSON.stringify(error)}`)
+            }
+            if (load !== selectedSubmissionLoads || selectedSubmissionId.value !== submissionId) {
+                return undefined
+            }
+            // eslint-disable-next-line require-atomic-updates -- the load counter above drops a stale answer
+            selectedSubmissionData.value = loaded
+            return loaded
         }
 
         function setSubmissionSearchQuery(newQuery: string) {
             submissionSearchQuery.value = newQuery
-            if (selectedModerationListViewTabChosen.value === SelectedSubmissionListViewTab.New) {
-                applyNewTabListView(cachedNewSubmissions.value)
-                return
-            }
             filteredSubmissionDataForListComponent.value = applySearchFilter(submissionsData.value)
         }
 
@@ -363,7 +425,11 @@ export const useModerationSubmissionsStore = defineStore(
             setSubmissionSearchQuery,
             selectedSubmissionId,
             filterSelectedSubmission,
+            loadSelectedSubmission,
             selectedSubmissionData,
+            correctionFacilityNames,
+            submissionFacilityName,
+            openCorrectionCount,
             didMutationFail,
             setDidMutationFail,
             selectedModerationListViewChosen,

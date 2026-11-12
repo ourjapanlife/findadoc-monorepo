@@ -288,7 +288,8 @@
     "collapse": "Réduire la barre latérale",
     "expand": "Ouvrir la barre latérale",
     "bookings": "Réservations",
-    "availability": "Disponibilités"
+    "availability": "Disponibilités",
+    "userFeedback": "Retours des visiteurs"
   },
   "accessPanel": {
     "loading": "Chargement des autorisations…",
@@ -305,8 +306,52 @@
   "modEditSubmissionTopNav": {
     "updateAndExit": "Enregistrer et quitter",
     "approve": "Approuver",
-    "reject": "Rejeter",
+    "reject": "Refuser",
     "update": "Mettre à jour"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "Signalé le {date}",
+    "facilityMissing": "Impossible de charger cette clinique. Elle a peut-être été retirée de l’annuaire.",
+    "openClinicPage": "Ouvrir la page de la clinique",
+    "editFacility": "Modifier cet établissement",
+    "startReview": "Commencer l’examen",
+    "startedReview": "Marqué comme en cours d’examen.",
+    "reasonsHeading": "Ce que le visiteur signale",
+    "changesHeading": "Avant et après",
+    "changesHint": "L’approbation n’enregistre que ces champs dans la clinique. Tout le reste reste identique.",
+    "before": "Actuel",
+    "after": "Selon le visiteur",
+    "added": "ajouté",
+    "removed": "retiré",
+    "emptyValue": "Non indiqué",
+    "noChanges": "Le visiteur n’a pas envoyé de nouvelle valeur. Vérifiez la clinique avant de décider.",
+    "fieldAddress": "Adresse",
+    "fieldPhone": "Téléphone",
+    "fieldWebsite": "Site web",
+    "fieldLanguages": "Langues prises en charge par la clinique",
+    "fieldPayment": "Moyens de paiement acceptés",
+    "cityHint": "La nouvelle adresse a besoin d’une ville. Choisissez-la dans la liste : une ville saisie par le visiteur n’est jamais utilisée telle quelle.",
+    "currentCity": "Ville actuelle : {city}",
+    "cityLabel": "Ville de la nouvelle adresse",
+    "closedNotice": "Fermé ou déménagé : l’approbation ne change rien à la page de la clinique. Pour retirer la clinique du site, modifiez l’établissement.",
+    "duplicateNotice": "Doublon : l’approbation ne fusionne rien. Comparez les deux fiches et modifiez-les à la main.",
+    "duplicateOtherListing": "L’autre fiche",
+    "duplicateNoLink": "Le visiteur n’a pas indiqué de lien vers l’autre fiche.",
+    "notesHeading": "Note du visiteur",
+    "noNotes": "Aucune note.",
+    "relationHeading": "Source de l’information",
+    "relationUnknown": "Non précisé",
+    "retentionNote": "La note du visiteur est supprimée 180 jours après l’approbation ou le refus de la correction.",
+    "approveConfirm": "Approuver cette correction ? Seuls les champs affichés ici changent sur la page de la clinique.",
+    "approveConfirmButton": "Oui, approuver",
+    "approved": "Correction approuvée. La modification est enregistrée dans la clinique.",
+    "declineConfirm": "Refuser cette correction ? Rien ne change sur la page de la clinique.",
+    "declineConfirmButton": "Oui, refuser",
+    "declined": "Correction refusée.",
+    "submissionMissing": "Impossible de charger cette soumission.",
+    "otherReportsHeading": "Autres signalements ouverts sur cette clinique",
+    "otherReportsHint": "Examinez-les ensemble, pour ne pas vérifier deux fois la même modification.",
+    "openOtherReport": "Signalement du {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Il n'y a pas de soumissions en attente"
@@ -537,7 +582,10 @@
     "network": "La requête ne s’est pas terminée. Vérifiez la connexion et réessayez.",
     "writeOutcomeUnknown": "Nous n’avons pas reçu de réponse. Votre modification est peut-être déjà enregistrée. Vérifiez avant de la renvoyer.",
     "prefectureMismatch": "Le nom anglais et le nom japonais de la préfecture doivent correspondre.",
-    "prefectureRequired": "Ajoutez la préfecture en anglais et en japonais."
+    "prefectureRequired": "Ajoutez la préfecture en anglais et en japonais.",
+    "correctionCityRequired": "Choisissez une ville avant d’approuver cette correction.",
+    "submissionKindMismatch": "Cette modification ne s’applique pas à une correction de visiteur.",
+    "submissionStatusChanged": "Quelqu’un d’autre a modifié cette soumission avant vous. Rechargez la page et vérifiez à nouveau."
   },
   "modHealthcareProfessionalSection": {
     "addHealthCareProfessionalLocaleName": "Add Name by Language",
@@ -645,7 +693,9 @@
     "approvedSubmission": "Approuvé",
     "rejectedSubmission": "Rejeté",
     "createdDate": "Créé le",
-    "updatedDate": "Dernière mise à jour"
+    "updatedDate": "Dernière mise à jour",
+    "feedbackSubmission": "Retour",
+    "moreReportsOnClinic": "+{count} sur cette clinique"
   },
   "settingsPage": {
     "heading": "Réglages",

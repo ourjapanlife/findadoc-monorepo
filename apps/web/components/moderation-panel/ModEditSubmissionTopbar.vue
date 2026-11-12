@@ -15,22 +15,24 @@
             class="grid w-full min-w-0 grid-cols-2 gap-2
             landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end"
         >
-            <button
-                type="button"
-                :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
-                data-testid="submission-topNav-update"
-                @click="requestUpdate"
-            >
-                {{ t('modEditSubmissionTopNav.update') }}
-            </button>
-            <button
-                type="button"
-                :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
-                data-testid="submission-topNav-updateAndExit"
-                @click="requestUpdateAndExit"
-            >
-                {{ t('modEditSubmissionTopNav.updateAndExit') }}
-            </button>
+            <template v-if="!isCorrectionSelected">
+                <button
+                    type="button"
+                    :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
+                    data-testid="submission-topNav-update"
+                    @click="requestUpdate"
+                >
+                    {{ t('modEditSubmissionTopNav.update') }}
+                </button>
+                <button
+                    type="button"
+                    :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
+                    data-testid="submission-topNav-updateAndExit"
+                    @click="requestUpdateAndExit"
+                >
+                    {{ t('modEditSubmissionTopNav.updateAndExit') }}
+                </button>
+            </template>
             <button
                 data-testid="mod-edit-submission-reject-button"
                 type="button"
@@ -52,9 +54,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ModerationSubmissionActionType, useModerationSubmissionActions } from '~/composables/useModerationSubmissionActions'
 import { leaveToModerationDashboard } from '~/utils/moderationUtils'
+import { isCorrection } from '~/utils/moderationSubmissionStatus'
+import { useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -63,6 +68,13 @@ const modalStore = useModalStore()
 
 const moderationSubmissionUnsavedStore = useModerationSubmissionUnsavedStore()
 const { emitModerationSubmissionAction } = useModerationSubmissionActions()
+const moderationSubmissionsStore = useModerationSubmissionsStore()
+
+// A correction has nothing to save: the moderator approves or declines what the visitor sent (#22).
+const isCorrectionSelected = computed(() => {
+    const selected = moderationSubmissionsStore.selectedSubmissionData
+    return selected !== undefined && selected.id === moderationSubmissionsStore.selectedSubmissionId && isCorrection(selected)
+})
 
 const goToDashboard = () => {
     moderationSubmissionUnsavedStore.runLeaveOr(() =>

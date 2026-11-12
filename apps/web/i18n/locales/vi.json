@@ -295,7 +295,8 @@
     "collapse": "Thu gọn thanh bên",
     "expand": "Mở rộng thanh bên",
     "bookings": "Đặt lịch",
-    "availability": "Khung giờ trống"
+    "availability": "Khung giờ trống",
+    "userFeedback": "Phản hồi người dùng"
   },
   "accessPanel": {
     "loading": "Đang tải quyền truy cập…",
@@ -347,6 +348,50 @@
     "approve": "Phê duyệt",
     "reject": "Từ chối",
     "update": "Lưu"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "Báo cáo ngày {date}",
+    "facilityMissing": "Không tải được phòng khám này. Có thể nó đã bị xóa khỏi danh bạ.",
+    "openClinicPage": "Mở trang phòng khám",
+    "editFacility": "Sửa cơ sở này",
+    "startReview": "Bắt đầu xem xét",
+    "startedReview": "Đã đánh dấu là đang xem xét.",
+    "reasonsHeading": "Điều khách truy cập cho là sai",
+    "changesHeading": "Trước và sau",
+    "changesHint": "Khi duyệt, chỉ các trường này được ghi vào phòng khám. Mọi thứ khác giữ nguyên.",
+    "before": "Hiện tại",
+    "after": "Theo khách truy cập",
+    "added": "đã thêm",
+    "removed": "đã bỏ",
+    "emptyValue": "Chưa có",
+    "noChanges": "Khách truy cập không gửi giá trị mới. Hãy kiểm tra phòng khám trước khi quyết định.",
+    "fieldAddress": "Địa chỉ",
+    "fieldPhone": "Điện thoại",
+    "fieldWebsite": "Trang web",
+    "fieldLanguages": "Ngôn ngữ phòng khám hỗ trợ",
+    "fieldPayment": "Hình thức thanh toán phòng khám nhận",
+    "cityHint": "Địa chỉ mới cần có thành phố. Hãy chọn trong danh sách: thành phố do khách truy cập nhập không bao giờ được dùng làm thành phố.",
+    "currentCity": "Thành phố hiện tại: {city}",
+    "cityLabel": "Thành phố của địa chỉ mới",
+    "closedNotice": "Đã đóng cửa hoặc chuyển đi: duyệt không thay đổi gì trên trang phòng khám. Để gỡ phòng khám khỏi trang, hãy sửa cơ sở.",
+    "duplicateNotice": "Trùng lặp: duyệt không gộp gì cả. Hãy so sánh hai mục và sửa thủ công.",
+    "duplicateOtherListing": "Mục còn lại",
+    "duplicateNoLink": "Khách truy cập không gửi liên kết đến mục còn lại.",
+    "notesHeading": "Ghi chú của khách truy cập",
+    "noNotes": "Không có ghi chú.",
+    "relationHeading": "Nguồn thông tin",
+    "relationUnknown": "Không cho biết",
+    "retentionNote": "Ghi chú của khách truy cập bị xóa 180 ngày sau khi bản sửa được duyệt hoặc từ chối.",
+    "approveConfirm": "Duyệt bản sửa này? Chỉ các trường hiển thị ở đây thay đổi trên trang phòng khám.",
+    "approveConfirmButton": "Có, duyệt",
+    "approved": "Đã duyệt bản sửa. Thay đổi đã được lưu vào phòng khám.",
+    "declineConfirm": "Từ chối bản sửa này? Trang phòng khám không thay đổi gì.",
+    "declineConfirmButton": "Có, từ chối",
+    "declined": "Đã từ chối bản sửa.",
+    "submissionMissing": "Không tải được nội dung gửi này.",
+    "otherReportsHeading": "Các báo cáo khác chưa xử lý về phòng khám này",
+    "otherReportsHint": "Hãy xem xét chúng cùng lúc để không kiểm tra cùng một thay đổi hai lần.",
+    "openOtherReport": "Báo cáo ngày {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Không có bài gửi nào đang chờ xử lý"
@@ -540,7 +585,10 @@
     "network": "Yêu cầu chưa hoàn tất. Hãy kiểm tra kết nối và thử lại.",
     "writeOutcomeUnknown": "Chúng tôi không nhận được phản hồi, nên thay đổi của bạn có thể đã được lưu. Hãy kiểm tra trước khi gửi lại.",
     "prefectureMismatch": "Tên tỉnh bằng tiếng Anh và tiếng Nhật phải khớp nhau.",
-    "prefectureRequired": "Hãy thêm tỉnh bằng tiếng Anh và tiếng Nhật."
+    "prefectureRequired": "Hãy thêm tỉnh bằng tiếng Anh và tiếng Nhật.",
+    "correctionCityRequired": "Hãy chọn thành phố trước khi duyệt bản sửa này.",
+    "submissionKindMismatch": "Thay đổi này không áp dụng cho bản sửa của khách truy cập.",
+    "submissionStatusChanged": "Người khác đã thay đổi nội dung gửi này trước. Hãy tải lại trang và kiểm tra lại."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Ngôn ngữ sử dụng",
@@ -645,7 +693,9 @@
     "approvedSubmission": "Đã duyệt",
     "rejectedSubmission": "Bị từ chối",
     "createdDate": "Tạo lúc",
-    "updatedDate": "Cập nhật lần cuối"
+    "updatedDate": "Cập nhật lần cuối",
+    "feedbackSubmission": "Phản hồi",
+    "moreReportsOnClinic": "+{count} ở phòng khám này"
   },
   "settingsPage": {
     "heading": "Cài đặt",

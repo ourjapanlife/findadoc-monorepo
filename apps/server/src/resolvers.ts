@@ -351,6 +351,15 @@ const resolvers = {
             convertErrorsToGqlErrors(countResults)
             return countResults.data
         }),
+        openCorrectionCounts: withScope(Scope['read:submissions'], async (
+            _parent: unknown,
+            args: { facilityIds: string[] }
+        ): Promise<gqlType.OpenCorrectionCount[]> => {
+            const result = await submissionService.countOpenCorrectionsByFacility(args.facilityIds)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
         user: withScope(Scope['read:users'], async (_parent: unknown, args: { id: string })
         : Promise<gqlType.User | undefined> => {
             const matchingUserResult = await userService.getUserById(args.id)

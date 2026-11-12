@@ -1922,6 +1922,15 @@ export enum ObjectType {
   Submission = 'Submission'
 }
 
+/** How many open corrections (new or under review) one facility has. */
+export type OpenCorrectionCount = {
+  __typename?: 'OpenCorrectionCount';
+  /** Open corrections on that facility. */
+  count: Scalars['Int']['output'];
+  /** The facility the corrections are about. */
+  facilityId: Scalars['ID']['output'];
+};
+
 /** Specifies a field and direction to order query results by. */
 export type OrderBy = {
   /** The name of the field to sort by (e.g. 'createdDate', 'nameEn'). */
@@ -2156,6 +2165,11 @@ export type Query = {
   mapsPlacePreview?: Maybe<MapsPlacePreview>;
   /** Clinics the signed-in user belongs to. Claims a pending invite for a verified email. */
   myBookingClinics: Array<BookingClinic>;
+  /**
+   * Open corrections (new or under review) on each of these facilities, so the moderation queue
+   * can show that a clinic has more than one report. At most 100 ids. A facility with none is left out.
+   */
+  openCorrectionCounts: Array<OpenCorrectionCount>;
   /** The patient's own booking, found by the private token from the email link. */
   patientBooking?: Maybe<PatientBookingView>;
   /** Prefectures this server owns. One row per prefecture in the frozen key list. */
@@ -2342,6 +2356,11 @@ export type QueryHealthcareProfessionalsTotalCountArgs = {
 export type QueryMapsPlacePreviewArgs = {
   languageCode?: InputMaybe<Scalars['String']['input']>;
   url: Scalars['String']['input'];
+};
+
+
+export type QueryOpenCorrectionCountsArgs = {
+  facilityIds: Array<Scalars['ID']['input']>;
 };
 
 
@@ -2616,12 +2635,18 @@ export enum SubmissionKind {
 export type SubmissionSearchFilters = {
   /** Filter by creation date (ISO 8601). */
   createdDate?: InputMaybe<Scalars['String']['input']>;
+  /** Filter to submissions about this facility, such as every report on one clinic. */
+  facilityId?: InputMaybe<Scalars['ID']['input']>;
   /** Filter by Google Maps URL. */
   googleMapsUrl?: InputMaybe<Scalars['String']['input']>;
   /** Filter by healthcare professional name. */
   healthcareProfessionalName?: InputMaybe<Scalars['String']['input']>;
   /** Filter to approved submissions. */
   isApproved?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Filter to open submissions: new or under review. Use one status filter at a time. */
+  isOpen?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Filter to new submissions: sent, and not yet under review or decided. */
+  isPending?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter to rejected submissions. */
   isRejected?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter to submissions under review. */
@@ -3014,6 +3039,7 @@ export type ResolversTypes = {
   MapsPlacePreview: ResolverTypeWrapper<MapsPlacePreview>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   ObjectType: ObjectType;
+  OpenCorrectionCount: ResolverTypeWrapper<OpenCorrectionCount>;
   OrderBy: OrderBy;
   OrderDirection: OrderDirection;
   PatientBookingView: ResolverTypeWrapper<PatientBookingView>;
@@ -3138,6 +3164,7 @@ export type ResolversParentTypes = {
   LocalizedNameInput: LocalizedNameInput;
   MapsPlacePreview: MapsPlacePreview;
   Mutation: Record<PropertyKey, never>;
+  OpenCorrectionCount: OpenCorrectionCount;
   OrderBy: OrderBy;
   PatientBookingView: PatientBookingView;
   PaymentOption: PaymentOption;
@@ -3800,6 +3827,11 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'id' | 'input'>>;
 };
 
+export type OpenCorrectionCountResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpenCorrectionCount'] = ResolversParentTypes['OpenCorrectionCount']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
 export type PatientBookingViewResolvers<ContextType = any, ParentType extends ResolversParentTypes['PatientBookingView'] = ResolversParentTypes['PatientBookingView']> = {
   branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
   canCancel?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -3878,6 +3910,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   healthcareProfessionalsTotalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<QueryHealthcareProfessionalsTotalCountArgs, 'filters'>>;
   mapsPlacePreview?: Resolver<Maybe<ResolversTypes['MapsPlacePreview']>, ParentType, ContextType, RequireFields<QueryMapsPlacePreviewArgs, 'url'>>;
   myBookingClinics?: Resolver<Array<ResolversTypes['BookingClinic']>, ParentType, ContextType>;
+  openCorrectionCounts?: Resolver<Array<ResolversTypes['OpenCorrectionCount']>, ParentType, ContextType, RequireFields<QueryOpenCorrectionCountsArgs, 'facilityIds'>>;
   patientBooking?: Resolver<Maybe<ResolversTypes['PatientBookingView']>, ParentType, ContextType, RequireFields<QueryPatientBookingArgs, 'token'>>;
   prefectures?: Resolver<Array<ResolversTypes['Prefecture']>, ParentType, ContextType>;
   publishedLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
@@ -3983,6 +4016,7 @@ export type Resolvers<ContextType = any> = {
   LocalizedName?: LocalizedNameResolvers<ContextType>;
   MapsPlacePreview?: MapsPlacePreviewResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  OpenCorrectionCount?: OpenCorrectionCountResolvers<ContextType>;
   PatientBookingView?: PatientBookingViewResolvers<ContextType>;
   PaymentOption?: PaymentOptionResolvers<ContextType>;
   PaymentQrUploadUrl?: PaymentQrUploadUrlResolvers<ContextType>;

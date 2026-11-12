@@ -1,4 +1,5 @@
 import { OrderDirection, type OrderBy } from '@findadoc/graphql'
+import type { ModerationPill } from './moderationSubmissionStatus'
 
 export interface ListOrder {
     field: string
@@ -8,6 +9,8 @@ export interface ListOrder {
 export interface ModerationTableBadge {
     label: string
     className: string
+    /** A submission status shown as ModStatusPill: an icon and a word, not color alone (#22). */
+    pill?: ModerationPill
 }
 
 export interface ModerationTableColumn {
@@ -23,6 +26,13 @@ export interface ModerationTableRow {
     linkColumn: string
     cells: Record<string, string>
     badges: ModerationTableBadge[]
+    /** False leaves the row out of bulk selection. A correction is always decided on its own. */
+    selectable?: boolean
+}
+
+/** The rows bulk selection may pick. */
+export function bulkSelectableRows<T extends Pick<ModerationTableRow, 'selectable'>>(rows: readonly T[]): T[] {
+    return rows.filter(row => row.selectable !== false)
 }
 
 export interface BulkSubmissionTarget {
@@ -113,26 +123,6 @@ export function orderByInput(order: ListOrder | null): OrderBy[] | null {
         fieldToOrder: order.field,
         orderDirection: order.direction === 'asc' ? OrderDirection.Asc : OrderDirection.Desc
     }]
-}
-
-/**
- * Sort the full loaded set, then cut the page.
- * A header click must not rearrange only the rows already on screen.
- */
-export function orderedPage<T>(
-    rows: readonly T[],
-    order: ListOrder | null,
-    offset: number,
-    limit: number,
-    valueAt: (row: T, field: string) => string
-): T[] {
-    const sorted = order === null
-        ? rows
-        : [...rows].sort((left, right) => {
-            const compared = valueAt(left, order.field).localeCompare(valueAt(right, order.field))
-            return order.direction === 'asc' ? compared : -compared
-        })
-    return sorted.slice(offset, offset + limit)
 }
 
 export function paginationIsCompact(width: number): boolean {

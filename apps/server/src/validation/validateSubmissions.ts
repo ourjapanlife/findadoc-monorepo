@@ -1,7 +1,7 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
 import { hasScriptTags, isInvalidName } from '../../utils/stringUtils.js'
-import { validateContactInput, validateGooglePlaceId, validatePaymentOptions } from './validateFacility.js'
+import { UUID_REGEX, validateContactInput, validateGooglePlaceId, validatePaymentOptions } from './validateFacility.js'
 import { validateNames, validateDegrees, validateSpecialties, validateSpokenLanguages } from './validationHealthcareProfessional.js'
 
 export function validateIdInput(id: string): Result<unknown> {
@@ -291,8 +291,54 @@ export function validateSubmissionSearchFilters(filters: gqlTypes.SubmissionSear
     validateSubmissionGoogleMapsUrl(filters, validateSearchResults)
     validateSearchLimit(filters, validateSearchResults)
     validateSearchOffset(filters, validateSearchResults)
+    validateSubmissionStatusFilters(filters, validateSearchResults)
+    validateSubmissionFacilityId(filters, validateSearchResults)
 
     return validateSearchResults
+}
+
+const STATUS_FILTER_FLAGS = ['isPending', 'isOpen', 'isUnderReview', 'isApproved', 'isRejected'] as const
+
+/** One status filter at a time: isOpen already covers new and under review. */
+function validateSubmissionStatusFilters(
+    filters: gqlTypes.SubmissionSearchFilters,
+    validateSearchResults: Result<unknown>
+): void {
+    if (STATUS_FILTER_FLAGS.filter(flag => filters[flag] === true).length > 1) {
+        validateSearchResults.hasErrors = true
+        validateSearchResults.errors?.push({ field: 'status', errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 })
+    }
+}
+
+function validateSubmissionFacilityId(
+    filters: gqlTypes.SubmissionSearchFilters,
+    validateSearchResults: Result<unknown>
+): void {
+    if (filters.facilityId !== undefined && filters.facilityId !== null && !UUID_REGEX.test(filters.facilityId)) {
+        validateSearchResults.hasErrors = true
+        validateSearchResults.errors?.push({ field: 'facilityId', errorCode: ErrorCode.INVALID_ID, httpStatus: 400 })
+    }
+}
+
+/** Facilities one openCorrectionCounts call may ask about: a moderation page holds at most 100 rows. */
+export const OPEN_CORRECTION_COUNT_IDS_MAX = 100
+
+export function validateOpenCorrectionCountIds(facilityIds: readonly string[]): Result<unknown> {
+    if (facilityIds.length > OPEN_CORRECTION_COUNT_IDS_MAX) {
+        return {
+            data: undefined,
+            hasErrors: true,
+            errors: [{ field: 'facilityIds', errorCode: ErrorCode.MAX_LIMIT, httpStatus: 400 }]
+        }
+    }
+    if (facilityIds.some(id => !UUID_REGEX.test(id))) {
+        return {
+            data: undefined,
+            hasErrors: true,
+            errors: [{ field: 'facilityIds', errorCode: ErrorCode.INVALID_ID, httpStatus: 400 }]
+        }
+    }
+    return { data: undefined, hasErrors: false, errors: [] }
 }
 
 export function validateCreateSubmissionInputs(input:gqlTypes.CreateSubmissionInput): Result<unknown> {

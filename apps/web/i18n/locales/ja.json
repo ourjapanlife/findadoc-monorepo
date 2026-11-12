@@ -295,7 +295,8 @@
     "collapse": "サイドバーを折りたたむ",
     "expand": "サイドバーを開く",
     "bookings": "予約申し込み",
-    "availability": "空き枠"
+    "availability": "空き枠",
+    "userFeedback": "利用者からの報告"
   },
   "accessPanel": {
     "loading": "権限を読み込み中…",
@@ -312,8 +313,52 @@
   "modEditSubmissionTopNav": {
     "updateAndExit": "更新して終了",
     "approve": "承認",
-    "reject": "却下",
+    "reject": "見送る",
     "update": "更新"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "{date}に報告",
+    "facilityMissing": "このクリニックを読み込めませんでした。掲載から削除された可能性があります。",
+    "openClinicPage": "クリニックのページを開く",
+    "editFacility": "この施設を編集",
+    "startReview": "確認を始める",
+    "startedReview": "確認中にしました。",
+    "reasonsHeading": "利用者が指摘している点",
+    "changesHeading": "変更前と変更後",
+    "changesHint": "承認すると、ここに表示された項目だけがクリニックに反映されます。そのほかの情報は変わりません。",
+    "before": "現在",
+    "after": "利用者の報告",
+    "added": "追加",
+    "removed": "削除",
+    "emptyValue": "掲載なし",
+    "noChanges": "利用者は新しい内容を送っていません。判断する前にクリニックの情報を確認してください。",
+    "fieldAddress": "住所",
+    "fieldPhone": "電話番号",
+    "fieldWebsite": "ウェブサイト",
+    "fieldLanguages": "クリニックの対応言語",
+    "fieldPayment": "クリニックで使える支払い方法",
+    "cityHint": "新しい住所には市区町村が必要です。一覧から選んでください。利用者が入力した市区町村名はそのまま使いません。",
+    "currentCity": "現在の市区町村: {city}",
+    "cityLabel": "新しい住所の市区町村",
+    "closedNotice": "閉院・移転: 承認してもクリニックのページは変わりません。掲載をやめる場合は施設を編集してください。",
+    "duplicateNotice": "重複: 承認しても統合はされません。2つの掲載を比べて、手作業で編集してください。",
+    "duplicateOtherListing": "もう一方の掲載",
+    "duplicateNoLink": "利用者はもう一方の掲載のリンクを送っていません。",
+    "notesHeading": "利用者のメモ",
+    "noNotes": "メモはありません。",
+    "relationHeading": "情報の確認方法",
+    "relationUnknown": "回答なし",
+    "retentionNote": "利用者のメモは、承認または見送りの180日後に削除されます。",
+    "approveConfirm": "この修正を承認しますか？ここに表示された項目だけがクリニックのページで変わります。",
+    "approveConfirmButton": "承認する",
+    "approved": "修正を承認しました。変更はクリニックに保存されました。",
+    "declineConfirm": "この修正を見送りますか？クリニックのページは変わりません。",
+    "declineConfirmButton": "見送る",
+    "declined": "修正を見送りました。",
+    "submissionMissing": "この申請を読み込めませんでした。",
+    "otherReportsHeading": "このクリニックへの未処理の報告",
+    "otherReportsHint": "同じ変更を二度確認しないよう、まとめて確認してください。",
+    "openOtherReport": "{date}の報告"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "確認待ちの投稿はありません"
@@ -540,7 +585,10 @@
     "network": "リクエストが完了しませんでした。接続を確認して、もう一度お試しください。",
     "writeOutcomeUnknown": "応答がありませんでした。変更はすでに保存されている可能性があります。もう一度送信する前に確認してください。",
     "prefectureMismatch": "英語と日本語の都道府県名が一致している必要があります。",
-    "prefectureRequired": "英語と日本語の都道府県を入力してください。"
+    "prefectureRequired": "英語と日本語の都道府県を入力してください。",
+    "correctionCityRequired": "この修正を承認する前に市区町村を選んでください。",
+    "submissionKindMismatch": "この変更は利用者からの修正には使えません。",
+    "submissionStatusChanged": "先にほかの人がこの申請を変更しました。ページを再読み込みして、もう一度確認してください。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "対応言語",
@@ -651,7 +699,9 @@
     "approvedSubmission": "承認済み",
     "rejectedSubmission": "却下",
     "createdDate": "作成日",
-    "updatedDate": "最終更新"
+    "updatedDate": "最終更新",
+    "feedbackSubmission": "報告",
+    "moreReportsOnClinic": "このクリニックに他{count}件"
   },
   "settingsPage": {
     "heading": "設定",

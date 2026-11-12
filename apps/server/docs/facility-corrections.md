@@ -47,6 +47,36 @@ no id.
   moderator can unpublish the clinic first.
 - A status change is a compare-and-set on the current status (`SUBMISSION_STATUS_CHANGED`).
 
+### Dashboard
+
+The submissions dashboard has five queues. Each tab and each row status has an icon and a word,
+so color is never the only signal.
+
+| Tab | What it shows |
+| --- | --- |
+| New | Listings nobody has opened (`pending`, filter `isPending`) |
+| For Review | Listings a moderator is working on (`under_review`) |
+| Approved | Approved listings and corrections |
+| Rejected | Rejected listings and corrections (`rejected`) |
+| User feedback | Corrections that are `pending` or `under_review` (filter `isOpen`) |
+
+Every tab is one server filter, so each one pages and counts on the server. A correction in
+Approved or Rejected carries a Feedback tag. New and For Review show listings only, so User
+feedback is the one place to look for open corrections.
+
+A correction is never in bulk selection, on any tab: each one is approved from its review screen.
+
+A clinic can get several reports. `openCorrectionCounts(facilityIds)` returns the open corrections
+per clinic for the rows on a page, in one grouped query (at most 100 ids), and a row shows
+"+N on this clinic". The review screen lists the clinic's other open reports
+(`facilityId` and `isOpen` filters), so a moderator checks them together.
+
+A correction opens a review screen, not the listing edit form. It shows the reasons, then the
+clinic's current value next to the visitor's value for each field the visitor sent. A `WRONG_CITY`
+report shows the city picker, and the screen saves the city before it approves. `CLOSED` and
+`DUPLICATE` show what to do by hand. The review screen has no Update button, because a moderator
+does not edit what the visitor sent.
+
 ## Retention
 
 Notes are free text and can hold personal data. A correction follows the same notes rule as

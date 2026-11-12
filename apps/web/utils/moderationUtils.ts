@@ -8,14 +8,6 @@ import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissi
 import type { ServerError } from '~/typedefs/serverResponse'
 import { localeCodeFromPath, localizedPath, unlocalizedPath } from './localePath'
 
-import type { Submission } from '@findadoc/graphql'
-
-export function isNewSubmission(
-    submission: Pick<Submission, 'isApproved' | 'isRejected' | 'isUnderReview'>
-): boolean {
-    return !submission.isRejected && !submission.isApproved && !submission.isUnderReview
-}
-
 export type ModerationDashboardView
     = 'submissions' | 'facilities' | 'healthcare-professionals' | 'bookings' | 'availability'
 

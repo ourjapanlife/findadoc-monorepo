@@ -20,7 +20,12 @@ import { gqlApiUrl } from './testSetup.test.js'
 import resolvers from '../src/resolvers.js'
 import type { UserContext } from '../src/auth.js'
 import { submitFacilityCorrection } from '../src/services/facilityCorrectionService.js'
-import { searchSubmissions, updateSubmission } from '../src/services/submissionService.js'
+import {
+    countOpenCorrectionsByFacility,
+    countSubmissions,
+    searchSubmissions,
+    updateSubmission
+} from '../src/services/submissionService.js'
 import { validateFacilityCorrectionInput } from '../src/validation/validateFacilityCorrection.js'
 import { storedContactText } from '../src/corrections/facilityCorrection.js'
 import {
@@ -567,5 +572,57 @@ describe('the submissions table', () => {
 
         await expect(insert(null)).rejects.toThrow(/submissions_correction_has_reasons_check/)
         await expect(insert([])).rejects.toThrow(/submissions_correction_has_reasons_check/)
+    })
+})
+
+describe('the User feedback queue', () => {
+    it('filters to open corrections on the server, new or under review, and pages them', async () => {
+        const facilityId = await insertFacility({ published: true })
+        const fresh = await submitAndFind({ facilityId, reasons: [FacilityCorrectionReason.Closed] })
+        const reviewing = await submitAndFind({ facilityId, reasons: [FacilityCorrectionReason.Other] })
+        const declined = await submitAndFind({ facilityId, reasons: [FacilityCorrectionReason.Other] })
+        await updateSubmission(reviewing, { isUnderReview: true }, MODERATOR)
+        await updateSubmission(declined, { isRejected: true }, MODERATOR)
+
+        const filters = { kind: SubmissionKind.Correction, facilityId }
+        const open = await searchSubmissions({ ...filters, isOpen: true, limit: 50 })
+        const newOnly = await searchSubmissions({ ...filters, isPending: true, limit: 50 })
+        const firstPage = await searchSubmissions({ ...filters, isOpen: true, limit: 1, offset: 0 })
+        const openCount = await countSubmissions({ ...filters, isOpen: true })
+
+        expect(open.data.map(submission => submission.id).sort()).toEqual([fresh, reviewing].sort())
+        expect(newOnly.data.map(submission => submission.id)).toEqual([fresh])
+        expect(firstPage.data).toHaveLength(1)
+        expect(openCount.data).toBe(2)
+    })
+
+    it('refuses two status filters at once and a facility id that is not a uuid', async () => {
+        const both = await searchSubmissions({ isOpen: true, isApproved: true })
+        const badFacility = await searchSubmissions({ facilityId: 'not-a-uuid' })
+
+        expect(errorCodes(both)).toEqual([ErrorCode.INVALID_INPUT])
+        expect(errorCodes(badFacility)).toEqual([ErrorCode.INVALID_ID])
+    })
+
+    it('counts open corrections per clinic and leaves out a clinic with none', async () => {
+        const busy = await insertFacility({ published: true })
+        const quiet = await insertFacility({ published: true })
+        await submitAndFind({ facilityId: busy, reasons: [FacilityCorrectionReason.Closed] })
+        await submitAndFind({ facilityId: busy, reasons: [FacilityCorrectionReason.Other] })
+        const decided = await submitAndFind({ facilityId: busy, reasons: [FacilityCorrectionReason.Other] })
+        await updateSubmission(decided, { isRejected: true }, MODERATOR)
+
+        const result = await countOpenCorrectionsByFacility([busy, quiet])
+
+        expect(result.errors).toBeUndefined()
+        expect(result.data).toEqual([{ facilityId: busy, count: 2 }])
+    })
+
+    it('refuses more than 100 clinics or an id that is not a uuid', async () => {
+        const tooMany = await countOpenCorrectionsByFacility(Array.from({ length: 101 }, () => randomUUID()))
+        const invalid = await countOpenCorrectionsByFacility(['not-a-uuid'])
+
+        expect(errorCodes(tooMany)).toEqual([ErrorCode.MAX_LIMIT])
+        expect(errorCodes(invalid)).toEqual([ErrorCode.INVALID_ID])
     })
 })

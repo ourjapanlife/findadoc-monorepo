@@ -288,7 +288,8 @@
     "collapse": "Recolher a barra lateral",
     "expand": "Expandir a barra lateral",
     "bookings": "Reservas",
-    "availability": "Disponibilidade"
+    "availability": "Disponibilidade",
+    "userFeedback": "Retorno dos usuários"
   },
   "accessPanel": {
     "loading": "Carregando permissões…",
@@ -304,9 +305,53 @@
   },
   "modEditSubmissionTopNav": {
     "approve": "Aprovar",
-    "reject": "Rejeitar",
+    "reject": "Recusar",
     "update": "Salvar",
     "updateAndExit": "Atualizar e sair"
+  },
+  "modCorrectionReview": {
+    "reportedOn": "Relatado em {date}",
+    "facilityMissing": "Não foi possível carregar esta clínica. Ela pode ter sido removida do diretório.",
+    "openClinicPage": "Abrir a página da clínica",
+    "editFacility": "Editar este estabelecimento",
+    "startReview": "Iniciar análise",
+    "startedReview": "Marcado como em análise.",
+    "reasonsHeading": "O que o visitante diz estar errado",
+    "changesHeading": "Antes e depois",
+    "changesHint": "Ao aprovar, só estes campos são gravados na clínica. Todo o resto continua igual.",
+    "before": "Agora",
+    "after": "Segundo o visitante",
+    "added": "adicionado",
+    "removed": "removido",
+    "emptyValue": "Não informado",
+    "noChanges": "O visitante não enviou um valor novo. Verifique a clínica antes de decidir.",
+    "fieldAddress": "Endereço",
+    "fieldPhone": "Telefone",
+    "fieldWebsite": "Site",
+    "fieldLanguages": "Idiomas atendidos pela clínica",
+    "fieldPayment": "Pagamentos aceitos pela clínica",
+    "cityHint": "O novo endereço precisa de uma cidade. Escolha na lista: uma cidade digitada pelo visitante nunca é usada como cidade.",
+    "currentCity": "Cidade atual: {city}",
+    "cityLabel": "Cidade do novo endereço",
+    "closedNotice": "Fechado ou mudou: aprovar não muda nada na página da clínica. Para tirar a clínica do site, edite o estabelecimento.",
+    "duplicateNotice": "Cadastro duplicado: aprovar não une nada. Compare os dois cadastros e edite-os manualmente.",
+    "duplicateOtherListing": "O outro cadastro",
+    "duplicateNoLink": "O visitante não informou o link do outro cadastro.",
+    "notesHeading": "Nota do visitante",
+    "noNotes": "Sem nota.",
+    "relationHeading": "Como sabe",
+    "relationUnknown": "Não informado",
+    "retentionNote": "A nota do visitante é apagada 180 dias depois que a correção é aprovada ou recusada.",
+    "approveConfirm": "Aprovar esta correção? Só os campos mostrados aqui mudam na página da clínica.",
+    "approveConfirmButton": "Sim, aprovar",
+    "approved": "Correção aprovada. A alteração foi salva na clínica.",
+    "declineConfirm": "Recusar esta correção? Nada muda na página da clínica.",
+    "declineConfirmButton": "Sim, recusar",
+    "declined": "Correção recusada.",
+    "submissionMissing": "Não foi possível carregar este envio.",
+    "otherReportsHeading": "Outros relatos abertos sobre esta clínica",
+    "otherReportsHint": "Revise-os juntos, para não verificar a mesma alteração duas vezes.",
+    "openOtherReport": "Relato de {date}"
   },
   "modPanelSubmissionList": {
     "noSubmissions": "Não existem novos envios"
@@ -540,7 +585,10 @@
     "network": "A solicitação não foi concluída. Verifique a conexão e tente novamente.",
     "writeOutcomeUnknown": "Não recebemos resposta, então sua alteração pode já ter sido salva. Verifique antes de enviar de novo.",
     "prefectureMismatch": "O nome da prefeitura em inglês e em japonês precisa ser o mesmo.",
-    "prefectureRequired": "Informe a prefeitura em inglês e em japonês."
+    "prefectureRequired": "Informe a prefeitura em inglês e em japonês.",
+    "correctionCityRequired": "Escolha uma cidade antes de aprovar esta correção.",
+    "submissionKindMismatch": "Esta alteração não se aplica a uma correção de visitante.",
+    "submissionStatusChanged": "Outra pessoa alterou este envio antes. Recarregue a página e verifique de novo."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Idiomas falados",
@@ -645,7 +693,9 @@
     "approvedSubmission": "Aprovado",
     "rejectedSubmission": "Rejeitado",
     "createdDate": "Criado em",
-    "updatedDate": "Atualizado por último"
+    "updatedDate": "Atualizado por último",
+    "feedbackSubmission": "Retorno",
+    "moreReportsOnClinic": "+{count} nesta clínica"
   },
   "settingsPage": {
     "heading": "Configurações",

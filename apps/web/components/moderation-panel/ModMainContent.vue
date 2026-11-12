@@ -15,7 +15,8 @@
             class="overflow-y-auto md:h-full"
         >
             <form class="p-4 md:h-full md:overflow-y-auto">
-                <ModEditSubmissionForm />
+                <ModCorrectionReview v-if="selectedSubmissionIsCorrection" />
+                <ModEditSubmissionForm v-else-if="selectedSubmissionChecked" />
             </form>
         </div>
         <div
@@ -67,12 +68,13 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { computed, nextTick, onMounted, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useModerationScreenStore, ModerationScreen } from '~/stores/moderationScreenStore'
 import { SelectedModerationListView, useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { isModerationSettingsView } from '~/utils/moderationView'
+import { isCorrection } from '~/utils/moderationSubmissionStatus'
 import { useBookingSubmissionsStore } from '~/stores/bookingSubmissionsStore'
 
 const route = useRoute()
@@ -91,6 +93,25 @@ const selectedViewQuery = computed(() => {
 })
 const isSettingsView = computed(() => isModerationSettingsView(selectedViewQuery.value))
 const isAvailabilityView = computed(() => selectedViewQuery.value === 'availability')
+
+// A visitor correction opens the before → after review, a listing opens the edit form (#22).
+// The kind is known only once the submission is loaded, so neither screen mounts before that.
+const selectedSubmissionChecked = ref(false)
+const selectedSubmissionIsCorrection = computed(() => selectedSubmissionChecked.value
+  && moderationSubmissionsStore.selectedSubmissionData !== undefined
+  && isCorrection(moderationSubmissionsStore.selectedSubmissionData))
+
+// Two quick clicks start two loads. Only the last one may mark the screen as loaded.
+let submissionLoads = 0
+
+async function loadSelectedSubmission(submissionId: string) {
+    const load = ++submissionLoads
+    selectedSubmissionChecked.value = false
+    await moderationSubmissionsStore.loadSelectedSubmission(submissionId)
+    if (load === submissionLoads) {
+        selectedSubmissionChecked.value = true
+    }
+}
 
 function syncSelectedModerationViewFromQuery() {
     if (isSettingsView.value) {
@@ -138,6 +159,7 @@ const setActiveScreenBasedOnRoute = async () => {
         case 'edit-submission':
             moderationScreenStore.setActiveScreen(ModerationScreen.EditSubmission)
             moderationSubmissionsStore.selectedSubmissionId = selectedIdFromModSubmissionList.value
+            await loadSelectedSubmission(selectedIdFromModSubmissionList.value)
             break
         case 'edit-facility':
             moderationScreenStore.setActiveScreen(ModerationScreen.EditFacility)

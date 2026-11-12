@@ -10,6 +10,7 @@
             @click.stop
         >
             <input
+                v-if="rowSelectable"
                 type="checkbox"
                 :checked="selected"
                 :aria-label="t('moderationTable.selectRow', { name: row.cells[row.linkColumn] ?? '' })"
@@ -38,14 +39,22 @@
                 v-else-if="column.id === 'status'"
                 class="flex flex-wrap gap-1"
             >
-                <span
+                <template
                     v-for="badge in row.badges"
                     :key="badge.label"
-                    class="rounded-full px-2 py-0.5 text-xs text-primary-inverted"
-                    :class="badge.className"
                 >
-                    {{ badge.label }}
-                </span>
+                    <ModStatusPill
+                        v-if="badge.pill"
+                        :pill="badge.pill"
+                    />
+                    <span
+                        v-else
+                        class="rounded-full px-2 py-0.5 text-xs text-primary-inverted"
+                        :class="badge.className"
+                    >
+                        {{ badge.label }}
+                    </span>
+                </template>
             </div>
             <span v-else>{{ row.cells[column.id] }}</span>
         </td>
@@ -60,6 +69,8 @@ const props = defineProps<{
     columns: ModerationTableColumn[]
     rowNumber: number
     selectable: boolean
+    /** The column stays for alignment; only the checkbox is left out. */
+    rowSelectable: boolean
     selected: boolean
 }>()
 
