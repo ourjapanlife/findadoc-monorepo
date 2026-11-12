@@ -12,6 +12,14 @@ import {
 } from '@/utils/sitemapDirectory'
 import { Locale, Specialty } from '@findadoc/graphql'
 
+// Outside generate, the sitemap reads the official city list from the API. A unit test must not
+// call production: the request made this file time out on a slow runner. With no official list,
+// hub names stay as stored, which is what these tests check.
+vi.mock('@/utils/cityOptions', async importOriginal => ({
+    ...await importOriginal<typeof import('@/utils/cityOptions')>(),
+    fetchCities: vi.fn(async () => [])
+}))
+
 function defaultLocaleEntries<T extends { loc: string, lastmod?: string }>(
     urls: readonly T[]
 ): Array<{ loc: string, lastmod?: string }> {
