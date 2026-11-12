@@ -4,6 +4,12 @@ A visitor can report an error on a published clinic page (#22). The report is a 
 `submissions` with `kind = 'correction'` and `facilities_id` set to that clinic. Every other
 submission is `kind = 'listing'`.
 
+A `CONFIRMED` clinic shows a small "See an error? Let us know" link. Any other clinic shows the
+"Help us confirm this listing" card. The clinics entered by hand before the government data import
+are confirmed by `backfill:confirm-facilities` (`utils/backfillConfirmFacilities.ts`). It only
+moves `UNVERIFIED` rows that have a city and a `MANUAL` or empty source, so imported rows stay
+unverified and get the card. `UNVERIFIED_LOCATION` rows are left alone.
+
 ## What the visitor sends
 
 `submitFacilityCorrection` takes the facility id, at least one reason, and only the fields the
