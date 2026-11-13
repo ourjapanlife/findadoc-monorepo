@@ -180,11 +180,22 @@ paths:
   /api/specialties:
     get:
       operationId: listSpecialties
-      summary: List all medical specialties
-      description: Returns all valid values for the specialties filter.
+      summary: List medical specialties and their categories
+      description: >-
+        Returns the valid values for the specialties filter, with English and Japanese names,
+        and the categories that group them (for example MENTAL_HEALTH holds PSYCHIATRY).
+        Search filters on specialties, not categories: to search a category, pass its specialty codes.
+      parameters:
+        - name: category
+          in: query
+          required: false
+          description: Only the specialties in this category, and only this category.
+          schema:
+            type: string
+            enum: [CHILDRENS_HEALTH, COSMETIC_AND_PLASTIC_SURGERY, DENTAL, DERMATOLOGY, ENT, EYE_AND_VISION, MENS_HEALTH, MENTAL_HEALTH, PHYSICAL_THERAPY, PRIMARY_CARE, SPORTS_AND_REHAB, WOMENS_HEALTH]
       responses:
         '200':
-          description: All specialties.
+          description: Specialties and categories.
           content:
             application/json:
               schema:
@@ -192,20 +203,37 @@ paths:
                 properties:
                   count:
                     type: integer
+                    description: Number of specialties returned.
                   specialties:
                     type: array
                     items:
-                      type: string
+                      $ref: '#/components/schemas/Specialty'
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SpecialtyCategory'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '502':
           $ref: '#/components/responses/UpstreamError'
   /api/languages:
     get:
       operationId: listLanguages
-      summary: List all spoken languages
-      description: Returns all valid values for the spokenLanguages filter, with human-readable labels.
+      summary: List spoken languages
+      description: >-
+        Returns the valid values for the spokenLanguages filter, with names in English, Japanese,
+        and the language itself. Only codes with published true are search filters; by default only those are listed.
+      parameters:
+        - name: includeUnpublished
+          in: query
+          required: false
+          description: Also list language codes that are not search filters.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
-          description: All languages.
+          description: Languages.
           content:
             application/json:
               schema:
@@ -216,18 +244,21 @@ paths:
                   languages:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        label:
-                          type: string
+                      $ref: '#/components/schemas/Language'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '502':
           $ref: '#/components/responses/UpstreamError'
 components:
   responses:
     NotFound:
       description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: A query parameter has a value the route does not accept.
       content:
         application/json:
           schema:
@@ -377,3 +408,49 @@ components:
           description: >-
             Whether the clinic takes Japanese public health insurance. Null is
             unknown. NOT_ACCEPTED means the visit is self-pay.
+    Specialty:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Value for the specialties filter, e.g. PSYCHIATRY.
+        nameEn:
+          type: string
+        nameJa:
+          type: string
+        categories:
+          type: array
+          description: Categories this specialty is grouped under. May be empty.
+          items:
+            type: string
+    SpecialtyCategory:
+      type: object
+      properties:
+        code:
+          type: string
+          description: A category code, e.g. MENTAL_HEALTH.
+        nameEn:
+          type: string
+        nameJa:
+          type: string
+        specialties:
+          type: array
+          description: Specialty codes in this category.
+          items:
+            type: string
+    Language:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Value for the spokenLanguages filter, e.g. en_US.
+        nameEn:
+          type: string
+        nameJa:
+          type: string
+        nameNative:
+          type: string
+          description: The language in its own name, e.g. 日本語.
+        published:
+          type: boolean
+          description: True when the code is a search filter. Other codes return no results.
