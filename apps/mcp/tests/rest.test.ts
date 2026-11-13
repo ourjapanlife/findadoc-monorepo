@@ -12,6 +12,11 @@ import { registerRestRoutes } from '../src/rest.js'
 
 const mockRequest = vi.mocked(gqlClient.request)
 
+// request() is overloaded, so the mock types each call as the one-argument form. The variables are the second.
+function variablesOf(call: number): unknown {
+    return (mockRequest.mock.calls[call] as unknown[])[1]
+}
+
 describe('REST routes', () => {
     let app: FastifyInstance
 
@@ -57,13 +62,59 @@ describe('REST routes', () => {
         expect(res.json().nameEn).toBe('A-ONE Dental Clinic')
     })
 
-    it('GET /api/specialties returns the enum list', async () => {
-        mockRequest.mockResolvedValueOnce({ __type: { enumValues: [{ name: 'DENTISTRY' }] } })
+    it('GET /api/specialties returns specialties and categories with labels', async () => {
+        const dentistry = { code: 'DENTISTRY', nameEn: 'Dentist', nameJa: '歯科', categories: ['DENTAL'] }
+        const dental = { code: 'DENTAL', nameEn: 'Dental', nameJa: '歯科', specialties: ['DENTISTRY'] }
+
+        mockRequest.mockResolvedValueOnce({ specialties: [dentistry], specialtyCategories: [dental] })
 
         const res = await app.inject({ method: 'GET', url: '/api/specialties' })
 
         expect(res.statusCode).toBe(200)
-        expect(res.json()).toEqual({ count: 1, specialties: ['DENTISTRY'] })
+        expect(res.json()).toEqual({ count: 1, specialties: [dentistry], categories: [dental] })
+    })
+
+    it('GET /api/specialties filters by category', async () => {
+        mockRequest.mockResolvedValueOnce({
+            specialties: [
+                { code: 'DENTISTRY', nameEn: 'Dentist', nameJa: '歯科', categories: ['DENTAL'] },
+                { code: 'PSYCHIATRY', nameEn: 'Psychiatrist', nameJa: '精神科・心療内科', categories: ['MENTAL_HEALTH'] }
+            ],
+            specialtyCategories: [
+                { code: 'DENTAL', nameEn: 'Dental', nameJa: '歯科', specialties: ['DENTISTRY'] },
+                { code: 'MENTAL_HEALTH', nameEn: 'Mental Health', nameJa: 'メンタルヘルス', specialties: ['PSYCHIATRY'] }
+            ]
+        })
+
+        const res = await app.inject({ method: 'GET', url: '/api/specialties?category=MENTAL_HEALTH' })
+
+        expect(res.statusCode).toBe(200)
+        expect(res.json().specialties.map((specialty: { code: string }) => specialty.code)).toEqual(['PSYCHIATRY'])
+        expect(res.json().categories.map((category: { code: string }) => category.code)).toEqual(['MENTAL_HEALTH'])
+    })
+
+    it('GET /api/specialties refuses an unknown category without calling the API', async () => {
+        const res = await app.inject({ method: 'GET', url: '/api/specialties?category=NOPE' })
+
+        expect(res.statusCode).toBe(400)
+        expect(mockRequest).not.toHaveBeenCalled()
+    })
+
+    it('GET /api/languages asks for published languages unless includeUnpublished is true', async () => {
+        mockRequest.mockResolvedValue({ languages: [] })
+
+        expect((await app.inject({ method: 'GET', url: '/api/languages' })).statusCode).toBe(200)
+        expect(variablesOf(0)).toEqual({ publishedOnly: true })
+
+        await app.inject({ method: 'GET', url: '/api/languages?includeUnpublished=true' })
+        expect(variablesOf(1)).toEqual({ publishedOnly: false })
+    })
+
+    it('GET /api/languages refuses an includeUnpublished that is not true or false', async () => {
+        const res = await app.inject({ method: 'GET', url: '/api/languages?includeUnpublished=yes' })
+
+        expect(res.statusCode).toBe(400)
+        expect(mockRequest).not.toHaveBeenCalled()
     })
 
     it('returns 502 when the upstream GraphQL call fails', async () => {
