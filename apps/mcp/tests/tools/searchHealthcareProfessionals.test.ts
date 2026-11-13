@@ -36,7 +36,7 @@ describe('search_healthcare_professionals', () => {
                     names: [{ firstName: 'Taro', middleName: '', lastName: 'Yamada', locale: 'ja_JP' }],
                     spokenLanguages: ['ja_JP', 'en_US'],
                     degrees: ['MD'],
-                    specialties: ['GENERAL_PRACTICE'],
+                    specialties: ['GENERAL_MEDICINE'],
                     facilityIds: ['facility-1']
                 }
             ],
