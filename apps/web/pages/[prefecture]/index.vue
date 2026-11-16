@@ -58,7 +58,7 @@
                         :to="entry.path"
                         class="chip h-8 px-3 text-sm"
                     >
-                        {{ entry.label }}
+                        {{ facetLabel(entry) }}
                     </NuxtLink>
                 </li>
             </ul>
@@ -83,7 +83,7 @@
                         :to="entry.path"
                         class="chip h-8 px-3 text-sm"
                     >
-                        {{ t('hubPage.languageChip', { language: entry.label }) }}
+                        {{ t('hubPage.languageChip', { language: facetLabel(entry) }) }}
                     </NuxtLink>
                 </li>
             </ul>
@@ -103,15 +103,16 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import generatedPrefectureHubs from '#generated-prefecture-hubs'
 import { createError, navigateTo, useAsyncData, useHead, useRoute } from '#imports'
-import { isJapaneseLocale } from '~/utils/activeLocale'
-import { canonicalPathMatches, slugifySegment } from '~/utils/clinicPath'
+import { canonicalPathMatches, facilityDocumentTitle, slugifySegment } from '~/utils/clinicPath'
 import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
 import { loadPrefectureFacets, loadPrefectureHub } from '~/utils/hubDirectory'
 import { prefectureHubCrumbs } from '~/utils/directoryLinks'
 import { breadcrumbListJsonLd, jsonLdScript } from '~/utils/structuredData'
-import { hubPrefectureDocumentTitle, isReservedHubSegment } from '~/utils/hubPath'
+import { isReservedHubSegment } from '~/utils/hubPath'
+import { hubFacetLabel, hubPlaceName } from '~/utils/hubLabels'
 import { formatPageTitle } from '~/utils/site'
 import type { HubCity } from '~/utils/hubIndex'
+import type { FacetLinkEntry } from '~/utils/directoryLinks'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -144,14 +145,11 @@ if (!data.value) {
 
 const prefecture = computed(() => data.value!)
 const facets = computed(() => facetData.value ?? { specialties: [], languages: [] })
-const isJapanese = computed(() => isJapaneseLocale(locale.value))
-
-const displayPrefecture = computed(() => {
-    if (isJapanese.value) {
-        return prefecture.value.prefectureJa || prefecture.value.prefectureEn
-    }
-    return prefecture.value.prefectureEn
-})
+const displayPrefecture = computed(() => hubPlaceName(
+    prefecture.value.prefectureEn,
+    prefecture.value.prefectureJa,
+    locale.value
+))
 
 const heading = computed(() => t('hubPage.prefectureHeading', { prefecture: displayPrefecture.value }))
 const crumbs = computed(() => prefectureHubCrumbs({
@@ -159,14 +157,18 @@ const crumbs = computed(() => prefectureHubCrumbs({
     prefectureLabel: displayPrefecture.value
 }))
 const facilityCountText = computed(() => t('hubPage.facilityCount', prefecture.value.facilities.length))
-const documentTitle = computed(() => hubPrefectureDocumentTitle(displayPrefecture.value))
+// The heading is translated, so the title is too (English stays "Healthcare in Tokyo").
+const documentTitle = computed(() => facilityDocumentTitle(heading.value))
 const brandedTitle = computed(() => formatPageTitle(documentTitle.value))
 const metaDescription = computed(() => t('hubPage.prefectureMeta', { prefecture: displayPrefecture.value }))
 
+/** A facet in the reader's language ("英語", "牙医"). English keeps the indexed label. */
+function facetLabel(entry: FacetLinkEntry): string {
+    return hubFacetLabel(entry, locale.value, t)
+}
+
 function cityLabel(city: HubCity): string {
-    return isJapanese.value
-        ? (city.cityJa || city.cityEn)
-        : city.cityEn
+    return hubPlaceName(city.cityEn, city.cityJa, locale.value)
 }
 
 if (!canonicalPathMatches(route.path, data.value.path)) {

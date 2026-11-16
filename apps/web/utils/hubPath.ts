@@ -1,4 +1,4 @@
-import { facilityDocumentTitle, locationCitySlug, locationPrefectureSlug } from './clinicPath'
+import { locationCitySlug, locationPrefectureSlug } from './clinicPath'
 import { LOCALE_CODES } from './localePath'
 
 /**
@@ -65,14 +65,6 @@ export function cityHubPath(
     cityEn: string | null | undefined
 ): string | undefined {
     return cityHubPathFromSlugs(locationPrefectureSlug(prefectureEn), locationCitySlug(cityEn))
-}
-
-export function hubPrefectureDocumentTitle(prefecture: string): string {
-    return facilityDocumentTitle(`Healthcare in ${prefecture}`)
-}
-
-export function hubCityDocumentTitle(city: string, prefecture: string): string {
-    return facilityDocumentTitle(`Healthcare in ${city}, ${prefecture}`)
 }
 
 /**

@@ -2,6 +2,7 @@ import type { Locale, Specialty } from '@findadoc/graphql'
 import type { FacetPage } from './facetIndex'
 import { locationPrefectureSlug } from './clinicPath'
 import { prefectureHubPath, cityHubPath, isIndexableCityHub } from './hubPath'
+import { hubFacetLabelSource, type HubFacetLabelSource } from './hubLabels'
 
 /**
  * Cross-links and breadcrumb trails for directory pages (#1794, #1828).
@@ -23,6 +24,8 @@ export type RelatedFacetLink = {
     path: string
     label: string
     labelJa: string
+    /** Set on a facet chip so the page can name it in the reader's language (`hubFacetLabel`). */
+    facet?: HubFacetLabelSource
 }
 
 export type RelatedCityLink = {
@@ -175,7 +178,8 @@ export function relatedFacetLinks(
         .map(facet => ({
             path: facet.path,
             label: facet.label,
-            labelJa: facet.label
+            labelJa: facet.label,
+            facet: hubFacetLabelSource(facet)
         }))
 
     const nearby: FacetLinkEntry[] = []

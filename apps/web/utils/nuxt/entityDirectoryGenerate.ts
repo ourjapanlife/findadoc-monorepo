@@ -6,7 +6,8 @@ import {
     writeClinicPrerenderCache
 } from '../clinicPrerender'
 import { prefectureHubPaths } from '../hubIndex'
-import { DIRECTORY_PRERENDER_LOCALE_CODES, withDirectoryLocaleVariants } from '../localePath'
+import { withDirectoryLocaleVariants } from '../directoryLocales'
+import { DIRECTORY_PRERENDER_LOCALE_CODES, HUB_PRERENDER_LOCALE_CODES } from '../localePath'
 import { PRERENDER_DIRECTORY_FILE_ENV, readPrerenderDirectorySnapshot } from '../prerenderDirectorySnapshot'
 import { isPrimaryPrerenderShard, pathsForShard, prerenderShardFromEnv } from '../prerenderShard'
 
@@ -220,9 +221,9 @@ export async function applyEntityDirectoryToNitro(nitroConfig: NitroConfig) {
     // Shard 0 renders the pages every build has (home, about, sitemap). The others render only
     // their share of the directory.
     const existing = isPrimaryPrerenderShard(shard) ? nitroConfig.prerender.routes ?? [] : []
-    // Slugs stay romanised (#1796). Only DIRECTORY_PRERENDER_LOCALE_CODES are
-    // written to disk. Every locale would multiply the directory pages. The shard is picked
-    // before the locale prefix, so a page's English and Japanese copies render in one run.
+    // Slugs stay romanised (#1796). Clinic and doctor pages are written for
+    // DIRECTORY_PRERENDER_LOCALE_CODES, hubs and facets for HUB_PRERENDER_LOCALE_CODES. The shard
+    // is picked before the locale prefix, so every locale copy of a page renders in one run.
     const entityPaths = withDirectoryLocaleVariants(pathsForShard([
         ...built.paths,
         ...built.professionalPaths,
@@ -230,6 +231,6 @@ export async function applyEntityDirectoryToNitro(nitroConfig: NitroConfig) {
         ...built.facetPaths
     ], shard))
     const shardLabel = shard ? ` in shard ${shard.index}/${shard.count}` : ''
-    console.warn(`[clinic prerender] ${built.paths.length} clinic pages, ${built.professionalPaths.length} doctor pages, ${built.hubPaths.length} hub pages, ${built.facetPaths.length} facet pages for ${DIRECTORY_PRERENDER_LOCALE_CODES.join(', ')}; ${entityPaths.length} routes${shardLabel}`)
+    console.warn(`[clinic prerender] ${built.paths.length} clinic pages, ${built.professionalPaths.length} doctor pages, ${built.hubPaths.length} hub pages, ${built.facetPaths.length} facet pages; clinics and doctors in ${DIRECTORY_PRERENDER_LOCALE_CODES.join(', ')}, hubs and facets in ${HUB_PRERENDER_LOCALE_CODES.join(', ')}; ${entityPaths.length} routes${shardLabel}`)
     nitroConfig.prerender.routes = [...existing, ...entityPaths]
 }
