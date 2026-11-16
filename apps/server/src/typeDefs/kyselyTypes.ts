@@ -103,6 +103,8 @@ export interface HpsTable {
     additional_credentials: ColumnType<gqlTypes.Degree[], gqlTypes.Degree[], gqlTypes.Degree[]>
     license_review: string | null
     license_recommendation: string | null
+    /** NEEDS_REVIEW or CONFIRMED, null when nothing needs checking (#282). */
+    name_review: string | null
     specialties: ColumnType<gqlTypes.Specialty[], gqlTypes.Specialty[], gqlTypes.Specialty[]>
     spoken_languages: ColumnType<gqlTypes.Locale[], gqlTypes.Locale[], gqlTypes.Locale[]>
     email: string | null

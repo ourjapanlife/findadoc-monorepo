@@ -326,7 +326,8 @@
     "openClinicDashboard": "Mở bảng điều khiển phòng khám",
     "chooseClinic": "Chọn phòng khám",
     "noBookingClinics": "Chưa có phòng khám nào nhận đặt lịch",
-    "clinicsLoadError": "Không thể tải danh sách phòng khám"
+    "clinicsLoadError": "Không thể tải danh sách phòng khám",
+    "nameReview": "Cần kiểm tra tên"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Xóa",
@@ -397,15 +398,11 @@
     "noSubmissions": "Không có bài gửi nào đang chờ xử lý"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "Thêm tên theo địa phương",
-    "addAnotherName": "Thêm tên khác",
-    "removeName": "Xóa tên",
     "healthcareProfessionalMedicalInfoHeading": "Thông tin Y tế của Chuyên gia Chăm sóc Sức khỏe.",
     "healthcareProfessionalNameHeading": "Tên Chuyên gia Chăm sóc Sức khỏe",
     "labelHealthcareProfessionalFirstName": "Tên",
     "labelHealthcareProfessionalLastName": "Họ",
     "labelHealthcareProfessionalMiddleName": "Tên đệm",
-    "labelHealthcareProfessionalNameLocale": "Địa phương tên",
     "placeholderTextHealthcareProfessionalFirstName": "Ví.dụ. John",
     "placeholderTextHealthcareProfessionalLastName": "Ví.dụ. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "Ví.dụ. Bronson",
@@ -418,22 +415,12 @@
     "removeFacility": "Bỏ {name}",
     "noFacilitiesWereFound": "Không tìm thấy cơ sở",
     "noFacilitiesLinked": "Chưa có cơ sở nào được liên kết. Tìm ở trên để thêm.",
-    "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextSpecialties": "Tìm theo chuyên khoa",
     "placeholderTextDegrees": "Tìm theo học vị",
     "placeholderTextLocales": "Tìm theo ngôn ngữ",
     "noSpecialtiesWereFound": "Không tìm thấy chuyên khoa",
     "noDegreesWereFound": "Không tìm thấy học vị",
     "noLocalesWereFound": "Không tìm thấy ngôn ngữ",
-    "delete": "Xóa vĩnh viễn",
-    "exit": "Thoát",
-    "missingFirstName": "Chưa nhập tên",
-    "missingLastName": "Chưa nhập họ",
-    "missingLocale": "Chưa chọn ngôn ngữ",
-    "oneNameNecessary": "Cần ít nhất một tên",
-    "save": "Lưu",
-    "update": "Cập nhật",
-    "charactersOfLanguageDoNotMatchNameLocale": "Ký tự trong tên không hợp lệ với ngôn ngữ đã chọn",
     "labelAdditionalNotesForPatients": "Ghi chú thêm cho người bệnh",
     "placeholderAdditionalNotesForPatients": "vd. bác sĩ nói tiếng Anh chỉ có mặt từ 14 giờ đến 16 giờ",
     "selectPrimaryLicense": "Giấy phép chính",
@@ -445,7 +432,14 @@
     "licenseRecommendationDental": "Gợi ý: một giấy phép nha khoa. Người bệnh vẫn thấy các học vị đã lưu cho đến khi bạn chọn.",
     "licenseRecommendationConfirm": "Đang lưu nhiều hơn một giấy phép lâm sàng. Hãy chọn giấy phép chính hoặc giữ cả hai.",
     "storedHiddenDegrees": "Cũng được lưu và vẫn hiện trên trang công khai: {degrees}",
-    "listingShowsSavedDegrees": "Trang công khai hiển thị mọi học vị được lưu ở đây."
+    "listingShowsSavedDegrees": "Trang công khai hiển thị mọi học vị được lưu ở đây.",
+    "romajiName": "Tên bằng romaji",
+    "japaneseName": "Tên bằng tiếng Nhật",
+    "japaneseNameHint": "Kanji hoặc kana. Tên không phải tiếng Nhật thì viết bằng katakana.",
+    "placeholderTextJapaneseLastName": "Ví.dụ. 山田",
+    "placeholderTextJapaneseFirstName": "Ví.dụ. 花子",
+    "nameNeedsReview": "Hãy kiểm tra các tên này. Một tên được điền tự động hoặc vẫn còn thiếu.",
+    "otherLocaleNamesRemoved": "Tên bằng các ngôn ngữ khác sẽ bị xóa khi bạn lưu."
   },
   "modFacilitySection": {
     "addresses": "Địa chỉ.",
@@ -557,7 +551,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Không thể hoàn tất. Vui lòng thử lại.",
-    "englishNameRequired": "Nhân viên y tế cần có tên bằng tiếng Anh.",
     "facilityFieldsIncomplete": "Hãy điền các mục bắt buộc của cơ sở y tế trước khi tiếp tục.",
     "healthcareProfessionalFieldsIncomplete": "Hãy điền các mục bắt buộc của nhân viên y tế trước khi tiếp tục.",
     "serverUnavailable": "Đã xảy ra sự cố từ phía chúng tôi. Hãy thử lại.",
@@ -587,7 +580,10 @@
     "prefectureRequired": "Hãy thêm tỉnh bằng tiếng Anh và tiếng Nhật.",
     "correctionCityRequired": "Hãy chọn thành phố trước khi duyệt bản sửa này.",
     "submissionKindMismatch": "Thay đổi này không áp dụng cho bản sửa của khách truy cập.",
-    "submissionStatusChanged": "Người khác đã thay đổi nội dung gửi này trước. Hãy tải lại trang và kiểm tra lại."
+    "submissionStatusChanged": "Người khác đã thay đổi nội dung gửi này trước. Hãy tải lại trang và kiểm tra lại.",
+    "professionalNamesRequired": "Nhân viên y tế cần có tên bằng romaji và tên bằng tiếng Nhật.",
+    "professionalNameLocaleNotAllowed": "Nhân viên y tế chỉ có tên bằng romaji và tên bằng tiếng Nhật.",
+    "japaneseMiddleNameNotAllowed": "Tên tiếng Nhật không có tên đệm."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Ngôn ngữ sử dụng",

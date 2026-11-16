@@ -114,6 +114,7 @@ export const professionalSelection = selection<HealthcareProfessional>({
     id: true,
     licenseRecommendation: true,
     licenseReview: true,
+    nameReview: true,
     names: block('names', nameSelection),
     primaryLicense: true,
     specialties: true,

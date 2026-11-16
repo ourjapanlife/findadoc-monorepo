@@ -143,7 +143,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "작업을 완료하지 못했습니다. 다시 시도해 주세요.",
-    "englishNameRequired": "의료인에게는 영문 이름이 필요합니다.",
     "facilityFieldsIncomplete": "계속하기 전에 필수 의료기관 항목을 입력해 주세요.",
     "healthcareProfessionalFieldsIncomplete": "계속하기 전에 필수 의료인 항목을 입력해 주세요.",
     "serverUnavailable": "서버에서 문제가 발생했습니다. 다시 시도해 주세요.",
@@ -173,7 +172,10 @@
     "prefectureRequired": "영문과 일본어로 광역지자체를 입력해 주세요.",
     "correctionCityRequired": "이 수정을 승인하기 전에 시를 선택하세요.",
     "submissionKindMismatch": "이 변경은 방문자 수정에는 적용되지 않습니다.",
-    "submissionStatusChanged": "다른 사람이 먼저 이 제출을 변경했습니다. 페이지를 새로고침하고 다시 확인하세요."
+    "submissionStatusChanged": "다른 사람이 먼저 이 제출을 변경했습니다. 페이지를 새로고침하고 다시 확인하세요.",
+    "professionalNamesRequired": "의료인에게는 로마자 이름과 일본어 이름이 필요합니다.",
+    "professionalNameLocaleNotAllowed": "의료인의 이름은 로마자 이름과 일본어 이름 두 가지뿐입니다.",
+    "japaneseMiddleNameNotAllowed": "일본어 이름에는 중간 이름이 없습니다."
   },
   "footer": {
     "poweredBy": "{name} 제공",
@@ -451,7 +453,8 @@
     "openClinicDashboard": "클리닉 대시보드 열기",
     "chooseClinic": "클리닉 선택",
     "noBookingClinics": "아직 예약을 받는 클리닉이 없습니다",
-    "clinicsLoadError": "클리닉을 불러올 수 없습니다"
+    "clinicsLoadError": "클리닉을 불러올 수 없습니다",
+    "nameReview": "이름 확인이 필요함"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "삭제",
@@ -522,30 +525,17 @@
     "noSubmissions": "대기 중인 제보가 없습니다"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "새 이름 추가",
-    "addAnotherName": "이름 하나 더 추가",
-    "removeName": "이름 삭제",
-    "delete": "영구 삭제",
     "errorMessageHealthcareProfessionalId": "의료인 ID를 찾을 수 없습니다",
-    "exit": "나가기",
     "healthcareProfessionalMedicalInfoHeading": "의료인 상세 정보",
     "healthcareProfessionalNameHeading": "의료인 이름",
     "labelHealthcareProfessionalFirstName": "이름",
     "labelHealthcareProfessionalLastName": "성",
     "labelHealthcareProfessionalMiddleName": "중간 이름",
-    "labelHealthcareProfessionalNameLocale": "이름 언어",
     "labelAdditionalNotesForPatients": "환자를 위한 추가 안내",
-    "missingFirstName": "이름이 입력되지 않았습니다",
-    "missingLastName": "성이 입력되지 않았습니다",
-    "missingLocale": "언어가 선택되지 않았습니다",
-    "charactersOfLanguageDoNotMatchNameLocale": "선택한 언어에서 의료인 이름의 문자가 올바르지 않습니다",
-    "nameForLocaleAlreadyExists": "선택한 언어의 이름이 이미 있습니다. 기존 이름을 수정하거나 다른 언어를 선택해 주세요.",
-    "oneNameNecessary": "의료인에게는 이름이 하나 이상 필요합니다",
     "placeholderTextHealthcareProfessionalFirstName": "예: John",
     "placeholderTextHealthcareProfessionalLastName": "예: Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "예: Bronson",
     "placeholderAdditionalNotesForPatients": "예: 영어 가능 의사는 14–16시에만 진료",
-    "save": "저장",
     "selectDegrees": "학위",
     "selectLocales": "구사 언어",
     "selectSpecialties": "전문 과목",
@@ -560,7 +550,6 @@
     "noSpecialtiesWereFound": "전문 과목을 찾을 수 없습니다",
     "noDegreesWereFound": "학위를 찾을 수 없습니다",
     "noLocalesWereFound": "언어를 찾을 수 없습니다",
-    "update": "업데이트",
     "selectPrimaryLicense": "주 면허",
     "selectAdditionalCredentials": "추가 자격",
     "placeholderPrimaryLicense": "주 면허를 선택하세요",
@@ -570,7 +559,14 @@
     "licenseRecommendationDental": "제안: 치과 면허를 하나로 정리. 선택할 때까지 저장된 학위가 공개됩니다.",
     "licenseRecommendationConfirm": "임상 면허가 둘 이상 저장되어 있습니다. 주 면허를 고르거나 둘 다 유지하세요.",
     "storedHiddenDegrees": "함께 저장되어 공개 목록에 계속 표시됨: {degrees}",
-    "listingShowsSavedDegrees": "공개 목록에는 여기에 저장된 모든 학위가 표시됩니다."
+    "listingShowsSavedDegrees": "공개 목록에는 여기에 저장된 모든 학위가 표시됩니다.",
+    "romajiName": "로마자 이름",
+    "japaneseName": "일본어 이름",
+    "japaneseNameHint": "한자 또는 가나. 일본 이름이 아니면 가타카나로 적어 주세요.",
+    "placeholderTextJapaneseLastName": "예: 山田",
+    "placeholderTextJapaneseFirstName": "예: 花子",
+    "nameNeedsReview": "이름을 확인해 주세요. 둘 중 하나가 자동으로 입력되었거나 아직 비어 있습니다.",
+    "otherLocaleNamesRemoved": "저장하면 다른 언어의 이름은 삭제됩니다."
   },
   "modFacilitySection": {
     "addresses": "주소",

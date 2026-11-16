@@ -60,6 +60,7 @@ describe('published language allowlist', () => {
             primary_license: null,
             additional_credentials: [],
             license_review: null,
+            name_review: null,
             license_recommendation: null,
             specialties: [],
             additional_info_for_patients: null,

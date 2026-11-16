@@ -246,7 +246,7 @@ describe('error path: validations healthcare professionals', () => {
             variables: {
                 input: {
                     facilityIds: sharedFacilityIds,
-                    names: [testData.generateLocalizedNameInput()],
+                    names: testData.generateProfessionalNames(),
                     degrees: [],
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: testData.generateSpokenLanguages(),
@@ -277,7 +277,7 @@ describe('error path: validations healthcare professionals', () => {
             variables: {
                 input: {
                     facilityIds: sharedFacilityIds,
-                    names: [testData.generateLocalizedNameInput()],
+                    names: testData.generateProfessionalNames(),
                     degrees: testData.generateDegrees(),
                     specialties: [],
                     spokenLanguages: testData.generateSpokenLanguages(),
@@ -308,7 +308,7 @@ describe('error path: validations healthcare professionals', () => {
             variables: {
                 input: {
                     facilityIds: sharedFacilityIds,
-                    names: [testData.generateLocalizedNameInput()],
+                    names: testData.generateProfessionalNames(),
                     degrees: testData.generateDegrees(),
                     specialties: testData.generateSpecialties(),
                     spokenLanguages: [],

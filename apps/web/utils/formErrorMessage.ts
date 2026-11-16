@@ -35,6 +35,10 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     CONTAINS_LATIN_CHARACTER: 'serverErrorMessages.latinInJapaneseField',
     CONTAINS_INVALID_CHARACTER: 'serverErrorMessages.invalidCharacter',
     CONTAINS_DUPLICATE_LOCAL: 'serverErrorMessages.duplicateLanguage',
+    // A professional has a romaji name and a Japanese name, and no other (#282).
+    NAME_LOCALE_REQUIRED: 'serverErrorMessages.professionalNamesRequired',
+    NAME_LOCALE_NOT_ALLOWED: 'serverErrorMessages.professionalNameLocaleNotAllowed',
+    MIDDLE_NAME_NOT_ALLOWED: 'serverErrorMessages.japaneseMiddleNameNotAllowed',
     INVALID_LANGUAGE_INPUT: 'serverErrorMessages.invalidLanguage',
     INVALID_LENGTH_NAME_TOO_LONG: 'serverErrorMessages.fieldTooLong',
     MAX_LIMIT: 'serverErrorMessages.fieldTooLong',
@@ -78,7 +82,7 @@ const FIELD_LABEL_BY_SERVER_FIELD: Readonly<Record<string, string>> = {
 
 /** Client checks that match a rule the API also enforces, or that the API does not name. */
 export const formErrorKey = {
-    englishNameRequired: 'serverErrorMessages.englishNameRequired',
+    professionalNamesRequired: 'serverErrorMessages.professionalNamesRequired',
     facilityFieldsIncomplete: 'serverErrorMessages.facilityFieldsIncomplete',
     healthcareProfessionalFieldsIncomplete: 'serverErrorMessages.healthcareProfessionalFieldsIncomplete',
     submissionAlreadyApproved: 'serverErrorMessages.submissionAlreadyApproved',

@@ -63,7 +63,7 @@ import { handleModerationResponseErrors, toastUnexpectedModerationError } from '
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import { ErrorCode } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
-import { hasEnglishLocalizedName } from '~/utils/nameUtils'
+import { hasBothProfessionalNames } from '~/utils/professionalNames'
 import { hasServerErrors, leaveToModerationDashboard, getModerationDashboardViewForScreen } from '~/utils/moderationUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 
@@ -255,14 +255,14 @@ const saveChanges = async () => {
             originalHealthcareProfessionalData.value?.names ?? []
         )
         if (namesDirty) {
-            const hasEnglishName = hasEnglishLocalizedName(
+            const hasBothNames = hasBothProfessionalNames(
                 healthcareProfessionalsStore.healthcareProfessionalSectionFields.names
             )
             if (guardWithErrorToast(
-                !hasEnglishName,
+                !hasBothNames,
                 toast,
                 t,
-                formErrorKey.englishNameRequired
+                formErrorKey.professionalNamesRequired
             )) {
                 return
             }

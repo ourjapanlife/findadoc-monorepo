@@ -186,6 +186,10 @@ A professional has one primary clinical license. PhD, MPH, and DSc are additiona
 
 The #1014 license backfill has run on production. `degrees` keeps the submitted list. MD+DO is `NEEDS_REVIEW` with recommendation `MD`. DDS+DMD is `NEEDS_REVIEW` with recommendation `one_dental_license`. A row with `license_review = CONFIRMED`, or one that already has `primary_license`, keeps it (`licenseColumnsForDegrees` in `apps/server/src/licenses/professionalLicense.ts`). A new professional is not given a license. The moderator chooses one.
 
+## Professional names
+
+A professional has two names: romaji (`en_US`) and Japanese (`ja_JP`), and no other locale (#282). `apps/server/docs/professional-names.md` is the rule. Only the romaji name has a middle name. A non-Japanese name is written in katakana. Creating, updating, and approving need both names; a submission draft may hold one. `hps.name_review = NEEDS_REVIEW` queues a name the backfill generated or could not fill. Do not guess a reading for kanji, and do not add a name dictionary dependency for it.
+
 ## Insurance
 
 Japanese public health insurance is one fact on the facility (#18): `facilities.japanese_insurance` is `ACCEPTED`, `NOT_ACCEPTED`, or null for unknown. Every facility starts unknown, including the ones that existed before the migration. Do not backfill `ACCEPTED`: private-only clinics exist. The moderation form has three choices: unknown, takes it, and does not take it (self-pay only). A self-pay-only answer may carry an optional source note in `japanese_insurance_source`: a link, or a call. The service drops the note for any other answer. The note is internal: the `Facility.japaneseInsuranceSource` resolver returns null unless the user can edit facilities. Readers only see a line when a clinic is `NOT_ACCEPTED`. A yes or an unknown shows nothing. Clinic and doctor pages are prerendered, so they re-read the answer in the browser after load (`useLiveJapaneseInsurance`). Do not store insurance on a professional, and do not bring back `UNINSURED`, international, or travel insurance as codes. Self-pay and overseas claims are explained on `/insurance`.

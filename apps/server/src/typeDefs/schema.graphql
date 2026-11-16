@@ -212,6 +212,8 @@ type HealthcareProfessional {
   licenseReview: LicenseReviewStatus
   """Suggestion for a dual license. A moderator decides whether to apply it."""
   licenseRecommendation: String
+  """NEEDS_REVIEW means the backfill guessed or could not fill one of the two names (#282)."""
+  nameReview: NameReviewStatus
   """Medical specialties practiced."""
   specialties: [Specialty!]!
   """IDs of facilities where this professional practices."""
@@ -275,6 +277,8 @@ input HealthcareProfessionalSearchFilters {
   degrees: [Degree!]
   """Only professionals in this license queue. NEEDS_REVIEW is the dual-license queue."""
   licenseReview: LicenseReviewStatus
+  """Only professionals in this name queue. NEEDS_REVIEW lists names a moderator must check (#282)."""
+  nameReview: NameReviewStatus
   """Filter by specialties."""
   specialties: [Specialty!]
   """Filter to professionals linked to at least one of these facility IDs."""
@@ -1046,6 +1050,16 @@ enum LicenseReviewStatus {
   """A moderator still needs to choose the primary license."""
   NEEDS_REVIEW
   """A moderator confirmed that more than one clinical license should stay."""
+  CONFIRMED
+}
+
+"""
+Moderator queue for a professional's two names (#282). Saving names in moderation confirms them.
+"""
+enum NameReviewStatus {
+  """The romaji or Japanese name was generated or is missing. A moderator checks it."""
+  NEEDS_REVIEW
+  """A moderator saved both names."""
   CONFIRMED
 }
 

@@ -244,31 +244,6 @@ function sanitizeLocales(locales: (gqlTypes.Locale | null | undefined)[] | null 
 }
 
 /**
- * Splits a full name string into first, last, and optional middle name parts.
- * If only one part is found, assigns 'Unknown' as a fallback last name.
- * @example
- * splitPersonName("John Smith") → { firstName: "John", lastName: "Smith" }
- * splitPersonName("Madonna") → { firstName: "Madonna", lastName: "Unknown" }
- */
-function splitPersonName(full: string): { firstName: string; lastName: string; middleName?: string } {
-    // Split by any whitespace and remove empty parts
-    const parts = full.trim().split(/\s+/).filter(Boolean)
-
-    if (parts.length === 1) {
-        return { firstName: parts[0], lastName: 'Unknown' }
-    }
-    if (parts.length === 2) {
-        return { firstName: parts[0], lastName: parts[1] }
-    }
-    // For 3+ parts: treat the first as firstName, last as lastName, and join the rest as middleName
-    return {
-        firstName: parts[0],
-        lastName: parts[parts.length - 1],
-        middleName: parts.slice(1, -1).join(' ')
-    }
-}
-
-/**
  * Applies filtering logic to a query on the `submissions` table.
  * Filter definitions live in SUBMISSION_*_QUERY_FILTERS and SUBMISSION_STATUS_FILTERS.
  */
@@ -787,61 +762,20 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
         return undefined
     }
 
+    // Approval already required both names, degrees, and specialties on this professional (#282).
+    // The submitter's free-text name is not used: it is one name in an unknown script.
     let hpInput: gqlTypes.CreateHealthcareProfessionalInput | null = null
+    const firstHp = current.healthcare_professionals_partial?.[0]
 
-    // Case A: healthcare_professionals_partial
-    if (current.healthcare_professionals_partial && current.healthcare_professionals_partial.length > 0) {
-        const firstHp = current.healthcare_professionals_partial[0]
-        const hasNames = Array.isArray(firstHp.names) && firstHp.names.length > 0
-
-        if (hasNames) {
-            hpInput = {
-                names: firstHp.names!,
-                spokenLanguages: sanitizeLocales(
-                    (firstHp.spokenLanguages ?? []) as (gqlTypes.Locale | null | undefined)[]
-                ),
-                degrees: firstHp.degrees ?? [],
-                specialties: firstHp.specialties ?? [],
-                additionalInfoForPatients: firstHp.additionalInfoForPatients ?? '',
-                facilityIds: [finalFacilityId]
-            }
-        } else if (current.healthcare_professional_name?.trim()) {
-            const parsed = splitPersonName(current.healthcare_professional_name.trim())
-            const localeFromSubmission = (current.spoken_languages?.[0] as gqlTypes.Locale) ?? gqlTypes.Locale.EnUs
-
-            hpInput = {
-                names: [{
-                    locale: localeFromSubmission,
-                    firstName: parsed.firstName,
-                    lastName: parsed.lastName,
-                    ...(parsed.middleName ? { middleName: parsed.middleName } : {})
-                }],
-                degrees: [],
-                specialties: [],
-                spokenLanguages: sanitizeLocales(current.spoken_languages as (gqlTypes.Locale | null | undefined)[]),
-                // Notes are the submitter's private text, not the doctor's public profile (#236).
-                // The moderator writes additionalInfoForPatients by hand.
-                additionalInfoForPatients: null,
-                facilityIds: [finalFacilityId]
-            }
-        }
-    } else if (current.healthcare_professional_name?.trim()) {
-        // Case B: Only healthcareProfessionalName
-        const parsed = splitPersonName(current.healthcare_professional_name.trim())
-        const localeFromSubmission = (current.spoken_languages?.[0] as gqlTypes.Locale) ?? gqlTypes.Locale.EnUs
-
+    if (firstHp && Array.isArray(firstHp.names) && firstHp.names.length > 0) {
         hpInput = {
-            names: [{
-                locale: localeFromSubmission,
-                firstName: parsed.firstName,
-                lastName: parsed.lastName,
-                ...(parsed.middleName ? { middleName: parsed.middleName } : {})
-            }],
-            degrees: [],
-            specialties: [],
-            spokenLanguages: sanitizeLocales(current.spoken_languages as (gqlTypes.Locale | null | undefined)[]),
-            // Notes stay private; the moderator writes the public text by hand (#236).
-            additionalInfoForPatients: null,
+            names: firstHp.names,
+            spokenLanguages: sanitizeLocales(
+                (firstHp.spokenLanguages ?? []) as (gqlTypes.Locale | null | undefined)[]
+            ),
+            degrees: firstHp.degrees ?? [],
+            specialties: firstHp.specialties ?? [],
+            additionalInfoForPatients: firstHp.additionalInfoForPatients ?? '',
             facilityIds: [finalFacilityId]
         }
     }

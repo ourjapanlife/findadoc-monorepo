@@ -143,7 +143,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Gagal. Silakan coba lagi.",
-    "englishNameRequired": "Tenaga kesehatan harus memiliki nama dalam bahasa Inggris.",
     "facilityFieldsIncomplete": "Isi kolom klinik yang wajib diisi sebelum melanjutkan.",
     "healthcareProfessionalFieldsIncomplete": "Isi kolom tenaga kesehatan yang wajib diisi sebelum melanjutkan.",
     "serverUnavailable": "Terjadi kesalahan di sistem kami. Silakan coba lagi.",
@@ -173,7 +172,10 @@
     "prefectureRequired": "Tambahkan prefektur dalam bahasa Inggris dan bahasa Jepang.",
     "correctionCityRequired": "Pilih kota sebelum menyetujui koreksi ini.",
     "submissionKindMismatch": "Perubahan ini tidak berlaku untuk koreksi pengunjung.",
-    "submissionStatusChanged": "Orang lain sudah mengubah pengajuan ini lebih dulu. Muat ulang halaman dan periksa lagi."
+    "submissionStatusChanged": "Orang lain sudah mengubah pengajuan ini lebih dulu. Muat ulang halaman dan periksa lagi.",
+    "professionalNamesRequired": "Tenaga kesehatan perlu nama dalam romaji dan nama dalam bahasa Jepang.",
+    "professionalNameLocaleNotAllowed": "Tenaga kesehatan hanya punya nama dalam romaji dan nama dalam bahasa Jepang.",
+    "japaneseMiddleNameNotAllowed": "Nama dalam bahasa Jepang tidak punya nama tengah."
   },
   "footer": {
     "poweredBy": "Didukung oleh {name}",
@@ -451,7 +453,8 @@
     "openClinicDashboard": "Buka dasbor klinik",
     "chooseClinic": "Pilih klinik",
     "noBookingClinics": "Belum ada klinik yang menerima reservasi",
-    "clinicsLoadError": "Tidak dapat memuat klinik"
+    "clinicsLoadError": "Tidak dapat memuat klinik",
+    "nameReview": "Nama perlu diperiksa"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Hapus",
@@ -522,30 +525,17 @@
     "noSubmissions": "Tidak ada pengajuan yang tertunda"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "Tambahkan Nama Baru",
-    "addAnotherName": "Tambahkan nama lain",
-    "removeName": "Hapus nama",
-    "delete": "Hapus permanen",
     "errorMessageHealthcareProfessionalId": "ID Tenaga Kesehatan tidak ditemukan",
-    "exit": "Keluar",
     "healthcareProfessionalMedicalInfoHeading": "Detail Tenaga Kesehatan",
     "healthcareProfessionalNameHeading": "Nama Tenaga Kesehatan",
     "labelHealthcareProfessionalFirstName": "Nama Depan",
     "labelHealthcareProfessionalLastName": "Nama Belakang",
     "labelHealthcareProfessionalMiddleName": "Nama Tengah",
-    "labelHealthcareProfessionalNameLocale": "Bahasa Nama",
     "labelAdditionalNotesForPatients": "Catatan Tambahan untuk Pasien",
-    "missingFirstName": "Nama depan belum diisi",
-    "missingLastName": "Nama belakang belum diisi",
-    "missingLocale": "Bahasa belum dipilih",
-    "charactersOfLanguageDoNotMatchNameLocale": "Karakter pada nama Tenaga Kesehatan tidak valid untuk bahasa yang dipilih",
-    "nameForLocaleAlreadyExists": "Nama untuk bahasa yang dipilih sudah ada. Perbarui nama yang ada atau pilih bahasa lain.",
-    "oneNameNecessary": "Tenaga Kesehatan harus memiliki setidaknya satu nama",
     "placeholderTextHealthcareProfessionalFirstName": "mis. John",
     "placeholderTextHealthcareProfessionalLastName": "mis. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "mis. Bronson",
     "placeholderAdditionalNotesForPatients": "mis. Dokter berbahasa Inggris hanya tersedia pukul 2-4",
-    "save": "Simpan",
     "selectDegrees": "Gelar",
     "selectPrimaryLicense": "Lisensi utama",
     "selectAdditionalCredentials": "Kredensial tambahan",
@@ -570,7 +560,13 @@
     "noSpecialtiesWereFound": "Tidak ada spesialisasi yang ditemukan",
     "noDegreesWereFound": "Tidak ada gelar yang ditemukan",
     "noLocalesWereFound": "Tidak ada bahasa yang ditemukan",
-    "update": "Perbarui"
+    "romajiName": "Nama dalam romaji",
+    "japaneseName": "Nama dalam bahasa Jepang",
+    "japaneseNameHint": "Kanji atau kana. Tulis nama yang bukan nama Jepang dalam katakana.",
+    "placeholderTextJapaneseLastName": "mis. 山田",
+    "placeholderTextJapaneseFirstName": "mis. 花子",
+    "nameNeedsReview": "Periksa nama-nama ini. Salah satunya diisi otomatis atau masih kosong.",
+    "otherLocaleNamesRemoved": "Nama dalam bahasa lain dihapus saat Anda menyimpan."
   },
   "modFacilitySection": {
     "addresses": "Alamat",
