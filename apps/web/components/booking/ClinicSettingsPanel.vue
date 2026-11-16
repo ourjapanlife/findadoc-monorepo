@@ -166,30 +166,11 @@
             class="card flex flex-col gap-3 p-5 shadow-card landscape:p-6"
             data-testid="clinic-settings-interpretation"
         >
-            <label
-                class="flex items-start gap-3"
-                :class="settings.canChangeInterpretation ? 'cursor-pointer' : 'cursor-not-allowed'"
-            >
-                <input
-                    type="checkbox"
-                    class="mt-0.5 size-5 shrink-0 accent-primary"
-                    :checked="settings.offersInterpretation"
-                    :disabled="!settings.canChangeInterpretation || savingInterpretation"
-                    :aria-describedby="interpretationHelpId"
-                    data-testid="clinic-settings-interpretation-toggle"
-                    @change="toggleInterpretation"
-                >
-                <span class="font-semibold text-primary-text">{{ t('clinicDashboard.settings.interpretation') }}</span>
-            </label>
-            <p
-                :id="interpretationHelpId"
-                class="ml-8 text-sm text-primary-text-muted"
-            >
-                {{ t('clinicDashboard.settings.interpretationHelp') }}
-                <template v-if="!settings.canChangeInterpretation">
-                    {{ t('clinicDashboard.settings.interpretationLocked') }}
-                </template>
-            </p>
+            <ClinicInterpretationSwitch
+                :facility-id="props.facilityId"
+                :settings="settings"
+                @saved="onInterpretationSaved"
+            />
             <ClinicInterpretersEditor
                 v-if="settings.offersInterpretation"
                 :key="interpretersKey"
@@ -205,13 +186,14 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { BookingFormType, BookingSettings } from '@findadoc/graphql'
+import ClinicInterpretationSwitch from '~/components/booking/ClinicInterpretationSwitch.vue'
 import ClinicInterpretersEditor from '~/components/booking/ClinicInterpretersEditor.vue'
 import ClinicPaymentSettings from '~/components/booking/ClinicPaymentSettings.vue'
 import ClinicWeeklyHoursEditor from '~/components/booking/ClinicWeeklyHoursEditor.vue'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
 import { ALLOWED_APPOINTMENT_DURATIONS, resolveDuration } from '~/utils/booking/durations'
-import { fetchClinicAdmin, setBookingInterpretation, updateBookingSettings } from '~/utils/booking/staffQuery'
+import { fetchClinicAdmin, updateBookingSettings } from '~/utils/booking/staffQuery'
 
 /**
  * Owner settings: weekly hours, visit lengths, which intake forms the clinic offers, and
@@ -233,8 +215,6 @@ const formIds = ref<string[]>([])
 const defaultFormId = ref('')
 const loadError = ref(false)
 const savingSettings = ref(false)
-const savingInterpretation = ref(false)
-const interpretationHelpId = 'clinic-settings-interpretation-help'
 // Turning interpretation on can add the default interpreter, so the list reloads.
 const interpretersKey = ref(0)
 
@@ -293,26 +273,11 @@ async function saveSettings(): Promise<void> {
     toast.success(t('clinicDashboard.saved'))
 }
 
-// Interpretation saves on its own: only admins may change it (#205), and it does not need the form above.
-async function toggleInterpretation(event: Event): Promise<void> {
-    if (!(event.target instanceof HTMLInputElement)) {
-        return
-    }
-    const checkbox = event.target
-    savingInterpretation.value = true
-    const saved = await setBookingInterpretation({
-        facilityId: props.facilityId,
-        offersInterpretation: checkbox.checked
-    })
-    savingInterpretation.value = false
-    if (saved === null) {
-        checkbox.checked = settings.value?.offersInterpretation ?? false
-        toast.error(t('clinicDashboard.saveFailed'))
-        return
-    }
+// Interpretation saves on its own (ClinicInterpretationSwitch). Turning it on can add the
+// default interpreter, so the interpreter list reloads.
+function onInterpretationSaved(saved: BookingSettings): void {
     settings.value = saved
     interpretersKey.value += 1
-    toast.success(t('clinicDashboard.saved'))
 }
 
 onMounted(load)

@@ -12,7 +12,7 @@ import {
     type BookingUploadDownloadUrl
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
-import { canManageFacility, canReadFacility, readableFacilityIds, type BookingAccess } from '../booking/access.js'
+import { isClinicOwner, isClinicMember, memberFacilityIds, type BookingAccess } from '../booking/access.js'
 import {
     PAYMENT_METHOD_FIELD_ID,
     isPaymentMethod,
@@ -109,22 +109,19 @@ function notFound(field: string): Result<never> {
     }
 }
 
-/** Facility ids the filters may reach, or undefined when nothing is readable. */
+/** Facility ids the filters may reach: the user's own clinics, or undefined when there are none. */
 function scopedFacilityIds(
     filters: BookingSubmissionSearchFilters,
     access: BookingAccess
-): string[] | 'all' | undefined {
-    const readable = readableFacilityIds(access)
+): string[] | undefined {
     if (filters.facilityId) {
-        return canReadFacility(access, filters.facilityId) ? [filters.facilityId] : undefined
+        return isClinicMember(access, filters.facilityId) ? [filters.facilityId] : undefined
     }
-    if (readable === 'all') {
-        return 'all'
-    }
+    const readable = memberFacilityIds(access)
     return readable.length > 0 ? readable : undefined
 }
 
-function listQuery(filters: BookingSubmissionSearchFilters, facilityIds: string[] | 'all') {
+function listQuery(filters: BookingSubmissionSearchFilters, facilityIds: string[]) {
     let query = db.selectFrom('booking_submissions as booking')
         .leftJoin('clinic_sites as site', 'site.id', 'booking.clinic_site_id')
         .leftJoin('clinic_site_locales as locale', join =>
@@ -132,9 +129,7 @@ function listQuery(filters: BookingSubmissionSearchFilters, facilityIds: string[
         .leftJoin('facilities as facility', 'facility.id', 'booking.facility_id')
         .leftJoin('booking_appointments as appointment', 'appointment.booking_submission_id', 'booking.id')
 
-    if (facilityIds !== 'all') {
-        query = query.where('booking.facility_id', 'in', facilityIds)
-    }
+    query = query.where('booking.facility_id', 'in', facilityIds)
     if (filters.clinicSiteId) {
         query = query.where('booking.clinic_site_id', '=', filters.clinicSiteId)
     }
@@ -277,7 +272,7 @@ export async function getBookingSubmissionDetail(
         .executeTakeFirst()
 
     // Another clinic's booking reads as missing, not forbidden.
-    if (row === undefined || !canReadFacility(access, row.facility_id)) {
+    if (row === undefined || !isClinicMember(access, row.facility_id)) {
         return null
     }
 
@@ -368,7 +363,7 @@ export async function createStaffBookingDownloadUrl(
         .where('id', '=', uploadId)
         .executeTakeFirst()
 
-    if (upload === undefined || !canReadFacility(access, upload.facility_id)) {
+    if (upload === undefined || !isClinicMember(access, upload.facility_id)) {
         return notFound('uploadId')
     }
     // An upload that never joined a submission is a patient's abandoned draft, not staff data.
@@ -409,7 +404,7 @@ function answerText(value: unknown): string | null {
 
 /**
  * One clinic's bookings for the owner CSV export (spec §3.2). Owners and admins only
- * (canManageFacility); staff and other clinics read as not found. The facility filter
+ * (isClinicOwner); staff and other clinics read as not found. The facility filter
  * is in the query. Only contact and scheduling answers are read, never medical answers,
  * the address, or files. The access log names ids and the row count, never a patient.
  */
@@ -427,7 +422,7 @@ export async function exportBookingSubmissions(
             errors: [{ field: 'facilityId', errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 }]
         }
     }
-    if (!canManageFacility(access, facilityId)) {
+    if (!isClinicOwner(access, facilityId)) {
         return notFound('facilityId')
     }
 

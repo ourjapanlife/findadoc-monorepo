@@ -111,6 +111,50 @@ describe('root resolver scopes', () => {
         await expect(Promise.resolve().then(() => resolver({}, {}, context, info)))
             .rejects.toMatchObject(unauthorized)
     })
+
+    // An admin sets up clinic accounts: the clinic, its settings summary, its members, and
+    // interpretation. Every booking, appointment, upload, calendar, and owner setting needs a
+    // claimed membership, so an admin with none is refused (#192).
+    const adminSetupFields = new Set([
+        'bookingClinic',
+        'bookingSettings',
+        'clinicMembers',
+        'inviteClinicMember',
+        'removeClinicMember',
+        'setBookingInterpretation'
+    ])
+    const adminRefusedFields = clinicRootFields.filter(([name]) => !adminSetupFields.has(fieldName(name)))
+
+    it('refuses an admin on every booking read', () => {
+        const refused = new Set(adminRefusedFields.map(([name]) => fieldName(name)))
+        for (const read of [
+            'bookingSubmissions', 'bookingSubmissionsTotalCount', 'bookingSubmission', 'bookingSubmissionsExport',
+            'bookingUploadDownloadUrl', 'clinicAppointments', 'bookingPaymentSettings', 'clinicInterpreters',
+            'clinicAvailabilityWindows', 'clinicWeeklyHours', 'clinicAvailabilityClosures', 'clinicPractitioners'
+        ]) {
+            expect(refused.has(read)).toBe(true)
+        }
+    })
+
+    it.each(adminRefusedFields)('%s rejects an admin who is not a member of the clinic', async (_name, resolver) => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const context: UserContext = {
+            user: { sub: 'test|admin-no-clinic', name: 'Admin', email: 'admin@example.com', roles: [Role.Admin], scope: '' }
+        }
+
+        await expect(Promise.resolve().then(() => resolver({}, {}, context, info)))
+            .rejects.toMatchObject(unauthorized)
+    })
+
+    it.each(['bookingClinics'])('%s is open to an admin, for the clinic-account picker', async name => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const context: UserContext = {
+            user: { sub: 'test|admin-no-clinic', name: 'Admin', email: 'admin@example.com', roles: [Role.Admin], scope: '' }
+        }
+        const resolver = resolvers.Query[name as 'bookingClinics'] as AnyResolver
+
+        await expect(Promise.resolve().then(() => resolver({}, {}, context, info))).resolves.toBeInstanceOf(Array)
+    })
 })
 
 describe('submitFacilityCorrection scope', () => {

@@ -9,7 +9,7 @@ import type { ServerError } from '~/typedefs/serverResponse'
 import { localeCodeFromPath, localizedPath, unlocalizedPath } from './localePath'
 
 export type ModerationDashboardView
-    = 'submissions' | 'facilities' | 'healthcare-professionals' | 'bookings' | 'availability'
+    = 'submissions' | 'facilities' | 'healthcare-professionals' | 'clinics'
 
 const MY_PAGE_FORM_ROUTE = /^\/(?:my-page|moderation)\/(?:edit-|create-)/
 
@@ -53,11 +53,8 @@ function syncModerationListView(view: ModerationDashboardView) {
                 SelectedModerationListView.HealthcareProfessionals
             )
             break
-        case 'bookings':
-            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Bookings)
-            break
-        case 'availability':
-            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Availability)
+        case 'clinics':
+            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.ClinicAccounts)
             break
         default:
             moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Submissions)

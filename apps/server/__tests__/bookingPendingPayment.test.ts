@@ -17,11 +17,10 @@ import * as facilityService from '../src/services/facilityService.js'
 import * as staffBookingService from '../src/services/staffBookingService.js'
 import { asJsonb } from '../utils/dbUtils.js'
 
-const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+// An admin who is also the clinic owner of the clinics under test. Being an admin alone reads no booking (#192).
+const adminOwner: BookingAccess = { isAdmin: true, memberships: new Map() }
 const memberOf = (facilityId: string, role: 'owner' | 'staff'): BookingAccess => ({
-    readAll: false,
-    writeAll: false,
-    manageMembersAll: false,
+    isAdmin: false,
     memberships: new Map([[facilityId, role]])
 })
 
@@ -38,12 +37,13 @@ describe('pending payment bookings', () => {
             const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
             expect(created.hasErrors).toBe(false)
             assign(created.data.id)
+            adminOwner.memberships.set(created.data.id, MEMBERSHIP_ROLE.OWNER)
         }
         const settings = await clinicAccessService.updateBookingSettings({
             facilityId,
             allowedDurations: [30],
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID, SHOWCASE_BOOKING_FORM_ID]
-        }, admin)
+        }, adminOwner)
         expect(settings.hasErrors).toBe(false)
     })
 
@@ -111,7 +111,7 @@ describe('pending payment bookings', () => {
         await availabilityService.createClinicAvailabilityWindow(
             { clinicSiteId: facilityId, startsAt: iso(0), endsAt: iso(60) },
             'test|staff',
-            admin
+            adminOwner
         )
         await storeConsult(0, APPOINTMENT_STATUS.PENDING_PAYMENT)
 
@@ -120,7 +120,7 @@ describe('pending payment bookings', () => {
     })
 
     it('counts pending payment in the clinic badge', async () => {
-        const clinic = await clinicAccessService.getBookingClinic(facilityId, admin)
+        const clinic = await clinicAccessService.getBookingClinic(facilityId, adminOwner)
         expect(clinic?.requestedCount).toBeGreaterThanOrEqual(1)
     })
 
@@ -136,7 +136,7 @@ describe('pending payment bookings', () => {
         expect(pending.every(row => row.appointmentStatus === BookingAppointmentStatus.PendingPayment)).toBe(true)
         expect(pending.find(row => row.id === submissionId)?.paymentMethod).toBe(BookingPaymentMethod.PayPay)
 
-        const detail = await staffBookingService.getBookingSubmissionDetail(submissionId, admin)
+        const detail = await staffBookingService.getBookingSubmissionDetail(submissionId, adminOwner)
         expect(detail?.paymentMethod).toBe(BookingPaymentMethod.PayPay)
     })
 
@@ -166,7 +166,7 @@ describe('pending payment bookings', () => {
 
         const unpaid = await appointmentService.updateAppointmentStatus(
             { appointmentId, status: BookingAppointmentStatus.PendingPayment },
-            admin,
+            adminOwner,
             'test|staff'
         )
         expect(unpaid.hasErrors).toBe(false)
@@ -174,7 +174,7 @@ describe('pending payment bookings', () => {
 
         const confirmed = await appointmentService.updateAppointmentStatus(
             { appointmentId, status: BookingAppointmentStatus.Confirmed },
-            admin,
+            adminOwner,
             'test|staff'
         )
         expect(confirmed.hasErrors).toBe(false)
@@ -185,7 +185,7 @@ describe('pending payment bookings', () => {
         const request = await storeConsult(300, APPOINTMENT_STATUS.REQUESTED)
         const refused = await appointmentService.updateAppointmentStatus(
             { appointmentId: request.appointmentId, status: BookingAppointmentStatus.PendingPayment },
-            admin,
+            adminOwner,
             'test|staff'
         )
         expect(refused.hasErrors).toBe(true)
@@ -206,7 +206,7 @@ describe('pending payment bookings', () => {
         await availabilityService.createClinicAvailabilityWindow(
             { clinicSiteId: facilityId, startsAt: iso(480), endsAt: iso(510) },
             'test|staff',
-            admin
+            adminOwner
         )
         const refused = await bookingService.submitBooking({
             clinicSiteId: facilityId,
@@ -304,14 +304,25 @@ describe('pending payment bookings', () => {
         })
 
         it('refuses a malformed facility id before it reaches the database', async () => {
-            const result = await staffBookingService.exportBookingSubmissions('not-a-uuid', null, admin, 'test|admin')
+            const result = await staffBookingService.exportBookingSubmissions('not-a-uuid', null, adminOwner, 'test|admin')
             expect(result.errors?.[0]?.errorCode).toBe(ErrorCode.INVALID_INPUT)
         })
 
-        it('lets an admin export any clinic', async () => {
-            const result = await staffBookingService.exportBookingSubmissions(facilityId, null, admin, 'test|admin')
+        it('lets the owner export their clinic', async () => {
+            const result = await staffBookingService.exportBookingSubmissions(
+                facilityId,
+                null,
+                memberOf(facilityId, MEMBERSHIP_ROLE.OWNER),
+                'test|owner'
+            )
             expect(result.hasErrors).toBe(false)
             expect(result.data.rows.length).toBeGreaterThan(0)
+        })
+
+        it('refuses an admin who is not a member of the clinic (#192)', async () => {
+            const admin: BookingAccess = { isAdmin: true, memberships: new Map() }
+            const result = await staffBookingService.exportBookingSubmissions(facilityId, null, admin, 'test|admin')
+            expect(result.errors?.[0]?.errorCode).toBe(ErrorCode.NOT_FOUND)
         })
 
         it('refuses staff, and the owner of another clinic', async () => {
@@ -334,7 +345,7 @@ describe('pending payment bookings', () => {
 
         it('never returns another clinic\'s rows', async () => {
             const foreign = await storeConsult(660, APPOINTMENT_STATUS.PENDING_PAYMENT, {}, otherFacilityId)
-            const result = await staffBookingService.exportBookingSubmissions(facilityId, null, admin, 'test|admin')
+            const result = await staffBookingService.exportBookingSubmissions(facilityId, null, adminOwner, 'test|admin')
             expect(result.data.rows.some(row => row.id === foreign.submissionId)).toBe(false)
         })
 
@@ -350,7 +361,7 @@ describe('pending payment bookings', () => {
             }))
             await db.insertInto('booking_submissions').values(values).execute()
 
-            const result = await staffBookingService.exportBookingSubmissions(otherFacilityId, null, admin, 'test|admin')
+            const result = await staffBookingService.exportBookingSubmissions(otherFacilityId, null, adminOwner, 'test|admin')
             expect(result.data.rows).toHaveLength(staffBookingService.EXPORT_MAX_ROWS)
             expect(result.data.truncated).toBe(true)
         })

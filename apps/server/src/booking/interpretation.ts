@@ -35,7 +35,7 @@ type Executor = Pick<typeof db, 'selectFrom'>
 
 /** Who may turn interpretation on or off: admins only, until there is a plan to check. */
 export function canChangeInterpretation(access: BookingAccess): boolean {
-    return access.manageMembersAll
+    return access.isAdmin
 }
 
 export async function offersInterpretation(facilityId: string | null, executor: Executor = db): Promise<boolean> {

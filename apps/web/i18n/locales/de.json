@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "Datenschutzerklärung",
     "subheading": "Was wir erheben, warum, an wen wir es weitergeben und wie Sie uns zu Ihren Daten erreichen.",
-    "date": "Gültig ab: 9. November 2026",
+    "date": "Gültig ab: 16. November 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Wer wir sind",
@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Sicherheit",
-        "p1": "Daten werden bei der Übertragung verschlüsselt, und Zugriff haben nur Personen, die ihn brauchen: unsere Moderatoren und das Personal der Praxis, bei der Sie angefragt haben. Praxispersonal sieht nur die Termine der eigenen Praxis."
+        "p1": "Daten werden bei der Übertragung verschlüsselt, und Zugriff haben nur Personen, die ihn brauchen. Unsere Moderatoren prüfen Vorschläge zu Praxen und Ärzten; diese Rolle gibt ihnen keinen Zugriff auf Ihre Terminanfragen. Ihre Anfrage, Ihre Antworten und Ihre Dateien sieht nur das Personal der Praxis, bei der Sie angefragt haben, und Praxispersonal sieht nur die Termine der eigenen Praxis."
       },
       "rights": {
         "heading": "8. Ihre Rechte",
@@ -342,9 +342,8 @@
     "submissions": "Einreichungen",
     "collapse": "Seitenleiste einklappen",
     "expand": "Seitenleiste ausklappen",
-    "bookings": "Buchungen",
-    "availability": "Verfügbarkeit",
-    "userFeedback": "Rückmeldungen"
+    "userFeedback": "Rückmeldungen",
+    "clinicAccounts": "Praxiskonten"
   },
   "accessPanel": {
     "loading": "Berechtigungen werden geladen…",
@@ -496,6 +495,7 @@
     "addHealthcareProfessional": "Gesundheitsfachkraft hinzufügen",
     "licenseReview": "Lizenz prüfen",
     "openClinicDashboard": "Praxis-Dashboard öffnen",
+    "clinicAccountsHelp": "Öffnen Sie eine Praxis, um Inhaber und Mitarbeitende einzuladen oder die Dolmetschleistung einzuschalten. Die Buchungen einer Praxis sehen Sie nur, wenn Sie Mitglied dieser Praxis sind.",
     "chooseClinic": "Praxis auswählen",
     "noBookingClinics": "Noch keine Praxis nimmt Buchungen an",
     "clinicsLoadError": "Praxen konnten nicht geladen werden"
@@ -1126,13 +1126,10 @@
     "retainUntil": "Aufbewahren bis {date}",
     "noAppointment": "Kein Termin gewählt",
     "identityBadge": "Ausweisdatei",
-    "identityYes": "Ja",
-    "identityNo": "Nein",
     "columns": {
       "clinic": "Klinik",
       "status": "Zustand",
       "appointment": "Termin",
-      "identity": "Identitätsupload",
       "created": "Erstellt",
       "locale": "Sprache"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "Praxisteam",
       "help": "Hier eingeladene Personen sehen nach der Anmeldung mit dieser E-Mail die Anfragen der Praxis und können ihren Kalender bearbeiten.",
+      "adminHelp": "Sie richten das Konto dieser Praxis ein. Laden Sie hier die Inhaberin oder den Inhaber ein. Die Buchungen dieser Praxis sehen Sie nur, wenn Sie Mitglied sind.",
       "active": "Angemeldet",
       "pending": "Eingeladen",
       "remove": "Entfernen",

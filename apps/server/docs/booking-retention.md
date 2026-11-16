@@ -78,8 +78,8 @@ Version 4 of the online consult form (`showcase-intake-v1`) adds more answers to
 (personal data), and `pastIllnesses` (medical, next to `reason`). They are
 erased with the rest of the row under the rule above. The form still stays on
 the preview showcase clinic: `updateBookingSettings` refuses
-it for a clinic owner unless the clinic site is on `preview` or an admin already
-turned it on, and `BookingSettings.offerableFormDefinitionIds` leaves it out of
+it for a clinic owner unless the clinic site is on `preview`, the clinic already
+offers it, or that owner is also an admin, and `BookingSettings.offerableFormDefinitionIds` leaves it out of
 that owner's settings panel. None of them is logged.
 
 ## Purge
@@ -168,5 +168,7 @@ role, which includes `create:bookings`. While clinic landings are in preview,
 the page itself needs the `?preview=1` cookie (see booking-showcase.md); the
 API endpoints do not check it.
 
-The my-page booking list, file download, and availability calendar require a
-signed-in session with `read:bookings` or `write:clinic_availability`.
+Requests, file download, and the calendar are on the clinic dashboard
+(`/clinic-dashboard/{facilityId}`) and need a signed-in clinic member: a claimed
+owner or staff row in `clinic_memberships` for that clinic (#192). Being an admin
+does not open them (booking-access.md).

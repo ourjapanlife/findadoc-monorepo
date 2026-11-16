@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "Patakaran sa Privacy",
     "subheading": "Ano ang kinokolekta namin, bakit, kanino namin ito ibinabahagi, at paano kami makakausap tungkol sa iyong impormasyon.",
-    "date": "Petsa ng bisa: Nobyembre 9, 2026",
+    "date": "Petsa ng bisa: Nobyembre 16, 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Sino kami",
@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Seguridad",
-        "p1": "Naka-encrypt ang impormasyon habang ipinapadala, at limitado ang access sa mga taong nangangailangan nito: ang aming mga moderator, at ang kawani ng klinikang pinag-book-an mo. Ang kawani ng klinika ay nakakakita lang ng mga booking ng sarili nilang klinika."
+        "p1": "Naka-encrypt ang impormasyon habang ipinapadala, at limitado ang access sa mga taong nangangailangan nito. Sinusuri ng aming mga moderator ang mga mungkahing klinika at doktor, at hindi sila binibigyan ng papel na iyon ng access sa iyong mga booking. Ang iyong booking request, mga sagot, at mga file ay nakikita lang ng kawani ng klinikang pinag-book-an mo, at ang kawani ng klinika ay nakakakita lang ng mga booking ng sarili nilang klinika."
       },
       "rights": {
         "heading": "8. Ang iyong mga karapatan",
@@ -294,9 +294,8 @@
     "submissions": "Mga Isinumite",
     "collapse": "Tiklupin ang gilid na menu",
     "expand": "Palawakin ang gilid na menu",
-    "bookings": "Mga booking",
-    "availability": "Mga oras na bukas",
-    "userFeedback": "Puna ng mga user"
+    "userFeedback": "Puna ng mga user",
+    "clinicAccounts": "Mga account ng klinika"
   },
   "accessPanel": {
     "loading": "Nilo-load ang mga pahintulot…",
@@ -324,6 +323,7 @@
     "addHealthcareProfessional": "Magdagdag ng propesyonal sa kalusugan",
     "licenseReview": "Kailangang suriin ang lisensya",
     "openClinicDashboard": "Buksan ang dashboard ng isang klinika",
+    "clinicAccountsHelp": "Magbukas ng klinika para imbitahan ang may-ari at mga tauhan nito, o para buksan ang interpretasyon. Hindi mo makikita ang mga booking ng klinika maliban kung miyembro ka nito.",
     "chooseClinic": "Pumili ng klinika",
     "noBookingClinics": "Wala pang klinikang tumatanggap ng booking",
     "clinicsLoadError": "Hindi ma-load ang mga klinika"
@@ -1126,13 +1126,10 @@
     "retainUntil": "Itago hanggang {date}",
     "noAppointment": "Walang napiling oras",
     "identityBadge": "File ng ID",
-    "identityYes": "Oo",
-    "identityNo": "Hindi",
     "columns": {
       "clinic": "Klinika",
       "status": "Katayuan",
       "appointment": "Takdang oras",
-      "identity": "Upload ng ID",
       "created": "Ginawa",
       "locale": "Wika"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "Koponan",
       "help": "Ang mga inimbitahan dito ay makakakita ng mga kahilingan ng klinika at makakapag-edit ng kalendaryo nito pagkatapos mag-sign in gamit ang email na iyon.",
+      "adminHelp": "Inaayos mo ang account ng klinikang ito. Imbitahan dito ang may-ari nito. Hindi mo makikita ang mga booking ng klinikang ito maliban kung miyembro ka.",
       "active": "Naka-sign in",
       "pending": "Inimbitahan",
       "remove": "Alisin",

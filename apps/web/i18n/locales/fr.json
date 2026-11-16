@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "Politique de confidentialité",
     "subheading": "Ce que nous collectons, pourquoi, avec qui nous le partageons, et comment nous contacter au sujet de vos informations.",
-    "date": "Date d'entrée en vigueur : 9 novembre 2026",
+    "date": "Date d'entrée en vigueur : 16 novembre 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Qui nous sommes",
@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Sécurité",
-        "p1": "Les informations sont chiffrées pendant leur transmission, et l'accès est limité aux personnes qui en ont besoin : nos modérateurs et le personnel de la clinique auprès de laquelle vous avez pris rendez-vous. Le personnel d'une clinique ne voit que les rendez-vous de sa propre clinique."
+        "p1": "Les informations sont chiffrées pendant leur transmission, et l'accès est limité aux personnes qui en ont besoin. Nos modérateurs examinent les suggestions de cliniques et de médecins, et ce rôle ne leur donne aucun accès à vos rendez-vous. Votre demande, vos réponses et vos fichiers ne sont visibles que par le personnel de la clinique auprès de laquelle vous avez pris rendez-vous, et le personnel d'une clinique ne voit que les rendez-vous de sa propre clinique."
       },
       "rights": {
         "heading": "8. Vos droits",
@@ -287,9 +287,8 @@
     "submissions": "Soumissions",
     "collapse": "Réduire la barre latérale",
     "expand": "Ouvrir la barre latérale",
-    "bookings": "Réservations",
-    "availability": "Disponibilités",
-    "userFeedback": "Retours des visiteurs"
+    "userFeedback": "Retours des visiteurs",
+    "clinicAccounts": "Comptes des cliniques"
   },
   "accessPanel": {
     "loading": "Chargement des autorisations…",
@@ -445,6 +444,7 @@
     "addHealthcareProfessional": "Ajouter un professionnel de santé",
     "licenseReview": "Licence à vérifier",
     "openClinicDashboard": "Ouvrir le tableau de bord d’une clinique",
+    "clinicAccountsHelp": "Ouvrez une clinique pour inviter son responsable et son personnel, ou pour activer l'interprétariat. Vous ne voyez les réservations d'une clinique que si vous en êtes membre.",
     "chooseClinic": "Choisir une clinique",
     "noBookingClinics": "Aucune clinique n’accepte encore de réservations",
     "clinicsLoadError": "Impossible de charger les cliniques"
@@ -1126,13 +1126,10 @@
     "retainUntil": "Conserver jusqu’au {date}",
     "noAppointment": "Aucun créneau choisi",
     "identityBadge": "Pièce d’identité",
-    "identityYes": "Oui",
-    "identityNo": "Non",
     "columns": {
       "clinic": "Clinique",
       "status": "Statut",
       "appointment": "Rendez-vous",
-      "identity": "Fichier d’identité",
       "created": "Créé",
       "locale": "Langue"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "Équipe",
       "help": "Les personnes invitées ici peuvent voir les demandes de cette clinique et modifier son calendrier après s'être connectées avec cet e-mail.",
+      "adminHelp": "Vous configurez le compte de cette clinique. Invitez son responsable ici. Vous ne pouvez pas voir les réservations de cette clinique sauf si vous en êtes membre.",
       "active": "Connecté",
       "pending": "Invité",
       "remove": "Retirer",

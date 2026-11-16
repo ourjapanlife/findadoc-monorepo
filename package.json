@@ -29,7 +29,7 @@
         "test": "pnpm exec turbo test --filter=@findadoc/web --filter=@findadoc/mcp --filter=@findadoc/utils",
         "test:server": "pnpm exec turbo test --filter=@findadoc/server",
         "test:e2e": "pnpm exec turbo test:e2e:headless --filter=@findadoc/web",
-        "generate": "pnpm exec turbo generate",
+        "generate": "pnpm exec turbo run generate",
         "docs": "pnpm --filter @findadoc/docs docs:serve",
         "docs:build": "pnpm --filter @findadoc/docs docs:build",
         "prepare": "husky"

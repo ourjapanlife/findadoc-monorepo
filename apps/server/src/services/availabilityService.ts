@@ -10,7 +10,7 @@ import type {
 } from '@findadoc/graphql'
 import { cleanHoursRepeat, type CleanHoursRepeat } from '@findadoc/utils'
 import { randomUUID } from 'node:crypto'
-import { canWriteFacility, type BookingAccess } from '../booking/access.js'
+import { isClinicMember, type BookingAccess } from '../booking/access.js'
 import { listFacilityPractitioners } from '../booking/practitioners.js'
 import { resolveBookingTarget } from '../booking/target.js'
 import {
@@ -47,7 +47,7 @@ export async function listClinicAvailabilityWindows(
     access: BookingAccess
 ): Promise<ClinicAvailabilityWindow[]> {
     const target = await resolveBookingTarget(clinicIdOrSlug)
-    if (target === undefined || !canWriteFacility(access, target.facilityId)) {
+    if (target === undefined || !isClinicMember(access, target.facilityId)) {
         return []
     }
     const from = new Date(fromIso)
@@ -89,7 +89,7 @@ export async function createClinicAvailabilityWindow(
     access: BookingAccess
 ): Promise<Result<ClinicAvailabilityWindow>> {
     const target = await resolveBookingTarget(input.clinicSiteId)
-    if (target === undefined || !canWriteFacility(access, target.facilityId)) {
+    if (target === undefined || !isClinicMember(access, target.facilityId)) {
         return validationError('clinicSiteId')
     }
     const practitionerId = await practitionerAt(target.facilityId, input.practitionerId)
@@ -147,7 +147,7 @@ export async function deleteClinicAvailabilityWindow(
         .select('facility_id')
         .where('id', '=', id)
         .executeTakeFirst()
-    if (window === undefined || !canWriteFacility(access, window.facility_id)) {
+    if (window === undefined || !isClinicMember(access, window.facility_id)) {
         return { data: { isSuccessful: false }, hasErrors: false }
     }
 
@@ -198,7 +198,7 @@ export async function listClinicPractitioners(clinicId: string, access: BookingA
 /** The facility a staff call may change, or undefined when the user may not. */
 async function writableFacilityId(clinicId: string, access: BookingAccess): Promise<string | undefined> {
     const target = await resolveBookingTarget(clinicId)
-    if (target === undefined || target.facilityId === null || !canWriteFacility(access, target.facilityId)) {
+    if (target === undefined || target.facilityId === null || !isClinicMember(access, target.facilityId)) {
         return undefined
     }
     return target.facilityId
@@ -411,7 +411,7 @@ export async function deleteClinicAvailabilityClosure(
         .select('facility_id')
         .where('id', '=', id)
         .executeTakeFirst()
-    if (closure === undefined || !canWriteFacility(access, closure.facility_id)) {
+    if (closure === undefined || !isClinicMember(access, closure.facility_id)) {
         return { data: { isSuccessful: false }, hasErrors: false }
     }
     const result = await db.deleteFrom('clinic_availability_closures')

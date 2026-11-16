@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "隐私政策",
     "subheading": "我们收集哪些信息、为何收集、与谁共享，以及如何就您的信息联系我们。",
-    "date": "生效日期：2026年11月9日",
+    "date": "生效日期：2026年11月16日",
     "sections": {
       "whoWeAre": {
         "heading": "1. 关于我们",
@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. 安全",
-        "p1": "信息在传输时加密，访问权限仅限需要的人员：我们的管理员，以及您预约的诊所的工作人员。诊所工作人员只能看到本诊所的预约。"
+        "p1": "信息在传输时加密，访问权限仅限需要的人员。我们的审核员负责审核诊所和医生推荐信息，但这一身份不能让他们查看您的预约。您的预约申请、填写的内容和文件只有您预约的诊所的工作人员才能看到，而诊所工作人员只能看到本诊所的预约。"
       },
       "rights": {
         "heading": "8. 您的权利",
@@ -294,9 +294,8 @@
     "submissions": "提交",
     "collapse": "收起侧边栏",
     "expand": "展开侧边栏",
-    "bookings": "预约申请",
-    "availability": "可预约时段",
-    "userFeedback": "用户反馈"
+    "userFeedback": "用户反馈",
+    "clinicAccounts": "诊所账户"
   },
   "accessPanel": {
     "loading": "正在加载权限…",
@@ -448,6 +447,7 @@
     "addHealthcareProfessional": "添加医疗人员",
     "licenseReview": "需要核对执照",
     "openClinicDashboard": "打开诊所控制面板",
+    "clinicAccountsHelp": "打开一家诊所，邀请其所有者和员工，或开启口译服务。除非您是该诊所的成员，否则看不到其预约。",
     "chooseClinic": "选择诊所",
     "noBookingClinics": "目前还没有接受预约的诊所",
     "clinicsLoadError": "无法加载诊所"
@@ -1126,13 +1126,10 @@
     "retainUntil": "保留至 {date}",
     "noAppointment": "未选择时段",
     "identityBadge": "身份文件",
-    "identityYes": "有",
-    "identityNo": "无",
     "columns": {
       "clinic": "诊所",
       "status": "状态",
       "appointment": "预约时段",
-      "identity": "身份上传",
       "created": "创建时间",
       "locale": "语言"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "团队",
       "help": "受邀者使用该邮箱登录后，可以查看此诊所的申请并编辑其日历。",
+      "adminHelp": "您正在设置此诊所的账户。请在此邀请其所有者。除非您是成员，否则无法查看此诊所的预约。",
       "active": "已登录",
       "pending": "已邀请",
       "remove": "移除",

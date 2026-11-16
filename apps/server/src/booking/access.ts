@@ -4,13 +4,16 @@ import { db } from '../kyselyClient.js'
 import { logger, errorLogFields } from '../logger.js'
 
 /**
- * Who may see and change a clinic's bookings.
+ * Who may see and change a clinic's bookings. Two separate things decide it:
  *
- * Admins hold the global scopes and reach every clinic while booking is in preview.
+ * - Clinic member (owner or staff): a claimed clinic_memberships row for that facility.
+ *   Staff read bookings and edit the calendar. The owner also changes settings and staff.
+ *   Only members see bookings (#192).
+ * - Admin: the write:clinic_memberships scope. An admin sets up clinic accounts (the
+ *   clinic list, owners and staff, interpretation) and reads no booking. An admin who
+ *   is also a member of a clinic sees that clinic as a member.
+ *
  * Moderators manage the directory and get no booking access (src/auth.ts).
- * Everyone else needs a claimed clinic_memberships row for the facility.
- * Staff read bookings and edit the calendar. Owners also manage members and
- * booking settings.
  */
 
 export const MEMBERSHIP_ROLE = {
@@ -21,10 +24,9 @@ export const MEMBERSHIP_ROLE = {
 export type MembershipRole = typeof MEMBERSHIP_ROLE[keyof typeof MEMBERSHIP_ROLE]
 
 export type BookingAccess = {
-    readAll: boolean
-    writeAll: boolean
-    manageMembersAll: boolean
-    /** facility id -> role, for claimed memberships only. */
+    /** Admin (write:clinic_memberships): sets up any clinic's account. Reads no booking. */
+    isAdmin: boolean
+    /** Clinic memberships: facility id -> owner or staff, claimed rows only. */
     memberships: Map<string, MembershipRole>
 }
 
@@ -69,9 +71,7 @@ async function claimPendingInvites(user: User): Promise<void> {
 
 export async function bookingAccessFor(user: User | null | undefined): Promise<BookingAccess> {
     const access: BookingAccess = {
-        readAll: user !== null && user !== undefined && authorize(user, [Scope['read:bookings']]),
-        writeAll: user !== null && user !== undefined && authorize(user, [Scope['write:clinic_availability']]),
-        manageMembersAll: user !== null && user !== undefined && authorize(user, [Scope['write:clinic_memberships']]),
+        isAdmin: user !== null && user !== undefined && authorize(user, [Scope['write:clinic_memberships']]),
         memberships: new Map()
     }
 
@@ -99,30 +99,20 @@ export async function bookingAccessFor(user: User | null | undefined): Promise<B
     return access
 }
 
-export function canReadFacility(access: BookingAccess, facilityId: string | null | undefined): boolean {
-    if (access.readAll) {
-        return true
-    }
+/**
+ * Clinic member: a claimed owner or staff row for this facility. Only a member reads or
+ * changes the clinic's bookings, appointments, uploads, calendar, and settings (#192).
+ */
+export function isClinicMember(access: BookingAccess, facilityId: string | null | undefined): boolean {
     return typeof facilityId === 'string' && access.memberships.has(facilityId)
 }
 
-export function canWriteFacility(access: BookingAccess, facilityId: string | null | undefined): boolean {
-    if (access.writeAll) {
-        return true
-    }
-    return typeof facilityId === 'string' && access.memberships.has(facilityId)
-}
-
-export function isFacilityOwner(access: BookingAccess, facilityId: string | null | undefined): boolean {
+/** Clinic owner: the member who also changes settings, payment, interpreters, staff, and exports. */
+export function isClinicOwner(access: BookingAccess, facilityId: string | null | undefined): boolean {
     return typeof facilityId === 'string' && access.memberships.get(facilityId) === MEMBERSHIP_ROLE.OWNER
 }
 
-/** Settings and members: admins, or the clinic owner. */
-export function canManageFacility(access: BookingAccess, facilityId: string | null | undefined): boolean {
-    return access.manageMembersAll || isFacilityOwner(access, facilityId)
-}
-
-/** Facility ids this user may read, or 'all' for admins. */
-export function readableFacilityIds(access: BookingAccess): string[] | 'all' {
-    return access.readAll ? 'all' : [...access.memberships.keys()]
+/** Facility ids where this user is a clinic member. */
+export function memberFacilityIds(access: BookingAccess): string[] {
+    return [...access.memberships.keys()]
 }

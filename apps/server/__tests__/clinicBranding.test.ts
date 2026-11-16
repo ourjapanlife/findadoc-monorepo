@@ -8,7 +8,8 @@ import * as bookingService from '../src/services/bookingService.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
 import { sharedFacilityIds } from './testSetup.test.js'
 
-const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+// An admin who is also the clinic owner of the clinics under test. Being an admin alone reads no booking (#192).
+const adminOwner: BookingAccess = { isAdmin: true, memberships: new Map() }
 const SITE_SLUG = 'branding-test-clinic'
 const THEME = {
     primary: '#177A80',
@@ -44,11 +45,12 @@ describe('clinic branding (online consult v2 §4)', () => {
     const submissionIds: string[] = []
 
     beforeAll(async () => {
+        adminOwner.memberships.set(facilityId(), 'owner')
         const saved = await clinicAccessService.updateBookingSettings({
             facilityId: facilityId(),
             allowedDurations: [60],
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
-        }, admin)
+        }, adminOwner)
         expect(saved.hasErrors).toBe(false)
     })
 
@@ -64,7 +66,7 @@ describe('clinic branding (online consult v2 §4)', () => {
 
     it('leaves a clinic without a clinic site on the Find a Doc layout', async () => {
         expect((await bookingService.getBookingForm(facilityId()))?.branding).toBeNull()
-        expect((await clinicAccessService.getBookingClinic(facilityId(), admin))?.branding).toBeNull()
+        expect((await clinicAccessService.getBookingClinic(facilityId(), adminOwner))?.branding).toBeNull()
     })
 
     it('returns the clinic site theme as branding on the form, the dashboard clinic, and the patient view', async () => {
@@ -80,12 +82,12 @@ describe('clinic branding (online consult v2 §4)', () => {
             .execute()
 
         expect((await bookingService.getBookingForm(facilityId()))?.branding).toEqual(BRANDING)
-        expect((await clinicAccessService.getBookingClinic(facilityId(), admin))?.branding).toEqual(BRANDING)
+        expect((await clinicAccessService.getBookingClinic(facilityId(), adminOwner))?.branding).toEqual(BRANDING)
 
         const window = await availabilityService.createClinicAvailabilityWindow(
             { clinicSiteId: facilityId(), startsAt: iso(0), endsAt: iso(60) },
             'test|staff',
-            admin
+            adminOwner
         )
         expect(window.hasErrors).toBe(false)
         const submitted = await bookingService.submitBooking({
@@ -116,7 +118,7 @@ describe('clinic branding (online consult v2 §4)', () => {
     it('drops the branding while the clinic site is a draft', async () => {
         await setSiteStatus('draft')
         expect((await bookingService.getBookingForm(facilityId()))?.branding).toBeNull()
-        expect((await clinicAccessService.getBookingClinic(facilityId(), admin))?.branding).toBeNull()
+        expect((await clinicAccessService.getBookingClinic(facilityId(), adminOwner))?.branding).toBeNull()
         await setSiteStatus('preview')
     })
 })

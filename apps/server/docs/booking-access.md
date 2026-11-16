@@ -9,18 +9,43 @@ page (`clinic_sites`) is optional branding.
 
 | Who | How | Can |
 |---|---|---|
-| Admin | `read:bookings`, `write:clinic_availability`, `write:clinic_memberships` scopes | Every clinic while booking is in preview. Invite owners and staff. |
-| Clinic owner | `Role.FacilityOwner`, from `clinic_memberships.role = 'owner'` | That clinic's requests, calendar, settings, and staff. |
+| Admin | `write:clinic_memberships` scope | Set up any clinic's account: list the clinics, invite and remove owners and staff, turn interpretation on or off. No bookings. |
+| Clinic owner | `Role.FacilityOwner`, from `clinic_memberships.role = 'owner'` | That clinic's requests, calendar, settings, payment, interpreters, export, and staff. |
 | Clinic staff | `Role.FacilityStaff`, from `clinic_memberships.role = 'staff'` | That clinic's requests and calendar. |
 | Patient | Private token from the confirmation email | Their own booking: view and cancel. |
 
-Admin access is wide only because booking is in preview. Later an admin will
-only create and manage the owner and staff memberships for a clinic. Bookings,
-calendar, and settings will be the owner's job.
+Admin and clinic member are separate, and the code keeps their names apart:
 
-Moderators manage the directory and have no booking access. `getEffectiveScopes` in
-`src/auth.ts` removes the three every-clinic scopes from anyone who is not an admin,
-even when Auth0 puts them on the token. Do not give them back to moderators.
+- **Clinic member** means a claimed owner or staff row for that clinic:
+  `isClinicMember` and `isClinicOwner` in `src/booking/access.ts`, and
+  `BookingClinic.role` in the API.
+- **Admin** means the `write:clinic_memberships` scope: `BookingAccess.isAdmin`
+  and `BookingClinic.isAdmin`. It never implies membership.
+
+Where both may do something, such as listing a clinic's members, the code says
+`isAdmin || isClinicOwner(...)` instead of hiding it behind one name.
+
+Booking left preview in #192. Only a clinic member opens a clinic's
+bookings, appointments, intake answers, uploads, calendar, and settings. An
+admin who is not a member of the clinic gets `UNAUTHORIZED` (403) from every
+one of those resolvers, and the services return nothing for them. An admin opens a clinic's
+dashboard to set up its account: `bookingClinic` (with `role: null`, `isAdmin: true`,
+and a `requestedCount` of 0), `bookingSettings` (durations, forms, languages,
+and interpretation, never a patient answer), `clinicMembers`,
+`inviteClinicMember`, `removeClinicMember`, and `setBookingInterpretation`.
+`bookingClinics` lists every clinic set up for booking for that picker.
+
+An admin who needs to see a clinic's bookings, for a demo or for support the
+clinic asked for, invites their own email to that clinic. The membership is a
+row the clinic's owner can see on the Team tab and remove. Locally, use the
+same invite, or `pnpm --filter @findadoc/server e2e:clinic-owner <auth0 sub> <facility id>`
+(see [booking-showcase.md](./booking-showcase.md)).
+
+The old every-clinic scopes `read:bookings` and `write:clinic_availability` are
+gone. `getEffectiveScopes` in `src/auth.ts` drops them if an Auth0 token still
+names them, and removes `write:clinic_memberships` from anyone who is not an
+admin (or a Dev off production). Moderators manage the directory and have no
+booking access. Do not give them any of these scopes.
 
 ### Owner and staff roles
 
@@ -39,8 +64,9 @@ after it is claimed, and a removed member loses the role on their next request.
 | `write:own_clinic_settings` | yes | no | booking settings, booking export |
 | `write:own_clinic_memberships` | yes | no | members, invite, remove |
 
-Clinic resolvers use `withClinicScope`, which accepts the admin's every-clinic
-scope or the own-clinic scope. A role does not name a clinic, so every service
+Clinic resolvers use `withClinicScope`. Booking reads and writes take only the
+own-clinic scope. The account set-up resolvers listed above also accept the
+admin's `write:clinic_memberships`. A role does not name a clinic, so every service
 still checks the facility through `src/booking/access.ts`. Another clinic's
 booking reads as missing. `myBookingClinics` needs only a signed-in session: it
 claims invites and returns an empty list to someone with no clinic.
@@ -48,7 +74,7 @@ claims invites and returns an empty list to someone with no clinic.
 
 ### Invites
 
-An admin (or an owner, for staff) invites an email for a facility. The
+An admin (any role) or an owner (staff only) invites an email for a facility. The
 first sign-in whose **verified** email matches claims the row and stores the
 Auth0 `sub`. The API reads the email from namespaced access-token claims, so
 an Auth0 post-login Action must add them:
@@ -157,9 +183,9 @@ card mode (`fixed_link` or `sent_by_staff`), an https card link (required for
 `fixed_link`), five bank fields, a PayPay QR object key, and the fee in whole
 yen (null leaves it out). It is separate from `booking_settings`, so the
 durations form never overwrites it. `bookingPaymentSettings` takes the read
-scopes and `canReadFacility`; `updateBookingPaymentSettings` and
+scopes and `isClinicMember`; `updateBookingPaymentSettings` and
 `createPaymentQrUploadUrl` take the owner settings scopes and
-`canManageFacility`, so staff read but do not change it. The facility delete
+`isClinicOwner`, so staff read but do not change it. The facility delete
 removes the row. It is clinic data, closed to the db:prod roles like every new
 table, and never logged.
 
@@ -186,10 +212,10 @@ The folder is gitignored and holds the message, so it never runs on AWS.
 
 ### Export
 
-Owners and admins can download one clinic's bookings as a CSV from the
+Owners can download one clinic's bookings as a CSV from the
 Requests tab (`bookingSubmissionsExport`, spec §3.2). The resolver takes the
-owner settings scopes and the service checks `canManageFacility`, so staff
-cannot export. The query filters by facility in SQL and returns at most 1000
+owner settings scope and the service checks `isClinicOwner`, so staff and
+admins who are not the owner cannot export. The query filters by facility in SQL and returns at most 1000
 rows, newest visit first, with `truncated` when more matched. The browser
 builds the file as UTF-8 with a byte order mark, so Excel opens Japanese
 names correctly; nothing is stored on the server. The columns are visit

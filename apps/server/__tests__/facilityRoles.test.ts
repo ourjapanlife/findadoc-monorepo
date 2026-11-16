@@ -11,7 +11,8 @@ import * as clinicAccessService from '../src/services/clinicAccessService.js'
 import { envVariables } from '../utils/environmentVariables.js'
 
 const info = {} as GraphQLResolveInfo
-const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+// Admins invite members to any clinic. They read no booking without a membership (#192).
+const admin: BookingAccess = { isAdmin: true, memberships: new Map() }
 
 // A new context per call, the same as a new request.
 function requestFrom(sub: string, email: string): UserContext {
@@ -23,7 +24,7 @@ async function rolesOf(context: UserContext): Promise<string[]> {
 }
 
 function accessWith(...memberships: [string, typeof MEMBERSHIP_ROLE[keyof typeof MEMBERSHIP_ROLE]][]): BookingAccess {
-    return { readAll: false, writeAll: false, manageMembersAll: false, memberships: new Map(memberships) }
+    return { isAdmin: false, memberships: new Map(memberships) }
 }
 
 describe('facilityRolesFrom()', () => {
@@ -100,9 +101,9 @@ describe('facility roles from clinic_memberships', () => {
         const staffRequest = () => requestFrom('auth0|guarded-staff', 'guarded-staff@example.com')
         const outsiderRequest = () => requestFrom('auth0|outsider', 'outsider@example.com')
 
-        const read = withClinicScope([Scope['read:bookings'], Scope['read:own_clinic_bookings']], resolver)
+        const read = withClinicScope([Scope['read:own_clinic_bookings']], resolver)
         const members = withClinicScope([Scope['write:clinic_memberships'], Scope['write:own_clinic_memberships']], resolver)
-        const settings = withClinicScope([Scope['write:clinic_memberships'], Scope['write:own_clinic_settings']], resolver)
+        const settings = withClinicScope([Scope['write:own_clinic_settings']], resolver)
 
         expect(await read({}, {}, staffRequest(), info)).toBe('ran')
         await expect(members({}, {}, staffRequest(), info)).rejects.toThrow('User is not authorized')

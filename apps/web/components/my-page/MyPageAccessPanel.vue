@@ -266,11 +266,10 @@ const canReadFacilities = computed(() => allowLinksWhileAccessUnknown.value || a
 const canReadHealthcareProfessionals = computed(
     () => allowLinksWhileAccessUnknown.value || accessStore.hasScope('read:healthcareprofessionals')
 )
-// Booking dashboards stay hidden until scopes load — no anonymous or unknown-access peek.
-const canReadBookings = computed(() =>
-    accessStore.isLoaded && !accessStore.loadError && accessStore.hasScope('read:bookings'))
-const canWriteAvailability = computed(() =>
-    accessStore.isLoaded && !accessStore.loadError && accessStore.hasScope('write:clinic_availability'))
+// Clinic accounts stay hidden until scopes load. Admins set up accounts there; they read no
+// bookings unless they are a member of that clinic (#192).
+const canSetUpClinics = computed(() =>
+    accessStore.isLoaded && !accessStore.loadError && accessStore.hasScope('write:clinic_memberships'))
 
 const settingsPages = computed<NavPage[]>(() => [{
     id: 'my-page',
@@ -311,24 +310,14 @@ const moderationPages = computed<NavPage[]>(() => [
             listView: SelectedModerationListView.HealthcareProfessionals
         }]
         : []),
-    ...(canReadBookings.value
+    ...(canSetUpClinics.value
         ? [{
-            id: 'moderation-bookings',
+            id: 'moderation-clinic-accounts',
             route: '/my-page',
-            label: t('modDashboardLeftNav.bookings'),
-            icon: SVGInbox,
-            iconClass: '',
-            listView: SelectedModerationListView.Bookings
-        }]
-        : []),
-    ...(canWriteAvailability.value
-        ? [{
-            id: 'moderation-availability',
-            route: '/my-page',
-            label: t('modDashboardLeftNav.availability'),
+            label: t('modDashboardLeftNav.clinicAccounts'),
             icon: SVGFacilityIcon,
             iconClass: '',
-            listView: SelectedModerationListView.Availability
+            listView: SelectedModerationListView.ClinicAccounts
         }]
         : [])
 ])
@@ -349,11 +338,9 @@ function pageRoute(page: NavPage): { path: string, query?: { view: string } } {
         ? 'submissions'
         : page.listView === SelectedModerationListView.Facilities
             ? 'facilities'
-            : page.listView === SelectedModerationListView.Bookings
-                ? 'bookings'
-                : page.listView === SelectedModerationListView.Availability
-                    ? 'availability'
-                    : 'healthcare-professionals'
+            : page.listView === SelectedModerationListView.ClinicAccounts
+                ? 'clinics'
+                : 'healthcare-professionals'
 
     return {
         path: page.route,

@@ -7,7 +7,7 @@ import {
     type UpdateBookingPaymentSettingsInput
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
-import { canManageFacility, canReadFacility, type BookingAccess } from '../booking/access.js'
+import { isClinicOwner, isClinicMember, type BookingAccess } from '../booking/access.js'
 import { paymentSettingsRow, type PaymentSettingsRow } from '../booking/paymentSettings.js'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
@@ -55,7 +55,7 @@ async function toGql(
         hasPayPayQr: qrKey !== null,
         payPayQrPreviewUrl: qrKey === null ? null : await clinicAssetPreviewUrl(qrKey, apiBaseUrl),
         feeJpy: row.fee_jpy,
-        canManage: canManageFacility(access, row.facility_id)
+        canManage: isClinicOwner(access, row.facility_id)
     }
 }
 
@@ -65,7 +65,7 @@ export async function getBookingPaymentSettings(
     access: BookingAccess,
     apiBaseUrl: string
 ): Promise<BookingPaymentSettings | null> {
-    if (!UUID_REGEX.test(facilityId) || !canReadFacility(access, facilityId)) {
+    if (!UUID_REGEX.test(facilityId) || !isClinicMember(access, facilityId)) {
         return null
     }
     const row = await paymentSettingsRow(facilityId)
@@ -131,7 +131,7 @@ export async function updateBookingPaymentSettings(
         return failure(checked.error.field, checked.error.errorCode, 400)
     }
     const { value } = checked
-    if (!canManageFacility(access, value.facilityId)) {
+    if (!isClinicOwner(access, value.facilityId)) {
         return failure('facilityId', ErrorCode.FORBIDDEN, 403)
     }
     try {
@@ -172,7 +172,7 @@ export async function createPaymentQrUploadUrl(
     if (!UUID_REGEX.test(facilityId)) {
         return failure('facilityId', ErrorCode.INVALID_ID, 400)
     }
-    if (!canManageFacility(access, facilityId)) {
+    if (!isClinicOwner(access, facilityId)) {
         return failure('facilityId', ErrorCode.FORBIDDEN, 403)
     }
     const contentType = input.contentType.trim().toLowerCase()

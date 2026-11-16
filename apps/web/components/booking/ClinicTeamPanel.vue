@@ -19,6 +19,13 @@
                 <p class="text-sm text-primary-text-muted">
                     {{ t('clinicDashboard.members.help') }}
                 </p>
+                <p
+                    v-if="props.showInterpretation"
+                    class="text-sm text-primary-text-muted"
+                    data-testid="clinic-team-admin-help"
+                >
+                    {{ t('clinicDashboard.members.adminHelp') }}
+                </p>
             </div>
             <ul
                 v-if="members.length > 0"
@@ -94,29 +101,48 @@
                 </button>
             </form>
         </section>
+
+        <section
+            v-if="props.showInterpretation && settings"
+            class="card flex flex-col gap-3 p-5 shadow-card landscape:p-6"
+            data-testid="clinic-team-interpretation"
+        >
+            <ClinicInterpretationSwitch
+                :facility-id="props.facilityId"
+                :settings="settings"
+                @saved="onInterpretationSaved"
+            />
+        </section>
     </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { ClinicMemberRole, type ClinicMember } from '@findadoc/graphql'
+import { ClinicMemberRole, type BookingSettings, type ClinicMember } from '@findadoc/graphql'
+import ClinicInterpretationSwitch from '~/components/booking/ClinicInterpretationSwitch.vue'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
 import { fetchClinicAdmin, inviteClinicMember, removeClinicMember } from '~/utils/booking/staffQuery'
 
 /**
  * Who may use the clinic's dashboard. An owner invites staff; an admin may
- * also invite owners. Booking settings are a separate tab (ClinicSettingsPanel).
+ * also invite owners. Booking settings are a separate tab (ClinicSettingsPanel), which
+ * an admin does not see: an admin who is not a member reads no bookings (#192), so
+ * their interpretation switch is here.
  */
 const props = defineProps<{
     facilityId: string
+    /** The viewer is an admin: they invite and remove clinic owners as well as staff. */
     isAdmin: boolean
+    /** The admin set-up view also turns interpretation on or off here (#192). */
+    showInterpretation: boolean
 }>()
 
 const { t } = useI18n()
 const toast = useAppToast()
 const members = ref<ClinicMember[]>([])
+const settings = ref<BookingSettings | null>(null)
 const loadError = ref(false)
 const inviting = ref(false)
 const inviteEmail = ref('')
@@ -134,6 +160,11 @@ async function load(): Promise<void> {
     const loaded = await fetchClinicAdmin(props.facilityId)
     loadError.value = loaded === null
     members.value = loaded?.members ?? []
+    settings.value = loaded?.settings ?? null
+}
+
+function onInterpretationSaved(saved: BookingSettings): void {
+    settings.value = saved
 }
 
 async function invite(): Promise<void> {

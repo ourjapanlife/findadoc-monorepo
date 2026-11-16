@@ -40,8 +40,8 @@ export enum SelectedModerationListView {
     Facilities = 'FACILITIES',
     HealthcareProfessionals = 'HEALTHCARE_PROFESSIONALS',
     Submissions = 'SUBMISSIONS',
-    Bookings = 'BOOKINGS',
-    Availability = 'AVAILABILITY'
+    /** Admins: pick a clinic to set up its account (#192). */
+    ClinicAccounts = 'CLINIC_ACCOUNTS'
 }
 
 type SubmissionStatusFilter = Pick<

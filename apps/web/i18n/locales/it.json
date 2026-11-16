@@ -160,7 +160,7 @@
   "privacyPage": {
     "heading": "Informativa sulla privacy",
     "subheading": "Cosa raccogliamo, perché, con chi lo condividiamo e come contattarci riguardo alle tue informazioni.",
-    "date": "Data di entrata in vigore: 9 novembre 2026",
+    "date": "Data di entrata in vigore: 16 novembre 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Chi siamo",
@@ -199,7 +199,7 @@
       },
       "security": {
         "heading": "7. Sicurezza",
-        "p1": "Le informazioni sono cifrate durante la trasmissione e l'accesso è limitato a chi ne ha bisogno: i nostri moderatori e il personale della clinica presso cui hai prenotato. Il personale di una clinica vede solo le prenotazioni della propria clinica."
+        "p1": "Le informazioni sono cifrate durante la trasmissione e l'accesso è limitato a chi ne ha bisogno. I nostri moderatori esaminano le segnalazioni di cliniche e medici, e questo ruolo non dà loro accesso alle tue prenotazioni. La tua richiesta, le tue risposte e i tuoi file sono visibili solo al personale della clinica presso cui hai prenotato, e il personale di una clinica vede solo le prenotazioni della propria clinica."
       },
       "rights": {
         "heading": "8. I tuoi diritti",
@@ -328,9 +328,8 @@
     "submissions": "Inoltrato",
     "collapse": "Comprimi la barra laterale",
     "expand": "Espandi la barra laterale",
-    "bookings": "Prenotazioni",
-    "availability": "Disponibilità",
-    "userFeedback": "Segnalazioni degli utenti"
+    "userFeedback": "Segnalazioni degli utenti",
+    "clinicAccounts": "Account delle cliniche"
   },
   "accessPanel": {
     "loading": "Caricamento autorizzazioni…",
@@ -358,6 +357,7 @@
     "addHealthcareProfessional": "Aggiungi un professionista sanitario",
     "licenseReview": "Licenza da verificare",
     "openClinicDashboard": "Apri la dashboard di una clinica",
+    "clinicAccountsHelp": "Apri una clinica per invitare il titolare e il personale, o per attivare l'interpretariato. Non vedi le prenotazioni di una clinica a meno che tu non ne sia membro.",
     "chooseClinic": "Scegli una clinica",
     "noBookingClinics": "Nessuna clinica accetta ancora prenotazioni",
     "clinicsLoadError": "Impossibile caricare le cliniche"
@@ -1126,13 +1126,10 @@
     "retainUntil": "Conservare fino al {date}",
     "noAppointment": "Nessuno slot scelto",
     "identityBadge": "Documento",
-    "identityYes": "Sì",
-    "identityNo": "Nessuno",
     "columns": {
       "clinic": "Clinica",
       "status": "Stato",
       "appointment": "Appuntamento",
-      "identity": "Caricamento identità",
       "created": "Creato",
       "locale": "Lingua"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "Squadra",
       "help": "Le persone invitate qui possono vedere le richieste della clinica e modificarne il calendario dopo aver effettuato l'accesso con quell'e-mail.",
+      "adminHelp": "Stai configurando l'account di questa clinica. Invita qui il titolare. Non puoi vedere le prenotazioni di questa clinica a meno che tu non ne sia membro.",
       "active": "Accesso effettuato",
       "pending": "Invitato",
       "remove": "Rimuovi",

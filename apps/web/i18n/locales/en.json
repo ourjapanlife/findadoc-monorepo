@@ -203,7 +203,7 @@
   "privacyPage": {
     "heading": "Privacy Policy",
     "subheading": "What we collect, why we collect it, who we share it with, and how to reach us about your information.",
-    "date": "Effective date: November 9, 2026",
+    "date": "Effective date: November 16, 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Who we are",
@@ -242,7 +242,7 @@
       },
       "security": {
         "heading": "7. Security",
-        "p1": "Information is encrypted in transit, and access is limited to the people who need it: our moderators, and the staff of the clinic you booked with. Clinic staff can see only their own clinic's bookings."
+        "p1": "Information is encrypted in transit, and access is limited to the people who need it. Our moderators review clinic and doctor suggestions, and that role gives them no access to your bookings. Your booking request, answers, and files are seen only by the staff of the clinic you booked with, and clinic staff can see only their own clinic's bookings."
       },
       "rights": {
         "heading": "8. Your rights",
@@ -419,9 +419,8 @@
     "submissions": "Submissions",
     "collapse": "Collapse sidebar",
     "expand": "Expand sidebar",
-    "bookings": "Bookings",
-    "availability": "Availability",
-    "userFeedback": "User feedback"
+    "userFeedback": "User feedback",
+    "clinicAccounts": "Clinic accounts"
   },
   "accessPanel": {
     "loading": "Loading permissions…",
@@ -449,6 +448,7 @@
     "facilities": "Facilities",
     "licenseReview": "Needs license review",
     "openClinicDashboard": "Open a clinic dashboard",
+    "clinicAccountsHelp": "Open a clinic to invite its owner and staff, or to turn interpretation on. You do not see a clinic's bookings unless you are a member of that clinic.",
     "chooseClinic": "Choose a clinic",
     "noBookingClinics": "No clinics take bookings yet",
     "clinicsLoadError": "Could not load clinics"
@@ -1126,13 +1126,10 @@
     "retainUntil": "Retain until {date}",
     "noAppointment": "No slot chosen",
     "identityBadge": "ID file",
-    "identityYes": "Yes",
-    "identityNo": "No",
     "columns": {
       "clinic": "Clinic",
       "status": "Status",
       "appointment": "Appointment",
-      "identity": "Identity upload",
       "created": "Created",
       "locale": "Language"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "Team",
       "help": "People invited here can see this clinic's requests and edit its calendar after they sign in with that email.",
+      "adminHelp": "You are setting up this clinic's account. Invite its owner here. You cannot see this clinic's bookings unless you are a member.",
       "active": "Signed in",
       "pending": "Invited",
       "remove": "Remove",

@@ -16,9 +16,9 @@ import { availableStarts, mergeWindows } from '../src/booking/schedule.js'
 import { hashPatientToken, newPatientToken } from '../src/booking/links.js'
 import {
     MEMBERSHIP_ROLE,
-    canManageFacility,
-    canReadFacility,
-    readableFacilityIds,
+    isClinicOwner,
+    isClinicMember,
+    memberFacilityIds,
     verifiedEmailFromUser,
     type BookingAccess
 } from '../src/booking/access.js'
@@ -121,25 +121,37 @@ describe('patient token', () => {
 
 describe('clinic access', () => {
     const member = (memberships: [string, 'owner' | 'staff'][]): BookingAccess => ({
-        readAll: false,
-        writeAll: false,
-        manageMembersAll: false,
+        isAdmin: false,
         memberships: new Map(memberships)
     })
 
     it('limits staff to their own facility', () => {
         const access = member([['facility-a', MEMBERSHIP_ROLE.STAFF]])
-        expect(canReadFacility(access, 'facility-a')).toBe(true)
-        expect(canReadFacility(access, 'facility-b')).toBe(false)
-        expect(canReadFacility(access, null)).toBe(false)
-        expect(canManageFacility(access, 'facility-a')).toBe(false)
-        expect(readableFacilityIds(access)).toEqual(['facility-a'])
+        expect(isClinicMember(access, 'facility-a')).toBe(true)
+        expect(isClinicMember(access, 'facility-b')).toBe(false)
+        expect(isClinicMember(access, null)).toBe(false)
+        expect(isClinicOwner(access, 'facility-a')).toBe(false)
+        expect(memberFacilityIds(access)).toEqual(['facility-a'])
     })
 
     it('lets an owner manage their facility only', () => {
         const access = member([['facility-a', MEMBERSHIP_ROLE.OWNER]])
-        expect(canManageFacility(access, 'facility-a')).toBe(true)
-        expect(canManageFacility(access, 'facility-b')).toBe(false)
+        expect(isClinicOwner(access, 'facility-a')).toBe(true)
+        expect(isClinicOwner(access, 'facility-b')).toBe(false)
+    })
+
+    it('does not make an admin a clinic member or owner (#192)', () => {
+        const admin: BookingAccess = { isAdmin: true, memberships: new Map() }
+        expect(isClinicMember(admin, 'facility-a')).toBe(false)
+        expect(isClinicOwner(admin, 'facility-a')).toBe(false)
+        expect(memberFacilityIds(admin)).toEqual([])
+    })
+
+    it('treats an admin who is a clinic member as a member of that clinic only', () => {
+        const admin: BookingAccess = { isAdmin: true, memberships: new Map([['facility-a', MEMBERSHIP_ROLE.STAFF]]) }
+        expect(isClinicMember(admin, 'facility-a')).toBe(true)
+        expect(isClinicMember(admin, 'facility-b')).toBe(false)
+        expect(memberFacilityIds(admin)).toEqual(['facility-a'])
     })
 
     it('claims invites only for a verified email', () => {

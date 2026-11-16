@@ -115,14 +115,24 @@ export enum BookingCardPaymentMode {
 export type BookingClinic = {
   __typename?: 'BookingClinic';
   branding?: Maybe<ClinicBranding>;
-  /** True when the user may change members and booking settings. */
-  canManage: Scalars['Boolean']['output'];
   clinicName: Scalars['String']['output'];
   clinicSiteSlug?: Maybe<Scalars['String']['output']>;
   facilityId: Scalars['ID']['output'];
-  /** Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline. */
+  /**
+   * True when the user is an admin. An admin sets up clinic accounts: owners, staff, and
+   * interpretation. Being an admin grants no booking access; only role does.
+   */
+  isAdmin: Scalars['Boolean']['output'];
+  /**
+   * Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline.
+   * 0 when the user is not a member.
+   */
   requestedCount: Scalars['Int']['output'];
-  /** Null for admins, who reach every clinic without a membership. */
+  /**
+   * The user's clinic membership here: OWNER or STAFF. Only a clinic member reads this clinic's
+   * bookings, calendar, and settings, and only the owner changes settings and staff (#192).
+   * Null when the user is not a member (an admin opening the clinic to set up its account).
+   */
   role?: Maybe<ClinicMemberRole>;
   /**
    * True when the clinic offers a form that asks how the patient pays, so new visits
@@ -272,7 +282,7 @@ export enum BookingPaymentMethod {
 
 /**
  * How a clinic takes the initial fee, for the pending-payment email (online consult v2 §3.3, §3.4).
- * Members read it. Owners and admins change it. Clinic data, not patient data.
+ * Clinic members read it. The clinic owner changes it. Clinic data, not patient data.
  */
 export type BookingPaymentSettings = {
   __typename?: 'BookingPaymentSettings';
@@ -333,8 +343,9 @@ export type BookingSettings = {
   /** Intake forms the clinic offers. The first is the default. */
   formDefinitionIds: Array<Scalars['String']['output']>;
   /**
-   * Intake forms this user may offer at this clinic. The online consult form is
-   * limited to admins and preview clinic sites until its answers have a purge path.
+   * Intake forms this user may offer at this clinic. The online consult form is limited to
+   * preview clinic sites, clinics that already offer it, and a clinic owner who is also an admin,
+   * until its answers have a purge path.
    */
   offerableFormDefinitionIds: Array<Scalars['String']['output']>;
   /** The clinic may use interpreters (#205). Admins turn it on; it is meant to be a paid add-on. */
@@ -1098,7 +1109,7 @@ export type DeleteResult = {
 export type Facility = {
   __typename?: 'Facility';
   /**
-   * True once an admin or the clinic owner has saved booking settings for this facility.
+   * True once the clinic owner has saved booking settings for this facility.
    * The clinic page shows Book, and patients may book, only then.
    */
   bookingEnabled: Scalars['Boolean']['output'];
@@ -1673,7 +1684,7 @@ export type Mutation = {
   /** Create a new healthcare professional record. */
   createHealthcareProfessional: HealthcareProfessional;
   /**
-   * A short-lived upload URL for the clinic's PayPay QR. Owners and admins. PNG, JPEG, or WebP up to
+   * A short-lived upload URL for the clinic's PayPay QR. The clinic owner only. PNG, JPEG, or WebP up to
    * 1 MB; the server checks the stored file again on save.
    */
   createPaymentQrUploadUrl: PaymentQrUploadUrl;
@@ -1701,7 +1712,7 @@ export type Mutation = {
   recordCityPlaceId: City;
   /** Remove a clinic member. Admins remove anyone; an owner removes staff. */
   removeClinicMember: DeleteResult;
-  /** Add or change one interpreter, with their whole week (#205). Owners and admins. */
+  /** Add or change one interpreter, with their whole week (#205). The clinic owner only. */
   saveClinicInterpreter: ClinicInterpreter;
   /** Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on. */
   setBookingInterpretation: BookingSettings;
@@ -1719,9 +1730,9 @@ export type Mutation = {
   submitFacilityCorrection: FacilityCorrectionResult;
   /** Staff confirm, decline, cancel, complete, or mark a confirmed visit unpaid. Declined and cancelled free the slot. */
   updateBookingAppointmentStatus: BookingAppointment;
-  /** Change how the clinic takes the initial fee (online consult v2 §3.3). Owners and admins. */
+  /** Change how the clinic takes the initial fee (online consult v2 §3.3). The clinic owner only. */
   updateBookingPaymentSettings: BookingPaymentSettings;
-  /** Change visit lengths and offered forms. Owners and admins. */
+  /** Change visit lengths and offered forms. The clinic owner only. */
   updateBookingSettings: BookingSettings;
   /** Update an existing facility by ID. */
   updateFacility: Facility;
@@ -2084,7 +2095,7 @@ export type Query = {
   bookingAvailable: Scalars['Boolean']['output'];
   /** One clinic for the dashboard header. Null when the user may not open it. */
   bookingClinic?: Maybe<BookingClinic>;
-  /** Every clinic set up for booking, for the admin clinic picker. Admins only. */
+  /** Every clinic set up for booking, for the admin clinic-account picker. Admins only. Reads no bookings (#192). */
   bookingClinics: Array<BookingClinic>;
   /**
    * The booking intake form for a directory facility or hosted clinic.
@@ -2094,20 +2105,20 @@ export type Query = {
   bookingForm?: Maybe<BookingForm>;
   /** Intake form types a clinic may offer. */
   bookingFormTypes: Array<BookingFormType>;
-  /** How one clinic takes the initial fee. Members and admins. Null when the clinic saved none. */
+  /** How one clinic takes the initial fee. Clinic members only. Null when the clinic saved none. */
   bookingPaymentSettings?: Maybe<BookingPaymentSettings>;
-  /** Booking options for one clinic. Members and admins. */
+  /** Booking options for one clinic. Clinic members, and admins setting up the clinic (no patient data). */
   bookingSettings?: Maybe<BookingSettings>;
   /** Staff read-only detail for one booking submission. */
   bookingSubmission?: Maybe<BookingSubmissionDetail>;
   /**
-   * Staff list of booking submissions, limited to the clinics the user belongs to.
-   * Admins see every clinic.
+   * Staff list of booking submissions, limited to the clinics the user is a member of.
+   * Being an admin adds no clinic (#192).
    */
   bookingSubmissions: Array<BookingSubmissionListItem>;
   /**
    * Contact and scheduling rows for one clinic's bookings, for a CSV the browser builds.
-   * Owners and admins only. Each call is access-logged with ids only.
+   * The clinic owner only. Each call is access-logged with ids only.
    */
   bookingSubmissionsExport: BookingSubmissionExport;
   bookingSubmissionsTotalCount: Scalars['Int']['output'];
@@ -2121,17 +2132,17 @@ export type Query = {
   clinicAvailabilityClosures: Array<ClinicAvailabilityClosure>;
   /** Staff availability windows for the calendar editor. */
   clinicAvailabilityWindows: Array<ClinicAvailabilityWindow>;
-  /** A clinic's interpreters (#205). Owners, staff, and admins. */
+  /** A clinic's interpreters (#205). Clinic members only. */
   clinicInterpreters: Array<ClinicInterpreter>;
   /** Invited and signed-in members of one clinic. Owners and admins only. */
   clinicMembers: Array<ClinicMember>;
-  /** Doctors at one clinic, for the schedule picker. Members and admins. */
+  /** Doctors at one clinic, for the schedule picker. Clinic members only. */
   clinicPractitioners: Array<BookingPractitioner>;
   /** A hosted clinic page. Drafts are null. The clean link is /clinic/{slug}. */
   clinicSite?: Maybe<ClinicSite>;
   /** Hosted clinics that are in preview or published. Drafts are omitted. */
   clinicSites: Array<ClinicSiteSummary>;
-  /** Every schedule's usual week in Japan time. Members and admins. */
+  /** Every schedule's usual week in Japan time. Clinic members only. */
   clinicWeeklyHours: Array<ClinicWeeklyHours>;
   /** Roles and effective API scopes for the authenticated user (always allowed when a user context exists). */
   currentUserAccess: CurrentUserAccess;
@@ -3225,10 +3236,10 @@ export type BookingAppointmentResolvers<ContextType = any, ParentType extends Re
 
 export type BookingClinicResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingClinic'] = ResolversParentTypes['BookingClinic']> = {
   branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
-  canManage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   requestedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['ClinicMemberRole']>, ParentType, ContextType>;
   takesPayment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
