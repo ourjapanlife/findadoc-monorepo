@@ -53,7 +53,7 @@
         </ul>
 
         <p
-            v-if="!professionals.length"
+            v-if="listsNoDoctors"
             data-testid="search-result-no-professionals"
             class="m-0 text-sm text-primary-text-muted"
         >
@@ -166,6 +166,13 @@ const professionals = computed(() => props.result.healthcareProfessionals.map(pr
         .filter(Boolean)
         .join(', ')
 })))
+
+/*
+ * `healthcareProfessionals` holds only the doctors who match the filters. A language search can
+ * match the clinic's own languages and none of its doctors, so ask the clinic whether it lists any.
+ */
+const listsNoDoctors = computed(() => !props.result.healthcareProfessionals.length
+  && !(props.result.healthcareProfessionalIds ?? []).length)
 
 const visibleProfessionals = computed(() => professionals.value.slice(0, MAX_VISIBLE_PROFESSIONALS))
 const hiddenProfessionalCount = computed(() => Math.max(0, professionals.value.length - MAX_VISIBLE_PROFESSIONALS))

@@ -58,6 +58,16 @@ describe('a clinic with no listed doctor (#21)', () => {
         expect(wrapper.find('[data-testid="search-details-add-professional"]').attributes('href')).toMatch(/\/submit$/)
     })
 
+    it('shows no note when the clinic lists doctors but the search filtered them all out', async () => {
+        const filteredOut = { ...result([]), healthcareProfessionalIds: ['fake-doctor'] }
+        const card = await mountSuspended(SearchResultCard, { props: { result: filteredOut, from: 'results' } })
+        const details = await mountSuspended(SearchResultDetails, { props: { facility: filteredOut } })
+
+        expect(card.find('[data-testid="search-result-no-professionals"]').exists()).toBe(false)
+        expect(details.find('[data-testid="search-details-no-professionals"]').exists()).toBe(false)
+        expect(details.text()).not.toContain('No professionals listed')
+    })
+
     it('shows no note once a doctor is listed', async () => {
         const card = await mountSuspended(SearchResultCard, { props: { result: result([doctor]), from: 'results' } })
         const details = await mountSuspended(SearchResultDetails, { props: { facility: result([doctor]) } })

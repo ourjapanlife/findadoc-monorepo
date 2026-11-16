@@ -128,13 +128,17 @@
             <JapaneseInsuranceNote :value="facility.japaneseInsurance" />
         </header>
 
-        <section class="flex flex-col gap-3">
+        <!-- Hidden when the clinic lists doctors but the search filtered every one of them out. -->
+        <section
+            v-if="professionals.length || listsNoDoctors"
+            class="flex flex-col gap-3"
+        >
             <h3 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ professionalsCountText }}
             </h3>
             <!-- A clinic can be listed before anyone names a doctor there (#21). Say so rather than leave a bare heading. -->
             <div
-                v-if="!professionals.length"
+                v-if="listsNoDoctors"
                 data-testid="search-details-no-professionals"
                 class="card flex flex-col gap-2 p-4"
             >
@@ -317,6 +321,13 @@ const professionals = computed(() => props.facility.healthcareProfessionals.map(
 })))
 
 // In script rather than the template: i18n/cleanUnusedLocaleKeys.js only sees template t() calls with no second argument.
+/*
+ * On search, `healthcareProfessionals` holds only the doctors who match the filters. A language
+ * search can match the clinic's own languages and none of its doctors (#21).
+ */
+const listsNoDoctors = computed(() => !props.facility.healthcareProfessionals.length
+  && !(props.facility.healthcareProfessionalIds ?? []).length)
+
 const professionalsCountText = computed(() => t('search.professionalsAtFacility', professionals.value.length))
 
 function trackContact(name: 'Call clicked' | 'Website clicked' | 'Email clicked' | 'Maps clicked') {
