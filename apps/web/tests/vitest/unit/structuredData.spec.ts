@@ -271,6 +271,14 @@ describe('organizationJsonLd', () => {
             url: `${SITE_ORIGIN}/contact`
         })
     })
+
+    it('names the official logo on our own domain, not a social card', () => {
+        const logo = organizationJsonLd().logo as { url: string, width: number, height: number }
+
+        expect(logo.url).to.equal(`${SITE_ORIGIN}/findadoc-logo.png`)
+        expect(logo.width).to.be.at.least(112)
+        expect(logo.width).to.equal(logo.height)
+    })
 })
 
 describe('serializeJsonLd', () => {

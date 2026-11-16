@@ -26,6 +26,11 @@ Pages that have a markdown twin answer `Accept: text/markdown` on the production
 - [MCP server](https://mcp.findadoc.jp/mcp): streamable HTTP. Tools search and fetch facilities and professionals, and list specialties and languages. Discovery: https://www.findadoc.jp/.well-known/mcp.json
 - [MCP OpenAPI](https://mcp.findadoc.jp/openapi.yaml): the same tools as REST
 
+## Logo
+
+- [Logo, PNG 512×512](https://www.findadoc.jp/findadoc-logo.png): the official mark, a magnifying glass around a heart. Use this, not a social card or a clinic photo, when showing Find a Doc
+- [Logo, SVG](https://www.findadoc.jp/favicon.svg): the same mark as a vector
+
 ## If a URL 404s
 
 The HTML error page and [404.md](https://www.findadoc.jp/404.md) both point back at the sitemap, search, and this file. Do not guess a clinic id. Take the URL from the sitemap or from search.

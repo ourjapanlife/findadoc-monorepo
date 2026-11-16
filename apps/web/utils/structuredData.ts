@@ -7,6 +7,8 @@ import {
     NPO_LEGAL_NAME,
     NPO_REGISTRATION_NUMBER,
     ORGANIZATION_PROFILE_URLS,
+    SITE_LOGO,
+    SITE_LOGO_SIZE,
     SITE_ORIGIN,
     SITE_TITLE
 } from './site'
@@ -365,6 +367,15 @@ export function organizationJsonLd(): JsonLdNode {
         name: SITE_TITLE,
         legalName: NPO_LEGAL_NAME,
         url: `${SITE_ORIGIN}/`,
+        // The mark itself, not a social card, so a search result or an assistant shows it.
+        logo: {
+            '@type': 'ImageObject',
+            url: SITE_LOGO,
+            contentUrl: SITE_LOGO,
+            width: SITE_LOGO_SIZE,
+            height: SITE_LOGO_SIZE,
+            caption: SITE_TITLE
+        },
         email: CONTACT_EMAIL,
         foundingDate: NPO_FOUNDING_DATE,
         identifier: {

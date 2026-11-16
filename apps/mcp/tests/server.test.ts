@@ -24,6 +24,17 @@ describe('findadoc-mcp server', () => {
         await client.connect(clientTransport)
     })
 
+    it('names itself with the official logo from findadoc.jp', () => {
+        const info = client.getServerVersion()
+
+        expect(info?.title).toBe('Find a Doc, Japan')
+        expect(info?.websiteUrl).toBe('https://www.findadoc.jp')
+        expect(info?.icons?.map(icon => icon.src)).toEqual([
+            'https://www.findadoc.jp/findadoc-logo.png',
+            'https://www.findadoc.jp/favicon.svg'
+        ])
+    })
+
     it('should list available tools', async () => {
         const result = await client.listTools()
 

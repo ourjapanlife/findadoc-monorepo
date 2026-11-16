@@ -1,7 +1,13 @@
 {
   "serverInfo": {
     "name": "Find a Doc, Japan",
-    "description": "Search clinics and healthcare professionals in Japan by language, specialty, and location, and fetch one record by id."
+    "title": "Find a Doc, Japan",
+    "description": "Search clinics and healthcare professionals in Japan by language, specialty, and location, and fetch one record by id.",
+    "websiteUrl": "https://www.findadoc.jp",
+    "icons": [
+      { "src": "https://www.findadoc.jp/findadoc-logo.png", "mimeType": "image/png", "sizes": ["512x512"] },
+      { "src": "https://www.findadoc.jp/favicon.svg", "mimeType": "image/svg+xml", "sizes": ["any"] }
+    ]
   },
   "transport": {
     "type": "streamable-http",
