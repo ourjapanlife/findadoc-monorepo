@@ -143,7 +143,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "That did not work. Please try again.",
-    "englishNameRequired": "The healthcare professional needs an English name.",
     "facilityFieldsIncomplete": "Fill in the required clinic fields before continuing.",
     "healthcareProfessionalFieldsIncomplete": "Fill in the required healthcare professional fields before continuing.",
     "serverUnavailable": "Something went wrong on our side. Try again.",
@@ -173,7 +172,10 @@
     "prefectureRequired": "Add a prefecture in English and in Japanese.",
     "correctionCityRequired": "Pick a city before you approve this correction.",
     "submissionKindMismatch": "This change does not apply to a visitor correction.",
-    "submissionStatusChanged": "Someone else changed this submission first. Reload the page and check it again."
+    "submissionStatusChanged": "Someone else changed this submission first. Reload the page and check it again.",
+    "professionalNamesRequired": "The healthcare professional needs a romaji name and a Japanese name.",
+    "professionalNameLocaleNotAllowed": "A healthcare professional only has a romaji name and a Japanese name.",
+    "japaneseMiddleNameNotAllowed": "The Japanese name has no middle name."
   },
   "footer": {
     "poweredBy": "Powered by {name}",
@@ -451,7 +453,8 @@
     "clinicAccountsHelp": "Open a clinic to invite its owner and staff, or to turn interpretation on. You do not see a clinic's bookings unless you are a member of that clinic.",
     "chooseClinic": "Choose a clinic",
     "noBookingClinics": "No clinics take bookings yet",
-    "clinicsLoadError": "Could not load clinics"
+    "clinicsLoadError": "Could not load clinics",
+    "nameReview": "Needs name review"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Delete",
@@ -522,30 +525,17 @@
     "noSubmissions": "There are no pending submissions"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "Add New Name",
-    "addAnotherName": "Add another name",
-    "removeName": "Remove name",
-    "delete": "Permanently delete",
     "errorMessageHealthcareProfessionalId": "Healthcare Professional ID was not found",
-    "exit": "Exit",
     "healthcareProfessionalMedicalInfoHeading": "Healthcare Professional Details",
     "healthcareProfessionalNameHeading": "Healthcare Professional Name",
     "labelHealthcareProfessionalFirstName": "First Name",
     "labelHealthcareProfessionalLastName": "Last Name",
     "labelHealthcareProfessionalMiddleName": "Middle Name",
-    "labelHealthcareProfessionalNameLocale": "Name Language",
     "labelAdditionalNotesForPatients": "Additional Notes for Patients",
-    "missingFirstName": "No first name entered",
-    "missingLastName": "No last name entered",
-    "missingLocale": "No language chosen",
-    "charactersOfLanguageDoNotMatchNameLocale": "The characters of the Healthcare Professional's name are invalid in the chosen language",
-    "nameForLocaleAlreadyExists": "Name for chosen language already exists. Either update existing name or choose a different language.",
-    "oneNameNecessary": "At least one name is required for a Healthcare Professional",
     "placeholderTextHealthcareProfessionalFirstName": "e.g. John",
     "placeholderTextHealthcareProfessionalLastName": "e.g. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "e.g. Bronson",
     "placeholderAdditionalNotesForPatients": "e.g. English speaking doctors only available from 2-4",
-    "save": "Save",
     "selectDegrees": "Degrees",
     "selectPrimaryLicense": "Primary license",
     "selectAdditionalCredentials": "Additional credentials",
@@ -570,7 +560,13 @@
     "noSpecialtiesWereFound": "No specialties were found",
     "noDegreesWereFound": "No degrees were found",
     "noLocalesWereFound": "No languages were found",
-    "update": "Update"
+    "romajiName": "Name in romaji",
+    "japaneseName": "Name in Japanese",
+    "japaneseNameHint": "Kanji or kana. Write a name that is not Japanese in katakana.",
+    "placeholderTextJapaneseLastName": "e.g. 山田",
+    "placeholderTextJapaneseFirstName": "e.g. 花子",
+    "nameNeedsReview": "Check these names. One of them was filled in automatically or is still missing.",
+    "otherLocaleNamesRemoved": "Names in other languages are removed when you save."
   },
   "modFacilitySection": {
     "addresses": "Addresses",

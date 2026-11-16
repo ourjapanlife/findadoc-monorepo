@@ -7,6 +7,7 @@ import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { professionalSelection } from '../utils/graphqlSelection'
 import { type Degree,
     LicenseReviewStatus,
+    NameReviewStatus,
     type Specialty,
     type Locale, type DeleteResult, type HealthcareProfessional,
     type LocalizedNameInput,
@@ -94,6 +95,13 @@ export const useHealthcareProfessionalsStore = defineStore(
             null as LicenseReviewStatus | null,
             [LicenseReviewStatus.NeedsReview]
         )
+        // Names the backfill generated or could not fill (#282).
+        const nameReviewFilter = usePersistentFilters(
+            'professionals',
+            'nameReview',
+            null as NameReviewStatus | null,
+            [NameReviewStatus.NeedsReview]
+        )
         const healthcareProfessionalList: Ref<HealthcareProfessional[]> = ref([])
         const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
         let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
@@ -109,6 +117,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             facilityIds: [],
             id: '', // Empty string, assuming the ID will be set later
             licenseReview: null,
+            nameReview: null,
             names: [],
             specialties: [],
             spokenLanguages: [],
@@ -123,9 +132,6 @@ export const useHealthcareProfessionalsStore = defineStore(
             spokenLanguages: [] as Locale[],
             additionalInfoForPatients: ''
         })
-
-        // This helps users easily add name locales back to a healthcare professional by keeping track of removed ones
-        const removedHealthcareProfessionalNames: Ref<LocalizedNameInput[]> = ref([])
 
         /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
         const unsavedChangesResetTick: Ref<number> = ref(0)
@@ -151,6 +157,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             healthcareProfessionalSectionFields.degrees = healthcareProfessional.degrees
             healthcareProfessionalSectionFields.additionalCredentials = healthcareProfessional.additionalCredentials ?? []
             healthcareProfessionalSectionFields.licenseReview = healthcareProfessional.licenseReview ?? null
+            healthcareProfessionalSectionFields.nameReview = healthcareProfessional.nameReview ?? null
             healthcareProfessionalSectionFields.facilityIds = healthcareProfessional.facilityIds
             healthcareProfessionalSectionFields.id = healthcareProfessional.id
             healthcareProfessionalSectionFields.names = healthcareProfessional.names
@@ -167,6 +174,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             healthcareProfessionalSectionFields.degrees = []
             healthcareProfessionalSectionFields.additionalCredentials = []
             healthcareProfessionalSectionFields.licenseReview = null
+            healthcareProfessionalSectionFields.nameReview = null
             healthcareProfessionalSectionFields.facilityIds = []
             healthcareProfessionalSectionFields.id = ''
             healthcareProfessionalSectionFields.names = []
@@ -215,7 +223,8 @@ export const useHealthcareProfessionalsStore = defineStore(
                             limit: itemsPerPage.value,
                             ...(query ? { query } : {}),
                             ...(orderBy === null ? {} : { orderBy }),
-                            ...(licenseReviewFilter.value ? { licenseReview: licenseReviewFilter.value } : {})
+                            ...(licenseReviewFilter.value ? { licenseReview: licenseReviewFilter.value } : {}),
+                            ...(nameReviewFilter.value ? { nameReview: nameReviewFilter.value } : {})
                         }
                         const { filteredSearchResults, totalCount } = await fetchHealthcareProfessionalsWithCount(filters)
                         return { rows: filteredSearchResults, totalCount }
@@ -326,7 +335,6 @@ export const useHealthcareProfessionalsStore = defineStore(
                 if (stillEditingUpdatedProfessional) {
                     selectedHealthcareProfessionalData.value = responseData
                     updateHealthcareProfessionalSectionFields(responseData)
-                    removedHealthcareProfessionalNames.value = []
                 }
                 await loadHealthcareProfessionalList()
             }
@@ -459,6 +467,12 @@ export const useHealthcareProfessionalsStore = defineStore(
             return loadHealthcareProfessionalList()
         }
 
+        function setNameReviewFilter(enabled: boolean) {
+            nameReviewFilter.value = enabled ? NameReviewStatus.NeedsReview : null
+            currentOffset.value = 0
+            return loadHealthcareProfessionalList()
+        }
+
         return {
             getHealthcareProfessionals,
             searchHealthcareProfessionals,
@@ -471,6 +485,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             licenseReviewFilter,
             setListSearchQuery,
             setLicenseReviewFilter,
+            nameReviewFilter,
+            setNameReviewFilter,
             updateHealthcareProfessional,
             selectedHealthcareProfessionalId,
             deleteHealthcareProfessional,
@@ -479,7 +495,6 @@ export const useHealthcareProfessionalsStore = defineStore(
             displayChosenLocaleForHealthcareProfessional,
             setSelectedHealthcareProfessional,
             selectedHealthcareProfessionalData,
-            removedHealthcareProfessionalNames,
             createHealthcareProfessional,
             createHealthcareProfessionalSectionFields,
             resetCreateHealthcareProfessionalFields,

@@ -28,7 +28,11 @@ export function buildHpUpdatePatch(
 
     // JSONB columns must be wrapped with asJsonb(): the pg driver serializes raw JS
     // arrays as PostgreSQL array literals ({...}) which jsonb columns reject.
-    if (fields.names !== undefined) { updatePatch.names = asJsonb(fields.names) }
+    if (fields.names !== undefined) {
+        updatePatch.names = asJsonb(fields.names)
+        // A moderator saved both names, so they leave the name queue (#282).
+        updatePatch.name_review = gqlTypes.NameReviewStatus.Confirmed
+    }
     if (fields.licenseReview === gqlTypes.LicenseReviewStatus.Confirmed) {
         updatePatch.license_review = gqlTypes.LicenseReviewStatus.Confirmed
         updatePatch.license_recommendation = null
@@ -76,6 +80,7 @@ export function applyHpFilters<O>(
     if (queryText) { filtered = filtered.where('hps.search_text', 'ilike', likeContainsPattern(queryText)) }
     if (filters.degrees?.length) { filtered = filtered.where('hps.degrees', '@>', asJsonb(filters.degrees)) }
     if (filters.licenseReview) { filtered = filtered.where('hps.license_review', '=', filters.licenseReview) }
+    if (filters.nameReview) { filtered = filtered.where('hps.name_review', '=', filters.nameReview) }
     if (filters.specialties?.length) { filtered = filtered.where('hps.specialties', '@>', asJsonb(filters.specialties)) }
     if (filters.spokenLanguages?.length) { filtered = filtered.where('hps.spoken_languages', '@>', asJsonb(filters.spokenLanguages)) }
     // Keeps professionals linked to at least one of the facilities. facilityIds on the result are still loaded separately.

@@ -459,7 +459,8 @@ export function validateUpdateSubmissionInput(
                     errors: []
                 }
 
-                validateNames(hp.names, namesValidation)
+                // A moderator may still be adding the second name; approval needs both (#282).
+                validateNames(hp.names, namesValidation, { requireBoth: false })
                 if (namesValidation.hasErrors) {
                     validationResults.hasErrors = true
                     namesValidation.errors?.forEach(err => {
@@ -557,13 +558,15 @@ const APPROVAL_PROFESSIONAL_FIELDS = ['degrees', 'specialties'] as const
 
 type ApprovalProfessionalFields = {
     id?: string | null
+    names?: gqlTypes.LocalizedNameInput[] | null
     degrees?: readonly unknown[] | null
     specialties?: readonly unknown[] | null
 }
 
 /**
- * Degrees and specialties can be saved empty while a submission is still a draft.
- * Approving a new professional requires each list. An existing professional already has them.
+ * Degrees and specialties can be saved empty while a submission is still a draft, and so can
+ * one of the two names. Approving a new professional requires each list and both the romaji and
+ * the Japanese name (#282). An existing professional already has them.
  */
 export function validateApprovalProfessionalFields(input: {
     hpsId?: string | null
@@ -603,6 +606,18 @@ export function validateApprovalProfessionalFields(input: {
                 httpStatus: 400
             })
         })
+
+        const namesValidation: Result<unknown> = { data: undefined, hasErrors: false, errors: [] }
+        validateNames(professional.names ? [...professional.names] : null, namesValidation)
+        if (namesValidation.hasErrors) {
+            validationResults.hasErrors = true
+            namesValidation.errors?.forEach(err => {
+                validationResults.errors?.push({
+                    ...err,
+                    field: err.field.replace('names', `healthcareProfessionals[${index}].names`)
+                })
+            })
+        }
     })
 
     return validationResults

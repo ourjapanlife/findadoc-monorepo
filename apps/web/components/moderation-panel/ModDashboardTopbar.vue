@@ -44,9 +44,19 @@
                 type="button"
                 data-testid="mod-license-review-filter"
                 :class="queueFilterClass(healthcareProfessionalsStore.licenseReviewFilter !== null)"
+                :aria-pressed="healthcareProfessionalsStore.licenseReviewFilter !== null"
                 @click="toggleLicenseReviewFilter"
             >
                 {{ t('modDashboardTopbar.licenseReview') }}
+            </button>
+            <button
+                type="button"
+                data-testid="mod-name-review-filter"
+                :class="queueFilterClass(healthcareProfessionalsStore.nameReviewFilter !== null)"
+                :aria-pressed="healthcareProfessionalsStore.nameReviewFilter !== null"
+                @click="toggleNameReviewFilter"
+            >
+                {{ t('modDashboardTopbar.nameReview') }}
             </button>
         </div>
         <div
@@ -130,6 +140,11 @@ const showLicenseReviewFilter = computed(() =>
 function toggleLicenseReviewFilter() {
     const reviewIsOff = healthcareProfessionalsStore.licenseReviewFilter === null
     healthcareProfessionalsStore.setLicenseReviewFilter(reviewIsOff)
+}
+
+function toggleNameReviewFilter() {
+    const reviewIsOff = healthcareProfessionalsStore.nameReviewFilter === null
+    healthcareProfessionalsStore.setNameReviewFilter(reviewIsOff)
 }
 
 type SubmissionTabCountKey = keyof typeof moderationSubmissionsStore.statusTotalCounts

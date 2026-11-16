@@ -1365,6 +1365,8 @@ export type HealthcareProfessional = {
   licenseRecommendation?: Maybe<Scalars['String']['output']>;
   /** NEEDS_REVIEW is the moderator queue. CONFIRMED keeps a dual license. */
   licenseReview?: Maybe<LicenseReviewStatus>;
+  /** NEEDS_REVIEW means the backfill guessed or could not fill one of the two names (#282). */
+  nameReview?: Maybe<NameReviewStatus>;
   /** Localized names of the healthcare professional (e.g. English and Japanese). */
   names: Array<LocalizedName>;
   /** One clinical license. Empty while a dual license is unresolved or confirmed as dual. */
@@ -1391,6 +1393,8 @@ export type HealthcareProfessionalSearchFilters = {
   licenseReview?: InputMaybe<LicenseReviewStatus>;
   /** Maximum number of results to return. */
   limit?: InputMaybe<Scalars['Int']['input']>;
+  /** Only professionals in this name queue. NEEDS_REVIEW lists names a moderator must check (#282). */
+  nameReview?: InputMaybe<NameReviewStatus>;
   /** Filter by localized names. */
   names?: InputMaybe<Array<LocalizedNameInput>>;
   /** Number of results to skip for pagination. */
@@ -1922,6 +1926,14 @@ export type MutationUpdateUserArgs = {
   id: Scalars['ID']['input'];
   input: UpdateUserInput;
 };
+
+/** Moderator queue for a professional's two names (#282). Saving names in moderation confirms them. */
+export enum NameReviewStatus {
+  /** A moderator saved both names. */
+  Confirmed = 'CONFIRMED',
+  /** The romaji or Japanese name was generated or is missing. A moderator checks it. */
+  NeedsReview = 'NEEDS_REVIEW'
+}
 
 /** The type of entity affected by an audited action. */
 export enum ObjectType {
@@ -3049,6 +3061,7 @@ export type ResolversTypes = {
   LocalizedNameInput: LocalizedNameInput;
   MapsPlacePreview: ResolverTypeWrapper<MapsPlacePreview>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
+  NameReviewStatus: NameReviewStatus;
   ObjectType: ObjectType;
   OpenCorrectionCount: ResolverTypeWrapper<OpenCorrectionCount>;
   OrderBy: OrderBy;
@@ -3755,6 +3768,7 @@ export type HealthcareProfessionalResolvers<ContextType = any, ParentType extend
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   licenseRecommendation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   licenseReview?: Resolver<Maybe<ResolversTypes['LicenseReviewStatus']>, ParentType, ContextType>;
+  nameReview?: Resolver<Maybe<ResolversTypes['NameReviewStatus']>, ParentType, ContextType>;
   names?: Resolver<Array<ResolversTypes['LocalizedName']>, ParentType, ContextType>;
   primaryLicense?: Resolver<Maybe<ResolversTypes['Degree']>, ParentType, ContextType>;
   specialties?: Resolver<Array<ResolversTypes['Specialty']>, ParentType, ContextType>;

@@ -34,7 +34,7 @@ import { handleModerationResponseErrors, toastUnexpectedModerationError } from '
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
 import { guardWithErrorToast } from '~/composables/useModerationGuardFeedback'
 import { formErrorKey } from '~/utils/formErrorMessage'
-import { hasEnglishLocalizedName } from '~/utils/nameUtils'
+import { hasBothProfessionalNames } from '~/utils/professionalNames'
 import { leaveToModerationDashboard } from '~/utils/moderationUtils'
 import {
     hasRequiredHealthcareProfessionalSelections,
@@ -81,15 +81,15 @@ const createFacilityOrHealthcareProfessional = async () => {
 const createFacilityOrHealthcareProfessionalUnchecked = async () => {
     if (moderationScreenStore.createHealthcareProfessionalScreenIsActive()) {
         const healthcareProfessionalCreationSectionFields = healthcareProfessionalsStore.createHealthcareProfessionalSectionFields
-        const hasEnglishName = hasEnglishLocalizedName(healthcareProfessionalCreationSectionFields.names)
+        const hasBothNames = hasBothProfessionalNames(healthcareProfessionalCreationSectionFields.names)
 
         const hasAllRequiredFields = validateHealthcareProfessionalFields()
 
         if (guardWithErrorToast(
-            !hasEnglishName,
+            !hasBothNames,
             toast,
             t,
-            formErrorKey.englishNameRequired
+            formErrorKey.professionalNamesRequired
         )) {
             return
         }

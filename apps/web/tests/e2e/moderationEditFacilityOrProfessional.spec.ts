@@ -111,6 +111,25 @@ test.describe('Moderation facility and healthcare professional happy paths', () 
         await expect(alertElement).toBeVisible()
     })
 
+    test('healthcare professional edit: shows the romaji and Japanese name rows and needs both (#282)', async ({ page }) => {
+        await page.getByTestId('access-page-link-moderation-healthcare-professionals').click()
+        const firstHealthcareProfessional = page.locator('[data-testid^="mod-healthcare-professional-list-item-"]').first()
+        await expect(firstHealthcareProfessional).toBeVisible({ timeout: 30_000 })
+        await firstHealthcareProfessional.click()
+
+        const editor = page.getByTestId('mod-professional-names-editor')
+        await expect(editor.getByText(enUS.modHealthcareProfessionalSection.romajiName)).toBeVisible()
+        await expect(editor.getByText(enUS.modHealthcareProfessionalSection.japaneseName)).toBeVisible()
+        await expect(page.getByTestId('mod-professional-name-japanese-middleName')).toHaveCount(0)
+
+        await switchModerationFormToEdit(page)
+        await page.getByTestId('mod-professional-name-japanese-lastName').locator('input').fill('')
+        await page.getByTestId('mod-professional-name-japanese-firstName').locator('input').fill('')
+        await page.getByTestId('mod-edit-facility-hp-topbar-update').click()
+
+        await expect(page.getByText(enUS.serverErrorMessages.professionalNamesRequired)).toBeVisible()
+    })
+
     test('healthcare professional edit: update-and-exit returns to moderation dashboard', async ({ page }) => {
         await page.getByTestId('access-page-link-moderation-healthcare-professionals').click()
         const firstHealthcareProfessional = page.locator('[data-testid^="mod-healthcare-professional-list-item-"]').first()

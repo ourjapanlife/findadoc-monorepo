@@ -411,15 +411,11 @@
     "noSubmissions": "Es gibt keine ausstehenden Einreichungen"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "Add Name by Language",
-    "addAnotherName": "Weiteren Namen hinzufügen",
-    "removeName": "Namen entfernen",
     "healthcareProfessionalMedicalInfoHeading": "Angaben zur Gesundheitsfachkraft",
     "healthcareProfessionalNameHeading": "Name der Gesundheitsfachkraft",
     "labelHealthcareProfessionalFirstName": "Vorname",
     "labelHealthcareProfessionalLastName": "Nachname",
     "labelHealthcareProfessionalMiddleName": "Zweiter Vorname",
-    "labelHealthcareProfessionalNameLocale": "Sprache des Namens",
     "placeholderTextHealthcareProfessionalFirstName": "z. B. John",
     "placeholderTextHealthcareProfessionalLastName": "z. B. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "z. B. Bronson",
@@ -432,22 +428,12 @@
     "noFacilitiesWereFound": "Keine Einrichtungen gefunden",
     "noFacilitiesLinked": "Noch keine Einrichtungen zugeordnet. Oben suchen, um eine hinzuzufügen.",
     "errorMessageHealthcareProfessionalId": "ID der Gesundheitsfachkraft wurde nicht gefunden",
-    "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextSpecialties": "Nach Fachgebiet suchen",
     "placeholderTextDegrees": "Nach Abschluss suchen",
     "placeholderTextLocales": "Nach Sprache suchen",
     "noSpecialtiesWereFound": "Keine Fachgebiete gefunden",
     "noDegreesWereFound": "Keine Abschlüsse gefunden",
     "noLocalesWereFound": "Keine Sprachen gefunden",
-    "delete": "Endgültig löschen",
-    "exit": "Beenden",
-    "missingFirstName": "Kein Vorname eingegeben",
-    "missingLastName": "Kein Nachname eingegeben",
-    "missingLocale": "Keine Sprache gewählt",
-    "oneNameNecessary": "Mindestens ein Name ist erforderlich",
-    "save": "Speichern",
-    "update": "Aktualisieren",
-    "charactersOfLanguageDoNotMatchNameLocale": "Die Zeichen im Namen passen nicht zur gewählten Sprache",
     "labelAdditionalNotesForPatients": "Zusätzliche Hinweise für Patientinnen und Patienten",
     "placeholderAdditionalNotesForPatients": "z. B. englischsprachige Ärztinnen nur von 14 bis 16 Uhr",
     "selectPrimaryLicense": "Hauptlizenz",
@@ -459,7 +445,14 @@
     "licenseRecommendationDental": "Vorschlag: eine zahnärztliche Lizenz. Bis zur Auswahl bleiben die gespeicherten Abschlüsse sichtbar.",
     "licenseRecommendationConfirm": "Es sind mehrere klinische Lizenzen gespeichert. Wählen Sie die Hauptlizenz oder behalten Sie beide.",
     "storedHiddenDegrees": "Ebenfalls gespeichert und weiter öffentlich sichtbar: {degrees}",
-    "listingShowsSavedDegrees": "Die öffentliche Ansicht zeigt alle hier gespeicherten Abschlüsse."
+    "listingShowsSavedDegrees": "Die öffentliche Ansicht zeigt alle hier gespeicherten Abschlüsse.",
+    "romajiName": "Name in Romaji",
+    "japaneseName": "Name auf Japanisch",
+    "japaneseNameHint": "Kanji oder Kana. Einen nicht japanischen Namen in Katakana schreiben.",
+    "placeholderTextJapaneseLastName": "z. B. 山田",
+    "placeholderTextJapaneseFirstName": "z. B. 花子",
+    "nameNeedsReview": "Diese Namen prüfen. Einer wurde automatisch ausgefüllt oder fehlt noch.",
+    "otherLocaleNamesRemoved": "Namen in anderen Sprachen werden beim Speichern entfernt."
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "Gesundheitsfachkraft-IDs",
@@ -498,7 +491,8 @@
     "clinicAccountsHelp": "Öffnen Sie eine Praxis, um Inhaber und Mitarbeitende einzuladen oder die Dolmetschleistung einzuschalten. Die Buchungen einer Praxis sehen Sie nur, wenn Sie Mitglied dieser Praxis sind.",
     "chooseClinic": "Praxis auswählen",
     "noBookingClinics": "Noch keine Praxis nimmt Buchungen an",
-    "clinicsLoadError": "Praxen konnten nicht geladen werden"
+    "clinicsLoadError": "Praxen konnten nicht geladen werden",
+    "nameReview": "Name muss geprüft werden"
   },
   "modFacilitySection": {
     "addresses": "Adressen",
@@ -605,7 +599,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Das hat nicht funktioniert. Bitte versuchen Sie es erneut.",
-    "englishNameRequired": "Die Gesundheitsfachkraft braucht einen englischen Namen.",
     "facilityFieldsIncomplete": "Füllen Sie die Pflichtfelder der Klinik aus, bevor Sie fortfahren.",
     "healthcareProfessionalFieldsIncomplete": "Füllen Sie die Pflichtfelder der Gesundheitsfachkraft aus, bevor Sie fortfahren.",
     "serverUnavailable": "Bei uns ist ein Fehler aufgetreten. Versuchen Sie es erneut.",
@@ -635,7 +628,10 @@
     "prefectureRequired": "Geben Sie die Präfektur auf Englisch und auf Japanisch an.",
     "correctionCityRequired": "Wählen Sie eine Stadt, bevor Sie diese Korrektur freigeben.",
     "submissionKindMismatch": "Diese Änderung gilt nicht für eine Korrektur eines Besuchers.",
-    "submissionStatusChanged": "Jemand anderes hat diese Einreichung zuerst geändert. Laden Sie die Seite neu und prüfen Sie sie erneut."
+    "submissionStatusChanged": "Jemand anderes hat diese Einreichung zuerst geändert. Laden Sie die Seite neu und prüfen Sie sie erneut.",
+    "professionalNamesRequired": "Die medizinische Fachkraft braucht einen Namen in Romaji und einen auf Japanisch.",
+    "professionalNameLocaleNotAllowed": "Eine medizinische Fachkraft hat nur einen Namen in Romaji und einen auf Japanisch.",
+    "japaneseMiddleNameNotAllowed": "Der japanische Name hat keinen zweiten Vornamen."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Gesprochene Sprachen",

@@ -99,11 +99,10 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useAppToast } from '~/composables/useAppToast'
 import { useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
-import { Locale,
-    type Submission,
-    type MutationUpdateSubmissionArgs,
-    type Facility,
-    type HealthcareProfessional } from '@findadoc/graphql'
+import type { Submission,
+    MutationUpdateSubmissionArgs,
+    Facility,
+    HealthcareProfessional } from '@findadoc/graphql'
 import { useI18n } from '#imports'
 import { stableStringify } from '~/utils/stableStringify'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
@@ -115,7 +114,8 @@ import { ModerationSubmissionActionType, useModerationSubmissionActions } from '
 import { mapIdsToEntities } from '~/utils/moderationSearchUtils'
 import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
-import { formatFirstLocalizedFullName, hasEnglishLocalizedName } from '~/utils/nameUtils'
+import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
+import { hasBothProfessionalNames, namesFromSubmittedName } from '~/utils/professionalNames'
 import { leaveToModerationDashboard } from '~/utils/moderationUtils'
 import { provideModerationFormEditing } from '~/composables/useModerationFormMode'
 import {
@@ -267,9 +267,10 @@ const validateHealthcareProfessionalFields = () => {
       && hasRequiredHealthcareProfessionalSelections(healthcareProfessionalFields)
 }
 
-const validateHealthcareProfessionalEnglishName = () => {
+// Approval needs the romaji name and the Japanese name (#282).
+const validateHealthcareProfessionalNames = () => {
     const healthcareProfessionalFields = healthcareProfessionalsStore.healthcareProfessionalSectionFields
-    return hasEnglishLocalizedName(healthcareProfessionalFields.names)
+    return hasBothProfessionalNames(healthcareProfessionalFields.names)
 }
 
 // Manual deep copy function for submission data
@@ -367,26 +368,9 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
     // Healthcare Professionals fields
     const hp = submissionData?.healthcareProfessionals?.[0]
 
+    // The submitter's free-text name goes under the locale its script belongs to (#282).
     healthcareProfessionalSections.names
-        = hp?.names
-          ?? (submittedHealthcareProfessionalName.length === 2
-              ? [
-                  {
-                      firstName: submittedHealthcareProfessionalName[0] || '',
-                      lastName: submittedHealthcareProfessionalName[1] || '',
-                      locale: Locale.Und
-                  }
-              ]
-              : submittedHealthcareProfessionalName.length === 3
-                  ? [
-                      {
-                          firstName: submittedHealthcareProfessionalName[0] || '',
-                          middleName: submittedHealthcareProfessionalName[1] || '',
-                          lastName: submittedHealthcareProfessionalName[2] || '',
-                          locale: Locale.Und
-                      }
-                  ]
-                  : [])
+        = hp?.names ?? namesFromSubmittedName(submittedHealthcareProfessionalName)
 
     healthcareProfessionalSections.facilityIds = [...(hp?.facilityIds ?? [])]
     // A searched clinic may sit outside the preloaded page. Keep the object already picked.
@@ -570,12 +554,12 @@ async function confirmAndApproveSubmission(e?: Event) {
         )) {
             return
         }
-        const hasEnglishName = validateHealthcareProfessionalEnglishName()
+        const hasBothNames = validateHealthcareProfessionalNames()
         if (await guardWithErrorToastAndEffect(
-            !hasEnglishName,
+            !hasBothNames,
             toast,
             t,
-            formErrorKey.englishNameRequired,
+            formErrorKey.professionalNamesRequired,
             resetModalRefs
         )) {
             return

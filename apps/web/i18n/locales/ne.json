@@ -143,7 +143,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "त्यो काम भएन। कृपया फेरि प्रयास गर्नुहोस्।",
-    "englishNameRequired": "स्वास्थ्यकर्मीको अंग्रेजी नाम चाहिन्छ।",
     "facilityFieldsIncomplete": "अगाडि बढ्नुअघि क्लिनिकका आवश्यक फिल्डहरू भर्नुहोस्।",
     "healthcareProfessionalFieldsIncomplete": "अगाडि बढ्नुअघि स्वास्थ्यकर्मीका आवश्यक फिल्डहरू भर्नुहोस्।",
     "serverUnavailable": "हाम्रो तर्फबाट केही गडबड भयो। फेरि प्रयास गर्नुहोस्।",
@@ -173,7 +172,10 @@
     "prefectureRequired": "प्रिफेक्चर अंग्रेजी र जापानी दुवैमा थप्नुहोस्।",
     "correctionCityRequired": "यो सुधार स्वीकृत गर्नुअघि सहर छान्नुहोस्।",
     "submissionKindMismatch": "यो परिवर्तन आगन्तुकको सुधारमा लागू हुँदैन।",
-    "submissionStatusChanged": "अरू कसैले यो आवेदन पहिले नै बदल्नुभयो। पृष्ठ फेरि लोड गरेर फेरि जाँच गर्नुहोस्।"
+    "submissionStatusChanged": "अरू कसैले यो आवेदन पहिले नै बदल्नुभयो। पृष्ठ फेरि लोड गरेर फेरि जाँच गर्नुहोस्।",
+    "professionalNamesRequired": "स्वास्थ्यकर्मीको रोमाजी नाम र जापानी नाम चाहिन्छ।",
+    "professionalNameLocaleNotAllowed": "स्वास्थ्यकर्मीको केवल रोमाजी नाम र जापानी नाम हुन्छ।",
+    "japaneseMiddleNameNotAllowed": "जापानी नाममा बीचको नाम हुँदैन।"
   },
   "footer": {
     "poweredBy": "{name} द्वारा सञ्चालित",
@@ -451,7 +453,8 @@
     "clinicAccountsHelp": "क्लिनिकको मालिक र कर्मचारीलाई निम्तो दिन, वा दोभाषे सेवा सुरु गर्न क्लिनिक खोल्नुहोस्। तपाईं त्यो क्लिनिकको सदस्य नभएसम्म त्यसको बुकिङ देख्नुहुन्न।",
     "chooseClinic": "क्लिनिक छान्नुहोस्",
     "noBookingClinics": "अहिलेसम्म कुनै क्लिनिकले बुकिङ लिँदैन",
-    "clinicsLoadError": "क्लिनिकहरू लोड गर्न सकिएन"
+    "clinicsLoadError": "क्लिनिकहरू लोड गर्न सकिएन",
+    "nameReview": "नाम जाँच आवश्यक"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "मेटाउनुहोस्",
@@ -522,30 +525,17 @@
     "noSubmissions": "बाँकी रहेका कुनै विवरण छैनन्"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "नयाँ नाम थप्नुहोस्",
-    "addAnotherName": "अर्को नाम थप्नुहोस्",
-    "removeName": "नाम हटाउनुहोस्",
-    "delete": "स्थायी रूपमा मेटाउनुहोस्",
     "errorMessageHealthcareProfessionalId": "स्वास्थ्यकर्मीको ID भेटिएन",
-    "exit": "बाहिर निस्कनुहोस्",
     "healthcareProfessionalMedicalInfoHeading": "स्वास्थ्यकर्मीको विवरण",
     "healthcareProfessionalNameHeading": "स्वास्थ्यकर्मीको नाम",
     "labelHealthcareProfessionalFirstName": "नाम",
     "labelHealthcareProfessionalLastName": "थर",
     "labelHealthcareProfessionalMiddleName": "बीचको नाम",
-    "labelHealthcareProfessionalNameLocale": "नामको भाषा",
     "labelAdditionalNotesForPatients": "बिरामीका लागि थप टिप्पणी",
-    "missingFirstName": "नाम लेखिएको छैन",
-    "missingLastName": "थर लेखिएको छैन",
-    "missingLocale": "भाषा छानिएको छैन",
-    "charactersOfLanguageDoNotMatchNameLocale": "छानिएको भाषामा स्वास्थ्यकर्मीको नामका अक्षरहरू अमान्य छन्",
-    "nameForLocaleAlreadyExists": "छानिएको भाषामा नाम पहिले नै छ। भएको नाम अद्यावधिक गर्नुहोस् वा फरक भाषा छान्नुहोस्।",
-    "oneNameNecessary": "स्वास्थ्यकर्मीको कम्तीमा एउटा नाम आवश्यक छ",
     "placeholderTextHealthcareProfessionalFirstName": "जस्तै: राम",
     "placeholderTextHealthcareProfessionalLastName": "जस्तै: श्रेष्ठ",
     "placeholderTextHealthcareProfessionalMiddleName": "जस्तै: प्रसाद",
     "placeholderAdditionalNotesForPatients": "जस्तै: अंग्रेजी बोल्ने डाक्टर 2 देखि 4 बजेसम्म मात्र उपलब्ध",
-    "save": "सेभ गर्नुहोस्",
     "selectDegrees": "डिग्रीहरू",
     "selectPrimaryLicense": "मुख्य लाइसेन्स",
     "selectAdditionalCredentials": "थप योग्यताहरू",
@@ -570,7 +560,13 @@
     "noSpecialtiesWereFound": "कुनै विशेषज्ञता भेटिएन",
     "noDegreesWereFound": "कुनै डिग्री भेटिएन",
     "noLocalesWereFound": "कुनै भाषा भेटिएन",
-    "update": "अद्यावधिक गर्नुहोस्"
+    "romajiName": "रोमाजीमा नाम",
+    "japaneseName": "जापानीमा नाम",
+    "japaneseNameHint": "कान्जी वा काना। जापानी नभएको नाम काताकानामा लेख्नुहोस्।",
+    "placeholderTextJapaneseLastName": "जस्तै: 山田",
+    "placeholderTextJapaneseFirstName": "जस्तै: 花子",
+    "nameNeedsReview": "यी नामहरू जाँच गर्नुहोस्। एउटा स्वतः भरिएको छ वा अझै छैन।",
+    "otherLocaleNamesRemoved": "सेभ गर्दा अन्य भाषाका नामहरू हटाइन्छन्।"
   },
   "modFacilitySection": {
     "addresses": "ठेगानाहरू",

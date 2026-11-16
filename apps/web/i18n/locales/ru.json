@@ -356,15 +356,11 @@
     "noSubmissions": "Нет заявок на рассмотрении"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "Add Name by Language",
-    "addAnotherName": "Добавить ещё одно имя",
-    "removeName": "Удалить имя",
     "healthcareProfessionalMedicalInfoHeading": "Сведения о медицинском специалисте",
     "healthcareProfessionalNameHeading": "Имя медицинского специалиста",
     "labelHealthcareProfessionalFirstName": "Имя",
     "labelHealthcareProfessionalLastName": "Фамилия",
     "labelHealthcareProfessionalMiddleName": "Отчество или второе имя",
-    "labelHealthcareProfessionalNameLocale": "Язык имени",
     "placeholderTextHealthcareProfessionalFirstName": "напр. John",
     "placeholderTextHealthcareProfessionalLastName": "напр. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "напр. Bronson",
@@ -377,22 +373,12 @@
     "noFacilitiesWereFound": "Учреждения не найдены",
     "noFacilitiesLinked": "Связанных учреждений пока нет. Найдите учреждение выше, чтобы добавить его.",
     "errorMessageHealthcareProfessionalId": "ID специалиста не найден",
-    "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextSpecialties": "Поиск по специальности",
     "placeholderTextDegrees": "Поиск по степени",
     "placeholderTextLocales": "Поиск по языку",
     "noSpecialtiesWereFound": "Специальности не найдены",
     "noDegreesWereFound": "Степени не найдены",
     "noLocalesWereFound": "No language were found",
-    "delete": "Удалить навсегда",
-    "exit": "Выйти",
-    "missingFirstName": "Имя не указано",
-    "missingLastName": "Фамилия не указана",
-    "missingLocale": "Язык не выбран",
-    "oneNameNecessary": "Нужно хотя бы одно имя",
-    "save": "Сохранить",
-    "update": "Обновить",
-    "charactersOfLanguageDoNotMatchNameLocale": "The characters of the Healthcare Professional's name are invalid in chosen language",
     "labelAdditionalNotesForPatients": "Дополнительные сведения для пациентов",
     "placeholderAdditionalNotesForPatients": "напр. англоязычные врачи только с 14 до 16",
     "selectPrimaryLicense": "Основная лицензия",
@@ -404,7 +390,14 @@
     "licenseRecommendationDental": "Предложение: одна стоматологическая лицензия. Сохранённые степени видны, пока вы не выберете.",
     "licenseRecommendationConfirm": "Сохранено несколько клинических лицензий. Выберите основную или оставьте обе.",
     "storedHiddenDegrees": "Также сохранено и видно в публичной карточке: {degrees}",
-    "listingShowsSavedDegrees": "Публичная карточка показывает все степени, сохранённые здесь."
+    "listingShowsSavedDegrees": "Публичная карточка показывает все степени, сохранённые здесь.",
+    "romajiName": "Имя ромадзи (латиницей)",
+    "japaneseName": "Имя на японском",
+    "japaneseNameHint": "Кандзи или кана. Неяпонское имя пишите катаканой.",
+    "placeholderTextJapaneseLastName": "напр. 山田",
+    "placeholderTextJapaneseFirstName": "напр. 花子",
+    "nameNeedsReview": "Проверьте эти имена. Одно из них заполнено автоматически или ещё отсутствует.",
+    "otherLocaleNamesRemoved": "Имена на других языках удаляются при сохранении."
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "ID Медицинских специалистов ",
@@ -450,7 +443,8 @@
     "clinicAccountsHelp": "Откройте клинику, чтобы пригласить владельца и сотрудников или включить услуги переводчика. Записи клиники видны только её участникам.",
     "chooseClinic": "Выберите клинику",
     "noBookingClinics": "Пока ни одна клиника не принимает записи",
-    "clinicsLoadError": "Не удалось загрузить клиники"
+    "clinicsLoadError": "Не удалось загрузить клиники",
+    "nameReview": "Нужно проверить имя"
   },
   "modFacilitySection": {
     "addresses": "Адреса",
@@ -557,7 +551,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Не удалось выполнить действие. Попробуйте ещё раз.",
-    "englishNameRequired": "У специалиста должно быть имя на английском.",
     "facilityFieldsIncomplete": "Заполните обязательные поля клиники, прежде чем продолжить.",
     "healthcareProfessionalFieldsIncomplete": "Заполните обязательные поля специалиста, прежде чем продолжить.",
     "serverUnavailable": "Сбой на нашей стороне. Попробуйте ещё раз.",
@@ -587,7 +580,10 @@
     "prefectureRequired": "Укажите префектуру на английском и на японском.",
     "correctionCityRequired": "Выберите город, прежде чем одобрить это исправление.",
     "submissionKindMismatch": "Это изменение не применяется к исправлению от посетителя.",
-    "submissionStatusChanged": "Кто-то другой уже изменил эту заявку. Обновите страницу и проверьте её ещё раз."
+    "submissionStatusChanged": "Кто-то другой уже изменил эту заявку. Обновите страницу и проверьте её ещё раз.",
+    "professionalNamesRequired": "Медицинскому специалисту нужно имя ромадзи и имя на японском.",
+    "professionalNameLocaleNotAllowed": "У медицинского специалиста есть только имя ромадзи и имя на японском.",
+    "japaneseMiddleNameNotAllowed": "В японском имени нет второго имени."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Языки общения",

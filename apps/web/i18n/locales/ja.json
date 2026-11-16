@@ -363,15 +363,11 @@
     "noSubmissions": "確認待ちの投稿はありません"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "Add Name by Language",
-    "addAnotherName": "名前をもう1つ追加",
-    "removeName": "名前を削除",
     "healthcareProfessionalMedicalInfoHeading": "医療従事者の詳細",
     "healthcareProfessionalNameHeading": "医療従事者の氏名",
     "labelHealthcareProfessionalFirstName": "名",
     "labelHealthcareProfessionalLastName": "姓",
     "labelHealthcareProfessionalMiddleName": "ミドルネーム",
-    "labelHealthcareProfessionalNameLocale": "氏名の言語",
     "placeholderTextHealthcareProfessionalFirstName": "例: John",
     "placeholderTextHealthcareProfessionalLastName": "例: Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "例: Bronson",
@@ -384,22 +380,12 @@
     "noFacilitiesWereFound": "医療機関は見つかりませんでした",
     "noFacilitiesLinked": "関連する医療機関はまだありません。上で検索して追加してください。",
     "errorMessageHealthcareProfessionalId": "医療従事者の ID が見つかりません",
-    "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextSpecialties": "専門で検索",
     "placeholderTextDegrees": "学位で検索",
     "placeholderTextLocales": "言語で検索",
     "noSpecialtiesWereFound": "専門は見つかりませんでした",
     "noDegreesWereFound": "学位は見つかりませんでした",
     "noLocalesWereFound": "No language were found",
-    "delete": "完全に削除",
-    "exit": "終了",
-    "missingFirstName": "名が入力されていません",
-    "missingLastName": "姓が入力されていません",
-    "missingLocale": "言語が選択されていません",
-    "oneNameNecessary": "医療従事者には、少なくとも一つの氏名が必要です",
-    "save": "保存",
-    "update": "更新",
-    "charactersOfLanguageDoNotMatchNameLocale": "The characters of the Healthcare Professional's name are invalid in chosen language",
     "labelAdditionalNotesForPatients": "患者向けの補足",
     "placeholderAdditionalNotesForPatients": "例: 英語対応の医師は14時から16時まで",
     "selectPrimaryLicense": "主な免許",
@@ -411,7 +397,14 @@
     "licenseRecommendationDental": "提案: 歯科免許は一つにまとめる。選ぶまでは、保存されている学位が公開ページに表示されます。",
     "licenseRecommendationConfirm": "臨床免許が複数保存されています。主な免許を選ぶか、両方を残してください。",
     "storedHiddenDegrees": "ほかに保存されていて、公開ページにも表示される学位: {degrees}",
-    "listingShowsSavedDegrees": "公開ページには、ここで保存したすべての学位が表示されます。"
+    "listingShowsSavedDegrees": "公開ページには、ここで保存したすべての学位が表示されます。",
+    "romajiName": "ローマ字の名前",
+    "japaneseName": "日本語の名前",
+    "japaneseNameHint": "漢字またはかな。日本人以外の名前はカタカナで書いてください。",
+    "placeholderTextJapaneseLastName": "例: 山田",
+    "placeholderTextJapaneseFirstName": "例: 花子",
+    "nameNeedsReview": "この名前を確認してください。どちらかが自動で入力されたか、まだ入力されていません。",
+    "otherLocaleNamesRemoved": "他の言語の名前は保存すると削除されます。"
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "医療従事者の ID",
@@ -450,7 +443,8 @@
     "clinicAccountsHelp": "クリニックを開いて、オーナーやスタッフを招待したり、通訳を有効にしたりできます。そのクリニックのメンバーでない限り、予約は表示されません。",
     "chooseClinic": "クリニックを選択",
     "noBookingClinics": "予約を受け付けているクリニックはまだありません",
-    "clinicsLoadError": "クリニックを読み込めませんでした"
+    "clinicsLoadError": "クリニックを読み込めませんでした",
+    "nameReview": "名前の確認が必要"
   },
   "modFacilitySection": {
     "addresses": "住所",
@@ -557,7 +551,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "うまくいきませんでした。もう一度お試しください。",
-    "englishNameRequired": "医療従事者には英語の氏名が必要です。",
     "facilityFieldsIncomplete": "続ける前に、必須の医療機関の項目を入力してください。",
     "healthcareProfessionalFieldsIncomplete": "続ける前に、必須の医療従事者の項目を入力してください。",
     "serverUnavailable": "こちらの処理で問題が起きました。もう一度お試しください。",
@@ -587,7 +580,10 @@
     "prefectureRequired": "英語と日本語の都道府県を入力してください。",
     "correctionCityRequired": "この修正を承認する前に市区町村を選んでください。",
     "submissionKindMismatch": "この変更は利用者からの修正には使えません。",
-    "submissionStatusChanged": "先にほかの人がこの申請を変更しました。ページを再読み込みして、もう一度確認してください。"
+    "submissionStatusChanged": "先にほかの人がこの申請を変更しました。ページを再読み込みして、もう一度確認してください。",
+    "professionalNamesRequired": "医療従事者にはローマ字の名前と日本語の名前が必要です。",
+    "professionalNameLocaleNotAllowed": "医療従事者の名前はローマ字と日本語の2つだけです。",
+    "japaneseMiddleNameNotAllowed": "日本語の名前にはミドルネームを入れません。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "対応言語",

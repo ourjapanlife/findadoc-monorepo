@@ -271,6 +271,7 @@ function buildSeed(): SeedFile {
             additional_credentials: licensed.additionalCredentials,
             license_review: licensed.licenseReview,
             license_recommendation: licensed.licenseRecommendation,
+            name_review: null,
             specialties,
             spoken_languages: spokenLanguages,
             email: faker.internet.email().toLowerCase(),

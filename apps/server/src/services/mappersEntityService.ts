@@ -14,6 +14,14 @@ function toLicenseReview(value: string | null | undefined): gqlTypes.LicenseRevi
     return null
 }
 
+function toNameReview(value: string | null | undefined): gqlTypes.NameReviewStatus | null {
+    if (value === gqlTypes.NameReviewStatus.NeedsReview || value === gqlTypes.NameReviewStatus.Confirmed) {
+        return value
+    }
+
+    return null
+}
+
 function toPrimaryLicense(value: string | null | undefined): gqlTypes.Degree | null {
     if (value && (Object.values(gqlTypes.Degree) as string[]).includes(value)) {
         return value as gqlTypes.Degree
@@ -38,6 +46,7 @@ export function professionalFromRow(row: Selectable<HpsTable>): ProfessionalPare
         additionalCredentials: row.additional_credentials ?? [],
         licenseReview: toLicenseReview(row.license_review),
         licenseRecommendation: row.license_recommendation ?? null,
+        nameReview: toNameReview(row.name_review),
         spokenLanguages: row.spoken_languages ?? [],
         specialties: row.specialties ?? [],
         createdDate: row.created_date,

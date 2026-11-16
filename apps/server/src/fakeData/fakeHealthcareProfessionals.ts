@@ -1,6 +1,5 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { faker, fakerJA } from '@faker-js/faker'
-import { logger } from '../logger.js'
 
 /**
  * Generates random data for a CreateHealthcareProfessionalInput object,
@@ -22,7 +21,7 @@ export function generateRandomCreateHealthcareProfessionalData(
     return {
         coreData: {
             // Note: facilityIds is omitted here for the core table
-            names: faker.helpers.multiple(generateLocalizedNameInput, { count: 1 }),
+            names: generateProfessionalNames(),
             degrees: generateDegrees(),
             specialties: generateSpecialties(),
             spokenLanguages: generateSpokenLanguages(),
@@ -70,27 +69,21 @@ export function generateRandomCreateHealthcareProfessionalInputArray({ count, fa
     })
 }
 
-export function generateLocalizedNameInput(): gqlTypes.LocalizedNameInput {
-    const randomLocal = faker.number.int({ min: 1, max: 10 }) < 5 ? gqlTypes.Locale.EnUs : gqlTypes.Locale.JaJp 
-
-    switch (randomLocal) {
-        case gqlTypes.Locale.EnUs:
-            return {
-                firstName: faker.person.firstName(),
-                middleName: faker.person.middleName(),
-                lastName: faker.person.lastName(),
-                locale: randomLocal
-            }
-        case gqlTypes.Locale.JaJp:
-            return {
-                firstName: fakerJA.person.firstName(),
-                lastName: fakerJA.person.lastName(),
-                locale: randomLocal
-            }
-        default:
-            logger.error(`Generating professional name: Unexpected locale value: ${randomLocal}`)
-            throw new Error(`Generating professional name: Unexpected locale value: ${randomLocal}`)
-    }
+/** A romaji name and a Japanese name, the two names every professional has (#282). */
+export function generateProfessionalNames(): gqlTypes.LocalizedNameInput[] {
+    return [
+        {
+            firstName: faker.person.firstName(),
+            middleName: faker.person.middleName(),
+            lastName: faker.person.lastName(),
+            locale: gqlTypes.Locale.EnUs
+        },
+        {
+            firstName: fakerJA.person.firstName(),
+            lastName: fakerJA.person.lastName(),
+            locale: gqlTypes.Locale.JaJp
+        }
+    ]
 }
 
 export function generateDegrees({ count = 2 } = {}): gqlTypes.Degree[] {

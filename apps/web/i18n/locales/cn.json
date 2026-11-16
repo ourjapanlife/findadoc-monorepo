@@ -363,15 +363,11 @@
     "noSubmissions": "暂无待审核的已提交项目"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "Add Name by Language",
-    "addAnotherName": "再添加一个名字",
-    "removeName": "删除名字",
     "healthcareProfessionalMedicalInfoHeading": "医疗人员详情",
     "healthcareProfessionalNameHeading": "医疗人员姓名",
     "labelHealthcareProfessionalFirstName": "名",
     "labelHealthcareProfessionalLastName": "姓",
     "labelHealthcareProfessionalMiddleName": "中间名",
-    "labelHealthcareProfessionalNameLocale": "姓名语言",
     "placeholderTextHealthcareProfessionalFirstName": "例如 John",
     "placeholderTextHealthcareProfessionalLastName": "例如 Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "例如 Bronson",
@@ -384,22 +380,12 @@
     "noFacilitiesWereFound": "未找到医疗机构",
     "noFacilitiesLinked": "尚未关联任何机构。请在上方搜索并添加。",
     "errorMessageHealthcareProfessionalId": "未找到医疗人员 ID",
-    "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextSpecialties": "按专科搜索",
     "placeholderTextDegrees": "按学位搜索",
     "placeholderTextLocales": "按语言搜索",
     "noSpecialtiesWereFound": "未找到专科",
     "noDegreesWereFound": "未找到学位",
     "noLocalesWereFound": "未找到语言",
-    "delete": "永久删除",
-    "exit": "退出",
-    "missingFirstName": "未填写名",
-    "missingLastName": "未填写姓",
-    "missingLocale": "No langugage chosen",
-    "oneNameNecessary": "医疗人员至少需要一个姓名",
-    "save": "保存",
-    "update": "更新",
-    "charactersOfLanguageDoNotMatchNameLocale": "医疗人员姓名中的字符与所选语言不符",
     "labelAdditionalNotesForPatients": "给患者的补充说明",
     "placeholderAdditionalNotesForPatients": "例如：英语医生仅在 14:00–16:00 出诊",
     "selectPrimaryLicense": "主要执照",
@@ -411,7 +397,14 @@
     "licenseRecommendationDental": "建议合并为一个牙科执照。在你做出选择之前，患者仍会看到已保存的学位。",
     "licenseRecommendationConfirm": "保存了多个临床执照。请选择主要执照，或全部保留。",
     "storedHiddenDegrees": "另外保存、并且仍显示在公开页面上的学位：{degrees}",
-    "listingShowsSavedDegrees": "公开页面会显示这里保存的全部学位。"
+    "listingShowsSavedDegrees": "公开页面会显示这里保存的全部学位。",
+    "romajiName": "罗马字姓名",
+    "japaneseName": "日文姓名",
+    "japaneseNameHint": "汉字或假名。非日本人的名字请用片假名书写。",
+    "placeholderTextJapaneseLastName": "例如 山田",
+    "placeholderTextJapaneseFirstName": "例如 花子",
+    "nameNeedsReview": "请核对这些姓名。其中一个是自动填写的，或者仍然缺失。",
+    "otherLocaleNamesRemoved": "保存时会删除其他语言的姓名。"
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "医师ID",
@@ -450,7 +443,8 @@
     "clinicAccountsHelp": "打开一家诊所，邀请其所有者和员工，或开启口译服务。除非您是该诊所的成员，否则看不到其预约。",
     "chooseClinic": "选择诊所",
     "noBookingClinics": "目前还没有接受预约的诊所",
-    "clinicsLoadError": "无法加载诊所"
+    "clinicsLoadError": "无法加载诊所",
+    "nameReview": "需要核对姓名"
   },
   "modFacilitySection": {
     "addresses": "地址",
@@ -557,7 +551,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "操作未成功，请重试。",
-    "englishNameRequired": "医疗人员需要英文姓名。",
     "facilityFieldsIncomplete": "继续之前，请填写必填的医疗机构项目。",
     "healthcareProfessionalFieldsIncomplete": "继续之前，请填写必填的医疗人员项目。",
     "serverUnavailable": "我们这边出了问题。请再试一次。",
@@ -587,7 +580,10 @@
     "prefectureRequired": "请填写英文和日文的都道府县。",
     "correctionCityRequired": "批准此修正前请先选择城市。",
     "submissionKindMismatch": "此更改不适用于访客修正。",
-    "submissionStatusChanged": "其他人已先更改了此提交。请刷新页面后再检查一次。"
+    "submissionStatusChanged": "其他人已先更改了此提交。请刷新页面后再检查一次。",
+    "professionalNamesRequired": "医疗人员需要罗马字姓名和日文姓名。",
+    "professionalNameLocaleNotAllowed": "医疗人员只有罗马字姓名和日文姓名。",
+    "japaneseMiddleNameNotAllowed": "日文姓名没有中间名。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "使用语言",

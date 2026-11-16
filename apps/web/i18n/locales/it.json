@@ -106,7 +106,6 @@
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Non è stato possibile completare l’operazione. Riprova.",
-    "englishNameRequired": "Il professionista sanitario deve avere un nome in inglese.",
     "facilityFieldsIncomplete": "Compila i campi obbligatori della struttura prima di continuare.",
     "healthcareProfessionalFieldsIncomplete": "Compila i campi obbligatori del professionista sanitario prima di continuare.",
     "serverUnavailable": "Qualcosa è andato storto da parte nostra. Riprova.",
@@ -136,7 +135,10 @@
     "prefectureRequired": "Aggiungi la prefettura in inglese e in giapponese.",
     "correctionCityRequired": "Scegli una città prima di approvare questa correzione.",
     "submissionKindMismatch": "Questa modifica non vale per una correzione di un visitatore.",
-    "submissionStatusChanged": "Qualcun altro ha modificato questo invio prima di te. Ricarica la pagina e controllalo di nuovo."
+    "submissionStatusChanged": "Qualcun altro ha modificato questo invio prima di te. Ricarica la pagina e controllalo di nuovo.",
+    "professionalNamesRequired": "Il professionista sanitario ha bisogno di un nome in romaji e di un nome in giapponese.",
+    "professionalNameLocaleNotAllowed": "Un professionista sanitario ha solo un nome in romaji e un nome in giapponese.",
+    "japaneseMiddleNameNotAllowed": "Il nome giapponese non ha un secondo nome."
   },
   "footer": {
     "poweredBy": "Offerto da {name}",
@@ -360,7 +362,8 @@
     "clinicAccountsHelp": "Apri una clinica per invitare il titolare e il personale, o per attivare l'interpretariato. Non vedi le prenotazioni di una clinica a meno che tu non ne sia membro.",
     "chooseClinic": "Scegli una clinica",
     "noBookingClinics": "Nessuna clinica accetta ancora prenotazioni",
-    "clinicsLoadError": "Impossibile caricare le cliniche"
+    "clinicsLoadError": "Impossibile caricare le cliniche",
+    "nameReview": "Nome da verificare"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Elimina",
@@ -431,16 +434,12 @@
     "noSubmissions": "Non ci sono richieste in attesa"
   },
   "modHealthcareProfessionalSection": {
-    "addHealthCareProfessionalLocaleName": "Aggiungi nome per località",
-    "addAnotherName": "Aggiungi un altro nome",
-    "removeName": "Rimuovi nome",
     "errorMessageHealthcareProfessionalId": "ID professionista sanitario non trovato",
     "healthcareProfessionalMedicalInfoHeading": "Informazioni mediche del professionista sanitario",
     "healthcareProfessionalNameHeading": "Nome del professionista sanitario",
     "labelHealthcareProfessionalFirstName": "Nome",
     "labelHealthcareProfessionalLastName": "Cognome",
     "labelHealthcareProfessionalMiddleName": "Nome intermedio",
-    "labelHealthcareProfessionalNameLocale": "Nome località",
     "placeholderTextHealthcareProfessionalFirstName": "es. John",
     "placeholderTextHealthcareProfessionalLastName": "es. Doe",
     "placeholderTextHealthcareProfessionalMiddleName": "es. Bronson",
@@ -452,22 +451,12 @@
     "removeFacility": "Rimuovi {name}",
     "noFacilitiesWereFound": "Nessuna struttura è stata trovata",
     "noFacilitiesLinked": "Nessuna struttura associata. Cerca qui sopra per aggiungerne una.",
-    "nameForLocaleAlreadyExists": "Name for language already exists. Either update existing name or choose a different language.",
     "placeholderTextSpecialties": "Cerca per specialità",
     "placeholderTextDegrees": "Cerca per titolo",
     "placeholderTextLocales": "Cerca per lingua",
     "noSpecialtiesWereFound": "Nessuna specialità trovata",
     "noDegreesWereFound": "Nessun titolo trovato",
     "noLocalesWereFound": "Nessuna lingua trovata",
-    "delete": "Elimina definitivamente",
-    "exit": "Esci",
-    "missingFirstName": "Nessun nome inserito",
-    "missingLastName": "Nessun cognome inserito",
-    "missingLocale": "Nessuna lingua scelta",
-    "oneNameNecessary": "È richiesto almeno un nome",
-    "save": "Salva",
-    "update": "Aggiorna",
-    "charactersOfLanguageDoNotMatchNameLocale": "I caratteri del nome non sono validi per la lingua scelta",
     "labelAdditionalNotesForPatients": "Note aggiuntive per i pazienti",
     "placeholderAdditionalNotesForPatients": "es. medici anglofoni disponibili solo dalle 14 alle 16",
     "selectPrimaryLicense": "Licenza principale",
@@ -479,7 +468,14 @@
     "licenseRecommendationDental": "Suggerimento: una sola licenza odontoiatrica. I titoli salvati restano visibili finché non scegli.",
     "licenseRecommendationConfirm": "È salvata più di una licenza clinica. Scegli quella principale oppure tieni entrambe.",
     "storedHiddenDegrees": "Salvati e ancora visibili nella scheda pubblica: {degrees}",
-    "listingShowsSavedDegrees": "La scheda pubblica mostra tutti i titoli salvati qui."
+    "listingShowsSavedDegrees": "La scheda pubblica mostra tutti i titoli salvati qui.",
+    "romajiName": "Nome in romaji",
+    "japaneseName": "Nome in giapponese",
+    "japaneseNameHint": "Kanji o kana. Scrivi in katakana un nome che non è giapponese.",
+    "placeholderTextJapaneseLastName": "es. 山田",
+    "placeholderTextJapaneseFirstName": "es. 花子",
+    "nameNeedsReview": "Controlla questi nomi. Uno è stato compilato automaticamente o manca ancora.",
+    "otherLocaleNamesRemoved": "I nomi in altre lingue vengono rimossi al salvataggio."
   },
   "modFacilitySection": {
     "addresses": "Indirizzi",

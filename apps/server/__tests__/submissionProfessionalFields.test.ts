@@ -7,6 +7,8 @@ import {
     validateUpdateSubmissionInput
 } from '../src/validation/validateSubmissions.js'
 
+const japaneseName = { locale: Locale.JaJp, firstName: 'エイダ', lastName: 'ラブレス' }
+
 const draftProfessional = {
     names: [{ locale: Locale.EnUs, firstName: 'Ada', lastName: 'Lovelace' }],
     spokenLanguages: [Locale.EnUs],
@@ -64,14 +66,52 @@ describe('submission professional fields', () => {
 
         expect(result.errors?.map(error => error.field)).toEqual([
             'healthcareProfessionals[0].degrees',
-            'healthcareProfessionals[0].specialties'
+            'healthcareProfessionals[0].specialties',
+            'healthcareProfessionals[0].names.ja_JP'
         ])
     })
 
-    test('approves when those lists are present', () => {
+    test('saves a draft that has only one of the two names (#282)', () => {
+        const result = validateUpdateSubmissionInput({
+            healthcareProfessionals: [{ ...draftProfessional, names: [japaneseName] }]
+        })
+
+        expect(result.hasErrors).toBe(false)
+    })
+
+    test('refuses a draft name in a locale other than romaji or Japanese (#282)', () => {
+        const result = validateUpdateSubmissionInput({
+            healthcareProfessionals: [{
+                ...draftProfessional,
+                names: [{ locale: Locale.ZhCn, firstName: 'Ada', lastName: 'Lovelace' }]
+            }]
+        })
+
+        expect(result.errors?.map(error => [error.field, error.errorCode])).toEqual([
+            ['healthcareProfessionals[0].names[0].locale', ErrorCode.NAME_LOCALE_NOT_ALLOWED]
+        ])
+    })
+
+    test('requires the romaji name before approving a new professional (#282)', () => {
         const result = validateApprovalProfessionalFields({
             healthcareProfessionals: [{
                 ...draftProfessional,
+                names: [japaneseName],
+                degrees: [Degree.Dds],
+                specialties: [Specialty.Cardiology]
+            }]
+        })
+
+        expect(result.errors?.map(error => [error.field, error.errorCode])).toEqual([
+            ['healthcareProfessionals[0].names.en_US', ErrorCode.NAME_LOCALE_REQUIRED]
+        ])
+    })
+
+    test('approves when those lists and both names are present', () => {
+        const result = validateApprovalProfessionalFields({
+            healthcareProfessionals: [{
+                ...draftProfessional,
+                names: [...draftProfessional.names, japaneseName],
                 degrees: [Degree.Dds],
                 specialties: [Specialty.Cardiology]
             }]

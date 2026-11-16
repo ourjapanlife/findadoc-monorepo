@@ -4,9 +4,26 @@ import { ErrorCode, Result } from '../result.js'
 import { UUID_REGEX } from './validateFacility.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 
+/** The two locales a professional name is stored in: romaji and Japanese script (#282). */
+export const PROFESSIONAL_NAME_LOCALES = [gqlTypes.Locale.EnUs, gqlTypes.Locale.JaJp] as const
+
+/** True for `en_US` and `ja_JP`, the only locales a professional name may use (#282). */
+export function isProfessionalNameLocale(locale: string): locale is typeof PROFESSIONAL_NAME_LOCALES[number] {
+    return PROFESSIONAL_NAME_LOCALES.some(allowed => allowed === locale)
+}
+
+/**
+ * Checks a professional's names. A professional has one romaji name (`en_US`) and one Japanese
+ * name (`ja_JP`), and no other locale (#282). Only the romaji name has a middle name.
+ *
+ * `requireBoth: false` is for a submission that a moderator is still filling in: one of the two
+ * names may be missing there. Creating or updating a professional, and approving a submission,
+ * require both.
+ */
 export function validateNames(
     names: gqlTypes.LocalizedNameInput[] | undefined | null,
-    validationResults: Result<unknown>
+    validationResults: Result<unknown>,
+    options: { requireBoth: boolean } = { requireBoth: true }
 ): void {
     if (!names || !names.length) {
         validationResults.hasErrors = true
@@ -18,13 +35,14 @@ export function validateNames(
         return
     }
 
-    if (names.length > 16) {
+    if (names.length > PROFESSIONAL_NAME_LOCALES.length) {
         validationResults.hasErrors = true
         validationResults.errors?.push({
             field: 'names',
             errorCode: ErrorCode.INVALID_LENGTH_TOO_LONG,
             httpStatus: 400
         })
+        return
     }
 
     const localesUsed: string[] = []
@@ -132,7 +150,38 @@ export function validateNames(
         }
 
         validateNameLocaleCharacters(nameObject, index, validationResults)
+
+        if (!isProfessionalNameLocale(nameObject.locale)) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: `names[${index}].locale`,
+                errorCode: ErrorCode.NAME_LOCALE_NOT_ALLOWED,
+                httpStatus: 400
+            })
+        }
+
+        if (nameObject.locale === gqlTypes.Locale.JaJp && nameObject.middleName?.trim()) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({
+                field: `names[${index}].middleName`,
+                errorCode: ErrorCode.MIDDLE_NAME_NOT_ALLOWED,
+                httpStatus: 400
+            })
+        }
     })
+
+    if (options.requireBoth) {
+        PROFESSIONAL_NAME_LOCALES
+            .filter(locale => !names.some(name => name.locale === locale))
+            .forEach(locale => {
+                validationResults.hasErrors = true
+                validationResults.errors?.push({
+                    field: `names.${locale}`,
+                    errorCode: ErrorCode.NAME_LOCALE_REQUIRED,
+                    httpStatus: 400
+                })
+            })
+    }
 }
 
 function validateNameLocaleCharacters(
