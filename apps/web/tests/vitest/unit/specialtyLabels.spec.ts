@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { expect } from 'chai'
 import { Specialty, SpecialtyCategory } from '@findadoc/graphql'
 import { SPECIALTY_CATEGORY_LABELS, SPECIALTY_LABELS } from '@findadoc/utils'
-import { CATEGORY_LABEL_KEYS, SPECIALTY_LABEL_KEYS } from '~/stores/specialtiesStore'
+import { CATEGORY_LABEL_KEYS, SPECIALTY_LABEL_KEYS } from '~/utils/specialtyLabelKeys'
 
 const localesDir = join(dirname(fileURLToPath(import.meta.url)), '../../../i18n/locales')
 
