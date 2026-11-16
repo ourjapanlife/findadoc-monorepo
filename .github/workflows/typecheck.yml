@@ -41,5 +41,5 @@ jobs:
 
       - name: Regenerate shared types and fail if they were not committed
         run: |
-          pnpm exec turbo generate
+          pnpm exec turbo run generate
           git diff --exit-code -- packages/graphql/src/index.ts
