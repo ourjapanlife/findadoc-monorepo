@@ -40,18 +40,23 @@ export interface LanguagesResult {
 
 /**
  * Specialties with labels and the categories that group them. With a category, only that
- * category's specialties and that category, so an agent can turn "mental health" into codes.
+ * category and its specialties, so an agent can turn "mental health" into codes. Those come in
+ * the category's own order, whose first entry is the homepage tile's specialty.
  */
 export async function listSpecialties(category?: SpecialtyCategory): Promise<SpecialtiesResult> {
     const data = await gqlClient.request<{ specialties: SpecialtyEntry[], specialtyCategories: CategoryEntry[] }>(
         LIST_SPECIALTIES
     )
-    const specialties = category === undefined
-        ? data.specialties
-        : data.specialties.filter(specialty => specialty.categories.includes(category))
-    const categories = category === undefined
-        ? data.specialtyCategories
-        : data.specialtyCategories.filter(entry => entry.code === category)
+
+    if (category === undefined) {
+        return { count: data.specialties.length, specialties: data.specialties, categories: data.specialtyCategories }
+    }
+
+    const categories = data.specialtyCategories.filter(entry => entry.code === category)
+    const byCode = new Map(data.specialties.map(specialty => [specialty.code, specialty]))
+    const specialties = (categories[0]?.specialties ?? [])
+        .map(code => byCode.get(code))
+        .filter((specialty): specialty is SpecialtyEntry => specialty !== undefined)
 
     return { count: specialties.length, specialties, categories }
 }

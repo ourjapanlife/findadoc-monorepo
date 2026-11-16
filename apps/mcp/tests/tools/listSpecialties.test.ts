@@ -65,6 +65,28 @@ describe('list_specialties', () => {
         expect(data.categories.map((category: { code: string }) => category.code)).toEqual(['MENTAL_HEALTH'])
     })
 
+    it('keeps the order of the category, so the first specialty is the main one', async () => {
+        mockRequest.mockResolvedValueOnce({
+            specialties: [
+                { code: 'ALLERGY_AND_IMMUNOLOGY', nameEn: 'Allergist', nameJa: 'アレルギー科', categories: ['PRIMARY_CARE'] },
+                { code: 'INTERNAL_MEDICINE', nameEn: 'Internist', nameJa: '内科', categories: ['PRIMARY_CARE'] }
+            ],
+            specialtyCategories: [
+                {
+                    code: 'PRIMARY_CARE',
+                    nameEn: 'Primary Care',
+                    nameJa: 'プライマリケア',
+                    specialties: ['INTERNAL_MEDICINE', 'ALLERGY_AND_IMMUNOLOGY']
+                }
+            ]
+        })
+
+        const data = parsed(await client.callTool({ name: 'list_specialties', arguments: { category: 'PRIMARY_CARE' } }))
+
+        expect(data.specialties.map((specialty: { code: string }) => specialty.code))
+            .toEqual(['INTERNAL_MEDICINE', 'ALLERGY_AND_IMMUNOLOGY'])
+    })
+
     it('refuses a category that does not exist', async () => {
         const result = await client.callTool({ name: 'list_specialties', arguments: { category: 'NOT_A_CATEGORY' } })
 
