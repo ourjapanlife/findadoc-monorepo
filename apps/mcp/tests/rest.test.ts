@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
 import Fastify, { type FastifyInstance } from 'fastify'
+import { SpecialtyCategory } from '@findadoc/graphql'
 
 vi.mock('../src/graphql.js', () => ({
     gqlClient: {
@@ -124,6 +126,14 @@ describe('REST routes', () => {
 
         expect(res.statusCode).toBe(502)
         expect(res.json().error).toContain('Connection refused')
+    })
+
+    it('lists every SpecialtyCategory in the OpenAPI category parameter', () => {
+        // ChatGPT Actions refuse a value missing from the enum, and the YAML is written by hand.
+        const yaml = readFileSync(new URL('../openapi.yaml', import.meta.url), 'utf8')
+        const listed = /name: category[\s\S]*?enum: \[([^\]]+)\]/u.exec(yaml)?.[1]
+
+        expect(listed?.split(',').map(code => code.trim()).sort()).toEqual(Object.values(SpecialtyCategory).sort())
     })
 
     it('serves the OpenAPI manifest', async () => {
