@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useLoadingStore } from './loadingStore.js'
 import { fetchCities } from '~/utils/cityOptions'
-import { listPrefectureJapanEn, listPrefectureJapanJa } from '~/utils/prefectureNames'
+import { listPrefectureJapanEn } from '~/utils/prefectureNames'
 
 export const useLocationsStore = defineStore('locationsStore', () => {
     const allCitiesEnglishList = ref<string[]>([])
@@ -27,8 +27,6 @@ export const useLocationsStore = defineStore('locationsStore', () => {
 
     return { allCitiesEnglishList, allCitiesJapaneseList, fetchLocations }
 })
-
-export { listPrefectureJapanEn, listPrefectureJapanJa }
 
 export const prefectureLanguageMatch: Record<string, string> = {
     hokkaido: '北海道',
