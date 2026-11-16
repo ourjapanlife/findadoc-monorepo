@@ -182,7 +182,7 @@ Before a change is done:
 
 ## Institutions list
 
-`apps/server/docs/institution-import.md` is the rule for the multilingual institutions spreadsheet (#21). Every row is staged in `institution_import_rows`. Green rows are already listed, and red rows are skipped. A match fills empty fields only, and a new facility is `UNVERIFIED` with one Places id from an id-only search. The import writes no professional, payment, or insurance. `utils/checkInstitutionList.py` checks rows against the ministry open data, Japan Post, and the live website first; only a working https link is stored.
+The #21 multilingual institutions import has run on production, and its scripts are deleted. `apps/server/docs/institution-import.md` records what it did. Every row is staged in `institution_import_rows`, which stays as the record of where each facility came from. Red rows were skipped, a match filled empty fields only, and a new facility is `UNVERIFIED` with one Places id. The import wrote no professional, payment, or insurance. Rows with outcome `needs_review` wait for a moderator. Do not bring the scripts back to re-run it; a new list is a new import.
 
 ## Licenses
 
