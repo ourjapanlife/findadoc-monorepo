@@ -145,7 +145,11 @@ export default defineNuxtConfig({
                     key: 'og:image:alt'
                 }
             ],
-            link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+            link: [
+                { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+                // iOS home screens and some link previews do not read an SVG icon.
+                { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }
+            ],
             script: [
                 { innerHTML: COLOR_SCHEME_BOOTSTRAP, tagPosition: 'head' },
                 { innerHTML: CLINIC_HOST_BOOTSTRAP, tagPosition: 'head' },

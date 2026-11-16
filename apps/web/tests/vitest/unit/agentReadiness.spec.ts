@@ -8,7 +8,7 @@ import {
     prefersMarkdown,
     withAcceptVary
 } from '@/utils/markdownNegotiation'
-import { MCP_OPENAPI_URL, MCP_SERVER_URL, SITE_ORIGIN } from '@/utils/site'
+import { MCP_OPENAPI_URL, MCP_SERVER_URL, SITE_LOGO, SITE_ORIGIN } from '@/utils/site'
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '../../..')
 
@@ -33,12 +33,15 @@ describe('agent discovery files', () => {
         const manifest = JSON.parse(readPublic('.well-known/mcp.json')) as { endpoint: string }
         const card = JSON.parse(readPublic('.well-known/mcp/server-card.json')) as {
             transport: { url: string }
+            serverInfo: { icons: Array<{ src: string }> }
         }
         const graphql = JSON.parse(readPublic('graphql.json')) as { endpoint: string, protocol: string }
         const openapi = JSON.parse(readPublic('openapi.json')) as { openapi: string, paths: Record<string, unknown> }
 
         expect(manifest.endpoint).to.equal(MCP_SERVER_URL)
         expect(card.transport.url).to.equal(MCP_SERVER_URL)
+        expect(card.serverInfo.icons.map(icon => icon.src)).to.deep.equal([SITE_LOGO, `${SITE_ORIGIN}/favicon.svg`])
+        expect(readPublic('llms.txt')).to.include(SITE_LOGO)
         expect(graphql).to.deep.include({ protocol: 'graphql', endpoint: 'https://api.findadoc.jp' })
         expect(openapi.openapi).to.equal('3.0.3')
         expect(openapi.paths).to.have.property('/llms.txt')
