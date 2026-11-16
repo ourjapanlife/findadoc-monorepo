@@ -1,5 +1,6 @@
 import { Locale, SpecialtyCategory } from '@findadoc/graphql'
 import type { Specialty } from '@findadoc/graphql'
+import type { DirectoryStats } from './directoryStats'
 import { specialtyFacetPathFromSlugs, specialtyFacetSlug } from './facetPath'
 import { prefectureHubPath } from './hubPath'
 import { specialtySearchParam } from './searchDirectory'
@@ -7,11 +8,11 @@ import { specialtySearchParam } from './searchDirectory'
 /**
  * Entry points for the homepage.
  *
- * These are static on purpose. The homepage must not pay for an API round trip before
- * it can paint, and the API exposes no facet endpoint — deriving any of this at runtime
- * means paging the entire facility table, which is the cost the homepage exists to avoid.
- *
- * Measured against production on 2026-09-02. Re-measure when the directory grows.
+ * The homepage must not pay for an API round trip before it can paint. The counts and the
+ * prefecture list come from `#directory-stats`, which `nuxi generate` computes from the
+ * directory it prerenders (`utils/directoryStats.ts`), so they are baked into the HTML and
+ * match the build. The static values below are only the fallback for `nuxi dev` and a build
+ * without the directory.
  */
 export interface PrefectureEntry {
     /** Must match `contact.address.prefectureEn` exactly — it is used as the filter value. */
@@ -22,11 +23,11 @@ export interface PrefectureEntry {
 }
 
 /**
- * Every prefecture that currently has at least one facility, ordered by how many.
+ * Fallback prefecture list, measured against production on 2026-09-02.
  *
- * Ordered by volume rather than alphabetically because the distribution is extreme —
- * Tokyo has 96 and Nagasaki has 1 — so the first handful covers most searches, and the
- * ordering itself tells the reader where coverage actually is.
+ * Ordered by volume rather than alphabetically because the distribution is uneven, so the
+ * first handful covers most searches, and the ordering itself tells the reader where coverage
+ * actually is. `directoryPrefectures` keeps the same order for the generated list.
  */
 export const ALL_PREFECTURES: readonly PrefectureEntry[] = [
     { name: 'Tokyo', nameJa: '東京都', approximateFacilities: 96 },
@@ -65,20 +66,40 @@ export const ALL_PREFECTURES: readonly PrefectureEntry[] = [
 ] as const
 
 /**
- * The directory's size, measured against production on 2026-09-02.
- *
- * Shown on the homepage and the about page. Carried statically for the same reason as the
- * prefecture list, and framed in copy as approximate so it never reads as a live counter.
- * Re-measure when the directory grows — the query is in docs/refresh-audit.md, Appendix.
+ * Fallback directory size, measured against production on 2026-11-16, after the #21 import.
+ * Framed in copy as approximate so it never reads as a live counter.
  */
 export const DIRECTORY_STATS = {
-    facilities: 465,
-    professionals: 400,
+    facilities: 1718,
+    professionals: 405,
     languages: 14
 } as const
 
+/** How many prefecture chips "Browse by area" shows. */
+const TOP_PREFECTURE_COUNT = 8
+
 /** The subset shown as chips under "Browse by area" when generate has not filtered them. */
-export const TOP_PREFECTURES: readonly PrefectureEntry[] = ALL_PREFECTURES.slice(0, 8)
+export const TOP_PREFECTURES: readonly PrefectureEntry[] = ALL_PREFECTURES.slice(0, TOP_PREFECTURE_COUNT)
+
+/** The counts from this build's directory, or the fallback when the build has none. */
+export function directoryCounts(
+    generated: DirectoryStats | null | undefined
+): { facilities: number, professionals: number, languages: number } {
+    if (!generated || generated.facilities === 0) {
+        return DIRECTORY_STATS
+    }
+
+    return {
+        facilities: generated.facilities,
+        professionals: generated.professionals,
+        languages: generated.languages
+    }
+}
+
+/** Prefectures with facilities in this build's directory, or the fallback list. */
+export function directoryPrefectures(generated: DirectoryStats | null | undefined): readonly PrefectureEntry[] {
+    return generated && generated.prefectures.length > 0 ? generated.prefectures : ALL_PREFECTURES
+}
 
 export type AreaPrefectureLink = string | { path: string, query: { prefecture: string } }
 
@@ -101,19 +122,23 @@ function prefectureIsInGenerate(
  * fall back to search so Nitro is not asked to crawl missing `/tokyo`.
  */
 export function homeAreaPrefectures(
-    generatedPrefectureHubs: readonly string[] | null | undefined
+    generatedPrefectureHubs: readonly string[] | null | undefined,
+    prefectures: readonly PrefectureEntry[] = ALL_PREFECTURES
 ): readonly PrefectureEntry[] {
+    const topPrefectures = prefectures === ALL_PREFECTURES
+        ? TOP_PREFECTURES
+        : prefectures.slice(0, TOP_PREFECTURE_COUNT)
     if (!Array.isArray(generatedPrefectureHubs) || generatedPrefectureHubs.length === 0) {
-        return TOP_PREFECTURES
+        return topPrefectures
     }
 
-    const top = TOP_PREFECTURES.filter(entry => prefectureIsInGenerate(entry, generatedPrefectureHubs))
+    const top = topPrefectures.filter(entry => prefectureIsInGenerate(entry, generatedPrefectureHubs))
     if (top.length > 0) {
         return top
     }
 
-    const rest = ALL_PREFECTURES.filter(entry => prefectureIsInGenerate(entry, generatedPrefectureHubs))
-    return rest.length > 0 ? rest.slice(0, TOP_PREFECTURES.length) : TOP_PREFECTURES
+    const rest = prefectures.filter(entry => prefectureIsInGenerate(entry, generatedPrefectureHubs))
+    return rest.length > 0 ? rest.slice(0, TOP_PREFECTURE_COUNT) : topPrefectures
 }
 
 /**

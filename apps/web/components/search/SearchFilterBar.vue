@@ -196,7 +196,8 @@ import { localeDisplayOptions } from '~/stores/localeStore'
 import { languageName } from '~/utils/languageName'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { searchFilterFlags } from '~/utils/analyticsEvents'
-import { ALL_PREFECTURES, SEARCHABLE_LANGUAGES, type PrefectureEntry } from '~/utils/homeDirectory'
+import { SEARCHABLE_LANGUAGES, directoryPrefectures, type PrefectureEntry } from '~/utils/homeDirectory'
+import directoryStats from '#directory-stats'
 import { hasActiveFilters } from '~/utils/searchDirectory'
 import { fetchCities, type CityOption } from '~/utils/cityOptions'
 import type { Locale, Specialty } from '@findadoc/graphql'
@@ -274,7 +275,7 @@ const languageOptions = computed(() =>
         .map(code => localeDisplayOptions.find(option => option.code === code))
         .filter((option): option is NonNullable<typeof option> => !!option))
 
-const prefectures = ALL_PREFECTURES
+const prefectures = directoryPrefectures(directoryStats)
 
 function prefectureLabel(entry: PrefectureEntry) {
     return locale.value === 'ja-JP' ? entry.nameJa : entry.name

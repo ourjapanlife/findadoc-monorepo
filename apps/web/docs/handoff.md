@@ -26,7 +26,7 @@ Merged today, in order:
 ### Read this before merging #1815
 
 - **The translations have had no native review.** 29 keys across nine languages, written by Claude during the session. The Japanese matters most. One factual error was already caught in draft — an unsupported `認定` claim on the disclosure page — which is the reason to get a second reader rather than a reason to trust the rest.
-- **The directory counts are hardcoded** in `utils/homeDirectory.ts`, measured against production on 2026-09-02: 465 clinics, 400 professionals, 14 languages, and per-prefecture figures. Re-measure as the directory grows. The reproduction query is in §Appendix of the audit.
+- **The directory counts come from the build.** `nuxi generate` counts clinics, professionals, languages, and facilities per prefecture from the directory it prerenders (`utils/directoryStats.ts`, `#directory-stats`). The values in `utils/homeDirectory.ts` are only the fallback for `nuxi dev` and a build without the directory.
 
 ---
 
