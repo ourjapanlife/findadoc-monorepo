@@ -33,6 +33,16 @@ export const SITE_DEFAULT_TITLE = `English-speaking doctors in Japan · ${SITE_T
  */
 export const SITE_SOCIAL_IMAGE = `${SITE_ORIGIN}/findadoc-social-home.jpg`
 
+/**
+ * The official logo, a 512×512 PNG of `public/favicon.svg`. Search engines and AI
+ * assistants read it from the Organization JSON-LD and the MCP server info, so they show
+ * our mark instead of a social card or a guess. A new mark gets a new file name, for the
+ * same caching reason as the social card. Keep the MCP copy (`apps/mcp/src/brand.ts`) in step.
+ */
+export const SITE_LOGO = `${SITE_ORIGIN}/findadoc-logo.png`
+
+export const SITE_LOGO_SIZE = 512
+
 /** Every social card is 1200×630, the size LinkedIn, Facebook, and X expect. */
 export const SITE_SOCIAL_IMAGE_WIDTH = 1200
 

@@ -1,4 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { SERVER_ICONS, SERVER_TITLE, SERVER_WEBSITE_URL } from './brand.js'
 import { registerHealthcheck } from './tools/healthcheck.js'
 import { registerSearchHealthcareProfessionals } from './tools/searchHealthcareProfessionals.js'
 import { registerSearchFacilities } from './tools/searchFacilities.js'
@@ -10,7 +11,10 @@ import { registerListLanguages } from './tools/listLanguages.js'
 export function createServer(): McpServer {
     const server = new McpServer({
         name: 'findadoc-mcp',
-        version: '0.1.0'
+        title: SERVER_TITLE,
+        version: '0.1.0',
+        websiteUrl: SERVER_WEBSITE_URL,
+        icons: SERVER_ICONS.map(icon => ({ ...icon, sizes: [...icon.sizes] }))
     })
 
     registerHealthcheck(server)
