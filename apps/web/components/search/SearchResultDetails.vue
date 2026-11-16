@@ -132,7 +132,27 @@
             <h3 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ professionalsCountText }}
             </h3>
-            <ul class="m-0 flex list-none flex-col gap-3 p-0">
+            <!-- A clinic can be listed before anyone names a doctor there (#21). Say so rather than leave a bare heading. -->
+            <div
+                v-if="!professionals.length"
+                data-testid="search-details-no-professionals"
+                class="card flex flex-col gap-2 p-4"
+            >
+                <p class="m-0 text-primary-text">
+                    {{ t('search.noProfessionalsNote') }}
+                </p>
+                <NuxtLink
+                    to="/submit"
+                    data-testid="search-details-add-professional"
+                    class="self-start font-medium text-primary hover:underline"
+                >
+                    {{ t('search.addProfessional') }}
+                </NuxtLink>
+            </div>
+            <ul
+                v-else
+                class="m-0 flex list-none flex-col gap-3 p-0"
+            >
                 <li
                     v-for="professional in professionals"
                     :key="professional.id"

@@ -52,7 +52,17 @@
             </li>
         </ul>
 
-        <ul class="m-0 flex list-none flex-col gap-2 p-0 text-primary-text">
+        <p
+            v-if="!professionals.length"
+            data-testid="search-result-no-professionals"
+            class="m-0 text-sm text-primary-text-muted"
+        >
+            {{ t('search.noProfessionalsYet') }}
+        </p>
+        <ul
+            v-else
+            class="m-0 flex list-none flex-col gap-2 p-0 text-primary-text"
+        >
             <li
                 v-for="professional in visibleProfessionals"
                 :key="professional.id"
