@@ -28,7 +28,7 @@ All of our software is open source and lives in one monorepo: [findadoc-monorepo
 | Path | Description |
 |------|-------------|
 | `apps/web` | Website at [findadoc.jp](https://www.findadoc.jp) (Nuxt 4 / Vue 3) |
-| `apps/server` | GraphQL API (Node.js / Apollo Server / Supabase) |
+| `apps/server` | GraphQL API (Node.js / Apollo Server / PostgreSQL on AWS) |
 | `apps/mcp` | MCP server for AI integrations |
 | `apps/docs` | This documentation site |
 | `packages/graphql` | TypeScript types generated from the API schema |

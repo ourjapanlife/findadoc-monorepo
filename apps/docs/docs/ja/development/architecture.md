@@ -6,7 +6,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 
 ```
 ┌─────────────────┐     GraphQL     ┌──────────────────┐     SQL      ┌─────────────────┐
-│    apps/web     │ ◄─────────────► │   apps/server    │ ◄──────────► │    Supabase     │
+│    apps/web     │ ◄─────────────► │   apps/server    │ ◄──────────► │  Amazon RDS     │
 │  (Nuxt 4 site)  │                 │ (Apollo GraphQL) │              │  (PostgreSQL)   │
 └─────────────────┘                 └──────────────────┘              └─────────────────┘
                                              ▲
@@ -34,8 +34,8 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **ランタイム**：Node.js + TypeScript
 - **API**：Fastify上のApollo Server
 - **スキーマ**：`apps/server/src/typeDefs/schema.graphql`（リポジトリ内で唯一のGraphQLスキーマ）
-- **データベース**：Supabase（PostgreSQL）。マイグレーションは `apps/server/supabase`。APIはSupabaseクライアントではなく、Postgres接続上のKyselyでクエリする
-- **本番環境**：PM2で管理されるDockerコンテナ
+- **データベース**：東京リージョンのAmazon RDS for PostgreSQL。マイグレーションは `apps/server/supabase/migrations` にあり、デプロイのたびに適用される。APIはKyselyでクエリする
+- **本番環境**：CloudFrontの背後にあるAWS Lambda（`api.findadoc.jp`）。`infra/` のCDKアプリでデプロイ
 - **キャッシュ**：`apps/server/src/publicCache.ts`がすべてのレスポンスに`Cache-Control`を付けます（#242）。トークンが送られておらず、ルートフィールドがすべて`PUBLIC_CACHEABLE_QUERY_FIELDS`にあり、エラーがないときだけ`public, max-age=60`になります。それ以外は`private, no-store`です。このリストに加えてよいのは、サインアウトしている訪問者全員に同じ答えを返すフィールドだけです。ユーザー、IP、国、トークン、レート制限を読まないものに限ります。予約、アップロード、モデレーション、ユーザーのフィールドは加えません。`__tests__/publicCache.test.ts`がリストを確認します
 - **CSRF**：Apolloの組み込みチェックは無効にし、`csrfPreventionPlugin`が同じルールを守ります。プリフライトのないリクエスト（フォームのPOSTや、`x-apollo-operation-name`ヘッダーのないGET）が実行できるのは、公開リストにあるクエリだけです。そのため公開の読み込みは、キャッシュできる普通のGETで送れます
 - **参照テーブル**：都道府県と市区町村の一覧は、Lambdaのメモリに10分間置きます（`src/lookupCache.ts`）
@@ -70,7 +70,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 
 1. ユーザーが[findadoc.jp](https://www.findadoc.jp)で医療機関を検索
 2. ウェブサイトがAPIにGraphQLクエリを送信
-3. APIがSupabase PostgreSQLデータベースに対してクエリを実行
+3. APIがAmazon RDS上のPostgreSQLデータベースに対してクエリを実行
 4. 結果がインタラクティブな地図上に医療機関の詳細とともに表示される
 
 

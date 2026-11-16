@@ -28,7 +28,7 @@
 | パス | 説明 |
 |------|-------------|
 | `apps/web` | [findadoc.jp](https://www.findadoc.jp) のウェブサイト (Nuxt 4 / Vue 3) |
-| `apps/server` | GraphQL API (Node.js / Apollo Server / Supabase) |
+| `apps/server` | GraphQL API (Node.js / Apollo Server / PostgreSQL on AWS) |
 | `apps/mcp` | AI連携用MCPサーバー |
 | `apps/docs` | このドキュメントサイト |
 | `packages/graphql` | APIスキーマから生成したTypeScript型 |
