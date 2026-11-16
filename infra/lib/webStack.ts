@@ -181,7 +181,20 @@ function siteBuildSpec(): string {
     ].join('\n')
 }
 
-function siteRules(): CfnApp.CustomRuleProperty[] {
+/**
+ * Pages are `tokyo.html`, not `tokyo/index.html` (`autoSubfolderIndex: false`), so the
+ * catch-all turned `/tokyo/` into `/tokyo/.html` and a 404. Google still has the slashed
+ * URLs from the old layout. Serve the same page; its canonical tag is slashless.
+ * A rewrite, not a 301: Amplify already 301s a missing `/x` to `/x/`, so a `/x/` → `/x`
+ * redirect would loop on every unknown path. The root rule keeps `/` off `/.html`.
+ */
+const TRAILING_SLASH_RULES: CfnApp.CustomRuleProperty[] = [
+    { source: '/', target: '/index.html', status: '200' },
+    { source: '/<*>/', target: '/<*>.html', status: '200' },
+]
+
+/** Amplify rewrites, first match wins. The `.html` catch-all stays last. */
+export function siteRules(): CfnApp.CustomRuleProperty[] {
     const rewrite = (locales: string[], paths: string[]) => ['', ...locales].flatMap(locale => {
         const root = locale === '' ? '' : `/${locale}`
         return paths.map(path => ({
@@ -196,6 +209,7 @@ function siteRules(): CfnApp.CustomRuleProperty[] {
         { source: '/stats.js', target: 'https://cloud.umami.is/script.js', status: '200' },
         { source: '/api/send', target: 'https://gateway.umami.is/api/send', status: '200' },
         ...clientRules,
+        ...TRAILING_SLASH_RULES,
         { source: '/<*>', target: '/<*>.html', status: '404-200' },
     ]
 }
