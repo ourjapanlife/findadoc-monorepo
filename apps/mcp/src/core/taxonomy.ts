@@ -22,19 +22,20 @@ const LIST_LANGUAGES = gql`
     }
 `
 
-export type Specialty = Omit<SpecialtyDefinition, '__typename'>
-export type Category = Omit<SpecialtyCategoryDefinition, '__typename'>
-export type Language = Omit<LanguageDefinition, '__typename'>
+// Not named Specialty or Language: @findadoc/graphql exports those names as enums.
+export type SpecialtyEntry = Omit<SpecialtyDefinition, '__typename'>
+export type CategoryEntry = Omit<SpecialtyCategoryDefinition, '__typename'>
+export type LanguageEntry = Omit<LanguageDefinition, '__typename'>
 
 export interface SpecialtiesResult {
     count: number
-    specialties: Specialty[]
-    categories: Category[]
+    specialties: SpecialtyEntry[]
+    categories: CategoryEntry[]
 }
 
 export interface LanguagesResult {
     count: number
-    languages: Language[]
+    languages: LanguageEntry[]
 }
 
 /**
@@ -42,7 +43,7 @@ export interface LanguagesResult {
  * category's specialties and that category, so an agent can turn "mental health" into codes.
  */
 export async function listSpecialties(category?: SpecialtyCategory): Promise<SpecialtiesResult> {
-    const data = await gqlClient.request<{ specialties: Specialty[], specialtyCategories: Category[] }>(
+    const data = await gqlClient.request<{ specialties: SpecialtyEntry[], specialtyCategories: CategoryEntry[] }>(
         LIST_SPECIALTIES
     )
     const specialties = category === undefined
@@ -57,7 +58,7 @@ export async function listSpecialties(category?: SpecialtyCategory): Promise<Spe
 
 /** The search-facet languages, or every Locale code when `includeUnpublished` is true. */
 export async function listLanguages(includeUnpublished = false): Promise<LanguagesResult> {
-    const data = await gqlClient.request<{ languages: Language[] }>(
+    const data = await gqlClient.request<{ languages: LanguageEntry[] }>(
         LIST_LANGUAGES,
         { publishedOnly: !includeUnpublished }
     )
