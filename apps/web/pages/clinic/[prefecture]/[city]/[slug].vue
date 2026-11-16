@@ -82,8 +82,8 @@ import {
 } from '~/utils/searchDirectory'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { clinicViewedProps } from '~/utils/analyticsEvents'
-import { useLiveJapaneseInsurance } from '~/composables/useLiveJapaneseInsurance'
-import { withLiveJapaneseInsurance } from '~/utils/japaneseInsurance'
+import { useLiveFacility } from '~/composables/useLiveFacility'
+import { withLiveFacility } from '~/utils/liveFacility'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -121,9 +121,9 @@ if (!canonicalPathMatches(route.path, canonicalPath)) {
     })
 }
 
-// The insurance answer is re-read in the browser so a post-build change shows (#18).
-const liveInsurance = useLiveJapaneseInsurance(() => [facilityId])
-const facility = computed(() => withLiveJapaneseInsurance(data.value!, liveInsurance.value))
+// The insurance answer and confirmation are re-read in the browser so a post-build change shows (#18, #22).
+const liveFacility = useLiveFacility(() => [facilityId])
+const facility = computed(() => withLiveFacility(data.value!, liveFacility.value))
 const bookPath = computed(() => bookingClinicPath(facility.value.id, String(locale.value)))
 // Booking is behind the preview cookie, so the button is added in the browser only and
 // never appears in the prerendered page that search engines read.
