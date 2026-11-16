@@ -5,9 +5,7 @@
             class="flex flex-col md:h-full md:min-h-0"
         >
             <MyPageSettingsContent v-if="isSettingsView" />
-            <ClinicAvailabilityCalendar
-                v-else-if="isAvailabilityView"
-            />
+            <ModClinicAccounts v-else-if="isClinicAccountsView" />
             <ModListContainer v-else />
         </div>
         <div
@@ -57,12 +55,6 @@
                 <ModCreateHealthcareProfessionalSection />
             </form>
         </div>
-        <div
-            v-if="moderationScreenStore.viewBookingScreenIsActive()"
-            class="overflow-y-auto md:h-full"
-        >
-            <BookingSubmissionDetail :booking-id="selectedIdFromModSubmissionList" />
-        </div>
     </div>
 </template>
 
@@ -75,7 +67,6 @@ import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { isModerationSettingsView } from '~/utils/moderationView'
 import { isCorrection } from '~/utils/moderationSubmissionStatus'
-import { useBookingSubmissionsStore } from '~/stores/bookingSubmissionsStore'
 
 const route = useRoute()
 
@@ -83,7 +74,6 @@ const moderationScreenStore = useModerationScreenStore()
 const moderationSubmissionsStore = useModerationSubmissionsStore()
 const facilitiesStore = useFacilitiesStore()
 const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
-const bookingSubmissionsStore = useBookingSubmissionsStore()
 
 const routePathForModerationScreen = computed(() => route.path as string)
 const selectedIdFromModSubmissionList = computed(() => route.params.id as string)
@@ -92,7 +82,7 @@ const selectedViewQuery = computed(() => {
     return typeof view === 'string' ? view : ''
 })
 const isSettingsView = computed(() => isModerationSettingsView(selectedViewQuery.value))
-const isAvailabilityView = computed(() => selectedViewQuery.value === 'availability')
+const isClinicAccountsView = computed(() => selectedViewQuery.value === 'clinics')
 
 // A visitor correction opens the before → after review, a listing opens the edit form (#22).
 // The kind is known only once the submission is loaded, so neither screen mounts before that.
@@ -126,11 +116,8 @@ function syncSelectedModerationViewFromQuery() {
             moderationSubmissionsStore
                 .setSelectedModerationListViewChosen(SelectedModerationListView.HealthcareProfessionals)
             return
-        case 'bookings':
-            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Bookings)
-            return
-        case 'availability':
-            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.Availability)
+        case 'clinics':
+            moderationSubmissionsStore.setSelectedModerationListViewChosen(SelectedModerationListView.ClinicAccounts)
             return
         case 'submissions':
         default:
@@ -144,7 +131,7 @@ const setActiveScreenBasedOnRoute = async () => {
     const pathSnippet = routePathForModerationScreen.value.split('/')[2] ?? ''
 
     // for routes that require a selected ID, check before entering the switch
-    const editRoutes = ['edit-submission', 'edit-facility', 'edit-healthcare-professional', 'booking']
+    const editRoutes = ['edit-submission', 'edit-facility', 'edit-healthcare-professional']
     if (editRoutes.includes(pathSnippet) && !selectedIdFromModSubmissionList.value) {
         moderationScreenStore.setActiveScreen(ModerationScreen.Dashboard)
         moderationSubmissionsStore.selectedSubmissionId = ''
@@ -175,9 +162,6 @@ const setActiveScreenBasedOnRoute = async () => {
         case 'create-facility':
             moderationScreenStore.setActiveScreen(ModerationScreen.CreateFacility)
             break
-        case 'booking':
-            moderationScreenStore.setActiveScreen(ModerationScreen.ViewBooking)
-            break
         default:
             moderationScreenStore.setActiveScreen(ModerationScreen.Dashboard)
             syncSelectedModerationViewFromQuery()
@@ -190,9 +174,6 @@ const setActiveScreenBasedOnRoute = async () => {
             healthcareProfessionalsStore.resetHealthcareProfessionalSectionFields()
             // Reset facilitySectionFields
             facilitiesStore.resetFacilitySectionFields()
-            if (selectedViewQuery.value === 'bookings') {
-                void bookingSubmissionsStore.loadList()
-            }
     }
 }
 

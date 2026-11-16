@@ -35,11 +35,10 @@ import { isSafeBookingObjectKey, isSafeLocalObjectKey, storeLocalBookingUpload }
 import { isHttpsUrl, validatePaymentSettings } from '../src/validation/validatePaymentSettings.js'
 
 const API = 'http://127.0.0.1:4000'
-const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+// An admin who is also the clinic owner of the clinics under test. Being an admin alone reads no booking (#192).
+const adminOwner: BookingAccess = { isAdmin: true, memberships: new Map() }
 const memberOf = (facilityId: string, role: 'owner' | 'staff'): BookingAccess => ({
-    readAll: false,
-    writeAll: false,
-    manageMembersAll: false,
+    isAdmin: false,
     memberships: new Map([[facilityId, role]])
 })
 
@@ -174,6 +173,7 @@ describe('booking payment settings', () => {
             const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
             expect(created.hasErrors).toBe(false)
             assign(created.data.id)
+            adminOwner.memberships.set(created.data.id, 'owner')
         }
     })
 
@@ -225,14 +225,31 @@ describe('booking payment settings', () => {
         expect(row.fee_jpy).toBe(5000)
     })
 
-    it('lets an admin save any clinic', async () => {
+    it('refuses an admin who is not a member of the clinic, and hides the settings (#192)', async () => {
+        const admin: BookingAccess = { isAdmin: true, memberships: new Map() }
+        const refused = await paymentSettingsService.updateBookingPaymentSettings(
+            settingsInput(facilityId, { feeJpy: 1 }),
+            admin,
+            API
+        )
+        expect(refused.errors?.[0]).toMatchObject({ field: 'facilityId', errorCode: ErrorCode.FORBIDDEN })
+        expect(await paymentSettingsService.getBookingPaymentSettings(facilityId, admin, API)).toBeNull()
+        const qr = await paymentSettingsService.createPaymentQrUploadUrl(
+            { facilityId, contentType: 'image/png', byteSize: 2048 },
+            admin,
+            API
+        )
+        expect(qr.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+    })
+
+    it('lets an admin who owns the clinic save it like any owner', async () => {
         const saved = await paymentSettingsService.updateBookingPaymentSettings(
             settingsInput(otherFacilityId, {
                 cardMode: BookingCardPaymentMode.SentByStaff,
                 cardUrl: null,
                 feeJpy: null
             }),
-            admin,
+            adminOwner,
             API
         )
         expect(saved.hasErrors).toBe(false)
@@ -330,7 +347,7 @@ describe('booking payment settings', () => {
             const key = await storedQr(facilityId, PNG)
             await paymentSettingsService.updateBookingPaymentSettings(
                 settingsInput(facilityId, { payPayQrObjectKey: key, feeJpy: 3000 }),
-                admin,
+                adminOwner,
                 API
             )
 
@@ -365,7 +382,7 @@ describe('booking payment settings', () => {
     it('saves an upper-case https link instead of failing on the database check', async () => {
         const saved = await paymentSettingsService.updateBookingPaymentSettings(
             settingsInput(otherFacilityId, { cardUrl: 'HTTPS://EXAMPLE.COM/pay' }),
-            admin,
+            adminOwner,
             API
         )
         expect(saved.hasErrors).toBe(false)
@@ -375,7 +392,8 @@ describe('booking payment settings', () => {
     it('is deleted with the facility', async () => {
         const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
         const id = created.data.id
-        await paymentSettingsService.updateBookingPaymentSettings(settingsInput(id), admin, API)
+        adminOwner.memberships.set(id, 'owner')
+        await paymentSettingsService.updateBookingPaymentSettings(settingsInput(id), adminOwner, API)
 
         const deleted = await facilityService.deleteFacility(id, 'test|moderator')
         expect(deleted.hasErrors).toBe(false)
@@ -452,13 +470,18 @@ describe('submitting an online consult request', () => {
         const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
         expect(created.hasErrors).toBe(false)
         facilityId = created.data.id
+        adminOwner.memberships.set(facilityId, 'owner')
         const settings = await clinicAccessService.updateBookingSettings({
             facilityId,
             allowedDurations: [30],
             formDefinitionIds: [SHOWCASE_BOOKING_FORM_ID]
-        }, admin)
+        }, adminOwner)
         expect(settings.hasErrors).toBe(false)
-        const payment = await paymentSettingsService.updateBookingPaymentSettings(settingsInput(facilityId), admin, API)
+        const payment = await paymentSettingsService.updateBookingPaymentSettings(
+            settingsInput(facilityId),
+            adminOwner,
+            API
+        )
         expect(payment.hasErrors).toBe(false)
     })
 
@@ -495,7 +518,7 @@ describe('submitting an online consult request', () => {
         await availabilityService.createClinicAvailabilityWindow(
             { clinicSiteId: facilityId, startsAt: iso(0), endsAt: iso(30) },
             'test|staff',
-            admin
+            adminOwner
         )
         const notice = vi.spyOn(notifications, 'sendBookingNotice').mockResolvedValue(true)
 

@@ -40,11 +40,16 @@ import type { FacilityParent, ProfessionalParent } from './typeDefs/resolverPare
 
 // Each pair is the every-clinic scope an admin holds, then the own-clinic scope that
 // FacilityOwner or FacilityStaff gets from clinic_memberships. The service checks which clinic.
-const CLINIC_READ_SCOPES = [Scope['read:bookings'], Scope['read:own_clinic_bookings']]
-const CLINIC_AVAILABILITY_SCOPES = [Scope['write:clinic_availability'], Scope['write:own_clinic_availability']]
-const CLINIC_STATUS_SCOPES = [Scope['write:clinic_availability'], Scope['write:own_clinic_bookings']]
+// Bookings, appointments, uploads, calendar, and settings take own-clinic scopes only, so
+// only a member reaches them (#192). An admin sets up clinic accounts: the clinic, its
+// settings summary, its members, and interpretation. Services still check the facility.
+const CLINIC_READ_SCOPES = [Scope['read:own_clinic_bookings']]
+const CLINIC_SETUP_READ_SCOPES = [Scope['write:clinic_memberships'], Scope['read:own_clinic_bookings']]
+const CLINIC_AVAILABILITY_SCOPES = [Scope['write:own_clinic_availability']]
+const CLINIC_STATUS_SCOPES = [Scope['write:own_clinic_bookings']]
 const CLINIC_MEMBER_SCOPES = [Scope['write:clinic_memberships'], Scope['write:own_clinic_memberships']]
-const CLINIC_SETTINGS_SCOPES = [Scope['write:clinic_memberships'], Scope['write:own_clinic_settings']]
+const CLINIC_SETTINGS_SCOPES = [Scope['write:own_clinic_settings']]
+const CLINIC_INTERPRETATION_SCOPES = [Scope['write:clinic_memberships']]
 
 const resolvers = {
     Query: {
@@ -111,14 +116,14 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.BookingClinic[]> =>
             clinicAccessService.listMyBookingClinics(await bookingAccessForContext(context))),
-        // The admin clinic picker on My Page. A member opens their own clinics through myBookingClinics.
-        bookingClinics: withScope(Scope['read:bookings'], async (
+        // The admin clinic-account picker on My Page. A member opens their own clinics through myBookingClinics.
+        bookingClinics: withScope(Scope['write:clinic_memberships'], async (
             _parent: unknown,
             _args: unknown,
             context: UserContext
         ): Promise<gqlType.BookingClinic[]> =>
             clinicAccessService.listAllBookingClinics(await bookingAccessForContext(context))),
-        bookingClinic: withClinicScope(CLINIC_READ_SCOPES, async (
+        bookingClinic: withClinicScope(CLINIC_SETUP_READ_SCOPES, async (
             _parent: unknown,
             args: { facilityId: string },
             context: UserContext
@@ -136,7 +141,7 @@ const resolvers = {
             context: UserContext
         ): Promise<gqlType.ClinicInterpreter[]> =>
             interpreterService.listClinicInterpreters(args.facilityId, await bookingAccessForContext(context))),
-        bookingSettings: withClinicScope(CLINIC_READ_SCOPES, async (
+        bookingSettings: withClinicScope(CLINIC_SETUP_READ_SCOPES, async (
             _parent: unknown,
             args: { facilityId: string },
             context: UserContext
@@ -180,7 +185,7 @@ const resolvers = {
         ): Promise<gqlType.BookingSubmissionDetail | null> =>
             staffBookingService.getBookingSubmissionDetail(args.id, await bookingAccessForContext(context))),
         // The export is an owner action (spec §3.2), so it takes the owner settings scopes, not
-        // the read scopes staff hold. The service also checks canManageFacility for the clinic.
+        // the read scopes staff hold. The service also checks isClinicOwner for the clinic.
         bookingSubmissionsExport: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
             _parent: unknown,
             args: { facilityId: string, appointmentStatus?: gqlType.BookingAppointmentStatus | null },
@@ -805,7 +810,7 @@ const resolvers = {
 
         // CLINIC_SETTINGS_SCOPES lets an owner reach the service, which refuses anyone
         // canChangeInterpretation does not allow (#205).
-        setBookingInterpretation: withClinicScope(CLINIC_SETTINGS_SCOPES, async (
+        setBookingInterpretation: withClinicScope(CLINIC_INTERPRETATION_SCOPES, async (
             _parent: unknown,
             args: { input: gqlType.SetBookingInterpretationInput },
             context: UserContext

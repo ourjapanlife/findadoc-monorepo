@@ -31,7 +31,7 @@ describe('locale paths', () => {
         expect(isLocaleOnlyNavigation('/book', '/ja-JP/book')).to.equal(true)
         expect(isLocaleOnlyNavigation('/book?preview=1', '/ko-KR/book?preview=1')).to.equal(true)
         expect(isLocaleOnlyNavigation('/book', '/ja-JP')).to.equal(false)
-        expect(isLocaleOnlyNavigation('/my-page?view=bookings', '/my-page?view=availability')).to.equal(false)
+        expect(isLocaleOnlyNavigation('/my-page?view=facilities', '/my-page?view=clinics')).to.equal(false)
         expect(withLocaleVariants(['/about'])[0]).to.equal('/about')
         expect(withLocaleVariants(['/about'])).to.include('/ja-JP/about')
         expect(withLocaleVariants(['/about'])).to.include('/zh-CN/about')

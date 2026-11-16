@@ -9,7 +9,8 @@ import * as bookingService from '../src/services/bookingService.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
 import * as facilityService from '../src/services/facilityService.js'
 
-const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+// An admin who is also the clinic owner of the clinics under test. Being an admin alone reads no booking (#192).
+const adminOwner: BookingAccess = { isAdmin: true, memberships: new Map() }
 
 const day = new Date(Date.now() + 12 * 24 * 60 * 60 * 1000)
 day.setUTCHours(2, 0, 0, 0)
@@ -19,18 +20,19 @@ async function createBookableFacility(): Promise<string> {
     const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
     expect(created.hasErrors).toBe(false)
     const facilityId = created.data.id
+    adminOwner.memberships.set(facilityId, 'owner')
 
     const settings = await clinicAccessService.updateBookingSettings({
         facilityId,
         allowedDurations: [30],
         formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
-    }, admin)
+    }, adminOwner)
     expect(settings.hasErrors).toBe(false)
 
     const window = await availabilityService.createClinicAvailabilityWindow(
         { clinicSiteId: facilityId, startsAt: iso(0), endsAt: iso(30) },
         'test|staff',
-        admin
+        adminOwner
     )
     expect(window.hasErrors).toBe(false)
 

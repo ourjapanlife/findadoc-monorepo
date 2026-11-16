@@ -54,8 +54,8 @@ erDiagram
 | Table | Who writes it | Meaning |
 | --- | --- | --- |
 | `booking_interpretation` | Admins only (`canChangeInterpretation`) | The clinic may use interpreters. No row: interpreter rows are ignored and booking works as before. |
-| `clinic_interpreters` | Clinic owner or admin | One interpreter, a team, or a phone service. |
-| `clinic_interpreter_hours` | Clinic owner or admin | When that interpreter works. **No rows: whenever the clinic is open.** |
+| `clinic_interpreters` | Clinic owner | One interpreter, a team, or a phone service. |
+| `clinic_interpreter_hours` | Clinic owner | When that interpreter works. **No rows: whenever the clinic is open.** |
 | `booking_appointments.interpreter_id` | Submit | The interpreter this visit holds. It counts against `capacity` like a doctor's slot. |
 
 ### Defaults

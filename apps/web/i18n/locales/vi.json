@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "Chính sách quyền riêng tư",
     "subheading": "Chúng tôi thu thập gì, vì sao, chia sẻ với ai, và cách liên hệ với chúng tôi về thông tin của bạn.",
-    "date": "Ngày hiệu lực: 9 tháng 11 năm 2026",
+    "date": "Ngày hiệu lực: 16 tháng 11 năm 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Chúng tôi là ai",
@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Bảo mật",
-        "p1": "Thông tin được mã hóa khi truyền, và quyền truy cập chỉ giới hạn cho những người cần: người kiểm duyệt của chúng tôi và nhân viên phòng khám bạn đặt lịch. Nhân viên phòng khám chỉ xem được lịch hẹn của phòng khám mình."
+        "p1": "Thông tin được mã hóa khi truyền, và quyền truy cập chỉ giới hạn cho những người cần. Người kiểm duyệt của chúng tôi chỉ xem các đề xuất phòng khám và bác sĩ mà họ xét duyệt, không bao giờ xem lịch hẹn của bạn. Yêu cầu đặt lịch, câu trả lời và tệp của bạn chỉ nhân viên phòng khám bạn đặt lịch mới xem được, và nhân viên phòng khám chỉ xem được lịch hẹn của phòng khám mình."
       },
       "rights": {
         "heading": "8. Quyền của bạn",
@@ -294,9 +294,8 @@
     "submissions": "Các bài gửi",
     "collapse": "Thu gọn thanh bên",
     "expand": "Mở rộng thanh bên",
-    "bookings": "Đặt lịch",
-    "availability": "Khung giờ trống",
-    "userFeedback": "Phản hồi người dùng"
+    "userFeedback": "Phản hồi người dùng",
+    "clinicAccounts": "Tài khoản phòng khám"
   },
   "accessPanel": {
     "loading": "Đang tải quyền truy cập…",
@@ -324,6 +323,7 @@
     "addHealthcareProfessional": "Thêm nhân viên y tế",
     "licenseReview": "Cần xem lại giấy phép",
     "openClinicDashboard": "Mở bảng điều khiển phòng khám",
+    "clinicAccountsHelp": "Mở một phòng khám để mời chủ phòng khám và nhân viên, hoặc bật dịch vụ phiên dịch. Bạn không thấy lịch hẹn của phòng khám trừ khi bạn là thành viên của phòng khám đó.",
     "chooseClinic": "Chọn phòng khám",
     "noBookingClinics": "Chưa có phòng khám nào nhận đặt lịch",
     "clinicsLoadError": "Không thể tải danh sách phòng khám"
@@ -1126,13 +1126,10 @@
     "retainUntil": "Giữ đến {date}",
     "noAppointment": "Chưa chọn khung giờ",
     "identityBadge": "Giấy tờ",
-    "identityYes": "Có",
-    "identityNo": "Không",
     "columns": {
       "clinic": "Phòng khám",
       "status": "Trạng thái",
       "appointment": "Cuộc hẹn",
-      "identity": "Tải giấy tờ",
       "created": "Tạo lúc",
       "locale": "Ngôn ngữ"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "Nhóm",
       "help": "Người được mời ở đây có thể xem yêu cầu của phòng khám và chỉnh sửa lịch sau khi đăng nhập bằng email đó.",
+      "adminHelp": "Bạn đang thiết lập tài khoản cho phòng khám này. Hãy mời chủ phòng khám tại đây. Bạn không thể xem lịch hẹn của phòng khám này trừ khi bạn là thành viên.",
       "active": "Đã đăng nhập",
       "pending": "Đã mời",
       "remove": "Xóa",

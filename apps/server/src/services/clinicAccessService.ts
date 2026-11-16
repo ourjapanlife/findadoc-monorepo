@@ -12,8 +12,8 @@ import {
 import { sql } from 'kysely'
 import {
     MEMBERSHIP_ROLE,
-    canManageFacility,
-    canReadFacility,
+    isClinicOwner,
+    isClinicMember,
     type BookingAccess,
     type MembershipRole
 } from '../booking/access.js'
@@ -38,7 +38,8 @@ import { ErrorCode, Result } from '../result.js'
 
 /**
  * Clinic booking accounts: who belongs to which facility, and what the clinic
- * offers. Admins invite anyone. An owner invites and removes staff.
+ * offers. Admins set up the account: they invite anyone and turn interpretation on,
+ * but read no booking unless they are a member (#192). An owner invites and removes staff.
  */
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -92,12 +93,17 @@ async function requestedCountsFor(facilityIds: string[]): Promise<Map<string, nu
         .map(row => [row.facility_id, Number(row.count)]))
 }
 
+/** A member opens the clinic; an admin opens it to set up its account. */
+function canOpenClinic(access: BookingAccess, facilityId: string): boolean {
+    return isClinicMember(access, facilityId) || access.isAdmin
+}
+
 async function bookingClinicFor(
     facilityId: string,
     access: BookingAccess,
     requestedCount: number
 ): Promise<BookingClinic | null> {
-    if (!canReadFacility(access, facilityId)) {
+    if (!canOpenClinic(access, facilityId)) {
         return null
     }
     const target = await resolveBookingTarget(facilityId)
@@ -110,7 +116,7 @@ async function bookingClinicFor(
         clinicName: target.clinicName,
         clinicSiteSlug: target.clinicSiteSlug,
         role: role === undefined ? null : roleToGql(role),
-        canManage: canManageFacility(access, facilityId),
+        isAdmin: access.isAdmin,
         requestedCount,
         takesPayment: formsTakePayment(target.formDefinitionIds),
         branding: target.branding
@@ -118,10 +124,11 @@ async function bookingClinicFor(
 }
 
 async function bookingClinicsFor(facilityIds: string[], access: BookingAccess): Promise<BookingClinic[]> {
-    const readable = facilityIds.filter(facilityId => canReadFacility(access, facilityId))
-    const counts = await requestedCountsFor(readable)
+    const openable = facilityIds.filter(facilityId => canOpenClinic(access, facilityId))
+    // The waiting count is booking data, so it only counts the clinics the user is a member of.
+    const counts = await requestedCountsFor(openable.filter(facilityId => isClinicMember(access, facilityId)))
     const clinics = await Promise.all(
-        readable.map(facilityId => bookingClinicFor(facilityId, access, counts.get(facilityId) ?? 0))
+        openable.map(facilityId => bookingClinicFor(facilityId, access, counts.get(facilityId) ?? 0))
     )
     return clinics
         .filter((clinic): clinic is BookingClinic => clinic !== null)
@@ -133,17 +140,18 @@ export async function getBookingClinic(facilityId: string, access: BookingAccess
     return clinic ?? null
 }
 
-/** Clinics this user is a member of. Admins open others by id. */
+/** Clinics this user is a member of. Admins open others by id to set up their accounts. */
 export async function listMyBookingClinics(access: BookingAccess): Promise<BookingClinic[]> {
     return bookingClinicsFor([...access.memberships.keys()], access)
 }
 
 /**
  * Every facility set up for booking: it has booking settings, a clinic member, or a hosted
- * clinic site. Admins only; anyone else gets an empty list.
+ * clinic site. Admins only, to set up accounts; anyone else gets an empty list. The waiting
+ * count stays 0 for a clinic the admin is not a member of.
  */
 export async function listAllBookingClinics(access: BookingAccess): Promise<BookingClinic[]> {
-    if (!access.readAll) {
+    if (!access.isAdmin) {
         return []
     }
     const [settings, members, sites] = await Promise.all([
@@ -176,7 +184,8 @@ function memberFromRow(row: {
 }
 
 export async function listClinicMembers(facilityId: string, access: BookingAccess): Promise<ClinicMember[]> {
-    if (!canManageFacility(access, facilityId)) {
+    // The clinic owner manages their staff. An admin sets up any clinic's owners and staff.
+    if (!access.isAdmin && !isClinicOwner(access, facilityId)) {
         return []
     }
     const rows = await db.selectFrom('clinic_memberships')
@@ -195,8 +204,8 @@ export async function inviteClinicMember(
 ): Promise<Result<ClinicMember>> {
     const role = roleFromGql(input.role)
     // Owners add staff. Only admins create owners.
-    const allowed = access.manageMembersAll
-        || (canManageFacility(access, input.facilityId) && role === MEMBERSHIP_ROLE.STAFF)
+    const allowed = access.isAdmin
+        || (isClinicOwner(access, input.facilityId) && role === MEMBERSHIP_ROLE.STAFF)
     if (!allowed) {
         return forbidden('facilityId')
     }
@@ -226,7 +235,7 @@ export async function inviteClinicMember(
 
     if (existing !== undefined) {
         // An owner may not demote another owner by re-inviting them as staff.
-        if (existing.role === MEMBERSHIP_ROLE.OWNER && !access.manageMembersAll) {
+        if (existing.role === MEMBERSHIP_ROLE.OWNER && !access.isAdmin) {
             return forbidden('email')
         }
         const row = await db.updateTable('clinic_memberships')
@@ -261,8 +270,8 @@ export async function removeClinicMember(id: string, access: BookingAccess): Pro
     if (row === undefined) {
         return { data: { isSuccessful: false }, hasErrors: false }
     }
-    const allowed = access.manageMembersAll
-        || (canManageFacility(access, row.facility_id) && row.role === MEMBERSHIP_ROLE.STAFF)
+    const allowed = access.isAdmin
+        || (isClinicOwner(access, row.facility_id) && row.role === MEMBERSHIP_ROLE.STAFF)
     if (!allowed) {
         return forbidden('id')
     }
@@ -270,8 +279,12 @@ export async function removeClinicMember(id: string, access: BookingAccess): Pro
     return { data: { isSuccessful: Number(result.numDeletedRows ?? 0) > 0 }, hasErrors: false }
 }
 
+/**
+ * Members read the settings. An admin reads them too, to see whether interpretation is on;
+ * they hold durations, forms, and languages, never a patient answer.
+ */
 export async function getBookingSettings(facilityId: string, access: BookingAccess): Promise<BookingSettings | null> {
-    if (!canReadFacility(access, facilityId)) {
+    if (!canOpenClinic(access, facilityId)) {
         return null
     }
     return bookingSettingsFor(facilityId, access)
@@ -296,7 +309,7 @@ async function hasPreviewClinicSite(facilityId: string): Promise<boolean> {
  */
 async function offerableFormIds(facilityId: string, access: BookingAccess): Promise<string[]> {
     const ids = listFormSources().map(source => source.id)
-    if (access.manageMembersAll || await hasPreviewClinicSite(facilityId)) {
+    if (access.isAdmin || await hasPreviewClinicSite(facilityId)) {
         return ids
     }
     const stored = (await settingsForFacility(facilityId)).formDefinitionIds
@@ -351,7 +364,7 @@ export async function updateBookingSettings(
     input: UpdateBookingSettingsInput,
     access: BookingAccess
 ): Promise<Result<BookingSettings>> {
-    if (!canManageFacility(access, input.facilityId)) {
+    if (!isClinicOwner(access, input.facilityId)) {
         return forbidden('facilityId')
     }
 

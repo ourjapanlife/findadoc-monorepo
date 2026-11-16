@@ -13,7 +13,7 @@
                 </h1>
             </div>
             <NuxtLink
-                :to="props.backTo ?? { path: '/my-page', query: { view: 'bookings' } }"
+                :to="props.backTo"
                 class="btn btn-secondary"
                 data-testid="booking-detail-back"
             >
@@ -352,8 +352,8 @@ import { useMyBookingClinicsStore } from '~/stores/myBookingClinicsStore'
 
 const props = defineProps<{
     bookingId: string
-    /** Where Back goes. Moderation's bookings list when unset. */
-    backTo?: RouteLocationRaw
+    /** Where Back goes: the dashboard tab the booking was opened from. */
+    backTo: RouteLocationRaw
 }>()
 
 const emit = defineEmits<{

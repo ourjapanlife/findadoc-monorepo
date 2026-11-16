@@ -6,7 +6,6 @@ import buildGetJwks from 'get-jwks'
 import { logger, errorLogFields } from './logger.js'
 import { clientIpFrom, viewerCountryFrom } from '@findadoc/utils'
 import { envVariables } from '../utils/environmentVariables.js'
-// import { envVariables } from '../utils/environmentVariables.js'
 
 // These are the different roles that a user can have in the system. 
 // A role comes with a set of permissions or scopes to save having to define them every time. 
@@ -42,8 +41,6 @@ export enum Scope {
     'delete:users' = 'delete:users',
     'create:submissions' = 'create:submissions',
     'create:bookings' = 'create:bookings',
-    'read:bookings' = 'read:bookings',
-    'write:clinic_availability' = 'write:clinic_availability',
     'write:clinic_memberships' = 'write:clinic_memberships',
     'read:own_clinic_bookings' = 'read:own_clinic_bookings',
     'write:own_clinic_bookings' = 'write:own_clinic_bookings',
@@ -58,12 +55,13 @@ export enum Scope {
 // For example, an admin might have permissions to read, write, and delete healthcare professionals,
 // while a user might only have permission to read their own profile and posts.
 // A user can have separate scopes from their roles, so we need to check both.
-// Every clinic's bookings, calendars, and members. Moderators manage the directory and never
-// see a booking. Only admins hold these while booking is in preview; clinic owners and staff
-// reach their own clinic through clinic_memberships (src/booking/access.ts).
-const ALL_CLINIC_BOOKING_SCOPES: readonly Scope[] = [
-    Scope['read:bookings'], Scope['write:clinic_availability'], Scope['write:clinic_memberships']
-]
+// Setting up any clinic's account: its members and interpretation. It reads no booking (#192).
+// Only admins hold it; moderators manage the directory and never see a booking. Clinic owners
+// and staff reach their own clinic's bookings through clinic_memberships (src/booking/access.ts).
+const ALL_CLINIC_SCOPES: readonly Scope[] = [Scope['write:clinic_memberships']]
+
+// Every-clinic booking scopes removed in #192. An Auth0 token may still name them; they are dropped.
+const RETIRED_SCOPES: readonly string[] = ['read:bookings', 'write:clinic_availability']
 
 // Own-clinic scopes come only from FacilityOwner and FacilityStaff. A scope alone does not
 // name a clinic: the booking services still check the facility (src/booking/access.ts).
@@ -85,8 +83,7 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['write:posts'],
         Scope['read:logs'], Scope['write:logs'],
         Scope['read:reservations'], Scope['write:reservations'],
-        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
-        Scope['write:clinic_memberships']
+        Scope['create:bookings'], Scope['write:clinic_memberships']
     ],
     [Role.Moderator]: [
         Scope['read:healthcareprofessionals'], Scope['write:healthcareprofessionals'], Scope['delete:healthcareprofessionals'],
@@ -106,8 +103,7 @@ const roleScopes: Record<Role, Scope[]> = {
         Scope['write:posts'],
         Scope['read:logs'], Scope['write:logs'],
         Scope['read:reservations'], Scope['write:reservations'],
-        Scope['create:bookings'], Scope['read:bookings'], Scope['write:clinic_availability'],
-        Scope['write:clinic_memberships']
+        Scope['create:bookings'], Scope['write:clinic_memberships']
     ],
     [Role.User]: [
         Scope['read:healthcareprofessionals'], 
@@ -140,7 +136,7 @@ export interface User {
 /**
  * Effective API scopes for this user: JWT `scope` claim plus scopes implied by roles,
  * with production non-admin/moderator stripping applied (same rules as {@link authorize}).
- * Only admins keep the every-clinic booking scopes. Own-clinic scopes come only from
+ * Only admins keep the every-clinic account scope. Own-clinic scopes come only from
  * FacilityOwner and FacilityStaff, which the API adds from clinic_memberships.
  */
 export function getEffectiveScopes(user: User | null | undefined): Scope[] {
@@ -150,17 +146,17 @@ export function getEffectiveScopes(user: User | null | undefined): Scope[] {
 
     // The token cannot grant own-clinic scopes. They come from the derived facility roles.
     const currentUserScopes = ((user.scope?.split(/\s+/).filter(Boolean) ?? []) as Scope[])
-        .filter(scope => !OWN_CLINIC_SCOPES.includes(scope))
+        .filter(scope => !OWN_CLINIC_SCOPES.includes(scope) && !RETIRED_SCOPES.includes(scope))
     const currentUserRoles = (user.roles as Role[]) || []
 
     const currentUserScopesFromRoles = currentUserRoles.flatMap(role => roleScopes[role] ?? [])
     let merged = [...currentUserScopes, ...currentUserScopesFromRoles]
 
-    // A token scope cannot grant every clinic's bookings either. Dev keeps them only off production.
-    const keepsAllClinicBookings = currentUserRoles.includes(Role.Admin)
+    // A token scope cannot grant every clinic's account either. Dev keeps it only off production.
+    const keepsAllClinics = currentUserRoles.includes(Role.Admin)
         || (!envVariables.isProduction() && currentUserRoles.includes(Role.Dev))
-    if (!keepsAllClinicBookings) {
-        merged = merged.filter(scope => !ALL_CLINIC_BOOKING_SCOPES.includes(scope))
+    if (!keepsAllClinics) {
+        merged = merged.filter(scope => !ALL_CLINIC_SCOPES.includes(scope))
     }
 
     if (envVariables.isProduction() &&

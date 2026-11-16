@@ -7,8 +7,7 @@ export enum ModerationScreen {
     EditSubmission = 'EDIT_SUBMISSION',
     CreateFacility = 'CREATE_FACILITY',
     EditHealthcareProfessional = 'EDIT_HEALTHCARE_PROFESSIONAL',
-    EditFacility = 'EDIT_FACILITY',
-    ViewBooking = 'VIEW_BOOKING'
+    EditFacility = 'EDIT_FACILITY'
 }
 
 export enum ModSubmissionLeftNavbarSectionIDs {
@@ -61,10 +60,6 @@ export const useModerationScreenStore = defineStore(
             return activeScreen.value === ModerationScreen.EditFacility
         }
 
-        function viewBookingScreenIsActive() {
-            return activeScreen.value === ModerationScreen.ViewBooking
-        }
-
         return {
             activeScreen,
             ModerationScreen,
@@ -74,8 +69,7 @@ export const useModerationScreenStore = defineStore(
             createFacilityScreenIsActive,
             editSubmissionScreenIsActive,
             editHealthcareProfessionalScreenIsActive,
-            editFacilityScreenIsActive,
-            viewBookingScreenIsActive
+            editFacilityScreenIsActive
         }
     }
 )

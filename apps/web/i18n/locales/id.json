@@ -203,7 +203,7 @@
   "privacyPage": {
     "heading": "Kebijakan Privasi",
     "subheading": "Data apa yang kami kumpulkan, mengapa kami mengumpulkannya, dengan siapa kami membagikannya, dan cara menghubungi kami tentang informasi Anda.",
-    "date": "Tanggal berlaku: 9 November 2026",
+    "date": "Tanggal berlaku: 16 November 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Siapa kami",
@@ -242,7 +242,7 @@
       },
       "security": {
         "heading": "7. Keamanan",
-        "p1": "Informasi dienkripsi selama pengiriman, dan aksesnya dibatasi hanya untuk orang yang membutuhkannya: moderator kami dan staf klinik tempat Anda membuat reservasi. Staf klinik hanya dapat melihat reservasi klinik mereka sendiri."
+        "p1": "Informasi dienkripsi selama pengiriman, dan aksesnya dibatasi hanya untuk orang yang membutuhkannya. Moderator kami melihat usulan klinik dan dokter yang mereka tinjau, tetapi tidak pernah melihat reservasi Anda. Permintaan reservasi, jawaban, dan file Anda hanya dapat dilihat oleh staf klinik tempat Anda membuat reservasi, dan staf klinik hanya dapat melihat reservasi klinik mereka sendiri."
       },
       "rights": {
         "heading": "8. Hak-hak Anda",
@@ -419,9 +419,8 @@
     "submissions": "Pengajuan",
     "collapse": "Ciutkan bilah samping",
     "expand": "Bentangkan bilah samping",
-    "bookings": "Reservasi",
-    "availability": "Ketersediaan",
-    "userFeedback": "Masukan pengguna"
+    "userFeedback": "Masukan pengguna",
+    "clinicAccounts": "Akun klinik"
   },
   "accessPanel": {
     "loading": "Memuat izin…",
@@ -449,6 +448,7 @@
     "facilities": "Fasilitas",
     "licenseReview": "Perlu peninjauan lisensi",
     "openClinicDashboard": "Buka dasbor klinik",
+    "clinicAccountsHelp": "Buka klinik untuk mengundang pemilik dan stafnya, atau untuk mengaktifkan layanan juru bahasa. Anda tidak melihat pemesanan klinik kecuali Anda anggota klinik tersebut.",
     "chooseClinic": "Pilih klinik",
     "noBookingClinics": "Belum ada klinik yang menerima reservasi",
     "clinicsLoadError": "Tidak dapat memuat klinik"
@@ -1126,13 +1126,10 @@
     "retainUntil": "Disimpan sampai {date}",
     "noAppointment": "Belum memilih waktu",
     "identityBadge": "File ID",
-    "identityYes": "Ya",
-    "identityNo": "Tidak",
     "columns": {
       "clinic": "Klinik",
       "status": "Status",
       "appointment": "Janji temu",
-      "identity": "Unggahan identitas",
       "created": "Dibuat",
       "locale": "Bahasa"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "Tim",
       "help": "Orang yang diundang di sini dapat melihat permintaan klinik ini dan mengedit kalendernya setelah masuk dengan email tersebut.",
+      "adminHelp": "Anda sedang menyiapkan akun klinik ini. Undang pemiliknya di sini. Anda tidak dapat melihat pemesanan klinik ini kecuali Anda anggotanya.",
       "active": "Sudah masuk",
       "pending": "Diundang",
       "remove": "Hapus",

@@ -12,7 +12,8 @@ import * as bookingService from '../src/services/bookingService.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
 import * as facilityService from '../src/services/facilityService.js'
 
-const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+// An admin who is also the clinic owner of the clinics under test. Being an admin alone reads no booking (#192).
+const adminOwner: BookingAccess = { isAdmin: true, memberships: new Map() }
 const SITE_SLUG = 'clinic-name-test-clinic'
 const NAME_EN = 'Name Test Clinic'
 const NAME_JA = '名前テストクリニック'
@@ -62,11 +63,12 @@ describe('the patient-facing clinic name', () => {
         const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
         expect(created.hasErrors).toBe(false)
         facilityId = created.data.id
+        adminOwner.memberships.set(facilityId, 'owner')
         const settings = await clinicAccessService.updateBookingSettings({
             facilityId,
             allowedDurations: [30],
             formDefinitionIds: [DEFAULT_BOOKING_FORM_ID]
-        }, admin)
+        }, adminOwner)
         expect(settings.hasErrors).toBe(false)
 
         const site = await db.insertInto('clinic_sites')
@@ -91,7 +93,7 @@ describe('the patient-facing clinic name', () => {
         const window = await availabilityService.createClinicAvailabilityWindow(
             { clinicSiteId: facilityId, startsAt: iso(0), endsAt: iso(180) },
             'test|staff',
-            admin
+            adminOwner
         )
         expect(window.hasErrors).toBe(false)
     })
@@ -144,7 +146,7 @@ describe('the patient-facing clinic name', () => {
         notice.mockClear()
         const confirmed = await appointmentService.updateAppointmentStatus(
             { appointmentId: appointment.id, status: BookingAppointmentStatus.Confirmed },
-            admin,
+            adminOwner,
             'test|staff'
         )
         expect(confirmed.hasErrors).toBe(false)

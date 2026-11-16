@@ -41,10 +41,10 @@
                         :key="item.id"
                         :to="{ query: { tab: item.id } }"
                         class="-mb-px border-b-2 px-4 py-2.5 font-semibold transition-colors"
-                        :class="tab === item.id && !bookingId
+                        :class="tab === item.id && !openBookingId
                             ? 'border-primary text-primary'
                             : 'border-transparent text-primary-text-muted hover:border-accent-bg hover:text-primary'"
-                        :aria-current="tab === item.id && !bookingId ? 'page' : undefined"
+                        :aria-current="tab === item.id && !openBookingId ? 'page' : undefined"
                         :data-testid="`clinic-dashboard-tab-${item.id}`"
                     >
                         {{ item.label }}
@@ -52,19 +52,19 @@
                 </nav>
 
                 <BookingSubmissionDetail
-                    v-if="bookingId"
-                    :booking-id="bookingId"
+                    v-if="openBookingId"
+                    :booking-id="openBookingId"
                     :back-to="{ query: { tab } }"
                 />
                 <ClinicBookingRequests
-                    v-else-if="tab === 'requests'"
+                    v-else-if="tab === 'requests' && isClinicMember(clinic)"
                     :facility-id="facilityId"
-                    :can-manage="clinic.canManage"
+                    :can-manage="isClinicOwner(clinic)"
                     :takes-payment="clinic.takesPayment"
                     @open-booking="openBooking"
                 />
                 <div
-                    v-else-if="tab === 'calendar'"
+                    v-else-if="tab === 'calendar' && isClinicMember(clinic)"
                     class="md:h-[75vh] md:min-h-128"
                 >
                     <ClinicAvailabilityCalendar
@@ -73,13 +73,14 @@
                     />
                 </div>
                 <ClinicSettingsPanel
-                    v-else-if="tab === 'settings' && clinic.canManage"
+                    v-else-if="tab === 'settings' && isClinicOwner(clinic)"
                     :facility-id="facilityId"
                 />
                 <ClinicTeamPanel
-                    v-else-if="tab === 'team' && clinic.canManage"
+                    v-else-if="tab === 'team' && (isClinicOwner(clinic) || clinic.isAdmin)"
                     :facility-id="facilityId"
-                    :is-admin="clinic.role === null"
+                    :is-admin="clinic.isAdmin"
+                    :show-interpretation="clinic.isAdmin && !isClinicOwner(clinic)"
                 />
             </template>
         </div>
@@ -94,12 +95,20 @@ import { definePageMeta, navigateTo, useHead, useRoute } from '#imports'
 import { useClinicBranding } from '~/composables/useClinicBranding'
 import { useAuthStore } from '~/stores/authStore'
 import { useMyBookingClinicsStore } from '~/stores/myBookingClinicsStore'
+import {
+    clinicDashboardTabs,
+    isClinicMember,
+    isClinicOwner,
+    selectedClinicDashboardTab,
+    type ClinicDashboardTab
+} from '~/utils/booking/clinicDashboardTabs'
 import { fetchBookingClinic } from '~/utils/booking/staffQuery'
 import { formatPageTitle } from '~/utils/site'
 
 /**
  * `/clinic-dashboard/{facilityId}`: one clinic's booking requests, calendar,
- * and (for owners and admins) settings and the team. A clinic subdomain's
+ * settings (owners), and team (owners and admins). An admin who is not a member
+ * sees the team and the interpretation switch only, never a booking (#192). A clinic subdomain's
  * `/dashboard` redirects here so sign-in stays on one origin.
  * A clinic with a clinic page gets its own header (online consult v2 §4), which keeps
  * sign-out and the way back to the clinic picker. Signed out, it is the Find a Doc layout.
@@ -108,8 +117,6 @@ definePageMeta({
     ssr: false,
     layout: 'clinic-branded'
 })
-
-type Tab = 'requests' | 'calendar' | 'settings' | 'team'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -120,25 +127,19 @@ const facilityId = computed(() => String(route.params.facilityId ?? ''))
 const clinic = ref<BookingClinic | null>(null)
 const loading = ref(true)
 
-const tab = computed((): Tab => {
-    const value = route.query.tab
-    if (value === 'calendar' || ((value === 'settings' || value === 'team') && clinic.value?.canManage)) {
-        return value
-    }
-    return 'requests'
-})
+const tabIds = computed(() => clinicDashboardTabs(clinic.value))
+const tab = computed(() => selectedClinicDashboardTab(route.query.tab, tabIds.value))
 const bookingId = computed(() => typeof route.query.booking === 'string' ? route.query.booking : '')
+const openBookingId = computed(() =>
+    clinic.value !== null && isClinicMember(clinic.value) ? bookingId.value : '')
 
-const tabs = computed(() => [
-    { id: 'requests', label: t('clinicDashboard.tabs.requests') },
-    { id: 'calendar', label: t('clinicDashboard.tabs.calendar') },
-    ...(clinic.value?.canManage
-        ? [
-            { id: 'settings', label: t('clinicDashboard.tabs.settings') },
-            { id: 'team', label: t('clinicDashboard.tabs.team') }
-        ]
-        : [])
-])
+const tabLabels = computed((): Record<ClinicDashboardTab, string> => ({
+    requests: t('clinicDashboard.tabs.requests'),
+    calendar: t('clinicDashboard.tabs.calendar'),
+    settings: t('clinicDashboard.tabs.settings'),
+    team: t('clinicDashboard.tabs.team')
+}))
+const tabs = computed(() => tabIds.value.map(id => ({ id, label: tabLabels.value[id] })))
 
 function openBooking(id: string): void {
     void navigateTo({ query: { tab: tab.value, booking: id } })
@@ -166,8 +167,8 @@ watchEffect(() => {
     clinicBranding.show({
         branding,
         staff: true,
-        // Admins (no role) reach every clinic. A member of one clinic has nowhere to switch to.
-        canSwitchClinic: loaded.role === null || (myBookingClinicsStore.clinics?.length ?? 0) > 1,
+        // An admin opens every clinic's account. A member of one clinic has nowhere to switch to.
+        canSwitchClinic: loaded.isAdmin || (myBookingClinicsStore.clinics?.length ?? 0) > 1,
         localeSelector: true
     })
 })

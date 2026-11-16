@@ -1562,11 +1562,21 @@ type BookingClinic {
   facilityId: ID!
   clinicName: String!
   clinicSiteSlug: String
-  """Null for admins, who reach every clinic without a membership."""
+  """
+  The user's clinic membership here: OWNER or STAFF. Only a clinic member reads this clinic's
+  bookings, calendar, and settings, and only the owner changes settings and staff (#192).
+  Null when the user is not a member (an admin opening the clinic to set up its account).
+  """
   role: ClinicMemberRole
-  """True when the user may change members and booking settings."""
-  canManage: Boolean!
-  """Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline."""
+  """
+  True when the user is an admin. An admin sets up clinic accounts: owners, staff, and
+  interpretation. Being an admin grants no booking access; only role does.
+  """
+  isAdmin: Boolean!
+  """
+  Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline.
+  0 when the user is not a member.
+  """
   requestedCount: Int!
   """
   True when the clinic offers a form that asks how the patient pays, so new visits
@@ -2136,7 +2146,7 @@ type Query {
   """Clinics the signed-in user belongs to. Claims a pending invite for a verified email."""
   myBookingClinics: [BookingClinic!]!
 
-  """Every clinic set up for booking, for the admin clinic picker. Admins only."""
+  """Every clinic set up for booking, for the admin clinic-account picker. Admins only. Reads no bookings (#192)."""
   bookingClinics: [BookingClinic!]!
 
   """One clinic for the dashboard header. Null when the user may not open it."""

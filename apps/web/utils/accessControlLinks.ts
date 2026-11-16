@@ -127,18 +127,11 @@ export const ACCESS_CONTROL_ENTRIES: AccessControlEntry[] = [
         kind: 'info'
     },
     {
-        scope: 'read:bookings',
-        labelKey: 'accessPanel.scopes.read_bookings',
+        scope: 'write:clinic_memberships',
+        labelKey: 'accessPanel.scopes.write_clinic_memberships',
         kind: 'route',
         route: '/my-page',
-        listView: SelectedModerationListView.Bookings
-    },
-    {
-        scope: 'write:clinic_availability',
-        labelKey: 'accessPanel.scopes.write_clinic_availability',
-        kind: 'route',
-        route: '/my-page',
-        listView: SelectedModerationListView.Availability
+        listView: SelectedModerationListView.ClinicAccounts
     }
 ]
 

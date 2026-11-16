@@ -12,11 +12,10 @@ import { ErrorCode } from '../src/result.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
 import * as facilityService from '../src/services/facilityService.js'
 
-const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+// An admin who is also the clinic owner of the clinics under test. Being an admin alone reads no booking (#192).
+const adminOwner: BookingAccess = { isAdmin: true, memberships: new Map() }
 const ownerOf = (facilityId: string): BookingAccess => ({
-    readAll: false,
-    writeAll: false,
-    manageMembersAll: false,
+    isAdmin: false,
     memberships: new Map([[facilityId, 'owner']])
 })
 
@@ -28,6 +27,7 @@ describe('offering the online consult form', () => {
     async function createFacility(): Promise<string> {
         const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
         expect(created.hasErrors).toBe(false)
+        adminOwner.memberships.set(created.data.id, 'owner')
         return created.data.id
     }
 
@@ -94,7 +94,7 @@ describe('offering the online consult form', () => {
     })
 
     it('lets an admin offer it, and the owner may then keep or remove it', async () => {
-        const byAdmin = await save(ordinaryId, admin, [DEFAULT_BOOKING_FORM_ID, SHOWCASE_BOOKING_FORM_ID])
+        const byAdmin = await save(ordinaryId, adminOwner, [DEFAULT_BOOKING_FORM_ID, SHOWCASE_BOOKING_FORM_ID])
         expect(byAdmin.hasErrors).toBe(false)
 
         const kept = await save(ordinaryId, ownerOf(ordinaryId), [SHOWCASE_BOOKING_FORM_ID, DEFAULT_BOOKING_FORM_ID])
@@ -112,7 +112,7 @@ describe('offering the online consult form', () => {
     it('tells the dashboard whether the clinic takes payment, so its list opens on the right status', async () => {
         expect(formsTakePayment([SHOWCASE_BOOKING_FORM_ID])).toBe(true)
         expect(formsTakePayment([DEFAULT_BOOKING_FORM_ID])).toBe(false)
-        expect((await clinicAccessService.getBookingClinic(previewId, admin))?.takesPayment).toBe(true)
-        expect((await clinicAccessService.getBookingClinic(ordinaryId, admin))?.takesPayment).toBe(false)
+        expect((await clinicAccessService.getBookingClinic(previewId, adminOwner))?.takesPayment).toBe(true)
+        expect((await clinicAccessService.getBookingClinic(ordinaryId, adminOwner))?.takesPayment).toBe(false)
     })
 })

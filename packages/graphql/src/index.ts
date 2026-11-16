@@ -115,14 +115,24 @@ export enum BookingCardPaymentMode {
 export type BookingClinic = {
   __typename?: 'BookingClinic';
   branding?: Maybe<ClinicBranding>;
-  /** True when the user may change members and booking settings. */
-  canManage: Scalars['Boolean']['output'];
   clinicName: Scalars['String']['output'];
   clinicSiteSlug?: Maybe<Scalars['String']['output']>;
   facilityId: Scalars['ID']['output'];
-  /** Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline. */
+  /**
+   * True when the user is an admin. An admin sets up clinic accounts: owners, staff, and
+   * interpretation. Being an admin grants no booking access; only role does.
+   */
+  isAdmin: Scalars['Boolean']['output'];
+  /**
+   * Appointments still REQUESTED or PENDING_PAYMENT, waiting for the clinic to confirm or decline.
+   * 0 when the user is not a member.
+   */
   requestedCount: Scalars['Int']['output'];
-  /** Null for admins, who reach every clinic without a membership. */
+  /**
+   * The user's clinic membership here: OWNER or STAFF. Only a clinic member reads this clinic's
+   * bookings, calendar, and settings, and only the owner changes settings and staff (#192).
+   * Null when the user is not a member (an admin opening the clinic to set up its account).
+   */
   role?: Maybe<ClinicMemberRole>;
   /**
    * True when the clinic offers a form that asks how the patient pays, so new visits
@@ -2084,7 +2094,7 @@ export type Query = {
   bookingAvailable: Scalars['Boolean']['output'];
   /** One clinic for the dashboard header. Null when the user may not open it. */
   bookingClinic?: Maybe<BookingClinic>;
-  /** Every clinic set up for booking, for the admin clinic picker. Admins only. */
+  /** Every clinic set up for booking, for the admin clinic-account picker. Admins only. Reads no bookings (#192). */
   bookingClinics: Array<BookingClinic>;
   /**
    * The booking intake form for a directory facility or hosted clinic.
@@ -3225,10 +3235,10 @@ export type BookingAppointmentResolvers<ContextType = any, ParentType extends Re
 
 export type BookingClinicResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingClinic'] = ResolversParentTypes['BookingClinic']> = {
   branding?: Resolver<Maybe<ResolversTypes['ClinicBranding']>, ParentType, ContextType>;
-  canManage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   requestedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['ClinicMemberRole']>, ParentType, ContextType>;
   takesPayment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;

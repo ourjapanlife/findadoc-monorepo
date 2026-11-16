@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import * as gqlTypes from '@findadoc/graphql'
 import { sharedFacilityIds } from './testSetup.test.js'
 import { db } from '../src/kyselyClient.js'
@@ -28,7 +28,8 @@ const TEST_USER = 'submission-retention-test'
 // Fake visitor text. The purge must never write it to a log.
 const FAKE_NOTE = 'Retention test note: call Testvisitor on 090-0000-0236'
 
-const admin: BookingAccess = { readAll: true, writeAll: true, manageMembersAll: true, memberships: new Map() }
+// An admin who is also the clinic owner of the clinics under test. Being an admin alone reads no booking (#192).
+const adminOwner: BookingAccess = { isAdmin: true, memberships: new Map() }
 
 function daysFrom(date: Date, days: number): Date {
     return new Date(date.getTime() + days * DAY_MS)
@@ -252,6 +253,10 @@ describe('submission notes retention (#236)', () => {
 })
 
 describe('appointment status reason retention (#236)', () => {
+    beforeAll(() => {
+        adminOwner.memberships.set(sharedFacilityIds[0]!, 'owner')
+    })
+
     const submissionIds: string[] = []
 
     afterAll(async () => {
@@ -316,14 +321,14 @@ describe('appointment status reason retention (#236)', () => {
 
         await purgeExpiredBookingAnswers({ write: true, now })
 
-        const cleared = await staffBookingService.getBookingSubmissionDetail(old, admin)
+        const cleared = await staffBookingService.getBookingSubmissionDetail(old, adminOwner)
         expect(cleared?.statusReason).toBeNull()
         expect(cleared?.statusReasonPurgedAt).not.toBeNull()
         // Not free text, so it stays.
         expect(cleared?.appointmentStatus).toBe(gqlTypes.BookingAppointmentStatus.Cancelled)
         expect(cleared?.cancelledBy).toBe(gqlTypes.BookingCancelledBy.Patient)
 
-        const kept = await staffBookingService.getBookingSubmissionDetail(recent, admin)
+        const kept = await staffBookingService.getBookingSubmissionDetail(recent, adminOwner)
         expect(kept?.statusReason).toBe('Retention test cancel note')
         expect(kept?.statusReasonPurgedAt).toBeNull()
     })

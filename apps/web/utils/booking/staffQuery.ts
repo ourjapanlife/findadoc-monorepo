@@ -102,7 +102,7 @@ const CLINIC_FIELDS = `
   clinicName
   clinicSiteSlug
   role
-  canManage
+  isAdmin
   requestedCount
   takesPayment
   ${CLINIC_BRANDING_FIELDS}
@@ -551,7 +551,7 @@ export async function fetchMyBookingClinics(): Promise<BookingClinic[] | null> {
     return data === null ? null : data.myBookingClinics ?? []
 }
 
-/** Every clinic set up for booking. Moderators only. Null when the request failed. */
+/** Every clinic set up for booking, for admins setting up clinic accounts. Null when the request failed. */
 export async function fetchAllBookingClinics(): Promise<BookingClinic[] | null> {
     const data = await request<{ bookingClinics: BookingClinic[] }>(allClinicsQuery, {}, READ)
     return data === null ? null : data.bookingClinics ?? []
@@ -613,7 +613,7 @@ const setInterpretationMutation = gql`
   }
 `
 
-/** Admins only (#205). The API refuses a clinic member. */
+/** Admins only (#205). The API refuses a clinic member, owners included. */
 export async function setBookingInterpretation(input: SetBookingInterpretationInput): Promise<BookingSettings | null> {
     const data = await request<{ setBookingInterpretation: BookingSettings }>(
         setInterpretationMutation,

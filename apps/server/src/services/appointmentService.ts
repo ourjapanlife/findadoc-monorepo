@@ -6,7 +6,7 @@ import {
     type UpdateBookingAppointmentStatusInput
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
-import { canReadFacility, canWriteFacility, type BookingAccess } from '../booking/access.js'
+import { isClinicMember, type BookingAccess } from '../booking/access.js'
 import {
     APPOINTMENT_STATUS,
     CANCELLED_BY,
@@ -122,7 +122,7 @@ export async function listClinicAppointments(
     access: BookingAccess
 ): Promise<BookingAppointment[]> {
     const target = await resolveBookingTarget(clinicIdOrSlug)
-    if (target === undefined || target.facilityId === null || !canReadFacility(access, target.facilityId)) {
+    if (target === undefined || target.facilityId === null || !isClinicMember(access, target.facilityId)) {
         return []
     }
     const from = new Date(fromIso)
@@ -165,7 +165,7 @@ export async function updateAppointmentStatus(
     const current = await appointmentQuery()
         .where('appointment.id', '=', input.appointmentId)
         .executeTakeFirst()
-    if (current === undefined || !canWriteFacility(access, current.facility_id)) {
+    if (current === undefined || !isClinicMember(access, current.facility_id)) {
         return notFound('appointmentId')
     }
     if (!canStaffMoveTo(current.status, next)) {

@@ -1,5 +1,5 @@
 import type { ClinicInterpreter, DeleteResult, Locale, SaveClinicInterpreterInput } from '@findadoc/graphql'
-import { canManageFacility, canReadFacility, type BookingAccess } from '../booking/access.js'
+import { isClinicOwner, isClinicMember, type BookingAccess } from '../booking/access.js'
 import { listInterpreters, type Interpreter } from '../booking/interpretation.js'
 import { SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
 import { lockClinicBookings } from '../booking/target.js'
@@ -32,7 +32,7 @@ function toGql(facilityId: string, interpreter: Interpreter): ClinicInterpreter 
 }
 
 export async function listClinicInterpreters(facilityId: string, access: BookingAccess): Promise<ClinicInterpreter[]> {
-    if (!canReadFacility(access, facilityId)) {
+    if (!isClinicMember(access, facilityId)) {
         return []
     }
     const interpreters = await listInterpreters(facilityId)
@@ -49,7 +49,7 @@ export async function saveClinicInterpreter(
         return failure(checked.field, ErrorCode.INVALID_INPUT, 400)
     }
     const value = checked.value
-    if (!canManageFacility(access, value.facilityId)) {
+    if (!isClinicOwner(access, value.facilityId)) {
         return failure('facilityId', ErrorCode.FORBIDDEN, 403)
     }
     const facility = await db.selectFrom('facilities').select('id').where('id', '=', value.facilityId).executeTakeFirst()
@@ -133,7 +133,7 @@ export async function deleteClinicInterpreter(id: string, access: BookingAccess)
     if (row === undefined) {
         return { data: { isSuccessful: false }, hasErrors: false }
     }
-    if (!canManageFacility(access, row.facility_id)) {
+    if (!isClinicOwner(access, row.facility_id)) {
         return failure('id', ErrorCode.FORBIDDEN, 403)
     }
     const outcome = await db.transaction().execute(async transaction => {

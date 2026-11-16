@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "Política de Privacidade",
     "subheading": "O que coletamos, por que coletamos, com quem compartilhamos e como falar conosco sobre suas informações.",
-    "date": "Data de vigência: 9 de novembro de 2026",
+    "date": "Data de vigência: 16 de novembro de 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Quem somos",
@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Segurança",
-        "p1": "As informações são criptografadas em trânsito, e o acesso é limitado a quem precisa: nossos moderadores e a equipe da clínica com quem você agendou. A equipe de uma clínica vê apenas os agendamentos da própria clínica."
+        "p1": "As informações são criptografadas em trânsito, e o acesso é limitado a quem precisa. Nossos moderadores veem as sugestões de clínicas e médicos que revisam, mas nunca os seus agendamentos. Sua solicitação, suas respostas e seus arquivos são vistos apenas pela equipe da clínica com quem você agendou, e a equipe de uma clínica vê apenas os agendamentos da própria clínica."
       },
       "rights": {
         "heading": "8. Seus direitos",
@@ -287,9 +287,8 @@
     "submissions": "Envios",
     "collapse": "Recolher a barra lateral",
     "expand": "Expandir a barra lateral",
-    "bookings": "Reservas",
-    "availability": "Disponibilidade",
-    "userFeedback": "Retorno dos usuários"
+    "userFeedback": "Retorno dos usuários",
+    "clinicAccounts": "Contas das clínicas"
   },
   "accessPanel": {
     "loading": "Carregando permissões…",
@@ -448,6 +447,7 @@
     "addHealthcareProfessional": "Adicionar profissional de saúde",
     "licenseReview": "Licença a revisar",
     "openClinicDashboard": "Abrir o painel de uma clínica",
+    "clinicAccountsHelp": "Abra uma clínica para convidar o responsável e a equipe, ou para ativar a interpretação. Você só vê os agendamentos de uma clínica se for membro dela.",
     "chooseClinic": "Escolha uma clínica",
     "noBookingClinics": "Nenhuma clínica aceita agendamentos ainda",
     "clinicsLoadError": "Não foi possível carregar as clínicas"
@@ -1126,13 +1126,10 @@
     "retainUntil": "Reter até {date}",
     "noAppointment": "Nenhum horário escolhido",
     "identityBadge": "Documento",
-    "identityYes": "Sim",
-    "identityNo": "Não",
     "columns": {
       "clinic": "Clínica",
       "status": "Situação",
       "appointment": "Consulta",
-      "identity": "Upload de identidade",
       "created": "Criado",
       "locale": "Idioma"
     },
@@ -1305,6 +1302,7 @@
     "members": {
       "heading": "Equipe da clínica",
       "help": "As pessoas convidadas aqui podem ver os pedidos desta clínica e editar o calendário depois de entrar com esse e-mail.",
+      "adminHelp": "Você está configurando a conta desta clínica. Convide o responsável aqui. Você não pode ver os agendamentos desta clínica a menos que seja membro.",
       "active": "Conectado",
       "pending": "Convidado",
       "remove": "Remover",

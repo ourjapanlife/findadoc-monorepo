@@ -42,7 +42,7 @@ Cancel (+reason) ─────▶ CANCELLED by the patient (slot freed)       
 - **`requested` and `confirmed` hold the time.** As soon as a request is declined or cancelled, the time is offered on the Book page again.
 - A patient can cancel until the visit starts. A closed appointment (declined, cancelled, completed) can't be reopened.
 - **The manage link works without email.** It is on the success screen, and the same link is in the confirmation email. Anyone with the link can view and cancel that one booking, so treat it like a password.
-- Who can open the dashboard: admins see every clinic. Moderators do not see bookings. Clinic owners and staff see their own clinic once they're invited and sign in (needs #158).
+- Who can open the dashboard: clinic owners and staff see their own clinic once they're invited and sign in. An admin who is not a member sees only the Team tab, to invite members and turn interpretation on; never a booking (#192). Moderators do not see bookings.
 
 ## 2. Email
 
@@ -64,7 +64,7 @@ Clinic notices go to the clinic's members only (#161). A clinic with no members 
 | Works today | Yes, on this branch | Only after #153 is merged and deployed |
 | Open times | Weekly hours: weekdays 09:00–12:00, 13:00–17:00 JST (seed) | None until a clinic sets them. `20261031090000_clear_booking_requests.sql` removed the showcase hours |
 | Emails | Printed in the API terminal | Real; use internal addresses only |
-| Sign-in | Real Auth0, **Admin account** | Same |
+| Sign-in | Real Auth0, an account that **owns the showcase clinic** (section 4) | Same: an admin invites their own email as owner |
 | Risk | Laptop has to run the stack | Real data; demo bookings stay in the database unless cancelled |
 
 **Recommendation for tomorrow: run it locally.** It doesn't depend on a deploy or on SES, and you can show the emails in the API terminal. Use production only if #153 is deployed tonight and you have time to rehearse there.
@@ -88,7 +88,10 @@ From the repo root, on this branch.
    This starts the `findadoc-db` container, applies every migration, seeds the directory and the showcase clinic, opens its weekday hours for the next 14 days, and runs the site on `http://localhost:3000` and the API on `http://127.0.0.1:4000`. **Seed the night before or the morning of**, because the hours start from the day you seed.
 3. **Two browser windows:**
    - **Patient window**: a private or incognito window, signed out.
-   - **Clinic window**: a normal window. Sign in at `http://localhost:3000` with an **Admin** account (ask a core maintainer on Slack if you don't have one). Local runs use real Auth0; there is no auth bypass.
+   - **Clinic window**: a normal window. Sign in at `http://localhost:3000`. Local runs use real Auth0; there is no auth bypass. Admins no longer see bookings (#192), so make your account an owner of the showcase clinic, either way:
+     - As an admin: My Page → **Clinic accounts** → the showcase → Team → invite your own verified email as **Owner**, then reload. Your sign-in claims it.
+     - Any account: copy your Auth0 sub (My Page → Access), then run `pnpm --filter @findadoc/server e2e:clinic-owner '<your Auth0 sub>' c32c316a-a368-499b-abaf-c5c973cb67e5`. It only runs against the local database.
+     `pnpm dev:seeded` resets the database, so do this again after each reseed.
 4. **Unlock the clinic page.** It's in preview, and the preview cookie is per host. In **both** windows open
    `http://multilingual-online-clinic.localhost:3000/?preview=1` once.
 5. **Rehearse sections 6 and 7 once.** Then reset (section 9) so the demo starts clean.
@@ -96,8 +99,8 @@ From the repo root, on this branch.
 ## 5. Night-before setup: production (only if #153 is deployed)
 
 1. `pnpm db:push` has applied `20261029150000_booking_access_lifecycle.sql`.
-2. As an admin, open `https://www.findadoc.jp/clinic-dashboard/c32c316a-a368-499b-abaf-c5c973cb67e5` → **Settings**. Save visit lengths and the intake form (the defaults are filled in), then set **Weekly hours**. Production has no settings and no open times until you do. Close any day you don't want offered on the **Calendar**.
-3. **Team**: invite your own email (role Owner). Notices for the showcase then go to you.
+2. As an admin, open `https://www.findadoc.jp/clinic-dashboard/c32c316a-a368-499b-abaf-c5c973cb67e5` → **Team** and invite your own email as **Owner**. Reload: your sign-in claims it, and notices for the showcase go to you. The clinic's other owners can see and remove that membership. Remove it after the demo.
+3. As that owner, open **Settings**. Save visit lengths and the intake form (the defaults are filled in), then set **Weekly hours**. Production has no settings and no open times until you do. Close any day you don't want offered on the **Calendar**.
 4. Use an internal address for the demo patient (section 2).
 5. Open `https://multilingual-online-clinic.findadoc.jp/?preview=1` in both windows.
 6. Rehearse, then cancel the rehearsal bookings so their times free up.
@@ -171,20 +174,18 @@ Playwright runs 1, 5, 6, 7, 8, 10, and 12 on every pull request against the seed
 | 18 | Settings | Untick 15 min, change default form, save | Book page follows both |
 | 19 | `?form=` | `?form=findadoc-intake-v1`, then `?form=nope` | Standard form; unknown id falls back to the default |
 | 20 | Signed out dashboard | Patient window → `/clinic-dashboard/c32c316a-…` | Sign-in screen, no data |
-| 21 | Admin bookings view | `/my-page?view=bookings` as an admin | List shows clinic · patient name and appointment status. A moderator sees no Bookings link |
+| 21 | Admin has no bookings | As an admin who is not a member, open the showcase dashboard, then add `?tab=requests` and `&booking=<any id>` | Only the Team tab and the interpretation switch; no requests, calendar, or booking. A moderator sees no Clinic accounts link |
 | 22 | Languages | Book in Japanese and one other language | All new screens translated; the manage link keeps the language |
 | 23 | Account menu | Sign in as a clinic owner or staff | Account menu and My Page show **Clinic dashboard** with the number of requested appointments; confirming one lowers it |
-| 24 | Admin clinic picker | `/my-page?view=bookings` as an admin, choose a clinic | That clinic's dashboard opens |
+| 24 | Admin clinic accounts | `/my-page?view=clinics` as an admin, choose a clinic | That clinic's Team tab opens; inviting yourself as owner shows the bookings after a reload |
 
-Clinic-member tests (owner and staff only see their clinic, invite claiming) need the Auth0 Action (#158). Until then, test as an admin. To try an owner locally anyway, attach your Auth0 user id directly (local database only):
+Clinic-member tests need a membership. Invite claiming needs the Auth0 email claims (see booking-access.md). To attach your Auth0 user id directly instead (local database only):
 
-```sql
--- docker exec -it findadoc-db psql -U postgres
-INSERT INTO clinic_memberships (facility_id, invited_email, auth0_sub, claimed_at, role)
-VALUES ('c32c316a-a368-499b-abaf-c5c973cb67e5', 'you@example.com', '<your Auth0 sub, e.g. google-oauth2|123>', now(), 'owner');
+```bash
+pnpm --filter @findadoc/server e2e:clinic-owner '<your Auth0 sub>' c32c316a-a368-499b-abaf-c5c973cb67e5
 ```
 
-Sign in with a plain (non-admin) account with that sub. You see only the showcase clinic. Any other `/clinic-dashboard/{id}` says you don't have access. My Page → Access lists `FacilityOwner` (or `FacilityStaff` for a staff row). The API adds that role from the row on each request, so deleting the row removes it on the next request.
+Sign in with that account (admin or not). You see only the showcase clinic. Any other `/clinic-dashboard/{id}` says you don't have access. My Page → Access lists `FacilityOwner` (or `FacilityStaff` for a staff row). The API adds that role from the row on each request, so deleting the row removes it on the next request.
 
 ## 8. Troubleshooting
 
@@ -193,7 +194,7 @@ Sign in with a plain (non-admin) account with that sub. You see only the showcas
 | `pnpm db:start`: "Port 54322 is taken by the Docker container supabase_db_findadoc-server" | Old Supabase stack on 54322 | Section 4 step 1, or run on another port with `PGPORT` |
 | Book page: no times | No open hours in range | Check Settings → Weekly hours and closures on the calendar, or re-seed locally |
 | Clinic subdomain doesn't show the clinic page | Preview cookie missing on that host | Open `…/?preview=1` once in that window |
-| Dashboard: "This account is not linked to a clinic yet" | Plain account and no claimed membership | Use an Admin account, or the SQL above; production needs #158 |
+| Dashboard: "This account is not linked to a clinic yet", or an admin sees only Team | No claimed membership for this clinic | Invite yourself as owner from Team, or run `e2e:clinic-owner` locally (section 4) |
 | Dashboard keeps showing "Sign in" | Auth0 session is per origin | Sign in on `localhost:3000` / `www.findadoc.jp`, not the clinic subdomain |
 | Request shows **Notify failed** | SES rejected the patient address | Check the address; the patient can use the manage link |
 | Clinic gets no email in production | The clinic has no members | Invite one (Team tab); section 2 |

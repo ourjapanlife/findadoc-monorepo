@@ -29,12 +29,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import type { BookingSubmissionListItem, HealthcareProfessional, Submission } from '@findadoc/graphql'
+import type { HealthcareProfessional, Submission } from '@findadoc/graphql'
 import { SelectedModerationListView, useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
-import { useBookingSubmissionsStore } from '~/stores/bookingSubmissionsStore'
-import { appointmentStatusLabelKey } from '~/utils/booking/appointmentStatus'
 import { formatToReadableDate } from '~/utils/dateUtils'
 import {
     bulkSelectableRows,
@@ -57,7 +55,6 @@ const { t } = useI18n()
 const modSubmissionsStore = useModerationSubmissionsStore()
 const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
 const facilitiesStore = useFacilitiesStore()
-const bookingSubmissionsStore = useBookingSubmissionsStore()
 
 const selectedSubmissions = ref<Record<string, string>>({})
 const bulkPending = ref(false)
@@ -72,9 +69,6 @@ const facilitiesModerationListViewChosen = computed(() => modSubmissionsStore.se
 const submissionsModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
   === SelectedModerationListView.Submissions)
 
-const bookingsModerationListViewChosen = computed(() => modSubmissionsStore.selectedModerationListViewChosen
-  === SelectedModerationListView.Bookings)
-
 // A correction is checked on its own, from its review screen, never in bulk. A page of
 // corrections only, such as User feedback, has no selection column at all.
 const bulkSelectable = computed(() => submissionsModerationListViewChosen.value
@@ -86,9 +80,6 @@ const columnStorageKey = computed(() => {
     }
     if (healthcareProfessionalsModerationListViewChosen.value) {
         return 'healthcare-professionals'
-    }
-    if (bookingsModerationListViewChosen.value) {
-        return 'bookings'
     }
     return 'submissions'
 })
@@ -107,15 +98,6 @@ const columns = computed((): ModerationTableColumn[] => {
             { id: 'name', label: t('moderationTable.name') },
             { id: 'created', label: t('modListContainerItem.createdDate'), sortField: 'createdDate' },
             { id: 'updated', label: t('modListContainerItem.updatedDate'), sortField: 'updatedDate' }
-        ]
-    }
-    if (bookingsModerationListViewChosen.value) {
-        return [
-            { id: 'clinic', label: t('bookingDashboard.columns.clinic') },
-            { id: 'status', label: t('bookingDashboard.columns.status') },
-            { id: 'appointment', label: t('bookingDashboard.columns.appointment') },
-            { id: 'identity', label: t('bookingDashboard.columns.identity') },
-            { id: 'created', label: t('modListContainerItem.createdDate'), sortField: 'createdDate' }
         ]
     }
     return [
@@ -157,30 +139,6 @@ const rows = computed((): ModerationTableRow[] => {
             }
         }))
     }
-    if (bookingsModerationListViewChosen.value) {
-        return bookingSubmissionsStore.rows.map((booking, index) => ({
-            id: booking.id,
-            href: `/my-page/booking/${booking.id}`,
-            testId: `mod-booking-list-item-${index + 1}`,
-            linkColumn: 'clinic',
-            badges: booking.hasIdentityUploads
-                ? [{ label: t('bookingDashboard.identityBadge'), className: 'bg-warning/80' }]
-                : [],
-            cells: {
-                clinic: booking.patientName
-                    ? `${booking.clinicName} · ${booking.patientName}`
-                    : booking.clinicName,
-                status: bookingStatusLabel(booking),
-                appointment: booking.startsAt
-                    ? formatToReadableDate(booking.startsAt)
-                    : t('bookingDashboard.noAppointment'),
-                identity: booking.hasIdentityUploads
-                    ? t('bookingDashboard.identityYes')
-                    : t('bookingDashboard.identityNo'),
-                created: formatToReadableDate(booking.createdDate)
-            }
-        }))
-    }
     return modSubmissionsStore.filteredSubmissionDataForListComponent.map((submission, index) => ({
         id: submission.id,
         href: `/my-page/edit-submission/${submission.id}`,
@@ -202,9 +160,6 @@ const emptyLabel = computed(() => {
     if (submissionsModerationListViewChosen.value) {
         return t('modPanelSubmissionList.noSubmissions')
     }
-    if (bookingsModerationListViewChosen.value) {
-        return t('bookingDashboard.empty')
-    }
     return t('searchResultsList.noResults')
 })
 
@@ -214,9 +169,6 @@ const offset = computed(() => {
     }
     if (healthcareProfessionalsModerationListViewChosen.value) {
         return healthcareProfessionalsStore.currentOffset
-    }
-    if (bookingsModerationListViewChosen.value) {
-        return bookingSubmissionsStore.currentOffset
     }
     return modSubmissionsStore.currentOffset
 })
@@ -228,9 +180,6 @@ const totalItems = computed(() => {
     if (healthcareProfessionalsModerationListViewChosen.value) {
         return healthcareProfessionalsStore.totalHealthcareProfessionalsCount
     }
-    if (bookingsModerationListViewChosen.value) {
-        return bookingSubmissionsStore.totalCount
-    }
     return modSubmissionsStore.totalSubmissionsCount
 })
 
@@ -241,9 +190,6 @@ const pageSize = computed(() => {
     if (healthcareProfessionalsModerationListViewChosen.value) {
         return healthcareProfessionalsStore.itemsPerPage
     }
-    if (bookingsModerationListViewChosen.value) {
-        return bookingSubmissionsStore.itemsPerPage
-    }
     return modSubmissionsStore.itemsPerPage
 })
 
@@ -253,9 +199,6 @@ const sort = computed(() => {
     }
     if (healthcareProfessionalsModerationListViewChosen.value) {
         return healthcareProfessionalsStore.listOrder
-    }
-    if (bookingsModerationListViewChosen.value) {
-        return bookingSubmissionsStore.listOrder
     }
     return modSubmissionsStore.listOrder
 })
@@ -268,9 +211,6 @@ const listSearchQuery = computed({
         if (healthcareProfessionalsModerationListViewChosen.value) {
             return healthcareProfessionalsStore.listSearchQuery
         }
-        if (bookingsModerationListViewChosen.value) {
-            return bookingSubmissionsStore.listSearchQuery
-        }
         return modSubmissionsStore.submissionSearchQuery
     },
     set(newValue: string) {
@@ -280,10 +220,6 @@ const listSearchQuery = computed({
         }
         if (healthcareProfessionalsModerationListViewChosen.value) {
             healthcareProfessionalsStore.setListSearchQuery(newValue)
-            return
-        }
-        if (bookingsModerationListViewChosen.value) {
-            bookingSubmissionsStore.setListSearchQuery(newValue)
             return
         }
         modSubmissionsStore.setSubmissionSearchQuery(newValue)
@@ -313,26 +249,11 @@ onMounted(async () => {
     await modSubmissionsStore.fetchStatusCounts()
     await facilitiesStore.loadFacilityList()
     await healthcareProfessionalsStore.loadHealthcareProfessionalList()
-    if (bookingsModerationListViewChosen.value) {
-        await bookingSubmissionsStore.loadList()
-    }
-})
-
-watch(bookingsModerationListViewChosen, async isBookings => {
-    if (isBookings) {
-        await bookingSubmissionsStore.loadList()
-    }
 })
 
 function professionalLabel(professional: HealthcareProfessional): string {
     const name = healthcareProfessionalsStore.displayChosenLocaleForHealthcareProfessional(professional)
     return [name.lastName, name.firstName, name.middleName].filter(part => part).join(' ')
-}
-
-function bookingStatusLabel(booking: BookingSubmissionListItem): string {
-    return booking.appointmentStatus
-        ? t(appointmentStatusLabelKey(booking.appointmentStatus))
-        : t('bookingDashboard.noAppointment')
 }
 
 function submissionBadges(submission: Submission): ModerationTableBadge[] {
@@ -377,10 +298,6 @@ function onOffset(nextOffset: number) {
         healthcareProfessionalsStore.setOffset(nextOffset)
         return
     }
-    if (bookingsModerationListViewChosen.value) {
-        bookingSubmissionsStore.setOffset(nextOffset)
-        return
-    }
     modSubmissionsStore.setOffset(nextOffset)
 }
 
@@ -395,10 +312,6 @@ function onPageSize(nextPageSize: number) {
         healthcareProfessionalsStore.setOffset(0)
         return
     }
-    if (bookingsModerationListViewChosen.value) {
-        bookingSubmissionsStore.setItemsPerPage(nextPageSize)
-        return
-    }
     modSubmissionsStore.setItemsPerPage(nextPageSize)
     modSubmissionsStore.setOffset(0)
 }
@@ -410,9 +323,6 @@ function onSort(field: string) {
     }
     if (healthcareProfessionalsModerationListViewChosen.value) {
         healthcareProfessionalsStore.setListOrder(field)
-        return
-    }
-    if (bookingsModerationListViewChosen.value) {
         return
     }
     modSubmissionsStore.setListOrder(field)
