@@ -49,6 +49,7 @@ import { breadcrumbListJsonLd, displayedLanguageCodes, jsonLdScript, physicianJs
 import { useUmami } from '~/composables/useUmamiTracking'
 import { doctorViewedProps } from '~/utils/analyticsEvents'
 import { localeDisplayOptions } from '~/stores/localeStore'
+import { spokenLanguageNames } from '~/utils/languageName'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { Locale } from '@findadoc/graphql'
 import { useLiveFacility } from '~/composables/useLiveFacility'
@@ -151,10 +152,7 @@ const metaDescription = computed(() => {
         .map(code => specialtiesStore.specialtyDisplayOptions.find(option => option.code === code)?.displayText)
         .filter((name): name is string => !!name)
         .join(', ')
-    const languages = (professional.value.spokenLanguages ?? [])
-        .map(code => localeDisplayOptions.find(option => option.code === code)?.simpleText)
-        .filter((name): name is string => !!name)
-        .join(', ')
+    const languages = spokenLanguageNames(professional.value.spokenLanguages ?? [], locale.value).join(', ')
 
     return t('doctorPage.metaDescription', {
         name: displayName.value,

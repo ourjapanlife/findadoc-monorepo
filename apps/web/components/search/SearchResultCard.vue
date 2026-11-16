@@ -52,7 +52,17 @@
             </li>
         </ul>
 
-        <ul class="m-0 flex list-none flex-col gap-2 p-0 text-primary-text">
+        <p
+            v-if="listsNoDoctors"
+            data-testid="search-result-no-professionals"
+            class="m-0 text-sm text-primary-text-muted"
+        >
+            {{ t('search.noProfessionalsYet') }}
+        </p>
+        <ul
+            v-else
+            class="m-0 flex list-none flex-col gap-2 p-0 text-primary-text"
+        >
             <li
                 v-for="professional in visibleProfessionals"
                 :key="professional.id"
@@ -89,11 +99,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { localeDisplayOptions } from '~/stores/localeStore'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { formatHealthcareProfessionalName } from '~/utils/nameUtils'
 import { isJapaneseLocale, toGqlLocale } from '~/utils/activeLocale'
 import { facilityPath } from '~/utils/clinicPath'
+import { spokenLanguageNames } from '~/utils/languageName'
 import { professionalPath } from '~/utils/doctorPath'
 import { useUmami } from '~/composables/useUmamiTracking'
 import type { FacilitySearchResult } from '~/utils/searchDirectory'
@@ -142,14 +152,8 @@ const languages = computed(() => {
         }
     }
 
-    /*
-     * Drop codes the locale list cannot name rather than showing the fallback string: an
-     * unmatched code used to render the raw translation key as if it were a language.
-     */
-    return [...counts.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .map(([code]) => localeDisplayOptions.find(option => option.code === code)?.simpleText)
-        .filter((name): name is string => !!name)
+    // Named in the reader's language; codes the directory does not list are dropped.
+    return spokenLanguageNames([...counts.entries()].sort((a, b) => b[1] - a[1]).map(([code]) => code), locale.value)
 })
 
 const professionals = computed(() => props.result.healthcareProfessionals.map(professional => ({
@@ -162,6 +166,13 @@ const professionals = computed(() => props.result.healthcareProfessionals.map(pr
         .filter(Boolean)
         .join(', ')
 })))
+
+/*
+ * `healthcareProfessionals` holds only the doctors who match the filters. A language search can
+ * match the clinic's own languages and none of its doctors, so ask the clinic whether it lists any.
+ */
+const listsNoDoctors = computed(() => !props.result.healthcareProfessionals.length
+  && !(props.result.healthcareProfessionalIds ?? []).length)
 
 const visibleProfessionals = computed(() => professionals.value.slice(0, MAX_VISIBLE_PROFESSIONALS))
 const hiddenProfessionalCount = computed(() => Math.max(0, professionals.value.length - MAX_VISIBLE_PROFESSIONALS))

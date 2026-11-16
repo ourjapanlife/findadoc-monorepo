@@ -128,11 +128,35 @@
             <JapaneseInsuranceNote :value="facility.japaneseInsurance" />
         </header>
 
-        <section class="flex flex-col gap-3">
+        <!-- Hidden when the clinic lists doctors but the search filtered every one of them out. -->
+        <section
+            v-if="professionals.length || listsNoDoctors"
+            class="flex flex-col gap-3"
+        >
             <h3 class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase">
                 {{ professionalsCountText }}
             </h3>
-            <ul class="m-0 flex list-none flex-col gap-3 p-0">
+            <!-- A clinic can be listed before anyone names a doctor there (#21). Say so rather than leave a bare heading. -->
+            <div
+                v-if="listsNoDoctors"
+                data-testid="search-details-no-professionals"
+                class="card flex flex-col gap-2 p-4"
+            >
+                <p class="m-0 text-primary-text">
+                    {{ t('search.noProfessionalsNote') }}
+                </p>
+                <NuxtLink
+                    to="/submit"
+                    data-testid="search-details-add-professional"
+                    class="self-start font-medium text-primary hover:underline"
+                >
+                    {{ t('search.addProfessional') }}
+                </NuxtLink>
+            </div>
+            <ul
+                v-else
+                class="m-0 flex list-none flex-col gap-3 p-0"
+            >
                 <li
                     v-for="professional in professionals"
                     :key="professional.id"
@@ -202,7 +226,6 @@ import OpenMapsButton from '~/components/common/OpenMapsButton.vue'
 import SVGGlobeIcon from '~/assets/icons/globe-icon.svg'
 import SVGPhoneIcon from '~/assets/icons/phone-icon.svg'
 import SVGEmailIcon from '~/assets/icons/email-icon.svg'
-import { localeDisplayOptions } from '~/stores/localeStore'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { formatHealthcareProfessionalName } from '~/utils/nameUtils'
 import { isJapaneseLocale, toGqlLocale } from '~/utils/activeLocale'
@@ -211,6 +234,7 @@ import { useUmami } from '~/composables/useUmamiTracking'
 import { noteSearchDetailsContact, type EventProps } from '~/utils/analyticsEvents'
 import { professionalPath } from '~/utils/doctorPath'
 import { formatPaymentOptions } from '~/utils/paymentOptions'
+import { spokenLanguageNames } from '~/utils/languageName'
 import { facilityEmail,
     facilityMapsUrl,
     facilityPhone,
@@ -279,9 +303,7 @@ const email = computed(() => facilityEmail(props.facility))
 const payment = computed(() => formatPaymentOptions(props.facility.paymentOptions, t))
 
 // Languages the clinic itself supports, with or without a named doctor (#19, #21). Empty shows nothing.
-const facilityLanguages = computed(() => (props.facility.supportedLanguages ?? [])
-    .map(code => localeDisplayOptions.find(option => option.code === code)?.simpleText)
-    .filter((name): name is string => !!name)
+const facilityLanguages = computed(() => spokenLanguageNames(props.facility.supportedLanguages ?? [], locale.value)
     .join(', '))
 
 const professionals = computed(() => props.facility.healthcareProfessionals.map(professional => ({
@@ -293,14 +315,19 @@ const professionals = computed(() => props.facility.healthcareProfessionals.map(
         .map(code => specialtiesStore.specialtyDisplayOptions.find(option => option.code === code)?.displayText)
         .filter(Boolean)
         .join(', '),
-    languages: (professional.spokenLanguages ?? [])
-        .map(code => localeDisplayOptions.find(option => option.code === code)?.simpleText)
-        .filter((name): name is string => !!name),
+    languages: spokenLanguageNames(professional.spokenLanguages ?? [], locale.value),
     additionalInfo: professional.additionalInfoForPatients ?? '',
     updated: professional.updatedDate ? formatToReadableDate(professional.updatedDate) : ''
 })))
 
 // In script rather than the template: i18n/cleanUnusedLocaleKeys.js only sees template t() calls with no second argument.
+/*
+ * On search, `healthcareProfessionals` holds only the doctors who match the filters. A language
+ * search can match the clinic's own languages and none of its doctors (#21).
+ */
+const listsNoDoctors = computed(() => !props.facility.healthcareProfessionals.length
+  && !(props.facility.healthcareProfessionalIds ?? []).length)
+
 const professionalsCountText = computed(() => t('search.professionalsAtFacility', professionals.value.length))
 
 function trackContact(name: 'Call clicked' | 'Website clicked' | 'Email clicked' | 'Maps clicked') {

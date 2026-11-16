@@ -298,7 +298,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { FacilityCorrectionReason, type Locale, type PaymentType, type PhysicalAddressInput } from '@findadoc/graphql'
 import { FIELD_LIMITS } from '@findadoc/utils'
-import { localeDisplayOptions } from '~/stores/localeStore'
+import { languageName } from '~/utils/languageName'
 import { listPrefectureJapanEn, listPrefectureJapanJa } from '~/stores/locationsStore'
 import { isJapaneseLocale } from '~/utils/activeLocale'
 import {
@@ -373,6 +373,6 @@ function togglePayment(paymentType: PaymentType) {
 }
 
 function languageLabel(code: Locale): string {
-    return localeDisplayOptions.find(option => option.code === code)?.simpleText ?? code
+    return languageName(code, locale.value)
 }
 </script>
