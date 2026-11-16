@@ -199,7 +199,7 @@
       },
       "security": {
         "heading": "7. Sicurezza",
-        "p1": "Le informazioni sono cifrate durante la trasmissione e l'accesso è limitato a chi ne ha bisogno. I nostri moderatori vedono le segnalazioni di cliniche e medici che esaminano, ma mai le tue prenotazioni. La tua richiesta, le tue risposte e i tuoi file sono visibili solo al personale della clinica presso cui hai prenotato, e il personale di una clinica vede solo le prenotazioni della propria clinica."
+        "p1": "Le informazioni sono cifrate durante la trasmissione e l'accesso è limitato a chi ne ha bisogno. I nostri moderatori esaminano le segnalazioni di cliniche e medici, e questo ruolo non dà loro accesso alle tue prenotazioni. La tua richiesta, le tue risposte e i tuoi file sono visibili solo al personale della clinica presso cui hai prenotato, e il personale di una clinica vede solo le prenotazioni della propria clinica."
       },
       "rights": {
         "heading": "8. I tuoi diritti",

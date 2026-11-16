@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Bảo mật",
-        "p1": "Thông tin được mã hóa khi truyền, và quyền truy cập chỉ giới hạn cho những người cần. Người kiểm duyệt của chúng tôi chỉ xem các đề xuất phòng khám và bác sĩ mà họ xét duyệt, không bao giờ xem lịch hẹn của bạn. Yêu cầu đặt lịch, câu trả lời và tệp của bạn chỉ nhân viên phòng khám bạn đặt lịch mới xem được, và nhân viên phòng khám chỉ xem được lịch hẹn của phòng khám mình."
+        "p1": "Thông tin được mã hóa khi truyền, và quyền truy cập chỉ giới hạn cho những người cần. Người kiểm duyệt của chúng tôi xét duyệt các đề xuất phòng khám và bác sĩ, và vai trò đó không cho họ quyền xem lịch hẹn của bạn. Yêu cầu đặt lịch, câu trả lời và tệp của bạn chỉ nhân viên phòng khám bạn đặt lịch mới xem được, và nhân viên phòng khám chỉ xem được lịch hẹn của phòng khám mình."
       },
       "rights": {
         "heading": "8. Quyền của bạn",

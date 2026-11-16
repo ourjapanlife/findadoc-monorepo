@@ -235,9 +235,10 @@ export async function resolveBookingTarget(clinicIdOrSlug: string): Promise<Book
 }
 
 /**
- * resolveBookingTarget for the patient surface. A facility books only after a
- * admin or owner saves its booking settings, so a directory clinic that
- * never opted in reads as missing.
+ * resolveBookingTarget for the patient surface. A facility books only after its
+ * clinic owner saves its booking settings, so a directory clinic that never opted
+ * in reads as missing. A clinic site with no facility never books, so every
+ * booking row has a facility a clinic member can open (#192).
  */
 export async function resolvePublicBookingTarget(clinicIdOrSlug: string): Promise<BookingTarget | undefined> {
     const target = await resolveBookingTarget(clinicIdOrSlug)

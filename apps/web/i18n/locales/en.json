@@ -242,7 +242,7 @@
       },
       "security": {
         "heading": "7. Security",
-        "p1": "Information is encrypted in transit, and access is limited to the people who need it. Our moderators see the clinic and doctor suggestions they review, but never your bookings. Your booking request, answers, and files are seen only by the staff of the clinic you booked with, and clinic staff can see only their own clinic's bookings."
+        "p1": "Information is encrypted in transit, and access is limited to the people who need it. Our moderators review clinic and doctor suggestions, and that role gives them no access to your bookings. Your booking request, answers, and files are seen only by the staff of the clinic you booked with, and clinic staff can see only their own clinic's bookings."
       },
       "rights": {
         "heading": "8. Your rights",

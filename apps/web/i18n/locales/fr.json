@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Sécurité",
-        "p1": "Les informations sont chiffrées pendant leur transmission, et l'accès est limité aux personnes qui en ont besoin. Nos modérateurs voient les suggestions de cliniques et de médecins qu'ils examinent, mais jamais vos rendez-vous. Votre demande, vos réponses et vos fichiers ne sont visibles que par le personnel de la clinique auprès de laquelle vous avez pris rendez-vous, et le personnel d'une clinique ne voit que les rendez-vous de sa propre clinique."
+        "p1": "Les informations sont chiffrées pendant leur transmission, et l'accès est limité aux personnes qui en ont besoin. Nos modérateurs examinent les suggestions de cliniques et de médecins, et ce rôle ne leur donne aucun accès à vos rendez-vous. Votre demande, vos réponses et vos fichiers ne sont visibles que par le personnel de la clinique auprès de laquelle vous avez pris rendez-vous, et le personnel d'une clinique ne voit que les rendez-vous de sa propre clinique."
       },
       "rights": {
         "heading": "8. Vos droits",

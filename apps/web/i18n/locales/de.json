@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Sicherheit",
-        "p1": "Daten werden bei der Übertragung verschlüsselt, und Zugriff haben nur Personen, die ihn brauchen. Unsere Moderatoren sehen die Vorschläge zu Praxen und Ärzten, die sie prüfen, aber nie Ihre Terminanfragen. Ihre Anfrage, Ihre Antworten und Ihre Dateien sieht nur das Personal der Praxis, bei der Sie angefragt haben, und Praxispersonal sieht nur die Termine der eigenen Praxis."
+        "p1": "Daten werden bei der Übertragung verschlüsselt, und Zugriff haben nur Personen, die ihn brauchen. Unsere Moderatoren prüfen Vorschläge zu Praxen und Ärzten; diese Rolle gibt ihnen keinen Zugriff auf Ihre Terminanfragen. Ihre Anfrage, Ihre Antworten und Ihre Dateien sieht nur das Personal der Praxis, bei der Sie angefragt haben, und Praxispersonal sieht nur die Termine der eigenen Praxis."
       },
       "rights": {
         "heading": "8. Ihre Rechte",

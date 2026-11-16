@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Seguridad",
-        "p1": "Naka-encrypt ang impormasyon habang ipinapadala, at limitado ang access sa mga taong nangangailangan nito. Nakikita ng aming mga moderator ang mga mungkahing klinika at doktor na sinusuri nila, pero hindi kailanman ang iyong mga booking. Ang iyong booking request, mga sagot, at mga file ay nakikita lang ng kawani ng klinikang pinag-book-an mo, at ang kawani ng klinika ay nakakakita lang ng mga booking ng sarili nilang klinika."
+        "p1": "Naka-encrypt ang impormasyon habang ipinapadala, at limitado ang access sa mga taong nangangailangan nito. Sinusuri ng aming mga moderator ang mga mungkahing klinika at doktor, at hindi sila binibigyan ng papel na iyon ng access sa iyong mga booking. Ang iyong booking request, mga sagot, at mga file ay nakikita lang ng kawani ng klinikang pinag-book-an mo, at ang kawani ng klinika ay nakakakita lang ng mga booking ng sarili nilang klinika."
       },
       "rights": {
         "heading": "8. Ang iyong mga karapatan",

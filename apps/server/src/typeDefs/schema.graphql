@@ -28,7 +28,7 @@ type Facility {
   """IDs of healthcare professionals associated with this facility."""
   healthcareProfessionalIds: [ID!]!
   """
-  True once an admin or the clinic owner has saved booking settings for this facility.
+  True once the clinic owner has saved booking settings for this facility.
   The clinic page shows Book, and patients may book, only then.
   """
   bookingEnabled: Boolean!
@@ -1607,8 +1607,9 @@ type BookingSettings {
   """Intake forms the clinic offers. The first is the default."""
   formDefinitionIds: [String!]!
   """
-  Intake forms this user may offer at this clinic. The online consult form is
-  limited to admins and preview clinic sites until its answers have a purge path.
+  Intake forms this user may offer at this clinic. The online consult form is limited to
+  preview clinic sites, clinics that already offer it, and a clinic owner who is also an admin,
+  until its answers have a purge path.
   """
   offerableFormDefinitionIds: [String!]!
   """The clinic may use interpreters (#205). Admins turn it on; it is meant to be a paid add-on."""
@@ -1635,7 +1636,7 @@ enum BookingBankAccountType {
 
 """
 How a clinic takes the initial fee, for the pending-payment email (online consult v2 §3.3, §3.4).
-Members read it. Owners and admins change it. Clinic data, not patient data.
+Clinic members read it. The clinic owner changes it. Clinic data, not patient data.
 """
 type BookingPaymentSettings {
   facilityId: ID!
@@ -2158,21 +2159,21 @@ type Query {
   """Invited and signed-in members of one clinic. Owners and admins only."""
   clinicMembers(facilityId: ID!): [ClinicMember!]!
 
-  """Booking options for one clinic. Members and admins."""
+  """Booking options for one clinic. Clinic members, and admins setting up the clinic (no patient data)."""
   bookingSettings(facilityId: ID!): BookingSettings
 
-  """How one clinic takes the initial fee. Members and admins. Null when the clinic saved none."""
+  """How one clinic takes the initial fee. Clinic members only. Null when the clinic saved none."""
   bookingPaymentSettings(facilityId: ID!): BookingPaymentSettings
 
-  """A clinic's interpreters (#205). Owners, staff, and admins."""
+  """A clinic's interpreters (#205). Clinic members only."""
   clinicInterpreters(facilityId: ID!): [ClinicInterpreter!]!
 
   """The patient's own booking, found by the private token from the email link."""
   patientBooking(token: String!): PatientBookingView
 
   """
-  Staff list of booking submissions, limited to the clinics the user belongs to.
-  Admins see every clinic.
+  Staff list of booking submissions, limited to the clinics the user is a member of.
+  Being an admin adds no clinic (#192).
   """
   bookingSubmissions(filters: BookingSubmissionSearchFilters!): [BookingSubmissionListItem!]!
 
@@ -2183,17 +2184,17 @@ type Query {
 
   """
   Contact and scheduling rows for one clinic's bookings, for a CSV the browser builds.
-  Owners and admins only. Each call is access-logged with ids only.
+  The clinic owner only. Each call is access-logged with ids only.
   """
   bookingSubmissionsExport(facilityId: ID!, appointmentStatus: BookingAppointmentStatus): BookingSubmissionExport!
 
   """Staff availability windows for the calendar editor."""
   clinicAvailabilityWindows(clinicSiteId: ID!, from: String!, to: String!): [ClinicAvailabilityWindow!]!
 
-  """Doctors at one clinic, for the schedule picker. Members and admins."""
+  """Doctors at one clinic, for the schedule picker. Clinic members only."""
   clinicPractitioners(clinicId: ID!): [BookingPractitioner!]!
 
-  """Every schedule's usual week in Japan time. Members and admins."""
+  """Every schedule's usual week in Japan time. Clinic members only."""
   clinicWeeklyHours(clinicId: ID!): [ClinicWeeklyHours!]!
 
   """Closures on one clinic calendar. The range must be 62 days or shorter."""
@@ -2488,14 +2489,14 @@ type Mutation {
   """Remove a clinic member. Admins remove anyone; an owner removes staff."""
   removeClinicMember(id: ID!): DeleteResult!
 
-  """Change visit lengths and offered forms. Owners and admins."""
+  """Change visit lengths and offered forms. The clinic owner only."""
   updateBookingSettings(input: UpdateBookingSettingsInput!): BookingSettings!
 
-  """Change how the clinic takes the initial fee (online consult v2 §3.3). Owners and admins."""
+  """Change how the clinic takes the initial fee (online consult v2 §3.3). The clinic owner only."""
   updateBookingPaymentSettings(input: UpdateBookingPaymentSettingsInput!): BookingPaymentSettings!
 
   """
-  A short-lived upload URL for the clinic's PayPay QR. Owners and admins. PNG, JPEG, or WebP up to
+  A short-lived upload URL for the clinic's PayPay QR. The clinic owner only. PNG, JPEG, or WebP up to
   1 MB; the server checks the stored file again on save.
   """
   createPaymentQrUploadUrl(input: CreatePaymentQrUploadUrlInput!): PaymentQrUploadUrl!
@@ -2503,7 +2504,7 @@ type Mutation {
   """Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on."""
   setBookingInterpretation(input: SetBookingInterpretationInput!): BookingSettings!
 
-  """Add or change one interpreter, with their whole week (#205). Owners and admins."""
+  """Add or change one interpreter, with their whole week (#205). The clinic owner only."""
   saveClinicInterpreter(input: SaveClinicInterpreterInput!): ClinicInterpreter!
 
   """Remove an interpreter. Refused while an upcoming visit holds them (INTERPRETER_HAS_BOOKINGS)."""

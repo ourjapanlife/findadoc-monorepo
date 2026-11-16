@@ -165,7 +165,7 @@
       },
       "security": {
         "heading": "7. Segurança",
-        "p1": "As informações são criptografadas em trânsito, e o acesso é limitado a quem precisa. Nossos moderadores veem as sugestões de clínicas e médicos que revisam, mas nunca os seus agendamentos. Sua solicitação, suas respostas e seus arquivos são vistos apenas pela equipe da clínica com quem você agendou, e a equipe de uma clínica vê apenas os agendamentos da própria clínica."
+        "p1": "As informações são criptografadas em trânsito, e o acesso é limitado a quem precisa. Nossos moderadores revisam sugestões de clínicas e médicos, e essa função não lhes dá acesso aos seus agendamentos. Sua solicitação, suas respostas e seus arquivos são vistos apenas pela equipe da clínica com quem você agendou, e a equipe de uma clínica vê apenas os agendamentos da própria clínica."
       },
       "rights": {
         "heading": "8. Seus direitos",

@@ -242,7 +242,7 @@
       },
       "security": {
         "heading": "7. Keamanan",
-        "p1": "Informasi dienkripsi selama pengiriman, dan aksesnya dibatasi hanya untuk orang yang membutuhkannya. Moderator kami melihat usulan klinik dan dokter yang mereka tinjau, tetapi tidak pernah melihat reservasi Anda. Permintaan reservasi, jawaban, dan file Anda hanya dapat dilihat oleh staf klinik tempat Anda membuat reservasi, dan staf klinik hanya dapat melihat reservasi klinik mereka sendiri."
+        "p1": "Informasi dienkripsi selama pengiriman, dan aksesnya dibatasi hanya untuk orang yang membutuhkannya. Moderator kami meninjau usulan klinik dan dokter, dan peran itu tidak memberi mereka akses ke reservasi Anda. Permintaan reservasi, jawaban, dan file Anda hanya dapat dilihat oleh staf klinik tempat Anda membuat reservasi, dan staf klinik hanya dapat melihat reservasi klinik mereka sendiri."
       },
       "rights": {
         "heading": "8. Hak-hak Anda",
