@@ -104,13 +104,14 @@ import { searchSubmittedProps } from '~/utils/analyticsEvents'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
 import { languageName } from '~/utils/languageName'
-import { ALL_PREFECTURES, SEARCHABLE_LANGUAGES, type PrefectureEntry } from '~/utils/homeDirectory'
+import { SEARCHABLE_LANGUAGES, directoryPrefectures, type PrefectureEntry } from '~/utils/homeDirectory'
+import directoryStats from '#directory-stats'
 
 const { t, locale } = useI18n()
 const specialtiesStore = useSpecialtiesStore()
 const { track } = useUmami()
 
-const prefectures = ALL_PREFECTURES
+const prefectures = directoryPrefectures(directoryStats)
 
 /**
  * Compare against vue-i18n's active locale, not localeStore. localeStore.activeLocale

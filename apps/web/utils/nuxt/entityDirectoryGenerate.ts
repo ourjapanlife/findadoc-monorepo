@@ -5,6 +5,7 @@ import {
     skipDirectoryPrerender,
     writeClinicPrerenderCache
 } from '../clinicPrerender'
+import { directoryStatsFrom } from '../directoryStats'
 import { prefectureHubPaths } from '../hubIndex'
 import { DIRECTORY_PRERENDER_LOCALE_CODES, withDirectoryLocaleVariants } from '../localePath'
 import { PRERENDER_DIRECTORY_FILE_ENV, readPrerenderDirectorySnapshot } from '../prerenderDirectorySnapshot'
@@ -109,8 +110,24 @@ function generatedFacetPathsModuleSource(): string {
     return `export default ${JSON.stringify(entityDirectoryBuild?.facetPaths ?? [])}`
 }
 
+/**
+ * Facility, professional, and language counts and the prefecture list for this generate, or
+ * `null` outside generate. The homepage and about page read it instead of a hand-measured number.
+ */
+function directoryStatsModuleSource(): string {
+    if (!isNuxtGenerateCommand() || !entityDirectoryBuild) {
+        return 'export default null'
+    }
+
+    const stats = directoryStatsFrom(
+        Object.values(entityDirectoryBuild.directory),
+        Object.values(entityDirectoryBuild.professionalDirectory)
+    )
+    return `export default ${JSON.stringify(stats)}`
+}
+
 function generatedDirectoryLinksVitePlugin(
-    moduleId: '#generated-prefecture-hubs' | '#generated-facet-paths',
+    moduleId: '#generated-prefecture-hubs' | '#generated-facet-paths' | '#directory-stats',
     sourceOf: () => string
 ) {
     const resolvedId = `\0${moduleId.slice(1)}`
@@ -165,7 +182,8 @@ export function entityDirectoryVitePlugins() {
         directoryVitePlugin('#doctor-directory', built => built.professionalDirectory),
         prerenderCitiesVitePlugin(),
         generatedDirectoryLinksVitePlugin('#generated-prefecture-hubs', generatedPrefectureHubsModuleSource),
-        generatedDirectoryLinksVitePlugin('#generated-facet-paths', generatedFacetPathsModuleSource)
+        generatedDirectoryLinksVitePlugin('#generated-facet-paths', generatedFacetPathsModuleSource),
+        generatedDirectoryLinksVitePlugin('#directory-stats', directoryStatsModuleSource)
     ]
 }
 
@@ -202,7 +220,8 @@ export async function applyEntityDirectoryToNitro(nitroConfig: NitroConfig) {
             ...nitroConfig.virtual,
             '#prerender-cities': prerenderCitiesModuleSource(),
             '#generated-prefecture-hubs': generatedPrefectureHubsModuleSource(),
-            '#generated-facet-paths': generatedFacetPathsModuleSource()
+            '#generated-facet-paths': generatedFacetPathsModuleSource(),
+            '#directory-stats': directoryStatsModuleSource()
         }
         return
     }
@@ -213,7 +232,8 @@ export async function applyEntityDirectoryToNitro(nitroConfig: NitroConfig) {
         '#doctor-directory': `export default ${JSON.stringify(built.professionalDirectory)}`,
         '#prerender-cities': prerenderCitiesModuleSource(),
         '#generated-prefecture-hubs': generatedPrefectureHubsModuleSource(),
-        '#generated-facet-paths': generatedFacetPathsModuleSource()
+        '#generated-facet-paths': generatedFacetPathsModuleSource(),
+        '#directory-stats': directoryStatsModuleSource()
     }
     nitroConfig.prerender ??= {}
     const shard = prerenderShardFromEnv()

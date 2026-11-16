@@ -187,15 +187,17 @@ import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { useUmami } from '~/composables/useUmamiTracking'
 import {
     BROWSE_CATEGORIES,
-    DIRECTORY_STATS,
     areaPrefectureLink,
     categorySpecialtyLink,
+    directoryCounts,
+    directoryPrefectures,
     homeAreaPrefectures,
     type PrefectureEntry
 } from '~/utils/homeDirectory'
 import type { SpecialtyCategory } from '@findadoc/graphql'
 import generatedPrefectureHubs from '#generated-prefecture-hubs'
 import generatedFacetPaths from '#generated-facet-paths'
+import directoryStats from '#directory-stats'
 
 const { t, locale } = useI18n()
 const specialtiesStore = useSpecialtiesStore()
@@ -208,7 +210,7 @@ const heroIllustration = '/illustrations/characters-together-welcomescreen.svg'
  * from static enums and translated copy, so the homepage can paint without waiting on
  * the API — the search waterfall belongs to /search.
  */
-const prefectures = homeAreaPrefectures(generatedPrefectureHubs)
+const prefectures = homeAreaPrefectures(generatedPrefectureHubs, directoryPrefectures(directoryStats))
 
 /**
  * Compare against vue-i18n's active locale, not localeStore. localeStore.activeLocale
@@ -244,10 +246,12 @@ const steps = computed(() => [
     { number: 3, title: t('home.howStep3Title'), body: t('home.howStep3Body') }
 ])
 
-// Framed as approximate so they do not read as a live counter; see DIRECTORY_STATS.
+// Counted from this build's directory (#directory-stats). Framed as approximate so they do not
+// read as a live counter.
+const counts = directoryCounts(directoryStats)
 const stats = computed(() => [
-    t('home.statFacilities', { n: DIRECTORY_STATS.facilities }),
-    t('home.statProfessionals', { n: DIRECTORY_STATS.professionals }),
-    t('home.statLanguages', { n: DIRECTORY_STATS.languages })
+    t('home.statFacilities', { n: counts.facilities }),
+    t('home.statProfessionals', { n: counts.professionals }),
+    t('home.statLanguages', { n: counts.languages })
 ])
 </script>

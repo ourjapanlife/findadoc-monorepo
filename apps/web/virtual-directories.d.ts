@@ -31,3 +31,11 @@ declare module '#generated-facet-paths' {
     const paths: string[] | null
     export default paths
 }
+
+declare module '#directory-stats' {
+    import type { DirectoryStats } from './utils/directoryStats'
+
+    /** Counts and prefectures from this generate's directory, or `null` outside generate. */
+    const stats: DirectoryStats | null
+    export default stats
+}
