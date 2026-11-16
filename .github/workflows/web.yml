@@ -71,7 +71,8 @@ jobs:
   prerender:
     # Each shard renders its share of the clinic, doctor, hub, and facet pages. Shard 0 also renders
     # the pages every build has. Previews have no directory pages, so one shard is enough.
-    name: Prerender ${{ matrix.shard }}
+    # Shards count from 1 in the job name, from 0 in NUXT_PRERENDER_SHARD.
+    name: Prerender ${{ matrix.shard.part }} of ${{ strategy.job-total }}
     needs: directory
     if: >-
       always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
@@ -81,7 +82,12 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        shard: ${{ fromJSON(github.event_name == 'pull_request' && '[0]' || '[0, 1, 2, 3]') }}
+        # To change the count, add or remove entries here. Each shard's run summary says how long it took.
+        shard: >-
+          ${{ fromJSON(github.event_name == 'pull_request'
+          && '[{"index": 0, "part": 1}]'
+          || '[{"index": 0, "part": 1}, {"index": 1, "part": 2}, {"index": 2, "part": 3}, {"index": 3, "part": 4},
+          {"index": 4, "part": 5}]') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -100,13 +106,14 @@ jobs:
         run: |
           pnpm --filter @findadoc/graphql build
           pnpm --filter @findadoc/utils build
-          pnpm --filter @findadoc/web build
+          set -o pipefail
+          pnpm --filter @findadoc/web build 2>&1 | tee "$RUNNER_TEMP/build.log"
         env:
           NODE_OPTIONS: --max-old-space-size=4096
           # Previews skip clinic, doctor, hub, and facet HTML. Production on main does not.
           NUXT_SKIP_DIRECTORY_PRERENDER: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
           NUXT_PRERENDER_DIRECTORY_FILE: ${{ github.event_name != 'pull_request' && format('{0}/prerender-directory.json', runner.temp) || '' }}
-          NUXT_PRERENDER_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
+          NUXT_PRERENDER_SHARD: ${{ matrix.shard.index }}/${{ strategy.job-total }}
           # One build id for every shard, so the merged site has one app manifest. Set here on every
           # run, nothing to configure. The run id, not the attempt: "Re-run failed jobs" rebuilds only
           # the failed shards, and they must match the shards kept from the first attempt.
@@ -119,14 +126,22 @@ jobs:
           NUXT_PUBLIC_UMAMI_SITE_ID: ${{ secrets.NUXT_PUBLIC_UMAMI_SITE_ID }}
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
+      # One line per shard on the run's summary page: how many routes and how long they took. When the
+      # slowest shard nears the job limit, add shards; when each takes seconds, fewer will do.
+      - name: Report the shard
+        run: |
+          rendered=$(grep -oE 'Prerendered [0-9]+ routes in [0-9.]+ seconds' "$RUNNER_TEMP/build.log" | tail -n 1)
+          echo "Prerender ${{ matrix.shard.part }} of ${{ strategy.job-total }}: ${rendered:-no prerender summary in the build log}" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Pack the shard
-        run: tar -C apps/web/.output/public -cf "$RUNNER_TEMP/site-shard-${{ matrix.shard }}.tar" .
+        run: tar -C apps/web/.output/public -cf "$RUNNER_TEMP/site-shard-${{ matrix.shard.index }}.tar" .
 
       - name: Keep the shard
         uses: actions/upload-artifact@v7
         with:
-          name: site-shard-${{ matrix.shard }}
-          path: ${{ runner.temp }}/site-shard-${{ matrix.shard }}.tar
+          name: site-shard-${{ matrix.shard.index }}
+          path: ${{ runner.temp }}/site-shard-${{ matrix.shard.index }}.tar
           retention-days: 1
           if-no-files-found: error
 

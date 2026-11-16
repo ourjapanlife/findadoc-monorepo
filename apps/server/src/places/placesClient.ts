@@ -20,6 +20,7 @@ const PLACE_DETAIL_FIELDS = [
 const PLACE_PREVIEW_FIELD_MASK = PLACE_DETAIL_FIELDS.join(',')
 const PLACE_SEARCH_FIELD_MASK = PLACE_DETAIL_FIELDS.map(field => `places.${field}`).join(',')
 const PLACE_SEARCH_URL = 'https://places.googleapis.com/v1/places:searchText'
+const PLACE_IDS_SEARCH_FIELD_MASK = 'places.id'
 const CITY_COMPONENT_TYPES = ['sublocality_level_1', 'administrative_area_level_3', 'locality'] as const
 const STREET_COMPONENT_TYPES = [
     'sublocality_level_1',
@@ -304,6 +305,49 @@ export async function searchPlacePreview(
     const payload = await response.json() as { places?: unknown }
     const first = Array.isArray(payload.places) ? payload.places[0] : null
     return readPlacePreview(first)
+}
+
+/**
+ * Place ids for a text query, asking Places for the id field only (#21).
+ * An id-only Text Search returns no Places content, so nothing here is cached against the terms,
+ * and the id is the one Places value we may store (docs/places-storage.md).
+ * `limit` is how many ids to ask for. Two is enough to tell one place from several.
+ */
+export async function searchPlaceIds(
+    textQuery: string,
+    apiKey: string,
+    limit = 2,
+    fetchImpl: typeof fetch = fetch
+): Promise<string[]> {
+    const response = await fetchImpl(PLACE_SEARCH_URL, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+            'X-Goog-Api-Key': apiKey,
+            'X-Goog-FieldMask': PLACE_IDS_SEARCH_FIELD_MASK
+        },
+        body: JSON.stringify({ textQuery, languageCode: 'ja', regionCode: 'JP', pageSize: limit })
+    })
+
+    if (!response.ok) {
+        throw new Error(`Places id search failed (${response.status})`)
+    }
+
+    return parsePlaceIds(await response.json())
+}
+
+/** The normalized ids from an id-only Text Search body. */
+export function parsePlaceIds(body: unknown): string[] {
+    if (!body || typeof body !== 'object' || !('places' in body)) { return [] }
+
+    const places = (body as { places?: unknown }).places
+    if (!Array.isArray(places)) { return [] }
+
+    return places.flatMap(place => {
+        const id = place && typeof place === 'object' ? (place as { id?: unknown }).id : null
+        const normalized = typeof id === 'string' ? normalizePlaceId(id) : null
+        return normalized ? [normalized] : []
+    })
 }
 
 /** Up to five live matches. The caller discards the text after the screen closes. */

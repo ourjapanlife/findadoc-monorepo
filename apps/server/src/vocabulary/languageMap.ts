@@ -6,7 +6,7 @@ import {
 
 export { PUBLISHED_LOCALES, type PublishedLocale } from '../languages/publishedLocales.js'
 
-/** Spreadsheet and short codes. Plain ZH is Simplified Chinese. */
+/** Spreadsheet and short codes, and the Japanese names the institutions list uses. Plain ZH is Simplified Chinese. */
 const LANGUAGE_CODES: Record<string, PublishedLocale> = {
     EN: 'en_US',
     JA: 'ja_JP',
@@ -25,7 +25,28 @@ const LANGUAGE_CODES: Record<string, PublishedLocale> = {
     VI: 'vi_VN',
     NE: 'ne_NP',
     NL: 'nl_BE',
-    SW: 'sw_KE'
+    SW: 'sw_KE',
+    // The multilingual institutions list (#21) also writes these.
+    FIL: 'tl_PH',
+    VN: 'vi_VN',
+    英語: 'en_US',
+    日本語: 'ja_JP',
+    中国語: 'zh_CN',
+    北京語: 'zh_CN',
+    広東語: 'zh_HK',
+    韓国語: 'ko_KR',
+    ベトナム語: 'vi_VN',
+    スペイン語: 'es_ES',
+    フランス語: 'fr_FR',
+    ドイツ語: 'de_DE',
+    ロシア語: 'ru_RU',
+    タガログ語: 'tl_PH',
+    フィリピン語: 'tl_PH',
+    インドネシア語: 'id_ID',
+    ネパール語: 'ne_NP',
+    アラビア語: 'ar_AE',
+    オランダ語: 'nl_BE',
+    スワヒリ語: 'sw_KE'
 }
 
 /**
