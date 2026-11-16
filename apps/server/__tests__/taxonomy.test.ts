@@ -79,7 +79,7 @@ describe('languages query (#24)', () => {
 
         expect(languages.map(language => language.code)).toEqual([...PUBLISHED_LOCALES])
         expect(languages.every(language => language.published)).toBe(true)
-        expect(languages[1]).toEqual({
+        expect(languages.find(language => language.code === Locale.JaJp)).toEqual({
             code: Locale.JaJp,
             nameEn: 'Japanese',
             nameJa: '日本語',
@@ -118,6 +118,10 @@ describe('language names for codes that are not facets', () => {
     it('names the language, not the region', () => {
         expect(languageNames(Locale.AkGh).nameEn).toBe('Akan')
         expect(languageNames(Locale.ZhTw).nameEn).toBe('Traditional Chinese')
+    })
+
+    it('gives zh_TW the same names as the published zh_HK', () => {
+        expect(languageNames(Locale.ZhTw)).toEqual(languageNames(Locale.ZhHk))
     })
 
     it('names und as undetermined, not as ICU\'s root locale', () => {

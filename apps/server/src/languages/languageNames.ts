@@ -16,11 +16,13 @@ function displayNamesIn(locale: string): Intl.DisplayNames {
     return names
 }
 
+const TRADITIONAL_CHINESE = 'zh-Hant'
+
 /** The language subtag of a Locale value. Chinese in Hong Kong and Taiwan is written in traditional characters. */
 function languageSubtag(code: string): string {
     const [language = '', region] = code.split('_')
 
-    return language === 'zh' && (region === 'HK' || region === 'TW') ? 'zh-Hant' : language
+    return language === 'zh' && (region === 'HK' || region === 'TW') ? TRADITIONAL_CHINESE : language
 }
 
 function nameIn(locale: string, subtag: string, code: string): string {
@@ -48,6 +50,12 @@ export function languageNames(code: string): LanguageNames {
 
     if (subtag === 'und') {
         return UNDETERMINED
+    }
+
+    // zh_TW is not published, but it is the same language as zh_HK. ICU spells its Japanese name 繁体中国語,
+    // so it would not match zh_HK's 繁体字中国語 in the same list.
+    if (subtag === TRADITIONAL_CHINESE) {
+        return PUBLISHED_LANGUAGE_NAMES.zh_HK
     }
 
     return {
