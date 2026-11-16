@@ -127,7 +127,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { localeDisplayOptions } from '~/stores/localeStore'
+import { isListedLanguage, languageName } from '~/utils/languageName'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { formatHealthcareProfessionalName } from '~/utils/nameUtils'
@@ -177,12 +177,12 @@ const specialtyItems = computed(() => (props.professional.specialties ?? [])
     }))
     .filter((item): item is { label: string, to: string | undefined } => Boolean(item.label)))
 
-const languageItems = computed(() => (props.professional.spokenLanguages ?? [])
-    .map(code => ({
-        label: localeDisplayOptions.find(option => option.code === code)?.simpleText,
-        to: facetPathForLocale(code)
-    }))
-    .filter((item): item is { label: string, to: string | undefined } => Boolean(item.label)))
+// Named in the reader's language. One chip per name: zh_CN and zh_TW are both "Chinese".
+const languageItems = computed(() => {
+    const knownCodes = (props.professional.spokenLanguages ?? []).filter(isListedLanguage)
+    const items = knownCodes.map(code => ({ label: languageName(code, locale.value), to: facetPathForLocale(code) }))
+    return items.filter((item, index) => items.findIndex(other => other.label === item.label) === index)
+})
 
 function facetPathForSpecialty(code: Specialty): string | undefined {
     return (props.facetLinks ?? []).find(link => link.specialty === code)?.path

@@ -31,6 +31,17 @@ const doctor = {
     facilityIds: ['fake-clinic']
 } as unknown as HealthcareProfessional
 
+describe('language names on the clinic card and details', () => {
+    it('names the clinic\'s and the doctor\'s languages in the reader\'s language', async () => {
+        const facility = { ...result([{ ...doctor, spokenLanguages: [Locale.JaJp] } as HealthcareProfessional]) }
+        const details = await mountSuspended(SearchResultDetails, { props: { facility } })
+
+        expect(details.find('[data-testid="facility-languages"]').text()).toContain('English')
+        expect(details.find('[data-testid="search-details-professional"]').text()).toContain('Japanese')
+        expect(details.text()).not.toContain('日本語')
+    })
+})
+
 describe('a clinic with no listed doctor (#21)', () => {
     it('says on the search card that no doctors are listed yet', async () => {
         const wrapper = await mountSuspended(SearchResultCard, { props: { result: result([]), from: 'results' } })

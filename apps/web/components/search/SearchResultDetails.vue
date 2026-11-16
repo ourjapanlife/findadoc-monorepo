@@ -222,7 +222,6 @@ import OpenMapsButton from '~/components/common/OpenMapsButton.vue'
 import SVGGlobeIcon from '~/assets/icons/globe-icon.svg'
 import SVGPhoneIcon from '~/assets/icons/phone-icon.svg'
 import SVGEmailIcon from '~/assets/icons/email-icon.svg'
-import { localeDisplayOptions } from '~/stores/localeStore'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { formatHealthcareProfessionalName } from '~/utils/nameUtils'
 import { isJapaneseLocale, toGqlLocale } from '~/utils/activeLocale'
@@ -231,6 +230,7 @@ import { useUmami } from '~/composables/useUmamiTracking'
 import { noteSearchDetailsContact, type EventProps } from '~/utils/analyticsEvents'
 import { professionalPath } from '~/utils/doctorPath'
 import { formatPaymentOptions } from '~/utils/paymentOptions'
+import { spokenLanguageNames } from '~/utils/languageName'
 import { facilityEmail,
     facilityMapsUrl,
     facilityPhone,
@@ -299,9 +299,7 @@ const email = computed(() => facilityEmail(props.facility))
 const payment = computed(() => formatPaymentOptions(props.facility.paymentOptions, t))
 
 // Languages the clinic itself supports, with or without a named doctor (#19, #21). Empty shows nothing.
-const facilityLanguages = computed(() => (props.facility.supportedLanguages ?? [])
-    .map(code => localeDisplayOptions.find(option => option.code === code)?.simpleText)
-    .filter((name): name is string => !!name)
+const facilityLanguages = computed(() => spokenLanguageNames(props.facility.supportedLanguages ?? [], locale.value)
     .join(', '))
 
 const professionals = computed(() => props.facility.healthcareProfessionals.map(professional => ({
@@ -313,9 +311,7 @@ const professionals = computed(() => props.facility.healthcareProfessionals.map(
         .map(code => specialtiesStore.specialtyDisplayOptions.find(option => option.code === code)?.displayText)
         .filter(Boolean)
         .join(', '),
-    languages: (professional.spokenLanguages ?? [])
-        .map(code => localeDisplayOptions.find(option => option.code === code)?.simpleText)
-        .filter((name): name is string => !!name),
+    languages: spokenLanguageNames(professional.spokenLanguages ?? [], locale.value),
     additionalInfo: professional.additionalInfoForPatients ?? '',
     updated: professional.updatedDate ? formatToReadableDate(professional.updatedDate) : ''
 })))

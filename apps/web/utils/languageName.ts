@@ -1,3 +1,7 @@
+import { localeDisplayOptions } from '~/stores/localeStore'
+
+const KNOWN_LANGUAGE_CODES = new Set<string>(localeDisplayOptions.map(option => option.code))
+
 /**
  * A language's name in the reader's own language: `en_US`, `en-US`, or `en` read
  * as "English" on the English site and "英語" on the Japanese one. Only the
@@ -56,4 +60,21 @@ export function languageName(code: string, uiLocale: string): string {
     } catch {
         return code
     }
+}
+
+/**
+ * Names for a list of spoken-language codes in the reader's language, in order. Codes the
+ * directory does not list are dropped, as before, and a name is shown once: `zh_CN` and
+ * `zh_TW` are both "Chinese".
+ */
+/** Whether the directory lists this spoken-language code (`localeDisplayOptions`). */
+export function isListedLanguage(code: string): boolean {
+    return KNOWN_LANGUAGE_CODES.has(code)
+}
+
+export function spokenLanguageNames(codes: readonly string[], uiLocale: string): string[] {
+    const names = codes
+        .filter(isListedLanguage)
+        .map(code => languageName(code, uiLocale))
+    return [...new Set(names)]
 }

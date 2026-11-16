@@ -99,11 +99,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { localeDisplayOptions } from '~/stores/localeStore'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { formatHealthcareProfessionalName } from '~/utils/nameUtils'
 import { isJapaneseLocale, toGqlLocale } from '~/utils/activeLocale'
 import { facilityPath } from '~/utils/clinicPath'
+import { spokenLanguageNames } from '~/utils/languageName'
 import { professionalPath } from '~/utils/doctorPath'
 import { useUmami } from '~/composables/useUmamiTracking'
 import type { FacilitySearchResult } from '~/utils/searchDirectory'
@@ -152,14 +152,8 @@ const languages = computed(() => {
         }
     }
 
-    /*
-     * Drop codes the locale list cannot name rather than showing the fallback string: an
-     * unmatched code used to render the raw translation key as if it were a language.
-     */
-    return [...counts.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .map(([code]) => localeDisplayOptions.find(option => option.code === code)?.simpleText)
-        .filter((name): name is string => !!name)
+    // Named in the reader's language; codes the directory does not list are dropped.
+    return spokenLanguageNames([...counts.entries()].sort((a, b) => b[1] - a[1]).map(([code]) => code), locale.value)
 })
 
 const professionals = computed(() => props.result.healthcareProfessionals.map(professional => ({

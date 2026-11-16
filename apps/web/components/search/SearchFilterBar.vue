@@ -102,7 +102,7 @@
                             :key="option.code"
                             :value="option.code"
                         >
-                            {{ option.simpleText }}
+                            {{ languageName(option.code, locale) }}
                         </option>
                     </select>
                 </div>
@@ -193,6 +193,7 @@ import { useSearchResultsStore } from '~/stores/searchResultsStore'
 import { useSearchDirectory } from '~/composables/useSearchDirectory'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
+import { languageName } from '~/utils/languageName'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { searchFilterFlags } from '~/utils/analyticsEvents'
 import { ALL_PREFECTURES, SEARCHABLE_LANGUAGES, type PrefectureEntry } from '~/utils/homeDirectory'

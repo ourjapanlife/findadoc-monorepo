@@ -56,7 +56,7 @@
                     :key="option.code"
                     :value="languageQueryParam(option.code)"
                 >
-                    {{ option.simpleText }}
+                    {{ languageName(option.code, locale) }}
                 </option>
             </select>
         </div>
@@ -103,6 +103,7 @@ import { useUmami } from '~/composables/useUmamiTracking'
 import { searchSubmittedProps } from '~/utils/analyticsEvents'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
+import { languageName } from '~/utils/languageName'
 import { ALL_PREFECTURES, SEARCHABLE_LANGUAGES, type PrefectureEntry } from '~/utils/homeDirectory'
 
 const { t, locale } = useI18n()
