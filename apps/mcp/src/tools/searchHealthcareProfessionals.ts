@@ -10,8 +10,8 @@ export function registerSearchHealthcareProfessionals(server: McpServer): void {
             inputSchema: {
                 limit: z.number().min(1).max(50).default(10).describe('Number of results to return (1-50)'),
                 offset: z.number().min(0).default(0).describe('Number of results to skip for pagination'),
-                spokenLanguages: z.array(z.string()).optional().describe('Filter by spoken languages (BCP 47 format, e.g. "en_US", "ja_JP")'),
-                specialties: z.array(z.string()).optional().describe('Filter by medical specialties (e.g. "GENERAL_PRACTICE", "PEDIATRICS", "INTERNAL_MEDICINE")'),
+                spokenLanguages: z.array(z.string()).optional().describe('Filter by spoken languages (e.g. "en_US", "ja_JP"). Use list_languages for valid values'),
+                specialties: z.array(z.string()).optional().describe('Filter by medical specialties (e.g. "GENERAL_MEDICINE", "PEDIATRICS", "INTERNAL_MEDICINE"). Use list_specialties for valid values'),
                 degrees: z.array(z.string()).optional().describe('Filter by degrees (e.g. "MD", "DO", "PhD")')
             }
         },

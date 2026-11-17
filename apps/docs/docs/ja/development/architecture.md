@@ -39,6 +39,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 - **キャッシュ**：`apps/server/src/publicCache.ts`がすべてのレスポンスに`Cache-Control`を付けます（#242）。トークンが送られておらず、ルートフィールドがすべて`PUBLIC_CACHEABLE_QUERY_FIELDS`にあり、エラーがないときだけ`public, max-age=60`になります。それ以外は`private, no-store`です。このリストに加えてよいのは、サインアウトしている訪問者全員に同じ答えを返すフィールドだけです。ユーザー、IP、国、トークン、レート制限を読まないものに限ります。予約、アップロード、モデレーション、ユーザーのフィールドは加えません。`__tests__/publicCache.test.ts`がリストを確認します
 - **CSRF**：Apolloの組み込みチェックは無効にし、`csrfPreventionPlugin`が同じルールを守ります。プリフライトのないリクエスト（フォームのPOSTや、`x-apollo-operation-name`ヘッダーのないGET）が実行できるのは、公開リストにあるクエリだけです。そのため公開の読み込みは、キャッシュできる普通のGETで送れます
 - **参照テーブル**：都道府県と市区町村の一覧は、Lambdaのメモリに10分間置きます（`src/lookupCache.ts`）
+- **絞り込み用の語彙**：`specialties`、`specialtyCategories`、`languages` は、診療科、カテゴリ、言語のコードを英語と日本語のラベル付きで返します（#24）。クライアントはスキーマのイントロスペクションではなく、これらを読みます。`languages` は `publishedOnly` が false でない限り、検索ファセットの言語だけを返します。ラベルとカテゴリの対応表は `packages/utils` にあるため、これらのクエリはデータベースを読まず、公開リストに入っています
 - **エッジ**：APIのCloudFrontディストリビューションは、APIが`public`と付けたGETだけをキャッシュします（`infra/lib/functionUrlEdge.ts`の`cachePublicReads`）。キャッシュキーはクエリ文字列、`Origin`、`Authorization`です。エラーのレスポンスはキャッシュしません。POST、OPTIONS、予約、サインイン中の読み込みは、常にAPIまで届きます。MCPサーバーも読み込みをGETで送るので、同じキャッシュを使います
 
 ### MCPサーバー（`apps/mcp`）
@@ -51,7 +52,7 @@ Find a Docは1つのモノレポにある3つのアプリで構成され、1つ�
 | パッケージ | 用途 |
 |---------|---------|
 | `packages/graphql` | `@findadoc/graphql`。スキーマから生成したTypeScript型。`pnpm generate`で再生成 |
-| `packages/utils` | `@findadoc/utils`。サイトとAPIで共有するチェックとヘルパー |
+| `packages/utils` | `@findadoc/utils`。サイトとAPIで共有するチェック、ヘルパー、診療科と言語の語彙 |
 | `packages/tsconfig` | 共有TypeScript設定 |
 
 ## ウェブサイトのディレクトリ構成
