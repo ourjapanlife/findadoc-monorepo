@@ -423,6 +423,8 @@ components:
             included.
           items:
             type: object
+            additionalProperties: false
+            required: ['day', 'opens', 'closes']
             properties:
               day:
                 type: string
