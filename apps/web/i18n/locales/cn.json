@@ -547,7 +547,8 @@
     "additionalInfoHint": "简短实用的信息，例如是否需要预约、能否直接就诊、停车等。请用英语和日语分别填写。日语读者看到日语说明，其他读者看到英语说明。",
     "additionalInfoEnLabel": "英语",
     "additionalInfoJaLabel": "日语",
-    "additionalInfoBothLanguages": "请用两种语言填写，或两者都留空。"
+    "additionalInfoBothLanguages": "请用两种语言填写，或两者都留空。",
+    "openingHoursUntilMidnight": "营业至午夜"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",

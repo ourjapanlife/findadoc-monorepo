@@ -595,7 +595,8 @@
     "additionalInfoHint": "Kurze, praktische Hinweise, etwa zu Terminen, Besuchen ohne Termin oder Parkplätzen. Schreiben Sie ihn auf Englisch und auf Japanisch. Japanische Leser sehen den japanischen Hinweis, alle anderen den englischen.",
     "additionalInfoEnLabel": "Englisch",
     "additionalInfoJaLabel": "Japanisch",
-    "additionalInfoBothLanguages": "Schreiben Sie den Hinweis in beiden Sprachen, oder lassen Sie beide Felder leer."
+    "additionalInfoBothLanguages": "Schreiben Sie den Hinweis in beiden Sprachen, oder lassen Sie beide Felder leer.",
+    "openingHoursUntilMidnight": "Bis Mitternacht"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Aktualisieren und beenden",

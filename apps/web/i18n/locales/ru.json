@@ -547,7 +547,8 @@
     "additionalInfoHint": "Короткая практическая информация: запись, приём без записи, парковка. Напишите её на английском и на японском. Японские читатели видят японскую заметку, все остальные — английскую.",
     "additionalInfoEnLabel": "Английский",
     "additionalInfoJaLabel": "Японский",
-    "additionalInfoBothLanguages": "Напишите заметку на обоих языках или оставьте оба поля пустыми."
+    "additionalInfoBothLanguages": "Напишите заметку на обоих языках или оставьте оба поля пустыми.",
+    "openingHoursUntilMidnight": "До полуночи"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Обновить и выйти",

@@ -498,7 +498,8 @@
     "additionalInfoHint": "Maikli at praktikal na impormasyon, gaya ng reserbasyon, walk-in, o paradahan. Isulat ito sa Ingles at sa Hapon. Ang mga mambabasang Hapon ay makakakita ng paalalang Hapon, at ang iba ay ang paalalang Ingles.",
     "additionalInfoEnLabel": "Ingles",
     "additionalInfoJaLabel": "Hapon",
-    "additionalInfoBothLanguages": "Isulat ang paalala sa dalawang wika, o iwanang blangko ang dalawa."
+    "additionalInfoBothLanguages": "Isulat ang paalala sa dalawang wika, o iwanang blangko ang dalawa.",
+    "openingHoursUntilMidnight": "Hanggang hatinggabi"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",

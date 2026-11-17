@@ -671,7 +671,8 @@
     "additionalInfoHint": "छोटो र व्यावहारिक जानकारी, जस्तै बुकिङ, बिना बुकिङ आउने, वा पार्किङ। अंग्रेजी र जापानी दुवैमा लेख्नुहोस्। जापानी पाठकले जापानी टिप्पणी र अरूले अंग्रेजी टिप्पणी देख्छन्।",
     "additionalInfoEnLabel": "अंग्रेजी",
     "additionalInfoJaLabel": "जापानी",
-    "additionalInfoBothLanguages": "टिप्पणी दुवै भाषामा लेख्नुहोस्, वा दुवै खाली छोड्नुहोस्।"
+    "additionalInfoBothLanguages": "टिप्पणी दुवै भाषामा लेख्नुहोस्, वा दुवै खाली छोड्नुहोस्।",
+    "openingHoursUntilMidnight": "मध्यरातसम्म"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "संस्था अद्यावधिक गर्न संस्थाको ID आवश्यक छ",

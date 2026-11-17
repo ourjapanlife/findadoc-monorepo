@@ -1,5 +1,5 @@
 import { OpeningDay, type Facility, type OpeningHours, type OpeningHoursInput } from '@findadoc/graphql'
-import { normalizeOpeningHours, OPENING_DAYS } from '@findadoc/utils'
+import { normalizeOpeningHours, OPENING_DAYS, openingHoursProblem, openingMinutes } from '@findadoc/utils'
 
 /**
  * Published opening hours on a facility (#294). Structured, so every locale reads them with no
@@ -53,9 +53,15 @@ export function openingHoursRows(blocks: readonly OpeningHours[] | null | undefi
     })
 }
 
-/** The form's blocks as API input, in day order. */
+/**
+ * The form's blocks as API input, in day order. Every block is kept, valid or not: dropping an
+ * invalid one would quietly turn that day into closed. `visitorInfoProblems` stops the save first.
+ */
 export function openingHoursInput(blocks: readonly OpeningHours[]): OpeningHoursInput[] {
-    return normalizeOpeningHours(blocks)
+    return blocks
+        .map(block => ({ day: block.day, opens: block.opens, closes: block.closes }))
+        .sort((a, b) => OPENING_DAYS.indexOf(a.day) - OPENING_DAYS.indexOf(b.day)
+          || (openingMinutes(a.opens) ?? 0) - (openingMinutes(b.opens) ?? 0))
 }
 
 /** The new list when the moderator changed it, or undefined when it is the same as the saved one. */
@@ -66,6 +72,27 @@ export function changedOpeningHours(
     const next = openingHoursInput(current)
 
     return JSON.stringify(next) === JSON.stringify(normalizeOpeningHours(original ?? [])) ? undefined : next
+}
+
+/**
+ * Why the hours or the note on the form cannot be saved, as i18n keys. Checked on the raw draft, so
+ * an invalid block blocks the save instead of being dropped. Empty when the draft can be saved.
+ */
+export function visitorInfoProblems(draft: {
+    openingHours?: readonly OpeningHoursInput[] | null
+    additionalInfoEn?: string | null
+    additionalInfoJa?: string | null
+}): string[] {
+    const problems: string[] = []
+
+    if (openingHoursProblem(draft.openingHours ?? []) !== null) {
+        problems.push('serverErrorMessages.invalidOpeningHours')
+    }
+    if (Boolean(draft.additionalInfoEn?.trim()) !== Boolean(draft.additionalInfoJa?.trim())) {
+        problems.push('serverErrorMessages.additionalInfoBothLanguages')
+    }
+
+    return problems
 }
 
 export type VisitorNote = { text: string, lang: 'en' | 'ja' }

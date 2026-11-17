@@ -8,9 +8,52 @@ ALTER TABLE facilities
   ADD COLUMN additional_info_en text,
   ADD COLUMN additional_info_ja text;
 
+-- The same rules as openingHoursProblem in packages/utils/src/openingHours.ts, so a
+-- direct write cannot store hours the API would refuse: a list of at most 32 objects,
+-- a known day, HH:MM times (24:00 only as a closing time), a block that closes after
+-- it opens, at most four blocks a day, and no overlapping blocks on one day.
+-- Zero-padded HH:MM strings sort in time order, so text comparison is enough.
+CREATE FUNCTION facility_opening_hours_valid(hours jsonb)
+RETURNS boolean
+LANGUAGE sql
+IMMUTABLE
+AS $$
+  SELECT jsonb_typeof(hours) = 'array'
+    AND jsonb_array_length(hours) <= 32
+    AND NOT EXISTS (
+      SELECT 1
+      FROM jsonb_array_elements(hours) AS block
+      WHERE jsonb_typeof(block) IS DISTINCT FROM 'object'
+        OR (block ->> 'day') IS NULL
+        OR (block ->> 'day') NOT IN (
+          'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY', 'PUBLIC_HOLIDAY'
+        )
+        OR (block ->> 'opens') IS NULL
+        OR (block ->> 'closes') IS NULL
+        OR (block ->> 'opens') !~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'
+        OR (block ->> 'closes') !~ '^(([01][0-9]|2[0-3]):[0-5][0-9]|24:00)$'
+        OR (block ->> 'closes') <= (block ->> 'opens')
+    )
+    AND NOT EXISTS (
+      SELECT 1
+      FROM jsonb_array_elements(hours) AS block
+      GROUP BY block ->> 'day'
+      HAVING count(*) > 4
+    )
+    AND NOT EXISTS (
+      SELECT 1
+      FROM jsonb_array_elements(hours) WITH ORDINALITY AS first_block(value, position)
+      JOIN jsonb_array_elements(hours) WITH ORDINALITY AS second_block(value, position)
+        ON first_block.position < second_block.position
+        AND (first_block.value ->> 'day') = (second_block.value ->> 'day')
+      WHERE (first_block.value ->> 'opens') < (second_block.value ->> 'closes')
+        AND (second_block.value ->> 'opens') < (first_block.value ->> 'closes')
+    )
+$$;
+
 ALTER TABLE facilities
-  ADD CONSTRAINT facilities_opening_hours_array
-  CHECK (jsonb_typeof(opening_hours) = 'array' AND jsonb_array_length(opening_hours) <= 32);
+  ADD CONSTRAINT facilities_opening_hours_valid
+  CHECK (facility_opening_hours_valid(opening_hours));
 
 ALTER TABLE facilities
   ADD CONSTRAINT facilities_additional_info_length

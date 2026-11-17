@@ -551,7 +551,8 @@
     "additionalInfoHint": "Des informations courtes et pratiques : rendez-vous, consultations sans rendez-vous, parking. Rédigez-la en anglais et en japonais. Les lecteurs japonais voient la note japonaise, tous les autres la note anglaise.",
     "additionalInfoEnLabel": "Anglais",
     "additionalInfoJaLabel": "Japonais",
-    "additionalInfoBothLanguages": "Rédigez la note dans les deux langues, ou laissez les deux vides."
+    "additionalInfoBothLanguages": "Rédigez la note dans les deux langues, ou laissez les deux vides.",
+    "openingHoursUntilMidnight": "Jusqu'à minuit"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",

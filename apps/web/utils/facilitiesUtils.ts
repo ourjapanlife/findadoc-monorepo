@@ -2,6 +2,7 @@ import { prefectureLanguageMatch } from '~/stores/locationsStore'
 import type { CreateFacilityInput, UpdateFacilityInput, PhysicalAddressInput } from '@findadoc/graphql'
 import type { FacilitySectionFields } from '~/stores/facilitiesStore'
 import { translatedFormError } from '~/utils/formErrorMessage'
+import { visitorInfoProblems } from '~/utils/openingHours'
 
 const REQUIRED_FIELD = 'serverErrorMessages.requiredFieldEmpty'
 const PREFECTURE_MISMATCH = 'serverErrorMessages.prefectureMismatch'
@@ -87,6 +88,8 @@ export function validateCreateFacility(input: CreateFacilityInput): FacilityVali
         nameJa: input.nameJa,
         phone: input.contact?.phone
     })
+    // Hours and the note are checked on what the moderator entered, before anything is sent (#294).
+    errors.push(...visitorInfoProblems(input))
 
     if (input.online === true) {
         return { valid: errors.length === 0, errors }
@@ -129,7 +132,8 @@ export function validateUpdateFacility(
     fields: FacilitySectionFields,
     updatedInput: UpdateFacilityInput
 ): FacilityValidationResult {
-    const errors: string[] = []
+    // The raw draft, not the changed fields: an invalid block must stop the save, not vanish (#294).
+    const errors: string[] = visitorInfoProblems(fields)
     if (fields.online !== true) {
         const addressValidation = validateAddress(updatedInput.contact?.address)
         if (!addressValidation.valid) {

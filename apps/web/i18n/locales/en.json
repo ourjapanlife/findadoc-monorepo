@@ -671,7 +671,8 @@
     "additionalInfoHint": "Short, practical information, like walk-ins, reservations, or parking. Write it in English and in Japanese. Japanese readers see the Japanese note, and everyone else sees the English one.",
     "additionalInfoEnLabel": "English",
     "additionalInfoJaLabel": "Japanese",
-    "additionalInfoBothLanguages": "Write the note in both languages, or leave both empty."
+    "additionalInfoBothLanguages": "Write the note in both languages, or leave both empty.",
+    "openingHoursUntilMidnight": "Until midnight"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",

@@ -547,7 +547,8 @@
     "additionalInfoHint": "Informações curtas e práticas, como agendamento, atendimento sem hora marcada ou estacionamento. Escreva em inglês e em japonês. Leitores em japonês veem a nota em japonês; os demais veem a nota em inglês.",
     "additionalInfoEnLabel": "Inglês",
     "additionalInfoJaLabel": "Japonês",
-    "additionalInfoBothLanguages": "Escreva a nota nos dois idiomas, ou deixe as duas em branco."
+    "additionalInfoBothLanguages": "Escreva a nota nos dois idiomas, ou deixe as duas em branco.",
+    "openingHoursUntilMidnight": "Até a meia-noite"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",

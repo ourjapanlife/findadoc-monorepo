@@ -547,7 +547,8 @@
     "additionalInfoHint": "予約の要否、飛び込み受診、駐車場など、短く実用的な情報を書いてください。英語と日本語の両方で書きます。日本語の読者には日本語、それ以外の読者には英語が表示されます。",
     "additionalInfoEnLabel": "英語",
     "additionalInfoJaLabel": "日本語",
-    "additionalInfoBothLanguages": "両方の言語で書くか、両方とも空欄にしてください。"
+    "additionalInfoBothLanguages": "両方の言語で書くか、両方とも空欄にしてください。",
+    "openingHoursUntilMidnight": "24時まで"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新して終了",

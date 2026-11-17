@@ -542,7 +542,8 @@
     "additionalInfoHint": "Thông tin ngắn gọn, thiết thực như đặt lịch, khám không hẹn trước hoặc chỗ đỗ xe. Viết bằng tiếng Anh và tiếng Nhật. Người đọc tiếng Nhật thấy ghi chú tiếng Nhật, những người khác thấy ghi chú tiếng Anh.",
     "additionalInfoEnLabel": "Tiếng Anh",
     "additionalInfoJaLabel": "Tiếng Nhật",
-    "additionalInfoBothLanguages": "Hãy viết ghi chú bằng cả hai ngôn ngữ, hoặc để trống cả hai."
+    "additionalInfoBothLanguages": "Hãy viết ghi chú bằng cả hai ngôn ngữ, hoặc để trống cả hai.",
+    "openingHoursUntilMidnight": "Đến nửa đêm"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Mã cơ sở vật chất là bắt buộc để cập nhật cơ sở vật chất.",

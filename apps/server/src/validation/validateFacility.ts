@@ -271,14 +271,27 @@ export function validateOpeningHours(
 
 /**
  * The visitor note is written by a moderator in English and Japanese (#294), so every reader
- * gets one: Japanese readers the Japanese note, everyone else the English one. Both or neither.
- * On an update, omitting both leaves the stored note alone.
+ * gets one: Japanese readers the Japanese note, everyone else the English one. Both or neither,
+ * and both fields are sent together. Omitting both leaves the stored note alone.
  */
 export function validateAdditionalInfo(
     input: { additionalInfoEn?: string | null, additionalInfoJa?: string | null },
     validationResults: Result<unknown>
 ): void {
-    if (input.additionalInfoEn === undefined && input.additionalInfoJa === undefined) {
+    const englishSent = input.additionalInfoEn !== undefined
+    const japaneseSent = input.additionalInfoJa !== undefined
+
+    if (!englishSent && !japaneseSent) {
+        return
+    }
+    // Both fields travel together, so one field alone cannot clear or keep the other's text.
+    if (englishSent !== japaneseSent) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: englishSent ? 'additionalInfoJa' : 'additionalInfoEn',
+            errorCode: ErrorCode.ADDITIONAL_INFO_BOTH_LANGUAGES,
+            httpStatus: 400
+        })
         return
     }
 

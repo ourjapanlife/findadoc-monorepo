@@ -671,7 +671,8 @@
     "additionalInfoHint": "예약, 예약 없이 방문, 주차 등 짧고 실용적인 정보를 적으세요. 영어와 일본어로 각각 작성합니다. 일본어 독자는 일본어 안내를, 그 외 독자는 영어 안내를 봅니다.",
     "additionalInfoEnLabel": "영어",
     "additionalInfoJaLabel": "일본어",
-    "additionalInfoBothLanguages": "두 언어로 모두 작성하거나 둘 다 비워 두세요."
+    "additionalInfoBothLanguages": "두 언어로 모두 작성하거나 둘 다 비워 두세요.",
+    "openingHoursUntilMidnight": "자정까지"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "의료기관을 업데이트하려면 의료기관 ID가 필요합니다",

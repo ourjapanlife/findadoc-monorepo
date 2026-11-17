@@ -671,7 +671,8 @@
     "additionalInfoHint": "Informasi singkat dan praktis, seperti reservasi, kunjungan tanpa janji, atau parkir. Tulis dalam bahasa Inggris dan bahasa Jepang. Pembaca berbahasa Jepang melihat catatan bahasa Jepang, yang lain melihat catatan bahasa Inggris.",
     "additionalInfoEnLabel": "Bahasa Inggris",
     "additionalInfoJaLabel": "Bahasa Jepang",
-    "additionalInfoBothLanguages": "Tulis catatan dalam kedua bahasa, atau kosongkan keduanya."
+    "additionalInfoBothLanguages": "Tulis catatan dalam kedua bahasa, atau kosongkan keduanya.",
+    "openingHoursUntilMidnight": "Sampai tengah malam"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",

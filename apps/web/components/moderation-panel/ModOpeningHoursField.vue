@@ -51,14 +51,25 @@
                 </label>
                 <label class="flex flex-col gap-1 text-xs text-primary-text-muted">
                     {{ t('modFacilitySection.openingHoursCloses') }}
+                    <!-- A time input cannot hold 24:00, so the end of the day is its own checkbox. -->
                     <input
                         type="time"
                         class="field"
-                        :value="entry.block.closes === '24:00' ? '23:59' : entry.block.closes"
-                        :disabled="!isEditing"
+                        :value="entry.block.closes === END_OF_DAY ? '' : entry.block.closes"
+                        :disabled="!isEditing || entry.block.closes === END_OF_DAY"
                         :data-testid="`mod-facility-section-opening-hours-${day}-closes-${entry.position}`"
                         @change="setTime(entry.index, 'closes', $event)"
                     >
+                </label>
+                <label class="flex items-center gap-2 text-xs text-primary-text-muted">
+                    <input
+                        type="checkbox"
+                        :checked="entry.block.closes === END_OF_DAY"
+                        :disabled="!isEditing"
+                        :data-testid="`mod-facility-section-opening-hours-${day}-midnight-${entry.position}`"
+                        @change="setUntilMidnight(entry.index, $event)"
+                    >
+                    {{ t('modFacilitySection.openingHoursUntilMidnight') }}
                 </label>
                 <button
                     v-if="isEditing"
@@ -107,6 +118,8 @@ import { openingDayLabel } from '~/utils/openingHours'
 const { t } = useI18n()
 const isEditing = useModerationFormEditing()
 
+const END_OF_DAY = '24:00'
+
 const hours = defineModel<OpeningHours[]>({ required: true })
 
 /** The blocks for one day, with their place in the whole list so edits reach the right one. */
@@ -119,9 +132,9 @@ function blocksFor(day: OpeningDay) {
 
 function addBlock(day: OpeningDay) {
     const last = blocksFor(day).at(-1)?.block
-    // A second block on a day usually follows a lunch break.
+    // A second block on a day usually follows a lunch break. Its closing time is left for the moderator.
     const block = last
-        ? { day, opens: last.closes === '24:00' ? '23:00' : last.closes, closes: '24:00' }
+        ? { day, opens: last.closes === END_OF_DAY ? '' : last.closes, closes: '' }
         : { day, opens: '09:00', closes: '18:00' }
     hours.value = [...hours.value, block]
 }
@@ -130,13 +143,22 @@ function removeBlock(index: number) {
     hours.value = hours.value.filter((block, position) => position !== index)
 }
 
+function setBlock(index: number, change: Partial<OpeningHours>) {
+    hours.value = hours.value.map((block, position) => (position === index ? { ...block, ...change } : block))
+}
+
+/** 23:59 stays 23:59. Only the checkbox stores 24:00, the end of the day. */
 function setTime(index: number, field: 'opens' | 'closes', event: Event) {
-    if (!(event.target instanceof HTMLInputElement)) {
-        return
+    if (event.target instanceof HTMLInputElement) {
+        setBlock(index, { [field]: event.target.value })
     }
-    // A time input cannot show 24:00, so 23:59 on the closing side means the end of the day.
-    const value = field === 'closes' && event.target.value === '23:59' ? '24:00' : event.target.value
-    hours.value = hours.value.map((block, position) => (position === index ? { ...block, [field]: value } : block))
+}
+
+/** Unchecking leaves the closing time blank, so the moderator enters the real one. */
+function setUntilMidnight(index: number, event: Event) {
+    if (event.target instanceof HTMLInputElement) {
+        setBlock(index, { closes: event.target.checked ? END_OF_DAY : '' })
+    }
 }
 
 const problem = computed(() => openingHoursProblem(hours.value))

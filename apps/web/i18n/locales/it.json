@@ -580,7 +580,8 @@
     "additionalInfoHint": "Informazioni brevi e pratiche, come prenotazioni, visite senza appuntamento o parcheggio. Scrivila in inglese e in giapponese. I lettori giapponesi vedono la nota in giapponese, tutti gli altri quella in inglese.",
     "additionalInfoEnLabel": "Inglese",
     "additionalInfoJaLabel": "Giapponese",
-    "additionalInfoBothLanguages": "Scrivi la nota in entrambe le lingue, oppure lascia vuoti entrambi i campi."
+    "additionalInfoBothLanguages": "Scrivi la nota in entrambe le lingue, oppure lascia vuoti entrambi i campi.",
+    "openingHoursUntilMidnight": "Fino a mezzanotte"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "L'ID della struttura è obbligatiorio per aggiornare la struttura",
