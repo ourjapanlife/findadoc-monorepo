@@ -3,7 +3,7 @@ import { SUBMISSION_KIND, SUBMISSION_STATUS, type HpsTable, type FacilitiesTable
 import { facilityCorrectionFromColumns } from '../corrections/facilityCorrection.js'
 import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.js'
 import type { Insertable, Selectable } from 'kysely'
-import { normalizePaymentOptions } from '@findadoc/utils'
+import { cleanAdditionalInfo, normalizeOpeningHours, normalizePaymentOptions } from '@findadoc/utils'
 import type { FacilityParent, ProfessionalParent } from '../typeDefs/resolverParents.js'
 
 function toLicenseReview(value: string | null | undefined): gqlTypes.LicenseReviewStatus | null {
@@ -83,6 +83,7 @@ export function facilityFromRow(row: Selectable<FacilitiesTable>): FacilityParen
         ...paymentOptionFields(row),
         ...supportedLanguageFields(row),
         ...japaneseInsuranceFields(row),
+        ...visitorInfoFields(row),
         ...facilityLocationFields(row)
     }
 }
@@ -123,6 +124,26 @@ export function supportedLanguageFields(row: {
 
     return {
         supportedLanguages: uniqueLocales(stored).filter(isPublishedLocale) as gqlTypes.Locale[]
+    }
+}
+
+/**
+ * Opening hours and the bilingual visitor note (#294). Only valid blocks reach a reader, in day
+ * order. A note is shown only when both languages are stored, which the database also enforces.
+ */
+export function visitorInfoFields(row: {
+    opening_hours?: unknown
+    additional_info_en?: string | null
+    additional_info_ja?: string | null
+}): Pick<gqlTypes.Facility, 'openingHours' | 'additionalInfoEn' | 'additionalInfoJa'> {
+    const en = cleanAdditionalInfo(row.additional_info_en)
+    const ja = cleanAdditionalInfo(row.additional_info_ja)
+    const bothLanguages = en !== null && ja !== null
+
+    return {
+        openingHours: normalizeOpeningHours(row.opening_hours),
+        additionalInfoEn: bothLanguages ? en : null,
+        additionalInfoJa: bothLanguages ? ja : null
     }
 }
 

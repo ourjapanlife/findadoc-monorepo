@@ -951,6 +951,10 @@ export type CreateClinicAvailabilityWindowInput = {
 
 /** Input for creating a new facility. */
 export type CreateFacilityInput = {
+  /** Visitor note in English, at most 1000 characters. Send with additionalInfoJa. */
+  additionalInfoEn?: InputMaybe<Scalars['String']['input']>;
+  /** Visitor note in Japanese, at most 1000 characters. Send with additionalInfoEn. */
+  additionalInfoJa?: InputMaybe<Scalars['String']['input']>;
   /** Id of a city in the vocabulary. Publishing under a city requires this. */
   cityId?: InputMaybe<Scalars['ID']['input']>;
   /** Contact information for the facility. */
@@ -983,6 +987,8 @@ export type CreateFacilityInput = {
    * When true, address, city, and map may be omitted.
    */
   online?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Opening hours from the clinic's site or a call, never from Places. Omit or send [] for unknown. */
+  openingHours?: InputMaybe<Array<OpeningHoursInput>>;
   /** Payment types and brands from the controlled list. Each type once. An empty list is unknown. */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
   /** Where this facility record came from. */
@@ -1108,6 +1114,10 @@ export type DeleteResult = {
 /** A medical facility (hospital, clinic, etc.) registered in the Find a Doc database. */
 export type Facility = {
   __typename?: 'Facility';
+  /** Short note for visitors in English (#294). Set together with additionalInfoJa, or neither. */
+  additionalInfoEn?: Maybe<Scalars['String']['output']>;
+  /** Short note for visitors in Japanese (#294). Set together with additionalInfoEn, or neither. */
+  additionalInfoJa?: Maybe<Scalars['String']['output']>;
   /**
    * True once the clinic owner has saved booking settings for this facility.
    * The clinic page shows Book, and patients may book, only then.
@@ -1153,6 +1163,11 @@ export type Facility = {
    * Default is false. Address, city, and map are not required when true.
    */
   online: Scalars['Boolean']['output'];
+  /**
+   * Published opening hours in Japan time (#294). An empty list is unknown, and readers see nothing.
+   * Once any block is known, a day with no block is closed, public holidays included.
+   */
+  openingHours: Array<OpeningHours>;
   /**
    * Payment methods this facility accepts (#20). An empty list is unknown, not cash only.
    * Brands come from a controlled list for each type.
@@ -1952,6 +1967,36 @@ export type OpenCorrectionCount = {
   count: Scalars['Int']['output'];
   /** The facility the corrections are about. */
   facilityId: Scalars['ID']['output'];
+};
+
+/** The day an opening-hours block applies to (#294). PUBLIC_HOLIDAY is a Japanese national holiday. */
+export enum OpeningDay {
+  Friday = 'FRIDAY',
+  Monday = 'MONDAY',
+  PublicHoliday = 'PUBLIC_HOLIDAY',
+  Saturday = 'SATURDAY',
+  Sunday = 'SUNDAY',
+  Thursday = 'THURSDAY',
+  Tuesday = 'TUESDAY',
+  Wednesday = 'WEDNESDAY'
+}
+
+/**
+ * One block of a facility's published opening hours, in Japan time (#294).
+ * Times are HH:MM on a 24-hour clock. closes is after opens, and may be 24:00.
+ */
+export type OpeningHours = {
+  __typename?: 'OpeningHours';
+  closes: Scalars['String']['output'];
+  day: OpeningDay;
+  opens: Scalars['String']['output'];
+};
+
+/** One opening-hours block. A day has at most four blocks, and blocks on one day do not overlap. */
+export type OpeningHoursInput = {
+  closes: Scalars['String']['input'];
+  day: OpeningDay;
+  opens: Scalars['String']['input'];
 };
 
 /** Specifies a field and direction to order query results by. */
@@ -2767,6 +2812,13 @@ export type UpdateBookingSettingsInput = {
 
 /** Input for updating an existing facility. All fields are optional — only provided fields are updated. */
 export type UpdateFacilityInput = {
+  /**
+   * Send with additionalInfoJa. Null or blank in both clears the note.
+   * Omit both to leave the stored note unchanged.
+   */
+  additionalInfoEn?: InputMaybe<Scalars['String']['input']>;
+  /** Send with additionalInfoEn. */
+  additionalInfoJa?: InputMaybe<Scalars['String']['input']>;
   /** Id of a city in the vocabulary. Null clears the city and marks the row unresolved. */
   cityId?: InputMaybe<Scalars['ID']['input']>;
   /** Updated contact information. */
@@ -2795,6 +2847,8 @@ export type UpdateFacilityInput = {
    * Omit to leave the stored value unchanged.
    */
   online?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Replacement opening hours. An empty list clears them back to unknown. */
+  openingHours?: InputMaybe<Array<OpeningHoursInput>>;
   /** Payment types and brands from the controlled list. Each type once. An empty list is unknown. */
   paymentOptions?: InputMaybe<Array<PaymentOptionsInput>>;
   /** Where this facility record came from. */
@@ -3064,6 +3118,9 @@ export type ResolversTypes = {
   NameReviewStatus: NameReviewStatus;
   ObjectType: ObjectType;
   OpenCorrectionCount: ResolverTypeWrapper<OpenCorrectionCount>;
+  OpeningDay: OpeningDay;
+  OpeningHours: ResolverTypeWrapper<OpeningHours>;
+  OpeningHoursInput: OpeningHoursInput;
   OrderBy: OrderBy;
   OrderDirection: OrderDirection;
   PatientBookingView: ResolverTypeWrapper<PatientBookingView>;
@@ -3189,6 +3246,8 @@ export type ResolversParentTypes = {
   MapsPlacePreview: MapsPlacePreview;
   Mutation: Record<PropertyKey, never>;
   OpenCorrectionCount: OpenCorrectionCount;
+  OpeningHours: OpeningHours;
+  OpeningHoursInput: OpeningHoursInput;
   OrderBy: OrderBy;
   PatientBookingView: PatientBookingView;
   PaymentOption: PaymentOption;
@@ -3697,6 +3756,8 @@ export type DeleteResultResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type FacilityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Facility'] = ResolversParentTypes['Facility']> = {
+  additionalInfoEn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  additionalInfoJa?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   bookingEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   cityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -3712,6 +3773,7 @@ export type FacilityResolvers<ContextType = any, ParentType extends ResolversPar
   nameEn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nameJa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   online?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  openingHours?: Resolver<Array<ResolversTypes['OpeningHours']>, ParentType, ContextType>;
   paymentOptions?: Resolver<Maybe<Array<ResolversTypes['PaymentOption']>>, ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes['FacilitySource']>, ParentType, ContextType>;
   supportedLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
@@ -3855,6 +3917,12 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type OpenCorrectionCountResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpenCorrectionCount'] = ResolversParentTypes['OpenCorrectionCount']> = {
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type OpeningHoursResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpeningHours'] = ResolversParentTypes['OpeningHours']> = {
+  closes?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  day?: Resolver<ResolversTypes['OpeningDay'], ParentType, ContextType>;
+  opens?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type PatientBookingViewResolvers<ContextType = any, ParentType extends ResolversParentTypes['PatientBookingView'] = ResolversParentTypes['PatientBookingView']> = {
@@ -4042,6 +4110,7 @@ export type Resolvers<ContextType = any> = {
   MapsPlacePreview?: MapsPlacePreviewResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   OpenCorrectionCount?: OpenCorrectionCountResolvers<ContextType>;
+  OpeningHours?: OpeningHoursResolvers<ContextType>;
   PatientBookingView?: PatientBookingViewResolvers<ContextType>;
   PaymentOption?: PaymentOptionResolvers<ContextType>;
   PaymentQrUploadUrl?: PaymentQrUploadUrlResolvers<ContextType>;

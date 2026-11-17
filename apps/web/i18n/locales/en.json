@@ -175,7 +175,9 @@
     "submissionStatusChanged": "Someone else changed this submission first. Reload the page and check it again.",
     "professionalNamesRequired": "The healthcare professional needs a romaji name and a Japanese name.",
     "professionalNameLocaleNotAllowed": "A healthcare professional only has a romaji name and a Japanese name.",
-    "japaneseMiddleNameNotAllowed": "The Japanese name has no middle name."
+    "japaneseMiddleNameNotAllowed": "The Japanese name has no middle name.",
+    "invalidOpeningHours": "Check the opening hours: each block needs a closing time after its opening time, and blocks on one day cannot overlap.",
+    "additionalInfoBothLanguages": "Write the visitor note in both English and Japanese, or leave both empty."
   },
   "footer": {
     "poweredBy": "Powered by {name}",
@@ -654,7 +656,22 @@
     "japaneseInsuranceSourceLabel": "Source",
     "japaneseInsuranceSourcePlaceholder": "A link, or a note such as: called the clinic on Nov 2, 2026",
     "paymentLabel": "Payment methods",
-    "paymentHint": "Check only what the clinic's website or a call confirms. If you do not know, leave everything unchecked. Readers then see nothing, not cash only."
+    "paymentHint": "Check only what the clinic's website or a call confirms. If you do not know, leave everything unchecked. Readers then see nothing, not cash only.",
+    "openingHoursLabel": "Opening hours",
+    "openingHoursHint": "Enter hours only from the clinic's website or a call, never from Google Maps. Times are Japan time. If you add no hours, readers see nothing. Once you add any, a day with no hours shows as closed.",
+    "openingHoursAdd": "Add hours",
+    "openingHoursUnknown": "Not known",
+    "openingHoursOpens": "Opens",
+    "openingHoursCloses": "Closes",
+    "openingHoursRemove": "Remove these {day} hours",
+    "openingHoursRemoveShort": "Remove",
+    "openingHoursInvalid": "Each block must close after it opens, and blocks on one day cannot overlap.",
+    "openingHoursClear": "Clear all hours",
+    "additionalInfoLabel": "Note for visitors",
+    "additionalInfoHint": "Short, practical information, like walk-ins, reservations, or parking. Write it in English and in Japanese. Japanese readers see the Japanese note, and everyone else sees the English one.",
+    "additionalInfoEnLabel": "English",
+    "additionalInfoJaLabel": "Japanese",
+    "additionalInfoBothLanguages": "Write the note in both languages, or leave both empty."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",
@@ -794,7 +811,8 @@
     "pageHeading": "Find a doctor in Japan",
     "mapUnavailable": "The map could not be loaded.",
     "mapUnavailableHint": "The rest of the results are unaffected.",
-    "payment": "Payment"
+    "payment": "Payment",
+    "clinicLanguagesCaveat": "These are languages the clinic says it supports. Not every doctor may speak them, so ask when you contact the clinic."
   },
   "breadcrumbs": {
     "navLabel": "Breadcrumb",
@@ -1406,5 +1424,23 @@
       "payPay": "PayPay",
       "other": "Other"
     }
+  },
+  "openingHours": {
+    "title": "Opening hours",
+    "closed": "Closed",
+    "disclaimer": "Japan time. Hours can change, so check with the clinic before you go.",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "publicHoliday": "Public holidays"
+    }
+  },
+  "facilityAdditionalInfo": {
+    "title": "Good to know"
   }
 }

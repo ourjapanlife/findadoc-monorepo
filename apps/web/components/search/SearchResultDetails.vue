@@ -108,8 +108,15 @@
                     <dt class="shrink-0 font-semibold">
                         {{ t('search.languagesSpoken') }}
                     </dt>
-                    <dd class="m-0">
-                        {{ facilityLanguages }}
+                    <dd class="m-0 flex flex-col gap-0.5">
+                        <span>{{ facilityLanguages }}</span>
+                        <!-- Clinic-level languages are not a promise about any one doctor. -->
+                        <span
+                            class="text-xs"
+                            data-testid="facility-languages-caveat"
+                        >
+                            {{ t('search.clinicLanguagesCaveat') }}
+                        </span>
                     </dd>
                 </div>
                 <div
@@ -127,6 +134,60 @@
             </dl>
             <JapaneseInsuranceNote :value="facility.japaneseInsurance" />
         </header>
+
+        <!-- Hours and the note show only when a moderator has filled them (#294). -->
+        <section
+            v-if="hoursRows.length"
+            class="flex flex-col gap-2"
+            data-testid="facility-opening-hours"
+            aria-labelledby="facility-opening-hours-title"
+        >
+            <h3
+                id="facility-opening-hours-title"
+                class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase"
+            >
+                {{ t('openingHours.title') }}
+            </h3>
+            <dl class="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                <template
+                    v-for="row in hoursRows"
+                    :key="row.day"
+                >
+                    <dt class="font-semibold text-primary-text">
+                        {{ row.label }}
+                    </dt>
+                    <dd
+                        class="m-0"
+                        :class="row.closed ? 'text-primary-text-muted' : 'text-primary-text'"
+                    >
+                        {{ row.times }}
+                    </dd>
+                </template>
+            </dl>
+            <p class="m-0 text-xs text-primary-text-muted">
+                {{ t('openingHours.disclaimer') }}
+            </p>
+        </section>
+
+        <section
+            v-if="note"
+            class="flex flex-col gap-2"
+            data-testid="facility-additional-info"
+            aria-labelledby="facility-additional-info-title"
+        >
+            <h3
+                id="facility-additional-info-title"
+                class="text-sm font-semibold tracking-wide text-primary-text-muted uppercase"
+            >
+                {{ t('facilityAdditionalInfo.title') }}
+            </h3>
+            <p
+                class="m-0 text-sm whitespace-pre-line text-primary-text"
+                :lang="note.lang"
+            >
+                {{ note.text }}
+            </p>
+        </section>
 
         <!-- Hidden when the clinic lists doctors but the search filtered every one of them out. -->
         <section
@@ -235,6 +296,7 @@ import { noteSearchDetailsContact, type EventProps } from '~/utils/analyticsEven
 import { professionalPath } from '~/utils/doctorPath'
 import { formatPaymentOptions } from '~/utils/paymentOptions'
 import { spokenLanguageNames } from '~/utils/languageName'
+import { openingHoursRows, visitorNote } from '~/utils/openingHours'
 import { facilityEmail,
     facilityMapsUrl,
     facilityPhone,
@@ -305,6 +367,10 @@ const payment = computed(() => formatPaymentOptions(props.facility.paymentOption
 // Languages the clinic itself supports, with or without a named doctor (#19, #21). Empty shows nothing.
 const facilityLanguages = computed(() => spokenLanguageNames(props.facility.supportedLanguages ?? [], locale.value)
     .join(', '))
+
+// Unknown hours are an empty list and show nothing. The note follows the reader's language (#294).
+const hoursRows = computed(() => openingHoursRows(props.facility.openingHours, t))
+const note = computed(() => visitorNote(props.facility, isJapanese.value))
 
 const professionals = computed(() => props.facility.healthcareProfessionals.map(professional => ({
     id: professional.id,

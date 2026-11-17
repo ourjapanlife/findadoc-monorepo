@@ -536,7 +536,22 @@
     "japaneseInsuranceSourceLabel": "Source",
     "japaneseInsuranceSourcePlaceholder": "Un lien, ou une note comme : clinique appelée le 2 nov. 2026",
     "paymentLabel": "Moyens de paiement",
-    "paymentHint": "Cochez seulement ce que le site de la clinique ou un appel confirme. Si vous ne savez pas, ne cochez rien. Les lecteurs ne verront alors rien, et non « espèces uniquement »."
+    "paymentHint": "Cochez seulement ce que le site de la clinique ou un appel confirme. Si vous ne savez pas, ne cochez rien. Les lecteurs ne verront alors rien, et non « espèces uniquement ».",
+    "openingHoursLabel": "Horaires d'ouverture",
+    "openingHoursHint": "Saisissez uniquement des horaires tirés du site de la clinique ou d'un appel, jamais de Google Maps. Les heures sont à l'heure du Japon. Sans horaires, les lecteurs ne voient rien. Dès qu'une plage existe, un jour sans plage s'affiche comme fermé.",
+    "openingHoursAdd": "Ajouter une plage",
+    "openingHoursUnknown": "Inconnu",
+    "openingHoursOpens": "Ouverture",
+    "openingHoursCloses": "Fermeture",
+    "openingHoursRemove": "Supprimer cette plage du {day}",
+    "openingHoursRemoveShort": "Supprimer",
+    "openingHoursInvalid": "Chaque plage doit se terminer après son début, et les plages d'un même jour ne peuvent pas se chevaucher.",
+    "openingHoursClear": "Effacer tous les horaires",
+    "additionalInfoLabel": "Note pour les visiteurs",
+    "additionalInfoHint": "Des informations courtes et pratiques : rendez-vous, consultations sans rendez-vous, parking. Rédigez-la en anglais et en japonais. Les lecteurs japonais voient la note japonaise, tous les autres la note anglaise.",
+    "additionalInfoEnLabel": "Anglais",
+    "additionalInfoJaLabel": "Japonais",
+    "additionalInfoBothLanguages": "Rédigez la note dans les deux langues, ou laissez les deux vides."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",
@@ -587,7 +602,9 @@
     "submissionStatusChanged": "Quelqu’un d’autre a modifié cette soumission avant vous. Rechargez la page et vérifiez à nouveau.",
     "professionalNamesRequired": "Le professionnel de santé doit avoir un nom en romaji et un nom en japonais.",
     "professionalNameLocaleNotAllowed": "Un professionnel de santé a seulement un nom en romaji et un nom en japonais.",
-    "japaneseMiddleNameNotAllowed": "Le nom japonais n'a pas de deuxième prénom."
+    "japaneseMiddleNameNotAllowed": "Le nom japonais n'a pas de deuxième prénom.",
+    "invalidOpeningHours": "Vérifiez les horaires : chaque plage doit se terminer après son début, et les plages d'un même jour ne peuvent pas se chevaucher.",
+    "additionalInfoBothLanguages": "Rédigez la note pour les visiteurs en anglais et en japonais, ou laissez les deux vides."
   },
   "modHealthcareProfessionalSection": {
     "healthcareProfessionalMedicalInfoHeading": "Informations sur le professionnel de santé",
@@ -788,7 +805,8 @@
     "pageHeading": "Trouver un médecin au Japon",
     "mapUnavailable": "La carte n’a pas pu être chargée.",
     "mapUnavailableHint": "Les autres résultats ne sont pas affectés.",
-    "payment": "Paiement"
+    "payment": "Paiement",
+    "clinicLanguagesCaveat": "La clinique indique pouvoir vous accueillir dans ces langues. Tous les médecins ne les parlent pas forcément : demandez-le en contactant la clinique."
   },
   "clinicPage": {
     "backToSearch": "Retour à la recherche",
@@ -1406,5 +1424,23 @@
       "payPay": "PayPay",
       "other": "Autre"
     }
+  },
+  "openingHours": {
+    "title": "Horaires d'ouverture",
+    "closed": "Fermé",
+    "disclaimer": "Heure du Japon. Les horaires peuvent changer : vérifiez auprès de la clinique avant de vous déplacer.",
+    "days": {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Dimanche",
+      "publicHoliday": "Jours fériés"
+    }
+  },
+  "facilityAdditionalInfo": {
+    "title": "Bon à savoir"
   }
 }

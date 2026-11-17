@@ -48,6 +48,10 @@ export interface FacilitiesTable {
         gqlTypes.JapaneseInsurance | null
     >
     japanese_insurance_source: ColumnType<string | null, string | null | undefined, string | null>
+    /** Opening-hours blocks (#294). Defaults to [] (unknown). May come back as a JSON string. */
+    opening_hours: ColumnType<gqlTypes.OpeningHours[] | string, string | undefined, string>
+    additional_info_en: ColumnType<string | null, string | null | undefined, string | null>
+    additional_info_ja: ColumnType<string | null, string | null | undefined, string | null>
     online: Generated<boolean>
     search_text: Generated<string>
 }

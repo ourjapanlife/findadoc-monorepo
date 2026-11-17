@@ -61,7 +61,10 @@ export const showcaseClinicFacility: FacilitySeed = {
         Locale.FrFr,
         Locale.NeNp,
         Locale.IdId
-    ]
+    ],
+    opening_hours: [],
+    additional_info_en: null,
+    additional_info_ja: null
 }
 
 export type ClinicLandingLanguage = {

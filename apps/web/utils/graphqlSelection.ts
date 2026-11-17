@@ -8,6 +8,7 @@ import type {
     HealthcareProfessional,
     HealthcareProfessionalSubmission,
     LocalizedName,
+    OpeningHours,
     PaymentOption,
     PhysicalAddress,
     Prefecture,
@@ -63,6 +64,12 @@ const paymentOptionSelection = selection<PaymentOption>({
     paymentType: true
 })
 
+const openingHoursSelection = selection<OpeningHours>({
+    closes: true,
+    day: true,
+    opens: true
+})
+
 const prefectureSelection = selection<Prefecture>({
     id: true,
     nameEn: true,
@@ -82,6 +89,8 @@ const citySelection = selection<City>({
 
 /** Every Facility field. Read queries use this so a schema change cannot leave a query behind. */
 export const facilitySelection = selection<Facility>({
+    additionalInfoEn: true,
+    additionalInfoJa: true,
     bookingEnabled: true,
     city: block('city', citySelection),
     cityId: true,
@@ -96,6 +105,7 @@ export const facilitySelection = selection<Facility>({
     mapLongitude: true,
     nameEn: true,
     nameJa: true,
+    openingHours: block('openingHours', openingHoursSelection),
     paymentOptions: block('paymentOptions', paymentOptionSelection),
     source: true,
     supportedLanguages: true,

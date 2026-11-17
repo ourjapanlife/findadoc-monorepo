@@ -9,11 +9,13 @@ import {
     LicenseReviewStatus,
     NameReviewStatus,
     Locale,
+    OpeningDay,
     PaymentType,
     Specialty,
-    type ContactInput
+    type ContactInput,
+    type OpeningHoursInput
 } from '@findadoc/graphql'
-import { isPaymentBrand } from '@findadoc/utils'
+import { isPaymentBrand, openingHoursProblem } from '@findadoc/utils'
 import type {
     ClinicSiteDoctorsTable,
     CorrectionChanges,
@@ -82,6 +84,11 @@ export type FacilitySeed = {
     source: EnumValue<FacilitySource> | null
     verification_status: EnumValue<FacilityVerificationStatus>
     supported_languages: EnumValue<Locale>[]
+    /** Opening-hours blocks in Japan time (#294). [] is unknown. */
+    opening_hours: Array<{ day: EnumValue<OpeningDay>, opens: string, closes: string }>
+    /** The visitor note, both languages or neither (#294). */
+    additional_info_en: string | null
+    additional_info_ja: string | null
 }
 
 export type HpSeed = {
@@ -275,6 +282,15 @@ export function parseSeed(value: unknown): SeedFile {
         readEnum(facility.verification_status, verificationValues, `${facility.id} verification_status`, problems)
         readEnum(facility.source, sourceValues, `${facility.id} source`, problems)
         readEnumList(facility.supported_languages, localeValues, `${facility.id} supported_languages`, problems)
+
+        if (!Array.isArray(facility.opening_hours)) {
+            problems.push(`${facility.id} opening_hours is missing`)
+        } else if (openingHoursProblem(facility.opening_hours as OpeningHoursInput[]) !== null) {
+            problems.push(`${facility.id} opening_hours does not pass the hours rules`)
+        }
+        if ((facility.additional_info_en === null) !== (facility.additional_info_ja === null)) {
+            problems.push(`${facility.id} needs both additional_info_en and additional_info_ja, or neither`)
+        }
 
         if (!Array.isArray(facility.payment_options)) {
             problems.push(`${facility.id} payment_options is missing`)

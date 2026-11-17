@@ -85,6 +85,11 @@
             v-model:source="facilityStore.createFacilityFields.japaneseInsuranceSource"
         />
         <ModPaymentOptionsField v-model="facilityStore.createFacilityFields.paymentOptions" />
+        <ModOpeningHoursField v-model="facilityStore.createFacilityFields.openingHours" />
+        <ModAdditionalInfoField
+            v-model:english="facilityStore.createFacilityFields.additionalInfoEn"
+            v-model:japanese="facilityStore.createFacilityFields.additionalInfoJa"
+        />
         <ModAccordion
             v-if="!facilityStore.createFacilityFields.online"
             tone="facility"

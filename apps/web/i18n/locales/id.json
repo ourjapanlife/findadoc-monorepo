@@ -175,7 +175,9 @@
     "submissionStatusChanged": "Orang lain sudah mengubah pengajuan ini lebih dulu. Muat ulang halaman dan periksa lagi.",
     "professionalNamesRequired": "Tenaga kesehatan perlu nama dalam romaji dan nama dalam bahasa Jepang.",
     "professionalNameLocaleNotAllowed": "Tenaga kesehatan hanya punya nama dalam romaji dan nama dalam bahasa Jepang.",
-    "japaneseMiddleNameNotAllowed": "Nama dalam bahasa Jepang tidak punya nama tengah."
+    "japaneseMiddleNameNotAllowed": "Nama dalam bahasa Jepang tidak punya nama tengah.",
+    "invalidOpeningHours": "Periksa jam buka: setiap rentang harus tutup setelah buka, dan rentang pada hari yang sama tidak boleh tumpang tindih.",
+    "additionalInfoBothLanguages": "Tulis catatan untuk pengunjung dalam bahasa Inggris dan Jepang, atau kosongkan keduanya."
   },
   "footer": {
     "poweredBy": "Didukung oleh {name}",
@@ -654,7 +656,22 @@
     "japaneseInsuranceSourceLabel": "Sumber",
     "japaneseInsuranceSourcePlaceholder": "Tautan, atau catatan seperti: menelepon klinik pada 2 Nov 2026",
     "paymentLabel": "Metode pembayaran",
-    "paymentHint": "Centang hanya yang dikonfirmasi oleh situs web klinik atau lewat telepon. Jika tidak tahu, biarkan semuanya kosong. Pembaca tidak akan melihat apa pun, bukan \"hanya tunai\"."
+    "paymentHint": "Centang hanya yang dikonfirmasi oleh situs web klinik atau lewat telepon. Jika tidak tahu, biarkan semuanya kosong. Pembaca tidak akan melihat apa pun, bukan \"hanya tunai\".",
+    "openingHoursLabel": "Jam buka",
+    "openingHoursHint": "Isi jam hanya dari situs web klinik atau dari telepon, jangan dari Google Maps. Waktu dalam waktu Jepang. Jika tidak diisi, pembaca tidak melihat apa pun. Setelah ada jam yang diisi, hari tanpa jam ditampilkan sebagai tutup.",
+    "openingHoursAdd": "Tambah jam",
+    "openingHoursUnknown": "Tidak diketahui",
+    "openingHoursOpens": "Buka",
+    "openingHoursCloses": "Tutup",
+    "openingHoursRemove": "Hapus jam {day} ini",
+    "openingHoursRemoveShort": "Hapus",
+    "openingHoursInvalid": "Setiap rentang harus tutup setelah buka, dan rentang pada hari yang sama tidak boleh tumpang tindih.",
+    "openingHoursClear": "Hapus semua jam",
+    "additionalInfoLabel": "Catatan untuk pengunjung",
+    "additionalInfoHint": "Informasi singkat dan praktis, seperti reservasi, kunjungan tanpa janji, atau parkir. Tulis dalam bahasa Inggris dan bahasa Jepang. Pembaca berbahasa Jepang melihat catatan bahasa Jepang, yang lain melihat catatan bahasa Inggris.",
+    "additionalInfoEnLabel": "Bahasa Inggris",
+    "additionalInfoJaLabel": "Bahasa Jepang",
+    "additionalInfoBothLanguages": "Tulis catatan dalam kedua bahasa, atau kosongkan keduanya."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",
@@ -794,7 +811,8 @@
     "pageHeading": "Temukan dokter di Jepang",
     "mapUnavailable": "Peta tidak dapat dimuat.",
     "mapUnavailableHint": "Hasil lainnya tidak terpengaruh.",
-    "payment": "Pembayaran"
+    "payment": "Pembayaran",
+    "clinicLanguagesCaveat": "Ini adalah bahasa yang menurut klinik dapat dilayani. Belum tentu setiap dokter menguasainya, jadi tanyakan saat menghubungi klinik."
   },
   "breadcrumbs": {
     "navLabel": "Navigasi jalur",
@@ -1406,5 +1424,23 @@
       "payPay": "PayPay",
       "other": "Lainnya"
     }
+  },
+  "openingHours": {
+    "title": "Jam buka",
+    "closed": "Tutup",
+    "disclaimer": "Waktu Jepang. Jam buka bisa berubah, jadi tanyakan ke klinik sebelum datang.",
+    "days": {
+      "monday": "Senin",
+      "tuesday": "Selasa",
+      "wednesday": "Rabu",
+      "thursday": "Kamis",
+      "friday": "Jumat",
+      "saturday": "Sabtu",
+      "sunday": "Minggu",
+      "publicHoliday": "Hari libur nasional"
+    }
+  },
+  "facilityAdditionalInfo": {
+    "title": "Perlu diketahui"
   }
 }

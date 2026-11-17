@@ -105,6 +105,9 @@ describe('facility update with payment', () => {
             japaneseInsurance: '',
             japaneseInsuranceSource: '',
             paymentOptions,
+            openingHours: [],
+            additionalInfoEn: '',
+            additionalInfoJa: '',
             healthcareProfessionalIds: [],
             healthProfessionalsRelations: []
         }
