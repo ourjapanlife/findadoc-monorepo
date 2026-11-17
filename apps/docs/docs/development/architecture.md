@@ -39,6 +39,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 - **Caching**: `apps/server/src/publicCache.ts` sets `Cache-Control` on every response (#242). A response is `public, max-age=60` only when the caller sent no token, every root field is on `PUBLIC_CACHEABLE_QUERY_FIELDS`, and nothing failed. Everything else is `private, no-store`. Add a field to that list only when its answer is the same for every signed-out visitor: it reads no user, IP, country, token, or rate limit. Booking, upload, moderation, and user fields never go there. `__tests__/publicCache.test.ts` checks the list
 - **CSRF**: Apollo's built-in check is off and `csrfPreventionPlugin` keeps its rule. A request without a preflight (a form post, or a GET with no `x-apollo-operation-name` header) may only run a query on the public list, so a public read can be a plain, cacheable GET
 - **Lookup tables**: prefecture and city lists stay in Lambda memory for 10 minutes (`src/lookupCache.ts`)
+- **Filter vocabulary**: `specialties`, `specialtyCategories`, and `languages` return the specialty, category, and language codes with English and Japanese labels (#24). Clients read them instead of introspecting the schema. `languages` returns only the search facets unless `publishedOnly` is false. The labels and the category map live in `packages/utils`, so these queries read no database and are on the public list
 - **Edge**: the API's CloudFront distribution caches a GET only when the API marked it `public` (`infra/lib/functionUrlEdge.ts`, `cachePublicReads`). The cache key is the query string, `Origin`, and `Authorization`. Error responses are never cached. POST, OPTIONS, booking, and signed-in reads always reach the API. The MCP server sends its reads as GET, so they share the cache
 
 ### MCP Server (`apps/mcp`)
@@ -51,7 +52,7 @@ Find a Doc is three apps in one monorepo, sharing the types generated from one G
 | Package | Purpose |
 |---------|---------|
 | `packages/graphql` | `@findadoc/graphql`, TypeScript types generated from the schema. Regenerate with `pnpm generate` |
-| `packages/utils` | `@findadoc/utils`, checks and helpers shared by the site and the API |
+| `packages/utils` | `@findadoc/utils`, checks, helpers, and the specialty and language vocabulary shared by the site and the API |
 | `packages/tsconfig` | Shared TypeScript config |
 
 ## Website Directory Structure

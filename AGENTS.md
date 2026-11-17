@@ -192,7 +192,7 @@ The #1014 license backfill has run on production. `degrees` keeps the submitted 
 
 ## Professional names
 
-A professional has two names: romaji (`en_US`) and Japanese (`ja_JP`), and no other locale (#282). `apps/server/docs/professional-names.md` is the rule. Only the romaji name has a middle name. A non-Japanese name is written in katakana. Creating, updating, and approving need both names; a submission draft may hold one. The #282 name backfill has run on production. `hps.name_review = NEEDS_REVIEW` queues a name it generated for a moderator to check. Do not guess a reading for kanji, and do not add a name dictionary dependency for it.
+A professional has two names: romaji (`en_US`) and Japanese (`ja_JP`), and no other locale (#282). `apps/server/docs/professional-names.md` is the rule. Only the romaji name has a middle name. A non-Japanese name is written in katakana. Creating, updating, and approving need both names; a submission draft may hold one. The #282 name backfill has run on production, and `hps_names_two_locales` enforces the two names in the database. Pages show the name for the page's language with no fallback to the other one: Japanese on a Japanese page, romaji everywhere else. `hps.name_review = NEEDS_REVIEW` is the moderator queue for a name to check. Do not guess a reading for kanji, and do not add a name dictionary dependency for it.
 
 ## Insurance
 

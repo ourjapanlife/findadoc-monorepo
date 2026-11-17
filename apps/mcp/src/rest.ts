@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import type { FastifyInstance, FastifyReply } from 'fastify'
+import { SpecialtyCategory } from '@findadoc/graphql'
 import { searchHealthcareProfessionals, getHealthcareProfessional } from './core/professionals.js'
 import { searchFacilities, getFacility } from './core/facilities.js'
 import { listSpecialties, listLanguages } from './core/taxonomy.js'
@@ -28,6 +29,20 @@ function toInt(value: unknown): number | undefined {
 
 function toStr(value: unknown): string | undefined {
     return value === undefined ? undefined : String(value)
+}
+
+/** `true` or `false`; missing is false. Anything else is null, which the route refuses. */
+function toBoolean(value: unknown): boolean | null {
+    if (value === undefined || value === 'false') { return false }
+    if (value === 'true') { return true }
+
+    return null
+}
+
+const SPECIALTY_CATEGORIES = new Set<string>(Object.values(SpecialtyCategory))
+
+function isSpecialtyCategory(value: unknown): value is SpecialtyCategory {
+    return typeof value === 'string' && SPECIALTY_CATEGORIES.has(value)
 }
 
 function fail(reply: FastifyReply, status: number, error: unknown): { error: string } {
@@ -100,16 +115,28 @@ export async function registerRestRoutes(app: FastifyInstance): Promise<void> {
     })
 
     app.get('/api/specialties', async (req, reply) => {
+        const { category } = req.query as Record<string, unknown>
+
+        if (category !== undefined && !isSpecialtyCategory(category)) {
+            return fail(reply, 400, new Error('category must be a SpecialtyCategory code, such as MENTAL_HEALTH.'))
+        }
+
         try {
-            return await listSpecialties()
+            return await listSpecialties(category)
         } catch (error) {
             return fail(reply, 502, error)
         }
     })
 
     app.get('/api/languages', async (req, reply) => {
+        const includeUnpublished = toBoolean((req.query as Record<string, unknown>).includeUnpublished)
+
+        if (includeUnpublished === null) {
+            return fail(reply, 400, new Error('includeUnpublished must be true or false.'))
+        }
+
         try {
-            return await listLanguages()
+            return await listLanguages(includeUnpublished)
         } catch (error) {
             return fail(reply, 502, error)
         }

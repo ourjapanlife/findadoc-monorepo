@@ -12,6 +12,9 @@ There are no other locales. A name in another language can be machine-translated
 - `validateNames` in `src/validation/validationHealthcareProfessional.ts`. Creating or updating a professional needs both names. A submission draft may hold one of the two, because the submitter types one free-text name and a moderator adds the other. Approving the submission needs both.
 - Error codes: `NAME_LOCALE_REQUIRED`, `NAME_LOCALE_NOT_ALLOWED`, `MIDDLE_NAME_NOT_ALLOWED`.
 - The moderation editor (`ModProfessionalNamesEditor.vue`) shows two fixed rows and offers no other locale.
+- The database: `hps_names_two_locales` (`20261117100000_hps_names_two_locales.sql`) refuses a row that does not hold exactly one `en_US` and one `ja_JP` name, each with a first and a last name, and no Japanese middle name. Submissions are a separate table, so a draft with one name is not affected.
+
+Pages show the Japanese name on a Japanese page and the romaji name on every other page (`formatHealthcareProfessionalName` in `apps/web/utils/nameUtils.ts`). There is no fallback to the other name.
 
 ## Name review
 
@@ -25,6 +28,4 @@ Saving names in moderation sets `CONFIRMED`. The dashboard's "Needs name review"
 
 ## Backfill
 
-The #282 backfill ran on production on 2026-11-16 and has been deleted. Every professional now has exactly one romaji and one Japanese name, and names in other locales are gone. The 11 rows whose Japanese name was a generated katakana guess are `NEEDS_REVIEW`. A new professional gets no generated name: the moderator enters both.
-
-Once the queue is empty, a migration adds a `CHECK` that `names` holds exactly the two locales, and the web pages drop their fallback from one name to the other.
+The #282 backfill ran on production on 2026-11-16 and has been deleted. Every professional then had exactly one romaji and one Japanese name, and moderators cleared the 11 generated Japanese names from the queue. A new professional gets no generated name: the moderator enters both.
