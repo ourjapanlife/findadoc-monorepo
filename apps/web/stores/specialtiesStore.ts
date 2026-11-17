@@ -2,93 +2,74 @@ import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Specialty, SpecialtyCategory } from '@findadoc/graphql'
+import { SPECIALTY_CATEGORY_DISPLAY_ORDER, SPECIALTY_CATEGORY_MEMBERS, SPECIALTY_DISPLAY_ORDER } from '@findadoc/utils'
+
+/** A Record, so a new Specialty fails typecheck until it has a label key (#24). */
+const SPECIALTY_LABEL_KEYS: Readonly<Record<Specialty, string>> = {
+    [Specialty.AllergyAndImmunology]: 'specialties.allergyAndImmunology',
+    [Specialty.Anesthesiology]: 'specialties.anesthesiology',
+    [Specialty.Cardiology]: 'specialties.cardiology',
+    [Specialty.CosmeticSurgery]: 'specialties.cosmeticSurgery',
+    [Specialty.Dentistry]: 'specialties.dentistry',
+    [Specialty.Dermatology]: 'specialties.dermatology',
+    [Specialty.DiagnosticRadiology]: 'specialties.diagnosticRadiology',
+    [Specialty.EmergencyMedicine]: 'specialties.emergencyMedicine',
+    [Specialty.EntSpecialist]: 'specialties.entSpecialist',
+    [Specialty.FamilyMedicine]: 'specialties.familyMedicine',
+    [Specialty.GeneralMedicine]: 'specialties.generalMedicine',
+    [Specialty.InfectiousDiseases]: 'specialties.infectiousDiseases',
+    [Specialty.InternalMedicine]: 'specialties.internalMedicine',
+    [Specialty.MedicalGenetics]: 'specialties.medicalGenetics',
+    [Specialty.Neurology]: 'specialties.neurology',
+    [Specialty.NuclearMedicine]: 'specialties.nuclearMedicine',
+    [Specialty.ObstetricsAndGynecology]: 'specialties.obstetricsAndGynecology',
+    [Specialty.Ophthalmology]: 'specialties.ophthalmology',
+    [Specialty.Optometry]: 'specialties.optometry',
+    [Specialty.Orthodontics]: 'specialties.orthodontics',
+    [Specialty.OrthopedicSurgery]: 'specialties.orthopedicSurgery',
+    [Specialty.Otolaryngology]: 'specialties.otolaryngology',
+    [Specialty.Pathology]: 'specialties.pathology',
+    [Specialty.Pediatrics]: 'specialties.pediatrics',
+    [Specialty.Pharmacy]: 'specialties.pharmacy',
+    [Specialty.PhysicalMedicineAndRehabilitation]: 'specialties.physicalMedicineAndRehabilitation',
+    [Specialty.Physiotherapy]: 'specialties.physiotherapy',
+    [Specialty.PlasticSurgery]: 'specialties.plasticSurgery',
+    [Specialty.PreventiveMedicine]: 'specialties.preventiveMedicine',
+    [Specialty.Proctology]: 'specialties.proctology',
+    [Specialty.Psychiatry]: 'specialties.psychiatry',
+    [Specialty.RadiationOncology]: 'specialties.radiationOncology',
+    [Specialty.SportsMedicine]: 'specialties.sportsMedicine',
+    [Specialty.Surgery]: 'specialties.surgery',
+    [Specialty.Traumatology]: 'specialties.traumatology',
+    [Specialty.Urology]: 'specialties.urology'
+}
+
+const CATEGORY_LABEL_KEYS: Readonly<Record<SpecialtyCategory, string>> = {
+    [SpecialtyCategory.ChildrensHealth]: 'specialtyCategories.childrensHealth',
+    [SpecialtyCategory.CosmeticAndPlasticSurgery]: 'specialtyCategories.cosmeticAndPlasticSurgery',
+    [SpecialtyCategory.Dental]: 'specialtyCategories.dental',
+    [SpecialtyCategory.Dermatology]: 'specialtyCategories.dermatology',
+    [SpecialtyCategory.Ent]: 'specialtyCategories.ent',
+    [SpecialtyCategory.EyeAndVision]: 'specialtyCategories.eyeAndVision',
+    [SpecialtyCategory.MensHealth]: 'specialtyCategories.mensHealth',
+    [SpecialtyCategory.MentalHealth]: 'specialtyCategories.mentalHealth',
+    [SpecialtyCategory.PhysicalTherapy]: 'specialtyCategories.physicalTherapy',
+    [SpecialtyCategory.PrimaryCare]: 'specialtyCategories.primaryCare',
+    [SpecialtyCategory.SportsAndRehab]: 'specialtyCategories.sportsAndRehab',
+    [SpecialtyCategory.WomensHealth]: 'specialtyCategories.womensHealth'
+}
 
 export const useSpecialtiesStore = defineStore('specialtiesStore', () => {
     const { t } = useI18n()
 
-    const specialtyCategories = computed(() => [
-        { code: SpecialtyCategory.Dental, displayText: t('specialtyCategories.dental') },
-        { code: SpecialtyCategory.Dermatology, displayText: t('specialtyCategories.dermatology') },
-        { code: SpecialtyCategory.ChildrensHealth, displayText: t('specialtyCategories.childrensHealth') },
-        { code: SpecialtyCategory.WomensHealth, displayText: t('specialtyCategories.womensHealth') },
-        { code: SpecialtyCategory.PrimaryCare, displayText: t('specialtyCategories.primaryCare') },
-        { code: SpecialtyCategory.MentalHealth, displayText: t('specialtyCategories.mentalHealth') },
-        { code: SpecialtyCategory.MensHealth, displayText: t('specialtyCategories.mensHealth') },
-        { code: SpecialtyCategory.PhysicalTherapy, displayText: t('specialtyCategories.physicalTherapy') },
-        { code: SpecialtyCategory.EyeAndVision, displayText: t('specialtyCategories.eyeAndVision') },
-        { code: SpecialtyCategory.Ent, displayText: t('specialtyCategories.ent') },
-        { code: SpecialtyCategory.SportsAndRehab, displayText: t('specialtyCategories.sportsAndRehab') },
-        { code: SpecialtyCategory.CosmeticAndPlasticSurgery, displayText: t('specialtyCategories.cosmeticAndPlasticSurgery') }
-    ])
+    const specialtyCategories = computed(() => SPECIALTY_CATEGORY_DISPLAY_ORDER
+        .map(code => ({ code, displayText: t(CATEGORY_LABEL_KEYS[code]) })))
 
-    const specialtyDisplayOptions = computed(() => [
-        { code: Specialty.AllergyAndImmunology, displayText: t('specialties.allergyAndImmunology') },
-        { code: Specialty.Anesthesiology, displayText: t('specialties.anesthesiology') },
-        { code: Specialty.Cardiology, displayText: t('specialties.cardiology') },
-        { code: Specialty.Dentistry, displayText: t('specialties.dentistry') },
-        { code: Specialty.Dermatology, displayText: t('specialties.dermatology') },
-        { code: Specialty.DiagnosticRadiology, displayText: t('specialties.diagnosticRadiology') },
-        { code: Specialty.EmergencyMedicine, displayText: t('specialties.emergencyMedicine') },
-        { code: Specialty.EntSpecialist, displayText: t('specialties.entSpecialist') },
-        { code: Specialty.InfectiousDiseases, displayText: t('specialties.infectiousDiseases') },
-        { code: Specialty.GeneralMedicine, displayText: t('specialties.generalMedicine') },
-        { code: Specialty.MedicalGenetics, displayText: t('specialties.medicalGenetics') },
-        { code: Specialty.Neurology, displayText: t('specialties.neurology') },
-        { code: Specialty.NuclearMedicine, displayText: t('specialties.nuclearMedicine') },
-        { code: Specialty.ObstetricsAndGynecology, displayText: t('specialties.obstetricsAndGynecology') },
-        { code: Specialty.Ophthalmology, displayText: t('specialties.ophthalmology') },
-        { code: Specialty.Optometry, displayText: t('specialties.optometry') },
-        { code: Specialty.OrthopedicSurgery, displayText: t('specialties.orthopedicSurgery') },
-        { code: Specialty.Otolaryngology, displayText: t('specialties.otolaryngology') },
-        { code: Specialty.Pathology, displayText: t('specialties.pathology') },
-        { code: Specialty.Pediatrics, displayText: t('specialties.pediatrics') },
-        { code: Specialty.Physiotherapy, displayText: t('specialties.physiotherapy') },
-        { code: Specialty.PreventiveMedicine, displayText: t('specialties.preventiveMedicine') },
-        { code: Specialty.Proctology, displayText: t('specialties.proctology') },
-        { code: Specialty.Psychiatry, displayText: t('specialties.psychiatry') },
-        { code: Specialty.PhysicalMedicineAndRehabilitation, displayText: t('specialties.physicalMedicineAndRehabilitation') },
-        { code: Specialty.RadiationOncology, displayText: t('specialties.radiationOncology') },
-        { code: Specialty.SportsMedicine, displayText: t('specialties.sportsMedicine') },
-        { code: Specialty.Traumatology, displayText: t('specialties.traumatology') },
-        { code: Specialty.Urology, displayText: t('specialties.urology') },
-        { code: Specialty.Surgery, displayText: t('specialties.surgery') },
-        { code: Specialty.InternalMedicine, displayText: t('specialties.internalMedicine') },
-        { code: Specialty.FamilyMedicine, displayText: t('specialties.familyMedicine') }
-    ] as SpecialtyDisplayOption[])
+    const specialtyDisplayOptions = computed((): SpecialtyDisplayOption[] => SPECIALTY_DISPLAY_ORDER
+        .map(code => ({ code, displayText: t(SPECIALTY_LABEL_KEYS[code]) })))
 
-    // This helps us map what specialties belong under a category.
-    // Used by the homepage category tiles and the search filter panel.
-    const categoryToSpecialtyMap = computed(() => ({
-        [SpecialtyCategory.Dental]: [Specialty.Dentistry],
-        [SpecialtyCategory.Dermatology]: [Specialty.Dermatology],
-        [SpecialtyCategory.ChildrensHealth]: [Specialty.Pediatrics],
-        [SpecialtyCategory.WomensHealth]: [Specialty.ObstetricsAndGynecology],
-        [SpecialtyCategory.PrimaryCare]: [
-            Specialty.InternalMedicine,
-            Specialty.AllergyAndImmunology,
-            Specialty.Cardiology,
-            Specialty.DiagnosticRadiology,
-            Specialty.EmergencyMedicine,
-            Specialty.InfectiousDiseases,
-            Specialty.GeneralMedicine,
-            Specialty.MedicalGenetics,
-            Specialty.Neurology,
-            Specialty.NuclearMedicine,
-            Specialty.Pathology,
-            Specialty.PreventiveMedicine,
-            Specialty.Otolaryngology,
-            Specialty.RadiationOncology
-        ],
-        [SpecialtyCategory.MentalHealth]: [Specialty.Psychiatry],
-        [SpecialtyCategory.PhysicalTherapy]: [Specialty.Physiotherapy],
-        [SpecialtyCategory.EyeAndVision]: [Specialty.Optometry, Specialty.Ophthalmology],
-        [SpecialtyCategory.Ent]: [Specialty.EntSpecialist],
-        [SpecialtyCategory.MensHealth]: [Specialty.Urology],
-        [SpecialtyCategory.SportsAndRehab]: [Specialty.SportsMedicine,
-                                             Specialty.OrthopedicSurgery,
-                                             Specialty.PhysicalMedicineAndRehabilitation],
-        [SpecialtyCategory.CosmeticAndPlasticSurgery]: [Specialty.Surgery, Specialty.Anesthesiology]
-    }))
+    // The specialties under each category, shared with the API and MCP. The homepage tiles read it.
+    const categoryToSpecialtyMap = computed(() => SPECIALTY_CATEGORY_MEMBERS)
 
     return {
         specialtyCategories,
