@@ -9,7 +9,7 @@ import { type Degree,
     LicenseReviewStatus,
     NameReviewStatus,
     type Specialty,
-    type Locale, type DeleteResult, type HealthcareProfessional,
+    Locale, type DeleteResult, type HealthcareProfessional,
     type LocalizedNameInput,
     type Mutation,
     type MutationDeleteHealthcareProfessionalArgs,
@@ -417,29 +417,14 @@ export const useHealthcareProfessionalsStore = defineStore(
             return mappedResponse
         }
 
+        // Japanese in the Japanese dashboard, romaji in every other language. Every professional has
+        // both names (#282), so there is no fallback to the other one.
         const displayChosenLocaleForHealthcareProfessional = (
             healthcareProfessional: HealthcareProfessional | CreateHealthcareProfessionalInput
-        ) => {
-            const nameFromChosenLocaleDisplay = healthcareProfessional.names.find(
-                name => name.locale === localeStore.activeLocale.code
-            )
-
-            if (nameFromChosenLocaleDisplay) {
-                return nameFromChosenLocaleDisplay
-            }
-
-            const defaultName = healthcareProfessional.names[0]
-            if (defaultName) {
-                return defaultName
-            }
-
-            const fallback: LocalizedNameInput = {
-                firstName: '',
-                lastName: '',
-                middleName: '',
-                locale: localeStore.activeLocale.code as LocalizedNameInput['locale']
-            }
-            return fallback
+        ): LocalizedNameInput => {
+            const locale = localeStore.activeLocale.code === Locale.JaJp ? Locale.JaJp : Locale.EnUs
+            return healthcareProfessional.names.find(name => name.locale === locale)
+              ?? { firstName: '', lastName: '', middleName: '', locale }
         }
 
         function setItemsPerPage(newLimit: number) {
