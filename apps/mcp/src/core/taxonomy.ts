@@ -1,78 +1,72 @@
 import { gql } from 'graphql-request'
+import type {
+    LanguageDefinition,
+    SpecialtyCategory,
+    SpecialtyCategoryDefinition,
+    SpecialtyDefinition
+} from '@findadoc/graphql'
 import { gqlClient } from '../graphql.js'
 
-// Find a Doc has no dedicated query for the lists of specialties or languages —
-// they are the `Specialty` and `Locale` GraphQL enums. We introspect the enums
-// so the lists stay in sync with the upstream schema. See findadoc-server#1001.
+// The API serves the filter vocabulary with labels (#24), so MCP no longer introspects the schema.
 
-const LIST_ENUM = gql`
-    query ListEnum($name: String!) {
-        __type(name: $name) {
-            enumValues {
-                name
-            }
-        }
+const LIST_SPECIALTIES = gql`
+    query ListSpecialties {
+        specialties { code nameEn nameJa categories }
+        specialtyCategories { code nameEn nameJa specialties }
     }
 `
 
-interface EnumResponse {
-    __type: {
-        enumValues: Array<{ name: string }>
-    } | null
-}
+const LIST_LANGUAGES = gql`
+    query ListLanguages($publishedOnly: Boolean) {
+        languages(publishedOnly: $publishedOnly) { code nameEn nameJa nameNative published }
+    }
+`
 
-async function fetchEnumValues(name: string): Promise<string[]> {
-    const data = await gqlClient.request<EnumResponse>(LIST_ENUM, { name })
-
-    // eslint-disable-next-line no-underscore-dangle -- `__type` is the GraphQL introspection field
-    return data.__type?.enumValues.map(v => v.name) ?? []
-}
+// Not named Specialty or Language: @findadoc/graphql exports those names as enums.
+export type SpecialtyEntry = Omit<SpecialtyDefinition, '__typename'>
+export type CategoryEntry = Omit<SpecialtyCategoryDefinition, '__typename'>
+export type LanguageEntry = Omit<LanguageDefinition, '__typename'>
 
 export interface SpecialtiesResult {
     count: number
-    specialties: string[]
-}
-
-export interface Language {
-    code: string
-    label: string
+    specialties: SpecialtyEntry[]
+    categories: CategoryEntry[]
 }
 
 export interface LanguagesResult {
     count: number
-    languages: Language[]
+    languages: LanguageEntry[]
 }
 
-// Map a Locale code (e.g. "en_US") to a human-readable label using the
-// runtime's Intl data, falling back to the raw code if it can't be resolved.
-function describeLocale(code: string): string {
-    if (code === 'und') { return 'Undetermined' }
+/**
+ * Specialties with labels and the categories that group them. With a category, only that
+ * category and its specialties, so an agent can turn "mental health" into codes. Those come in
+ * the category's own order, whose first entry is the homepage tile's specialty.
+ */
+export async function listSpecialties(category?: SpecialtyCategory): Promise<SpecialtiesResult> {
+    const data = await gqlClient.request<{ specialties: SpecialtyEntry[], specialtyCategories: CategoryEntry[] }>(
+        LIST_SPECIALTIES
+    )
 
-    const [language, region] = code.split('_')
-
-    try {
-        const languageName = new Intl.DisplayNames(['en'], { type: 'language' }).of(language)
-        const regionName = region
-            ? new Intl.DisplayNames(['en'], { type: 'region' }).of(region)
-            : undefined
-
-        if (languageName && regionName) { return `${languageName} (${regionName})` }
-
-        return languageName ?? code
-    } catch {
-        return code
+    if (category === undefined) {
+        return { count: data.specialties.length, specialties: data.specialties, categories: data.specialtyCategories }
     }
+
+    const categories = data.specialtyCategories.filter(entry => entry.code === category)
+    const byCode = new Map(data.specialties.map(specialty => [specialty.code, specialty]))
+    const specialties = (categories[0]?.specialties ?? [])
+        .map(code => byCode.get(code))
+        .filter((specialty): specialty is SpecialtyEntry => specialty !== undefined)
+
+    return { count: specialties.length, specialties, categories }
 }
 
-export async function listSpecialties(): Promise<SpecialtiesResult> {
-    const specialties = await fetchEnumValues('Specialty')
+/** The search-facet languages, or every Locale code when `includeUnpublished` is true. */
+export async function listLanguages(includeUnpublished = false): Promise<LanguagesResult> {
+    const data = await gqlClient.request<{ languages: LanguageEntry[] }>(
+        LIST_LANGUAGES,
+        { publishedOnly: !includeUnpublished }
+    )
 
-    return { count: specialties.length, specialties }
-}
-
-export async function listLanguages(): Promise<LanguagesResult> {
-    const codes = await fetchEnumValues('Locale')
-    const languages = codes.map(code => ({ code, label: describeLocale(code) }))
-
-    return { count: languages.length, languages }
+    return { count: data.languages.length, languages: data.languages }
 }
