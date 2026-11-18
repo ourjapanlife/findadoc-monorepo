@@ -22,6 +22,7 @@ describe('isServerError', () => {
         expect(isServerError(serviceError('facility', 404))).toBe(false)
         expect(isServerError(new GraphQLError('boom'))).toBe(true)
         expect(isServerError(new GraphQLError('no', { extensions: { code: 'UNAUTHORIZED' } }))).toBe(false)
+        expect(isServerError(new GraphQLError('no', { extensions: { code: 'UNAUTHENTICATED' } }))).toBe(false)
         expect(isServerError(new GraphQLError('bad', { extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } }))).toBe(false)
     })
 })

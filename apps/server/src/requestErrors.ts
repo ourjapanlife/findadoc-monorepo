@@ -12,6 +12,7 @@ export const SEARCH_ROOT_FIELDS: ReadonlySet<string> = new Set([
 // Codes for a request the client got wrong. They are answered in the response, not alerted on.
 const CLIENT_ERROR_CODES: ReadonlySet<string> = new Set([
     'BAD_USER_INPUT',
+    'UNAUTHENTICATED',
     'UNAUTHORIZED',
     'GRAPHQL_PARSE_FAILED',
     'GRAPHQL_VALIDATION_FAILED',

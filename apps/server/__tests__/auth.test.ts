@@ -508,6 +508,14 @@ describe('buildUserContext()', () => {
         expect(ctx.user.roles).toEqual([Role.User])
     })
 
+    it('refuses a request whose token did not verify with UNAUTHENTICATED (#123)', async () => {
+        const fakeReq = { user: null } as unknown as FastifyRequest
+
+        await expect(buildUserContext(fakeReq)).rejects.toMatchObject({
+            extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } }
+        })
+    })
+
     it('should default to empty roles if none provided', async () => {
         const fakeReq = { user: { sub: 'noRoleSub', name: 'NoRole', email: 'norole@norole.com', scope: '' } } as FastifyRequest
         const ctx = await buildUserContext(fakeReq)

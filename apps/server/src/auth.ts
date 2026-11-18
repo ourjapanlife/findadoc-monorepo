@@ -318,9 +318,30 @@ export function withAnyScope<TParent, TArgs, TContext extends UserContext, TResu
 export const EMAIL_CLAIM = 'https://findadoc.jp/email'
 export const EMAIL_VERIFIED_CLAIM = 'https://findadoc.jp/email_verified'
 
-// This function builds the user context from the FastifyRequest object so it can be used in the graphQL resolvers.
+/**
+ * The error for a request whose Authorization header did not verify (#123).
+ * It is the client's mistake, so it is a 401, not a 500 that sets off server alarms.
+ */
+export function invalidTokenError(): GraphQLError {
+    return new GraphQLError('Invalid or expired token', {
+        extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } }
+    })
+}
+
+/**
+ * Builds the resolver context from the verified JWT on the request.
+ * The preHandler sets `request.user` for a valid token or for no token. It stays null when a token
+ * was sent and did not verify, and that request gets UNAUTHENTICATED instead of a crash (#123).
+ */
 export async function buildUserContext(req: FastifyRequest): Promise<UserContext> {
-    const userFromRequest = req?.user as User
+    const userFromRequest: unknown = req?.user
+    if (typeof userFromRequest !== 'object' || userFromRequest === null) {
+        throw invalidTokenError()
+    }
+    return userContextFrom(req, userFromRequest as User)
+}
+
+function userContextFrom(req: FastifyRequest, userFromRequest: User): UserContext {
     const tokenRoles = userFromRequest['https://findadoc.jp/roles'] as Role[] || userFromRequest?.roles as Role[] || []
 
     return {
@@ -383,8 +404,8 @@ export async function initializeAuth(fastify: FastifyInstance) {
                     
                 return
             } catch (err) {
-                // Token is invalid
-                logger.error('Invalid token', errorLogFields(err)) 
+                // The client sent a bad token. request.user stays null and buildUserContext answers 401 (#123).
+                logger.warn('Invalid token', errorLogFields(err))
                 return
             }
         }
