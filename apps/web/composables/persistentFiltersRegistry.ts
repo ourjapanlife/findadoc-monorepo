@@ -1,10 +1,13 @@
-/** Stored moderation filters. A key that leaves this map is removed on the next read. */
+/**
+ * Stored moderation filters. A key that leaves this map is removed on the next read.
+ * Search text is not stored: a reload starts with an empty search box.
+ */
 export const PERSISTENT_FILTER_STORAGE_PREFIX = 'moderation-filters:'
 
 export const persistentFilterKeys = {
     submissions: ['tab', 'pageSize', 'offset'],
-    facilities: ['search', 'pageSize', 'offset'],
-    professionals: ['search', 'licenseReview', 'nameReview', 'pageSize', 'offset'],
+    facilities: ['pageSize', 'offset'],
+    professionals: ['licenseReview', 'nameReview', 'pageSize', 'offset'],
     bookings: ['pageSize', 'offset']
 } as const
 

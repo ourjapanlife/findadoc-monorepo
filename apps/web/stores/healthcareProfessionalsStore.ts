@@ -87,7 +87,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             DEFAULT_MODERATION_PAGE_SIZE,
             MODERATION_PAGE_SIZES
         )
-        const listSearchQuery = usePersistentFilters('professionals', 'search', '')
+        const listSearchQuery = ref('')
         const listOrder: Ref<ListOrder | null> = ref(null)
         const licenseReviewFilter = usePersistentFilters(
             'professionals',

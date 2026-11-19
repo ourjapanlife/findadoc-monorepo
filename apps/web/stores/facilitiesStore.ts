@@ -239,7 +239,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         DEFAULT_MODERATION_PAGE_SIZE,
         MODERATION_PAGE_SIZES
     )
-    const listSearchQuery = usePersistentFilters('facilities', 'search', '')
+    const listSearchQuery = ref('')
     const listOrder: Ref<ListOrder | null> = ref(null)
     const facilityList: Ref<Facility[]> = ref([])
     const filteredFacilityData = computed(() => facilityList.value)
