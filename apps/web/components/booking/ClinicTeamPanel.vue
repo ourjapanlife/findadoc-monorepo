@@ -55,8 +55,12 @@
                         v-if="canRemove(member)"
                         type="button"
                         class="btn btn-ghost btn-sm text-error hover:bg-error/10"
+                        :data-testid="`clinic-member-remove-${member.id}`"
+                        :disabled="removingId !== null"
+                        :aria-busy="removingId === member.id"
                         @click="askRemove(member)"
                     >
+                        <ButtonSpinner v-if="removingId === member.id" />
                         {{ t('clinicDashboard.members.remove') }}
                     </button>
                 </li>
@@ -183,6 +187,9 @@ async function invite(): Promise<void> {
 
 // Removing someone asks in a toast, not a browser dialog. The toast's button does it, and
 // the toast stays until it is used or dismissed, so there is no deadline to confirm.
+// The member whose removal is in flight. Every Remove button waits for it.
+const removingId = ref<string | null>(null)
+
 function askRemove(member: ClinicMember): void {
     const label = t('clinicDashboard.members.remove')
     toast.warning(t('clinicDashboard.members.removeConfirm', { email: member.email ?? '' }), {
@@ -198,11 +205,19 @@ function askRemove(member: ClinicMember): void {
 }
 
 async function remove(member: ClinicMember): Promise<void> {
-    const removed = await removeClinicMember(member.id)
-    if (!removed) {
-        toast.error(t('clinicDashboard.saveFailed'))
+    if (removingId.value !== null) {
+        return
     }
-    await load()
+    removingId.value = member.id
+    try {
+        const removed = await removeClinicMember(member.id)
+        if (!removed) {
+            toast.error(t('clinicDashboard.saveFailed'))
+        }
+        await load()
+    } finally {
+        removingId.value = null
+    }
 }
 
 onMounted(load)

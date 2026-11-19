@@ -1,5 +1,11 @@
 import { expect } from 'chai'
-import { DIRECTORY_PRERENDER_LOCALE_CODES, LOCALE_CODES, localizedPath, unlocalizedPath } from '@/utils/localePath'
+import {
+    DIRECTORY_PRERENDER_LOCALE_CODES,
+    HUB_PRERENDER_LOCALE_CODES,
+    LOCALE_CODES,
+    localizedPath,
+    unlocalizedPath
+} from '@/utils/localePath'
 import { hreflangAlternates, isNoindexRoute, ROBOTS_DISALLOW_PATHS } from '@/utils/seo'
 import { indexableMarketingPaths, publicSitemapUrls, SITEMAP_EXCLUDE } from '@/utils/sitemap'
 import {
@@ -162,12 +168,15 @@ describe('loadDirectorySitemapUrls', () => {
             { loc: '/tokyo', lastmod: '2026-08-01T00:00:00.000Z' }
         ])
         expect(urls.map(url => url.loc)).to.include('/ja-JP/tokyo')
-        expect(urls.map(url => url.loc)).to.not.include('/zh-CN/tokyo')
+        expect(urls.map(url => url.loc)).to.include('/zh-CN/tokyo')
+        expect(urls.map(url => url.loc)).to.not.include('/ne-NP/tokyo')
         expect(urls.map(url => url.loc)).to.not.include('/zh-CN/clinic/tokyo/shibuya/tokyo-family-clinic--f1')
         expect(urls.filter(url => unlocalizedPath(url.loc) === '/tokyo'))
+            .to.have.length(HUB_PRERENDER_LOCALE_CODES.length)
+        expect(urls.filter(url => unlocalizedPath(url.loc) === '/clinic/tokyo/shibuya/tokyo-family-clinic--f1'))
             .to.have.length(DIRECTORY_PRERENDER_LOCALE_CODES.length)
         expect(urls.find(url => url.loc === '/ja-JP/tokyo')?.alternatives?.map(alt => alt.hreflang))
-            .to.deep.equal(['en-US', 'ja-JP', 'x-default'])
+            .to.deep.equal([...HUB_PRERENDER_LOCALE_CODES, 'x-default'])
     })
 
     it('omits entity URLs when the directory API fails', async () => {

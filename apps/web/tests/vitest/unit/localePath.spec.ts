@@ -7,9 +7,9 @@ import {
     routeMatchesPath,
     unlocalizedPath,
     DIRECTORY_PRERENDER_LOCALE_CODES,
-    withDirectoryLocaleVariants,
     withLocaleVariants
 } from '@/utils/localePath'
+import { withDirectoryLocaleVariants } from '@/utils/directoryLocales'
 
 describe('locale paths', () => {
     it('strips a non-default prefix and leaves English paths alone', () => {
@@ -37,7 +37,7 @@ describe('locale paths', () => {
         expect(withLocaleVariants(['/about'])).to.include('/zh-CN/about')
     })
 
-    it('prerenders directory pages for English and Japanese only', () => {
+    it('prerenders clinic pages for English and Japanese only', () => {
         const clinic = '/clinic/tokyo/shibuya/clinic--abc'
         const variants = withDirectoryLocaleVariants([clinic])
 

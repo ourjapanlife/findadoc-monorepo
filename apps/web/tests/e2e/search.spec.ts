@@ -285,6 +285,8 @@ test.describe('Search page', () => {
         test('filtered search URLs are noindex so they do not compete with facet pages', async ({ page }) => {
             await page.goto('/search')
             await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(0)
+            // Wait for hydration: its router.replace otherwise interrupts the next goto (WebKit flake).
+            await expect(page.getByTestId('search-result-card')).toHaveCount(3)
 
             await page.goto('/search?specialty=dentistry')
             await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(1)

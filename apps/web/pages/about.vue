@@ -286,7 +286,8 @@ import { useState } from '#imports'
 import data from '../member_directory/members.json'
 import MemberComponent from '~/components/about/MemberComponent.vue'
 import { shuffleArray } from '~/utils/arrayUtils'
-import { DIRECTORY_STATS } from '~/utils/homeDirectory'
+import { directoryCounts } from '~/utils/homeDirectory'
+import directoryStats from '#directory-stats'
 import { CONTACT_MAILTO, LINKEDIN_ORGANIZATION_URL } from '~/utils/site'
 import SvgNotes from '~/assets/icons/note-stack-add.svg'
 import SvgLinkedin from '~/assets/icons/social-linkedin.svg'
@@ -330,11 +331,13 @@ const sectionLinks = computed(() => [
     { id: 'involve', label: t('about.involveHeader') }
 ])
 
-// Framed as approximate so they do not read as a live counter; see DIRECTORY_STATS.
+// Counted from this build's directory (#directory-stats). Framed as approximate so they do not
+// read as a live counter.
+const counts = directoryCounts(directoryStats)
 const stats = computed(() => [
-    t('home.statFacilities', { n: DIRECTORY_STATS.facilities }),
-    t('home.statProfessionals', { n: DIRECTORY_STATS.professionals }),
-    t('home.statLanguages', { n: DIRECTORY_STATS.languages })
+    t('home.statFacilities', { n: counts.facilities }),
+    t('home.statProfessionals', { n: counts.professionals }),
+    t('home.statLanguages', { n: counts.languages })
 ])
 
 /*

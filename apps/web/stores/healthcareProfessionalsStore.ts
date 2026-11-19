@@ -9,7 +9,7 @@ import { type Degree,
     LicenseReviewStatus,
     NameReviewStatus,
     type Specialty,
-    type Locale, type DeleteResult, type HealthcareProfessional,
+    Locale, type DeleteResult, type HealthcareProfessional,
     type LocalizedNameInput,
     type Mutation,
     type MutationDeleteHealthcareProfessionalArgs,
@@ -87,7 +87,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             DEFAULT_MODERATION_PAGE_SIZE,
             MODERATION_PAGE_SIZES
         )
-        const listSearchQuery = usePersistentFilters('professionals', 'search', '')
+        const listSearchQuery = ref('')
         const listOrder: Ref<ListOrder | null> = ref(null)
         const licenseReviewFilter = usePersistentFilters(
             'professionals',
@@ -106,6 +106,8 @@ export const useHealthcareProfessionalsStore = defineStore(
         const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
         let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
         let professionalListRequest = 0
+        /** True while the latest list request is in flight, so the table shows Chiko instead of "no results". */
+        const isListLoading: Ref<boolean> = ref(false)
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalHealthcareProfessionalsCount.value)
         const hasPrevPage = computed(() => currentOffset.value > 0)
         const healthcareProfessionalSectionFields = reactive<HealthcareProfessional>({
@@ -211,6 +213,7 @@ export const useHealthcareProfessionalsStore = defineStore(
 
         async function loadHealthcareProfessionalList() {
             const request = ++professionalListRequest
+            isListLoading.value = true
             const query = listSearchQuery.value.trim()
             const orderBy = orderByInput(listOrder.value)
             try {
@@ -238,6 +241,10 @@ export const useHealthcareProfessionalsStore = defineStore(
                 toastModerationLoadError('moderationListErrors.professionals')
                 healthcareProfessionalList.value = []
                 totalHealthcareProfessionalsCount.value = 0
+            } finally {
+                if (request === professionalListRequest) {
+                    isListLoading.value = false
+                }
             }
         }
 
@@ -417,29 +424,14 @@ export const useHealthcareProfessionalsStore = defineStore(
             return mappedResponse
         }
 
+        // Japanese in the Japanese dashboard, romaji in every other language. Every professional has
+        // both names (#282), so there is no fallback to the other one.
         const displayChosenLocaleForHealthcareProfessional = (
             healthcareProfessional: HealthcareProfessional | CreateHealthcareProfessionalInput
-        ) => {
-            const nameFromChosenLocaleDisplay = healthcareProfessional.names.find(
-                name => name.locale === localeStore.activeLocale.code
-            )
-
-            if (nameFromChosenLocaleDisplay) {
-                return nameFromChosenLocaleDisplay
-            }
-
-            const defaultName = healthcareProfessional.names[0]
-            if (defaultName) {
-                return defaultName
-            }
-
-            const fallback: LocalizedNameInput = {
-                firstName: '',
-                lastName: '',
-                middleName: '',
-                locale: localeStore.activeLocale.code as LocalizedNameInput['locale']
-            }
-            return fallback
+        ): LocalizedNameInput => {
+            const locale = localeStore.activeLocale.code === Locale.JaJp ? Locale.JaJp : Locale.EnUs
+            return healthcareProfessional.names.find(name => name.locale === locale)
+              ?? { firstName: '', lastName: '', middleName: '', locale }
         }
 
         function setItemsPerPage(newLimit: number) {
@@ -477,6 +469,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             getHealthcareProfessionals,
             searchHealthcareProfessionals,
             loadHealthcareProfessionalList,
+            isListLoading,
             healthcareProfessionalsData,
             filteredHealthcareProfessionalsData,
             listSearchQuery,

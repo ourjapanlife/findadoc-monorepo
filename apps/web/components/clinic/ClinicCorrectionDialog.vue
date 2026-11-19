@@ -218,8 +218,10 @@
                         type="submit"
                         class="btn btn-primary btn-sm"
                         data-testid="clinic-correction-submit"
+                        :aria-busy="isSending"
                         :disabled="isSending"
                     >
+                        <ButtonSpinner v-if="isSending" />
                         {{ isSending ? t('clinicCorrection.sending') : t('clinicCorrection.submit') }}
                     </button>
                 </footer>
@@ -229,6 +231,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, onMounted, ref, useId } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FacilityCorrectionReason } from '@findadoc/graphql'

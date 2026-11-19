@@ -1,6 +1,4 @@
 import {
-    facetLanguageDocumentTitle,
-    facetSpecialtyDocumentTitle,
     isIndexableFacet,
     languageFacetDisplayName,
     languageFacetPathFromSlugs,
@@ -321,10 +319,4 @@ export function attachProfessionalsToFacilities(
         ...facility,
         healthcareProfessionals: byFacility.get(facility.id) ?? facility.healthcareProfessionals ?? []
     }))
-}
-
-export function facetDocumentTitle(facet: Pick<FacetPage, 'kind' | 'label' | 'prefectureEn'>): string {
-    return facet.kind === 'specialty'
-        ? facetSpecialtyDocumentTitle(facet.label, facet.prefectureEn)
-        : facetLanguageDocumentTitle(facet.label, facet.prefectureEn)
 }

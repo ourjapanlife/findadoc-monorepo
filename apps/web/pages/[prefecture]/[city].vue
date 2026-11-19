@@ -70,16 +70,14 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import generatedPrefectureHubs from '#generated-prefecture-hubs'
 import { createError, navigateTo, useAsyncData, useHead, useRoute } from '#imports'
-import { isJapaneseLocale } from '~/utils/activeLocale'
-import { canonicalPathMatches, slugifySegment } from '~/utils/clinicPath'
+import { canonicalPathMatches, facilityDocumentTitle, slugifySegment } from '~/utils/clinicPath'
 import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
 import { cityHubCrumbs, facetCrumbs } from '~/utils/directoryLinks'
 import { breadcrumbListJsonLd, jsonLdScript } from '~/utils/structuredData'
-import { facetDocumentTitle } from '~/utils/facetIndex'
 import { loadPrefectureLeaf } from '~/utils/hubDirectory'
 import { useDirectoryRelatedLinks } from '~/composables/useDirectoryLinks'
+import { hubFacetLabel, hubPlaceName, type HubFacetLabelSource } from '~/utils/hubLabels'
 import {
-    hubCityDocumentTitle,
     isIndexableCityHub,
     isReservedHubSegment,
     prefectureHubPathFromSlug
@@ -121,36 +119,33 @@ const canonicalPath = computed(() => city.value?.path ?? facet.value?.path ?? ''
 const prefecturePath = computed(() => prefectureHubPathFromSlug(
     city.value?.prefectureSlug ?? facet.value?.prefectureSlug ?? prefectureSlug
 ))
-const isJapanese = computed(() => isJapaneseLocale(locale.value))
+const displayPrefecture = computed(() => hubPlaceName(
+    city.value?.prefectureEn ?? facet.value?.prefectureEn ?? '',
+    city.value?.prefectureJa ?? facet.value?.prefectureJa,
+    locale.value
+))
 
-const displayPrefecture = computed(() => {
-    const prefectureEn = city.value?.prefectureEn ?? facet.value?.prefectureEn ?? ''
-    const prefectureJa = city.value?.prefectureJa ?? facet.value?.prefectureJa ?? ''
-    if (isJapanese.value) {
-        return prefectureJa || prefectureEn
-    }
-    return prefectureEn
-})
+const displayCity = computed(() => (
+    city.value ? hubPlaceName(city.value.cityEn, city.value.cityJa, locale.value) : ''
+))
 
-const displayCity = computed(() => {
-    if (!city.value) {
-        return ''
-    }
-    return isJapanese.value
-        ? (city.value.cityJa || city.value.cityEn)
-        : city.value.cityEn
-})
+function translatedFacetLabel(item: { label: string, facet?: HubFacetLabelSource }): string {
+    return item.facet ? hubFacetLabel(item.facet, locale.value, t) : item.label
+}
+
+// The facet in the reader's language ("英語", "牙医"). English keeps the indexed label.
+const facetLabel = computed(() => (facet.value ? hubFacetLabel(facet.value, locale.value, t) : ''))
 
 const heading = computed(() => {
     if (facet.value?.kind === 'specialty') {
         return t('hubPage.specialtyHeading', {
-            specialty: facet.value.label,
+            specialty: facetLabel.value,
             prefecture: displayPrefecture.value
         })
     }
     if (facet.value?.kind === 'language') {
         return t('hubPage.languageHeading', {
-            language: facet.value.label,
+            language: facetLabel.value,
             prefecture: displayPrefecture.value
         })
     }
@@ -168,7 +163,7 @@ const crumbs = computed(() => {
     if (facet.value) {
         return facetCrumbs({
             ...shared,
-            facetLabel: facet.value.label
+            facetLabel: facetLabel.value
         })
     }
     return cityHubCrumbs({
@@ -178,14 +173,17 @@ const crumbs = computed(() => {
 })
 const facilityCountText = computed(() => t('hubPage.facilityCount', city.value?.facilities.length ?? 0))
 const professionalCountText = computed(() => t('hubPage.professionalCount', facet.value?.professionalCount ?? 0))
-const citySpecialtyItems = computed(() => related.value?.prefectureSpecialties ?? [])
+const citySpecialtyItems = computed(() => (related.value?.prefectureSpecialties ?? []).map(item => ({
+    path: item.path,
+    label: hubFacetLabel(item, locale.value, t)
+})))
 const cityLanguageItems = computed(() => (related.value?.prefectureLanguages ?? []).map(item => ({
     path: item.path,
-    label: t('hubPage.languageChip', { language: item.label })
+    label: t('hubPage.languageChip', { language: hubFacetLabel(item, locale.value, t) })
 })))
 const siblingCityItems = computed(() => (related.value?.siblingCities ?? []).map(item => ({
     path: item.path,
-    label: isJapanese.value ? item.labelJa : item.label
+    label: hubPlaceName(item.label, item.labelJa, locale.value)
 })))
 const samePlaceHeading = computed(() => (
     facet.value?.kind === 'language'
@@ -194,41 +192,33 @@ const samePlaceHeading = computed(() => (
 ))
 const nearbyHeading = computed(() => {
     if (facet.value?.kind === 'language') {
-        return t('hubPage.nearbyLanguageHeading', { language: facet.value.label })
+        return t('hubPage.nearbyLanguageHeading', { language: facetLabel.value })
     }
-    return t('hubPage.nearbySpecialtyHeading', { specialty: facet.value?.label ?? '' })
+    return t('hubPage.nearbySpecialtyHeading', { specialty: facetLabel.value })
 })
 const samePlaceItems = computed(() => (related.value?.samePlace ?? []).map(item => ({
     path: item.path,
     label: facet.value?.kind === 'language'
-        ? t('hubPage.languageChip', { language: item.label })
-        : item.label
+        ? t('hubPage.languageChip', { language: translatedFacetLabel(item) })
+        : translatedFacetLabel(item)
 })))
 const nearbyItems = computed(() => (related.value?.nearbySame ?? []).map(item => ({
     path: item.path,
-    label: isJapanese.value ? item.labelJa : item.label
+    label: hubPlaceName(item.label, item.labelJa, locale.value)
 })))
-const documentTitle = computed(() => {
-    if (facet.value) {
-        return facetDocumentTitle({
-            kind: facet.value.kind,
-            label: facet.value.label,
-            prefectureEn: displayPrefecture.value || facet.value.prefectureEn
-        })
-    }
-    return hubCityDocumentTitle(displayCity.value, displayPrefecture.value)
-})
+// The heading is translated, so the title is too. English titles are unchanged.
+const documentTitle = computed(() => facilityDocumentTitle(heading.value))
 const brandedTitle = computed(() => formatPageTitle(documentTitle.value))
 const metaDescription = computed(() => {
     if (facet.value?.kind === 'specialty') {
         return t('hubPage.specialtyMeta', {
-            specialty: facet.value.label,
+            specialty: facetLabel.value,
             prefecture: displayPrefecture.value
         })
     }
     if (facet.value?.kind === 'language') {
         return t('hubPage.languageMeta', {
-            language: facet.value.label,
+            language: facetLabel.value,
             prefecture: displayPrefecture.value
         })
     }

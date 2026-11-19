@@ -325,8 +325,10 @@
                         type="submit"
                         class="btn btn-primary"
                         data-testid="clinic-booking-submit"
+                        :aria-busy="submitting"
                         :disabled="submitting || !confirmationsComplete"
                     >
+                        <ButtonSpinner v-if="submitting" />
                         {{ submitting ? t('bookingPage.submitting') : t('bookingPage.submit') }}
                     </button>
                 </template>
@@ -336,6 +338,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {

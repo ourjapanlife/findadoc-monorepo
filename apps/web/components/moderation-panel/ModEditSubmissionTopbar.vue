@@ -20,33 +20,45 @@
                     type="button"
                     :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
                     data-testid="submission-topNav-update"
+                    :disabled="actionPending"
+                    :aria-busy="isActionPending(ModerationSubmissionActionType.Update)"
                     @click="requestUpdate"
                 >
+                    <ButtonSpinner v-if="isActionPending(ModerationSubmissionActionType.Update)" />
                     {{ t('modEditSubmissionTopNav.update') }}
                 </button>
                 <button
                     type="button"
                     :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
                     data-testid="submission-topNav-updateAndExit"
+                    :disabled="actionPending"
+                    :aria-busy="isActionPending(ModerationSubmissionActionType.UpdateAndExit)"
                     @click="requestUpdateAndExit"
                 >
+                    <ButtonSpinner v-if="isActionPending(ModerationSubmissionActionType.UpdateAndExit)" />
                     {{ t('modEditSubmissionTopNav.updateAndExit') }}
                 </button>
             </template>
             <button
                 data-testid="mod-edit-submission-reject-button"
+                :disabled="actionPending"
+                :aria-busy="isActionPending(ModerationSubmissionActionType.Reject)"
                 type="button"
                 :class="[buttonBaseClass, actionButtonClass, buttonDangerClass, buttonPaddingClass]"
                 @click="requestRejectConfirmation"
             >
+                <ButtonSpinner v-if="isActionPending(ModerationSubmissionActionType.Reject)" />
                 {{ t('modEditSubmissionTopNav.reject') }}
             </button>
             <button
                 type="button"
                 data-testid="mod-edit-submission-approve-button"
+                :disabled="actionPending"
+                :aria-busy="isActionPending(ModerationSubmissionActionType.Approve)"
                 :class="[buttonBaseClass, actionButtonClass, buttonPrimaryClass, buttonPaddingClass]"
                 @click="requestApproveConfirmation"
             >
+                <ButtonSpinner v-if="isActionPending(ModerationSubmissionActionType.Approve)" />
                 {{ t('modEditSubmissionTopNav.approve') }}
             </button>
         </div>
@@ -57,6 +69,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ModerationSubmissionActionType, useModerationSubmissionActions } from '~/composables/useModerationSubmissionActions'
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { leaveToModerationDashboard } from '~/utils/moderationUtils'
 import { isCorrection } from '~/utils/moderationSubmissionStatus'
 import { useModerationSubmissionsStore } from '~/stores/moderationSubmissionsStore'
@@ -67,7 +80,9 @@ const moderationScreenStore = useModerationScreenStore()
 const modalStore = useModalStore()
 
 const moderationSubmissionUnsavedStore = useModerationSubmissionUnsavedStore()
-const { emitModerationSubmissionAction } = useModerationSubmissionActions()
+const { emitModerationSubmissionAction, moderationSubmissionPendingAction } = useModerationSubmissionActions()
+const actionPending = computed(() => moderationSubmissionPendingAction.value !== null)
+const isActionPending = (type: ModerationSubmissionActionType) => moderationSubmissionPendingAction.value === type
 const moderationSubmissionsStore = useModerationSubmissionsStore()
 
 // A correction has nothing to save: the moderator approves or declines what the visitor sent (#22).
@@ -81,8 +96,9 @@ const goToDashboard = () => {
         leaveToModerationDashboard(router, moderationScreenStore, modalStore, 'submissions'))
 }
 
-const buttonBaseClass = 'inline-flex min-h-11 min-w-0 max-w-full items-center justify-center rounded-full border-2'
+const buttonBaseClass = 'inline-flex min-h-11 min-w-0 max-w-full items-center justify-center gap-2 rounded-full border-2'
   + ' break-words text-center text-sm font-bold leading-tight landscape:text-base'
+  + ' disabled:cursor-not-allowed disabled:opacity-50'
 const actionButtonClass = 'w-full landscape:w-auto landscape:shrink-0'
 const backButtonClass = 'w-auto shrink-0 self-start landscape:self-center'
 const buttonPaddingClass = 'px-3 py-2 whitespace-normal landscape:px-5'

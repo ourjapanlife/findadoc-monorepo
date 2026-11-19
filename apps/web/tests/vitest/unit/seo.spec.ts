@@ -13,6 +13,7 @@ import {
     ROBOTS_DISALLOW_PATHS,
     socialImageForPath
 } from '@/utils/seo'
+import { HUB_PRERENDER_LOCALE_CODES } from '@/utils/localePath'
 import {
     PAGE_SOCIAL_IMAGES,
     SITE_DEFAULT_TITLE,
@@ -69,6 +70,15 @@ describe('hreflangAlternates', () => {
         expect(byLang['x-default']).to.equal(`${SITE_ORIGIN}/clinic/tokyo/shibuya/clinic--abc`)
         expect(alternates).to.have.length(3)
     })
+
+    it('lists the wider hub locales on a hub page', () => {
+        const alternates = hreflangAlternates('/ko-KR/tokyo/dentistry')
+
+        expect(alternates.map(alternate => alternate.hreflang))
+            .to.deep.equal([...HUB_PRERENDER_LOCALE_CODES, 'x-default'])
+        expect(alternates.find(alternate => alternate.hreflang === 'zh-CN')?.href)
+            .to.equal(`${SITE_ORIGIN}/zh-CN/tokyo/dentistry`)
+    })
 })
 
 describe('openGraphLocale', () => {
@@ -102,7 +112,11 @@ describe('isNoindexRoute', () => {
         expect(isNoindexRoute('/ja-JP/clinic/tokyo/shibuya/clinic--abc')).to.equal(false)
         expect(isNoindexRoute('/ja-JP/tokyo')).to.equal(false)
         expect(isNoindexRoute('/zh-CN/clinic/tokyo/shibuya/clinic--abc')).to.equal(true)
-        expect(isNoindexRoute('/zh-CN/tokyo')).to.equal(true)
+        expect(isNoindexRoute('/zh-CN/tokyo')).to.equal(false)
+        expect(isNoindexRoute('/ko-KR/tokyo/dentistry')).to.equal(false)
+        expect(isNoindexRoute('/ne-NP/tokyo')).to.equal(true)
+        expect(isNoindexRoute('/zh-CN/doctor/aiko-tanaka--p1')).to.equal(true)
+        expect(isNoindexRoute('/zh-CN/book/abc')).to.equal(true)
         expect(isNoindexRoute('/zh-CN/about')).to.equal(false)
         expect(isNoindexRoute('/clinic/multilingual-online-clinic')).to.equal(true)
         expect(isNoindexRoute('/ja-JP/clinic/multilingual-online-clinic')).to.equal(true)

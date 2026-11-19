@@ -310,6 +310,7 @@
                 :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
                 :fields-to-display-callback="healthcareProfessionalsToDisplayCallback"
                 :default-suggestions="defaultHealthcareProfessionalSuggestions"
+                :searching="handleHealthcareProfessionalsInputChange.pending.value"
                 @search-input-blur="handleHealthcareProfessionalsInputChange.cancel"
                 @search-input-change="handleHealthcareProfessionalsInputChange"
             />
@@ -370,7 +371,8 @@ import { validateAddressLineEn,
     validateWebsite } from '~/utils/formValidations'
 import { RelationshipAction, type HealthcareProfessional } from '@findadoc/graphql'
 import type { CityOption } from '~/utils/cityOptions'
-import { listPrefectureJapanEn, listPrefectureJapanJa, pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
+import { pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
+import { listPrefectureJapanEn, listPrefectureJapanJa } from '~/utils/prefectureNames'
 import { checkPrefectureNameMatch } from '~/utils/facilitiesUtils'
 import { stableStringify } from '~/utils/stableStringify'
 import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'

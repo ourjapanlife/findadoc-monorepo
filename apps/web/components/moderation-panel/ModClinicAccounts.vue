@@ -12,18 +12,14 @@
                 v-model="pickedClinicId"
                 class="field max-w-md"
                 data-testid="mod-clinic-dashboard-picker"
-                :disabled="clinics === null || clinics.length === 0"
+                :disabled="clinics === undefined || clinics === null || clinics.length === 0"
                 @change="openClinic"
             >
                 <option
                     value=""
                     disabled
                 >
-                    {{ clinics === null
-                        ? t('modDashboardTopbar.clinicsLoadError')
-                        : clinics.length === 0
-                            ? t('modDashboardTopbar.noBookingClinics')
-                            : t('modDashboardTopbar.chooseClinic') }}
+                    {{ placeholderLabel }}
                 </option>
                 <option
                     v-for="clinic in clinics ?? []"
@@ -34,14 +30,20 @@
                 </option>
             </select>
         </label>
+        <ChikoLoader
+            v-if="clinics === undefined"
+            size="sm"
+            hide-label
+        />
     </section>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import type { BookingClinic } from '@findadoc/graphql'
 import { navigateTo, useI18n } from '#imports'
+import ChikoLoader from '~/components/common/ChikoLoader.vue'
 import { fetchAllBookingClinics } from '~/utils/booking/staffQuery'
 import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
 
@@ -51,7 +53,20 @@ import { localeCodeFromPath, localizedPath } from '~/utils/localePath'
  */
 const { t } = useI18n()
 const route = useRoute()
-const clinics = ref<BookingClinic[] | null>([])
+// undefined while the request is in flight, null when it failed.
+const clinics = ref<BookingClinic[] | null | undefined>(undefined)
+
+const placeholderLabel = computed(() => {
+    if (clinics.value === undefined) {
+        return t('common.loading')
+    }
+    if (clinics.value === null) {
+        return t('modDashboardTopbar.clinicsLoadError')
+    }
+    return clinics.value.length === 0
+        ? t('modDashboardTopbar.noBookingClinics')
+        : t('modDashboardTopbar.chooseClinic')
+})
 const pickedClinicId = ref('')
 
 async function openClinic(): Promise<void> {

@@ -96,7 +96,10 @@ describe('booking flow', () => {
         const now = new Date().toISOString()
         const row = await db.insertInto('hps')
             .values({
-                names: asJsonb([{ firstName: 'Test', lastName, locale: Locale.EnUs }]),
+                names: asJsonb([
+                    { firstName: 'Test', lastName, locale: Locale.EnUs },
+                    { firstName: 'テスト', lastName: '医師', locale: Locale.JaJp }
+                ]),
                 degrees: asJsonb([]),
                 primary_license: null,
                 additional_credentials: asJsonb([]),

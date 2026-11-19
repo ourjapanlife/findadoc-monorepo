@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect } from 'chai'
 import type { NitroConfig } from 'nitropack'
+import { DIRECTORY_PRERENDER_LOCALE_CODES, HUB_PRERENDER_LOCALE_CODES } from '@/utils/localePath'
 
 // Fake directory rows only.
 const built = {
@@ -25,7 +26,9 @@ vi.mock('@/utils/clinicPrerender', async importOriginal => ({
 }))
 
 const STATIC_ROUTES = ['/', '/about', '/sitemap.xml']
-const DIRECTORY_PAGES = built.paths.length + built.professionalPaths.length + built.hubPaths.length
+// Clinic and doctor pages render in English and Japanese; hubs in the wider hub list.
+const ENTITY_ROUTES = (built.paths.length + built.professionalPaths.length) * DIRECTORY_PRERENDER_LOCALE_CODES.length
+const DIRECTORY_ROUTES = ENTITY_ROUTES + built.hubPaths.length * HUB_PRERENDER_LOCALE_CODES.length
 
 async function generateConfig(): Promise<NitroConfig> {
     const { applyEntityDirectoryToNitro } = await import('@/utils/nuxt/entityDirectoryGenerate')
@@ -76,11 +79,12 @@ describe('generate-time directory', () => {
         expect(fetchDirectory.mock.calls).to.have.length(0)
     })
 
-    it('lists every directory page in both locales when the build is not split', async () => {
+    it('lists every directory page in its locales when the build is not split', async () => {
         const routes = (await generateConfig()).prerender?.routes ?? []
 
-        expect(routes).to.include.members([...STATIC_ROUTES, ...built.paths, '/ja-JP/tokyo/minato'])
-        expect(routes).to.have.length(STATIC_ROUTES.length + 2 * DIRECTORY_PAGES)
+        expect(routes).to.include.members([...STATIC_ROUTES, ...built.paths, '/ja-JP/tokyo/minato', '/ko-KR/tokyo'])
+        expect(routes).to.not.include('/zh-CN/doctor/test-doctor--doctor-1')
+        expect(routes).to.have.length(STATIC_ROUTES.length + DIRECTORY_ROUTES)
     })
 
     it('renders from the saved directory without calling the API', async () => {
@@ -122,13 +126,14 @@ describe('generate-time directory', () => {
 
         const all = perShard.flat()
         expect(new Set(all).size).to.equal(all.length)
-        expect(all).to.have.length(STATIC_ROUTES.length + 2 * DIRECTORY_PAGES)
+        expect(all).to.have.length(STATIC_ROUTES.length + DIRECTORY_ROUTES)
         expect(perShard[0]).to.include.members(STATIC_ROUTES)
         expect(perShard[1]).to.not.include('/')
         expect(perShard[2]).to.not.include('/sitemap.xml')
         for (const routes of perShard) {
-            for (const route of routes.filter(path => path.startsWith('/ja-JP/'))) {
-                expect(routes).to.include(route.replace('/ja-JP', ''))
+            // Every locale copy of a page renders in the same shard as the English one.
+            for (const route of routes.filter(path => /^\/[a-z]{2}-[A-Z]{2}\//.test(path))) {
+                expect(routes).to.include(route.replace(/^\/[a-z]{2}-[A-Z]{2}/, ''))
             }
         }
     })

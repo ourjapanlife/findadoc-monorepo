@@ -18,8 +18,10 @@
             class="btn btn-secondary btn-sm"
             :disabled="loading"
             data-testid="mod-facility-place-find"
+            :aria-busy="loading"
             @click="findPlaces"
         >
+            <ButtonSpinner v-if="loading" />
             {{ t('modFacilitySection.placeMatchFind') }}
         </button>
         <p
@@ -73,6 +75,7 @@
                     :disabled="savingId === candidate.placeId"
                     @click="savePlace(candidate.placeId)"
                 >
+                    <ButtonSpinner v-if="savingId === candidate.placeId" />
                     {{ savedPlaceId === candidate.placeId
                         ? t('modFacilitySection.placeMatchSaved')
                         : t('modFacilitySection.placeMatchSave') }}
@@ -83,6 +86,7 @@
 </template>
 
 <script lang="ts" setup>
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from '#imports'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'

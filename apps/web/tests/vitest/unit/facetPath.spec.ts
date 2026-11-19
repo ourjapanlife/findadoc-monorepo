@@ -1,8 +1,6 @@
 /// <reference types="vitest/globals" />
 import { expect } from 'chai'
 import {
-    facetLanguageDocumentTitle,
-    facetSpecialtyDocumentTitle,
     INDEXABLE_FACET_MIN_RESULTS,
     isFacetSecondSegment,
     languageFacetPathFromSlugs,
@@ -13,7 +11,6 @@ import {
     specialtyFacetSlug,
     specialtyFromFacetSlug
 } from '@/utils/facetPath'
-import { formatPageTitle } from '@/utils/site'
 import { Locale, Specialty } from '@findadoc/graphql'
 
 describe('facet slugs', () => {
@@ -58,14 +55,5 @@ describe('facet slugs', () => {
         expect(languageFacetPathFromSlugs('tokyo', Locale.EnUs)).to.equal('/tokyo/english-speaking')
         expect(specialtyFacetPathFromSlugs('search', Specialty.Dentistry)).to.equal(undefined)
         expect(INDEXABLE_FACET_MIN_RESULTS).to.equal(3)
-    })
-})
-
-describe('facet document titles', () => {
-    it('stay under 60 characters once branded', () => {
-        expect(formatPageTitle(facetSpecialtyDocumentTitle('Dentistry', 'Tokyo')).length)
-            .to.be.at.most(60)
-        expect(formatPageTitle(facetLanguageDocumentTitle('English', 'Tokyo')))
-            .to.equal(formatPageTitle('English-speaking care in Tokyo'))
     })
 })

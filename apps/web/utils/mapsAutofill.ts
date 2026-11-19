@@ -1,9 +1,5 @@
-import {
-    listPrefectureJapanEn,
-    listPrefectureJapanJa,
-    pairedPrefectureEn,
-    pairedPrefectureJa
-} from '~/stores/locationsStore'
+import { pairedPrefectureEn, pairedPrefectureJa } from '~/stores/locationsStore'
+import { listPrefectureJapanEn, listPrefectureJapanJa } from '~/utils/prefectureNames'
 import { matchOfficialCity, type CityOption } from '~/utils/cityOptions'
 
 export type FacilityMapsFillTarget = {

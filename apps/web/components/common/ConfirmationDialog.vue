@@ -19,6 +19,7 @@
             aria-modal="true"
             :aria-labelledby="titleId"
             :aria-describedby="messageId"
+            :aria-busy="pending"
         >
             <h2
                 :id="titleId"
@@ -37,6 +38,7 @@
                     ref="cancelButton"
                     type="button"
                     class="btn btn-secondary btn-sm"
+                    :disabled="pending"
                     @click="cancelAction"
                 >
                     {{ textCancel }}
@@ -45,9 +47,11 @@
                     type="button"
                     class="btn btn-sm"
                     :class="destructive ? 'btn-danger' : 'btn-primary'"
-                    :data-testid="isUnsaved ? 'submission-unsaved-confirmation-btn' : undefined"
+                    :data-testid="isUnsaved ? 'submission-unsaved-confirmation-btn' : 'confirmation-modal-confirm'"
+                    :disabled="pending"
                     @click="confirmAction"
                 >
+                    <ButtonSpinner v-if="pending" />
                     {{ textConfirm }}
                 </button>
             </div>
@@ -58,6 +62,7 @@
 <script setup lang="ts">
 import { computed, ref, shallowRef, useId } from 'vue'
 import { useI18n } from 'vue-i18n'
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { vCloseOnOutsideClick } from '~/composables/closeOnOutsideClick'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 
@@ -78,6 +83,7 @@ const confirmationDialog = useNuxtApp().$confirmationDialog
 const confirmation = confirmationDialog?.confirmation ?? shallowRef(undefined)
 const cancelAction = confirmationDialog?.cancelAction ?? (() => {})
 const confirmAction = confirmationDialog?.confirmAction ?? (() => {})
+const pending = confirmationDialog?.pending ?? shallowRef(false)
 
 const { t } = useI18n()
 

@@ -2,15 +2,12 @@
 import { expect } from 'chai'
 import {
     cityHubPath,
-    hubCityDocumentTitle,
-    hubPrefectureDocumentTitle,
     INDEXABLE_CITY_HUB_MIN_FACILITIES,
     isGeographyHubRoute,
     isIndexableCityHub,
     isReservedHubSegment,
     prefectureHubPath
 } from '@/utils/hubPath'
-import { formatPageTitle } from '@/utils/site'
 
 describe('hub paths', () => {
     it('uses the same slugs as facility URLs', () => {
@@ -53,13 +50,5 @@ describe('thin city hubs', () => {
         expect(INDEXABLE_CITY_HUB_MIN_FACILITIES).to.equal(2)
         expect(isIndexableCityHub(1)).to.equal(false)
         expect(isIndexableCityHub(2)).to.equal(true)
-    })
-})
-
-describe('hub document titles', () => {
-    it('stay under 60 characters once branded', () => {
-        expect(formatPageTitle(hubPrefectureDocumentTitle('Tokyo')).length).to.be.at.most(60)
-        expect(formatPageTitle(hubCityDocumentTitle('Shibuya', 'Tokyo')))
-            .to.equal(formatPageTitle('Healthcare in Shibuya, Tokyo'))
     })
 })

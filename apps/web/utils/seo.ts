@@ -1,12 +1,10 @@
 import {
     DEFAULT_LOCALE_CODE,
-    DIRECTORY_PRERENDER_LOCALE_CODES,
-    isDirectoryPrerenderLocale,
     LOCALE_CODES,
-    localeCodeFromPath,
     localizedPath,
     unlocalizedPath
 } from './localePath'
+import { directoryLocaleCodesForPath, isPrerenderedDirectoryPath } from './directoryLocales'
 import { CLINIC_LANDING_MODE, clinicLandingMode, isClinicLandingPath } from './clinicLanding'
 import { isEntityRoute } from './pageTitles'
 import { PAGE_SOCIAL_IMAGES, SITE_ORIGIN, SITE_SITEMAP_URL, SITE_SOCIAL_IMAGE, SITE_SOCIAL_IMAGE_ALT } from './site'
@@ -71,14 +69,14 @@ export type HreflangAlternate = {
 }
 
 /**
- * Marketing pages exist in every locale. Directory pages are generated for
- * English and Japanese only, so hreflang must not advertise the rest.
+ * Marketing pages exist in every locale. Directory pages are generated only for the
+ * locales `directoryLocaleCodesForPath` names, so hreflang must not advertise the rest.
  */
 export function indexableLocaleCodes(path: string): readonly string[] {
     if (isClinicLandingPath(path)) {
         return LOCALE_CODES
     }
-    return isEntityRoute(path) ? DIRECTORY_PRERENDER_LOCALE_CODES : LOCALE_CODES
+    return isEntityRoute(path) ? directoryLocaleCodesForPath(path) : LOCALE_CODES
 }
 
 /**
@@ -205,8 +203,8 @@ export function isNoindexRoute(
     }
 
     // A directory URL we did not generate. The browser can still render it.
-    // Crawlers should stay on the English and Japanese files.
-    if (isEntityRoute(path) && !isDirectoryPrerenderLocale(localeCodeFromPath(path))) {
+    // Crawlers should stay on the generated files.
+    if (isEntityRoute(path) && !isPrerenderedDirectoryPath(path)) {
         return true
     }
 

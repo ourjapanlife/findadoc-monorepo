@@ -81,7 +81,8 @@ describe('entityDirectoryVitePlugins', () => {
                 'doctor-directory',
                 'prerender-cities',
                 'generated-prefecture-hubs',
-                'generated-facet-paths'
+                'generated-facet-paths',
+                'directory-stats'
             ])
     })
 })

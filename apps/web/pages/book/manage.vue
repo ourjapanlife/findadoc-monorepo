@@ -76,8 +76,10 @@
                             class="btn btn-primary"
                             :disabled="cancelling"
                             data-testid="patient-booking-confirm-cancel"
+                            :aria-busy="cancelling"
                             @click="cancel"
                         >
+                            <ButtonSpinner v-if="cancelling" />
                             {{ t('patientBooking.yesCancel') }}
                         </button>
                         <button
@@ -139,6 +141,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BookingAppointmentStatus, type PatientBookingView } from '@findadoc/graphql'

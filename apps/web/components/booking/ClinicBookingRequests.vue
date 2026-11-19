@@ -30,8 +30,10 @@
                 class="btn btn-secondary btn-sm"
                 :disabled="exporting"
                 data-testid="clinic-booking-export"
+                :aria-busy="exporting"
                 @click="exportCsv"
             >
+                <ButtonSpinner v-if="exporting" />
                 {{ exporting ? t('clinicDashboard.export.working') : t('clinicDashboard.export.button') }}
             </button>
         </div>
@@ -219,6 +221,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BookingAppointmentStatus, type BookingSubmissionListItem } from '@findadoc/graphql'

@@ -4,6 +4,7 @@
         :columns="columns"
         :rows="rows"
         :empty-label="emptyLabel"
+        :loading="listLoading"
         :search="listSearchQuery"
         :offset="offset"
         :total-items="totalItems"
@@ -156,6 +157,22 @@ const rows = computed((): ModerationTableRow[] => {
     }))
 })
 
+// Until onMounted asks for the lists, an empty table means "not asked yet", not "no results".
+const listsRequested = ref(false)
+
+const listLoading = computed(() => {
+    if (!listsRequested.value) {
+        return true
+    }
+    if (facilitiesModerationListViewChosen.value) {
+        return facilitiesStore.isListLoading
+    }
+    if (healthcareProfessionalsModerationListViewChosen.value) {
+        return healthcareProfessionalsStore.isListLoading
+    }
+    return modSubmissionsStore.isListLoading
+})
+
 const emptyLabel = computed(() => {
     if (submissionsModerationListViewChosen.value) {
         return t('modPanelSubmissionList.noSubmissions')
@@ -245,10 +262,15 @@ watch(
 )
 
 onMounted(async () => {
-    await modSubmissionsStore.getSubmissions()
-    await modSubmissionsStore.fetchStatusCounts()
-    await facilitiesStore.loadFacilityList()
-    await healthcareProfessionalsStore.loadHealthcareProfessionalList()
+    // Each list sets its own loading flag before its first await, so every view shows Chiko until its rows land.
+    const loads = Promise.all([
+        modSubmissionsStore.getSubmissions(),
+        modSubmissionsStore.fetchStatusCounts(),
+        facilitiesStore.loadFacilityList(),
+        healthcareProfessionalsStore.loadHealthcareProfessionalList()
+    ])
+    listsRequested.value = true
+    await loads
 })
 
 function professionalLabel(professional: HealthcareProfessional): string {

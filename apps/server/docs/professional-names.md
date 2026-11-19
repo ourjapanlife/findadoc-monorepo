@@ -12,27 +12,20 @@ There are no other locales. A name in another language can be machine-translated
 - `validateNames` in `src/validation/validationHealthcareProfessional.ts`. Creating or updating a professional needs both names. A submission draft may hold one of the two, because the submitter types one free-text name and a moderator adds the other. Approving the submission needs both.
 - Error codes: `NAME_LOCALE_REQUIRED`, `NAME_LOCALE_NOT_ALLOWED`, `MIDDLE_NAME_NOT_ALLOWED`.
 - The moderation editor (`ModProfessionalNamesEditor.vue`) shows two fixed rows and offers no other locale.
+- The database: `hps_names_two_locales` (`20261117100000_hps_names_two_locales.sql`) refuses a row that does not hold exactly one `en_US` and one `ja_JP` name, each with a first and a last name, and no Japanese middle name. Submissions are a separate table, so a draft with one name is not affected.
+
+Pages show the Japanese name on a Japanese page and the romaji name on every other page (`formatHealthcareProfessionalName` in `apps/web/utils/nameUtils.ts`). There is no fallback to the other name.
 
 ## Name review
 
 `hps.name_review` is the moderator queue, like `license_review`:
 
 - `NEEDS_REVIEW`: the backfill generated one of the names, could not fill it, or moved a Japanese middle name into the first name.
-- `CONFIRMED`: a moderator saved the names. The backfill does not touch the row again.
+- `CONFIRMED`: a moderator saved the names.
 - `null`: nothing to check.
 
 Saving names in moderation sets `CONFIRMED`. The dashboard's "Needs name review" filter lists the queue.
 
 ## Backfill
 
-`pnpm --filter @findadoc/server backfill:professional-names` is a dry run. It reports counts and ids, never a name. `backfill:professional-names:write` applies it. Run it on production through `pnpm db:prod` (`.claude/skills/production-database/SKILL.md`).
-
-For each row that is not `CONFIRMED` (`src/names/professionalNames.ts`):
-
-- Names in other locales are removed.
-- A missing romaji name is generated from a kana name with passport-style Hepburn (Satō is Sato).
-- A missing Japanese name is a best-guess katakana spelling of the romaji name.
-- A name in kanji has no reading without a dictionary. No romaji is guessed: the row is queued with its one name.
-- A row with neither name keeps what it has and is queued.
-
-The web pages still fall back from one name to the other while the queue has rows with one name. After the backfill has run on production and the queue is empty, a migration adds a `CHECK` that `names` holds exactly the two locales, the fallbacks go, and the backfill script is deleted.
+The #282 backfill ran on production on 2026-11-16 and has been deleted. Every professional then had exactly one romaji and one Japanese name, and moderators cleared the 11 generated Japanese names from the queue. A new professional gets no generated name: the moderator enters both.

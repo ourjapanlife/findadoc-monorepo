@@ -239,12 +239,14 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         DEFAULT_MODERATION_PAGE_SIZE,
         MODERATION_PAGE_SIZES
     )
-    const listSearchQuery = usePersistentFilters('facilities', 'search', '')
+    const listSearchQuery = ref('')
     const listOrder: Ref<ListOrder | null> = ref(null)
     const facilityList: Ref<Facility[]> = ref([])
     const filteredFacilityData = computed(() => facilityList.value)
     let facilitySearchTimer: ReturnType<typeof setTimeout> | undefined
     let facilityListRequest = 0
+    /** True while the latest list request is in flight, so the table shows Chiko instead of "no results". */
+    const isListLoading: Ref<boolean> = ref(false)
     const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalFacilitiesCount.value)
     const hasPrevPage = computed(() => currentOffset.value > 0)
     // This reactive object is used to share data changes of the updated facility or submission across the components
@@ -411,6 +413,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
 
     async function loadFacilityList() {
         const request = ++facilityListRequest
+        isListLoading.value = true
         const query = listSearchQuery.value.trim()
         const orderBy = orderByInput(listOrder.value)
         try {
@@ -436,6 +439,10 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             toastModerationLoadError('moderationListErrors.facilities')
             facilityList.value = []
             totalFacilitiesCount.value = 0
+        } finally {
+            if (request === facilityListRequest) {
+                isListLoading.value = false
+            }
         }
     }
 
@@ -663,6 +670,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         getFacilities,
         searchFacilities,
         loadFacilityList,
+        isListLoading,
         createFacility,
         createFacilityFields,
         facilityData,

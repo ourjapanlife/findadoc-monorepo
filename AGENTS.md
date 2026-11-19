@@ -192,7 +192,7 @@ The #1014 license backfill has run on production. `degrees` keeps the submitted 
 
 ## Professional names
 
-A professional has two names: romaji (`en_US`) and Japanese (`ja_JP`), and no other locale (#282). `apps/server/docs/professional-names.md` is the rule. Only the romaji name has a middle name. A non-Japanese name is written in katakana. Creating, updating, and approving need both names; a submission draft may hold one. `hps.name_review = NEEDS_REVIEW` queues a name the backfill generated or could not fill. Do not guess a reading for kanji, and do not add a name dictionary dependency for it.
+A professional has two names: romaji (`en_US`) and Japanese (`ja_JP`), and no other locale (#282). `apps/server/docs/professional-names.md` is the rule. Only the romaji name has a middle name. A non-Japanese name is written in katakana. Creating, updating, and approving need both names; a submission draft may hold one. The #282 name backfill has run on production, and `hps_names_two_locales` enforces the two names in the database. Pages show the name for the page's language with no fallback to the other one: Japanese on a Japanese page, romaji everywhere else. `hps.name_review = NEEDS_REVIEW` is the moderator queue for a name to check. Do not guess a reading for kanji, and do not add a name dictionary dependency for it.
 
 ## Insurance
 
@@ -218,7 +218,7 @@ Payment is `facilities.payment_options` (#20). An empty list is unknown, not cas
 
 ## Directory HTML
 
-Clinic, doctor, hub, and facet pages are generated for English and Japanese only. `apps/web/utils/localePath.ts` names that set as `DIRECTORY_PRERENDER_LOCALE_CODES`. Marketing pages still generate for every locale. A directory URL in another locale renders in the browser, stays `noindex`, and stays out of hreflang and the sitemap. Do not add a `/ja-JP/*` rewrite. Unknown Japanese clinics stay a real 404.
+Clinic and doctor pages are generated for English and Japanese only (`DIRECTORY_PRERENDER_LOCALE_CODES` in `apps/web/utils/localePath.ts`). Their content is directory data held in those two languages, so another locale would be a near-copy. Hub and facet pages are translated template text and generate for `HUB_PRERENDER_LOCALE_CODES`, a wider list. Add a locale there one at a time, when search demand shows it, not all at once. `directoryLocaleCodesForPath` in `apps/web/utils/directoryLocales.ts` picks the list for a path; generate, hreflang, `noindex`, and the sitemap all go through it. Hub titles come from the translated heading. `apps/web/utils/hubLabels.ts` names places and facets on hub pages: kanji place names for Japanese and Chinese, romaji for the rest; specialties from the `specialties` messages, except English, which keeps the indexed field name ("Dentistry in Tokyo"). Marketing pages still generate for every locale. A directory URL in a locale outside its list renders in the browser, stays `noindex`, and stays out of hreflang and the sitemap. Do not add a `/ja-JP/*` rewrite. Unknown Japanese clinics stay a real 404.
 
 The generate-time directory and city list are bundled modules (`#clinic-directory`, `#doctor-directory`, `#prerender-cities`). Do not put them in `runtimeConfig`: Nitro deep-copies runtime config for every prerendered route. Production fetches the directory once (`prerender:directory`) and prerenders it in shards from that file (`NUXT_PRERENDER_SHARD`, `apps/web/utils/prerenderShard.ts`), all with one `NUXT_BUILD_ID`. Shard 0 alone renders the pages every build has and writes the once-only files.
 

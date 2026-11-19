@@ -299,7 +299,7 @@ import { useI18n } from 'vue-i18n'
 import { FacilityCorrectionReason, type Locale, type PaymentType, type PhysicalAddressInput } from '@findadoc/graphql'
 import { FIELD_LIMITS } from '@findadoc/utils'
 import { languageName } from '~/utils/languageName'
-import { listPrefectureJapanEn, listPrefectureJapanJa } from '~/stores/locationsStore'
+import { listPrefectureJapanEn, listPrefectureJapanJa } from '~/utils/prefectureNames'
 import { isJapaneseLocale } from '~/utils/activeLocale'
 import {
     PAYMENT_TYPE_OPTIONS,

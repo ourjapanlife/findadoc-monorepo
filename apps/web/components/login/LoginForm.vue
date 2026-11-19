@@ -1,8 +1,9 @@
 <template>
     <div class="card flex w-full max-w-md flex-col items-center gap-4 p-8 text-center">
-        <SVGLoadingIcon
-            aria-hidden="true"
-            class="size-10 text-primary"
+        <ChikoLoader
+            size="md"
+            :label="displayMessage"
+            hide-label
         />
         <h1
             data-testid="login-heading"
@@ -15,7 +16,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import SVGLoadingIcon from '~/assets/icons/loading.svg'
+import ChikoLoader from '~/components/common/ChikoLoader.vue'
 import { useAuthStore } from '~/stores/authStore'
 import { resolveAuthReturnPath } from '~/utils/auth0Config'
 

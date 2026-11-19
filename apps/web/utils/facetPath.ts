@@ -1,4 +1,4 @@
-import { facilityDocumentTitle, slugifySegment } from './clinicPath'
+import { slugifySegment } from './clinicPath'
 import { isReservedHubSegment, prefectureHubPathFromSlug } from './hubPath'
 import { Locale, Specialty } from '@findadoc/graphql'
 
@@ -139,12 +139,4 @@ export function languageFacetPathFromSlugs(
         return undefined
     }
     return `${prefecturePath}/${languageSlug}`
-}
-
-export function facetSpecialtyDocumentTitle(specialty: string, prefecture: string): string {
-    return facilityDocumentTitle(`${specialty} in ${prefecture}`)
-}
-
-export function facetLanguageDocumentTitle(language: string, prefecture: string): string {
-    return facilityDocumentTitle(`${language}-speaking care in ${prefecture}`)
 }

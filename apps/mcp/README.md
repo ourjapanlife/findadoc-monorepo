@@ -16,8 +16,8 @@ This is the MCP server for Find a Doc, providing AI-powered tools for interactin
 | `search_facilities` | Search clinics and hospitals by name or affiliated professional |
 | `get_facility` | Full details for a single facility by ID |
 | `get_healthcare_professional` | Full details for a single professional by ID |
-| `list_specialties` | All searchable medical specialties (valid `specialties` filter values) |
-| `list_languages` | All supported spoken languages (valid `spokenLanguages` filter values) |
+| `list_specialties` | Medical specialties (valid `specialties` filter values) with English and Japanese names, and the categories that group them. Optional `category` returns one category |
+| `list_languages` | Spoken languages you can search by (valid `spokenLanguages` filter values), named in English, Japanese, and the language itself. `includeUnpublished` also lists codes that are not search filters |
 | `healthcheck` | Confirm the server is running |
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) to add a tool and [docs/testing.md](docs/testing.md) for example calls.
@@ -80,7 +80,8 @@ The server listens on `http://localhost:3000/mcp` by default. Set `PORT` in your
 The HTTP server also exposes the same tools as REST endpoints under `/api/*`, described by [`openapi.yaml`](openapi.yaml) (served at `/openapi.yaml`). This is for OpenAPI clients such as ChatGPT custom GPTs that use REST Actions rather than MCP. The REST routes are thin wrappers over the same core logic as the MCP tools — see [docs/chatgpt-setup.md](docs/chatgpt-setup.md).
 
 ```bash
-curl 'http://localhost:3000/api/specialties'
+curl 'http://localhost:3000/api/specialties?category=MENTAL_HEALTH'
+curl 'http://localhost:3000/api/languages'
 ```
 
 ### Connecting to an MCP Client
