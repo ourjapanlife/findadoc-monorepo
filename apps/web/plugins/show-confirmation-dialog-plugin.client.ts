@@ -29,6 +29,8 @@ interface ConfirmationData {
 
 export default defineNuxtPlugin(() => {
     const confirmation = ref<ConfirmationData>()
+    // True while onConfirm's promise runs. The dialog stays open with a spinner, and a second click does nothing.
+    const pending = ref(false)
 
     const withConfirmation = (
         onConfirm: () => void | Promise<void>,
@@ -58,18 +60,21 @@ export default defineNuxtPlugin(() => {
 
     const confirmAction = async () => {
         const current = confirmation.value
-        if (!current) return
+        if (!current || pending.value) return
 
+        pending.value = true
         try {
             await current.onConfirm()
         } finally {
+            pending.value = false
             clearIfCurrent(current.id)
         }
     }
 
     const cancelAction = () => {
         const current = confirmation.value
-        if (!current) return
+        // The request has already gone out: cancelling now would hide it, not stop it.
+        if (!current || pending.value) return
 
         current.onCancel?.()
         clearIfCurrent(current.id)
@@ -79,6 +84,7 @@ export default defineNuxtPlugin(() => {
         provide: {
             confirmationDialog: {
                 confirmation,
+                pending,
                 confirmAction,
                 cancelAction
             },

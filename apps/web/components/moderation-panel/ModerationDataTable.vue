@@ -20,7 +20,18 @@
             </div>
         </div>
 
-        <div class="relative z-10 overflow-x-auto md:min-h-0 md:flex-1 md:overflow-auto">
+        <div
+            class="relative z-10 overflow-x-auto md:min-h-0 md:flex-1 md:overflow-auto"
+            :aria-busy="loading"
+        >
+            <!-- A page change keeps the old rows under Chiko instead of blanking the table. -->
+            <div
+                v-if="loading && rows.length > 0"
+                class="absolute inset-0 z-20 flex items-start justify-center bg-primary-bg/60 pt-16"
+                data-testid="mod-table-loading-overlay"
+            >
+                <ChikoLoader />
+            </div>
             <table class="w-full border-collapse text-sm">
                 <thead class="sticky top-0 z-10 bg-secondary-bg">
                     <tr class="border-b border-accent-bg text-left">
@@ -73,7 +84,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-if="rows.length === 0">
+                    <tr
+                        v-if="loading && rows.length === 0"
+                        data-testid="mod-table-loading"
+                    >
+                        <td
+                            :colspan="columnSpan"
+                            class="px-4 py-16"
+                        >
+                            <ChikoLoader size="lg" />
+                        </td>
+                    </tr>
+                    <tr
+                        v-else-if="rows.length === 0"
+                        data-testid="mod-table-empty"
+                    >
                         <td
                             :colspan="columnSpan"
                             class="px-4 py-16 text-center text-primary-text-muted"
@@ -123,22 +148,24 @@
                 <div class="flex flex-wrap gap-2">
                     <button
                         type="button"
-                        class="rounded-lg border border-accent-bg bg-secondary-bg px-3 py-1.5 text-sm font-semibold
-                        text-primary-text hover:bg-accent-bg/20 disabled:opacity-40"
+                        class="inline-flex items-center gap-2 rounded-lg border border-accent-bg bg-secondary-bg px-3 py-1.5
+                        text-sm font-semibold text-primary-text hover:bg-accent-bg/20 disabled:opacity-40"
                         data-testid="mod-bulk-approve"
                         :disabled="pending || selectedNames.length === 0"
-                        @click="emit('approve')"
+                        @click="startBulk('approve')"
                     >
+                        <ButtonSpinner v-if="pending && bulkAction === 'approve'" />
                         {{ t('moderationTable.approveSelected') }}
                     </button>
                     <button
                         type="button"
-                        class="rounded-lg border border-accent-bg bg-secondary-bg px-3 py-1.5 text-sm font-semibold
-                        text-primary-text hover:bg-accent-bg/20 disabled:opacity-40"
+                        class="inline-flex items-center gap-2 rounded-lg border border-accent-bg bg-secondary-bg px-3 py-1.5
+                        text-sm font-semibold text-primary-text hover:bg-accent-bg/20 disabled:opacity-40"
                         data-testid="mod-bulk-reject"
                         :disabled="pending || selectedNames.length === 0"
-                        @click="emit('reject')"
+                        @click="startBulk('reject')"
                     >
+                        <ButtonSpinner v-if="pending && bulkAction === 'reject'" />
                         {{ t('moderationTable.rejectSelected') }}
                     </button>
                 </div>
@@ -196,7 +223,9 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, ref, watch, watchEffect } from 'vue'
+import ChikoLoader from '~/components/common/ChikoLoader.vue'
 import SVGLookingGlass from '~/assets/icons/looking-glass.svg'
 import type { ListOrder, ModerationTableColumn, ModerationTableRow, PageSelection } from '~/utils/moderationTable'
 import { MODERATION_PAGE_SIZES, readColumnOrder, reorderColumns, writeColumnOrder } from '~/utils/moderationTable'
@@ -208,6 +237,7 @@ const props = defineProps<{
     columns: ModerationTableColumn[]
     rows: ModerationTableRow[]
     emptyLabel: string
+    loading: boolean
     search: string
     offset: number
     totalItems: number
@@ -236,6 +266,8 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const orderedIds = ref<string[]>([])
 const pageCheckbox = ref<HTMLInputElement | null>(null)
+// Which bulk button was pressed, so only that one spins while `pending`.
+const bulkAction = ref<'approve' | 'reject' | null>(null)
 let draggedColumnId = ''
 
 const visibleColumns = computed(() => orderedIds.value.flatMap(id => {
@@ -254,6 +286,15 @@ watchEffect(() => {
         pageCheckbox.value.indeterminate = props.pageSelection === 'some'
     }
 })
+
+function startBulk(action: 'approve' | 'reject') {
+    bulkAction.value = action
+    if (action === 'approve') {
+        emit('approve')
+    } else {
+        emit('reject')
+    }
+}
 
 function onSearchInput(event: Event) {
     emit('update:search', (event.target as HTMLInputElement).value)

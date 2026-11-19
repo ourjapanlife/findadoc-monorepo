@@ -89,8 +89,10 @@
                             :class="next === BookingAppointmentStatus.Confirmed ? 'btn btn-primary' : 'btn btn-secondary'"
                             :disabled="updating"
                             :data-testid="`booking-action-${next.toLowerCase()}`"
+                            :aria-busy="updatingStatus === next"
                             @click="changeStatus(next)"
                         >
+                            <ButtonSpinner v-if="updatingStatus === next" />
                             {{ t(staffActionLabelKey(next, detail.appointmentStatus)) }}
                         </button>
                     </div>
@@ -252,6 +254,7 @@
                                 class="block w-fit max-w-full overflow-hidden rounded-lg border border-accent-bg
                                 bg-primary-bg"
                                 :aria-label="t('bookingDashboard.previewOf', { name: answerLabel(upload.fieldId) })"
+                                :disabled="fetchingUpload !== null"
                                 @click="previewUpload(upload.id)"
                             >
                                 <!-- No fixed size: the photo keeps its own aspect ratio inside the limits. -->
@@ -293,16 +296,22 @@
                                     type="button"
                                     class="btn btn-secondary btn-sm"
                                     :data-testid="`booking-upload-open-${upload.id}`"
+                                    :disabled="fetchingUpload !== null"
+                                    :aria-busy="fetchingUpload === `${upload.id}:inline`"
                                     @click="previewUpload(upload.id)"
                                 >
+                                    <ButtonSpinner v-if="fetchingUpload === `${upload.id}:inline`" />
                                     {{ t('bookingDashboard.preview') }}
                                 </button>
                                 <button
                                     type="button"
                                     class="btn btn-secondary btn-sm"
                                     :data-testid="`booking-upload-download-${upload.id}`"
+                                    :disabled="fetchingUpload !== null"
+                                    :aria-busy="fetchingUpload === `${upload.id}:attachment`"
                                     @click="downloadUpload(upload.id)"
                                 >
+                                    <ButtonSpinner v-if="fetchingUpload === `${upload.id}:attachment`" />
                                     {{ t('bookingDashboard.download') }}
                                 </button>
                             </div>
@@ -318,6 +327,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
@@ -370,6 +380,10 @@ const downloadError = ref(false)
 const previewUrls = ref<Record<string, string>>({})
 const reason = ref('')
 const updating = ref(false)
+// `${uploadId}:inline` or `${uploadId}:attachment` while that signed URL is requested.
+const fetchingUpload = ref<string | null>(null)
+// The status button that was pressed, so only it spins while `updating`.
+const updatingStatus = ref<BookingAppointmentStatus | null>(null)
 const actionError = ref('')
 
 const actions = computed(() => staffActionsFor(detail.value?.appointmentStatus))
@@ -434,12 +448,14 @@ async function changeStatus(next: BookingAppointmentStatus): Promise<void> {
     }
     actionError.value = ''
     updating.value = true
+    updatingStatus.value = next
     const updated = await updateAppointmentStatus(
         appointmentId,
         next,
         actionTakesReason(next) ? reason.value : ''
     )
     updating.value = false
+    updatingStatus.value = null
     // Reload either way: a failure is usually someone else changing it first.
     await load()
     if (updated === null) {
@@ -473,9 +489,25 @@ function sensitivityLabel(sensitivity: BookingFieldSensitivity): string {
 }
 
 /** Opens the file in a new tab. */
-async function previewUpload(uploadId: string): Promise<void> {
+/** Asks for a signed URL once at a time, so a double click does not sign it twice. */
+async function signUpload(uploadId: string, disposition: BookingUploadDisposition) {
+    if (fetchingUpload.value !== null) {
+        return undefined
+    }
     downloadError.value = false
-    const signed = await requestBookingUploadDownloadUrl(uploadId, BookingUploadDisposition.Inline)
+    fetchingUpload.value = `${uploadId}:${disposition === BookingUploadDisposition.Inline ? 'inline' : 'attachment'}`
+    try {
+        return await requestBookingUploadDownloadUrl(uploadId, disposition)
+    } finally {
+        fetchingUpload.value = null
+    }
+}
+
+async function previewUpload(uploadId: string): Promise<void> {
+    const signed = await signUpload(uploadId, BookingUploadDisposition.Inline)
+    if (signed === undefined) {
+        return
+    }
     if (signed === null) {
         downloadError.value = true
         return
@@ -485,8 +517,10 @@ async function previewUpload(uploadId: string): Promise<void> {
 
 /** Saves the file. The URL answers with Content-Disposition: attachment, so the page stays put. */
 async function downloadUpload(uploadId: string): Promise<void> {
-    downloadError.value = false
-    const signed = await requestBookingUploadDownloadUrl(uploadId, BookingUploadDisposition.Attachment)
+    const signed = await signUpload(uploadId, BookingUploadDisposition.Attachment)
+    if (signed === undefined) {
+        return
+    }
     if (signed === null) {
         downloadError.value = true
         return

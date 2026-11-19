@@ -40,6 +40,7 @@
                         :no-match-text="t('modHealthcareProfessionalSection.noFacilitiesWereFound')"
                         :fields-to-display-callback="facilitiesFieldsToDisplayCallback"
                         :default-suggestions="facilitiesStore.facilityData"
+                        :searching="applyFacilitySearch.pending.value"
                         @search-input-blur="applyFacilitySearch.cancel"
                         @search-input-change="handleFacilitySearchInputChange"
                     />
@@ -70,6 +71,7 @@
                         :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
                         :fields-to-display-callback="healthcareProfessionalsToDisplayCallback"
                         :default-suggestions="healthcareProfessionalsStore.healthcareProfessionalsData"
+                        :searching="applyHealthcareProfessionalSearch.pending.value"
                         @search-input-blur="applyHealthcareProfessionalSearch.cancel"
                         @search-input-change="handleHealthcareProfessionalsInputChange"
                     />
@@ -128,7 +130,7 @@ const { t, te } = useI18n()
 const router = useRouter()
 
 const moderationSubmissionStore = useModerationSubmissionsStore()
-const { moderationSubmissionAction } = useModerationSubmissionActions()
+const { moderationSubmissionAction, runModerationSubmissionAction } = useModerationSubmissionActions()
 const modalStore = useModalStore()
 const screenStore = useModerationScreenStore()
 const loadingStore = useLoadingStore()
@@ -638,8 +640,9 @@ watch(
 
         switch (action.type) {
             case ModerationSubmissionActionType.Approve:
-                useNuxtApp().$withConfirmation(() => {
-                    void confirmAndApproveSubmission()
+                useNuxtApp().$withConfirmation(async () => {
+                    // Awaited so the dialog keeps its spinner until the request finishes.
+                    await runModerationSubmissionAction(action.type, confirmAndApproveSubmission)
                 }, {
                     title: t('modEditSubmissionTopNav.approve'),
                     message: t('modSubmissionForm.submissionConfirmationMessage'),
@@ -648,8 +651,9 @@ watch(
                 })
                 return
             case ModerationSubmissionActionType.Reject:
-                useNuxtApp().$withConfirmation(() => {
-                    void rejectSubmission()
+                useNuxtApp().$withConfirmation(async () => {
+                    // Awaited so the dialog keeps its spinner until the request finishes.
+                    await runModerationSubmissionAction(action.type, rejectSubmission)
                 }, {
                     title: t('modEditSubmissionTopNav.reject'),
                     message: t('modSubmissionForm.rejectSubmissionConfirmationMessage'),
@@ -659,14 +663,16 @@ watch(
                 })
                 return
             case ModerationSubmissionActionType.UpdateAndExit:
-                saveSubmissionDraft(new Event('submit', { bubbles: false, cancelable: true }), {
-                    shouldExitAfterUpdate: true
-                })
+                void runModerationSubmissionAction(action.type, () => saveSubmissionDraft(
+                    new Event('submit', { bubbles: false, cancelable: true }),
+                    { shouldExitAfterUpdate: true }
+                ))
                 return
             case ModerationSubmissionActionType.Update:
-                saveSubmissionDraft(new Event('submit', { bubbles: false, cancelable: true }), {
-                    shouldResetModalRefsAfterUpdate: true
-                })
+                void runModerationSubmissionAction(action.type, () => saveSubmissionDraft(
+                    new Event('submit', { bubbles: false, cancelable: true }),
+                    { shouldResetModalRefsAfterUpdate: true }
+                ))
         }
     }
 )

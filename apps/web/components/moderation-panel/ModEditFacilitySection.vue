@@ -310,6 +310,7 @@
                 :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
                 :fields-to-display-callback="healthcareProfessionalsToDisplayCallback"
                 :default-suggestions="defaultHealthcareProfessionalSuggestions"
+                :searching="handleHealthcareProfessionalsInputChange.pending.value"
                 @search-input-blur="handleHealthcareProfessionalsInputChange.cancel"
                 @search-input-change="handleHealthcareProfessionalsInputChange"
             />

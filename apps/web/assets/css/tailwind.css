@@ -54,6 +54,57 @@
 
   /* Motion. One curve, short durations; reduced-motion users get none (see @layer base). */
   --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Chiko runs while something loads (ChikoLoader.vue). Reduced motion stops it like every other animation. */
+  --animate-chiko-run: chiko-run 0.5s ease-in-out infinite;
+  --animate-chiko-ground: chiko-ground 0.6s linear infinite;
+  --animate-chiko-speed: chiko-speed 0.5s ease-out infinite;
+
+  /* A gallop: push off, stretch in the air, land nose-down, squash. */
+  @keyframes chiko-run {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg) scale(1.03, 0.97);
+    }
+
+    30% {
+      transform: translateY(-14%) rotate(-6deg) scale(0.98, 1.02);
+    }
+
+    55% {
+      transform: translateY(-6%) rotate(3deg) scale(1, 1);
+    }
+
+    80% {
+      transform: translateY(0) rotate(2deg) scale(1.04, 0.96);
+    }
+  }
+
+  /* Chiko faces left, so the ground slides right under the paws. */
+  @keyframes chiko-ground {
+    from {
+      transform: translateX(-50%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes chiko-speed {
+    0% {
+      transform: translateX(0) scaleX(0.4);
+      opacity: 0;
+    }
+
+    30% {
+      opacity: 0.8;
+    }
+
+    100% {
+      transform: translateX(60%) scaleX(1);
+      opacity: 0;
+    }
+  }
 }
 
 @layer base {

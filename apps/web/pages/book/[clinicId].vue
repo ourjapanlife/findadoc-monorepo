@@ -42,9 +42,11 @@
                 type="button"
                 class="btn btn-primary self-start"
                 data-testid="clinic-booking-availability-retry"
+                :aria-busy="checkingAvailability"
                 :disabled="checkingAvailability"
                 @click="retryAvailability"
             >
+                <ButtonSpinner v-if="checkingAvailability" />
                 {{ t(checkingAvailability ? 'bookingPage.availabilityError.checking' : 'bookingPage.availabilityError.retry') }}
             </button>
         </div>
@@ -52,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { ref } from 'vue'
 import { createError, definePageMeta, navigateTo, useHead, useRoute } from '#imports'
 import { useI18n } from 'vue-i18n'

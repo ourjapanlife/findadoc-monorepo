@@ -106,6 +106,8 @@ export const useHealthcareProfessionalsStore = defineStore(
         const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
         let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
         let professionalListRequest = 0
+        /** True while the latest list request is in flight, so the table shows Chiko instead of "no results". */
+        const isListLoading: Ref<boolean> = ref(false)
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalHealthcareProfessionalsCount.value)
         const hasPrevPage = computed(() => currentOffset.value > 0)
         const healthcareProfessionalSectionFields = reactive<HealthcareProfessional>({
@@ -211,6 +213,7 @@ export const useHealthcareProfessionalsStore = defineStore(
 
         async function loadHealthcareProfessionalList() {
             const request = ++professionalListRequest
+            isListLoading.value = true
             const query = listSearchQuery.value.trim()
             const orderBy = orderByInput(listOrder.value)
             try {
@@ -238,6 +241,10 @@ export const useHealthcareProfessionalsStore = defineStore(
                 toastModerationLoadError('moderationListErrors.professionals')
                 healthcareProfessionalList.value = []
                 totalHealthcareProfessionalsCount.value = 0
+            } finally {
+                if (request === professionalListRequest) {
+                    isListLoading.value = false
+                }
             }
         }
 
@@ -462,6 +469,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             getHealthcareProfessionals,
             searchHealthcareProfessionals,
             loadHealthcareProfessionalList,
+            isListLoading,
             healthcareProfessionalsData,
             filteredHealthcareProfessionalsData,
             listSearchQuery,

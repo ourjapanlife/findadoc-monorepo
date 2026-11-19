@@ -303,10 +303,12 @@
             <button
                 type="submit"
                 data-testid="submit-submitbutton"
+                :aria-busy="isSubmitting"
                 class="btn btn-primary w-full"
                 :disabled="isSubmitting || Boolean(existingFacility)"
                 :aria-describedby="existingFacility ? 'submit-existing-place' : undefined"
             >
+                <ButtonSpinner v-if="isSubmitting" />
                 {{ t('submitPage.submitButton') }}
             </button>
         </form>
@@ -314,6 +316,7 @@
 </template>
 
 <script lang="ts" setup>
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppToast } from '~/composables/useAppToast'
