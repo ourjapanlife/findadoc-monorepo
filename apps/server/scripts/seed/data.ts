@@ -5,6 +5,7 @@ import {
     FacilitySource,
     FacilityVerificationStatus,
     Locale,
+    OpeningDay,
     PaymentType,
     Specialty
 } from '@findadoc/graphql'
@@ -105,6 +106,40 @@ const paymentSets: Array<SeedFile['facilities'][number]['payment_options']> = [
         { paymentType: PaymentType.QrCode, paymentBrands: ['PayPay'] }
     ],
     []
+]
+
+type SeedHours = SeedFile['facilities'][number]['opening_hours']
+
+const WEEKDAYS = [OpeningDay.Monday, OpeningDay.Tuesday, OpeningDay.Wednesday, OpeningDay.Thursday, OpeningDay.Friday]
+
+// Opening hours (#294). A split clinic day, a plain weekday clinic, and unknown, as real listings are.
+const hoursSets: SeedHours[] = [
+    [
+        ...WEEKDAYS.flatMap(day => [
+            { day, opens: '09:00', closes: '12:30' },
+            // Many Japanese clinics close on Thursday afternoon.
+            ...(day === OpeningDay.Thursday ? [] : [{ day, opens: '15:00', closes: '18:30' }])
+        ]),
+        { day: OpeningDay.Saturday, opens: '09:00', closes: '13:00' }
+    ],
+    [],
+    WEEKDAYS.map(day => ({ day, opens: '10:00', closes: '19:00' })),
+    []
+]
+
+// The visitor note is written in both languages, or not at all (#294).
+const visitorNotes: Array<{ en: string, ja: string } | null> = [
+    {
+        en: 'Walk-ins are welcome until 30 minutes before closing. Bring your health insurance card.',
+        ja: '受付は診療終了の30分前までです。保険証をお持ちください。'
+    },
+    null,
+    null,
+    {
+        en: 'Reservations are recommended. Parking is available for three cars.',
+        ja: '予約をおすすめします。駐車場は3台分あります。'
+    },
+    null
 ]
 
 function iso(day: number): string {
@@ -248,7 +283,10 @@ function buildSeed(): SeedFile {
             google_place_id: `ChIJFindadocSeed${String(index).padStart(6, '0')}`,
             source: FacilitySource.Manual,
             verification_status: FacilityVerificationStatus.Confirmed,
-            supported_languages: index % 3 === 0 ? [] : [Locale.EnUs, Locale.JaJp]
+            supported_languages: index % 3 === 0 ? [] : [Locale.EnUs, Locale.JaJp],
+            opening_hours: hoursSets[index % hoursSets.length] ?? [],
+            additional_info_en: visitorNotes[index % visitorNotes.length]?.en ?? null,
+            additional_info_ja: visitorNotes[index % visitorNotes.length]?.ja ?? null
         })
 
         hps.push({

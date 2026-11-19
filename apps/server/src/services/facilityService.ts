@@ -1,5 +1,5 @@
 import * as gqlTypes from '@findadoc/graphql'
-import { normalizePaymentOptions } from '@findadoc/utils'
+import { cleanAdditionalInfo, normalizeOpeningHours, normalizePaymentOptions } from '@findadoc/utils'
 import { db } from '../kyselyClient.js'
 import { ErrorCode, Result } from '../result.js'
 import { logger, errorLogFields } from '../logger.js'
@@ -243,6 +243,14 @@ export function buildFacilityUpdatePatch(
         updatePatch.japanese_insurance_source = fields.japaneseInsurance === gqlTypes.JapaneseInsurance.NotAccepted
             ? fields.japaneseInsuranceSource?.trim() || null
             : null
+    }
+    if (fields.openingHours !== undefined) {
+        updatePatch.opening_hours = JSON.stringify(normalizeOpeningHours(fields.openingHours ?? []))
+    }
+    // Validation sends the two notes together. Blank in both clears the note (#294).
+    if (fields.additionalInfoEn !== undefined || fields.additionalInfoJa !== undefined) {
+        updatePatch.additional_info_en = cleanAdditionalInfo(fields.additionalInfoEn)
+        updatePatch.additional_info_ja = cleanAdditionalInfo(fields.additionalInfoJa)
     }
     if (fields.online !== undefined) {
         updatePatch.online = fields.online === true
@@ -692,6 +700,9 @@ export async function createFacility(
                         facilityInput.japaneseInsurance === gqlTypes.JapaneseInsurance.NotAccepted
                             ? facilityInput.japaneseInsuranceSource?.trim() || null
                             : null,
+                    opening_hours: JSON.stringify(normalizeOpeningHours(facilityInput.openingHours ?? [])),
+                    additional_info_en: cleanAdditionalInfo(facilityInput.additionalInfoEn),
+                    additional_info_ja: cleanAdditionalInfo(facilityInput.additionalInfoJa),
                     online: isOnline,
                     created_date: new Date().toISOString(),
                     updated_date: new Date().toISOString()

@@ -83,3 +83,15 @@ export {
     type PaymentBrand,
     type PaymentOptionsProblem
 } from './paymentOptions.js'
+export {
+    ADDITIONAL_INFO_MAX_LENGTH,
+    cleanAdditionalInfo,
+    isOpeningDay,
+    MAX_OPENING_BLOCKS,
+    MAX_OPENING_BLOCKS_PER_DAY,
+    normalizeOpeningHours,
+    OPENING_DAYS,
+    openingHoursProblem,
+    openingMinutes,
+    type OpeningHoursProblem
+} from './openingHours.js'

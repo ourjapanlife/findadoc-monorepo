@@ -94,6 +94,15 @@
             v-if="moderationScreenStore.editFacilityScreenIsActive()"
             v-model="facilityStore.facilitySectionFields.paymentOptions"
         />
+        <ModOpeningHoursField
+            v-if="moderationScreenStore.editFacilityScreenIsActive()"
+            v-model="facilityStore.facilitySectionFields.openingHours"
+        />
+        <ModAdditionalInfoField
+            v-if="moderationScreenStore.editFacilityScreenIsActive()"
+            v-model:english="facilityStore.facilitySectionFields.additionalInfoEn"
+            v-model:japanese="facilityStore.facilitySectionFields.additionalInfoJa"
+        />
         <ModAccordion
             v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"

@@ -532,7 +532,23 @@
     "japaneseInsuranceSourceLabel": "信息来源",
     "japaneseInsuranceSourcePlaceholder": "链接，或备注，例如：2026年11月2日致电诊所确认",
     "paymentLabel": "支付方式",
-    "paymentHint": "只勾选诊所网站或电话确认过的项目。如果不知道，请全部留空。这样读者看不到任何内容，也不会被当作仅收现金。"
+    "paymentHint": "只勾选诊所网站或电话确认过的项目。如果不知道，请全部留空。这样读者看不到任何内容，也不会被当作仅收现金。",
+    "openingHoursLabel": "营业时间",
+    "openingHoursHint": "只填写从诊所网站或电话确认的时间，不要从 Google 地图获取。时间为日本时间。如果不填写，读者将看不到任何内容。只要填写了任何时段，没有时段的日子就显示为休诊。",
+    "openingHoursAdd": "添加时段",
+    "openingHoursUnknown": "未知",
+    "openingHoursOpens": "开始",
+    "openingHoursCloses": "结束",
+    "openingHoursRemove": "删除{day}的这个时段",
+    "openingHoursRemoveShort": "删除",
+    "openingHoursInvalid": "每个时段的结束时间必须晚于开始时间，同一天的时段不能重叠。",
+    "openingHoursClear": "清除所有时段",
+    "additionalInfoLabel": "访客说明",
+    "additionalInfoHint": "简短实用的信息，例如是否需要预约、能否直接就诊、停车等。请用英语和日语分别填写。日语读者看到日语说明，其他读者看到英语说明。",
+    "additionalInfoEnLabel": "英语",
+    "additionalInfoJaLabel": "日语",
+    "additionalInfoBothLanguages": "请用两种语言填写，或两者都留空。",
+    "openingHoursUntilMidnight": "营业至午夜"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",
@@ -583,7 +599,9 @@
     "submissionStatusChanged": "其他人已先更改了此提交。请刷新页面后再检查一次。",
     "professionalNamesRequired": "医疗人员需要罗马字姓名和日文姓名。",
     "professionalNameLocaleNotAllowed": "医疗人员只有罗马字姓名和日文姓名。",
-    "japaneseMiddleNameNotAllowed": "日文姓名没有中间名。"
+    "japaneseMiddleNameNotAllowed": "日文姓名没有中间名。",
+    "invalidOpeningHours": "请检查营业时间：每个时段的结束时间必须晚于开始时间，同一天的时段不能重叠。",
+    "additionalInfoBothLanguages": "请用英语和日语填写访客说明，或两者都留空。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "使用语言",
@@ -796,7 +814,8 @@
     "pageHeading": "在日本找医生",
     "mapUnavailable": "地图无法加载。",
     "mapUnavailableHint": "其余结果不受影响。",
-    "payment": "支付方式"
+    "payment": "支付方式",
+    "clinicLanguagesCaveat": "这些是诊所表示可以提供的语言。并非每位医生都会说，联系诊所时请先确认。"
   },
   "clinicPage": {
     "backToSearch": "返回搜索",
@@ -1414,5 +1433,23 @@
       "payPay": "PayPay",
       "other": "其他"
     }
+  },
+  "openingHours": {
+    "title": "营业时间",
+    "closed": "休诊",
+    "disclaimer": "日本时间。时间可能变动，前往前请先向诊所确认。",
+    "days": {
+      "monday": "星期一",
+      "tuesday": "星期二",
+      "wednesday": "星期三",
+      "thursday": "星期四",
+      "friday": "星期五",
+      "saturday": "星期六",
+      "sunday": "星期日",
+      "publicHoliday": "法定节假日"
+    }
+  },
+  "facilityAdditionalInfo": {
+    "title": "须知"
   }
 }

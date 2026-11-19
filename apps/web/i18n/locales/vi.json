@@ -527,7 +527,23 @@
     "japaneseInsuranceSourceLabel": "Nguồn",
     "japaneseInsuranceSourcePlaceholder": "Đường dẫn, hoặc ghi chú như: đã gọi cho phòng khám ngày 2/11/2026",
     "paymentLabel": "Phương thức thanh toán",
-    "paymentHint": "Chỉ đánh dấu những gì trang web của phòng khám hoặc một cuộc gọi xác nhận. Nếu không biết, hãy để trống tất cả. Khi đó người đọc sẽ không thấy gì, chứ không phải là chỉ nhận tiền mặt."
+    "paymentHint": "Chỉ đánh dấu những gì trang web của phòng khám hoặc một cuộc gọi xác nhận. Nếu không biết, hãy để trống tất cả. Khi đó người đọc sẽ không thấy gì, chứ không phải là chỉ nhận tiền mặt.",
+    "openingHoursLabel": "Giờ làm việc",
+    "openingHoursHint": "Chỉ nhập giờ từ trang web của phòng khám hoặc qua điện thoại, không lấy từ Google Maps. Giờ là giờ Nhật Bản. Nếu không nhập, người đọc sẽ không thấy gì. Khi đã có giờ, ngày không có giờ sẽ hiển thị là nghỉ.",
+    "openingHoursAdd": "Thêm giờ",
+    "openingHoursUnknown": "Chưa rõ",
+    "openingHoursOpens": "Mở cửa",
+    "openingHoursCloses": "Đóng cửa",
+    "openingHoursRemove": "Xóa khung giờ {day} này",
+    "openingHoursRemoveShort": "Xóa",
+    "openingHoursInvalid": "Mỗi khung giờ phải kết thúc sau khi bắt đầu, và các khung giờ trong cùng một ngày không được chồng lên nhau.",
+    "openingHoursClear": "Xóa tất cả giờ",
+    "additionalInfoLabel": "Ghi chú cho khách",
+    "additionalInfoHint": "Thông tin ngắn gọn, thiết thực như đặt lịch, khám không hẹn trước hoặc chỗ đỗ xe. Viết bằng tiếng Anh và tiếng Nhật. Người đọc tiếng Nhật thấy ghi chú tiếng Nhật, những người khác thấy ghi chú tiếng Anh.",
+    "additionalInfoEnLabel": "Tiếng Anh",
+    "additionalInfoJaLabel": "Tiếng Nhật",
+    "additionalInfoBothLanguages": "Hãy viết ghi chú bằng cả hai ngôn ngữ, hoặc để trống cả hai.",
+    "openingHoursUntilMidnight": "Đến nửa đêm"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Mã cơ sở vật chất là bắt buộc để cập nhật cơ sở vật chất.",
@@ -583,7 +599,9 @@
     "submissionStatusChanged": "Người khác đã thay đổi nội dung gửi này trước. Hãy tải lại trang và kiểm tra lại.",
     "professionalNamesRequired": "Nhân viên y tế cần có tên bằng romaji và tên bằng tiếng Nhật.",
     "professionalNameLocaleNotAllowed": "Nhân viên y tế chỉ có tên bằng romaji và tên bằng tiếng Nhật.",
-    "japaneseMiddleNameNotAllowed": "Tên tiếng Nhật không có tên đệm."
+    "japaneseMiddleNameNotAllowed": "Tên tiếng Nhật không có tên đệm.",
+    "invalidOpeningHours": "Kiểm tra giờ làm việc: mỗi khung giờ phải kết thúc sau khi bắt đầu, và các khung giờ trong cùng một ngày không được chồng lên nhau.",
+    "additionalInfoBothLanguages": "Hãy viết ghi chú cho khách bằng cả tiếng Anh và tiếng Nhật, hoặc để trống cả hai."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Ngôn ngữ sử dụng",
@@ -796,7 +814,8 @@
     "pageHeading": "Tìm bác sĩ ở Nhật Bản",
     "mapUnavailable": "Không tải được bản đồ.",
     "mapUnavailableHint": "Các kết quả còn lại không bị ảnh hưởng.",
-    "payment": "Thanh toán"
+    "payment": "Thanh toán",
+    "clinicLanguagesCaveat": "Đây là các ngôn ngữ phòng khám cho biết có thể hỗ trợ. Không phải bác sĩ nào cũng nói được, vì vậy hãy hỏi khi liên hệ phòng khám."
   },
   "clinicPage": {
     "backToSearch": "Về tìm kiếm",
@@ -1414,5 +1433,23 @@
       "payPay": "PayPay",
       "other": "Khác"
     }
+  },
+  "openingHours": {
+    "title": "Giờ làm việc",
+    "closed": "Nghỉ",
+    "disclaimer": "Giờ Nhật Bản. Giờ làm việc có thể thay đổi, vì vậy hãy hỏi phòng khám trước khi đến.",
+    "days": {
+      "monday": "Thứ Hai",
+      "tuesday": "Thứ Ba",
+      "wednesday": "Thứ Tư",
+      "thursday": "Thứ Năm",
+      "friday": "Thứ Sáu",
+      "saturday": "Thứ Bảy",
+      "sunday": "Chủ Nhật",
+      "publicHoliday": "Ngày lễ"
+    }
+  },
+  "facilityAdditionalInfo": {
+    "title": "Cần biết"
   }
 }

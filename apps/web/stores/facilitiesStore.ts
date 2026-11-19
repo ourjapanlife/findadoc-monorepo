@@ -17,6 +17,7 @@ import type {
     PhysicalAddressInput,
     UpdateFacilityInput,
     MutationCreateFacilityArgs,
+    OpeningHours,
     PaymentOption
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
@@ -40,6 +41,7 @@ import {
     type JapaneseInsuranceChoice
 } from '~/utils/japaneseInsurance'
 import { changedPaymentOptions, paymentOptionsInput } from '~/utils/paymentOptions'
+import { changedOpeningHours, openingHoursInput } from '~/utils/openingHours'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -73,6 +75,11 @@ export type FacilitySectionFields = {
 
     // Payment types and brands (#20). Empty is unknown.
     paymentOptions: PaymentOption[]
+
+    // Opening hours and the bilingual visitor note (#294). Empty is unknown.
+    openingHours: OpeningHours[]
+    additionalInfoEn: string
+    additionalInfoJa: string
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -109,6 +116,23 @@ function coordinateOrZero(value: string): number {
     return Number.isFinite(parsed) ? parsed : 0
 }
 
+/** Changed opening hours and visitor note (#294). The API takes the two notes together, so a change to either sends both. */
+function changedVisitorInfo(current: FacilitySectionFields, original: Facility): Partial<UpdateFacilityInput> {
+    const changes: Partial<UpdateFacilityInput> = {}
+    const nextHours = changedOpeningHours(current.openingHours, original.openingHours)
+
+    if (nextHours) {
+        changes.openingHours = nextHours
+    }
+    if (current.additionalInfoEn.trim() !== (original.additionalInfoEn ?? '')
+      || current.additionalInfoJa.trim() !== (original.additionalInfoJa ?? '')) {
+        changes.additionalInfoEn = current.additionalInfoEn.trim()
+        changes.additionalInfoJa = current.additionalInfoJa.trim()
+    }
+
+    return changes
+}
+
 export function getChangedFacilityFieldsForUpdate(
     current: FacilitySectionFields,
     original: Facility
@@ -139,6 +163,8 @@ export function getChangedFacilityFieldsForUpdate(
     if (nextPayment) {
         updatedFields.paymentOptions = nextPayment
     }
+
+    Object.assign(updatedFields, changedVisitorInfo(current, original))
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
 
@@ -276,6 +302,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         japaneseInsurance: '' as JapaneseInsuranceChoice,
         japaneseInsuranceSource: '',
         paymentOptions: [] as PaymentOption[],
+        openingHours: [] as OpeningHours[],
+        additionalInfoEn: '',
+        additionalInfoJa: '',
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -309,7 +338,11 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         japaneseInsurance: '' as JapaneseInsuranceChoice,
         japaneseInsuranceSource: '',
         // Unknown until the moderator checks a payment type (#20).
-        paymentOptions: [] as PaymentOption[]
+        paymentOptions: [] as PaymentOption[],
+        // Unknown until the moderator enters hours or a note (#294).
+        openingHours: [] as OpeningHours[],
+        additionalInfoEn: '',
+        additionalInfoJa: ''
     })
 
     /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
@@ -353,6 +386,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.japaneseInsurance = japaneseInsuranceChoice(data.japaneseInsurance)
         facilitySectionFields.value.japaneseInsuranceSource = data.japaneseInsuranceSource ?? ''
         facilitySectionFields.value.paymentOptions = paymentOptionsInput(data.paymentOptions ?? [])
+        facilitySectionFields.value.openingHours = openingHoursInput(data.openingHours ?? [])
+        facilitySectionFields.value.additionalInfoEn = data.additionalInfoEn ?? ''
+        facilitySectionFields.value.additionalInfoJa = data.additionalInfoJa ?? ''
     }
 
     function resetFacilitySectionFields() {
@@ -379,6 +415,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             japaneseInsurance: '' as JapaneseInsuranceChoice,
             japaneseInsuranceSource: '',
             paymentOptions: [] as PaymentOption[],
+            openingHours: [] as OpeningHours[],
+            additionalInfoEn: '',
+            additionalInfoJa: '',
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }
@@ -488,6 +527,16 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                 // Sent only when known. An empty list stays unknown.
                 ...(createFacilityFields.paymentOptions.length
                     ? { paymentOptions: paymentOptionsInput(createFacilityFields.paymentOptions) }
+                    : {}),
+                ...(createFacilityFields.openingHours.length
+                    ? { openingHours: openingHoursInput(createFacilityFields.openingHours) }
+                    : {}),
+                // Both notes or neither (#294). The API names the missing one.
+                ...(createFacilityFields.additionalInfoEn.trim() || createFacilityFields.additionalInfoJa.trim()
+                    ? {
+                        additionalInfoEn: createFacilityFields.additionalInfoEn.trim(),
+                        additionalInfoJa: createFacilityFields.additionalInfoJa.trim()
+                    }
                     : {}),
                 // Online is opt-in: only send when the moderator checked it.
                 ...(isOnline ? { online: true } : {}),
@@ -621,6 +670,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.japaneseInsurance = ''
         createFacilityFields.japaneseInsuranceSource = ''
         createFacilityFields.paymentOptions = []
+        createFacilityFields.openingHours = []
+        createFacilityFields.additionalInfoEn = ''
+        createFacilityFields.additionalInfoJa = ''
     }
 
     async function deleteFacility(

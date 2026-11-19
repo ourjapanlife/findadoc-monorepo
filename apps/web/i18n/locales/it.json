@@ -138,7 +138,9 @@
     "submissionStatusChanged": "Qualcun altro ha modificato questo invio prima di te. Ricarica la pagina e controllalo di nuovo.",
     "professionalNamesRequired": "Il professionista sanitario ha bisogno di un nome in romaji e di un nome in giapponese.",
     "professionalNameLocaleNotAllowed": "Un professionista sanitario ha solo un nome in romaji e un nome in giapponese.",
-    "japaneseMiddleNameNotAllowed": "Il nome giapponese non ha un secondo nome."
+    "japaneseMiddleNameNotAllowed": "Il nome giapponese non ha un secondo nome.",
+    "invalidOpeningHours": "Controlla gli orari: ogni fascia deve chiudere dopo l'apertura e le fasce dello stesso giorno non possono sovrapporsi.",
+    "additionalInfoBothLanguages": "Scrivi la nota per i visitatori in inglese e in giapponese, oppure lascia vuoti entrambi i campi."
   },
   "footer": {
     "poweredBy": "Offerto da {name}",
@@ -563,7 +565,23 @@
     "japaneseInsuranceSourceLabel": "Fonte",
     "japaneseInsuranceSourcePlaceholder": "Un link, o una nota come: chiamata la clinica il 2 nov 2026",
     "paymentLabel": "Metodi di pagamento",
-    "paymentHint": "Seleziona solo ciò che il sito della clinica o una telefonata conferma. Se non lo sai, lascia tutto vuoto. I lettori non vedranno nulla, non «solo contanti»."
+    "paymentHint": "Seleziona solo ciò che il sito della clinica o una telefonata conferma. Se non lo sai, lascia tutto vuoto. I lettori non vedranno nulla, non «solo contanti».",
+    "openingHoursLabel": "Orari di apertura",
+    "openingHoursHint": "Inserisci solo orari presi dal sito della clinica o da una telefonata, mai da Google Maps. Gli orari sono in ora del Giappone. Senza orari i lettori non vedono nulla. Appena aggiungi una fascia, un giorno senza fasce risulta chiuso.",
+    "openingHoursAdd": "Aggiungi fascia",
+    "openingHoursUnknown": "Non noto",
+    "openingHoursOpens": "Apre",
+    "openingHoursCloses": "Chiude",
+    "openingHoursRemove": "Rimuovi questa fascia di {day}",
+    "openingHoursRemoveShort": "Rimuovi",
+    "openingHoursInvalid": "Ogni fascia deve chiudere dopo l'apertura e le fasce dello stesso giorno non possono sovrapporsi.",
+    "openingHoursClear": "Cancella tutti gli orari",
+    "additionalInfoLabel": "Nota per i visitatori",
+    "additionalInfoHint": "Informazioni brevi e pratiche, come prenotazioni, visite senza appuntamento o parcheggio. Scrivila in inglese e in giapponese. I lettori giapponesi vedono la nota in giapponese, tutti gli altri quella in inglese.",
+    "additionalInfoEnLabel": "Inglese",
+    "additionalInfoJaLabel": "Giapponese",
+    "additionalInfoBothLanguages": "Scrivi la nota in entrambe le lingue, oppure lascia vuoti entrambi i campi.",
+    "openingHoursUntilMidnight": "Fino a mezzanotte"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "L'ID della struttura è obbligatiorio per aggiornare la struttura",
@@ -796,7 +814,8 @@
     "pageHeading": "Trova un medico in Giappone",
     "mapUnavailable": "Impossibile caricare la mappa.",
     "mapUnavailableHint": "Gli altri risultati non sono interessati.",
-    "payment": "Pagamento"
+    "payment": "Pagamento",
+    "clinicLanguagesCaveat": "Sono le lingue che la clinica dichiara di supportare. Non tutti i medici potrebbero parlarle: chiedi quando contatti la clinica."
   },
   "clinicPage": {
     "backToSearch": "Torna alla ricerca",
@@ -1414,5 +1433,23 @@
       "payPay": "PayPay",
       "other": "Altro"
     }
+  },
+  "openingHours": {
+    "title": "Orari di apertura",
+    "closed": "Chiuso",
+    "disclaimer": "Ora del Giappone. Gli orari possono cambiare: verifica con la clinica prima di andare.",
+    "days": {
+      "monday": "Lunedì",
+      "tuesday": "Martedì",
+      "wednesday": "Mercoledì",
+      "thursday": "Giovedì",
+      "friday": "Venerdì",
+      "saturday": "Sabato",
+      "sunday": "Domenica",
+      "publicHoliday": "Festivi"
+    }
+  },
+  "facilityAdditionalInfo": {
+    "title": "Da sapere"
   }
 }
