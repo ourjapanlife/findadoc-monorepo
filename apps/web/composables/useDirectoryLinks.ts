@@ -4,12 +4,13 @@ import {
     type RelatedCityLink,
     type RelatedFacetLink
 } from '~/utils/directoryLinks'
+import { hubFacetLabelSource, type HubFacetLabelSource } from '~/utils/hubLabels'
 import { loadFacetLinkCatalog, loadPrefectureHub, type loadPrefectureLeaf } from '~/utils/hubDirectory'
 import { useAsyncData } from '#imports'
 
 export type DirectoryRelatedLinks = {
-    prefectureSpecialties: { path: string, label: string }[]
-    prefectureLanguages: { path: string, label: string }[]
+    prefectureSpecialties: ({ path: string } & HubFacetLabelSource)[]
+    prefectureLanguages: ({ path: string } & HubFacetLabelSource)[]
     siblingCities: RelatedCityLink[]
     samePlace: RelatedFacetLink[]
     nearbySame: RelatedFacetLink[]
@@ -35,11 +36,11 @@ export async function useDirectoryRelatedLinks(leaf: DirectoryLeaf) {
             return {
                 prefectureSpecialties: (bucket?.specialties ?? []).map(facet => ({
                     path: facet.path,
-                    label: facet.label
+                    ...hubFacetLabelSource(facet)
                 })),
                 prefectureLanguages: (bucket?.languages ?? []).map(facet => ({
                     path: facet.path,
-                    label: facet.label
+                    ...hubFacetLabelSource(facet)
                 })),
                 siblingCities: siblingCityLinks(leaf.city, prefecture?.cities ?? []),
                 samePlace: [],

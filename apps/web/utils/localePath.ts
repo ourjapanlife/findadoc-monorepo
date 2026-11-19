@@ -4,13 +4,22 @@ import i18nLocales from '../i18n'
 export const DEFAULT_LOCALE_CODE = 'en-US'
 
 /**
- * Locales whose clinic, doctor, hub, and facet HTML is written at generate time.
- * Production is about 1,100 of those pages. All 13 locales is about 14,000 renders
- * and the generate step stays under Amplify's time limit. English is the default URL.
- * Japanese is the host-country language. Marketing pages still generate for
+ * Locales whose clinic and doctor HTML is written at generate time. Those pages are
+ * mostly directory data (names, addresses, notes) held in English and Japanese only,
+ * so another locale would be a near-copy of the English page. English is the default
+ * URL. Japanese is the host-country language. Marketing pages still generate for
  * every locale. Other directory URLs render in the browser. See `public/_redirects`.
  */
 export const DIRECTORY_PRERENDER_LOCALE_CODES = [DEFAULT_LOCALE_CODE, 'ja-JP'] as const
+
+/**
+ * Locales whose hub and facet HTML (`/tokyo`, `/tokyo/minato`, `/tokyo/dentistry`) is
+ * written at generate time. Those pages are template text, so a translation is a real
+ * page in that language. Beyond English and Japanese, these are the three largest
+ * foreign-resident languages (see `i18n/index.ts`). Add a locale here when search
+ * demand shows it, not all at once: each one is indexed, in the sitemap, and in hreflang.
+ */
+export const HUB_PRERENDER_LOCALE_CODES = [...DIRECTORY_PRERENDER_LOCALE_CODES, 'zh-CN', 'vi-VN', 'ko-KR'] as const
 
 export function isDirectoryPrerenderLocale(code: string): boolean {
     return (DIRECTORY_PRERENDER_LOCALE_CODES as readonly string[]).includes(code)
@@ -87,11 +96,6 @@ export function withLocales(paths: readonly string[], codes: readonly string[]):
 /** One path per site locale, default locale first and unprefixed. */
 export function withLocaleVariants(paths: readonly string[]): string[] {
     return withLocales(paths, LOCALE_CODES)
-}
-
-/** Directory pages for the locales `nuxi generate` actually writes. */
-export function withDirectoryLocaleVariants(paths: readonly string[]): string[] {
-    return withLocales(paths, DIRECTORY_PRERENDER_LOCALE_CODES)
 }
 
 /** Nav highlight: `/ja-JP/about` is the About item. */

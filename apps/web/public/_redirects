@@ -39,9 +39,10 @@
 /:locale/clinic-dashboard   /200.html   200
 /:locale/clinic-dashboard/* /200.html   200
 
-# Directory HTML is generated for en-US and ja-JP only. These locales still
-# have static marketing pages; this rewrite covers the directory URLs generate
-# skipped. Do not add /ja-JP/* — unknown Japanese clinics must stay a hard 404.
+# Clinic and doctor HTML is generated for en-US and ja-JP only. Hub and facet
+# HTML also exists for HUB_PRERENDER_LOCALE_CODES (utils/localePath.ts); Amplify
+# serves those files before this rewrite. These locales still have static
+# marketing pages; this rewrite covers the directory URLs generate skipped. Do not add /ja-JP/* — unknown Japanese clinics must stay a hard 404.
 /zh-CN/*            /200.html   200
 /vi-VN/*            /200.html   200
 /ko-KR/*            /200.html   200
