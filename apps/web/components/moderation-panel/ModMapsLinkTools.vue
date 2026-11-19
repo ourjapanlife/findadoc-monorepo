@@ -13,9 +13,11 @@
                 type="button"
                 class="btn btn-secondary btn-sm mod-edit-only"
                 data-testid="mod-fill-from-maps"
+                :aria-busy="filling"
                 :disabled="filling"
                 @click="fillEmptyFields"
             >
+                <ButtonSpinner v-if="filling" />
                 {{ t('modFacilitySection.fillFromMaps') }}
             </button>
         </div>
@@ -34,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, ref } from 'vue'
 import { useI18n } from '#imports'
 import OpenMapsButton from '~/components/common/OpenMapsButton.vue'

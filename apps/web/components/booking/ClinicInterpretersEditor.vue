@@ -172,7 +172,7 @@
                     :aria-busy="draft.saving"
                     data-testid="clinic-interpreter-save"
                 >
-                    <ButtonSpinner v-if="draft.saving" />
+                    <ButtonSpinner v-if="draft.saving && !draft.removing" />
                     {{ t('clinicDashboard.interpreters.save') }}
                 </button>
                 <button
@@ -180,8 +180,10 @@
                     class="btn btn-ghost"
                     :disabled="draft.saving"
                     data-testid="clinic-interpreter-remove"
+                    :aria-busy="draft.removing"
                     @click="remove(draft)"
                 >
+                    <ButtonSpinner v-if="draft.removing" />
                     {{ t('clinicDashboard.interpreters.remove') }}
                 </button>
             </div>
@@ -234,6 +236,8 @@ type Draft = {
     alwaysAvailable: boolean
     blocks: EditableBlock[]
     saving: boolean
+    // Set with `saving` while a delete runs, so the spinner shows on Remove, not Save.
+    removing: boolean
 }
 
 const drafts = ref<Draft[]>([])
@@ -255,7 +259,8 @@ function draftFrom(interpreter: ClinicInterpreter | null): Draft {
         capacity: interpreter?.capacity ?? null,
         alwaysAvailable: (interpreter?.hours.length ?? 0) === 0,
         blocks: editableBlocks(interpreter?.hours ?? []),
-        saving: false
+        saving: false,
+        removing: false
     }
 }
 
@@ -308,8 +313,10 @@ async function remove(draft: Draft): Promise<void> {
         return
     }
     draft.saving = true
+    draft.removing = true
     const removed = await deleteClinicInterpreter(draft.id)
     draft.saving = false
+    draft.removing = false
     if (!removed) {
         toast.error(t('clinicDashboard.interpreters.removeFailed'))
         return

@@ -18,26 +18,31 @@
         >
             <button
                 type="button"
-                :disabled="!hasPendingChanges"
+                :disabled="!hasPendingChanges || pending"
+                :aria-busy="isPending('update')"
                 :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
                 data-testid="mod-edit-facility-hp-topbar-update"
-                @click="saveChanges"
+                @click="run('update', saveChanges)"
             >
+                <ButtonSpinner v-if="isPending('update')" />
                 {{ t('modEditFacilityOrHPTopbar.update') }}
             </button>
             <button
                 type="button"
-                :disabled="!hasPendingChanges"
+                :disabled="!hasPendingChanges || pending"
+                :aria-busy="isPending('updateAndExit')"
                 :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
                 data-testid="mod-edit-facility-hp-topbar-update-and-exit"
-                @click="saveChangesAndExit"
+                @click="run('updateAndExit', saveChangesAndExit)"
             >
+                <ButtonSpinner v-if="isPending('updateAndExit')" />
                 {{ t('modEditFacilityOrHPTopbar.updateAndExit') }}
             </button>
             <button
                 type="button"
                 :class="[buttonBaseClass, actionButtonClass, buttonDangerClass, buttonPaddingClass]"
                 data-testid="mod-edit-facility-hp-topbar-delete"
+                :disabled="pending"
                 @click="openDeleteConfirmation"
             >
                 {{ t('modEditFacilityOrHPTopbar.delete') }}
@@ -50,6 +55,8 @@
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAppToast } from '~/composables/useAppToast'
+import { usePendingAction } from '~/composables/usePendingAction'
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from '#imports'
 import { useFacilitiesStore, getChangedFacilityFieldsForUpdate } from '~/stores/facilitiesStore'
@@ -130,11 +137,13 @@ watch(
 const hasPendingChanges = computed(() => hasPendingFormChanges())
 
 const toast = useAppToast()
+const { pending, isPending, run } = usePendingAction()
 
 const { t, te } = useI18n()
 
-const buttonBaseClass = 'inline-flex min-h-11 min-w-0 max-w-full items-center justify-center rounded-full border-2'
+const buttonBaseClass = 'inline-flex min-h-11 min-w-0 max-w-full items-center justify-center gap-2 rounded-full border-2'
   + ' break-words text-center text-sm font-bold leading-tight landscape:text-base'
+  + ' disabled:cursor-not-allowed disabled:opacity-50'
 const actionButtonClass = 'w-full landscape:w-auto landscape:shrink-0'
 const backButtonClass = 'w-auto shrink-0 self-start landscape:self-center'
 const buttonPaddingClass = 'px-3 py-2 whitespace-normal landscape:px-5'
@@ -319,8 +328,9 @@ const openDeleteConfirmation = () => {
     const professionalName = name === undefined
         ? ''
         : [name.firstName, name.lastName].filter(part => part).join(' ')
-    useNuxtApp().$withConfirmation(() => {
-        void deleteFacilityOrHealthcareProfessional()
+    useNuxtApp().$withConfirmation(async () => {
+        // Awaited so the dialog keeps its spinner until the request finishes.
+        await deleteFacilityOrHealthcareProfessional()
     }, {
         title: t('modEditFacilityOrHPTopbar.delete'),
         message: deletingFacility

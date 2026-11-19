@@ -93,9 +93,17 @@
                         />
                     </div>
                 </li>
+                <!-- The directory search is still running: not a "no match" yet. -->
+                <li
+                    v-if="searching && !filteredItems.length"
+                    data-testid="mod-search-bar-searching"
+                    class="m-3 flex cursor-default justify-center"
+                >
+                    <ChikoLoader size="sm" />
+                </li>
                 <!-- Fallback for empty search results -->
                 <li
-                    v-if="!filteredItems.length"
+                    v-else-if="!filteredItems.length"
                     data-testid="mod-search-bar-search-no-match"
                     class="m-3 cursor-default"
                 >
@@ -112,6 +120,7 @@
     Defining generic types using props
 */
 import { computed, nextTick, onUnmounted, ref, useId, watch, type Ref } from 'vue'
+import ChikoLoader from '~/components/common/ChikoLoader.vue'
 import SVGCheckMark from '~/assets/icons/check-mark.svg'
 import SVGLookingGlass from '~/assets/icons/looking-glass.svg'
 import { searchResultMenuBox } from '~/utils/searchResultMenu'
@@ -138,12 +147,14 @@ type Props = {
     // Callback to display the desired output
     fieldsToDisplayCallback: (item: ArrayType<T>) => string[]
     defaultSuggestions: ArrayType<T>[]
+    // True while an API search for the typed text is in flight
+    searching?: boolean
 
     //Optional test id for testing the component
     dataTestId?: string
 }
 
-const { placeHolderText, noMatchText, fieldsToDisplayCallback, defaultSuggestions } = defineProps<Props>()
+const { placeHolderText, noMatchText, fieldsToDisplayCallback, defaultSuggestions, searching = false } = defineProps<Props>()
 
 const showResultId = (item: { id?: unknown }) => {
     const id = item.id === null || item.id === undefined ? '' : String(item.id)

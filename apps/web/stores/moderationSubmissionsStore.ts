@@ -125,6 +125,9 @@ export const useModerationSubmissionsStore = defineStore(
             MODERATION_PAGE_SIZES
         )
         const listOrder: Ref<ListOrder | null> = ref(null)
+        let submissionListRequest = 0
+        /** True while the latest list request is in flight, so the table shows Chiko instead of "no results". */
+        const isListLoading: Ref<boolean> = ref(false)
         // Counts loadSelectedSubmission calls, so a slow answer for an older id is dropped.
         let selectedSubmissionLoads = 0
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalSubmissionsCount.value)
@@ -211,6 +214,9 @@ export const useModerationSubmissionsStore = defineStore(
         }
 
         async function getSubmissions() {
+            // A tab switch can start a second request before the first returns. Only the latest one lands.
+            const request = ++submissionListRequest
+            isListLoading.value = true
             try {
                 const orderBy = orderByInput(listOrder.value)
                 const page = await loadPageInRange(
@@ -229,13 +235,23 @@ export const useModerationSubmissionsStore = defineStore(
                 )
                 // Names first: the search box matches a correction by its clinic's name.
                 await Promise.all([loadCorrectionFacilityNames(page.rows), loadOpenCorrectionCounts(page.rows)])
+                if (request !== submissionListRequest) {
+                    return
+                }
                 applySubmissionPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
+                if (request !== submissionListRequest) {
+                    return
+                }
                 console.error(`Error fetching submissions: ${JSON.stringify(error)}`)
                 toastModerationLoadError('moderationListErrors.submissions')
                 submissionsData.value = []
                 filteredSubmissionDataForListComponent.value = []
                 totalSubmissionsCount.value = 0
+            } finally {
+                if (request === submissionListRequest) {
+                    isListLoading.value = false
+                }
             }
         }
 
@@ -418,6 +434,7 @@ export const useModerationSubmissionsStore = defineStore(
 
         return {
             getSubmissions,
+            isListLoading,
             fetchStatusCounts,
             submissionsData,
             filteredSubmissionDataForListComponent,

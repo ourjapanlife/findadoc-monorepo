@@ -7,14 +7,18 @@
                 type="button"
                 :class="[buttonBaseClass, buttonPrimaryClass, buttonPaddingClass]"
                 data-testid="mod-create-facility-hp-topbar-create"
-                @click="createFacilityOrHealthcareProfessional"
+                :disabled="pending"
+                :aria-busy="pending"
+                @click="run('create', createFacilityOrHealthcareProfessional)"
             >
+                <ButtonSpinner v-if="pending" />
                 {{ t('modCreateFacilityOrHPTopbar.create') }}
             </button>
             <button
                 type="button"
                 :class="[buttonBaseClass, buttonOutlineClass, buttonPaddingClass]"
                 data-testid="mod-create-facility-hp-topbar-exit"
+                :disabled="pending"
                 @click="openExitConfirmation"
             >
                 {{ t('modCreateFacilityOrHPTopbar.exit') }}
@@ -25,6 +29,8 @@
 
 <script setup lang="ts">
 import { useAppToast } from '~/composables/useAppToast'
+import { usePendingAction } from '~/composables/usePendingAction'
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from '#imports'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
@@ -50,11 +56,12 @@ const moderationScreenStore = useModerationScreenStore()
 const modalStore = useModalStore()
 
 const toast = useAppToast()
+const { pending, run } = usePendingAction()
 
 const { t, te } = useI18n()
 const buttonBaseClass = 'inline-flex min-h-11 w-full min-w-0 max-w-full flex-1 basis-[calc(50%-0.25rem)]'
-  + ' items-center justify-center rounded-full border-2'
-  + ' break-words text-center text-sm font-bold leading-tight'
+  + ' items-center justify-center gap-2 rounded-full border-2'
+  + ' break-words text-center text-sm font-bold leading-tight disabled:cursor-not-allowed disabled:opacity-50'
   + ' landscape:w-auto landscape:max-w-full landscape:flex-none landscape:basis-auto landscape:text-base'
 const buttonPaddingClass = 'px-3 py-2 whitespace-normal landscape:px-5'
 const buttonOutlineClass = 'bg-secondary-bg border-primary-text-muted text-primary-text hover:bg-accent-bg/20'

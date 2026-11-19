@@ -55,9 +55,11 @@
                 type="button"
                 class="btn btn-secondary btn-sm w-fit"
                 data-testid="mod-correction-start-review"
+                :aria-busy="isBusy"
                 :disabled="isBusy"
                 @click="startReview"
             >
+                <ButtonSpinner v-if="isBusy" />
                 {{ t('modCorrectionReview.startReview') }}
             </button>
         </section>
@@ -217,6 +219,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { FacilityCorrectionReason, type Facility } from '@findadoc/graphql'
@@ -251,7 +254,7 @@ const modalStore = useModalStore()
 const screenStore = useModerationScreenStore()
 const loadingStore = useLoadingStore()
 const submissionsStore = useModerationSubmissionsStore()
-const { moderationSubmissionAction } = useModerationSubmissionActions()
+const { moderationSubmissionAction, runModerationSubmissionAction } = useModerationSubmissionActions()
 
 const facility = ref<Facility | null>(null)
 const facilityLoadFailed = ref(false)
@@ -400,8 +403,9 @@ watch(moderationSubmissionAction, action => {
     lastHandledActionId.value = action.id
 
     if (action.type === ModerationSubmissionActionType.Approve) {
-        useNuxtApp().$withConfirmation(() => {
-            void approve()
+        useNuxtApp().$withConfirmation(async () => {
+            // Awaited so the dialog keeps its spinner until the request finishes.
+            await runModerationSubmissionAction(ModerationSubmissionActionType.Approve, approve)
         }, {
             title: t('modEditSubmissionTopNav.approve'),
             message: t('modCorrectionReview.approveConfirm'),
@@ -411,8 +415,9 @@ watch(moderationSubmissionAction, action => {
         return
     }
     if (action.type === ModerationSubmissionActionType.Reject) {
-        useNuxtApp().$withConfirmation(() => {
-            void decline()
+        useNuxtApp().$withConfirmation(async () => {
+            // Awaited so the dialog keeps its spinner until the request finishes.
+            await runModerationSubmissionAction(ModerationSubmissionActionType.Reject, decline)
         }, {
             title: t('modEditSubmissionTopNav.reject'),
             message: t('modCorrectionReview.declineConfirm'),
