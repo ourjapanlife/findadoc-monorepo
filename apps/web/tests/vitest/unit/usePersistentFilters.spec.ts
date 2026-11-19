@@ -26,13 +26,13 @@ describe('usePersistentFilters', () => {
 
     it('starts from the default and writes the next value', async () => {
         const scope = effectScope()
-        const search = scope.run(() => usePersistentFilters('facilities', 'search', ''))!
-        expect(search.value).toBe('')
+        const offset = scope.run(() => usePersistentFilters('facilities', 'offset', 0))!
+        expect(offset.value).toBe(0)
 
-        search.value = 'minato'
+        offset.value = 50
         await nextTick()
 
-        expect(localStorage.getItem(persistentFilterStorageKey('facilities', 'search'))).toBe('"minato"')
+        expect(localStorage.getItem(persistentFilterStorageKey('facilities', 'offset'))).toBe('50')
         scope.stop()
     })
 
@@ -79,18 +79,18 @@ describe('usePersistentFilters', () => {
 
     it('prunes an array to the values that are still allowed', async () => {
         localStorage.setItem(
-            persistentFilterStorageKey('facilities', 'search'),
-            JSON.stringify(['minato', 'retired'])
+            persistentFilterStorageKey('submissions', 'tab'),
+            JSON.stringify(['NEW', 'RETIRED'])
         )
         const scope = effectScope()
-        const search = scope.run(() => usePersistentFilters(
-            'facilities',
-            'search',
+        const tabs = scope.run(() => usePersistentFilters(
+            'submissions',
+            'tab',
             [] as string[],
-            ['minato']
+            ['NEW']
         ))!
         await nextTick()
-        expect(search.value).toEqual(['minato'])
+        expect(tabs.value).toEqual(['NEW'])
         scope.stop()
     })
 
@@ -106,25 +106,35 @@ describe('usePersistentFilters', () => {
         localStorage.setItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}facilities:sort`, '"nameEn"')
         localStorage.setItem('moderation-sidebar-collapsed', 'true')
         const scope = effectScope()
-        scope.run(() => usePersistentFilters('facilities', 'search', ''))
+        scope.run(() => usePersistentFilters('facilities', 'offset', 0))
         expect(localStorage.getItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}facilities:sort`)).toBeNull()
         expect(localStorage.getItem('moderation-sidebar-collapsed')).toBe('true')
         localStorage.removeItem('moderation-sidebar-collapsed')
         scope.stop()
     })
 
+    it('does not keep search text across a reload', () => {
+        localStorage.setItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}facilities:search`, '"minato"')
+        localStorage.setItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}professionals:search`, '"tanaka"')
+        const scope = effectScope()
+        scope.run(() => usePersistentFilters('professionals', 'offset', 0))
+        expect(localStorage.getItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}facilities:search`)).toBeNull()
+        expect(localStorage.getItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}professionals:search`)).toBeNull()
+        scope.stop()
+    })
+
     it('keeps the in-memory value when storage rejects the write', () => {
         const scope = effectScope()
-        const search = scope.run(() => usePersistentFilters('facilities', 'search', ''))!
+        const offset = scope.run(() => usePersistentFilters('facilities', 'offset', 0))!
         const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
             throw new Error('blocked')
         })
         try {
             expect(() => {
-                search.value = 'minato'
+                offset.value = 50
             }).not.toThrow()
             expect(setItem).toHaveBeenCalled()
-            expect(search.value).toBe('minato')
+            expect(offset.value).toBe(50)
         } finally {
             setItem.mockRestore()
             scope.stop()
