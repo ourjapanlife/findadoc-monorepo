@@ -1,11 +1,17 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
-import { hasSpecialCharacters, isValidEmail, isValidWebsite } from '../../utils/stringUtils.js'
+import { hasScriptTags, hasSpecialCharacters, isValidEmail, isValidWebsite } from '../../utils/stringUtils.js'
 import { isStorablePhone } from './validatePhone.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
 import { LIST_QUERY_MAX } from '../search/listQuery.js'
 import { isPublishedLocale } from '../languages/publishedLocales.js'
-import { fitsFieldLimit, paymentOptionsProblem } from '@findadoc/utils'
+import {
+    ADDITIONAL_INFO_MAX_LENGTH,
+    cleanAdditionalInfo,
+    fitsFieldLimit,
+    openingHoursProblem,
+    paymentOptionsProblem
+} from '@findadoc/utils'
 
 /** A Places id token, as Google writes it. 256 characters is far above any real id. */
 const GOOGLE_PLACE_ID = /^[A-Za-z0-9_-]{8,256}$/
@@ -240,6 +246,84 @@ export function validateJapaneseInsurance(
 }
 
 /**
+ * Opening hours are optional (#294). Times are HH:MM in Japan time, a block closes after it
+ * opens, and blocks on one day do not overlap. Null or an empty list clears them to unknown.
+ */
+export function validateOpeningHours(
+    blocks: readonly gqlTypes.OpeningHoursInput[] | null | undefined,
+    validationResults: Result<unknown>
+): void {
+    if (!blocks) {
+        return
+    }
+
+    const problem = openingHoursProblem(blocks)
+
+    if (problem) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: 'openingHours',
+            errorCode: problem === 'too_many' ? ErrorCode.INVALID_LENGTH_TOO_LONG : ErrorCode.INVALID_OPENING_HOURS,
+            httpStatus: 400
+        })
+    }
+}
+
+/**
+ * The visitor note is written by a moderator in English and Japanese (#294), so every reader
+ * gets one: Japanese readers the Japanese note, everyone else the English one. Both or neither,
+ * and both fields are sent together. Omitting both leaves the stored note alone.
+ */
+export function validateAdditionalInfo(
+    input: { additionalInfoEn?: string | null, additionalInfoJa?: string | null },
+    validationResults: Result<unknown>
+): void {
+    const englishSent = input.additionalInfoEn !== undefined
+    const japaneseSent = input.additionalInfoJa !== undefined
+
+    if (!englishSent && !japaneseSent) {
+        return
+    }
+    // Both fields travel together, so one field alone cannot clear or keep the other's text.
+    if (englishSent !== japaneseSent) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: englishSent ? 'additionalInfoJa' : 'additionalInfoEn',
+            errorCode: ErrorCode.ADDITIONAL_INFO_BOTH_LANGUAGES,
+            httpStatus: 400
+        })
+        return
+    }
+
+    const notes = { additionalInfoEn: input.additionalInfoEn, additionalInfoJa: input.additionalInfoJa }
+
+    for (const [field, value] of Object.entries(notes)) {
+        const text = cleanAdditionalInfo(value)
+
+        if (text !== null && text.length > ADDITIONAL_INFO_MAX_LENGTH) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({ field, errorCode: ErrorCode.INVALID_LENGTH_TOO_LONG, httpStatus: 400 })
+        }
+        if (text !== null && hasScriptTags(text)) {
+            validationResults.hasErrors = true
+            validationResults.errors?.push({ field, errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 })
+        }
+    }
+
+    const hasEnglish = cleanAdditionalInfo(input.additionalInfoEn) !== null
+    const hasJapanese = cleanAdditionalInfo(input.additionalInfoJa) !== null
+
+    if (hasEnglish !== hasJapanese) {
+        validationResults.hasErrors = true
+        validationResults.errors?.push({
+            field: hasEnglish ? 'additionalInfoJa' : 'additionalInfoEn',
+            errorCode: ErrorCode.ADDITIONAL_INFO_BOTH_LANGUAGES,
+            httpStatus: 400
+        })
+    }
+}
+
+/**
  * Validates the input for updating a facility.
  */
 export function validateUpdateFacilityInput(
@@ -305,6 +389,8 @@ export function validateUpdateFacilityInput(
     validateGooglePlaceId(input.googlePlaceId, validationResults)
     validateJapaneseInsurance(input, validationResults)
     validatePaymentOptions(input.paymentOptions, validationResults)
+    validateOpeningHours(input.openingHours, validationResults)
+    validateAdditionalInfo(input, validationResults)
 
     return validationResults
 }
@@ -389,6 +475,8 @@ export function validateCreateFacilityInput(input: gqlTypes.CreateFacilityInput)
     validateGooglePlaceId(input.googlePlaceId, validationResults)
     validateJapaneseInsurance(input, validationResults)
     validatePaymentOptions(input.paymentOptions, validationResults)
+    validateOpeningHours(input.openingHours, validationResults)
+    validateAdditionalInfo(input, validationResults)
 
     return validationResults
 }

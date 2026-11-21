@@ -483,7 +483,23 @@
     "japaneseInsuranceSourceLabel": "Pinagmulan",
     "japaneseInsuranceSourcePlaceholder": "Isang link, o tala gaya ng: tinawagan ang klinika noong 2 Nob 2026",
     "paymentLabel": "Paraan ng pagbabayad",
-    "paymentHint": "Lagyan lang ng tsek ang kinumpirma ng website ng klinika o ng isang tawag. Kung hindi mo alam, iwanang walang tsek ang lahat. Walang makikita ang mga mambabasa, hindi \"cash lang\"."
+    "paymentHint": "Lagyan lang ng tsek ang kinumpirma ng website ng klinika o ng isang tawag. Kung hindi mo alam, iwanang walang tsek ang lahat. Walang makikita ang mga mambabasa, hindi \"cash lang\".",
+    "openingHoursLabel": "Oras ng bukas",
+    "openingHoursHint": "Ilagay lang ang oras mula sa website ng klinika o sa tawag, hindi mula sa Google Maps. Oras sa Japan ang gamit. Kung walang oras, walang makikita ang mga mambabasa. Kapag may isa nang oras, ang araw na walang oras ay ipapakitang sarado.",
+    "openingHoursAdd": "Magdagdag ng oras",
+    "openingHoursUnknown": "Hindi alam",
+    "openingHoursOpens": "Bukas",
+    "openingHoursCloses": "Sara",
+    "openingHoursRemove": "Alisin ang oras na ito sa {day}",
+    "openingHoursRemoveShort": "Alisin",
+    "openingHoursInvalid": "Dapat magsara ang bawat oras pagkatapos itong magbukas, at hindi puwedeng magpatong ang mga oras sa iisang araw.",
+    "openingHoursClear": "Burahin lahat ng oras",
+    "additionalInfoLabel": "Paalala para sa bisita",
+    "additionalInfoHint": "Maikli at praktikal na impormasyon, gaya ng reserbasyon, walk-in, o paradahan. Isulat ito sa Ingles at sa Hapon. Ang mga mambabasang Hapon ay makakakita ng paalalang Hapon, at ang iba ay ang paalalang Ingles.",
+    "additionalInfoEnLabel": "Ingles",
+    "additionalInfoJaLabel": "Hapon",
+    "additionalInfoBothLanguages": "Isulat ang paalala sa dalawang wika, o iwanang blangko ang dalawa.",
+    "openingHoursUntilMidnight": "Hanggang hatinggabi"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",
@@ -539,7 +555,9 @@
     "submissionStatusChanged": "May ibang nagbago muna sa pagsusumiteng ito. I-reload ang pahina at suriin itong muli.",
     "professionalNamesRequired": "Kailangan ng propesyonal sa kalusugan ang pangalan sa romaji at pangalan sa wikang Hapon.",
     "professionalNameLocaleNotAllowed": "Pangalan sa romaji at pangalan sa wikang Hapon lang ang mayroon ang propesyonal sa kalusugan.",
-    "japaneseMiddleNameNotAllowed": "Walang gitnang pangalan ang pangalan sa wikang Hapon."
+    "japaneseMiddleNameNotAllowed": "Walang gitnang pangalan ang pangalan sa wikang Hapon.",
+    "invalidOpeningHours": "Suriin ang oras ng bukas: dapat magsara ang bawat oras pagkatapos itong magbukas, at hindi puwedeng magpatong ang mga oras sa iisang araw.",
+    "additionalInfoBothLanguages": "Isulat ang paalala para sa bisita sa Ingles at Hapon, o iwanang blangko ang dalawa."
   },
   "modHealthcareProfessionalSection": {
     "healthcareProfessionalMedicalInfoHeading": "Detalye ng propesyonal sa kalusugan",
@@ -796,7 +814,8 @@
     "pageHeading": "Maghanap ng doktor sa Japan",
     "mapUnavailable": "Hindi ma-load ang mapa.",
     "mapUnavailableHint": "Hindi apektado ang iba pang resulta.",
-    "payment": "Bayad"
+    "payment": "Bayad",
+    "clinicLanguagesCaveat": "Ito ang mga wikang sinasabi ng klinika na kaya nilang suportahan. Maaaring hindi lahat ng doktor ay nagsasalita nito, kaya magtanong kapag kinontak mo ang klinika."
   },
   "clinicPage": {
     "backToSearch": "Bumalik sa paghahanap",
@@ -1414,5 +1433,23 @@
       "payPay": "PayPay",
       "other": "Iba pa"
     }
+  },
+  "openingHours": {
+    "title": "Oras ng bukas",
+    "closed": "Sarado",
+    "disclaimer": "Oras sa Japan. Maaaring magbago ang oras, kaya magtanong muna sa klinika bago pumunta.",
+    "days": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miyerkules",
+      "thursday": "Huwebes",
+      "friday": "Biyernes",
+      "saturday": "Sabado",
+      "sunday": "Linggo",
+      "publicHoliday": "Mga pista opisyal"
+    }
+  },
+  "facilityAdditionalInfo": {
+    "title": "Mabuting malaman"
   }
 }

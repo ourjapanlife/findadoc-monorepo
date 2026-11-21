@@ -56,6 +56,9 @@ function section(online: boolean, map = ''): FacilitySectionFields {
         japaneseInsurance: '',
         japaneseInsuranceSource: '',
         paymentOptions: [],
+        openingHours: [],
+        additionalInfoEn: '',
+        additionalInfoJa: '',
         healthcareProfessionalIds: [],
         healthProfessionalsRelations: []
     }

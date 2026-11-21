@@ -66,5 +66,9 @@ export enum ErrorCode {
     /** A duplicate report must link to a Find a Doc listing over https. */
     INVALID_LISTING_URL = 'INVALID_LISTING_URL',
     /** Someone else changed the submission status first. Reload and decide again. */
-    SUBMISSION_STATUS_CHANGED = 'SUBMISSION_STATUS_CHANGED'
+    SUBMISSION_STATUS_CHANGED = 'SUBMISSION_STATUS_CHANGED',
+    /** An opening-hours block has a bad time, closes before it opens, or overlaps another (#294). */
+    INVALID_OPENING_HOURS = 'INVALID_OPENING_HOURS',
+    /** A facility visitor note needs both English and Japanese, or neither (#294). */
+    ADDITIONAL_INFO_BOTH_LANGUAGES = 'ADDITIONAL_INFO_BOTH_LANGUAGES'
 }

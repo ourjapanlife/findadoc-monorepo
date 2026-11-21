@@ -68,6 +68,14 @@ const GET_FACILITY = gql`
                 paymentBrands
             }
             japaneseInsurance
+            supportedLanguages
+            openingHours {
+                day
+                opens
+                closes
+            }
+            additionalInfoEn
+            additionalInfoJa
         }
     }
 `
@@ -92,6 +100,10 @@ export type Facility = Pick<
     | 'healthcareProfessionalIds'
     | 'paymentOptions'
     | 'japaneseInsurance'
+    | 'supportedLanguages'
+    | 'openingHours'
+    | 'additionalInfoEn'
+    | 'additionalInfoJa'
 >
 
 export interface SearchFacilitiesParams {

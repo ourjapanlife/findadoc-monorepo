@@ -206,6 +206,14 @@ The #18 insurance backfill has run on production, and `20261108120000_drop_hps_a
 
 Payment is `facilities.payment_options` (#20). An empty list is unknown, not cash only, and readers see nothing. A moderator fills it only from the clinic's site or a call. Types are `CASH`, `CREDIT_CARD`, `DEBIT_CARD`, `ELECTRONIC_MONEY`, and `QR_CODE`, each at most once. Brands come from the controlled list in `packages/utils/src/paymentOptions.ts`, filed under the type that names them: Suica and PASMO are `IC`. The API refuses anything else, and the mapper drops a legacy entry instead of showing it. Search does not filter on payment. Insurance is not a payment type (see Insurance).
 
+## Opening hours and visitor note
+
+Opening hours are `facilities.opening_hours` (#294): `{ day, opens, closes }` blocks in Japan time, `HH:MM` on a 24-hour clock, with closing up to `24:00`. The day is Monday–Sunday or `PUBLIC_HOLIDAY`. A day can have up to four blocks, and blocks on one day do not overlap. The rules live in `packages/utils/src/openingHours.ts`, and the API and the moderation form both use them. An empty list is unknown, and readers see nothing. Once any block is known, a day with no block is closed. A moderator fills hours only from the clinic's site or a call, never from Places (see Places). Hours are structured so every locale renders them from its own day names; do not store hours as free text.
+
+The visitor note is `additional_info_en` and `additional_info_ja`, at most 1000 characters each. The moderator writes both, the API takes both or neither (`ADDITIONAL_INFO_BOTH_LANGUAGES`), and the database enforces it. Japanese readers see the Japanese note, and every other locale sees the English one. There is no machine translation. Render the note with `{{ }}` and its `lang`.
+
+`supportedLanguages` on the clinic page carries a caveat: the clinic says it supports these languages, and not every doctor may speak them. Keep that caveat wherever clinic-level languages are shown on their own.
+
 ## Places
 
 `apps/server/docs/places-storage.md` is the storage rule. Follow it. Do not open a Places write path that contradicts it.

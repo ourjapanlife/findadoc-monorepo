@@ -25,6 +25,9 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     SUBMISSION_ALREADY_APPROVED: 'serverErrorMessages.submissionAlreadyApproved',
     // A clinic with an address needs its Google place (#228).
     PLACE_ID_REQUIRED: 'serverErrorMessages.placeIdRequired',
+    // Facility opening hours and the bilingual visitor note (#294).
+    INVALID_OPENING_HOURS: 'serverErrorMessages.invalidOpeningHours',
+    ADDITIONAL_INFO_BOTH_LANGUAGES: 'serverErrorMessages.additionalInfoBothLanguages',
     // Clinic corrections in moderation (#22).
     CORRECTION_CITY_REQUIRED: 'serverErrorMessages.correctionCityRequired',
     SUBMISSION_KIND_MISMATCH: 'serverErrorMessages.submissionKindMismatch',

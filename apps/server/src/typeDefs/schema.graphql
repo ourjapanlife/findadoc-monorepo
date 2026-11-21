@@ -63,6 +63,15 @@ type Facility {
   Null for anyone who cannot edit facilities, and when there is no note.
   """
   japaneseInsuranceSource: String
+  """
+  Published opening hours in Japan time (#294). An empty list is unknown, and readers see nothing.
+  Once any block is known, a day with no block is closed, public holidays included.
+  """
+  openingHours: [OpeningHours!]!
+  """Short note for visitors in English (#294). Set together with additionalInfoJa, or neither."""
+  additionalInfoEn: String
+  """Short note for visitors in Japanese (#294). Set together with additionalInfoEn, or neither."""
+  additionalInfoJa: String
 }
 
 """Input for creating a new facility."""
@@ -107,6 +116,12 @@ input CreateFacilityInput {
   japaneseInsurance: JapaneseInsurance
   """Optional. A link, or a short note such as a call to the clinic. At most 500 characters."""
   japaneseInsuranceSource: String
+  """Opening hours from the clinic's site or a call, never from Places. Omit or send [] for unknown."""
+  openingHours: [OpeningHoursInput!]
+  """Visitor note in English, at most 1000 characters. Send with additionalInfoJa."""
+  additionalInfoEn: String
+  """Visitor note in Japanese, at most 1000 characters. Send with additionalInfoEn."""
+  additionalInfoJa: String
 }
 
 """Input for updating an existing facility. All fields are optional — only provided fields are updated."""
@@ -147,6 +162,15 @@ input UpdateFacilityInput {
   japaneseInsurance: JapaneseInsurance
   """Optional. A link, or a short note such as a call to the clinic. At most 500 characters."""
   japaneseInsuranceSource: String
+  """Replacement opening hours. An empty list clears them back to unknown."""
+  openingHours: [OpeningHoursInput!]
+  """
+  Send with additionalInfoJa. Null or blank in both clears the note.
+  Omit both to leave the stored note unchanged.
+  """
+  additionalInfoEn: String
+  """Send with additionalInfoEn."""
+  additionalInfoJa: String
 }
 
 """Search filters for querying facilities. All filters are combined with AND logic."""
@@ -1061,6 +1085,35 @@ enum NameReviewStatus {
   NEEDS_REVIEW
   """A moderator saved both names."""
   CONFIRMED
+}
+
+"""The day an opening-hours block applies to (#294). PUBLIC_HOLIDAY is a Japanese national holiday."""
+enum OpeningDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+  PUBLIC_HOLIDAY
+}
+
+"""
+One block of a facility's published opening hours, in Japan time (#294).
+Times are HH:MM on a 24-hour clock. closes is after opens, and may be 24:00.
+"""
+type OpeningHours {
+  day: OpeningDay!
+  opens: String!
+  closes: String!
+}
+
+"""One opening-hours block. A day has at most four blocks, and blocks on one day do not overlap."""
+input OpeningHoursInput {
+  day: OpeningDay!
+  opens: String!
+  closes: String!
 }
 
 """

@@ -65,12 +65,12 @@ async function runSeed() {
                     id, code, name_en, name_ja, contact, map_latitude, map_longitude,
                     created_date, updated_date, firestore_id, payment_options,
                     city_id, google_place_id, source, verification_status,
-                    supported_languages
+                    supported_languages, opening_hours, additional_info_en, additional_info_ja
                 ) VALUES (
                     $1, $2, $3, $4, $5::jsonb, $6, $7,
                     $8, $9, $10, $11::jsonb,
                     $12, $13, $14, $15,
-                    $16::jsonb
+                    $16::jsonb, $17::jsonb, $18, $19
                 )`,
                 [
                     facility.id,
@@ -88,7 +88,10 @@ async function runSeed() {
                     facility.google_place_id,
                     facility.source,
                     facility.verification_status,
-                    JSON.stringify(facility.supported_languages)
+                    JSON.stringify(facility.supported_languages),
+                    JSON.stringify(facility.opening_hours),
+                    facility.additional_info_en,
+                    facility.additional_info_ja
                 ]
             )
         }
