@@ -483,7 +483,12 @@
     "japaneseInsuranceSourceLabel": "Pinagmulan",
     "japaneseInsuranceSourcePlaceholder": "Isang link, o tala gaya ng: tinawagan ang klinika noong 2 Nob 2026",
     "paymentLabel": "Paraan ng pagbabayad",
-    "paymentHint": "Lagyan lang ng tsek ang kinumpirma ng website ng klinika o ng isang tawag. Kung hindi mo alam, iwanang walang tsek ang lahat. Walang makikita ang mga mambabasa, hindi \"cash lang\"."
+    "paymentHint": "Lagyan lang ng tsek ang kinumpirma ng website ng klinika o ng isang tawag. Kung hindi mo alam, iwanang walang tsek ang lahat. Walang makikita ang mga mambabasa, hindi \"cash lang\".",
+    "verificationLabel": "Katayuan ng listing",
+    "verificationHint": "Kumpirmahin lang ang klinika kapag tugma ang pangalan, address, at telepono rito sa website nito o sa isang tawag. Ang kumpirmadong klinika ay may maliit na link na \"May nakitang mali?\". Sa ibang klinika, hinihingan ang mga mambabasa ng tulong sa pagkumpirma.",
+    "verificationUnverified": "Hindi pa beripikado",
+    "verificationConfirmed": "Kumpirmado",
+    "verificationNeedsCity": "Magdagdag ng lungsod bago kumpirmahin ang klinikang ito."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",

@@ -662,7 +662,12 @@
     "japaneseInsuranceSourceLabel": "출처",
     "japaneseInsuranceSourcePlaceholder": "링크 또는 메모 (예: 2026년 11월 2일 클리닉에 전화로 확인)",
     "paymentLabel": "결제 수단",
-    "paymentHint": "병원 웹사이트나 전화로 확인한 항목만 체크하세요. 모르면 모두 비워 두세요. 그러면 이용자에게는 아무것도 표시되지 않으며 현금 전용으로 처리되지 않습니다."
+    "paymentHint": "병원 웹사이트나 전화로 확인한 항목만 체크하세요. 모르면 모두 비워 두세요. 그러면 이용자에게는 아무것도 표시되지 않으며 현금 전용으로 처리되지 않습니다.",
+    "verificationLabel": "등록 정보 확인 상태",
+    "verificationHint": "병원 웹사이트나 전화로 이름, 주소, 전화번호가 맞는지 확인한 뒤에만 확인됨으로 바꾸세요. 확인된 병원에는 작은 \"오류를 발견하셨나요?\" 링크가 표시됩니다. 다른 병원에는 확인을 도와 달라는 안내가 표시됩니다.",
+    "verificationUnverified": "미확인",
+    "verificationConfirmed": "확인됨",
+    "verificationNeedsCity": "이 병원을 확인하기 전에 도시를 설정하세요."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "의료기관을 업데이트하려면 의료기관 ID가 필요합니다",

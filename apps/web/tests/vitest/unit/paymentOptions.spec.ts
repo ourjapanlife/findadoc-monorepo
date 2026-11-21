@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { createI18n } from 'vue-i18n'
-import { PaymentType, type Facility, type PaymentOption } from '@findadoc/graphql'
+import { FacilityVerificationStatus, PaymentType, type Facility, type PaymentOption } from '@findadoc/graphql'
 import ModPaymentOptionsField from '~/components/moderation-panel/ModPaymentOptionsField.vue'
 import { getChangedFacilityFieldsForUpdate, type FacilitySectionFields } from '~/stores/facilitiesStore'
 import {
@@ -105,6 +105,7 @@ describe('facility update with payment', () => {
             japaneseInsurance: '',
             japaneseInsuranceSource: '',
             paymentOptions,
+            verificationStatus: FacilityVerificationStatus.Unverified,
             healthcareProfessionalIds: [],
             healthProfessionalsRelations: []
         }

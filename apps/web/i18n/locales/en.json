@@ -662,7 +662,12 @@
     "japaneseInsuranceSourceLabel": "Source",
     "japaneseInsuranceSourcePlaceholder": "A link, or a note such as: called the clinic on Nov 2, 2026",
     "paymentLabel": "Payment methods",
-    "paymentHint": "Check only what the clinic's website or a call confirms. If you do not know, leave everything unchecked. Readers then see nothing, not cash only."
+    "paymentHint": "Check only what the clinic's website or a call confirms. If you do not know, leave everything unchecked. Readers then see nothing, not cash only.",
+    "verificationLabel": "Listing status",
+    "verificationHint": "Confirm a clinic only after its website or a call matches the name, address, and phone here. A confirmed clinic shows a small \"See an error?\" link. Any other clinic asks readers to help confirm it.",
+    "verificationUnverified": "Unverified",
+    "verificationConfirmed": "Confirmed",
+    "verificationNeedsCity": "Add a city before confirming this clinic."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",

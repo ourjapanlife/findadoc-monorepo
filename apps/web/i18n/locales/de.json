@@ -588,7 +588,12 @@
     "japaneseInsuranceSourceLabel": "Quelle",
     "japaneseInsuranceSourcePlaceholder": "Ein Link oder eine Notiz, z. B.: Klinik am 2. Nov. 2026 angerufen",
     "paymentLabel": "Zahlungsarten",
-    "paymentHint": "Kreuzen Sie nur an, was die Website der Praxis oder ein Anruf bestätigt. Wenn Sie es nicht wissen, lassen Sie alles leer. Dann sehen Lesende nichts, nicht „nur bar“."
+    "paymentHint": "Kreuzen Sie nur an, was die Website der Praxis oder ein Anruf bestätigt. Wenn Sie es nicht wissen, lassen Sie alles leer. Dann sehen Lesende nichts, nicht „nur bar“.",
+    "verificationLabel": "Prüfstatus des Eintrags",
+    "verificationHint": "Bestätigen Sie eine Praxis erst, wenn ihre Website oder ein Anruf Name, Adresse und Telefonnummer bestätigt. Eine bestätigte Praxis zeigt einen kleinen Link „Fehler gefunden?“. Bei allen anderen werden Lesende gebeten, beim Bestätigen zu helfen.",
+    "verificationUnverified": "Nicht geprüft",
+    "verificationConfirmed": "Bestätigt",
+    "verificationNeedsCity": "Geben Sie eine Stadt an, bevor Sie diese Praxis bestätigen."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Aktualisieren und beenden",

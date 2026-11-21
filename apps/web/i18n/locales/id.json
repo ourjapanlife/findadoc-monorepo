@@ -662,7 +662,12 @@
     "japaneseInsuranceSourceLabel": "Sumber",
     "japaneseInsuranceSourcePlaceholder": "Tautan, atau catatan seperti: menelepon klinik pada 2 Nov 2026",
     "paymentLabel": "Metode pembayaran",
-    "paymentHint": "Centang hanya yang dikonfirmasi oleh situs web klinik atau lewat telepon. Jika tidak tahu, biarkan semuanya kosong. Pembaca tidak akan melihat apa pun, bukan \"hanya tunai\"."
+    "paymentHint": "Centang hanya yang dikonfirmasi oleh situs web klinik atau lewat telepon. Jika tidak tahu, biarkan semuanya kosong. Pembaca tidak akan melihat apa pun, bukan \"hanya tunai\".",
+    "verificationLabel": "Status data",
+    "verificationHint": "Konfirmasi klinik hanya setelah situs web klinik atau telepon mencocokkan nama, alamat, dan nomor telepon di sini. Klinik yang terkonfirmasi menampilkan tautan kecil \"Menemukan kesalahan?\". Klinik lain meminta pembaca membantu mengonfirmasinya.",
+    "verificationUnverified": "Belum diverifikasi",
+    "verificationConfirmed": "Terkonfirmasi",
+    "verificationNeedsCity": "Tambahkan kota sebelum mengonfirmasi klinik ini."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",
