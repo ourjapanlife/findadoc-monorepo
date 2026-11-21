@@ -200,6 +200,7 @@ import { SEARCHABLE_LANGUAGES, directoryPrefectures, type PrefectureEntry } from
 import directoryStats from '#directory-stats'
 import { hasActiveFilters } from '~/utils/searchDirectory'
 import { fetchCities, type CityOption } from '~/utils/cityOptions'
+import { searchPrefectures } from '~/utils/directoryStats'
 import type { Locale, Specialty } from '@findadoc/graphql'
 
 const props = defineProps<{ showMap: boolean }>()
@@ -207,7 +208,7 @@ const emit = defineEmits<{ (e: 'update:showMap', value: boolean): void }>()
 
 const { t, locale } = useI18n()
 const searchResultsStore = useSearchResultsStore()
-const { isLoading, hasLoadError, totalResults } = useSearchDirectory()
+const { isLoading, hasLoadError, totalResults, isReady, facilities } = useSearchDirectory()
 const specialtiesStore = useSpecialtiesStore()
 const { track } = useUmami()
 
@@ -275,7 +276,11 @@ const languageOptions = computed(() =>
         .map(code => localeDisplayOptions.find(option => option.code === code))
         .filter((option): option is NonNullable<typeof option> => !!option))
 
-const prefectures = directoryPrefectures(directoryStats)
+// Live counts once the directory loads, so a facility added since the deploy is counted.
+const prefectures = computed(() => searchPrefectures(
+    isReady.value ? facilities.value : null,
+    directoryPrefectures(directoryStats)
+))
 
 function prefectureLabel(entry: PrefectureEntry) {
     return locale.value === 'ja-JP' ? entry.nameJa : entry.name

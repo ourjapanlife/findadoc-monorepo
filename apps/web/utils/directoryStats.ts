@@ -70,3 +70,16 @@ export function directoryStatsFrom(
         prefectures: prefectureCounts(facilities)
     }
 }
+
+/**
+ * The prefecture picker on /search. The build's counts are frozen at deploy time, so once the
+ * live directory has loaded the picker counts from it and matches the results. Before that, or
+ * when the live directory has no prefectures, it uses the build's list.
+ */
+export function searchPrefectures(
+    liveFacilities: readonly StatsFacility[] | null,
+    generated: readonly PrefectureEntry[]
+): readonly PrefectureEntry[] {
+    const live = liveFacilities ? prefectureCounts(liveFacilities) : []
+    return live.length ? live : generated
+}
