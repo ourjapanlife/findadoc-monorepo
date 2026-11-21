@@ -532,7 +532,9 @@
     "japaneseInsuranceSourceLabel": "Fonte",
     "japaneseInsuranceSourcePlaceholder": "Um link, ou uma nota como: liguei para a clínica em 2 nov. 2026",
     "paymentLabel": "Formas de pagamento",
-    "paymentHint": "Marque apenas o que o site da clínica ou uma ligação confirmar. Se não souber, deixe tudo desmarcado. Assim os leitores não veem nada, e não «apenas dinheiro»."
+    "paymentHint": "Marque apenas o que o site da clínica ou uma ligação confirmar. Se não souber, deixe tudo desmarcado. Assim os leitores não veem nada, e não «apenas dinheiro».",
+    "supportedLanguagesLabel": "Idiomas atendidos pela clínica",
+    "supportedLanguagesHint": "Marque apenas os idiomas confirmados pelo site da clínica ou por telefone. A busca mostra a clínica para esses idiomas mesmo quando nenhum médico está cadastrado."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",

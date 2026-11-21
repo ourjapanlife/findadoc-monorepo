@@ -532,7 +532,9 @@
     "japaneseInsuranceSourceLabel": "情報源",
     "japaneseInsuranceSourcePlaceholder": "リンク、または「2026年11月2日にクリニックに電話で確認」などのメモ",
     "paymentLabel": "支払い方法",
-    "paymentHint": "クリニックのウェブサイトか電話で確認できたものだけをチェックしてください。わからない場合は何もチェックしないでください。その場合、閲覧者には何も表示されず、現金のみとは扱われません。"
+    "paymentHint": "クリニックのウェブサイトか電話で確認できたものだけをチェックしてください。わからない場合は何もチェックしないでください。その場合、閲覧者には何も表示されず、現金のみとは扱われません。",
+    "supportedLanguagesLabel": "クリニックが対応している言語",
+    "supportedLanguagesHint": "クリニックのウェブサイトか電話で確認できた言語だけにチェックしてください。医師が登録されていなくても、これらの言語で検索するとこのクリニックが表示されます。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新して終了",

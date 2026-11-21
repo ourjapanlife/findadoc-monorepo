@@ -662,7 +662,9 @@
     "japaneseInsuranceSourceLabel": "Sumber",
     "japaneseInsuranceSourcePlaceholder": "Tautan, atau catatan seperti: menelepon klinik pada 2 Nov 2026",
     "paymentLabel": "Metode pembayaran",
-    "paymentHint": "Centang hanya yang dikonfirmasi oleh situs web klinik atau lewat telepon. Jika tidak tahu, biarkan semuanya kosong. Pembaca tidak akan melihat apa pun, bukan \"hanya tunai\"."
+    "paymentHint": "Centang hanya yang dikonfirmasi oleh situs web klinik atau lewat telepon. Jika tidak tahu, biarkan semuanya kosong. Pembaca tidak akan melihat apa pun, bukan \"hanya tunai\".",
+    "supportedLanguagesLabel": "Bahasa yang didukung klinik",
+    "supportedLanguagesHint": "Centang hanya bahasa yang dikonfirmasi oleh situs web klinik atau lewat telepon. Pencarian menampilkan klinik ini untuk bahasa tersebut meskipun belum ada dokter yang terdaftar."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",

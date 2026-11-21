@@ -85,6 +85,9 @@
             v-model:source="facilityStore.createFacilityFields.japaneseInsuranceSource"
         />
         <ModPaymentOptionsField v-model="facilityStore.createFacilityFields.paymentOptions" />
+        <ModSupportedLanguagesField
+            v-model="facilityStore.createFacilityFields.supportedLanguages"
+        />
         <ModAccordion
             v-if="!facilityStore.createFacilityFields.online"
             tone="facility"

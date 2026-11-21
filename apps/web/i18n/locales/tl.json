@@ -483,7 +483,9 @@
     "japaneseInsuranceSourceLabel": "Pinagmulan",
     "japaneseInsuranceSourcePlaceholder": "Isang link, o tala gaya ng: tinawagan ang klinika noong 2 Nob 2026",
     "paymentLabel": "Paraan ng pagbabayad",
-    "paymentHint": "Lagyan lang ng tsek ang kinumpirma ng website ng klinika o ng isang tawag. Kung hindi mo alam, iwanang walang tsek ang lahat. Walang makikita ang mga mambabasa, hindi \"cash lang\"."
+    "paymentHint": "Lagyan lang ng tsek ang kinumpirma ng website ng klinika o ng isang tawag. Kung hindi mo alam, iwanang walang tsek ang lahat. Walang makikita ang mga mambabasa, hindi \"cash lang\".",
+    "supportedLanguagesLabel": "Mga wikang sinusuportahan ng klinika",
+    "supportedLanguagesHint": "Lagyan ng tsek lang ang mga wikang kinumpirma ng website ng klinika o ng isang tawag. Ipinapakita ng search ang klinika para sa mga wikang ito kahit walang nakalistang doktor."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",

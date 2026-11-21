@@ -588,7 +588,9 @@
     "japaneseInsuranceSourceLabel": "Quelle",
     "japaneseInsuranceSourcePlaceholder": "Ein Link oder eine Notiz, z. B.: Klinik am 2. Nov. 2026 angerufen",
     "paymentLabel": "Zahlungsarten",
-    "paymentHint": "Kreuzen Sie nur an, was die Website der Praxis oder ein Anruf bestätigt. Wenn Sie es nicht wissen, lassen Sie alles leer. Dann sehen Lesende nichts, nicht „nur bar“."
+    "paymentHint": "Kreuzen Sie nur an, was die Website der Praxis oder ein Anruf bestätigt. Wenn Sie es nicht wissen, lassen Sie alles leer. Dann sehen Lesende nichts, nicht „nur bar“.",
+    "supportedLanguagesLabel": "Sprachen, die die Klinik unterstützt",
+    "supportedLanguagesHint": "Kreuzen Sie nur Sprachen an, die die Website der Praxis oder ein Anruf bestätigt. Die Suche zeigt die Praxis für diese Sprachen auch dann, wenn keine Ärztin und kein Arzt eingetragen ist."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Aktualisieren und beenden",

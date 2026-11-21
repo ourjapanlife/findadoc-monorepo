@@ -662,7 +662,9 @@
     "japaneseInsuranceSourceLabel": "Source",
     "japaneseInsuranceSourcePlaceholder": "A link, or a note such as: called the clinic on Nov 2, 2026",
     "paymentLabel": "Payment methods",
-    "paymentHint": "Check only what the clinic's website or a call confirms. If you do not know, leave everything unchecked. Readers then see nothing, not cash only."
+    "paymentHint": "Check only what the clinic's website or a call confirms. If you do not know, leave everything unchecked. Readers then see nothing, not cash only.",
+    "supportedLanguagesLabel": "Languages the clinic supports",
+    "supportedLanguagesHint": "Check only languages the clinic's website or a call confirms. Search shows the clinic for these languages even when no doctor is listed."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",

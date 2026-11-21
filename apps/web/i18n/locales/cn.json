@@ -532,7 +532,9 @@
     "japaneseInsuranceSourceLabel": "信息来源",
     "japaneseInsuranceSourcePlaceholder": "链接，或备注，例如：2026年11月2日致电诊所确认",
     "paymentLabel": "支付方式",
-    "paymentHint": "只勾选诊所网站或电话确认过的项目。如果不知道，请全部留空。这样读者看不到任何内容，也不会被当作仅收现金。"
+    "paymentHint": "只勾选诊所网站或电话确认过的项目。如果不知道，请全部留空。这样读者看不到任何内容，也不会被当作仅收现金。",
+    "supportedLanguagesLabel": "诊所支持的语言",
+    "supportedLanguagesHint": "只勾选经诊所网站或电话确认的语言。即使没有登记医生，按这些语言搜索时也会显示该诊所。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",
