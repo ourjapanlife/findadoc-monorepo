@@ -18,7 +18,8 @@ import type {
     UpdateFacilityInput,
     MutationCreateFacilityArgs,
     OpeningHours,
-    PaymentOption
+    PaymentOption,
+    Locale
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import type { ServerResponse } from '~/typedefs/serverResponse'
@@ -42,6 +43,7 @@ import {
 } from '~/utils/japaneseInsurance'
 import { changedPaymentOptions, paymentOptionsInput } from '~/utils/paymentOptions'
 import { changedOpeningHours, openingHoursInput } from '~/utils/openingHours'
+import { changedSupportedLanguages } from '~/utils/facilityLanguages'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -80,6 +82,8 @@ export type FacilitySectionFields = {
     openingHours: OpeningHours[]
     additionalInfoEn: string
     additionalInfoJa: string
+    // Languages the facility supports with no named professional (#21). Empty is none listed.
+    supportedLanguages: Locale[]
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -165,6 +169,11 @@ export function getChangedFacilityFieldsForUpdate(
     }
 
     Object.assign(updatedFields, changedVisitorInfo(current, original))
+
+    const nextLanguages = changedSupportedLanguages(current.supportedLanguages, original.supportedLanguages)
+    if (nextLanguages) {
+        updatedFields.supportedLanguages = nextLanguages
+    }
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
 
@@ -305,6 +314,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         openingHours: [] as OpeningHours[],
         additionalInfoEn: '',
         additionalInfoJa: '',
+        supportedLanguages: [] as Locale[],
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -342,7 +352,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         // Unknown until the moderator enters hours or a note (#294).
         openingHours: [] as OpeningHours[],
         additionalInfoEn: '',
-        additionalInfoJa: ''
+        additionalInfoJa: '',
+        // Languages the facility supports with no named professional (#21).
+        supportedLanguages: [] as Locale[]
     })
 
     /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
@@ -389,6 +401,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.openingHours = openingHoursInput(data.openingHours ?? [])
         facilitySectionFields.value.additionalInfoEn = data.additionalInfoEn ?? ''
         facilitySectionFields.value.additionalInfoJa = data.additionalInfoJa ?? ''
+        facilitySectionFields.value.supportedLanguages = [...(data.supportedLanguages ?? [])]
     }
 
     function resetFacilitySectionFields() {
@@ -418,6 +431,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             openingHours: [] as OpeningHours[],
             additionalInfoEn: '',
             additionalInfoJa: '',
+            supportedLanguages: [] as Locale[],
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }
@@ -537,6 +551,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                         additionalInfoEn: createFacilityFields.additionalInfoEn.trim(),
                         additionalInfoJa: createFacilityFields.additionalInfoJa.trim()
                     }
+                    : {}),
+                ...(createFacilityFields.supportedLanguages.length
+                    ? { supportedLanguages: [...createFacilityFields.supportedLanguages] }
                     : {}),
                 // Online is opt-in: only send when the moderator checked it.
                 ...(isOnline ? { online: true } : {}),
@@ -673,6 +690,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.openingHours = []
         createFacilityFields.additionalInfoEn = ''
         createFacilityFields.additionalInfoJa = ''
+        createFacilityFields.supportedLanguages = []
     }
 
     async function deleteFacility(

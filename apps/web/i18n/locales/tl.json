@@ -499,7 +499,9 @@
     "additionalInfoEnLabel": "Ingles",
     "additionalInfoJaLabel": "Hapon",
     "additionalInfoBothLanguages": "Isulat ang paalala sa dalawang wika, o iwanang blangko ang dalawa.",
-    "openingHoursUntilMidnight": "Hanggang hatinggabi"
+    "openingHoursUntilMidnight": "Hanggang hatinggabi",
+    "supportedLanguagesLabel": "Mga wikang sinusuportahan ng klinika",
+    "supportedLanguagesHint": "Lagyan ng tsek lang ang mga wikang kinumpirma ng website ng klinika o ng isang tawag. Ipinapakita ng search ang klinika para sa mga wikang ito kahit walang nakalistang doktor."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",

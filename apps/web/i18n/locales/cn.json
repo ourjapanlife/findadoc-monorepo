@@ -548,7 +548,9 @@
     "additionalInfoEnLabel": "英语",
     "additionalInfoJaLabel": "日语",
     "additionalInfoBothLanguages": "请用两种语言填写，或两者都留空。",
-    "openingHoursUntilMidnight": "营业至午夜"
+    "openingHoursUntilMidnight": "营业至午夜",
+    "supportedLanguagesLabel": "诊所支持的语言",
+    "supportedLanguagesHint": "只勾选经诊所网站或电话确认的语言。即使没有登记医生，按这些语言搜索时也会显示该诊所。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",

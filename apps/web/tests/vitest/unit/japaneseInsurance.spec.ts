@@ -45,6 +45,7 @@ function section(fields: Partial<FacilitySectionFields>): FacilitySectionFields 
         openingHours: [],
         additionalInfoEn: '',
         additionalInfoJa: '',
+        supportedLanguages: [],
         healthcareProfessionalIds: [],
         healthProfessionalsRelations: [],
         ...fields

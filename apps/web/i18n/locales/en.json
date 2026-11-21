@@ -680,7 +680,9 @@
     "additionalInfoEnLabel": "English",
     "additionalInfoJaLabel": "Japanese",
     "additionalInfoBothLanguages": "Write the note in both languages, or leave both empty.",
-    "openingHoursUntilMidnight": "Until midnight"
+    "openingHoursUntilMidnight": "Until midnight",
+    "supportedLanguagesLabel": "Languages the clinic supports",
+    "supportedLanguagesHint": "Check only languages the clinic's website or a call confirms. Search shows the clinic for these languages even when no doctor is listed."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",

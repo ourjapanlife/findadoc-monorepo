@@ -59,6 +59,7 @@ function section(online: boolean, map = ''): FacilitySectionFields {
         openingHours: [],
         additionalInfoEn: '',
         additionalInfoJa: '',
+        supportedLanguages: [],
         healthcareProfessionalIds: [],
         healthProfessionalsRelations: []
     }

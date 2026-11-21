@@ -581,7 +581,9 @@
     "additionalInfoEnLabel": "Inglese",
     "additionalInfoJaLabel": "Giapponese",
     "additionalInfoBothLanguages": "Scrivi la nota in entrambe le lingue, oppure lascia vuoti entrambi i campi.",
-    "openingHoursUntilMidnight": "Fino a mezzanotte"
+    "openingHoursUntilMidnight": "Fino a mezzanotte",
+    "supportedLanguagesLabel": "Lingue supportate dalla clinica",
+    "supportedLanguagesHint": "Seleziona solo le lingue confermate dal sito della clinica o da una telefonata. La ricerca mostra la clinica per queste lingue anche se non è indicato nessun medico."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "L'ID della struttura è obbligatiorio per aggiornare la struttura",
