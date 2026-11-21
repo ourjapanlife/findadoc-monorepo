@@ -3,12 +3,16 @@ import type { Context } from 'aws-lambda'
 import { handler } from '../src/lambda.js'
 
 // The shape a Lambda Function URL sends (payload format 2.0).
-function functionUrlEvent(method: string, path: string, body?: unknown) {
+function functionUrlEvent(method: string, path: string, body?: unknown, query?: Record<string, string>) {
+    const search = new URLSearchParams(query)
+
     return {
         version: '2.0',
         routeKey: '$default',
         rawPath: path,
-        rawQueryString: '',
+        rawQueryString: search.toString(),
+        // Function URLs send the decoded values here, and the library reads this field.
+        queryStringParameters: query,
         headers: {
             'content-type': 'application/json',
             host: 'example.lambda-url.ap-northeast-1.on.aws',
@@ -50,5 +54,20 @@ describe('Lambda handler', () => {
         expect(body.errors).toBeUndefined()
         expect(Array.isArray(body.data.facilities)).toBe(true)
         expect(typeof body.data.facilitiesTotalCount).toBe('number')
+    })
+
+    // A GraphQL GET carries commas in the query and in the variables JSON. The library used
+    // to split those values into arrays, so Apollo refused every public directory read.
+    it('runs a GraphQL GET whose query and variables contain commas', async () => {
+        const response = await handler(functionUrlEvent('GET', '/', undefined, {
+            query: 'query Page($filters: FacilitySearchFilters!, $countFilters: FacilitySearchFilters!) '
+                + '{ facilities(filters: $filters) { id } facilitiesTotalCount(filters: $countFilters) }',
+            variables: JSON.stringify({ filters: { limit: 1, offset: 0 }, countFilters: {} })
+        }) as never, context)
+        const body = JSON.parse(response.body as string)
+
+        expect(response.statusCode).toBe(200)
+        expect(body.errors).toBeUndefined()
+        expect(Array.isArray(body.data.facilities)).toBe(true)
     })
 })

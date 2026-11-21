@@ -11,7 +11,9 @@ import { buildApiServer } from './server.js'
 initializeLogger()
 await initializeKyselyClient()
 const app = await buildApiServer()
-const proxy = awsLambdaFastify(app)
+// A GraphQL GET carries commas in its query and variables. The library's default splits any
+// value with a comma into an array, and Apollo then refuses the request as a repeated parameter.
+const proxy = awsLambdaFastify(app, { parseCommaSeparatedQueryParams: false })
 
 await app.ready()
 
