@@ -65,3 +65,58 @@ export function localeMessageProblems(english, translated, allowSameAsEnglish) {
 
     return problems
 }
+
+/**
+ * Dotted paths of keys that appear twice in the same object of a JSON file. JSON.parse keeps
+ * only the last one, so an earlier translation is silently dropped and no other check sees it.
+ */
+export function duplicateMessageKeys(text) {
+    const duplicates = []
+    const stack = []
+    let index = 0
+
+    function readString() {
+        let value = ''
+        index++
+        while (index < text.length && text[index] !== '"') {
+            if (text[index] === '\\') {
+                value += text[index]
+                index++
+            }
+            value += text[index]
+            index++
+        }
+        index++
+        return value
+    }
+
+    while (index < text.length) {
+        const character = text[index]
+        const frame = stack.at(-1)
+
+        if (character === '"') {
+            const value = readString()
+            if (frame?.expectingKey) {
+                const path = [...stack.map(entry => entry.key).filter(Boolean), value].join('.')
+                if (frame.keys.has(value)) {
+                    duplicates.push(path)
+                }
+                frame.keys.add(value)
+                frame.pendingKey = value
+                frame.expectingKey = false
+            }
+            continue
+        }
+
+        if (character === '{') {
+            stack.push({ keys: new Set(), expectingKey: true, pendingKey: null, key: frame?.pendingKey ?? null })
+        } else if (character === '}') {
+            stack.pop()
+        } else if (character === ',' && frame) {
+            frame.expectingKey = true
+        }
+        index++
+    }
+
+    return duplicates
+}

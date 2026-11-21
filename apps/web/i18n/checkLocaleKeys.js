@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { localeMessageProblems } from './localeMessages.js'
+import { duplicateMessageKeys, localeMessageProblems } from './localeMessages.js'
 
 const localesDirectory = path.join(path.dirname(fileURLToPath(import.meta.url)), 'locales')
 
@@ -18,11 +18,15 @@ export function localeFileProblems(localesDirectoryPath, allowlist) {
         .filter(filename => filename.endsWith('.json') && filename !== 'en.json')
         .sort()
 
-    return localeFiles.flatMap(filename => {
+    const duplicateProblems = ['en.json', ...localeFiles].flatMap(filename =>
+        duplicateMessageKeys(fs.readFileSync(path.join(localesDirectoryPath, filename), 'utf8'))
+            .map(key => `${filename}: ${key}: duplicate key`))
+
+    return [...duplicateProblems, ...localeFiles.flatMap(filename => {
         const translated = JSON.parse(fs.readFileSync(path.join(localesDirectoryPath, filename), 'utf8'))
         return localeMessageProblems(english, translated, allowedSameAsEnglishKeys(allowlist, filename))
             .map(problem => `${filename}: ${problem}`)
-    })
+    })]
 }
 
 function reportProblems(problems) {
