@@ -680,7 +680,9 @@
     "additionalInfoEnLabel": "अंग्रेजी",
     "additionalInfoJaLabel": "जापानी",
     "additionalInfoBothLanguages": "टिप्पणी दुवै भाषामा लेख्नुहोस्, वा दुवै खाली छोड्नुहोस्।",
-    "openingHoursUntilMidnight": "मध्यरातसम्म"
+    "openingHoursUntilMidnight": "मध्यरातसम्म",
+    "supportedLanguagesLabel": "क्लिनिकले सहयोग गर्ने भाषाहरू",
+    "supportedLanguagesHint": "क्लिनिकको वेबसाइट वा फोनबाट पुष्टि भएका भाषाहरू मात्र छान्नुहोस्। कुनै डाक्टर सूचीमा नभए पनि यी भाषाहरूमा खोज्दा यो क्लिनिक देखिन्छ।"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "संस्था अद्यावधिक गर्न संस्थाको ID आवश्यक छ",

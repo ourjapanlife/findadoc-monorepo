@@ -108,6 +108,7 @@ describe('facility update with payment', () => {
             openingHours: [],
             additionalInfoEn: '',
             additionalInfoJa: '',
+            supportedLanguages: [],
             healthcareProfessionalIds: [],
             healthProfessionalsRelations: []
         }

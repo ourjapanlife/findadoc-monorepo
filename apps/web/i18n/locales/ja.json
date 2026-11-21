@@ -548,7 +548,9 @@
     "additionalInfoEnLabel": "英語",
     "additionalInfoJaLabel": "日本語",
     "additionalInfoBothLanguages": "両方の言語で書くか、両方とも空欄にしてください。",
-    "openingHoursUntilMidnight": "24時まで"
+    "openingHoursUntilMidnight": "24時まで",
+    "supportedLanguagesLabel": "クリニックが対応している言語",
+    "supportedLanguagesHint": "クリニックのウェブサイトか電話で確認できた言語だけにチェックしてください。医師が登録されていなくても、これらの言語で検索するとこのクリニックが表示されます。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新して終了",

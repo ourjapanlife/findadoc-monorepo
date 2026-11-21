@@ -103,6 +103,10 @@
             v-model:english="facilityStore.facilitySectionFields.additionalInfoEn"
             v-model:japanese="facilityStore.facilitySectionFields.additionalInfoJa"
         />
+        <ModSupportedLanguagesField
+            v-if="moderationScreenStore.editFacilityScreenIsActive()"
+            v-model="facilityStore.facilitySectionFields.supportedLanguages"
+        />
         <ModAccordion
             v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"

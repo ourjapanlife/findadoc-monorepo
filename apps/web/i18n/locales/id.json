@@ -680,7 +680,9 @@
     "additionalInfoEnLabel": "Bahasa Inggris",
     "additionalInfoJaLabel": "Bahasa Jepang",
     "additionalInfoBothLanguages": "Tulis catatan dalam kedua bahasa, atau kosongkan keduanya.",
-    "openingHoursUntilMidnight": "Sampai tengah malam"
+    "openingHoursUntilMidnight": "Sampai tengah malam",
+    "supportedLanguagesLabel": "Bahasa yang didukung klinik",
+    "supportedLanguagesHint": "Centang hanya bahasa yang dikonfirmasi oleh situs web klinik atau lewat telepon. Pencarian menampilkan klinik ini untuk bahasa tersebut meskipun belum ada dokter yang terdaftar."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",

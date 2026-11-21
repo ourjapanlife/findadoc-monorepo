@@ -90,6 +90,9 @@
             v-model:english="facilityStore.createFacilityFields.additionalInfoEn"
             v-model:japanese="facilityStore.createFacilityFields.additionalInfoJa"
         />
+        <ModSupportedLanguagesField
+            v-model="facilityStore.createFacilityFields.supportedLanguages"
+        />
         <ModAccordion
             v-if="!facilityStore.createFacilityFields.online"
             tone="facility"

@@ -548,7 +548,9 @@
     "additionalInfoEnLabel": "Английский",
     "additionalInfoJaLabel": "Японский",
     "additionalInfoBothLanguages": "Напишите заметку на обоих языках или оставьте оба поля пустыми.",
-    "openingHoursUntilMidnight": "До полуночи"
+    "openingHoursUntilMidnight": "До полуночи",
+    "supportedLanguagesLabel": "Языки, которые поддерживает клиника",
+    "supportedLanguagesHint": "Отмечайте только языки, подтверждённые сайтом клиники или звонком. Поиск показывает клинику по этим языкам, даже если врачи не указаны."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Обновить и выйти",

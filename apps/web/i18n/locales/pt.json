@@ -548,7 +548,9 @@
     "additionalInfoEnLabel": "Inglês",
     "additionalInfoJaLabel": "Japonês",
     "additionalInfoBothLanguages": "Escreva a nota nos dois idiomas, ou deixe as duas em branco.",
-    "openingHoursUntilMidnight": "Até a meia-noite"
+    "openingHoursUntilMidnight": "Até a meia-noite",
+    "supportedLanguagesLabel": "Idiomas atendidos pela clínica",
+    "supportedLanguagesHint": "Marque apenas os idiomas confirmados pelo site da clínica ou por telefone. A busca mostra a clínica para esses idiomas mesmo quando nenhum médico está cadastrado."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",
