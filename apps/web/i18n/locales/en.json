@@ -682,7 +682,12 @@
     "additionalInfoBothLanguages": "Write the note in both languages, or leave both empty.",
     "openingHoursUntilMidnight": "Until midnight",
     "supportedLanguagesLabel": "Languages the clinic supports",
-    "supportedLanguagesHint": "Check only languages the clinic's website or a call confirms. Search shows the clinic for these languages even when no doctor is listed."
+    "supportedLanguagesHint": "Check only languages the clinic's website or a call confirms. Search shows the clinic for these languages even when no doctor is listed.",
+    "verificationLabel": "Listing status",
+    "verificationHint": "Confirm a clinic only after its website or a call matches the name, address, and phone here. A confirmed clinic shows a small \"See an error?\" link. Any other clinic asks readers to help confirm it.",
+    "verificationUnverified": "Unverified",
+    "verificationConfirmed": "Confirmed",
+    "verificationNeedsCity": "Add a city before confirming this clinic."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Facility ID is required for updating the Facility",

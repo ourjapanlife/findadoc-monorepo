@@ -682,7 +682,12 @@
     "additionalInfoBothLanguages": "두 언어로 모두 작성하거나 둘 다 비워 두세요.",
     "openingHoursUntilMidnight": "자정까지",
     "supportedLanguagesLabel": "병원이 지원하는 언어",
-    "supportedLanguagesHint": "병원 웹사이트나 전화로 확인한 언어만 선택하세요. 등록된 의사가 없어도 이 언어로 검색하면 이 병원이 표시됩니다."
+    "supportedLanguagesHint": "병원 웹사이트나 전화로 확인한 언어만 선택하세요. 등록된 의사가 없어도 이 언어로 검색하면 이 병원이 표시됩니다.",
+    "verificationLabel": "등록 정보 확인 상태",
+    "verificationHint": "병원 웹사이트나 전화로 이름, 주소, 전화번호가 맞는지 확인한 뒤에만 확인됨으로 바꾸세요. 확인된 병원에는 작은 \"오류를 발견하셨나요?\" 링크가 표시됩니다. 다른 병원에는 확인을 도와 달라는 안내가 표시됩니다.",
+    "verificationUnverified": "미확인",
+    "verificationConfirmed": "확인됨",
+    "verificationNeedsCity": "이 병원을 확인하기 전에 도시를 설정하세요."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "의료기관을 업데이트하려면 의료기관 ID가 필요합니다",

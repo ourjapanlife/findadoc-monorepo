@@ -583,7 +583,12 @@
     "additionalInfoBothLanguages": "Scrivi la nota in entrambe le lingue, oppure lascia vuoti entrambi i campi.",
     "openingHoursUntilMidnight": "Fino a mezzanotte",
     "supportedLanguagesLabel": "Lingue supportate dalla clinica",
-    "supportedLanguagesHint": "Seleziona solo le lingue confermate dal sito della clinica o da una telefonata. La ricerca mostra la clinica per queste lingue anche se non è indicato nessun medico."
+    "supportedLanguagesHint": "Seleziona solo le lingue confermate dal sito della clinica o da una telefonata. La ricerca mostra la clinica per queste lingue anche se non è indicato nessun medico.",
+    "verificationLabel": "Stato della scheda",
+    "verificationHint": "Conferma una clinica solo dopo che il suo sito o una telefonata confermano nome, indirizzo e telefono indicati qui. Una clinica confermata mostra un piccolo link \"Hai trovato un errore?\". Per le altre si chiede ai lettori di aiutare a confermarla.",
+    "verificationUnverified": "Non verificata",
+    "verificationConfirmed": "Confermata",
+    "verificationNeedsCity": "Aggiungi una città prima di confermare questa clinica."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "L'ID della struttura è obbligatiorio per aggiornare la struttura",

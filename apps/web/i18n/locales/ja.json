@@ -550,7 +550,12 @@
     "additionalInfoBothLanguages": "両方の言語で書くか、両方とも空欄にしてください。",
     "openingHoursUntilMidnight": "24時まで",
     "supportedLanguagesLabel": "クリニックが対応している言語",
-    "supportedLanguagesHint": "クリニックのウェブサイトか電話で確認できた言語だけにチェックしてください。医師が登録されていなくても、これらの言語で検索するとこのクリニックが表示されます。"
+    "supportedLanguagesHint": "クリニックのウェブサイトか電話で確認できた言語だけにチェックしてください。医師が登録されていなくても、これらの言語で検索するとこのクリニックが表示されます。",
+    "verificationLabel": "掲載の確認状況",
+    "verificationHint": "名前・住所・電話番号がクリニックのウェブサイトか電話で確認できたときだけ「確認済み」にしてください。確認済みのクリニックには「誤りを見つけましたか？」の小さなリンクが表示されます。それ以外のクリニックには、確認への協力を読者にお願いするカードが表示されます。",
+    "verificationUnverified": "未確認",
+    "verificationConfirmed": "確認済み",
+    "verificationNeedsCity": "確認済みにする前に市区町村を設定してください。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新して終了",

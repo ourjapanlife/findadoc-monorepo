@@ -562,7 +562,12 @@
     "additionalInfoBothLanguages": "Rédigez la note dans les deux langues, ou laissez les deux vides.",
     "openingHoursUntilMidnight": "Jusqu'à minuit",
     "supportedLanguagesLabel": "Langues prises en charge par la clinique",
-    "supportedLanguagesHint": "Cochez uniquement les langues confirmées par le site de la clinique ou par un appel. La recherche affiche la clinique pour ces langues même si aucun médecin n'est indiqué."
+    "supportedLanguagesHint": "Cochez uniquement les langues confirmées par le site de la clinique ou par un appel. La recherche affiche la clinique pour ces langues même si aucun médecin n'est indiqué.",
+    "verificationLabel": "Statut de la fiche",
+    "verificationHint": "Ne confirmez une clinique qu'après avoir vérifié le nom, l'adresse et le téléphone sur son site ou par un appel. Une clinique confirmée affiche un petit lien « Une erreur ? ». Pour les autres, on demande aux lecteurs d'aider à la confirmer.",
+    "verificationUnverified": "Non vérifiée",
+    "verificationConfirmed": "Confirmée",
+    "verificationNeedsCity": "Ajoutez une ville avant de confirmer cette clinique."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",
