@@ -105,6 +105,7 @@ describe('facility update with payment', () => {
             japaneseInsurance: '',
             japaneseInsuranceSource: '',
             paymentOptions,
+            supportedLanguages: [],
             healthcareProfessionalIds: [],
             healthProfessionalsRelations: []
         }

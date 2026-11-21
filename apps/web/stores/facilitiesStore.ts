@@ -17,7 +17,8 @@ import type {
     PhysicalAddressInput,
     UpdateFacilityInput,
     MutationCreateFacilityArgs,
-    PaymentOption
+    PaymentOption,
+    Locale
 } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import type { ServerResponse } from '~/typedefs/serverResponse'
@@ -40,6 +41,7 @@ import {
     type JapaneseInsuranceChoice
 } from '~/utils/japaneseInsurance'
 import { changedPaymentOptions, paymentOptionsInput } from '~/utils/paymentOptions'
+import { changedSupportedLanguages } from '~/utils/facilityLanguages'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -73,6 +75,9 @@ export type FacilitySectionFields = {
 
     // Payment types and brands (#20). Empty is unknown.
     paymentOptions: PaymentOption[]
+
+    // Languages the facility supports with no named professional (#21). Empty is none listed.
+    supportedLanguages: Locale[]
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -138,6 +143,11 @@ export function getChangedFacilityFieldsForUpdate(
     const nextPayment = changedPaymentOptions(current.paymentOptions, original.paymentOptions)
     if (nextPayment) {
         updatedFields.paymentOptions = nextPayment
+    }
+
+    const nextLanguages = changedSupportedLanguages(current.supportedLanguages, original.supportedLanguages)
+    if (nextLanguages) {
+        updatedFields.supportedLanguages = nextLanguages
     }
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
@@ -276,6 +286,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         japaneseInsurance: '' as JapaneseInsuranceChoice,
         japaneseInsuranceSource: '',
         paymentOptions: [] as PaymentOption[],
+        supportedLanguages: [] as Locale[],
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -309,7 +320,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         japaneseInsurance: '' as JapaneseInsuranceChoice,
         japaneseInsuranceSource: '',
         // Unknown until the moderator checks a payment type (#20).
-        paymentOptions: [] as PaymentOption[]
+        paymentOptions: [] as PaymentOption[],
+        // Languages the facility supports with no named professional (#21).
+        supportedLanguages: [] as Locale[]
     })
 
     /** Bumped after a successful moderation edit save so useUnsavedChanges can call makeNonDirty before router navigation. */
@@ -353,6 +366,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.japaneseInsurance = japaneseInsuranceChoice(data.japaneseInsurance)
         facilitySectionFields.value.japaneseInsuranceSource = data.japaneseInsuranceSource ?? ''
         facilitySectionFields.value.paymentOptions = paymentOptionsInput(data.paymentOptions ?? [])
+        facilitySectionFields.value.supportedLanguages = [...(data.supportedLanguages ?? [])]
     }
 
     function resetFacilitySectionFields() {
@@ -379,6 +393,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             japaneseInsurance: '' as JapaneseInsuranceChoice,
             japaneseInsuranceSource: '',
             paymentOptions: [] as PaymentOption[],
+            supportedLanguages: [] as Locale[],
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }
@@ -488,6 +503,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                 // Sent only when known. An empty list stays unknown.
                 ...(createFacilityFields.paymentOptions.length
                     ? { paymentOptions: paymentOptionsInput(createFacilityFields.paymentOptions) }
+                    : {}),
+                ...(createFacilityFields.supportedLanguages.length
+                    ? { supportedLanguages: [...createFacilityFields.supportedLanguages] }
                     : {}),
                 // Online is opt-in: only send when the moderator checked it.
                 ...(isOnline ? { online: true } : {}),
@@ -621,6 +639,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.japaneseInsurance = ''
         createFacilityFields.japaneseInsuranceSource = ''
         createFacilityFields.paymentOptions = []
+        createFacilityFields.supportedLanguages = []
     }
 
     async function deleteFacility(

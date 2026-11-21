@@ -94,6 +94,10 @@
             v-if="moderationScreenStore.editFacilityScreenIsActive()"
             v-model="facilityStore.facilitySectionFields.paymentOptions"
         />
+        <ModSupportedLanguagesField
+            v-if="moderationScreenStore.editFacilityScreenIsActive()"
+            v-model="facilityStore.facilitySectionFields.supportedLanguages"
+        />
         <ModAccordion
             v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"

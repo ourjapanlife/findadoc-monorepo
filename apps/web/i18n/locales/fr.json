@@ -544,7 +544,9 @@
     "japaneseInsuranceSourceLabel": "Source",
     "japaneseInsuranceSourcePlaceholder": "Un lien, ou une note comme : clinique appelée le 2 nov. 2026",
     "paymentLabel": "Moyens de paiement",
-    "paymentHint": "Cochez seulement ce que le site de la clinique ou un appel confirme. Si vous ne savez pas, ne cochez rien. Les lecteurs ne verront alors rien, et non « espèces uniquement »."
+    "paymentHint": "Cochez seulement ce que le site de la clinique ou un appel confirme. Si vous ne savez pas, ne cochez rien. Les lecteurs ne verront alors rien, et non « espèces uniquement ».",
+    "supportedLanguagesLabel": "Langues prises en charge par la clinique",
+    "supportedLanguagesHint": "Cochez uniquement les langues confirmées par le site de la clinique ou par un appel. La recherche affiche la clinique pour ces langues même si aucun médecin n'est indiqué."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",
