@@ -563,7 +563,12 @@
     "japaneseInsuranceSourceLabel": "Fonte",
     "japaneseInsuranceSourcePlaceholder": "Un link, o una nota come: chiamata la clinica il 2 nov 2026",
     "paymentLabel": "Metodi di pagamento",
-    "paymentHint": "Seleziona solo ciò che il sito della clinica o una telefonata conferma. Se non lo sai, lascia tutto vuoto. I lettori non vedranno nulla, non «solo contanti»."
+    "paymentHint": "Seleziona solo ciò che il sito della clinica o una telefonata conferma. Se non lo sai, lascia tutto vuoto. I lettori non vedranno nulla, non «solo contanti».",
+    "verificationLabel": "Stato della scheda",
+    "verificationHint": "Conferma una clinica solo dopo che il suo sito o una telefonata confermano nome, indirizzo e telefono indicati qui. Una clinica confermata mostra un piccolo link \"Hai trovato un errore?\". Per le altre si chiede ai lettori di aiutare a confermarla.",
+    "verificationUnverified": "Non verificata",
+    "verificationConfirmed": "Confermata",
+    "verificationNeedsCity": "Aggiungi una città prima di confermare questa clinica."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "L'ID della struttura è obbligatiorio per aggiornare la struttura",

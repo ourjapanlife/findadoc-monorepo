@@ -40,6 +40,12 @@ import {
     type JapaneseInsuranceChoice
 } from '~/utils/japaneseInsurance'
 import { changedPaymentOptions, paymentOptionsInput } from '~/utils/paymentOptions'
+import { FacilityVerificationStatus } from '@findadoc/graphql'
+import {
+    changedVerificationStatus,
+    facilityVerificationChoice,
+    type FacilityVerificationChoice
+} from '~/utils/facilityVerification'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -73,6 +79,9 @@ export type FacilitySectionFields = {
 
     // Payment types and brands (#20). Empty is unknown.
     paymentOptions: PaymentOption[]
+
+    // Unverified or confirmed. Confirmed needs a city; without one the API keeps UNVERIFIED_LOCATION.
+    verificationStatus: FacilityVerificationChoice
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -138,6 +147,11 @@ export function getChangedFacilityFieldsForUpdate(
     const nextPayment = changedPaymentOptions(current.paymentOptions, original.paymentOptions)
     if (nextPayment) {
         updatedFields.paymentOptions = nextPayment
+    }
+
+    const nextVerification = changedVerificationStatus(current.verificationStatus, current.cityId, original)
+    if (nextVerification) {
+        updatedFields.verificationStatus = nextVerification
     }
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
@@ -276,6 +290,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         japaneseInsurance: '' as JapaneseInsuranceChoice,
         japaneseInsuranceSource: '',
         paymentOptions: [] as PaymentOption[],
+        verificationStatus: FacilityVerificationStatus.Unverified as FacilityVerificationChoice,
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -353,6 +368,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.japaneseInsurance = japaneseInsuranceChoice(data.japaneseInsurance)
         facilitySectionFields.value.japaneseInsuranceSource = data.japaneseInsuranceSource ?? ''
         facilitySectionFields.value.paymentOptions = paymentOptionsInput(data.paymentOptions ?? [])
+        facilitySectionFields.value.verificationStatus = facilityVerificationChoice(data.verificationStatus)
     }
 
     function resetFacilitySectionFields() {
@@ -379,6 +395,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             japaneseInsurance: '' as JapaneseInsuranceChoice,
             japaneseInsuranceSource: '',
             paymentOptions: [] as PaymentOption[],
+            verificationStatus: FacilityVerificationStatus.Unverified as FacilityVerificationChoice,
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }

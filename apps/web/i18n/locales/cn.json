@@ -532,7 +532,12 @@
     "japaneseInsuranceSourceLabel": "信息来源",
     "japaneseInsuranceSourcePlaceholder": "链接，或备注，例如：2026年11月2日致电诊所确认",
     "paymentLabel": "支付方式",
-    "paymentHint": "只勾选诊所网站或电话确认过的项目。如果不知道，请全部留空。这样读者看不到任何内容，也不会被当作仅收现金。"
+    "paymentHint": "只勾选诊所网站或电话确认过的项目。如果不知道，请全部留空。这样读者看不到任何内容，也不会被当作仅收现金。",
+    "verificationLabel": "信息核实状态",
+    "verificationHint": "只有在诊所网站或电话确认这里的名称、地址和电话后，才能标记为已确认。已确认的诊所会显示一个小的“发现错误？”链接，其他诊所会请读者帮忙确认。",
+    "verificationUnverified": "未核实",
+    "verificationConfirmed": "已确认",
+    "verificationNeedsCity": "请先设置城市，再确认这家诊所。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",

@@ -532,7 +532,12 @@
     "japaneseInsuranceSourceLabel": "Fonte",
     "japaneseInsuranceSourcePlaceholder": "Um link, ou uma nota como: liguei para a clínica em 2 nov. 2026",
     "paymentLabel": "Formas de pagamento",
-    "paymentHint": "Marque apenas o que o site da clínica ou uma ligação confirmar. Se não souber, deixe tudo desmarcado. Assim os leitores não veem nada, e não «apenas dinheiro»."
+    "paymentHint": "Marque apenas o que o site da clínica ou uma ligação confirmar. Se não souber, deixe tudo desmarcado. Assim os leitores não veem nada, e não «apenas dinheiro».",
+    "verificationLabel": "Status do cadastro",
+    "verificationHint": "Confirme uma clínica só depois que o site dela ou uma ligação confirmar o nome, o endereço e o telefone daqui. Uma clínica confirmada mostra um pequeno link \"Encontrou um erro?\". As demais pedem que os leitores ajudem a confirmá-la.",
+    "verificationUnverified": "Não verificada",
+    "verificationConfirmed": "Confirmada",
+    "verificationNeedsCity": "Adicione uma cidade antes de confirmar esta clínica."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { CreateFacilityInput } from '@findadoc/graphql'
+import { FacilityVerificationStatus, type CreateFacilityInput } from '@findadoc/graphql'
 import { validateCreateFacility, validateUpdateFacility } from '~/utils/facilitiesUtils'
 import type { FacilitySectionFields } from '~/stores/facilitiesStore'
 
@@ -56,6 +56,7 @@ function section(online: boolean, map = ''): FacilitySectionFields {
         japaneseInsurance: '',
         japaneseInsuranceSource: '',
         paymentOptions: [],
+        verificationStatus: FacilityVerificationStatus.Unverified,
         healthcareProfessionalIds: [],
         healthProfessionalsRelations: []
     }
