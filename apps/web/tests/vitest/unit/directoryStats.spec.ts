@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
 import { expect } from 'chai'
 import { Locale } from '@findadoc/graphql'
-import { directoryStatsFrom, type StatsFacility } from '@/utils/directoryStats'
+import { directoryStatsFrom, searchPrefectures, type StatsFacility } from '@/utils/directoryStats'
 import {
     ALL_PREFECTURES,
     DIRECTORY_STATS,
@@ -94,5 +94,26 @@ describe('homeAreaPrefectures with the generated list', () => {
 
     it('keeps the static top eight when it is given the static list', () => {
         expect(homeAreaPrefectures(null, ALL_PREFECTURES)).to.equal(TOP_PREFECTURES)
+    })
+})
+
+describe('searchPrefectures', () => {
+    const generated = [{ name: 'Okinawa', nameJa: '沖縄県', approximateFacilities: 9 }]
+    const inOkinawa: StatsFacility = { contact: { address: { prefectureEn: 'Okinawa' } } }
+
+    it('counts the live directory so a facility added after the deploy is included', () => {
+        const live = Array.from({ length: 10 }, () => inOkinawa)
+
+        expect(searchPrefectures(live, generated)).to.deep.equal([
+            { name: 'Okinawa', nameJa: '沖縄県', approximateFacilities: 10 }
+        ])
+    })
+
+    it('uses the build list before the directory loads', () => {
+        expect(searchPrefectures(null, generated)).to.equal(generated)
+    })
+
+    it('uses the build list when the live directory has no prefecture', () => {
+        expect(searchPrefectures([{ contact: null }], generated)).to.equal(generated)
     })
 })

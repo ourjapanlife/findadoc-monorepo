@@ -91,6 +91,7 @@ export function useSearchDirectory() {
         isReady: hasDirectory,
         hasLoadError,
         reloadDirectory,
+        facilities,
         searchResultsList,
         paginatedResults,
         totalResults,
