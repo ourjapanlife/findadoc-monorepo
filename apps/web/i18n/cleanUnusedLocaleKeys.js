@@ -17,6 +17,31 @@ import { parse } from '@vue/compiler-sfc'
 import { fileURLToPath } from 'url'
 
 /**
+ * Keys a Vue template names: `$t('key')` or `t('key')`, and a static `keypath="key"` on
+ * `<i18n-t>`, which renders a message with links in it. A key with `$` in it is a runtime
+ * expression and is not collected.
+ *
+ * @param {string} templateContent - The template block of a single-file component.
+ * @returns {string[]} The keys found.
+ */
+export function templateKeys(templateContent) {
+    const patterns = [
+        /(?:\$t|t)\(\s*['"`]([^'"`]+)['"`]\s*\)/g,
+        /(?<![:\w-])keypath=["']([^"']+)["']/g
+    ]
+    const keys = []
+    for (const pattern of patterns) {
+        for (const match of templateContent.matchAll(pattern)) {
+            const key = match[1]
+            if (key && !key.includes('$')) {
+                keys.push(key)
+            }
+        }
+    }
+    return keys
+}
+
+/**
  * Parses a single file, segregating and evaluating script and template nodes
  * to extract hardcoded and dynamic i18n localization keys.
  *
@@ -73,16 +98,8 @@ function extractKeysFromFile(filePath) {
 
     // 3. Template Tokenization: Regex execution across visual layout scopes
     if (templateContent.trim()) {
-        // Matches global template patterns for $t('key') or t('key') across various quote bindings
-        const templateRegex = /(?:\$t|t)\(\s*['"`]([^'"`]+)['"`]\s*\)/g
-        let match
-
-        while ((match = templateRegex.exec(templateContent)) !== null) {
-            const key = match[1]
-            // Discard inline runtime expressions evaluated within template interpolation tags
-            if (!key.includes('$')) {
-                usedKeys.add(key)
-            }
+        for (const key of templateKeys(templateContent)) {
+            usedKeys.add(key)
         }
     }
 

@@ -1,5 +1,5 @@
 import * as gqlTypes from '@findadoc/graphql'
-import { normalizePaymentOptions } from '@findadoc/utils'
+import { hasUsableMapPin, normalizePaymentOptions } from '@findadoc/utils'
 import { ErrorCode, Result, type Error as ValidationError } from '../result.js'
 import {
     isValidHpInput,
@@ -937,6 +937,13 @@ export const approveSubmission = async (
                         errorCode: ErrorCode.PLACE_ID_REQUIRED,
                         httpStatus: 400
                     }])
+                }
+                // An in-person clinic needs a real pin (facilities_pin_required). The 0,0 placeholder is not one.
+                if (!isOnline && !hasUsableMapPin(facilityInput.mapLatitude, facilityInput.mapLongitude)) {
+                    throw new SubmissionApprovalValidationError([
+                        { field: 'mapLatitude', errorCode: ErrorCode.REQUIRED, httpStatus: 400 },
+                        { field: 'mapLongitude', errorCode: ErrorCode.REQUIRED, httpStatus: 400 }
+                    ])
                 }
                 const storedContact = contactForStorage(
                     facilityInput.contact ?? createBlankContact(),

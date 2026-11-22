@@ -285,7 +285,10 @@
     "speaks": "Questo medico parla",
     "lastUpdate": "Ultimo aggiornamento",
     "healthcareProfessionals": "Professionisti sanitari",
-    "callNow": "Chiama"
+    "callNow": "Chiama",
+    "sourceCredit": "Fonte: {list} e {openData} (Ministero della Salute, del Lavoro e del Welfare), dati modificati da Find a Doc.",
+    "sourceInstitutionList": "Elenco delle strutture mediche che accolgono pazienti stranieri",
+    "sourceOpenData": "Dati aperti della Rete di informazione medica"
   },
   "thankYouPage": {
     "heading": "Grazie!",
@@ -816,6 +819,7 @@
     "pageHeading": "Trova un medico in Giappone",
     "mapUnavailable": "Impossibile caricare la mappa.",
     "mapUnavailableHint": "Gli altri risultati non sono interessati.",
+    "notOnMap": "Tutti i risultati sono sulla mappa | 1 risultato non è ancora sulla mappa | {n} risultati non sono ancora sulla mappa",
     "payment": "Pagamento",
     "clinicLanguagesCaveat": "Sono le lingue che la clinica dichiara di supportare. Non tutti i medici potrebbero parlarle: chiedi quando contatti la clinica."
   },

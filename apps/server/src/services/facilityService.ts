@@ -931,6 +931,38 @@ function assertPhoneAcceptedOnLockedRow(phone: string | null | undefined, stored
 }
 
 /**
+ * Any update that leaves a facility in person needs a usable pin, from this update or the locked
+ * row (facilities_pin_required). The database checks every updated row, so without this a name
+ * edit on a facility the #21 import left without a pin fails as a server error. Throws
+ * `FacilityUpdateRejected` with REQUIRED on both coordinates, so the form can say what is missing.
+ */
+export function assertInPersonPinOnLockedRow(
+    fields: Partial<gqlTypes.UpdateFacilityInput>,
+    row: { online: boolean, map_latitude: number | null, map_longitude: number | null }
+): void {
+    const online = fields.online ?? row.online
+    if (online) {
+        return
+    }
+    const latitude = fields.mapLatitude !== undefined ? fields.mapLatitude : row.map_latitude
+    const longitude = fields.mapLongitude !== undefined ? fields.mapLongitude : row.map_longitude
+    if (hasUsableMapPin(
+        latitude === null || latitude === undefined ? null : Number(latitude),
+        longitude === null || longitude === undefined ? null : Number(longitude)
+    )) {
+        return
+    }
+    throw new FacilityUpdateRejected({
+        data: {} as gqlTypes.Facility,
+        hasErrors: true,
+        errors: [
+            { field: 'mapLatitude', errorCode: ErrorCode.REQUIRED, httpStatus: 400 },
+            { field: 'mapLongitude', errorCode: ErrorCode.REQUIRED, httpStatus: 400 }
+        ]
+    })
+}
+
+/**
  * A facility going offline needs an address, a Maps link, and a usable pin, from this update or
  * the locked row. Throws `FacilityUpdateRejected` with every missing field.
  */
@@ -1021,6 +1053,8 @@ export async function updateFacilityInTransaction(
     const goingOffline = fields.online === false && originalFacility.online === true
     if (goingOffline) {
         assertOfflineLocationComplete(fields, originalFacility)
+    } else {
+        assertInPersonPinOnLockedRow(fields, originalFacility)
     }
 
     let publicationPatch: { city_id: string | null, verification_status: string } | undefined

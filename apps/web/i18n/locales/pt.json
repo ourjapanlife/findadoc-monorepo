@@ -247,7 +247,10 @@
     "speaks": "Este profissional fala",
     "lastUpdate": "Última atualização",
     "healthcareProfessionals": "Profissionais de saúde",
-    "callNow": "Ligar"
+    "callNow": "Ligar",
+    "sourceCredit": "Fonte: {list} e {openData} (Ministério da Saúde, Trabalho e Bem-Estar), dados editados pela Find a Doc.",
+    "sourceInstitutionList": "Lista de instituições médicas que atendem pacientes estrangeiros",
+    "sourceOpenData": "Dados abertos da Rede de Informação Médica"
   },
   "thankYouPage": {
     "heading": "Obrigado!",
@@ -816,6 +819,7 @@
     "pageHeading": "Encontrar um médico no Japão",
     "mapUnavailable": "Não foi possível carregar o mapa.",
     "mapUnavailableHint": "Os demais resultados não foram afetados.",
+    "notOnMap": "Todos os resultados estão no mapa | 1 resultado ainda não está no mapa | {n} resultados ainda não estão no mapa",
     "payment": "Pagamento",
     "clinicLanguagesCaveat": "Estes são os idiomas que a clínica diz atender. Nem todo médico pode falá-los, então pergunte ao entrar em contato com a clínica."
   },

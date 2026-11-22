@@ -247,7 +247,10 @@
     "speaks": "Itong Doktor ay nakakapagsalita ng",
     "lastUpdate": "Huling na-update",
     "healthcareProfessionals": "Mga propesyonal sa kalusugan",
-    "callNow": "Tumawag"
+    "callNow": "Tumawag",
+    "sourceCredit": "Pinagmulan: {list} at {openData} (Ministry of Health, Labour and Welfare ng Japan), inayos ng Find a Doc.",
+    "sourceInstitutionList": "Listahan ng mga pasilidad medikal na tumatanggap ng dayuhang pasyente",
+    "sourceOpenData": "Bukas na datos ng Medical Information Net"
   },
   "thankYouPage": {
     "heading": "Maraming Salamat!",
@@ -816,6 +819,7 @@
     "pageHeading": "Maghanap ng doktor sa Japan",
     "mapUnavailable": "Hindi ma-load ang mapa.",
     "mapUnavailableHint": "Hindi apektado ang iba pang resulta.",
+    "notOnMap": "Nasa mapa ang lahat ng resulta | 1 resulta ang wala pa sa mapa | {n} resulta ang wala pa sa mapa",
     "payment": "Bayad",
     "clinicLanguagesCaveat": "Ito ang mga wikang sinasabi ng klinika na kaya nilang suportahan. Maaaring hindi lahat ng doktor ay nagsasalita nito, kaya magtanong kapag kinontak mo ang klinika."
   },

@@ -247,7 +247,10 @@
     "speaks": "Dieser Arzt spricht",
     "lastUpdate": "Zuletzt aktualisiert",
     "healthcareProfessionals": "Gesundheitsfachkräfte",
-    "callNow": "Anrufen"
+    "callNow": "Anrufen",
+    "sourceCredit": "Quelle: {list} und {openData} (Ministerium für Gesundheit, Arbeit und Soziales), bearbeitet von Find a Doc.",
+    "sourceInstitutionList": "Liste der medizinischen Einrichtungen, die ausländische Patienten aufnehmen",
+    "sourceOpenData": "Offene Daten des Medizininformationsnetzes"
   },
   "thankYouPage": {
     "heading": "Vielen Dank!",
@@ -816,6 +819,7 @@
     "pageHeading": "Eine Ärztin oder einen Arzt in Japan finden",
     "mapUnavailable": "Die Karte konnte nicht geladen werden.",
     "mapUnavailableHint": "Die übrigen Ergebnisse sind davon nicht betroffen.",
+    "notOnMap": "Alle Ergebnisse sind auf der Karte | 1 Ergebnis ist noch nicht auf der Karte | {n} Ergebnisse sind noch nicht auf der Karte",
     "payment": "Zahlung",
     "clinicLanguagesCaveat": "Diese Sprachen unterstützt die Klinik nach eigenen Angaben. Nicht jede Ärztin und jeder Arzt spricht sie. Fragen Sie nach, wenn Sie die Klinik kontaktieren."
   },

@@ -328,7 +328,10 @@
     "speaks": "Dokter ini berbicara",
     "lastUpdate": "Terakhir diperbarui",
     "healthcareProfessionals": "Tenaga Kesehatan",
-    "callNow": "Telepon"
+    "callNow": "Telepon",
+    "sourceCredit": "Sumber: {list} dan {openData} (Kementerian Kesehatan, Tenaga Kerja, dan Kesejahteraan), diolah oleh Find a Doc.",
+    "sourceInstitutionList": "Daftar fasilitas medis yang menerima pasien asing",
+    "sourceOpenData": "Data terbuka Jaringan Informasi Medis"
   },
   "thankYouPage": {
     "heading": "Terima kasih!",
@@ -822,6 +825,7 @@
     "pageHeading": "Temukan dokter di Jepang",
     "mapUnavailable": "Peta tidak dapat dimuat.",
     "mapUnavailableHint": "Hasil lainnya tidak terpengaruh.",
+    "notOnMap": "Semua hasil ada di peta | 1 hasil belum ada di peta | {n} hasil belum ada di peta",
     "payment": "Pembayaran",
     "clinicLanguagesCaveat": "Ini adalah bahasa yang menurut klinik dapat dilayani. Belum tentu setiap dokter menguasainya, jadi tanyakan saat menghubungi klinik."
   },

@@ -48,6 +48,27 @@ Nothing from these sources replaced the name, address, or phone from the sheet.
 
 The list is public institution data (names, addresses, clinic phone numbers, websites). It holds no patient or personal data. The staging table is open to the `db:prod` roles like the directory tables.
 
+## Map pins
+
+The import stored only a Places id, so the 1,249 facilities it created had no latitude or longitude. The API refuses an in-person facility without a pin, but the import wrote to the table directly, and the search map drew every one of them in central Tokyo. `20261122090000_facility_pin_required.sql` adds `facilities_pin_required` as `NOT VALID`: every new row and every update needs a pin now. A later migration validates it once no row is left without one.
+
+`utils/backfillFacilityPins.ts` fills the pins from the ministry's own coordinates: the 医療情報ネット open data facility CSVs (病院・診療所・歯科診療所の施設票) from https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryou/newpage_43373.html, used under 公共データ利用規約 (PDL1.0). Places coordinates are not used, because they may be kept for 30 days at most (`docs/places-storage.md`).
+
+| Match | What the script does |
+| --- | --- |
+| Same Japanese name in the same municipality, and the same street address, every number alike | Fills the pin |
+| The name or the street address agrees, not both | Fills it only when the facility is approved in the verification CSV (`--approved`, `check_map_pin_place` = ok) |
+| A ministry row with 0,0 coordinates, or no match | Leaves it for a moderator |
+
+Unzip the three CSVs, then dry-run, read the counts, and write (see `.claude/skills/production-database/SKILL.md`):
+
+```bash
+pnpm db:prod node --loader ts-node/esm utils/backfillFacilityPins.ts --csv hospital.csv --csv clinic.csv --csv dental.csv --approved verification.csv
+pnpm db:prod --role operator node --loader ts-node/esm utils/backfillFacilityPins.ts --csv hospital.csv --csv clinic.csv --csv dental.csv --approved verification.csv --write --confirm-production
+```
+
+Checked against the 470 facilities that already had a pin, a name-and-address match lands a median of 28 m away, and 4 of 113 more than 1 km away. Facility pages credit the ministry for imported facilities (`facility-source-credit`), with a link to each source page and a note that Find a Doc edited the data.
+
 ## Review
 
 Rows with outcome `needs_review` stay in the staging table for a moderator. Keep the table and its rows as the record of where each facility came from. A new edition of the list is a new import, written again with `apps/server/utils/scriptDatabase.ts`.

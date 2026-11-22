@@ -247,7 +247,10 @@
     "speaks": "Bác sĩ này nói",
     "lastUpdate": "Cập nhật lần cuối",
     "healthcareProfessionals": "Nhân viên y tế",
-    "callNow": "Gọi"
+    "callNow": "Gọi",
+    "sourceCredit": "Nguồn: {list} và {openData} (Bộ Y tế, Lao động và Phúc lợi), do Find a Doc biên tập.",
+    "sourceInstitutionList": "Danh sách cơ sở y tế tiếp nhận bệnh nhân nước ngoài",
+    "sourceOpenData": "Dữ liệu mở của Mạng thông tin y tế"
   },
   "thankYouPage": {
     "heading": "Cảm ơn bạn!",
@@ -816,6 +819,7 @@
     "pageHeading": "Tìm bác sĩ ở Nhật Bản",
     "mapUnavailable": "Không tải được bản đồ.",
     "mapUnavailableHint": "Các kết quả còn lại không bị ảnh hưởng.",
+    "notOnMap": "Tất cả kết quả đều có trên bản đồ | 1 kết quả chưa có trên bản đồ | {n} kết quả chưa có trên bản đồ",
     "payment": "Thanh toán",
     "clinicLanguagesCaveat": "Đây là các ngôn ngữ phòng khám cho biết có thể hỗ trợ. Không phải bác sĩ nào cũng nói được, vì vậy hãy hỏi khi liên hệ phòng khám."
   },

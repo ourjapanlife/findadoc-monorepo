@@ -247,7 +247,10 @@
     "speaks": "这位医师可以说",
     "lastUpdate": "最近更新",
     "healthcareProfessionals": "医疗人员",
-    "callNow": "拨打"
+    "callNow": "拨打",
+    "sourceCredit": "来源：{list}、{openData}（日本厚生劳动省），由 Find a Doc 编辑整理。",
+    "sourceInstitutionList": "接收外国患者的医疗机构名单",
+    "sourceOpenData": "医疗信息网开放数据"
   },
   "thankYouPage": {
     "heading": "谢谢！",
@@ -816,6 +819,7 @@
     "pageHeading": "在日本找医生",
     "mapUnavailable": "地图无法加载。",
     "mapUnavailableHint": "其余结果不受影响。",
+    "notOnMap": "所有结果都已显示在地图上 | 1 条结果暂未显示在地图上 | {n} 条结果暂未显示在地图上",
     "payment": "支付方式",
     "clinicLanguagesCaveat": "这些是诊所表示可以提供的语言。并非每位医生都会说，联系诊所时请先确认。"
   },

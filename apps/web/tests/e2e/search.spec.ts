@@ -85,7 +85,8 @@ function facility(id: string, nameEn: string, professionalIds: string[], cityEn:
 const facilities = [
     facility('f1', 'Tokyo Family Clinic', ['p1', 'p2'], 'Shibuya', 'Tokyo'),
     facility('f2', 'Osaka Dental', ['p3'], 'Kita', 'Osaka'),
-    facility('f3', 'Sapporo Skin Clinic', ['p4'], 'Chuo', 'Hokkaido')
+    // Imported from the Ministry of Health list (#21), so its details credit the ministry.
+    { ...facility('f3', 'Sapporo Skin Clinic', ['p4'], 'Chuo', 'Hokkaido'), source: 'MHLW_MULTILINGUAL_INSTITUTIONS' }
 ]
 
 function isApiRequest(url: URL): boolean {
@@ -360,6 +361,21 @@ test.describe('Search page', () => {
             await expect(panel.getByRole('link', { name: 'Yuki Mori' }))
                 .toHaveAttribute('href', '/doctor/yuki-mori--p4')
             await expect(page).toHaveURL(/facility=f3/)
+        })
+
+        test('credits the Ministry of Health on a facility imported from its data (#21)', async ({ page }) => {
+            await page.goto('/search?facility=f3')
+
+            const credit = page.getByTestId('search-details-panel').getByTestId('facility-source-credit')
+            await expect(credit).toBeVisible()
+            await expect(credit.getByRole('link', { name: 'Medical Information Net open data' }))
+                .toHaveAttribute('href', /mhlw\.go\.jp/)
+            await expect(credit.getByRole('link').first()).toHaveAttribute('rel', 'noopener noreferrer')
+
+            await page.goto('/search?facility=f1')
+            await expect(page.getByTestId('search-details-panel').getByRole('heading', { name: 'Tokyo Family Clinic' }))
+                .toBeVisible()
+            await expect(page.getByTestId('facility-source-credit')).toHaveCount(0)
         })
 
         test('the back-to-results button closes a panel opened from a shared link', async ({ page }) => {
