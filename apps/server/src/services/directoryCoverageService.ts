@@ -174,7 +174,7 @@ async function loadAvailableCities(prefectureKey: string | undefined): Promise<R
 }
 
 /**
- * Specialties at least one professional practices, most professionals first. With a prefecture,
+ * Specialties at least one professional practices, most facilities first. With a prefecture,
  * only professionals at a facility there count, and the facility count is that prefecture's.
  */
 export async function listAvailableSpecialties(
@@ -216,7 +216,11 @@ async function loadAvailableSpecialties(prefectureKey: string | undefined): Prom
                 professionalCount: Number(row.professional_count),
                 facilityCount: Number(row.facility_count)
             }))
-            .sort(byCountThenName(item => item.professionalCount, item => item.specialty))
+            // A picker lists the specialty with the most results first: facilities, as a specialty
+            // search returns facilities, then professionals.
+            .sort((left, right) => right.facilityCount - left.facilityCount
+                || right.professionalCount - left.professionalCount
+                || left.specialty.localeCompare(right.specialty))
 
         return { data, hasErrors: false }
     } catch (error) {

@@ -99,6 +99,10 @@ describe('directory coverage', () => {
         expect(cities.map(entry => entry.city.id)).toContain(tottoriCity.id)
         expect(cities.every(entry => entry.city.prefecture.nameEn === 'Tottori')).toBe(true)
         expect(cities.every(entry => entry.facilityCount > 0)).toBe(true)
+
+        // The city with the most clinics, usually the largest, comes first.
+        const counts = cities.map(entry => entry.facilityCount)
+        expect(counts).toEqual([...counts].sort((left, right) => right - left))
     })
 
     test('counts a specialty in a prefecture as the facilities a specialty search there returns', async () => {
@@ -109,6 +113,10 @@ describe('directory coverage', () => {
         const psychiatry = specialties.find(entry => entry.specialty === gqlType.Specialty.Psychiatry)
 
         expect(psychiatry?.professionalCount).toBeGreaterThan(0)
+
+        // The specialty a search finds the most facilities for comes first.
+        const counts = specialties.map(entry => entry.facilityCount)
+        expect(counts).toEqual([...counts].sort((left, right) => right - left))
         expect(psychiatry?.facilityCount).toBe(await totalCount({
             prefecture: 'Tottori',
             specialties: [gqlType.Specialty.Psychiatry]

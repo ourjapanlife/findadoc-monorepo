@@ -101,8 +101,9 @@ async function loadCoverage(key: string): Promise<DirectoryCoverage | undefined>
 }
 
 /**
- * The specialty options to offer, in display order: those with a professional, plus the one
- * already selected so a shared link still shows its filter. Without coverage, every option.
+ * The specialty options to offer: those with a professional, most available first, as the
+ * API orders them. The one already selected stays, last, so a shared link still shows its
+ * filter. Without coverage, every option in display order.
  */
 export function availableSpecialtyOptions<T extends { code: Specialty }>(
     options: readonly T[],
@@ -113,6 +114,13 @@ export function availableSpecialtyOptions<T extends { code: Specialty }>(
         return [...options]
     }
 
-    const offered = new Set<Specialty>(available)
-    return options.filter(option => offered.has(option.code) || option.code === selected)
+    const byCode = new Map(options.map(option => [option.code, option]))
+    const offered = available
+        .map(code => byCode.get(code))
+        .filter((option): option is T => option !== undefined)
+    const selectedOption = selected ? byCode.get(selected) : undefined
+    if (selectedOption && !offered.includes(selectedOption)) {
+        offered.push(selectedOption)
+    }
+    return offered
 }

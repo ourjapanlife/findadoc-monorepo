@@ -35,13 +35,13 @@ describe('coverageFromResponse', () => {
 })
 
 describe('availableSpecialtyOptions', () => {
-    it('offers only specialties that have a professional, in display order', () => {
+    it('offers only specialties that have a professional, most available first', () => {
         const offered = availableSpecialtyOptions(options, [Specialty.Psychiatry, Specialty.Dentistry], '')
 
-        expect(offered.map(option => option.code)).to.deep.equal([Specialty.Dentistry, Specialty.Psychiatry])
+        expect(offered.map(option => option.code)).to.deep.equal([Specialty.Psychiatry, Specialty.Dentistry])
     })
 
-    it('keeps the selected specialty so a shared link still shows its filter', () => {
+    it('keeps the selected specialty, last, so a shared link still shows its filter', () => {
         const offered = availableSpecialtyOptions(options, [Specialty.Dentistry], Specialty.Pediatrics)
 
         expect(offered.map(option => option.code)).to.deep.equal([Specialty.Dentistry, Specialty.Pediatrics])
