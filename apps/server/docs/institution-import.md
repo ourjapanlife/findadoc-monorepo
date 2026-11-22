@@ -60,7 +60,7 @@ The import stored only a Places id, so the 1,249 facilities it created had no la
 | The name or the street address agrees, not both | Fills it when the facility is approved in the verification CSV (`--approved`, `check_map_pin_place` = ok), or with `--geocode` when the facility's street address lands within 150 m of the ministry pin |
 | A ministry row with 0,0 coordinates, or no match | With `--geocode`, fills the pin from the street address when the lookup finds the block (番 or 号). Otherwise leaves it for a moderator |
 
-`--geocode` looks up each facility's Japanese street address, cut before the building, in the Geospatial Information Authority's address search (国土地理院, `msearch.gsi.go.jp`), one call every 250 ms. It sends only the clinic's public address. An address found only to the town or 丁目 is never used, and a street address that disagrees with a one-sided ministry pin is left for a person to decide. Facility pages credit GSI next to the ministry (`facility-pin-credit`).
+`--geocode` looks up each facility's Japanese street address, cut before the building, in the Geospatial Information Authority's address search (国土地理院, `msearch.gsi.go.jp`), one call every 250 ms. It sends only the clinic's public address. An address found only to the town or 丁目 is never used, and a street address that disagrees with a one-sided ministry pin is left for a person to decide. Facility pages credit GSI next to the ministry (`facility-pin-credit`), and only for imported facilities, so the script reads only rows with `source = MHLW_MULTILINGUAL_INSTITUTIONS`.
 
 Unzip the three CSVs, then dry-run, read the counts, and write (see `.claude/skills/production-database/SKILL.md`):
 

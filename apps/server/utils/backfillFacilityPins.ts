@@ -315,6 +315,10 @@ export function parseGsiResponse(body: unknown): AddressPin | null {
     if (typeof lat !== 'number' || typeof lng !== 'number') {
         return null
     }
+    // facilities_pin_required refuses an out-of-range pin, and one refused update rolls back the run.
+    if (!(Math.abs(lat) <= 90 && Math.abs(lng) <= 180)) {
+        return null
+    }
     return { lat, lng, precision: addressPrecision(title) }
 }
 
@@ -324,13 +328,16 @@ export function parseGsiResponse(body: unknown): AddressPin | null {
  */
 export function createGsiGeocoder(fetchImpl: typeof fetch = fetch, delayMs = GSI_DELAY_MS): Geocoder {
     return async street => {
-        const response = await fetchImpl(`${GSI_ADDRESS_SEARCH_URL}?q=${encodeURIComponent(street)}`)
-        if (!response.ok) {
-            throw new Error(`GSI address search returned HTTP ${response.status}`)
+        try {
+            const response = await fetchImpl(`${GSI_ADDRESS_SEARCH_URL}?q=${encodeURIComponent(street)}`)
+            if (!response.ok) {
+                throw new Error(`GSI address search returned HTTP ${response.status}`)
+            }
+            return parseGsiResponse(await response.json())
+        } finally {
+            // Pause after a failure too, so a run of fast errors does not hammer the service.
+            await new Promise(resolve => setTimeout(resolve, delayMs))
         }
-        const pin = parseGsiResponse(await response.json())
-        await new Promise(resolve => setTimeout(resolve, delayMs))
-        return pin
     }
 }
 
@@ -402,6 +409,8 @@ export async function backfillFacilityPins(
                contact->'address'->>'addressLine1Ja' as address_line1_ja
         from facilities
         where online = false
+          -- Only the #21 import: its pages carry the ministry and GSI credit for these pins.
+          and source = 'MHLW_MULTILINGUAL_INSTITUTIONS'
           and (map_latitude is null or map_longitude is null or map_latitude = 0 or map_longitude = 0)
         order by created_date
     `)

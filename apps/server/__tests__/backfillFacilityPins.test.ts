@@ -145,6 +145,12 @@ describe('parseGsiResponse', () => {
         expect(parseGsiResponse([{ geometry: { coordinates: ['x', 1] }, properties: { title: 'a' } }])).toBeNull()
         expect(parseGsiResponse({ error: 'nope' })).toBeNull()
     })
+
+    it('refuses coordinates outside the valid range, which the pin constraint would reject', () => {
+        const at = (lng: number, lat: number) => [{ geometry: { coordinates: [lng, lat] }, properties: { title: '番' } }]
+        expect(parseGsiResponse(at(132.4596, 134.3963))).toBeNull()
+        expect(parseGsiResponse(at(232.4596, 34.3963))).toBeNull()
+    })
 })
 
 describe('planFill', () => {
@@ -205,6 +211,24 @@ describe('createGsiGeocoder', () => {
         const fetchImpl = vi.fn<typeof fetch>(async () => new Response('busy', { status: 503 }))
         await expect(createGsiGeocoder(fetchImpl, 0)('広島県')).rejects.toThrow(/503/)
     })
+
+    it('still pauses after a failed lookup', async () => {
+        vi.useFakeTimers()
+        try {
+            const fetchImpl = vi.fn<typeof fetch>(async () => new Response('busy', { status: 503 }))
+            let settled = false
+            const lookup = createGsiGeocoder(fetchImpl, 250)('広島県').catch(() => {
+                settled = true
+            })
+            await vi.advanceTimersByTimeAsync(249)
+            expect(settled).toBe(false)
+            await vi.advanceTimersByTimeAsync(1)
+            await lookup
+            expect(settled).toBe(true)
+        } finally {
+            vi.useRealTimers()
+        }
+    })
 })
 
 describe('parseMinistryCsv', () => {
@@ -263,6 +287,13 @@ describe('backfillFacilityPins', () => {
         expect(report).toMatchObject({ pinless: 2, toFill: 1, sampleIds: ['f1'], updated: 0 })
         expect(report.byLevel).toMatchObject({ name_and_address: 1, name_only: 1 })
         expect(queries.some(query => query.text.includes('update facilities'))).toBe(false)
+    })
+
+    it('reads only facilities from the ministry import, whose pages carry the credit', async () => {
+        const { client, queries } = fakeClient(PINLESS_ROWS)
+        await backfillFacilityPins(client, INSTITUTIONS, new Set(), false)
+
+        expect(queries[0]?.text).toContain('source = \'MHLW_MULTILINGUAL_INSTITUTIONS\'')
     })
 
     it('writes the ministry pin only where the row still has none', async () => {
