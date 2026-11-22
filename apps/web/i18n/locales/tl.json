@@ -250,7 +250,9 @@
     "callNow": "Tumawag",
     "sourceCredit": "Pinagmulan: {list} at {openData} (Ministry of Health, Labour and Welfare ng Japan), inayos ng Find a Doc.",
     "sourceInstitutionList": "Listahan ng mga pasilidad medikal na tumatanggap ng dayuhang pasyente",
-    "sourceOpenData": "Bukas na datos ng Medical Information Net"
+    "sourceOpenData": "Bukas na datos ng Medical Information Net",
+    "pinCredit": "Ang ilang pin sa mapa ay galing sa {gsi}.",
+    "pinSourceGsi": "paghahanap ng address ng Geospatial Information Authority of Japan"
   },
   "thankYouPage": {
     "heading": "Maraming Salamat!",

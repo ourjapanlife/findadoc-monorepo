@@ -250,7 +250,9 @@
     "callNow": "Gọi",
     "sourceCredit": "Nguồn: {list} và {openData} (Bộ Y tế, Lao động và Phúc lợi), do Find a Doc biên tập.",
     "sourceInstitutionList": "Danh sách cơ sở y tế tiếp nhận bệnh nhân nước ngoài",
-    "sourceOpenData": "Dữ liệu mở của Mạng thông tin y tế"
+    "sourceOpenData": "Dữ liệu mở của Mạng thông tin y tế",
+    "pinCredit": "Một số ghim trên bản đồ lấy từ {gsi}.",
+    "pinSourceGsi": "tìm kiếm địa chỉ của Cơ quan Thông tin Không gian Địa lý Nhật Bản"
   },
   "thankYouPage": {
     "heading": "Cảm ơn bạn!",

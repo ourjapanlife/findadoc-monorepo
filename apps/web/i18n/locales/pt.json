@@ -250,7 +250,9 @@
     "callNow": "Ligar",
     "sourceCredit": "Fonte: {list} e {openData} (Ministério da Saúde, Trabalho e Bem-Estar), dados editados pela Find a Doc.",
     "sourceInstitutionList": "Lista de instituições médicas que atendem pacientes estrangeiros",
-    "sourceOpenData": "Dados abertos da Rede de Informação Médica"
+    "sourceOpenData": "Dados abertos da Rede de Informação Médica",
+    "pinCredit": "Alguns marcadores do mapa vêm da {gsi}.",
+    "pinSourceGsi": "busca de endereços da Autoridade de Informação Geoespacial do Japão"
   },
   "thankYouPage": {
     "heading": "Obrigado!",

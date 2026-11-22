@@ -250,7 +250,9 @@
     "callNow": "電話",
     "sourceCredit": "出典：{list}、{openData}（厚生労働省）をもとにFind a Docが加工して作成",
     "sourceInstitutionList": "外国人患者を受け入れる医療機関の情報を取りまとめたリスト",
-    "sourceOpenData": "医療情報ネットのオープンデータ"
+    "sourceOpenData": "医療情報ネットのオープンデータ",
+    "pinCredit": "一部の地図のピンは{gsi}によるものです。",
+    "pinSourceGsi": "国土地理院の住所検索"
   },
   "thankYouPage": {
     "heading": "ありがとうございます",

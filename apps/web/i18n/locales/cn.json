@@ -250,7 +250,9 @@
     "callNow": "拨打",
     "sourceCredit": "来源：{list}、{openData}（日本厚生劳动省），由 Find a Doc 编辑整理。",
     "sourceInstitutionList": "接收外国患者的医疗机构名单",
-    "sourceOpenData": "医疗信息网开放数据"
+    "sourceOpenData": "医疗信息网开放数据",
+    "pinCredit": "部分地图标记来自{gsi}。",
+    "pinSourceGsi": "日本国土地理院地址搜索"
   },
   "thankYouPage": {
     "heading": "谢谢！",

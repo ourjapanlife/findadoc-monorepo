@@ -288,7 +288,9 @@
     "callNow": "Chiama",
     "sourceCredit": "Fonte: {list} e {openData} (Ministero della Salute, del Lavoro e del Welfare), dati modificati da Find a Doc.",
     "sourceInstitutionList": "Elenco delle strutture mediche che accolgono pazienti stranieri",
-    "sourceOpenData": "Dati aperti della Rete di informazione medica"
+    "sourceOpenData": "Dati aperti della Rete di informazione medica",
+    "pinCredit": "Alcuni segnaposto della mappa provengono dalla {gsi}.",
+    "pinSourceGsi": "ricerca indirizzi dell’Autorità per l’informazione geospaziale del Giappone"
   },
   "thankYouPage": {
     "heading": "Grazie!",
