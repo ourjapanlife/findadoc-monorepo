@@ -50,6 +50,30 @@ test.describe('Home page', () => {
             await expect(page).toHaveURL(/\/privacypolicy/)
         })
 
+        test('offers the prefectures and specialties the live directory has (#21)', async ({ page }) => {
+            await page.route(url => url.searchParams.get('query')?.includes('DirectoryCoverage') ?? false, route =>
+                route.fulfill({
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        data: {
+                            availablePrefectures: [
+                                { prefecture: { nameEn: 'Hiroshima', nameJa: '広島県' }, facilityCount: 24 }
+                            ],
+                            availableCities: [],
+                            availableSpecialties: [{ specialty: 'PEDIATRICS' }, { specialty: 'DENTISTRY' }]
+                        }
+                    })
+                }))
+            await page.goto('/')
+
+            const area = page.getByTestId('home-area')
+            await expect(area.locator('option[value="hiroshima"]')).toHaveText('Hiroshima (24)')
+            await expect(area.locator('option[value="tokyo"]')).toHaveCount(0)
+            // The specialty with the most clinics comes first, after "All specialties".
+            await expect(page.getByTestId('home-specialty').locator('option').nth(1)).toHaveAttribute('value', 'pediatrics')
+            await expect(page.getByTestId('home-specialty').locator('option')).toHaveCount(3)
+        })
+
         test('the search entry carries its filters into the URL', async ({ page }) => {
             await page.getByTestId('home-specialty').selectOption('dentistry')
             await page.getByTestId('home-language').selectOption('en')

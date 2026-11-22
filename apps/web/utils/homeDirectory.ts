@@ -3,6 +3,7 @@ import type { Specialty } from '@findadoc/graphql'
 import type { DirectoryStats } from './directoryStats'
 import { specialtyFacetPathFromSlugs, specialtyFacetSlug } from './facetPath'
 import { prefectureHubPath } from './hubPath'
+import { listPrefectureJapanEn, listPrefectureJapanJa } from './prefectureNames'
 import { specialtySearchParam } from './searchDirectory'
 
 /**
@@ -19,59 +20,34 @@ export interface PrefectureEntry {
     name: string
     /** Shown to Japanese readers. Place names are data, not UI copy, so they are not i18n keys. */
     nameJa: string
-    approximateFacilities: number
+    /** Facilities there, from the directory. Unknown in the fallback list, and then not shown. */
+    approximateFacilities?: number
+}
+
+/** The picker label: the name for the reader's language, with the count when it is known. */
+export function prefectureOptionLabel(entry: PrefectureEntry, japanese: boolean): string {
+    const name = japanese ? entry.nameJa : entry.name
+    return entry.approximateFacilities === undefined ? name : `${name} (${entry.approximateFacilities})`
 }
 
 /**
- * Fallback prefecture list, measured against production on 2026-09-02.
- *
- * Ordered by volume rather than alphabetically because the distribution is uneven, so the
- * first handful covers most searches, and the ordering itself tells the reader where coverage
- * actually is. `directoryPrefectures` keeps the same order for the generated list.
+ * Every prefecture in code order, north to south, with no count. Only the fallback when the
+ * build has no directory and the API has not answered: the pickers otherwise list what the
+ * directory has, most facilities first (`#directory-stats`, then `availablePrefectures`).
+ * No count is written here by hand, so nothing here goes stale.
  */
-export const ALL_PREFECTURES: readonly PrefectureEntry[] = [
-    { name: 'Tokyo', nameJa: '東京都', approximateFacilities: 96 },
-    { name: 'Fukuoka', nameJa: '福岡県', approximateFacilities: 68 },
-    { name: 'Osaka', nameJa: '大阪府', approximateFacilities: 43 },
-    { name: 'Mie', nameJa: '三重県', approximateFacilities: 34 },
-    { name: 'Hokkaido', nameJa: '北海道', approximateFacilities: 32 },
-    { name: 'Tokushima', nameJa: '徳島県', approximateFacilities: 14 },
-    { name: 'Tochigi', nameJa: '栃木県', approximateFacilities: 13 },
-    { name: 'Ishikawa', nameJa: '石川県', approximateFacilities: 13 },
-    { name: 'Hyogo', nameJa: '兵庫県', approximateFacilities: 12 },
-    { name: 'Kagoshima', nameJa: '鹿児島県', approximateFacilities: 12 },
-    { name: 'Fukui', nameJa: '福井県', approximateFacilities: 12 },
-    { name: 'Yamanashi', nameJa: '山梨県', approximateFacilities: 11 },
-    { name: 'Toyama', nameJa: '富山県', approximateFacilities: 11 },
-    { name: 'Yamaguchi', nameJa: '山口県', approximateFacilities: 10 },
-    { name: 'Akita', nameJa: '秋田県', approximateFacilities: 9 },
-    { name: 'Miyagi', nameJa: '宮城県', approximateFacilities: 9 },
-    { name: 'Okinawa', nameJa: '沖縄県', approximateFacilities: 8 },
-    { name: 'Yamagata', nameJa: '山形県', approximateFacilities: 8 },
-    { name: 'Kumamoto', nameJa: '熊本県', approximateFacilities: 6 },
-    { name: 'Iwate', nameJa: '岩手県', approximateFacilities: 6 },
-    { name: 'Fukushima', nameJa: '福島県', approximateFacilities: 6 },
-    { name: 'Niigata', nameJa: '新潟県', approximateFacilities: 6 },
-    { name: 'Nagano', nameJa: '長野県', approximateFacilities: 5 },
-    { name: 'Ehime', nameJa: '愛媛県', approximateFacilities: 5 },
-    { name: 'Kochi', nameJa: '高知県', approximateFacilities: 3 },
-    { name: 'Kanagawa', nameJa: '神奈川県', approximateFacilities: 3 },
-    { name: 'Oita', nameJa: '大分県', approximateFacilities: 2 },
-    { name: 'Saga', nameJa: '佐賀県', approximateFacilities: 2 },
-    { name: 'Aomori', nameJa: '青森県', approximateFacilities: 1 },
-    { name: 'Saitama', nameJa: '埼玉県', approximateFacilities: 1 },
-    { name: 'Aichi', nameJa: '愛知県', approximateFacilities: 1 },
-    { name: 'Miyazaki', nameJa: '宮崎県', approximateFacilities: 1 },
-    { name: 'Nagasaki', nameJa: '長崎県', approximateFacilities: 1 }
-] as const
+export const ALL_PREFECTURES: readonly PrefectureEntry[] = listPrefectureJapanEn.map((name, index) => ({
+    name,
+    nameJa: listPrefectureJapanJa[index] ?? ''
+}))
 
 /**
- * Fallback directory size, measured against production on 2026-11-16, after the #21 import.
+ * Fallback directory size, measured against production on 2026-11-22, after the #21 import.
  * Framed in copy as approximate so it never reads as a live counter.
  */
 export const DIRECTORY_STATS = {
-    facilities: 1718,
-    professionals: 405,
+    facilities: 1719,
+    professionals: 403,
     languages: 14
 } as const
 

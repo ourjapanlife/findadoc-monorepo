@@ -2373,6 +2373,26 @@ type Query {
   cities(prefecture: String): [City!]!
 
   """
+  Prefectures that have at least one facility with an address, most facilities first.
+  Counted from the directory on each read, so a new prefecture appears without a code change.
+  The count matches what the facilities prefecture filter returns.
+  """
+  availablePrefectures: [AvailablePrefecture!]!
+
+  """
+  Cities with at least one facility linked to them, most facilities first.
+  Pass a prefecture key or Japanese name to filter. An unknown prefecture is rejected.
+  """
+  availableCities(prefecture: String): [AvailableCity!]!
+
+  """
+  Specialties practiced by at least one healthcare professional linked to a facility,
+  most facilities first, then most professionals.
+  Pass a prefecture key or Japanese name to count only professionals at facilities there.
+  """
+  availableSpecialties(prefecture: String): [AvailableSpecialty!]!
+
+  """
   Japan-only city suggestions from Places. The label is live Google text for this screen.
   Do not store it. A suggestion with no city is not in our vocabulary.
   """
@@ -2430,6 +2450,26 @@ type Prefecture {
   nameJa: String!
   """Lowercase English key."""
   slug: String!
+}
+
+"""A prefecture with how many facilities have an address there."""
+type AvailablePrefecture {
+  prefecture: Prefecture!
+  facilityCount: Int!
+}
+
+"""A city with how many facilities are linked to it."""
+type AvailableCity {
+  city: City!
+  facilityCount: Int!
+}
+
+"""A specialty with how many professionals practice it and at how many facilities."""
+type AvailableSpecialty {
+  specialty: Specialty!
+  professionalCount: Int!
+  """Facilities with at least one of those professionals. This is what a specialty search returns."""
+  facilityCount: Int!
 }
 
 """A search city owned by one prefecture. The same English slug may exist in two prefectures."""

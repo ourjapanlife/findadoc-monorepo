@@ -253,6 +253,33 @@ test.describe('Search page', () => {
             await expect(page.getByRole('link', { name: 'Tokyo Family Clinic' })).toBeVisible()
         })
 
+        test('offers the prefectures and specialties the directory has (#21)', async ({ page }) => {
+            await page.route(isApiRequest, async (route: Route) => {
+                if (!graphqlOperation(route.request())?.query?.includes('DirectoryCoverage')) {
+                    await route.fallback()
+                    return
+                }
+                await route.fulfill({
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        data: {
+                            availablePrefectures: [
+                                { prefecture: { nameEn: 'Hiroshima', nameJa: '広島県' }, facilityCount: 24 }
+                            ],
+                            availableCities: [],
+                            availableSpecialties: [{ specialty: 'DENTISTRY' }]
+                        }
+                    })
+                })
+            })
+            await page.goto('/search')
+
+            await expect(page.getByTestId('search-area').locator('option[value="hiroshima"]'))
+                .toHaveText('Hiroshima (24)')
+            await expect(page.getByTestId('search-specialty').locator('option[value="DENTISTRY"]')).toHaveCount(1)
+            await expect(page.getByTestId('search-specialty').locator('option[value="DERMATOLOGY"]')).toHaveCount(0)
+        })
+
         test('updates the URL and the results as soon as a filter changes', async ({ page }) => {
             await page.goto('/search')
             await page.getByTestId('search-specialty').selectOption('DERMATOLOGY')

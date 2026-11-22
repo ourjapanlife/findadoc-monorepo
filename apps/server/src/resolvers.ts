@@ -19,6 +19,7 @@ import * as facilityCorrectionService from './services/facilityCorrectionService
 import * as userService from './services/userService.js'
 import * as reservationService from './services/reservationService.js'
 import * as cityService from './services/cityService.js'
+import * as directoryCoverageService from './services/directoryCoverageService.js'
 import * as citySuggestionService from './services/citySuggestionService.js'
 import * as mapsPlacePreviewService from './services/mapsPlacePreviewService.js'
 import * as facilityPlaceService from './services/facilityPlaceService.js'
@@ -409,6 +410,31 @@ const resolvers = {
         cities: withScope(Scope['read:facilities'], async (_parent: unknown, args: { prefecture?: string | null })
         : Promise<gqlType.City[]> => {
             const result = await cityService.listCities(args.prefecture)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+        availablePrefectures: withScope(Scope['read:facilities'], async ()
+        : Promise<gqlType.AvailablePrefecture[]> => {
+            const result = await directoryCoverageService.listAvailablePrefectures()
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+        availableCities: withScope(Scope['read:facilities'], async (
+            _parent: unknown,
+            args: gqlType.QueryAvailableCitiesArgs
+        ): Promise<gqlType.AvailableCity[]> => {
+            const result = await directoryCoverageService.listAvailableCities(args.prefecture)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+        availableSpecialties: withScope(Scope['read:facilities'], async (
+            _parent: unknown,
+            args: gqlType.QueryAvailableSpecialtiesArgs
+        ): Promise<gqlType.AvailableSpecialty[]> => {
+            const result = await directoryCoverageService.listAvailableSpecialties(args.prefecture)
 
             convertErrorsToGqlErrors(result)
             return result.data

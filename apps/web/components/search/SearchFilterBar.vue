@@ -127,7 +127,7 @@
                             :key="entry.name"
                             :value="entry.name.toLowerCase()"
                         >
-                            {{ prefectureLabel(entry) }} ({{ entry.approximateFacilities }})
+                            {{ prefectureOptionLabel(entry, locale === 'ja-JP') }}
                         </option>
                     </select>
                 </div>
@@ -185,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SVGFiltersIcon from '~/assets/icons/equalizer-icon.svg'
 import SVGMapPinIcon from '~/assets/icons/map-pin-icon.svg'
@@ -196,10 +196,10 @@ import { localeDisplayOptions } from '~/stores/localeStore'
 import { languageName } from '~/utils/languageName'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { searchFilterFlags } from '~/utils/analyticsEvents'
-import { SEARCHABLE_LANGUAGES, directoryPrefectures, type PrefectureEntry } from '~/utils/homeDirectory'
-import directoryStats from '#directory-stats'
+import { SEARCHABLE_LANGUAGES, prefectureOptionLabel } from '~/utils/homeDirectory'
 import { hasActiveFilters } from '~/utils/searchDirectory'
-import { fetchCities, type CityOption } from '~/utils/cityOptions'
+import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
+import { useDirectoryCoverage } from '~/composables/useDirectoryCoverage'
 import type { Locale, Specialty } from '@findadoc/graphql'
 
 const props = defineProps<{ showMap: boolean }>()
@@ -247,39 +247,22 @@ const city = computed({
     }
 })
 
-const cityOptions = ref<CityOption[]>([])
-let cityRequest = 0
+const {
+    prefectures,
+    cities: cityOptions,
+    specialties: availableSpecialties
+} = useDirectoryCoverage(prefecture)
 
-watch(prefecture, async value => {
-    const request = ++cityRequest
-    cityOptions.value = []
-    if (!value) {
-        return
-    }
-
-    try {
-        const nextCities = await fetchCities(value)
-        if (request !== cityRequest) return
-        cityOptions.value = nextCities
-    } catch (error) {
-        if (request !== cityRequest) return
-        console.error('Loading cities failed', error)
-        cityOptions.value = []
-    }
-}, { immediate: true })
-
-const specialtyOptions = computed(() => specialtiesStore.specialtyDisplayOptions)
+const specialtyOptions = computed(() => availableSpecialtyOptions(
+    specialtiesStore.specialtyDisplayOptions,
+    availableSpecialties.value,
+    specialty.value as Specialty | ''
+))
 
 const languageOptions = computed(() =>
     SEARCHABLE_LANGUAGES
         .map(code => localeDisplayOptions.find(option => option.code === code))
         .filter((option): option is NonNullable<typeof option> => !!option))
-
-const prefectures = directoryPrefectures(directoryStats)
-
-function prefectureLabel(entry: PrefectureEntry) {
-    return locale.value === 'ja-JP' ? entry.nameJa : entry.name
-}
 
 const hasFilters = computed(() => hasActiveFilters(searchResultsStore.filters))
 
