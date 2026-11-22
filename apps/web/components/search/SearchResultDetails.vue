@@ -307,6 +307,27 @@
                 >{{ t('searchResultsDetails.sourceOpenData') }}</a>
             </template>
         </i18n-t>
+        <!--
+            Imported facilities the ministry has no pin for are placed by street address with GSI's
+            address search (国土地理院コンテンツ利用規約): credit the source.
+        -->
+        <i18n-t
+            v-if="fromMinistryData"
+            keypath="searchResultsDetails.pinCredit"
+            tag="p"
+            scope="global"
+            class="m-0 text-xs text-primary-text-muted"
+            data-testid="facility-pin-credit"
+        >
+            <template #gsi>
+                <a
+                    :href="GSI_ADDRESS_SEARCH_URL"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="underline"
+                >{{ t('searchResultsDetails.pinSourceGsi') }}</a>
+            </template>
+        </i18n-t>
     </div>
 </template>
 
@@ -351,6 +372,7 @@ const specialtiesStore = useSpecialtiesStore()
 // The ministry pages the credit links to (#21).
 const MHLW_INSTITUTION_LIST_URL = 'https://www.mhlw.go.jp/stf/newpage_05774.html'
 const MHLW_OPEN_DATA_URL = 'https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryou/newpage_43373.html'
+const GSI_ADDRESS_SEARCH_URL = 'https://maps.gsi.go.jp/'
 
 const fromMinistryData = computed(() => props.facility.source === FacilitySource.MhlwMultilingualInstitutions)
 const { track } = useUmami()

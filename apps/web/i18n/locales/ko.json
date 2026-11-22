@@ -331,7 +331,9 @@
     "callNow": "전화",
     "sourceCredit": "출처: {list}, {openData}(후생노동성), Find a Doc이 가공함.",
     "sourceInstitutionList": "외국인 환자를 받는 의료기관 목록",
-    "sourceOpenData": "의료정보넷 오픈 데이터"
+    "sourceOpenData": "의료정보넷 오픈 데이터",
+    "pinCredit": "일부 지도 핀은 {gsi}에서 가져왔습니다.",
+    "pinSourceGsi": "일본 국토지리원 주소 검색"
   },
   "thankYouPage": {
     "heading": "감사합니다!",

@@ -250,7 +250,9 @@
     "callNow": "Appeler",
     "sourceCredit": "Source : {list} et {openData} (ministère de la Santé, du Travail et des Affaires sociales), données modifiées par Find a Doc.",
     "sourceInstitutionList": "Liste des établissements médicaux qui accueillent les patients étrangers",
-    "sourceOpenData": "Données ouvertes du réseau d’information médicale"
+    "sourceOpenData": "Données ouvertes du réseau d’information médicale",
+    "pinCredit": "Certains repères de la carte proviennent de la {gsi}.",
+    "pinSourceGsi": "recherche d’adresses de l’Autorité d’information géospatiale du Japon"
   },
   "thankYouPage": {
     "heading": "Merci !",
