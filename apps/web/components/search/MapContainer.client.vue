@@ -1,5 +1,5 @@
 <template>
-    <div class="size-full">
+    <div class="relative size-full">
         <!--
             Google rejects the key silently: it logs to the console and leaves an empty box, which
             is how a referrer misconfiguration on deploy previews went unnoticed. gm_authFailure
@@ -45,14 +45,11 @@
                 }"
             >
                 <AdvancedMarker
-                    v-for="location in searchResultsList"
+                    v-for="location in mappedResults"
                     :key="location.id"
                     :options="{
-                        position: {
-                            lat: location.mapLatitude ?? defaultLocation.lat,
-                            lng: location.mapLongitude ?? defaultLocation.lng,
-                        },
-                        title: location.nameEn || location.nameJa || 'Facility',
+                        position: location.position,
+                        title: location.title,
                     }"
                     @click="() => handlePinClick(location.id)"
                 >
@@ -66,12 +63,24 @@
                 </AdvancedMarker>
             </MarkerCluster>
         </GoogleMap>
+        <!--
+            A facility without a pin stays in the list but off the map. Drawing it at a default
+            spot put hundreds of clinics in central Tokyo.
+        -->
+        <p
+            v-if="!authFailed && unmappedCount > 0"
+            data-testid="map-unmapped-count"
+            class="absolute inset-x-3 bottom-3 m-0 rounded-lg bg-primary-bg/90 px-3 py-2 text-sm text-primary-text
+                shadow-sm"
+        >
+            {{ t('search.notOnMap', unmappedCount) }}
+        </p>
     </div>
 </template>
 
 <script setup lang="ts">
 /// <reference types="google.maps" />
-import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { GoogleMap, AdvancedMarker, MarkerCluster } from 'vue3-google-map'
 import type { Renderer } from '@googlemaps/markerclusterer'
@@ -81,6 +90,7 @@ import { useSearchDirectory } from '~/composables/useSearchDirectory'
 import { useRuntimeConfig } from '#imports'
 import { useThemeColors } from '~/composables/useThemeColors'
 import pinTemplate from '~/assets/icons/map-pin-template.svg?raw'
+import { mapPins, pinPosition } from '~/utils/mapPins'
 
 /*
  * The map is a view over the store's results and nothing more: pins mirror
@@ -104,6 +114,11 @@ const markerClusterRef = ref<typeof MarkerCluster | null>(null)
 const runtimeConfig = useRuntimeConfig()
 
 const markerIcons = ref<Record<string, string>>({})
+
+/** Results that can be placed. The rest stay in the list only. */
+const mappedResults = computed(() => mapPins(searchResultsList.value))
+
+const unmappedCount = computed(() => searchResultsList.value.length - mappedResults.value.length)
 
 const isMapReady = ref(false)
 const authFailed = ref(false)
@@ -159,7 +174,7 @@ const renderMarkerIcons = () => {
     const activeId = activeFacility.value?.id
     const icons: Record<string, string> = {}
 
-    for (const location of searchResultsList.value) {
+    for (const location of mappedResults.value) {
         icons[location.id] = createMarkerIcon(location.id === activeId)
     }
     markerIcons.value = icons
@@ -281,7 +296,9 @@ const handleZoomChanged = () => {
 
 const adjustMapToActiveResult = () => {
     const active = activeFacility.value
-    if (!active) {
+    // A facility with no pin leaves the map where it is, rather than jumping to Tokyo.
+    const pin = active ? pinPosition(active) : undefined
+    if (!pin) {
         return
     }
 
@@ -290,7 +307,7 @@ const adjustMapToActiveResult = () => {
         currentZoom.value = 10
     }
 
-    setLocation(active.mapLatitude ?? defaultLocation.lat, active.mapLongitude ?? defaultLocation.lng)
+    setLocation(pin.lat, pin.lng)
 }
 
 const setLocation = (lat: number, lng: number) => {
@@ -310,18 +327,7 @@ const recenterMap = () => {
     setLocation(center.lat, center.lng)
 }
 
-const getAllCurrentCoordinates = () => {
-    const currentLocations = searchResultsList.value
-    if (!currentLocations || !currentLocations.length)
-        return
-
-    return currentLocations
-        .filter(facility => facility.mapLatitude && facility.mapLongitude)
-        .map(facility => ({
-            lat: facility.mapLatitude!,
-            lng: facility.mapLongitude!
-        }))
-}
+const getAllCurrentCoordinates = () => mappedResults.value.map(location => location.position)
 
 const calculateAvgCenter = (coordinates: { lat: number, lng: number }[]): Location => {
     if (coordinates.length === 0) return defaultLocation

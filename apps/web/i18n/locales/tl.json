@@ -816,6 +816,7 @@
     "pageHeading": "Maghanap ng doktor sa Japan",
     "mapUnavailable": "Hindi ma-load ang mapa.",
     "mapUnavailableHint": "Hindi apektado ang iba pang resulta.",
+    "notOnMap": "Nasa mapa ang lahat ng resulta | 1 resulta ang wala pa sa mapa | {n} resulta ang wala pa sa mapa",
     "payment": "Bayad",
     "clinicLanguagesCaveat": "Ito ang mga wikang sinasabi ng klinika na kaya nilang suportahan. Maaaring hindi lahat ng doktor ay nagsasalita nito, kaya magtanong kapag kinontak mo ang klinika."
   },

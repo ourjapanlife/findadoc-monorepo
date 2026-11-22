@@ -816,6 +816,7 @@
     "pageHeading": "Tìm bác sĩ ở Nhật Bản",
     "mapUnavailable": "Không tải được bản đồ.",
     "mapUnavailableHint": "Các kết quả còn lại không bị ảnh hưởng.",
+    "notOnMap": "Tất cả kết quả đều có trên bản đồ | 1 kết quả chưa có trên bản đồ | {n} kết quả chưa có trên bản đồ",
     "payment": "Thanh toán",
     "clinicLanguagesCaveat": "Đây là các ngôn ngữ phòng khám cho biết có thể hỗ trợ. Không phải bác sĩ nào cũng nói được, vì vậy hãy hỏi khi liên hệ phòng khám."
   },

@@ -822,6 +822,7 @@
     "pageHeading": "Find a doctor in Japan",
     "mapUnavailable": "The map could not be loaded.",
     "mapUnavailableHint": "The rest of the results are unaffected.",
+    "notOnMap": "Every result is on the map | 1 result is not on the map yet | {n} results are not on the map yet",
     "payment": "Payment",
     "clinicLanguagesCaveat": "These are languages the clinic says it supports. Not every doctor may speak them, so ask when you contact the clinic."
   },

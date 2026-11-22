@@ -1,5 +1,6 @@
 import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
+import { hasUsableMapPin } from '@findadoc/utils'
 import { hasScriptTags, hasSpecialCharacters, isValidEmail, isValidWebsite } from '../../utils/stringUtils.js'
 import { isStorablePhone } from './validatePhone.js'
 import { resolvePrefectureKey } from '../../utils/japanesePrefectures.js'
@@ -506,22 +507,8 @@ function pushRequiredMapErrors(
     }
 }
 
-export function hasUsableMapPin(
-    latitude?: number | null,
-    longitude?: number | null
-): boolean {
-    if (latitude === undefined || latitude === null || longitude === undefined || longitude === null) {
-        return false
-    }
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-        return false
-    }
-    // 0/0 was the previous empty-pin sentinel and is not a Japan clinic location.
-    if (latitude === 0 || longitude === 0) {
-        return false
-    }
-    return true
-}
+// One rule for the API and the search map (@findadoc/utils).
+export { hasUsableMapPin }
 
 export function validateContactInput(
     contactInput: gqlTypes.ContactInput | gqlTypes.Contact,

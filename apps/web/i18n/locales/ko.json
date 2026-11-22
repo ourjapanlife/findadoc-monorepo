@@ -816,6 +816,7 @@
     "pageHeading": "일본에서 의사 찾기",
     "mapUnavailable": "지도를 불러오지 못했습니다.",
     "mapUnavailableHint": "나머지 검색 결과에는 영향이 없습니다.",
+    "notOnMap": "모든 결과가 지도에 있습니다 | 결과 1건은 아직 지도에 없습니다 | 결과 {n}건은 아직 지도에 없습니다",
     "payment": "결제 수단",
     "clinicLanguagesCaveat": "클리닉이 지원한다고 밝힌 언어입니다. 모든 의사가 사용하는 것은 아닐 수 있으니 연락할 때 확인하세요."
   },

@@ -816,6 +816,7 @@
     "pageHeading": "Trova un medico in Giappone",
     "mapUnavailable": "Impossibile caricare la mappa.",
     "mapUnavailableHint": "Gli altri risultati non sono interessati.",
+    "notOnMap": "Tutti i risultati sono sulla mappa | 1 risultato non è ancora sulla mappa | {n} risultati non sono ancora sulla mappa",
     "payment": "Pagamento",
     "clinicLanguagesCaveat": "Sono le lingue che la clinica dichiara di supportare. Non tutti i medici potrebbero parlarle: chiedi quando contatti la clinica."
   },

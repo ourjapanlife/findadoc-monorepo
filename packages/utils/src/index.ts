@@ -58,6 +58,7 @@ export {
     isValidWebsite
 } from './string.js'
 export type { OptionalsRemoved } from './types.js'
+export { hasUsableMapPin } from './mapPin.js'
 export {
     cleanHoursRepeat,
     EVERY_WEEK,
