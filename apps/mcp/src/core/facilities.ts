@@ -9,10 +9,9 @@ import { gqlClient } from '../graphql.js'
 // Shared GraphQL logic for facilities. Used by both the MCP tools and the REST
 // routes so the queries are defined once.
 //
-// NOTE: the upstream `FacilitySearchFilters` does NOT support filtering by
-// location, prefecture, spoken language, specialty, or "accepting new patients".
-// See findadoc-server#999. Until that lands, search is limited to name and
-// associated-professional filters.
+// `FacilitySearchFilters` filters by prefecture, spoken language, and specialty
+// on the API. There is no city filter: results carry `cityEn` and `cityJa` so a
+// client can narrow within a prefecture.
 
 const SEARCH_FACILITIES = gql`
     query SearchFacilities($filters: FacilitySearchFilters!) {
@@ -27,10 +26,12 @@ const SEARCH_FACILITIES = gql`
                     postalCode
                     prefectureEn
                     cityEn
+                    cityJa
                     addressLine1En
                     addressLine2En
                 }
             }
+            supportedLanguages
             healthcareProfessionalIds
         }
         facilitiesTotalCount(filters: $filters)
@@ -83,9 +84,15 @@ const GET_FACILITY = gql`
 // Shapes returned by the queries above: the subsets of the generated `Facility`
 // type that each selection set actually requests. Field names and value types
 // stay in sync with the schema via `pnpm generate`.
-export type FacilitySummary = Pick<GqlFacility, 'id' | 'nameEn' | 'nameJa' | 'healthcareProfessionalIds'> & {
+export type FacilitySummary = Pick<
+    GqlFacility,
+    'id' | 'nameEn' | 'nameJa' | 'supportedLanguages' | 'healthcareProfessionalIds'
+> & {
     contact: Pick<Contact, 'phone' | 'website'> & {
-        address?: Pick<PhysicalAddress, 'postalCode' | 'prefectureEn' | 'cityEn' | 'addressLine1En' | 'addressLine2En'> | null
+        address?: Pick<
+            PhysicalAddress,
+            'postalCode' | 'prefectureEn' | 'cityEn' | 'cityJa' | 'addressLine1En' | 'addressLine2En'
+        > | null
     }
 }
 
@@ -112,6 +119,9 @@ export interface SearchFacilitiesParams {
     nameEn?: string
     nameJa?: string
     healthcareProfessionalName?: string
+    prefecture?: string
+    spokenLanguages?: string[]
+    specialties?: string[]
 }
 
 export interface SearchFacilitiesResult {
@@ -128,6 +138,9 @@ export async function searchFacilities(params: SearchFacilitiesParams): Promise<
     if (params.nameEn) { filters.nameEn = params.nameEn }
     if (params.nameJa) { filters.nameJa = params.nameJa }
     if (params.healthcareProfessionalName) { filters.healthcareProfessionalName = params.healthcareProfessionalName }
+    if (params.prefecture) { filters.prefecture = params.prefecture }
+    if (params.spokenLanguages?.length) { filters.spokenLanguages = params.spokenLanguages }
+    if (params.specialties?.length) { filters.specialties = params.specialties }
 
     const data = await gqlClient.request<{
         facilities: FacilitySummary[]

@@ -93,7 +93,10 @@ export async function registerRestRoutes(app: FastifyInstance): Promise<void> {
                 offset: toInt(q.offset),
                 nameEn: toStr(q.nameEn),
                 nameJa: toStr(q.nameJa),
-                healthcareProfessionalName: toStr(q.healthcareProfessionalName)
+                healthcareProfessionalName: toStr(q.healthcareProfessionalName),
+                prefecture: toStr(q.prefecture),
+                spokenLanguages: toArray(q.spokenLanguages),
+                specialties: toArray(q.specialties)
             })
         } catch (error) {
             return fail(reply, 502, error)
