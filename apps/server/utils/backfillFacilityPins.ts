@@ -59,26 +59,27 @@ export function normalizeJapanese(value: string): string {
 }
 
 /**
- * The street address down to its last number, as digits: 「基町10番52号 テストビル2階」 and
- * 「基町１０－５２」 both become 「基町1052」. A space after a number starts the building, and a
- * trailing floor (2階, 3F) is dropped: building names differ too often to compare.
+ * The street address down to its last number, with each number kept apart: 「基町10番52号 テストビル2階」
+ * and 「基町１０－５２」 both become 「基町10-52」, while 「1-23」 and 「12-3」 stay different. A space
+ * after a number starts the building, and a trailing floor (2階, 3F) is dropped: building names
+ * differ too often to compare.
  */
 export function addressKey(value: string): string {
-    const width = value.normalize('NFKC')
+    const width = value.normalize('NFKC').replace(/[‐－−]/g, '-')
     const buildingStart = width.search(/\d\s/)
     const street = buildingStart === -1 ? width : width.slice(0, buildingStart + 1)
-    const folded = normalizeJapanese(street)
+    return street
+        .replace(/[\s　・･]/g, '')
         .replace(/\d+(階|F)$/, '')
         .replace(/丁目|番地|番|号/g, '-')
         .replace(/[〇一二三四五六七八九]/g, digit => String(KANJI_DIGITS.indexOf(digit)))
-    return folded.replace(/[^0-9]*$/, '').replace(/-/g, '')
+        .replace(/[^0-9]*$/, '')
+        .replace(/-+/g, '-')
 }
 
+/** The same street address: every number has to agree, so 10-5 is not 10-52. */
 function sameStreet(left: string, right: string): boolean {
-    if (!left || !right) {
-        return false
-    }
-    return left.startsWith(right) || right.startsWith(left)
+    return left !== '' && left === right
 }
 
 function pushTo<T>(index: Map<string, T[]>, key: string, value: T): void {
@@ -134,14 +135,33 @@ const NAME_COLUMN = '正式名称'
 const ADDRESS_COLUMN = '所在地'
 const LATITUDE_COLUMN = '所在地座標（緯度）'
 const LONGITUDE_COLUMN = '所在地座標（経度）'
+const MINISTRY_COLUMNS = [ID_COLUMN, NAME_COLUMN, ADDRESS_COLUMN, LATITUDE_COLUMN, LONGITUDE_COLUMN]
+const APPROVAL_COLUMNS = ['id', 'check_map_pin_place']
+
+/**
+ * Parses a CSV with a header row and refuses one that lacks a required column, so a wrong file
+ * fails before anything is planned instead of reading as rows with no pin or no approval.
+ */
+function parseCsvRows(text: string, required: readonly string[], label: string): Record<string, string>[] {
+    const parsed: unknown = parse(text, { bom: true, columns: true, skip_empty_lines: true, relax_column_count: true })
+    if (!Array.isArray(parsed)) {
+        throw new Error(`The ${label} could not be read.`)
+    }
+    const rows = parsed.filter((row): row is Record<string, string> => typeof row === 'object' && row !== null)
+    const [first] = rows
+    const missing = first ? required.filter(column => !(column in first)) : []
+    if (missing.length > 0) {
+        throw new Error(`The ${label} has no ${missing.join(', ')} column.`)
+    }
+    return rows
+}
 
 /**
  * Reads one ministry facility CSV. Rows without usable coordinates stay, so that a facility
  * matches its own row and not another branch with the same name; they are never written.
  */
 export function parseMinistryCsv(text: string): MinistryInstitution[] {
-    const rows = parse(text, { bom: true, columns: true, skip_empty_lines: true, relax_column_count: true }) as
-        Record<string, string | undefined>[]
+    const rows = parseCsvRows(text, MINISTRY_COLUMNS, 'ministry CSV')
 
     return rows.map(row => ({
         id: row[ID_COLUMN] ?? '',
@@ -161,7 +181,7 @@ const APPROVED_VALUES = new Set(['ok', 'yes', 'y', 'approved', '✓', '✔'])
 
 /** Facility ids a person approved in the verification CSV (`check_map_pin_place`). */
 export function parseApprovedIds(text: string): Set<string> {
-    const rows = parse(text, { bom: true, columns: true, skip_empty_lines: true }) as Record<string, string | undefined>[]
+    const rows = parseCsvRows(text, APPROVAL_COLUMNS, 'verification CSV')
 
     return new Set(rows
         .filter(row => APPROVED_VALUES.has((row.check_map_pin_place ?? '').trim().toLowerCase()))
@@ -289,9 +309,19 @@ export async function main(argv: readonly string[] = process.argv): Promise<void
         process.exitCode = 1
         return
     }
-    const institutions = csvFiles.flatMap(file => parseMinistryCsv(readFileSync(file, 'utf8')))
-    const approvedFile = argValues(argv, '--approved')[0]
-    const approved = approvedFile ? parseApprovedIds(readFileSync(approvedFile, 'utf8')) : new Set<string>()
+    let institutions: MinistryInstitution[]
+    let approved: Set<string>
+    try {
+        institutions = csvFiles.flatMap(file => parseMinistryCsv(readFileSync(file, 'utf8')))
+        const approvedFile = argValues(argv, '--approved')[0]
+        approved = approvedFile ? parseApprovedIds(readFileSync(approvedFile, 'utf8')) : new Set<string>()
+    } catch (error) {
+        // The message names a file problem or a missing column, never a row value.
+        // eslint-disable-next-line no-console -- CLI usage
+        console.error(error instanceof Error ? error.message : 'The CSV files could not be read.')
+        process.exitCode = 1
+        return
+    }
 
     // eslint-disable-next-line no-console -- a CLI report of the target, like the other backfills
     console.log(describeScriptTarget(write))

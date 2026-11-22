@@ -40,6 +40,14 @@ describe('addressKey', () => {
         expect(addressKey('広島県広島市中区基町１０番５２号'))
             .toBe(addressKey('広島県広島市中区基町10-52 テストビル2階'))
     })
+
+    it('keeps each street number apart, so 1-23 is not 12-3', () => {
+        expect(addressKey('中区基町1-23')).not.toBe(addressKey('中区基町12-3'))
+    })
+
+    it('keeps a katakana long vowel in a town name', () => {
+        expect(addressKey('テストニュータウン1-2')).toBe('テストニュータウン1-2')
+    })
 })
 
 describe('matchFacilityPins', () => {
@@ -48,6 +56,12 @@ describe('matchFacilityPins', () => {
 
         expect(match?.level).toBe(MATCH_LEVEL.NameAndAddress)
         expect(match?.institution?.id).toBe('M1')
+    })
+
+    it('needs every street number to agree: 10-5 is not 10-52', () => {
+        const [match] = matchFacilityPins([facility('f6', 'テスト中央病院', '広島市', '中区基町10-5')], INSTITUTIONS)
+
+        expect(match?.level).toBe(MATCH_LEVEL.NameOnly)
     })
 
     it('marks a name match with a different street as name only', () => {
@@ -99,6 +113,17 @@ describe('parseMinistryCsv', () => {
         const csv = '﻿ID,正式名称,所在地,所在地座標（緯度）,所在地座標（経度）\n'
             + 'M1,テスト中央病院,広島県広島市中区基町１０番５２号,34.3963,132.4596\n'
         expect(parseMinistryCsv(csv)).toEqual([HOSPITAL])
+    })
+})
+
+describe('the CSV readers', () => {
+    it('refuse a ministry file without the coordinate columns before planning anything', () => {
+        expect(() => parseMinistryCsv('ID,正式名称,所在地\nM1,テスト中央病院,広島県広島市\n'))
+            .toThrow(/所在地座標（緯度）/)
+    })
+
+    it('refuse a verification file without the pin check column', () => {
+        expect(() => parseApprovedIds('id,name_en\nf1,Test\n')).toThrow(/check_map_pin_place/)
     })
 })
 
