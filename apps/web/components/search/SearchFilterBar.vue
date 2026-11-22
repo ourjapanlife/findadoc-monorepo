@@ -127,7 +127,7 @@
                             :key="entry.name"
                             :value="entry.name.toLowerCase()"
                         >
-                            {{ prefectureLabel(entry) }} ({{ entry.approximateFacilities }})
+                            {{ prefectureOptionLabel(entry, locale === 'ja-JP') }}
                         </option>
                     </select>
                 </div>
@@ -185,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SVGFiltersIcon from '~/assets/icons/equalizer-icon.svg'
 import SVGMapPinIcon from '~/assets/icons/map-pin-icon.svg'
@@ -196,11 +196,10 @@ import { localeDisplayOptions } from '~/stores/localeStore'
 import { languageName } from '~/utils/languageName'
 import { useUmami } from '~/composables/useUmamiTracking'
 import { searchFilterFlags } from '~/utils/analyticsEvents'
-import { SEARCHABLE_LANGUAGES, directoryPrefectures, type PrefectureEntry } from '~/utils/homeDirectory'
-import directoryStats from '#directory-stats'
+import { SEARCHABLE_LANGUAGES, prefectureOptionLabel } from '~/utils/homeDirectory'
 import { hasActiveFilters } from '~/utils/searchDirectory'
-import { fetchCities, type CityOption } from '~/utils/cityOptions'
-import { availableSpecialtyOptions, fetchDirectoryCoverage } from '~/utils/directoryCoverage'
+import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
+import { useDirectoryCoverage } from '~/composables/useDirectoryCoverage'
 import type { Locale, Specialty } from '@findadoc/graphql'
 
 const props = defineProps<{ showMap: boolean }>()
@@ -248,45 +247,11 @@ const city = computed({
     }
 })
 
-const cityOptions = ref<CityOption[]>([])
-const prefectures = ref<readonly PrefectureEntry[]>(directoryPrefectures(directoryStats))
-const availableSpecialties = ref<Specialty[]>()
-let coverageRequest = 0
-
-/*
- * Prefectures, cities, and specialties come from what the directory has, so each option
- * leads to results (#21). When the API cannot answer, the build's list and every city of
- * the prefecture stay.
- */
-watch(prefecture, async value => {
-    const request = ++coverageRequest
-    cityOptions.value = []
-
-    const coverage = await fetchDirectoryCoverage(value || undefined)
-    if (request !== coverageRequest) return
-
-    if (coverage?.prefectures.length) {
-        prefectures.value = coverage.prefectures
-    }
-    availableSpecialties.value = coverage?.specialties
-    if (!value) {
-        return
-    }
-    if (coverage) {
-        cityOptions.value = coverage.cities
-        return
-    }
-
-    try {
-        const nextCities = await fetchCities(value)
-        if (request !== coverageRequest) return
-        cityOptions.value = nextCities
-    } catch (error) {
-        if (request !== coverageRequest) return
-        console.error('Loading cities failed', error)
-        cityOptions.value = []
-    }
-}, { immediate: true })
+const {
+    prefectures,
+    cities: cityOptions,
+    specialties: availableSpecialties
+} = useDirectoryCoverage(prefecture)
 
 const specialtyOptions = computed(() => availableSpecialtyOptions(
     specialtiesStore.specialtyDisplayOptions,
@@ -298,10 +263,6 @@ const languageOptions = computed(() =>
     SEARCHABLE_LANGUAGES
         .map(code => localeDisplayOptions.find(option => option.code === code))
         .filter((option): option is NonNullable<typeof option> => !!option))
-
-function prefectureLabel(entry: PrefectureEntry) {
-    return locale.value === 'ja-JP' ? entry.nameJa : entry.name
-}
 
 const hasFilters = computed(() => hasActiveFilters(searchResultsStore.filters))
 

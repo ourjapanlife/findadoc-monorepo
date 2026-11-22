@@ -5,6 +5,7 @@ import {
     areaPrefectureLink,
     categorySpecialtyLink,
     homeAreaPrefectures,
+    prefectureOptionLabel,
     SEARCHABLE_LANGUAGES,
     TOP_PREFECTURES,
     type PrefectureEntry
@@ -24,18 +25,24 @@ const tokyo = prefecture('Tokyo')
 const osaka = prefecture('Osaka')
 
 describe('ALL_PREFECTURES', () => {
-    // The fallback predated the #21 import and had no Hiroshima, so the pickers dropped it.
-    it('lists every prefecture once with its standard English and Japanese names', () => {
-        expect(ALL_PREFECTURES.map(entry => entry.name)).to.have.members([...listPrefectureJapanEn])
-        for (const entry of ALL_PREFECTURES) {
-            const index = listPrefectureJapanEn.indexOf(entry.name)
-            expect(entry.nameJa).to.equal(listPrefectureJapanJa[index])
-        }
+    // The hand-measured fallback had no Hiroshima, so the pickers dropped it.
+    it('lists every prefecture once, in code order, with its standard names', () => {
+        expect(ALL_PREFECTURES.map(entry => entry.name)).to.deep.equal([...listPrefectureJapanEn])
+        expect(ALL_PREFECTURES.map(entry => entry.nameJa)).to.deep.equal([...listPrefectureJapanJa])
     })
 
-    it('puts the prefectures with the most facilities first', () => {
-        const counts = ALL_PREFECTURES.map(entry => entry.approximateFacilities)
-        expect(counts).to.deep.equal([...counts].sort((left, right) => right - left))
+    it('writes no count by hand', () => {
+        expect(ALL_PREFECTURES.every(entry => entry.approximateFacilities === undefined)).to.equal(true)
+    })
+})
+
+describe('prefectureOptionLabel', () => {
+    it('shows the count only when the directory gave one', () => {
+        expect(prefectureOptionLabel({ name: 'Hiroshima', nameJa: '広島県', approximateFacilities: 24 }, false))
+            .to.equal('Hiroshima (24)')
+        expect(prefectureOptionLabel({ name: 'Hiroshima', nameJa: '広島県', approximateFacilities: 24 }, true))
+            .to.equal('広島県 (24)')
+        expect(prefectureOptionLabel({ name: 'Hiroshima', nameJa: '広島県' }, false)).to.equal('Hiroshima')
     })
 })
 

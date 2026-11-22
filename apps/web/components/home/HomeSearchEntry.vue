@@ -80,7 +80,7 @@
                     :key="prefecture.name"
                     :value="prefectureQueryParam(prefecture.name)"
                 >
-                    {{ prefectureLabel(prefecture) }} ({{ prefecture.approximateFacilities }})
+                    {{ prefectureOptionLabel(prefecture, locale === 'ja-JP') }}
                 </option>
             </select>
         </div>
@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { navigateTo } from '#imports'
 import { useUmami } from '~/composables/useUmamiTracking'
@@ -104,24 +104,18 @@ import { searchSubmittedProps } from '~/utils/analyticsEvents'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
 import { languageName } from '~/utils/languageName'
-import { SEARCHABLE_LANGUAGES, directoryPrefectures, type PrefectureEntry } from '~/utils/homeDirectory'
-import directoryStats from '#directory-stats'
+import { SEARCHABLE_LANGUAGES, prefectureOptionLabel } from '~/utils/homeDirectory'
+import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
+import { useDirectoryCoverage } from '~/composables/useDirectoryCoverage'
 
+// The template compares vue-i18n's locale, not localeStore: the store only updates when someone
+// uses the language picker, so a direct Japanese load would still read en-US. i18n says "ja-JP".
 const { t, locale } = useI18n()
 const specialtiesStore = useSpecialtiesStore()
 const { track } = useUmami()
 
-const prefectures = directoryPrefectures(directoryStats)
-
-/**
- * Compare against vue-i18n's active locale, not localeStore. localeStore.activeLocale
- * only updates when someone uses the language picker, so on a direct load carrying the
- * i18n_redirected cookie the page renders Japanese while the store still says en-US.
- * Note i18n uses "ja-JP" while the gql Locale enum uses "ja_JP".
- */
-function prefectureLabel(prefecture: PrefectureEntry) {
-    return locale.value === 'ja-JP' ? prefecture.nameJa : prefecture.name
-}
+// The homepage has no prefecture of its own, so only the country-wide lists load.
+const { prefectures, specialties: availableSpecialties } = useDirectoryCoverage(ref(''))
 
 /** Same encoding as the search URL: `dentistry`, `en`, `tokyo`. */
 function specialtyQueryParam(code: string): string {
@@ -142,12 +136,16 @@ function languageQueryParam(code: string): string {
 }
 
 /*
- * Both lists come from static enums, so this form costs no API call. The location
- * list is prefectures rather than cities on purpose: city names are not normalised
- * upstream ("Chuo Ward" and "Chuo City" are the same place), which would put two
- * entries for one location in front of the user.
+ * The first render uses the counts this build computed, so the form paints with no API call.
+ * After mount, the live coverage narrows specialties to those with a professional, most
+ * available first, and refreshes the prefectures. The location list is prefectures rather
+ * than cities on purpose: a city picker needs a prefecture first.
  */
-const specialtyOptions = computed(() => specialtiesStore.specialtyDisplayOptions)
+const specialtyOptions = computed(() => availableSpecialtyOptions(
+    specialtiesStore.specialtyDisplayOptions,
+    availableSpecialties.value,
+    ''
+))
 
 const languageOptions = computed(() =>
     SEARCHABLE_LANGUAGES
