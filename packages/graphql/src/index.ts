@@ -47,6 +47,29 @@ export type AuditLog = {
   updatedDate: Scalars['String']['output'];
 };
 
+/** A city with how many facilities are linked to it. */
+export type AvailableCity = {
+  __typename?: 'AvailableCity';
+  city: City;
+  facilityCount: Scalars['Int']['output'];
+};
+
+/** A prefecture with how many facilities have an address there. */
+export type AvailablePrefecture = {
+  __typename?: 'AvailablePrefecture';
+  facilityCount: Scalars['Int']['output'];
+  prefecture: Prefecture;
+};
+
+/** A specialty with how many professionals practice it and at how many facilities. */
+export type AvailableSpecialty = {
+  __typename?: 'AvailableSpecialty';
+  /** Facilities with at least one of those professionals. This is what a specialty search returns. */
+  facilityCount: Scalars['Int']['output'];
+  professionalCount: Scalars['Int']['output'];
+  specialty: Specialty;
+};
+
 export type BookingAnswerInput = {
   fieldId: Scalars['String']['input'];
   uploadId?: InputMaybe<Scalars['ID']['input']>;
@@ -2157,6 +2180,22 @@ export type Query = {
    */
   availableBookingStarts: Array<Scalars['String']['output']>;
   /**
+   * Cities with at least one facility linked to them, most facilities first.
+   * Pass a prefecture key or Japanese name to filter. An unknown prefecture is rejected.
+   */
+  availableCities: Array<AvailableCity>;
+  /**
+   * Prefectures that have at least one facility with an address, most facilities first.
+   * Counted from the directory on each read, so a new prefecture appears without a code change.
+   * The count matches what the facilities prefecture filter returns.
+   */
+  availablePrefectures: Array<AvailablePrefecture>;
+  /**
+   * Specialties practiced by at least one healthcare professional, most professionals first.
+   * Pass a prefecture key or Japanese name to count only professionals at facilities there.
+   */
+  availableSpecialties: Array<AvailableSpecialty>;
+  /**
    * Whether this visitor may send a booking request. Booking is offered only to people
    * in Japan (CloudFront's viewer country). Always true in local development and tests.
    * submitBooking and createBookingUploadUrl refuse with BOOKING_REGION_UNAVAILABLE otherwise.
@@ -2303,6 +2342,16 @@ export type QueryAvailableBookingStartsArgs = {
   practitionerId?: InputMaybe<Scalars['ID']['input']>;
   spokenLanguages?: InputMaybe<Array<Locale>>;
   to: Scalars['String']['input'];
+};
+
+
+export type QueryAvailableCitiesArgs = {
+  prefecture?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryAvailableSpecialtiesArgs = {
+  prefecture?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3059,6 +3108,9 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 export type ResolversTypes = {
   ActionType: ActionType;
   AuditLog: ResolverTypeWrapper<AuditLog>;
+  AvailableCity: ResolverTypeWrapper<AvailableCity>;
+  AvailablePrefecture: ResolverTypeWrapper<AvailablePrefecture>;
+  AvailableSpecialty: ResolverTypeWrapper<AvailableSpecialty>;
   BookingAnswerInput: BookingAnswerInput;
   BookingAnswerView: ResolverTypeWrapper<BookingAnswerView>;
   BookingAppointment: ResolverTypeWrapper<BookingAppointment>;
@@ -3214,6 +3266,9 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   AuditLog: AuditLog;
+  AvailableCity: AvailableCity;
+  AvailablePrefecture: AvailablePrefecture;
+  AvailableSpecialty: AvailableSpecialty;
   BookingAnswerInput: BookingAnswerInput;
   BookingAnswerView: BookingAnswerView;
   BookingAppointment: BookingAppointment;
@@ -3341,6 +3396,22 @@ export type AuditLogResolvers<ContextType = any, ParentType extends ResolversPar
   schemaVersion?: Resolver<ResolversTypes['SchemaVersion'], ParentType, ContextType>;
   updatedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type AvailableCityResolvers<ContextType = any, ParentType extends ResolversParentTypes['AvailableCity'] = ResolversParentTypes['AvailableCity']> = {
+  city?: Resolver<ResolversTypes['City'], ParentType, ContextType>;
+  facilityCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type AvailablePrefectureResolvers<ContextType = any, ParentType extends ResolversParentTypes['AvailablePrefecture'] = ResolversParentTypes['AvailablePrefecture']> = {
+  facilityCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  prefecture?: Resolver<ResolversTypes['Prefecture'], ParentType, ContextType>;
+};
+
+export type AvailableSpecialtyResolvers<ContextType = any, ParentType extends ResolversParentTypes['AvailableSpecialty'] = ResolversParentTypes['AvailableSpecialty']> = {
+  facilityCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  professionalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  specialty?: Resolver<ResolversTypes['Specialty'], ParentType, ContextType>;
 };
 
 export type BookingAnswerViewResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingAnswerView'] = ResolversParentTypes['BookingAnswerView']> = {
@@ -4033,6 +4104,9 @@ export type PrefectureResolvers<ContextType = any, ParentType extends ResolversP
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   auditLog?: Resolver<Maybe<ResolversTypes['AuditLog']>, ParentType, ContextType, Partial<QueryAuditLogArgs>>;
   availableBookingStarts?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryAvailableBookingStartsArgs, 'clinicSiteId' | 'from' | 'to'>>;
+  availableCities?: Resolver<Array<ResolversTypes['AvailableCity']>, ParentType, ContextType, Partial<QueryAvailableCitiesArgs>>;
+  availablePrefectures?: Resolver<Array<ResolversTypes['AvailablePrefecture']>, ParentType, ContextType>;
+  availableSpecialties?: Resolver<Array<ResolversTypes['AvailableSpecialty']>, ParentType, ContextType, Partial<QueryAvailableSpecialtiesArgs>>;
   bookingAvailable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   bookingClinic?: Resolver<Maybe<ResolversTypes['BookingClinic']>, ParentType, ContextType, RequireFields<QueryBookingClinicArgs, 'facilityId'>>;
   bookingClinics?: Resolver<Array<ResolversTypes['BookingClinic']>, ParentType, ContextType>;
@@ -4131,6 +4205,9 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type Resolvers<ContextType = any> = {
   AuditLog?: AuditLogResolvers<ContextType>;
+  AvailableCity?: AvailableCityResolvers<ContextType>;
+  AvailablePrefecture?: AvailablePrefectureResolvers<ContextType>;
+  AvailableSpecialty?: AvailableSpecialtyResolvers<ContextType>;
   BookingAnswerView?: BookingAnswerViewResolvers<ContextType>;
   BookingAppointment?: BookingAppointmentResolvers<ContextType>;
   BookingClinic?: BookingClinicResolvers<ContextType>;

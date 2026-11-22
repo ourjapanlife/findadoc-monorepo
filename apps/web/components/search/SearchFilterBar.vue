@@ -200,6 +200,7 @@ import { SEARCHABLE_LANGUAGES, directoryPrefectures, type PrefectureEntry } from
 import directoryStats from '#directory-stats'
 import { hasActiveFilters } from '~/utils/searchDirectory'
 import { fetchCities, type CityOption } from '~/utils/cityOptions'
+import { availableSpecialtyOptions, fetchDirectoryCoverage } from '~/utils/directoryCoverage'
 import type { Locale, Specialty } from '@findadoc/graphql'
 
 const props = defineProps<{ showMap: boolean }>()
@@ -248,34 +249,55 @@ const city = computed({
 })
 
 const cityOptions = ref<CityOption[]>([])
-let cityRequest = 0
+const prefectures = ref<readonly PrefectureEntry[]>(directoryPrefectures(directoryStats))
+const availableSpecialties = ref<Specialty[]>()
+let coverageRequest = 0
 
+/*
+ * Prefectures, cities, and specialties come from what the directory has, so each option
+ * leads to results (#21). When the API cannot answer, the build's list and every city of
+ * the prefecture stay.
+ */
 watch(prefecture, async value => {
-    const request = ++cityRequest
+    const request = ++coverageRequest
     cityOptions.value = []
+
+    const coverage = await fetchDirectoryCoverage(value || undefined)
+    if (request !== coverageRequest) return
+
+    if (coverage?.prefectures.length) {
+        prefectures.value = coverage.prefectures
+    }
+    availableSpecialties.value = coverage?.specialties
     if (!value) {
+        return
+    }
+    if (coverage) {
+        cityOptions.value = coverage.cities
         return
     }
 
     try {
         const nextCities = await fetchCities(value)
-        if (request !== cityRequest) return
+        if (request !== coverageRequest) return
         cityOptions.value = nextCities
     } catch (error) {
-        if (request !== cityRequest) return
+        if (request !== coverageRequest) return
         console.error('Loading cities failed', error)
         cityOptions.value = []
     }
 }, { immediate: true })
 
-const specialtyOptions = computed(() => specialtiesStore.specialtyDisplayOptions)
+const specialtyOptions = computed(() => availableSpecialtyOptions(
+    specialtiesStore.specialtyDisplayOptions,
+    availableSpecialties.value,
+    specialty.value as Specialty | ''
+))
 
 const languageOptions = computed(() =>
     SEARCHABLE_LANGUAGES
         .map(code => localeDisplayOptions.find(option => option.code === code))
         .filter((option): option is NonNullable<typeof option> => !!option))
-
-const prefectures = directoryPrefectures(directoryStats)
 
 function prefectureLabel(entry: PrefectureEntry) {
     return locale.value === 'ja-JP' ? entry.nameJa : entry.name
