@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { expect } from 'chai'
 import i18nLocales from '@/i18n'
 import { allowedSameAsEnglishKeys, localeFileProblems } from '../../../i18n/checkLocaleKeys.js'
-import { localeMessageProblems } from '../../../i18n/localeMessages.js'
+import { duplicateMessageKeys, localeMessageProblems } from '../../../i18n/localeMessages.js'
 
 const i18nDir = join(dirname(fileURLToPath(import.meta.url)), '../../../i18n')
 const localesDir = join(i18nDir, 'locales')
@@ -59,6 +59,13 @@ describe('site UI locales', () => {
             { brand: 'Find a Doc', empty: '—' },
             new Set(['brand'])
         )).to.deep.equal([])
+    })
+
+    it('finds a key repeated in the same object, at any depth', () => {
+        const text = '{ "a": { "x": "1", "y": "2", "x": "3" }, "b": { "x": "1" }, "c": "\\"x\\"", "c": "4" }'
+
+        expect(duplicateMessageKeys(text)).to.deep.equal(['a.x', 'c'])
+        expect(duplicateMessageKeys('{ "a": { "x": "1" }, "b": { "x": "1" } }')).to.deep.equal([])
     })
 
     it('keeps every locale file aligned with English', () => {
