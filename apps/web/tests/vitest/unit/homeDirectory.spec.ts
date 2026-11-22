@@ -10,6 +10,7 @@ import {
     type PrefectureEntry
 } from '@/utils/homeDirectory'
 import { Specialty, Locale } from '@findadoc/graphql'
+import { listPrefectureJapanEn, listPrefectureJapanJa } from '@/utils/prefectureNames'
 
 function prefecture(name: string): PrefectureEntry {
     const entry = ALL_PREFECTURES.find(item => item.name === name)
@@ -21,6 +22,22 @@ function prefecture(name: string): PrefectureEntry {
 
 const tokyo = prefecture('Tokyo')
 const osaka = prefecture('Osaka')
+
+describe('ALL_PREFECTURES', () => {
+    // The fallback predated the #21 import and had no Hiroshima, so the pickers dropped it.
+    it('lists every prefecture once with its standard English and Japanese names', () => {
+        expect(ALL_PREFECTURES.map(entry => entry.name)).to.have.members([...listPrefectureJapanEn])
+        for (const entry of ALL_PREFECTURES) {
+            const index = listPrefectureJapanEn.indexOf(entry.name)
+            expect(entry.nameJa).to.equal(listPrefectureJapanJa[index])
+        }
+    })
+
+    it('puts the prefectures with the most facilities first', () => {
+        const counts = ALL_PREFECTURES.map(entry => entry.approximateFacilities)
+        expect(counts).to.deep.equal([...counts].sort((left, right) => right - left))
+    })
+})
 
 describe('areaPrefectureLink', () => {
     it('points at the prefecture hub when generate has not filtered the list', () => {
@@ -53,13 +70,13 @@ describe('homeAreaPrefectures', () => {
     })
 
     it('keeps volume order among hubs this generate actually built', () => {
-        expect(homeAreaPrefectures(['/hokkaido', '/tokyo']).map(entry => entry.name))
-            .to.deep.equal(['Tokyo', 'Hokkaido'])
+        expect(homeAreaPrefectures(['/osaka', '/tokyo']).map(entry => entry.name))
+            .to.deep.equal(['Tokyo', 'Osaka'])
     })
 
     it('falls back to generated hubs outside the top eight when the seed missed them', () => {
-        expect(homeAreaPrefectures(['/kanagawa']).map(entry => entry.name))
-            .to.deep.equal(['Kanagawa'])
+        expect(homeAreaPrefectures(['/hiroshima']).map(entry => entry.name))
+            .to.deep.equal(['Hiroshima'])
     })
 
     it('keeps the static top eight when generate found no hubs', () => {

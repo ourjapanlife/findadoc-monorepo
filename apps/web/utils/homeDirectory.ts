@@ -23,55 +23,69 @@ export interface PrefectureEntry {
 }
 
 /**
- * Fallback prefecture list, measured against production on 2026-09-02.
+ * Fallback prefecture list, measured against production on 2026-11-22, after the #21 import.
  *
  * Ordered by volume rather than alphabetically because the distribution is uneven, so the
  * first handful covers most searches, and the ordering itself tells the reader where coverage
  * actually is. `directoryPrefectures` keeps the same order for the generated list.
  */
 export const ALL_PREFECTURES: readonly PrefectureEntry[] = [
-    { name: 'Tokyo', nameJa: '東京都', approximateFacilities: 96 },
-    { name: 'Fukuoka', nameJa: '福岡県', approximateFacilities: 68 },
-    { name: 'Osaka', nameJa: '大阪府', approximateFacilities: 43 },
-    { name: 'Mie', nameJa: '三重県', approximateFacilities: 34 },
-    { name: 'Hokkaido', nameJa: '北海道', approximateFacilities: 32 },
-    { name: 'Tokushima', nameJa: '徳島県', approximateFacilities: 14 },
-    { name: 'Tochigi', nameJa: '栃木県', approximateFacilities: 13 },
+    { name: 'Tokyo', nameJa: '東京都', approximateFacilities: 408 },
+    { name: 'Osaka', nameJa: '大阪府', approximateFacilities: 141 },
+    { name: 'Ibaraki', nameJa: '茨城県', approximateFacilities: 110 },
+    { name: 'Kagawa', nameJa: '香川県', approximateFacilities: 89 },
+    { name: 'Kanagawa', nameJa: '神奈川県', approximateFacilities: 79 },
+    { name: 'Fukuoka', nameJa: '福岡県', approximateFacilities: 75 },
+    { name: 'Saitama', nameJa: '埼玉県', approximateFacilities: 66 },
+    { name: 'Nara', nameJa: '奈良県', approximateFacilities: 54 },
+    { name: 'Aichi', nameJa: '愛知県', approximateFacilities: 48 },
+    { name: 'Gifu', nameJa: '岐阜県', approximateFacilities: 48 },
+    { name: 'Chiba', nameJa: '千葉県', approximateFacilities: 47 },
+    { name: 'Gunma', nameJa: '群馬県', approximateFacilities: 44 },
+    { name: 'Mie', nameJa: '三重県', approximateFacilities: 44 },
+    { name: 'Shimane', nameJa: '島根県', approximateFacilities: 42 },
+    { name: 'Kyoto', nameJa: '京都府', approximateFacilities: 35 },
+    { name: 'Hokkaido', nameJa: '北海道', approximateFacilities: 34 },
+    { name: 'Shizuoka', nameJa: '静岡県', approximateFacilities: 32 },
+    { name: 'Tottori', nameJa: '鳥取県', approximateFacilities: 29 },
+    { name: 'Hiroshima', nameJa: '広島県', approximateFacilities: 24 },
+    { name: 'Okayama', nameJa: '岡山県', approximateFacilities: 19 },
+    { name: 'Tokushima', nameJa: '徳島県', approximateFacilities: 19 },
+    { name: 'Fukui', nameJa: '福井県', approximateFacilities: 18 },
+    { name: 'Yamagata', nameJa: '山形県', approximateFacilities: 17 },
+    { name: 'Kagoshima', nameJa: '鹿児島県', approximateFacilities: 16 },
+    { name: 'Yamanashi', nameJa: '山梨県', approximateFacilities: 16 },
+    { name: 'Hyogo', nameJa: '兵庫県', approximateFacilities: 15 },
+    { name: 'Tochigi', nameJa: '栃木県', approximateFacilities: 15 },
     { name: 'Ishikawa', nameJa: '石川県', approximateFacilities: 13 },
-    { name: 'Hyogo', nameJa: '兵庫県', approximateFacilities: 12 },
-    { name: 'Kagoshima', nameJa: '鹿児島県', approximateFacilities: 12 },
-    { name: 'Fukui', nameJa: '福井県', approximateFacilities: 12 },
-    { name: 'Yamanashi', nameJa: '山梨県', approximateFacilities: 11 },
+    { name: 'Akita', nameJa: '秋田県', approximateFacilities: 11 },
     { name: 'Toyama', nameJa: '富山県', approximateFacilities: 11 },
+    { name: 'Miyagi', nameJa: '宮城県', approximateFacilities: 10 },
+    { name: 'Okinawa', nameJa: '沖縄県', approximateFacilities: 10 },
     { name: 'Yamaguchi', nameJa: '山口県', approximateFacilities: 10 },
-    { name: 'Akita', nameJa: '秋田県', approximateFacilities: 9 },
-    { name: 'Miyagi', nameJa: '宮城県', approximateFacilities: 9 },
-    { name: 'Okinawa', nameJa: '沖縄県', approximateFacilities: 8 },
-    { name: 'Yamagata', nameJa: '山形県', approximateFacilities: 8 },
-    { name: 'Kumamoto', nameJa: '熊本県', approximateFacilities: 6 },
-    { name: 'Iwate', nameJa: '岩手県', approximateFacilities: 6 },
+    { name: 'Kumamoto', nameJa: '熊本県', approximateFacilities: 9 },
+    { name: 'Shiga', nameJa: '滋賀県', approximateFacilities: 9 },
+    { name: 'Wakayama', nameJa: '和歌山県', approximateFacilities: 8 },
     { name: 'Fukushima', nameJa: '福島県', approximateFacilities: 6 },
+    { name: 'Iwate', nameJa: '岩手県', approximateFacilities: 6 },
     { name: 'Niigata', nameJa: '新潟県', approximateFacilities: 6 },
-    { name: 'Nagano', nameJa: '長野県', approximateFacilities: 5 },
     { name: 'Ehime', nameJa: '愛媛県', approximateFacilities: 5 },
+    { name: 'Nagano', nameJa: '長野県', approximateFacilities: 5 },
+    { name: 'Oita', nameJa: '大分県', approximateFacilities: 4 },
     { name: 'Kochi', nameJa: '高知県', approximateFacilities: 3 },
-    { name: 'Kanagawa', nameJa: '神奈川県', approximateFacilities: 3 },
-    { name: 'Oita', nameJa: '大分県', approximateFacilities: 2 },
+    { name: 'Nagasaki', nameJa: '長崎県', approximateFacilities: 3 },
     { name: 'Saga', nameJa: '佐賀県', approximateFacilities: 2 },
     { name: 'Aomori', nameJa: '青森県', approximateFacilities: 1 },
-    { name: 'Saitama', nameJa: '埼玉県', approximateFacilities: 1 },
-    { name: 'Aichi', nameJa: '愛知県', approximateFacilities: 1 },
-    { name: 'Miyazaki', nameJa: '宮崎県', approximateFacilities: 1 },
-    { name: 'Nagasaki', nameJa: '長崎県', approximateFacilities: 1 }
+    { name: 'Miyazaki', nameJa: '宮崎県', approximateFacilities: 1 }
 ] as const
 
 /**
- * Fallback directory size, measured against production on 2026-11-16, after the #21 import.
+ * Fallback directory size, measured against production on 2026-11-22, after the #21 import.
  * Framed in copy as approximate so it never reads as a live counter.
  */
 export const DIRECTORY_STATS = {
-    facilities: 1718,
-    professionals: 405,
+    facilities: 1719,
+    professionals: 403,
     languages: 14
 } as const
 
