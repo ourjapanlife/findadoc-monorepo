@@ -637,7 +637,9 @@ describe('submission status filters and counts', () => {
         expect(approvalErrors.every(error => error.errorCode === ErrorCode.REQUIRED)).toBe(true)
 
         const completedUpdate = await updateSubmissionForTest(createdSubmission.id, {
-            healthcareProfessionals: [professional]
+            healthcareProfessionals: [professional],
+            // Approval creates the facility, which needs a map pin (facilities_pin_required).
+            facility: generateRandomCreateFacilityInput()
         })
 
         expect(completedUpdate.body.errors).toBeUndefined()
@@ -646,6 +648,22 @@ describe('submission status filters and counts', () => {
 
         expect(approveResult.body.errors).toBeUndefined()
         expect(approveResult.body.data.updateSubmission.isApproved).toBe(true)
+    })
+
+    test('refuses to approve an in-person facility with no map pin', async () => {
+        const createdSubmission = await createSubmissionForTest()
+        const update = await updateSubmissionForTest(createdSubmission.id, {
+            healthcareProfessionals: [generateRandomCreateHealthcareProfessionalInput()]
+        })
+
+        expect(update.body.errors).toBeUndefined()
+
+        // No facility details, so approval would create one with no pin.
+        const approval = await updateSubmissionForTest(createdSubmission.id, { isApproved: true })
+        const errors = approval.body.errors[0].extensions.errors as Error[]
+
+        expect(errors.map(error => error.field)).toEqual(['mapLatitude', 'mapLongitude'])
+        expect(errors.every(error => error.errorCode === ErrorCode.REQUIRED)).toBe(true)
     })
 
     test('excludes pending submissions from isUnderReview filter', async () => {

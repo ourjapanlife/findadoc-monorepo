@@ -99,6 +99,9 @@ describe('facility place id (#228)', () => {
             name_en: 'Example Clinic',
             name_ja: 'エグザンプルクリニック',
             contact: asJsonb<ContactInput>(addressedFacility().contact),
+            // A pin, so the place id is the only rule this row breaks (facilities_pin_required).
+            map_latitude: 35.6812,
+            map_longitude: 139.7671,
             payment_options: '[]',
             supported_languages: '[]',
             google_place_id: null,
