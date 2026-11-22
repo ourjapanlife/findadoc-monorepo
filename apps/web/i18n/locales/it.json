@@ -285,7 +285,10 @@
     "speaks": "Questo medico parla",
     "lastUpdate": "Ultimo aggiornamento",
     "healthcareProfessionals": "Professionisti sanitari",
-    "callNow": "Chiama"
+    "callNow": "Chiama",
+    "sourceCredit": "Fonte: {list} e {openData} (Ministero della Salute, del Lavoro e del Welfare), dati modificati da Find a Doc.",
+    "sourceInstitutionList": "Elenco delle strutture mediche che accolgono pazienti stranieri",
+    "sourceOpenData": "Dati aperti della Rete di informazione medica"
   },
   "thankYouPage": {
     "heading": "Grazie!",

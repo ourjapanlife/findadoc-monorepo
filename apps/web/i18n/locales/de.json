@@ -247,7 +247,10 @@
     "speaks": "Dieser Arzt spricht",
     "lastUpdate": "Zuletzt aktualisiert",
     "healthcareProfessionals": "Gesundheitsfachkräfte",
-    "callNow": "Anrufen"
+    "callNow": "Anrufen",
+    "sourceCredit": "Quelle: {list} und {openData} (Ministerium für Gesundheit, Arbeit und Soziales), bearbeitet von Find a Doc.",
+    "sourceInstitutionList": "Liste der medizinischen Einrichtungen, die ausländische Patienten aufnehmen",
+    "sourceOpenData": "Offene Daten des Medizininformationsnetzes"
   },
   "thankYouPage": {
     "heading": "Vielen Dank!",

@@ -41,8 +41,9 @@ export const showcaseClinicFacility: FacilitySeed = {
             addressLine2Ja: ''
         }
     },
-    map_latitude: 0,
-    map_longitude: 0,
+    // A fake pin near Tokyo Station: an in-person row needs one (facilities_pin_required).
+    map_latitude: 35.6812,
+    map_longitude: 139.7671,
     created_date: SHOWCASE_SEEDED_AT,
     updated_date: SHOWCASE_SEEDED_AT,
     firestore_id: null,

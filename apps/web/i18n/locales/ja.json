@@ -247,7 +247,10 @@
     "speaks": "この医師は話す",
     "lastUpdate": "最終更新",
     "healthcareProfessionals": "医療従事者",
-    "callNow": "電話"
+    "callNow": "電話",
+    "sourceCredit": "出典：{list}、{openData}（厚生労働省）をもとにFind a Docが加工して作成",
+    "sourceInstitutionList": "外国人患者を受け入れる医療機関の情報を取りまとめたリスト",
+    "sourceOpenData": "医療情報ネットのオープンデータ"
   },
   "thankYouPage": {
     "heading": "ありがとうございます",

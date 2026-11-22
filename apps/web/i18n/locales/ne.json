@@ -328,7 +328,10 @@
     "speaks": "यी डाक्टर बोल्ने भाषा",
     "lastUpdate": "अन्तिम पटक अद्यावधिक",
     "healthcareProfessionals": "स्वास्थ्यकर्मीहरू",
-    "callNow": "फोन गर्नुहोस्"
+    "callNow": "फोन गर्नुहोस्",
+    "sourceCredit": "स्रोत: {list} र {openData} (स्वास्थ्य, श्रम तथा कल्याण मन्त्रालय), Find a Doc द्वारा सम्पादित।",
+    "sourceInstitutionList": "विदेशी बिरामी स्वीकार गर्ने चिकित्सा संस्थाहरूको सूची",
+    "sourceOpenData": "चिकित्सा सूचना नेटको खुला डेटा"
   },
   "thankYouPage": {
     "heading": "धन्यवाद!",

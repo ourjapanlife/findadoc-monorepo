@@ -247,7 +247,10 @@
     "speaks": "Bác sĩ này nói",
     "lastUpdate": "Cập nhật lần cuối",
     "healthcareProfessionals": "Nhân viên y tế",
-    "callNow": "Gọi"
+    "callNow": "Gọi",
+    "sourceCredit": "Nguồn: {list} và {openData} (Bộ Y tế, Lao động và Phúc lợi), do Find a Doc biên tập.",
+    "sourceInstitutionList": "Danh sách cơ sở y tế tiếp nhận bệnh nhân nước ngoài",
+    "sourceOpenData": "Dữ liệu mở của Mạng thông tin y tế"
   },
   "thankYouPage": {
     "heading": "Cảm ơn bạn!",

@@ -277,12 +277,43 @@
                 </li>
             </ul>
         </section>
+
+        <!--
+            Imported facilities and their map pins come from Ministry of Health data, used under
+            公共データ利用規約 (PDL1.0): name each source with its page, and say we edited it.
+        -->
+        <i18n-t
+            v-if="fromMinistryData"
+            keypath="searchResultsDetails.sourceCredit"
+            tag="p"
+            scope="global"
+            class="m-0 text-xs text-primary-text-muted"
+            data-testid="facility-source-credit"
+        >
+            <template #list>
+                <a
+                    :href="MHLW_INSTITUTION_LIST_URL"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="underline"
+                >{{ t('searchResultsDetails.sourceInstitutionList') }}</a>
+            </template>
+            <template #openData>
+                <a
+                    :href="MHLW_OPEN_DATA_URL"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="underline"
+                >{{ t('searchResultsDetails.sourceOpenData') }}</a>
+            </template>
+        </i18n-t>
     </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { FacilitySource } from '@findadoc/graphql'
 import OpenMapsButton from '~/components/common/OpenMapsButton.vue'
 import SVGGlobeIcon from '~/assets/icons/globe-icon.svg'
 import SVGPhoneIcon from '~/assets/icons/phone-icon.svg'
@@ -316,6 +347,12 @@ const props = withDefaults(defineProps<{
 
 const { t, locale } = useI18n()
 const specialtiesStore = useSpecialtiesStore()
+
+// The ministry pages the credit links to (#21).
+const MHLW_INSTITUTION_LIST_URL = 'https://www.mhlw.go.jp/stf/newpage_05774.html'
+const MHLW_OPEN_DATA_URL = 'https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryou/newpage_43373.html'
+
+const fromMinistryData = computed(() => props.facility.source === FacilitySource.MhlwMultilingualInstitutions)
 const { track } = useUmami()
 
 // Keyed off vue-i18n, not localeStore: the store lags behind a cookie-driven locale.

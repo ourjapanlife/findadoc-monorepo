@@ -247,7 +247,10 @@
     "speaks": "Este profissional fala",
     "lastUpdate": "Última atualização",
     "healthcareProfessionals": "Profissionais de saúde",
-    "callNow": "Ligar"
+    "callNow": "Ligar",
+    "sourceCredit": "Fonte: {list} e {openData} (Ministério da Saúde, Trabalho e Bem-Estar), dados editados pela Find a Doc.",
+    "sourceInstitutionList": "Lista de instituições médicas que atendem pacientes estrangeiros",
+    "sourceOpenData": "Dados abertos da Rede de Informação Médica"
   },
   "thankYouPage": {
     "heading": "Obrigado!",
