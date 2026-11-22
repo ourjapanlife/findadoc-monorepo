@@ -44,6 +44,12 @@ import {
 import { changedPaymentOptions, paymentOptionsInput } from '~/utils/paymentOptions'
 import { changedOpeningHours, openingHoursInput } from '~/utils/openingHours'
 import { changedSupportedLanguages } from '~/utils/facilityLanguages'
+import { FacilityVerificationStatus } from '@findadoc/graphql'
+import {
+    changedVerificationStatus,
+    facilityVerificationChoice,
+    type FacilityVerificationChoice
+} from '~/utils/facilityVerification'
 
 export type FacilitySectionFields = {
     // contactFields
@@ -84,6 +90,8 @@ export type FacilitySectionFields = {
     additionalInfoJa: string
     // Languages the facility supports with no named professional (#21). Empty is none listed.
     supportedLanguages: Locale[]
+    // Unverified or confirmed. Confirmed needs a city; without one the API keeps UNVERIFIED_LOCATION.
+    verificationStatus: FacilityVerificationChoice
 
     healthcareProfessionalIds: string[]
     healthProfessionalsRelations: Relationship[]
@@ -173,6 +181,11 @@ export function getChangedFacilityFieldsForUpdate(
     const nextLanguages = changedSupportedLanguages(current.supportedLanguages, original.supportedLanguages)
     if (nextLanguages) {
         updatedFields.supportedLanguages = nextLanguages
+    }
+
+    const nextVerification = changedVerificationStatus(current.verificationStatus, current.cityId, original)
+    if (nextVerification) {
+        updatedFields.verificationStatus = nextVerification
     }
 
     const originalContactInput = mapFacilityContactToInput(original.contact as Contact)
@@ -315,6 +328,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         additionalInfoEn: '',
         additionalInfoJa: '',
         supportedLanguages: [] as Locale[],
+        verificationStatus: FacilityVerificationStatus.Unverified as FacilityVerificationChoice,
         healthcareProfessionalIds: [] as string[],
         healthProfessionalsRelations: [] as Relationship[]
     })
@@ -402,6 +416,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields.value.additionalInfoEn = data.additionalInfoEn ?? ''
         facilitySectionFields.value.additionalInfoJa = data.additionalInfoJa ?? ''
         facilitySectionFields.value.supportedLanguages = [...(data.supportedLanguages ?? [])]
+        facilitySectionFields.value.verificationStatus = facilityVerificationChoice(data.verificationStatus)
     }
 
     function resetFacilitySectionFields() {
@@ -432,6 +447,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             additionalInfoEn: '',
             additionalInfoJa: '',
             supportedLanguages: [] as Locale[],
+            verificationStatus: FacilityVerificationStatus.Unverified as FacilityVerificationChoice,
             healthcareProfessionalIds: [] as string[],
             healthProfessionalsRelations: [] as Relationship[]
         }

@@ -548,7 +548,12 @@
     "additionalInfoBothLanguages": "Hãy viết ghi chú bằng cả hai ngôn ngữ, hoặc để trống cả hai.",
     "openingHoursUntilMidnight": "Đến nửa đêm",
     "supportedLanguagesLabel": "Ngôn ngữ phòng khám hỗ trợ",
-    "supportedLanguagesHint": "Chỉ chọn những ngôn ngữ đã được xác nhận qua trang web của phòng khám hoặc qua điện thoại. Kết quả tìm kiếm vẫn hiển thị phòng khám cho các ngôn ngữ này ngay cả khi chưa có bác sĩ nào được liệt kê."
+    "supportedLanguagesHint": "Chỉ chọn những ngôn ngữ đã được xác nhận qua trang web của phòng khám hoặc qua điện thoại. Kết quả tìm kiếm vẫn hiển thị phòng khám cho các ngôn ngữ này ngay cả khi chưa có bác sĩ nào được liệt kê.",
+    "verificationLabel": "Trạng thái xác minh",
+    "verificationHint": "Chỉ xác nhận phòng khám sau khi trang web của phòng khám hoặc một cuộc gọi khớp với tên, địa chỉ và số điện thoại ở đây. Phòng khám đã xác nhận sẽ có một liên kết nhỏ \"Phát hiện lỗi?\". Các phòng khám khác sẽ nhờ người đọc giúp xác nhận.",
+    "verificationUnverified": "Chưa xác minh",
+    "verificationConfirmed": "Đã xác nhận",
+    "verificationNeedsCity": "Hãy thêm thành phố trước khi xác nhận phòng khám này."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Mã cơ sở vật chất là bắt buộc để cập nhật cơ sở vật chất.",

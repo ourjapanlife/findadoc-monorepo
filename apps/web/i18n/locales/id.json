@@ -681,7 +681,12 @@
     "additionalInfoBothLanguages": "Tulis catatan dalam kedua bahasa, atau kosongkan keduanya.",
     "openingHoursUntilMidnight": "Sampai tengah malam",
     "supportedLanguagesLabel": "Bahasa yang didukung klinik",
-    "supportedLanguagesHint": "Centang hanya bahasa yang dikonfirmasi oleh situs web klinik atau lewat telepon. Pencarian menampilkan klinik ini untuk bahasa tersebut meskipun belum ada dokter yang terdaftar."
+    "supportedLanguagesHint": "Centang hanya bahasa yang dikonfirmasi oleh situs web klinik atau lewat telepon. Pencarian menampilkan klinik ini untuk bahasa tersebut meskipun belum ada dokter yang terdaftar.",
+    "verificationLabel": "Status data",
+    "verificationHint": "Konfirmasi klinik hanya setelah situs web klinik atau telepon mencocokkan nama, alamat, dan nomor telepon di sini. Klinik yang terkonfirmasi menampilkan tautan kecil \"Menemukan kesalahan?\". Klinik lain meminta pembaca membantu mengonfirmasinya.",
+    "verificationUnverified": "Belum diverifikasi",
+    "verificationConfirmed": "Terkonfirmasi",
+    "verificationNeedsCity": "Tambahkan kota sebelum mengonfirmasi klinik ini."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",

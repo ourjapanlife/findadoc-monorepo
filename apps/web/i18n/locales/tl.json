@@ -504,7 +504,12 @@
     "additionalInfoBothLanguages": "Isulat ang paalala sa dalawang wika, o iwanang blangko ang dalawa.",
     "openingHoursUntilMidnight": "Hanggang hatinggabi",
     "supportedLanguagesLabel": "Mga wikang sinusuportahan ng klinika",
-    "supportedLanguagesHint": "Lagyan ng tsek lang ang mga wikang kinumpirma ng website ng klinika o ng isang tawag. Ipinapakita ng search ang klinika para sa mga wikang ito kahit walang nakalistang doktor."
+    "supportedLanguagesHint": "Lagyan ng tsek lang ang mga wikang kinumpirma ng website ng klinika o ng isang tawag. Ipinapakita ng search ang klinika para sa mga wikang ito kahit walang nakalistang doktor.",
+    "verificationLabel": "Katayuan ng listing",
+    "verificationHint": "Kumpirmahin lang ang klinika kapag tugma ang pangalan, address, at telepono rito sa website nito o sa isang tawag. Ang kumpirmadong klinika ay may maliit na link na \"May nakitang mali?\". Sa ibang klinika, hinihingan ang mga mambabasa ng tulong sa pagkumpirma.",
+    "verificationUnverified": "Hindi pa beripikado",
+    "verificationConfirmed": "Kumpirmado",
+    "verificationNeedsCity": "Magdagdag ng lungsod bago kumpirmahin ang klinikang ito."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "Kinakailangan ang ID ng Pasilidad upang ma-update ang pasilidad.",

@@ -553,7 +553,12 @@
     "additionalInfoBothLanguages": "Escreva a nota nos dois idiomas, ou deixe as duas em branco.",
     "openingHoursUntilMidnight": "Até a meia-noite",
     "supportedLanguagesLabel": "Idiomas atendidos pela clínica",
-    "supportedLanguagesHint": "Marque apenas os idiomas confirmados pelo site da clínica ou por telefone. A busca mostra a clínica para esses idiomas mesmo quando nenhum médico está cadastrado."
+    "supportedLanguagesHint": "Marque apenas os idiomas confirmados pelo site da clínica ou por telefone. A busca mostra a clínica para esses idiomas mesmo quando nenhum médico está cadastrado.",
+    "verificationLabel": "Status do cadastro",
+    "verificationHint": "Confirme uma clínica só depois que o site dela ou uma ligação confirmar o nome, o endereço e o telefone daqui. Uma clínica confirmada mostra um pequeno link \"Encontrou um erro?\". As demais pedem que os leitores ajudem a confirmá-la.",
+    "verificationUnverified": "Não verificada",
+    "verificationConfirmed": "Confirmada",
+    "verificationNeedsCity": "Adicione uma cidade antes de confirmar esta clínica."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",

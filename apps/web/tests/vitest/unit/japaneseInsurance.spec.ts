@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { JapaneseInsurance, type Facility } from '@findadoc/graphql'
+import { FacilityVerificationStatus, JapaneseInsurance, type Facility } from '@findadoc/graphql'
 import { getChangedFacilityFieldsForUpdate, type FacilitySectionFields } from '~/stores/facilitiesStore'
 import {
     isValidJapaneseInsuranceSource,
@@ -46,6 +46,7 @@ function section(fields: Partial<FacilitySectionFields>): FacilitySectionFields 
         additionalInfoEn: '',
         additionalInfoJa: '',
         supportedLanguages: [],
+        verificationStatus: FacilityVerificationStatus.Unverified,
         healthcareProfessionalIds: [],
         healthProfessionalsRelations: [],
         ...fields

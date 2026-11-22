@@ -553,7 +553,12 @@
     "additionalInfoBothLanguages": "请用两种语言填写，或两者都留空。",
     "openingHoursUntilMidnight": "营业至午夜",
     "supportedLanguagesLabel": "诊所支持的语言",
-    "supportedLanguagesHint": "只勾选经诊所网站或电话确认的语言。即使没有登记医生，按这些语言搜索时也会显示该诊所。"
+    "supportedLanguagesHint": "只勾选经诊所网站或电话确认的语言。即使没有登记医生，按这些语言搜索时也会显示该诊所。",
+    "verificationLabel": "信息核实状态",
+    "verificationHint": "只有在诊所网站或电话确认这里的名称、地址和电话后，才能标记为已确认。已确认的诊所会显示一个小的“发现错误？”链接，其他诊所会请读者帮忙确认。",
+    "verificationUnverified": "未核实",
+    "verificationConfirmed": "已确认",
+    "verificationNeedsCity": "请先设置城市，再确认这家诊所。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",
