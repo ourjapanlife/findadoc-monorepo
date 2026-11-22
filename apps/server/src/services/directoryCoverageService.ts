@@ -174,7 +174,7 @@ async function loadAvailableCities(prefectureKey: string | undefined): Promise<R
 }
 
 /**
- * Specialties at least one professional practices, most facilities first. With a prefecture,
+ * Specialties at least one professional practices at a facility, most facilities first. With a prefecture,
  * only professionals at a facility there count, and the facility count is that prefecture's.
  */
 export async function listAvailableSpecialties(
@@ -209,22 +209,30 @@ async function loadAvailableSpecialties(prefectureKey: string | undefined): Prom
         }
 
         const rows = await query.execute()
-        const data = rows
-            .filter((row): row is typeof row & { specialty: Specialty } => isSpecialty(row.specialty))
-            .map(row => ({
-                specialty: row.specialty,
-                professionalCount: Number(row.professional_count),
-                facilityCount: Number(row.facility_count)
-            }))
-            // A picker lists the specialty with the most results first: facilities, as a specialty
-            // search returns facilities, then professionals.
-            .sort((left, right) => right.facilityCount - left.facilityCount
-                || right.professionalCount - left.professionalCount
-                || left.specialty.localeCompare(right.specialty))
-
-        return { data, hasErrors: false }
+        return { data: specialtyCoverageFromRows(rows), hasErrors: false }
     } catch (error) {
         logger.error('ERROR: listAvailableSpecialties', errorLogFields(error))
         return serverError('availableSpecialties')
     }
+}
+
+type SpecialtyCountRow = { specialty: string, professional_count: string, facility_count: string }
+
+/**
+ * Turns grouped specialty rows into picker entries, most facilities first, then most
+ * professionals. Deleting a facility keeps its professionals, so a specialty that only they hold
+ * finds no facility; the picker must not offer it. An unknown specialty value is dropped.
+ */
+export function specialtyCoverageFromRows(rows: readonly SpecialtyCountRow[]): AvailableSpecialty[] {
+    return rows
+        .filter((row): row is SpecialtyCountRow & { specialty: Specialty } => isSpecialty(row.specialty))
+        .filter(row => Number(row.facility_count) > 0)
+        .map(row => ({
+            specialty: row.specialty,
+            professionalCount: Number(row.professional_count),
+            facilityCount: Number(row.facility_count)
+        }))
+        .sort((left, right) => right.facilityCount - left.facilityCount
+            || right.professionalCount - left.professionalCount
+            || left.specialty.localeCompare(right.specialty))
 }

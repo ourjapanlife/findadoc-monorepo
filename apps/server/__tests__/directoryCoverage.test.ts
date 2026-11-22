@@ -5,6 +5,7 @@ import type { gqlMutation, gqlRequest } from '../utils/gqlTool.js'
 import { generateRandomCreateFacilityInput } from '../src/fakeData/fakeFacilities.js'
 import { generateRandomCreateHealthcareProfessionalInput } from '../src/fakeData/fakeHealthcareProfessionals.js'
 import { ErrorCode, type Error } from '../src/result.js'
+import { specialtyCoverageFromRows } from '../src/services/directoryCoverageService.js'
 import { gqlApiUrl } from './testSetup.test.js'
 import { createFacilityMutation } from './facilities.test.js'
 import { createHealthcareProfessionalMutation } from './healthcareProfessional.test.js'
@@ -129,5 +130,31 @@ describe('directory coverage', () => {
 
         expect(errors[0].field).toBe('prefecture')
         expect(errors[0].errorCode).toBe(ErrorCode.INVALID_INPUT)
+    })
+})
+
+describe('specialtyCoverageFromRows', () => {
+    test('drops a specialty whose professionals are at no facility, after a facility was deleted', () => {
+        const coverage = specialtyCoverageFromRows([
+            { specialty: gqlType.Specialty.NuclearMedicine, professional_count: '2', facility_count: '0' },
+            { specialty: gqlType.Specialty.Dentistry, professional_count: '3', facility_count: '2' }
+        ])
+
+        expect(coverage).toEqual([{ specialty: gqlType.Specialty.Dentistry, professionalCount: 3, facilityCount: 2 }])
+    })
+
+    test('lists the most facilities first, then the most professionals, and drops unknown values', () => {
+        const coverage = specialtyCoverageFromRows([
+            { specialty: gqlType.Specialty.Pediatrics, professional_count: '1', facility_count: '1' },
+            { specialty: 'NOT_A_SPECIALTY', professional_count: '9', facility_count: '9' },
+            { specialty: gqlType.Specialty.Dentistry, professional_count: '4', facility_count: '3' },
+            { specialty: gqlType.Specialty.Cardiology, professional_count: '2', facility_count: '1' }
+        ])
+
+        expect(coverage.map(entry => entry.specialty)).toEqual([
+            gqlType.Specialty.Dentistry,
+            gqlType.Specialty.Cardiology,
+            gqlType.Specialty.Pediatrics
+        ])
     })
 })

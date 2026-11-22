@@ -62,23 +62,38 @@ export function coverageFromResponse(json: CoverageResponse): DirectoryCoverage 
     }
 }
 
-const cache = new Map<string, Promise<DirectoryCoverage | undefined>>()
+/** The API keeps coverage for five minutes, so the page asks again after the same time. */
+export const COVERAGE_CLIENT_TTL_MS = 5 * 60 * 1000
+
+type CacheEntry = { request: Promise<DirectoryCoverage | undefined>, expiresAt: number }
+
+const cache = new Map<string, CacheEntry>()
 
 /**
  * Coverage for the whole directory, with cities and specialties for one prefecture when given.
- * Resolves undefined when the API cannot answer, so the caller keeps the list it has.
+ * Resolves undefined when the API cannot answer, so the caller keeps the list it has. Requests in
+ * flight are shared, a failed one is dropped, and a good one is asked again after the TTL.
  */
-export function fetchDirectoryCoverage(prefecture?: string): Promise<DirectoryCoverage | undefined> {
+export function fetchDirectoryCoverage(
+    prefecture?: string,
+    now: () => number = Date.now
+): Promise<DirectoryCoverage | undefined> {
     const key = prefecture?.trim().toLowerCase() ?? ''
     const cached = cache.get(key)
-    if (cached) {
-        return cached
+    if (cached && cached.expiresAt > now()) {
+        return cached.request
     }
 
     const request = loadCoverage(key)
-    cache.set(key, request)
+    const entry = { request, expiresAt: Number.POSITIVE_INFINITY }
+    cache.set(key, entry)
     void request.then(result => {
-        if (!result) {
+        if (cache.get(key) !== entry) {
+            return
+        }
+        if (result) {
+            entry.expiresAt = now() + COVERAGE_CLIENT_TTL_MS
+        } else {
             cache.delete(key)
         }
     })

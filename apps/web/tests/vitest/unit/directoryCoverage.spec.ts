@@ -1,7 +1,25 @@
 /// <reference types="vitest/globals" />
 import { expect } from 'chai'
+import { vi } from 'vitest'
 import { Specialty } from '@findadoc/graphql'
-import { availableSpecialtyOptions, coverageFromResponse } from '@/utils/directoryCoverage'
+import {
+    availableSpecialtyOptions,
+    COVERAGE_CLIENT_TTL_MS,
+    coverageFromResponse,
+    fetchDirectoryCoverage
+} from '@/utils/directoryCoverage'
+
+const publicGetRequest = vi.fn()
+
+vi.mock('~/utils/graphql', () => ({
+    publicGetRequest: (...args: unknown[]) => publicGetRequest(...args)
+}))
+
+const coverageData = {
+    availablePrefectures: [],
+    availableCities: [],
+    availableSpecialties: [{ specialty: Specialty.Dentistry }]
+}
 
 const options = [
     { code: Specialty.Dentistry, displayText: 'Dentistry' },
@@ -49,5 +67,34 @@ describe('availableSpecialtyOptions', () => {
 
     it('offers every specialty when coverage could not load', () => {
         expect(availableSpecialtyOptions(options, undefined, '')).to.deep.equal(options)
+    })
+})
+
+describe('fetchDirectoryCoverage', () => {
+    beforeEach(() => {
+        publicGetRequest.mockReset()
+    })
+
+    it('shares an answer within the TTL and asks again after it', async () => {
+        publicGetRequest.mockResolvedValue(coverageData)
+        let time = 1000
+        const now = () => time
+
+        await fetchDirectoryCoverage('ttl-check', now)
+        await fetchDirectoryCoverage('ttl-check', now)
+        expect(publicGetRequest.mock.calls.length).to.equal(1)
+
+        time += COVERAGE_CLIENT_TTL_MS + 1
+        await fetchDirectoryCoverage('ttl-check', now)
+        expect(publicGetRequest.mock.calls.length).to.equal(2)
+    })
+
+    it('asks again at once after a failed load', async () => {
+        publicGetRequest.mockRejectedValueOnce(new Error('down')).mockResolvedValue(coverageData)
+
+        expect(await fetchDirectoryCoverage('retry-check')).to.equal(undefined)
+        await Promise.resolve()
+        expect(await fetchDirectoryCoverage('retry-check')).to.not.equal(undefined)
+        expect(publicGetRequest.mock.calls.length).to.equal(2)
     })
 })

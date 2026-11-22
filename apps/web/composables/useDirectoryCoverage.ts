@@ -23,6 +23,9 @@ export function useDirectoryCoverage(prefecture: Ref<string>) {
     async function load(value: string) {
         const current = ++request
         cities.value = []
+        // Another prefecture's specialties would hide this one's while it loads. Every
+        // specialty shows until the answer arrives.
+        specialties.value = undefined
 
         const coverage = await fetchDirectoryCoverage(value || undefined)
         if (current !== request) return

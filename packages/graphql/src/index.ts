@@ -2191,7 +2191,8 @@ export type Query = {
    */
   availablePrefectures: Array<AvailablePrefecture>;
   /**
-   * Specialties practiced by at least one healthcare professional, most facilities first, then most professionals.
+   * Specialties practiced by at least one healthcare professional linked to a facility,
+   * most facilities first, then most professionals.
    * Pass a prefecture key or Japanese name to count only professionals at facilities there.
    */
   availableSpecialties: Array<AvailableSpecialty>;
