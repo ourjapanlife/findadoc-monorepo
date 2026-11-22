@@ -129,6 +129,10 @@ describe('addressPrecision', () => {
         expect(addressPrecision('広島県呉市中央四丁目')).toBe(ADDRESS_PRECISION.Chome)
         expect(addressPrecision('広島県広島市中区基町')).toBe(ADDRESS_PRECISION.Town)
     })
+
+    it('counts a lot number (番地) as the block, where there is no 住居表示', () => {
+        expect(addressPrecision('広島県三次市テスト町２２７６番地')).toBe(ADDRESS_PRECISION.Block)
+    })
 })
 
 describe('parseGsiResponse', () => {
