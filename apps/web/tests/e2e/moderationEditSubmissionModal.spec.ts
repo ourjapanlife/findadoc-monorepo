@@ -1,10 +1,11 @@
 import enUS from '../../i18n/locales/en.json' with { type: 'json' }
 import { test, expect, type Page, type Route } from '@playwright/test'
+import { showOnlySubmissionQueue, submissionStatusChip } from './moderationFilters'
 
 async function navigateToFirstSubmissionEditPage(page: Page) {
     await page.getByTestId('access-page-link-moderation-submissions').click()
-    // Default tab is "New"; CI seed data has submissions under "For Review".
-    await page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.forReview, 'i') }).click()
+    // CI seed data has submissions under "For Review".
+    await showOnlySubmissionQueue(page, 'FOR_REVIEW')
     const firstSubmission = page.locator('[data-testid^="mod-submission-list-item-"]').first()
     await expect(firstSubmission).toBeVisible({ timeout: 30_000 })
     await firstSubmission.click()
@@ -21,7 +22,7 @@ test.describe('Moderation edit submission topbar modals', () => {
         await page.goto('/my-page?view=submissions')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByTestId('access-page-link-moderation-submissions')).toBeVisible({ timeout: 30_000 })
-        await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.forReview, 'i') })).toBeVisible()
+        await expect(submissionStatusChip(page)).toBeVisible()
     })
 
     test('opens approve confirmation modal from topbar action', async ({ page }) => {

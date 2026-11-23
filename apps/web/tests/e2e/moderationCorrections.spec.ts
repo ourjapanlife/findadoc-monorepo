@@ -1,5 +1,6 @@
 import enUS from '../../i18n/locales/en.json' with { type: 'json' }
 import { test, expect, type APIRequestContext, type Page } from '@playwright/test'
+import { showOnlySubmissionQueue } from './moderationFilters'
 
 /*
  * A moderator reviews visitor corrections from the User feedback queue (#22). The seed holds two
@@ -26,26 +27,8 @@ async function facilityFromApi(request: APIRequestContext, id: string): Promise<
     return facility
 }
 
-const QUEUES = ['NEW', 'FOR_REVIEW', 'APPROVED', 'REJECTED', 'USER_FEEDBACK'] as const
-
-/** Leaves one queue ticked on the status chip (#313): reset to every queue, then untick the rest. */
-async function showOnlyQueue(page: Page, queue: typeof QUEUES[number]) {
-    const chip = page.getByTestId('mod-submission-status-filter')
-    await chip.click()
-    const reset = page.getByTestId('mod-submission-status-filter-reset')
-    if (await reset.isEnabled()) {
-        await reset.click()
-        await chip.click()
-    }
-    for (const other of QUEUES.filter(item => item !== queue)) {
-        await page.getByTestId(`mod-submission-status-filter-option-${other}`).click()
-    }
-    await page.keyboard.press('Escape')
-    await expect(chip).toHaveAttribute('data-active', 'true')
-}
-
 async function openFeedbackQueue(page: Page) {
-    await showOnlyQueue(page, 'USER_FEEDBACK')
+    await showOnlySubmissionQueue(page, 'USER_FEEDBACK')
 }
 
 async function facilityIdOnReview(page: Page): Promise<string> {
@@ -72,7 +55,7 @@ test.describe('Moderation user feedback', () => {
     test('opens a listing straight from its link, as a shared link or a reload does', async ({ page }) => {
         // The review screen waits for the submission to load, so a listing opened by URL must still
         // reach its edit form when the list does not hold it.
-        await showOnlyQueue(page, 'NEW')
+        await showOnlySubmissionQueue(page, 'NEW')
         const href = await page.getByTestId('mod-submission-list-item-1').getAttribute('href')
         expect(href).toMatch(/\/edit-submission\//)
 
@@ -86,7 +69,7 @@ test.describe('Moderation user feedback', () => {
         const chip = page.getByTestId('mod-submission-status-filter')
         await expect(chip).toHaveAttribute('data-active', 'false')
 
-        await showOnlyQueue(page, 'NEW')
+        await showOnlySubmissionQueue(page, 'NEW')
         await expect(chip).toContainText(enUS.modDashboardLeftNav.new)
 
         await chip.click()
@@ -146,7 +129,7 @@ test.describe('Moderation user feedback', () => {
         const after = await facilityFromApi(request, facilityId)
         expect(after.contact?.phone).toBe(before.contact?.phone)
 
-        await showOnlyQueue(page, 'REJECTED')
+        await showOnlySubmissionQueue(page, 'REJECTED')
         const declinedRow = page.locator('tr', {
             has: page.getByRole('link', { name: new RegExp(enUS.clinicCorrection.reasonWrongContact, 'i') })
         })
