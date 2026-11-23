@@ -78,7 +78,7 @@ export const SPECIALTY_GROUP: Readonly<Record<Specialty, SpecialtyCategory>> = {
 
 /**
  * Stored values a picker no longer offers. ENT_SPECIALIST and OTOLARYNGOLOGY were the same
- * department (耳鼻咽喉科); OTOLARYNGOLOGY stays, and `utils/backfillEntSpecialty.ts` moves the rest.
+ * department (耳鼻咽喉科). OTOLARYNGOLOGY stays, and the #277 backfill moved every stored row to it.
  */
 export const HIDDEN_SPECIALTIES: ReadonlySet<Specialty> = new Set([Specialty.EntSpecialist])
 
