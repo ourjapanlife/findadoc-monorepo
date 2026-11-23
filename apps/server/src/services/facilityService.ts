@@ -832,6 +832,9 @@ export async function searchFacilities(
         } else {
             baseQuery = baseQuery.orderBy('facilities.name_en', 'asc')
         }
+        // Facilities can share a name, so the id breaks ties. Without it, Postgres may return tied
+        // rows in a different order on each page, and moderation can show one twice and skip one.
+        baseQuery = baseQuery.orderBy('facilities.id', 'asc')
 
         // Execute the main query, applying the offset and limit for the current page
         const paginationRows = await baseQuery.limit(limit).offset(offset).execute()
