@@ -63,6 +63,48 @@ describe('search_facilities', () => {
         })
     })
 
+    it('passes prefecture, language, and specialty filters to the query', async () => {
+        mockRequest.mockResolvedValueOnce({ facilities: [], facilitiesTotalCount: 0 })
+
+        await client.callTool({
+            name: 'search_facilities',
+            arguments: { prefecture: 'Okinawa', spokenLanguages: ['en_US'], specialties: ['INTERNAL_MEDICINE'] }
+        })
+
+        expect(mockRequest).toHaveBeenCalledWith(expect.anything(), {
+            filters: {
+                limit: 10,
+                offset: 0,
+                prefecture: 'Okinawa',
+                spokenLanguages: ['en_US'],
+                specialties: ['INTERNAL_MEDICINE']
+            }
+        })
+    })
+
+    it('omits empty language and specialty lists', async () => {
+        mockRequest.mockResolvedValueOnce({ facilities: [], facilitiesTotalCount: 0 })
+
+        await client.callTool({
+            name: 'search_facilities',
+            arguments: { prefecture: '沖縄県', spokenLanguages: [], specialties: [] }
+        })
+
+        expect(mockRequest).toHaveBeenCalledWith(expect.anything(), {
+            filters: { limit: 10, offset: 0, prefecture: '沖縄県' }
+        })
+    })
+
+    it('rejects more than five languages', async () => {
+        const result = await client.callTool({
+            name: 'search_facilities',
+            arguments: { spokenLanguages: ['en_US', 'ja_JP', 'zh_CN', 'ko_KR', 'vi_VN', 'fr_FR'] }
+        })
+
+        expect(result.isError).toBe(true)
+        expect(mockRequest).not.toHaveBeenCalled()
+    })
+
     it('should return an error when the GraphQL request fails', async () => {
         mockRequest.mockRejectedValueOnce(new Error('Connection refused'))
 
