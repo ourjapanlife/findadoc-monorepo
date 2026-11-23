@@ -30,7 +30,9 @@ import { assertScriptWriteAllowed, describeScriptTarget, scriptDatabaseConfig } 
  *   150 m of it, so the address confirms what a person would otherwise approve;
  * - a facility with no ministry row, or a ministry row at 0,0, gets the address pin.
  * A one-sided match the address does not confirm, and an address found only to the town or
- * 丁目, are left for a moderator. Only rows that still have no pin are written, and the write is
+ * 丁目, are left for a moderator, unless `--closest` is passed too: then each of them gets the
+ * closest pin there is (`planClosestFill`), and the report lists their ids as `approximateIds`
+ * for a moderator to check later. Only rows that still have no pin are written, and the write is
  * a compare-and-set on the empty pin.
  *
  * Dry-run unless `--write` is passed. Reports counts and ids only.
@@ -62,6 +64,8 @@ export type PinMatch = {
     institution?: MinistryInstitution
     // The facility's own street address, for the address lookup.
     street: string
+    // The prefecture and city alone, for the --closest city-center fallback.
+    city: string
 }
 
 const KANJI_DIGITS = '〇一二三四五六七八九'
@@ -133,6 +137,7 @@ export function matchFacilityPins(
         const street = streetQuery(facility)
         const ours = addressKey(street)
         const city = normalizeJapanese(`${facility.prefectureJa}${facility.cityJa}`)
+        const cityQuery = `${facility.prefectureJa}${facility.cityJa}`.normalize('NFKC').replace(/\s/g, '')
         const sameName = (byName.get(normalizeJapanese(facility.nameJa)) ?? [])
             .filter(institution => city && normalizeJapanese(institution.address).startsWith(city))
         const [named] = sameName
@@ -141,16 +146,22 @@ export function matchFacilityPins(
             const level = sameStreet(ours, addressKey(named.address))
                 ? MATCH_LEVEL.NameAndAddress
                 : MATCH_LEVEL.NameOnly
-            return { facilityId: facility.id, level, institution: named, street }
+            return { facilityId: facility.id, level, institution: named, street, city: cityQuery }
         }
 
         const sameAddress = sameName.length === 0 ? byAddress.get(ours) ?? [] : []
         const [located] = sameAddress
         if (sameAddress.length === 1 && located) {
-            return { facilityId: facility.id, level: MATCH_LEVEL.AddressOnly, institution: located, street }
+            return {
+                facilityId: facility.id,
+                level: MATCH_LEVEL.AddressOnly,
+                institution: located,
+                street,
+                city: cityQuery
+            }
         }
 
-        return { facilityId: facility.id, level: MATCH_LEVEL.None, street }
+        return { facilityId: facility.id, level: MATCH_LEVEL.None, street, city: cityQuery }
     })
 }
 
@@ -198,7 +209,10 @@ export function parseMinistryCsv(text: string): MinistryInstitution[] {
 
 /** True when the matched ministry row has coordinates we can use. */
 export function hasMinistryPin(match: PinMatch): boolean {
-    return match.institution !== undefined && hasUsableMapPin(match.institution.lat, match.institution.lng)
+    const institution = match.institution
+    // In range too: facilities_pin_required refuses anything else, and one refusal rolls back the run.
+    return institution !== undefined && hasUsableMapPin(institution.lat, institution.lng)
+        && Math.abs(institution.lat) <= 90 && Math.abs(institution.lng) <= 180
 }
 
 const APPROVED_VALUES = new Set(['ok', 'yes', 'y', 'approved', '✓', '✔'])
@@ -262,7 +276,12 @@ export const ADDRESS_CONFIRM_METERS = 150
 export const PIN_SOURCE = {
     Ministry: 'ministry',
     MinistryConfirmedByAddress: 'ministry_confirmed_by_address',
-    Address: 'address'
+    Address: 'address',
+    // --closest only: best guesses, listed by id in the report so a moderator can check them later.
+    AddressOverMinistry: 'address_over_ministry',
+    MinistryUnconfirmed: 'ministry_unconfirmed',
+    AddressApproximate: 'address_approximate',
+    CityCenter: 'city_center'
 } as const
 
 export type PinSource = typeof PIN_SOURCE[keyof typeof PIN_SOURCE]
@@ -295,6 +314,40 @@ export function planFill(match: PinMatch, approved: ReadonlySet<string>, address
         }
     }
     return { facilityId: match.facilityId, lat: address.lat, lng: address.lng, source: PIN_SOURCE.Address }
+}
+
+/** Sources that are a best guess rather than a checked pin. */
+export const APPROXIMATE_SOURCES: ReadonlySet<PinSource> = new Set([
+    PIN_SOURCE.AddressOverMinistry,
+    PIN_SOURCE.MinistryUnconfirmed,
+    PIN_SOURCE.AddressApproximate,
+    PIN_SOURCE.CityCenter
+])
+
+/**
+ * The closest pin there is for a match `planFill` leaves alone (--closest), so the map shows every
+ * facility near where it is. In order: the block-level street address over a ministry pin that
+ * disagrees with it, since the address is what the page shows; the ministry pin when the address
+ * did not reach the block; the 丁目 or town the address reached; the city center.
+ */
+export function planClosestFill(match: PinMatch, address?: AddressPin | null, cityCenter?: AddressPin | null): PinFill | null {
+    const institution = match.institution
+    const usable = (pin?: AddressPin | null): pin is AddressPin => hasUsableMapPin(pin?.lat, pin?.lng)
+    const fill = (lat: number, lng: number, source: PinSource): PinFill => ({ facilityId: match.facilityId, lat, lng, source })
+
+    if (usable(address) && address.precision === ADDRESS_PRECISION.Block) {
+        return fill(address.lat, address.lng, PIN_SOURCE.AddressOverMinistry)
+    }
+    if (institution && hasMinistryPin(match)) {
+        return fill(institution.lat, institution.lng, PIN_SOURCE.MinistryUnconfirmed)
+    }
+    if (usable(address)) {
+        return fill(address.lat, address.lng, PIN_SOURCE.AddressApproximate)
+    }
+    if (usable(cityCenter)) {
+        return fill(cityCenter.lat, cityCenter.lng, PIN_SOURCE.CityCenter)
+    }
+    return null
 }
 
 const GSI_ADDRESS_SEARCH_URL = 'https://msearch.gsi.go.jp/address-search/AddressSearch'
@@ -345,26 +398,42 @@ export function createGsiGeocoder(fetchImpl: typeof fetch = fetch, delayMs = GSI
 }
 
 /** Looks up each match that nothing else fills. A failed lookup leaves that facility for later. */
+type AddressLookups = {
+    addresses: Map<string, AddressPin | null>
+    cityCenters: Map<string, AddressPin | null>
+    lookups: number
+    failures: number
+}
+
+/**
+ * Looks up each match that nothing else fills. With `closest`, a street the lookup cannot find
+ * also gets its city looked up, for the city-center fallback. A failed lookup leaves that
+ * facility for later.
+ */
 async function lookUpAddresses(
     matches: readonly PinMatch[],
     approved: ReadonlySet<string>,
-    geocode: Geocoder
-): Promise<{ addresses: Map<string, AddressPin | null>, lookups: number, failures: number }> {
-    const addresses = new Map<string, AddressPin | null>()
-    let lookups = 0
-    let failures = 0
+    geocode: Geocoder,
+    closest: boolean
+): Promise<AddressLookups> {
+    const result: AddressLookups = { addresses: new Map(), cityCenters: new Map(), lookups: 0, failures: 0 }
     for (const match of matches) {
         if (shouldFill(match, approved) || match.street === '') {
             continue
         }
-        lookups += 1
+        result.lookups += 1
         try {
-            addresses.set(match.facilityId, await geocode(match.street))
+            const address = await geocode(match.street)
+            result.addresses.set(match.facilityId, address)
+            const streetUsable = hasUsableMapPin(address?.lat, address?.lng)
+            if (closest && !streetUsable && !hasMinistryPin(match) && match.city !== '') {
+                result.cityCenters.set(match.facilityId, await geocode(match.city))
+            }
         } catch {
-            failures += 1
+            result.failures += 1
         }
     }
-    return { addresses, lookups, failures }
+    return result
 }
 
 export type FacilityPinsReport = {
@@ -381,6 +450,8 @@ export type FacilityPinsReport = {
     bySource: Record<PinSource, number>
     toFill: number
     sampleIds: string[]
+    // --closest: every facility given a best-guess pin, so a moderator can check them later.
+    approximateIds: string[]
     updated: number
 }
 
@@ -396,14 +467,16 @@ const SAMPLE_SIZE = 5
 
 /**
  * Plans and, with `write`, fills the pins on an open connection. Without `geocode`, only ministry
- * pins are planned, as before.
+ * pins are planned, as before. With `closest`, every facility `planFill` leaves alone gets the
+ * closest pin there is (`planClosestFill`).
  */
 export async function backfillFacilityPins(
     client: pg.ClientBase,
     institutions: readonly MinistryInstitution[],
     approved: ReadonlySet<string>,
     write: boolean,
-    geocode?: Geocoder
+    geocode?: Geocoder,
+    closest = false
 ): Promise<FacilityPinsReport> {
     const result = await client.query<FacilityRow>(`
         select id, name_ja,
@@ -426,17 +499,32 @@ export async function backfillFacilityPins(
     }))
 
     const matches = matchFacilityPins(facilities, institutions)
-    const lookup = geocode
-        ? await lookUpAddresses(matches, approved, geocode)
-        : { addresses: new Map<string, AddressPin | null>(), lookups: 0, failures: 0 }
+    const lookup: AddressLookups = geocode
+        ? await lookUpAddresses(matches, approved, geocode, closest)
+        : { addresses: new Map(), cityCenters: new Map(), lookups: 0, failures: 0 }
     const fills = matches
-        .map(match => planFill(match, approved, lookup.addresses.get(match.facilityId)))
+        .map(match => {
+            const address = lookup.addresses.get(match.facilityId)
+            const planned = planFill(match, approved, address)
+            if (planned || !closest || !lookup.addresses.has(match.facilityId)) {
+                return planned
+            }
+            return planClosestFill(match, address, lookup.cityCenters.get(match.facilityId))
+        })
         .filter((fill): fill is PinFill => fill !== null)
     const byLevel: Record<MatchLevel, number> = { name_and_address: 0, name_only: 0, address_only: 0, none: 0 }
     for (const match of matches) {
         byLevel[match.level] += 1
     }
-    const bySource: Record<PinSource, number> = { ministry: 0, ministry_confirmed_by_address: 0, address: 0 }
+    const bySource: Record<PinSource, number> = {
+        ministry: 0,
+        ministry_confirmed_by_address: 0,
+        address: 0,
+        address_over_ministry: 0,
+        ministry_unconfirmed: 0,
+        address_approximate: 0,
+        city_center: 0
+    }
     for (const fill of fills) {
         bySource[fill.source] += 1
     }
@@ -454,6 +542,7 @@ export async function backfillFacilityPins(
         bySource,
         toFill: fills.length,
         sampleIds: fills.slice(0, SAMPLE_SIZE).map(fill => fill.facilityId),
+        approximateIds: fills.filter(fill => APPROXIMATE_SOURCES.has(fill.source)).map(fill => fill.facilityId),
         updated: 0
     }
 
@@ -518,7 +607,14 @@ export async function main(argv: readonly string[] = process.argv): Promise<void
 
     try {
         const geocode = argv.includes('--geocode') ? createGsiGeocoder() : undefined
-        const report = await backfillFacilityPins(client, institutions, approved, write, geocode)
+        const closest = argv.includes('--closest')
+        if (closest && !geocode) {
+            // eslint-disable-next-line no-console -- CLI usage
+            console.error('--closest needs --geocode.')
+            process.exitCode = 1
+            return
+        }
+        const report = await backfillFacilityPins(client, institutions, approved, write, geocode, closest)
         // eslint-disable-next-line no-console -- counts and ids only
         console.log(JSON.stringify(report, null, 2))
         if (!write && report.toFill > 0) {

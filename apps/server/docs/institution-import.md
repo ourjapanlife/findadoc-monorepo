@@ -62,6 +62,8 @@ The import stored only a Places id, so the 1,249 facilities it created had no la
 
 `--geocode` looks up each facility's Japanese street address, cut before the building, in the Geospatial Information Authority's address search (国土地理院, `msearch.gsi.go.jp`), one call every 250 ms. It sends only the clinic's public address. A lot number (番地) counts as the block, since rural addresses without 住居表示 stop there. An address found only to the town or 丁目 is never used, and a street address that disagrees with a one-sided ministry pin is left for a person to decide. Facility pages credit GSI next to the ministry (`facility-pin-credit`), and only for imported facilities, so the script reads only rows with `source = MHLW_MULTILINGUAL_INSTITUTIONS`.
 
+`--closest` (with `--geocode`) places every facility the rules above leave, so none is missing from the map. In order it takes the block-level street address over a ministry pin that disagrees with it, the ministry pin when the address did not reach the block, the 丁目 or town the address reached, and last the city center. These pins are best guesses: the report lists their ids as `approximateIds`, for a moderator to check and correct on the edit form.
+
 Unzip the three CSVs, then dry-run, read the counts, and write (see `.claude/skills/production-database/SKILL.md`):
 
 ```bash
