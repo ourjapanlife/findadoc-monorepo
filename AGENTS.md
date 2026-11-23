@@ -184,6 +184,8 @@ Before a change is done:
 
 The #21 multilingual institutions import has run on production, and its scripts are deleted. `apps/server/docs/institution-import.md` records what it did. Every row is staged in `institution_import_rows`, which stays as the record of where each facility came from. Red rows were skipped, a match filled empty fields only, and a new facility is `UNVERIFIED` with one Places id. The import wrote no professional, payment, or insurance. Rows with outcome `needs_review` wait for a moderator. Do not bring the scripts back to re-run it; a new list is a new import.
 
+The #21 map pins backfill has also run on production, and its script is deleted. Every in-person facility has a pin, and `facilities_pin_required` is validated. The pins came from the Ministry of Health open data and GSI's address search, never from Places, and imported facilities credit both (`facility-source-credit`, `facility-pin-credit`). 116 of them are best guesses, and a moderator corrects those on the edit form.
+
 ## Licenses
 
 A professional has one primary clinical license. PhD, MPH, and DSc are additional credentials. DVM, EdD, and DSW stay in the enum and stay hidden from the moderation picker.

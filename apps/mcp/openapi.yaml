@@ -106,10 +106,9 @@ paths:
       operationId: searchFacilities
       summary: Search healthcare facilities
       description: >-
-        Search for clinics and hospitals in Japan. Note: filtering is currently
-        limited to facility name and associated professional name. To find
-        facilities by language or specialty, search healthcare professionals and
-        look up facilities by their facilityIds.
+        Search for clinics and hospitals in Japan. Filter by prefecture, spoken
+        language, and specialty in one call. There is no city filter; filter by
+        prefecture and narrow by address.cityEn.
       parameters:
         - name: limit
           in: query
@@ -139,6 +138,29 @@ paths:
           description: Filter to facilities that have a professional matching this name.
           schema:
             type: string
+        - name: prefecture
+          in: query
+          description: Prefecture as an English key (e.g. Okinawa) or Japanese name (e.g. 沖縄県).
+          schema:
+            type: string
+        - name: spokenLanguages
+          in: query
+          description: Only facilities where all of these languages are supported (e.g. en_US). Comma-separated or repeated.
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: specialties
+          in: query
+          description: Only facilities with a professional in all of these specialties (e.g. INTERNAL_MEDICINE). Comma-separated or repeated.
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         '200':
           description: Matching facilities.
@@ -352,6 +374,13 @@ components:
               type: ['string', 'null']
             address:
               $ref: '#/components/schemas/Address'
+        supportedLanguages:
+          type: array
+          description: >-
+            Languages the clinic says it supports, with or without a named
+            doctor. Not every doctor may speak them.
+          items:
+            type: string
         healthcareProfessionalIds:
           type: array
           items:

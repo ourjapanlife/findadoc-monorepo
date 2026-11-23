@@ -224,7 +224,7 @@
                     </p>
                 </div>
             </div>
-            <div class="mod-form-grid">
+            <div class="mod-form-grid mt-6">
                 <ModInputField
                     v-model="facilityStore.facilitySectionFields.addressLine1En"
                     data-testid="mod-facility-section-addressLine1En"

@@ -46,6 +46,27 @@ describe('REST routes', () => {
         })
     })
 
+    it('GET /api/facilities forwards prefecture, language, and specialty filters', async () => {
+        mockRequest.mockResolvedValueOnce({ facilities: [{ id: 'f-1' }], facilitiesTotalCount: 1 })
+
+        const res = await app.inject({
+            method: 'GET',
+            url: '/api/facilities?prefecture=Okinawa&spokenLanguages=en_US&specialties=INTERNAL_MEDICINE'
+        })
+
+        expect(res.statusCode).toBe(200)
+        expect(res.json().totalCount).toBe(1)
+        expect(variablesOf(0)).toEqual({
+            filters: {
+                limit: 10,
+                offset: 0,
+                prefecture: 'Okinawa',
+                spokenLanguages: ['en_US'],
+                specialties: ['INTERNAL_MEDICINE']
+            }
+        })
+    })
+
     it('GET /api/facilities/:id returns 404 when not found', async () => {
         mockRequest.mockResolvedValueOnce({ facility: null })
 
