@@ -137,31 +137,46 @@ describe('ModOpeningHoursField', () => {
         return wrapper
     }
 
-    it('adds a block for a day, and a second block that opens when the first closes', async () => {
+    it('opens a day at 09:00–18:00, and a break splits it into morning and afternoon', async () => {
         const wrapper = mountField([])
-        await wrapper.get('[data-testid="mod-facility-section-opening-hours-MONDAY-add"]').trigger('click')
+        await wrapper.get('[data-testid="mod-facility-section-opening-hours-MONDAY-open"]').setValue(true)
         expect(wrapper.props('modelValue')).toEqual([{ day: OpeningDay.Monday, opens: '09:00', closes: '18:00' }])
 
-        await wrapper.get('[data-testid="mod-facility-section-opening-hours-MONDAY-closes-0"]').setValue('12:30')
-        await wrapper.get('[data-testid="mod-facility-section-opening-hours-MONDAY-add"]').trigger('click')
+        await wrapper.get('[data-testid="mod-facility-section-opening-hours-MONDAY-add-break"]').trigger('click')
         expect(wrapper.props('modelValue')).toEqual([
-            { day: OpeningDay.Monday, opens: '09:00', closes: '12:30' },
-            { day: OpeningDay.Monday, opens: '12:30', closes: '' }
+            { day: OpeningDay.Monday, opens: '09:00', closes: '12:00' },
+            { day: OpeningDay.Monday, opens: '13:00', closes: '18:00' }
         ])
+        expect(wrapper.find('[data-testid="mod-facility-section-opening-hours-MONDAY-break-0"]').exists()).toBe(true)
     })
 
-    it('keeps 23:59 as 23:59, and stores 24:00 only from the midnight checkbox', async () => {
+    it('picks times from the lists, with 24:00 as the end of the day', async () => {
         const wrapper = mountField([{ day: OpeningDay.Friday, opens: '09:00', closes: '18:00' }])
-        await wrapper.get('[data-testid="mod-facility-section-opening-hours-FRIDAY-closes-0"]').setValue('23:59')
-        expect(wrapper.props('modelValue')).toEqual([{ day: OpeningDay.Friday, opens: '09:00', closes: '23:59' }])
+        await wrapper.get('[data-testid="mod-facility-section-opening-hours-FRIDAY-opens-0"]').setValue('16:30')
+        await wrapper.get('[data-testid="mod-facility-section-opening-hours-FRIDAY-closes-0"]').setValue('24:00')
+        expect(wrapper.props('modelValue')).toEqual([{ day: OpeningDay.Friday, opens: '16:30', closes: '24:00' }])
+    })
 
-        await wrapper.get('[data-testid="mod-facility-section-opening-hours-FRIDAY-midnight-0"]').setValue(true)
-        expect(wrapper.props('modelValue')).toEqual([{ day: OpeningDay.Friday, opens: '09:00', closes: '24:00' }])
-        expect(wrapper.get<HTMLInputElement>('[data-testid="mod-facility-section-opening-hours-FRIDAY-closes-0"]')
-            .element.disabled).toBe(true)
+    it('copies Monday to Tuesday through Friday', async () => {
+        const wrapper = mountField([
+            { day: OpeningDay.Monday, opens: '09:00', closes: '12:00' },
+            { day: OpeningDay.Monday, opens: '16:30', closes: '18:30' },
+            { day: OpeningDay.Saturday, opens: '09:00', closes: '12:00' }
+        ])
+        await wrapper.get('[data-testid="mod-facility-section-opening-hours-copy-weekdays"]').trigger('click')
+        const days = wrapper.props('modelValue').map(block => block.day)
+        expect(days.filter(day => day === OpeningDay.Thursday)).toHaveLength(2)
+        expect(days.filter(day => day === OpeningDay.Saturday)).toHaveLength(1)
+    })
 
-        await wrapper.get('[data-testid="mod-facility-section-opening-hours-FRIDAY-midnight-0"]').setValue(false)
-        expect(wrapper.props('modelValue')).toEqual([{ day: OpeningDay.Friday, opens: '09:00', closes: '' }])
+    it('closes a day by unticking it', async () => {
+        const wrapper = mountField([
+            { day: OpeningDay.Friday, opens: '09:00', closes: '17:00' },
+            { day: OpeningDay.Saturday, opens: '09:00', closes: '12:00' }
+        ])
+        await wrapper.get('[data-testid="mod-facility-section-opening-hours-FRIDAY-open"]').setValue(false)
+        expect(wrapper.props('modelValue')).toEqual([{ day: OpeningDay.Saturday, opens: '09:00', closes: '12:00' }])
+        expect(wrapper.get('[data-testid="mod-facility-section-opening-hours-FRIDAY"]').text()).toContain('openingHours.closed')
     })
 
     it('says when a block closes before it opens', async () => {

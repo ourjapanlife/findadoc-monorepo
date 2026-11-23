@@ -50,28 +50,20 @@ The list is public institution data (names, addresses, clinic phone numbers, web
 
 ## Map pins
 
-The import stored only a Places id, so the 1,249 facilities it created had no latitude or longitude. The API refuses an in-person facility without a pin, but the import wrote to the table directly, and the search map drew every one of them in central Tokyo. `20261122090000_facility_pin_required.sql` adds `facilities_pin_required` as `NOT VALID`: every new row and every update needs a pin now. A later migration validates it once no row is left without one.
+The import stored only a Places id, so the 1,249 facilities it created had no latitude or longitude, and the search map drew every one of them in central Tokyo. `20261122090000_facility_pin_required.sql` added `facilities_pin_required` as `NOT VALID`, and `20261123120000_validate_facility_pin_required.sql` validates it: every in-person facility has a usable pin, in the database as well as the API.
 
-`utils/backfillFacilityPins.ts` fills the pins from the ministry's own coordinates: the 医療情報ネット open data facility CSVs (病院・診療所・歯科診療所の施設票) from https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryou/newpage_43373.html, used under 公共データ利用規約 (PDL1.0). Places coordinates are not used, because they may be kept for 30 days at most (`docs/places-storage.md`).
+The pins backfill has run on production (#306, #308, #309, #310), and its script is deleted. Do not bring it back to re-run it. It wrote only empty pins, from these sources, and never Places coordinates, which may be kept for 30 days at most (`docs/places-storage.md`):
 
-| Match | What the script does |
-| --- | --- |
-| Same Japanese name in the same municipality, and the same street address, every number alike | Fills the pin |
-| The name or the street address agrees, not both | Fills it when the facility is approved in the verification CSV (`--approved`, `check_map_pin_place` = ok), or with `--geocode` when the facility's street address lands within 150 m of the ministry pin |
-| A ministry row with 0,0 coordinates, or no match | With `--geocode`, fills the pin from the street address when the lookup finds the block (番 or 号). Otherwise leaves it for a moderator |
+| Source | Facilities | Rule |
+| --- | --- | --- |
+| Ministry of Health open data (医療情報ネット, 2026-06-01 施設票, 公共データ利用規約 PDL1.0) | 566 | Same Japanese name in the same municipality and the same street address |
+| Ministry pin, confirmed by the street address | 293 | Name or street agreed, and GSI's address search (国土地理院) put the facility's own street within 150 m of the ministry pin |
+| GSI street address, block or lot (番, 番地, 号) | 274 | No ministry row, or a ministry row at 0,0 |
+| Best guess | 116 | 47 block-level street addresses that disagreed with the ministry pin, 35 ministry pins the address could not confirm, 33 丁目 or town centers, 1 city center |
 
-`--geocode` looks up each facility's Japanese street address, cut before the building, in the Geospatial Information Authority's address search (国土地理院, `msearch.gsi.go.jp`), one call every 250 ms. It sends only the clinic's public address. A lot number (番地) counts as the block, since rural addresses without 住居表示 stop there. An address found only to the town or 丁目 is never used, and a street address that disagrees with a one-sided ministry pin is left for a person to decide. Facility pages credit GSI next to the ministry (`facility-pin-credit`), and only for imported facilities, so the script reads only rows with `source = MHLW_MULTILINGUAL_INSTITUTIONS`.
+The 116 best guesses may be off, the town and city centers most of all. Their ids were kept outside the repository for a moderator to check on the edit form. Checked against the 470 facilities that already had a pin, a name-and-address ministry match landed a median of 28 m away.
 
-`--closest` (with `--geocode`) places every facility the rules above leave, so none is missing from the map. In order it takes the block-level street address over a ministry pin that disagrees with it, the ministry pin when the address did not reach the block, the 丁目 or town the address reached, and last the city center. These pins are best guesses: the report lists their ids as `approximateIds`, for a moderator to check and correct on the edit form.
-
-Unzip the three CSVs, then dry-run, read the counts, and write (see `.claude/skills/production-database/SKILL.md`):
-
-```bash
-pnpm db:prod node --loader ts-node/esm utils/backfillFacilityPins.ts --csv hospital.csv --csv clinic.csv --csv dental.csv --approved verification.csv --geocode
-pnpm db:prod --role operator node --loader ts-node/esm utils/backfillFacilityPins.ts --csv hospital.csv --csv clinic.csv --csv dental.csv --approved verification.csv --geocode --write --confirm-production
-```
-
-Checked against the 470 facilities that already had a pin, a name-and-address match lands a median of 28 m away, and 4 of 113 more than 1 km away. Facility pages credit the ministry for imported facilities (`facility-source-credit`), with a link to each source page and a note that Find a Doc edited the data.
+Imported facilities credit both sources: the ministry (`facility-source-credit`), with a link to each source page and a note that Find a Doc edited the data, and GSI's address search (`facility-pin-credit`).
 
 ## Review
 
