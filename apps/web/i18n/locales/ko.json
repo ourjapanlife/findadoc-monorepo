@@ -499,7 +499,9 @@
     "chooseClinic": "클리닉 선택",
     "noBookingClinics": "아직 예약을 받는 클리닉이 없습니다",
     "clinicsLoadError": "클리닉을 불러올 수 없습니다",
-    "nameReview": "이름 확인이 필요함"
+    "nameReview": "이름 확인이 필요함",
+    "statusFilter": "상태",
+    "reviewFilter": "검토"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "삭제",
@@ -1498,5 +1500,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "알아두기"
+  },
+  "filterChip": {
+    "reset": "초기화",
+    "selected": "{count}개 선택됨"
   }
 }

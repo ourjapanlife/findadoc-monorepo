@@ -2862,6 +2862,20 @@ export enum SubmissionKind {
   Listing = 'LISTING'
 }
 
+/** A moderation queue: the kind and status one dashboard filter stands for. */
+export enum SubmissionQueue {
+  /** Approved listings and corrections. */
+  Approved = 'APPROVED',
+  /** Listings under review. */
+  ForReview = 'FOR_REVIEW',
+  /** New listings: sent, and not yet under review or decided. */
+  New = 'NEW',
+  /** Declined listings and corrections. */
+  Rejected = 'REJECTED',
+  /** Corrections nobody has decided: new or under review. */
+  UserFeedback = 'USER_FEEDBACK'
+}
+
 /** Search filters for querying submissions. All filters are combined with AND logic. */
 export type SubmissionSearchFilters = {
   /** Filter by creation date (ISO 8601). */
@@ -2890,6 +2904,8 @@ export type SubmissionSearchFilters = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   /** Ordering rules for the results. */
   orderBy?: InputMaybe<Array<OrderBy>>;
+  /** Filter to submissions in any of these queues. Omit or leave empty for every queue. Not with a status flag. */
+  queues?: InputMaybe<Array<SubmissionQueue>>;
   /** Filter by spoken languages. */
   spokenLanguages?: InputMaybe<Array<Locale>>;
   /** Filter by last updated date (ISO 8601). */
@@ -3315,6 +3331,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Submission: ResolverTypeWrapper<Submission>;
   SubmissionKind: SubmissionKind;
+  SubmissionQueue: SubmissionQueue;
   SubmissionSearchFilters: SubmissionSearchFilters;
   SubmitBookingInput: SubmitBookingInput;
   UpdateBookingAppointmentStatusInput: UpdateBookingAppointmentStatusInput;

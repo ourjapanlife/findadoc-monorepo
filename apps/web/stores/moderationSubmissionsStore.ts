@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 import { fetchSubmissionsWithCount } from '../utils/graphqlHelpers'
 import { submissionSelection } from '../utils/graphqlSelection'
-import { SubmissionKind } from '@findadoc/graphql'
+import { SubmissionQueue } from '@findadoc/graphql'
 import type { Submission, MutationUpdateSubmissionArgs, Mutation, SubmissionSearchFilters } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql.js'
 import type { ServerResponse } from '~/typedefs/serverResponse'
@@ -27,15 +27,6 @@ import {
     type ListOrder
 } from '~/utils/moderationTable'
 
-/** The stored values stay as they were, so a saved tab still opens. Rejected reads as Declined. */
-export enum SelectedSubmissionListViewTab {
-    New = 'NEW',
-    ForReview = 'FOR_REVIEW',
-    Approved = 'APPROVED',
-    Rejected = 'REJECTED',
-    UserFeedback = 'USER_FEEDBACK'
-}
-
 export enum SelectedModerationListView {
     Facilities = 'FACILITIES',
     HealthcareProfessionals = 'HEALTHCARE_PROFESSIONALS',
@@ -44,48 +35,23 @@ export enum SelectedModerationListView {
     ClinicAccounts = 'CLINIC_ACCOUNTS'
 }
 
-type SubmissionStatusFilter = Pick<
-    SubmissionSearchFilters,
-    'isPending' | 'isOpen' | 'isUnderReview' | 'isApproved' | 'isRejected'
->
+/**
+ * The moderation queues, in the order the status chip lists them (#313). The API decides what
+ * each holds: New and For review are listings, User feedback is open corrections (#22), and
+ * Approved and Declined hold both kinds.
+ */
+export const SUBMISSION_QUEUES: readonly SubmissionQueue[] = [
+    SubmissionQueue.New,
+    SubmissionQueue.ForReview,
+    SubmissionQueue.Approved,
+    SubmissionQueue.Rejected,
+    SubmissionQueue.UserFeedback
+]
 
-// Visitor corrections (#22) wait in User feedback, so New and Under review show listings only.
-// Approved and Declined show both kinds, and a correction row carries the Feedback tag.
-const LISTINGS_ONLY = { kind: SubmissionKind.Listing } as const satisfies SubmissionSearchFilters
-const CORRECTIONS_ONLY = { kind: SubmissionKind.Correction } as const satisfies SubmissionSearchFilters
+type SubmissionQueueCounts = Record<SubmissionQueue, number>
 
-type ServerTabFilter = SubmissionStatusFilter & Pick<SubmissionSearchFilters, 'kind'>
-
-// Every tab is one server filter, so each pages and counts on the server, however long the queue.
-const NEW_FILTER: ServerTabFilter = { ...LISTINGS_ONLY, isPending: true }
-const FOR_REVIEW_FILTER: ServerTabFilter = { ...LISTINGS_ONLY, isUnderReview: true }
-const APPROVED_FILTER: ServerTabFilter = { isApproved: true }
-const DECLINED_FILTER: ServerTabFilter = { isRejected: true }
-// User feedback is every correction nobody has decided: new or under review.
-const FEEDBACK_FILTER: ServerTabFilter = { ...CORRECTIONS_ONLY, isOpen: true }
-
-const SUBMISSION_TAB_FILTERS: Record<SelectedSubmissionListViewTab, ServerTabFilter> = {
-    [SelectedSubmissionListViewTab.New]: NEW_FILTER,
-    [SelectedSubmissionListViewTab.ForReview]: FOR_REVIEW_FILTER,
-    [SelectedSubmissionListViewTab.Approved]: APPROVED_FILTER,
-    [SelectedSubmissionListViewTab.Rejected]: DECLINED_FILTER,
-    [SelectedSubmissionListViewTab.UserFeedback]: FEEDBACK_FILTER
-}
-
-const SUBMISSION_STATUS_COUNT_QUERIES = [
-    { countKey: 'newCount', filter: NEW_FILTER },
-    { countKey: 'forReviewCount', filter: FOR_REVIEW_FILTER },
-    { countKey: 'approvedCount', filter: APPROVED_FILTER },
-    { countKey: 'rejectedCount', filter: DECLINED_FILTER },
-    { countKey: 'feedbackCount', filter: FEEDBACK_FILTER }
-] as const
-
-interface SubmissionStatusCounts {
-    newCount: number
-    forReviewCount: number
-    approvedCount: number
-    rejectedCount: number
-    feedbackCount: number
+function emptyQueueCounts(): SubmissionQueueCounts {
+    return Object.fromEntries(SUBMISSION_QUEUES.map(queue => [queue, 0])) as SubmissionQueueCounts
 }
 
 export const useModerationSubmissionsStore = defineStore(
@@ -98,19 +64,10 @@ export const useModerationSubmissionsStore = defineStore(
         const filteredSubmissionDataForListComponent: Ref<Submission[]> = ref([])
         const submissionSearchQuery: Ref<string> = ref('')
         const didMutationFail: Ref<boolean> = ref(false)
-        const selectedModerationListViewTabChosen = usePersistentFilters(
-            'submissions',
-            'tab',
-            SelectedSubmissionListViewTab.New,
-            Object.values(SelectedSubmissionListViewTab)
-        )
-        const statusTotalCounts: Ref<SubmissionStatusCounts> = ref({
-            newCount: 0,
-            forReviewCount: 0,
-            approvedCount: 0,
-            rejectedCount: 0,
-            feedbackCount: 0
-        })
+        // The status chip. Empty is every queue. Not kept between visits: a filter left on from an
+        // earlier visit looked like an empty queue (#313).
+        const selectedSubmissionQueues: Ref<SubmissionQueue[]> = ref([])
+        const statusTotalCounts: Ref<SubmissionQueueCounts> = ref(emptyQueueCounts())
         // A correction row stores only the facility id. The list shows the clinic's name.
         const correctionFacilityNames: Ref<Record<string, CorrectionFacilityName>> = ref({})
         // Open corrections per clinic, so a row shows that its clinic has other reports.
@@ -226,7 +183,9 @@ export const useModerationSubmissionsStore = defineStore(
                         const filters: SubmissionSearchFilters = {
                             offset,
                             limit: itemsPerPage.value,
-                            ...SUBMISSION_TAB_FILTERS[selectedModerationListViewTabChosen.value],
+                            ...(selectedSubmissionQueues.value.length > 0
+                                ? { queues: selectedSubmissionQueues.value }
+                                : {}),
                             ...(orderBy === null ? {} : { orderBy })
                         }
                         const { filteredSearchResults, totalCount } = await fetchSubmissionsWithCount(filters)
@@ -257,22 +216,14 @@ export const useModerationSubmissionsStore = defineStore(
 
         async function fetchStatusCounts() {
             try {
-                const countResults = await Promise.all(SUBMISSION_STATUS_COUNT_QUERIES.map(({ filter }) =>
-                    fetchSubmissionsWithCount({ ...filter, limit: 1, offset: 0 })))
+                const countResults = await Promise.all(SUBMISSION_QUEUES.map(queue =>
+                    fetchSubmissionsWithCount({ queues: [queue], limit: 1, offset: 0 })))
 
-                statusTotalCounts.value = SUBMISSION_STATUS_COUNT_QUERIES.reduce(
-                    (counts, { countKey }, index) => {
-                        counts[countKey] = countResults[index]?.totalCount ?? 0
-                        return counts
-                    },
-                    {
-                        newCount: 0,
-                        forReviewCount: 0,
-                        approvedCount: 0,
-                        rejectedCount: 0,
-                        feedbackCount: 0
-                    }
-                )
+                const counts = emptyQueueCounts()
+                SUBMISSION_QUEUES.forEach((queue, index) => {
+                    counts[queue] = countResults[index]?.totalCount ?? 0
+                })
+                statusTotalCounts.value = counts
             } catch (error) {
                 console.error(`Error fetching submission status counts: ${JSON.stringify(error)}`)
             }
@@ -287,8 +238,9 @@ export const useModerationSubmissionsStore = defineStore(
             selectedModerationListViewChosen.value = selectedOption
         }
 
-        async function setSelectedModerationListViewTabChosen(selectedOption: SelectedSubmissionListViewTab) {
-            selectedModerationListViewTabChosen.value = selectedOption
+        /** Shows these queues, or every queue for []. Starts again from the first page. */
+        async function setSelectedSubmissionQueues(queues: SubmissionQueue[]) {
+            selectedSubmissionQueues.value = queues
             currentOffset.value = 0
             await getSubmissions()
         }
@@ -451,8 +403,8 @@ export const useModerationSubmissionsStore = defineStore(
             setDidMutationFail,
             selectedModerationListViewChosen,
             setSelectedModerationListViewChosen,
-            selectedModerationListViewTabChosen,
-            setSelectedModerationListViewTabChosen,
+            selectedSubmissionQueues,
+            setSelectedSubmissionQueues,
             statusTotalCounts,
             updateSubmission,
             approveSubmission,

@@ -490,7 +490,9 @@
     "chooseClinic": "Choisir une clinique",
     "noBookingClinics": "Aucune clinique n’accepte encore de réservations",
     "clinicsLoadError": "Impossible de charger les cliniques",
-    "nameReview": "Nom à vérifier"
+    "nameReview": "Nom à vérifier",
+    "statusFilter": "Statut",
+    "reviewFilter": "Vérification"
   },
   "modFacilitySection": {
     "addresses": "Adresses",
@@ -1498,5 +1500,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Bon à savoir"
+  },
+  "filterChip": {
+    "reset": "Réinitialiser",
+    "selected": "{count} sélectionnés"
   }
 }

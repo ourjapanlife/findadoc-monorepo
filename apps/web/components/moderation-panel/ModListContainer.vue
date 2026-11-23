@@ -253,7 +253,7 @@ const pageSelection = computed(() => pageSelectionState(
 watch(
     () => [
         modSubmissionsStore.selectedModerationListViewChosen,
-        modSubmissionsStore.selectedModerationListViewTabChosen
+        modSubmissionsStore.selectedSubmissionQueues
     ],
     () => {
         selectedSubmissions.value = {}

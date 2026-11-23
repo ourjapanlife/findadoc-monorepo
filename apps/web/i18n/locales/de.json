@@ -537,7 +537,9 @@
     "chooseClinic": "Praxis auswählen",
     "noBookingClinics": "Noch keine Praxis nimmt Buchungen an",
     "clinicsLoadError": "Praxen konnten nicht geladen werden",
-    "nameReview": "Name muss geprüft werden"
+    "nameReview": "Name muss geprüft werden",
+    "statusFilter": "Status",
+    "reviewFilter": "Prüfung"
   },
   "modFacilitySection": {
     "addresses": "Adressen",
@@ -1498,5 +1500,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Gut zu wissen"
+  },
+  "filterChip": {
+    "reset": "Zurücksetzen",
+    "selected": "{count} ausgewählt"
   }
 }

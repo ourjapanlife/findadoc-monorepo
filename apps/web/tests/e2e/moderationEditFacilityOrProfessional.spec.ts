@@ -1,6 +1,7 @@
 import enUS from '../../i18n/locales/en.json' with { type: 'json' }
 import { test, expect, type Page } from '@playwright/test'
 import { moderationSuccessToastPattern } from './fixtures'
+import { submissionStatusChip } from './moderationFilters'
 
 async function switchModerationFormToEdit(page: Page) {
     await page.getByTestId('mod-form-mode-toggle').click()
@@ -13,7 +14,7 @@ test.describe('Moderation facility and healthcare professional happy paths', () 
         await page.goto('/my-page?view=submissions')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByTestId('access-page-link-moderation-submissions')).toBeVisible({ timeout: 30_000 })
-        await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.forReview, 'i') })).toBeVisible()
+        await expect(submissionStatusChip(page)).toBeVisible()
     })
 
     test('facility edit: update shows success toast', async ({ page }) => {

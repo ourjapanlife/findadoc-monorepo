@@ -1,5 +1,6 @@
 import enUS from '../../i18n/locales/en.json' with { type: 'json' }
 import { test, expect } from '@playwright/test'
+import { submissionStatusChip } from './moderationFilters'
 
 test.describe('Moderation dashboard', () => {
     test.beforeEach(async ({ page }) => {
@@ -8,8 +9,7 @@ test.describe('Moderation dashboard', () => {
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByTestId('mod-access-panel')).toBeVisible({ timeout: 30_000 })
         await expect(page.getByTestId('access-page-link-moderation-submissions')).toBeVisible({ timeout: 30_000 })
-        await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.new, 'i') })).toBeVisible()
-        await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.forReview, 'i') })).toBeVisible()
+        await expect(submissionStatusChip(page)).toBeVisible()
     })
 
     test('shows access panel and primary view navigation for Submissions, Facilities, Healthcare Professionals',
@@ -24,7 +24,7 @@ test.describe('Moderation dashboard', () => {
                  .toBeVisible()
 
              await page.getByTestId('access-page-link-moderation-submissions').click()
-             await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.forReview, 'i') })).toBeVisible()
+             await expect(submissionStatusChip(page)).toBeVisible()
          })
 
     test('shows scope link for read:submissions when granted', async ({ page }) => {
@@ -33,12 +33,20 @@ test.describe('Moderation dashboard', () => {
 
     test('shows the submission queues New, Under review, Approved, Declined, and User feedback',
          async ({ page }) => {
-             await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.new, 'i') })).toBeVisible()
-             await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.forReview, 'i') })).toBeVisible()
-             await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.approved, 'i') })).toBeVisible()
-             await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.rejected, 'i') })).toBeVisible()
-             await expect(page.getByRole('button', { name: new RegExp(enUS.modDashboardLeftNav.userFeedback, 'i') }))
-                 .toBeVisible()
+             // Every queue is shown, and ticked, until a moderator unticks one (#313).
+             const chip = submissionStatusChip(page)
+             await expect(chip).toHaveAttribute('data-active', 'false')
+             await chip.click()
+             const menu = page.getByTestId('mod-submission-status-filter-menu')
+             for (const label of [
+                 enUS.modDashboardLeftNav.new,
+                 enUS.modDashboardLeftNav.forReview,
+                 enUS.modDashboardLeftNav.approved,
+                 enUS.modDashboardLeftNav.rejected,
+                 enUS.modDashboardLeftNav.userFeedback
+             ]) {
+                 await expect(menu.getByRole('checkbox', { name: new RegExp(label, 'i') })).toBeChecked()
+             }
          })
 })
 

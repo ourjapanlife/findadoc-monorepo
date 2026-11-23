@@ -280,6 +280,16 @@ function applySubmissionQueryFilters<O>(
         query = query.where('kind', '=', storedSubmissionKind(filters.kind))
     }
 
+    // Any of the chosen queues: the moderation dashboard's status chip (#313).
+    const queues = [...new Set(filters.queues ?? [])]
+    if (queues.length > 0) {
+        query = query.where(eb => eb.or(queues.map(queue => {
+            const { kind, statuses } = SUBMISSION_QUEUE_ROWS[queue]
+            const inStatuses = eb('status', 'in', statuses)
+            return kind === undefined ? inStatuses : eb.and([eb('kind', '=', kind), inStatuses])
+        })))
+    }
+
     if (filters.facilityId) {
         query = query.where('facilities_id', '=', filters.facilityId)
     }
@@ -297,6 +307,21 @@ function applySubmissionQueryFilters<O>(
 
 /** A submission nobody has decided yet: new, or under review. */
 const OPEN_SUBMISSION_STATUSES: SubmissionStatusEnum[] = [SUBMISSION_STATUS.PENDING, SUBMISSION_STATUS.UNDER_REVIEW]
+
+/**
+ * The rows each moderation queue holds. New and For review are listings only, because visitor
+ * corrections (#22) wait in User feedback. Approved and Rejected hold both kinds.
+ */
+const SUBMISSION_QUEUE_ROWS: Record<
+    gqlTypes.SubmissionQueue,
+    { kind?: SubmissionKindEnum, statuses: SubmissionStatusEnum[] }
+> = {
+    [gqlTypes.SubmissionQueue.New]: { kind: SUBMISSION_KIND.LISTING, statuses: [SUBMISSION_STATUS.PENDING] },
+    [gqlTypes.SubmissionQueue.ForReview]: { kind: SUBMISSION_KIND.LISTING, statuses: [SUBMISSION_STATUS.UNDER_REVIEW] },
+    [gqlTypes.SubmissionQueue.Approved]: { statuses: [SUBMISSION_STATUS.APPROVED] },
+    [gqlTypes.SubmissionQueue.Rejected]: { statuses: [SUBMISSION_STATUS.REJECTED] },
+    [gqlTypes.SubmissionQueue.UserFeedback]: { kind: SUBMISSION_KIND.CORRECTION, statuses: OPEN_SUBMISSION_STATUSES }
+}
 
 /**
  * Open corrections per facility, in one grouped query. The moderation queue uses it to show

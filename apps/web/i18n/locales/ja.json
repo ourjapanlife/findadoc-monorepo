@@ -453,7 +453,9 @@
     "chooseClinic": "クリニックを選択",
     "noBookingClinics": "予約を受け付けているクリニックはまだありません",
     "clinicsLoadError": "クリニックを読み込めませんでした",
-    "nameReview": "名前の確認が必要"
+    "nameReview": "名前の確認が必要",
+    "statusFilter": "ステータス",
+    "reviewFilter": "レビュー"
   },
   "modFacilitySection": {
     "addresses": "住所",
@@ -1498,5 +1500,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "ご案内"
+  },
+  "filterChip": {
+    "reset": "リセット",
+    "selected": "{count}件を選択中"
   }
 }
