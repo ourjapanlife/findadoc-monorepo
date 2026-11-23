@@ -551,7 +551,7 @@
     "openingHoursRemoveShort": "Remover",
     "openingHoursAddBreak": "Adicionar intervalo",
     "openingHoursBreak": "Intervalo {from}–{to}",
-    "openingHoursCopyWeekdays": "Copiar para terça a sexta",
+    "openingHoursCopyToChecked": "Copiar horários para os outros dias marcados",
     "openingHoursOpensOn": "Abertura de {day}",
     "openingHoursClosesOn": "Fechamento de {day}",
     "openingHoursInvalid": "Cada faixa precisa fechar depois de abrir, e faixas no mesmo dia não podem se sobrepor.",

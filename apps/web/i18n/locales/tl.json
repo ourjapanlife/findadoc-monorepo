@@ -499,7 +499,7 @@
     "openingHoursRemoveShort": "Alisin",
     "openingHoursAddBreak": "Magdagdag ng pahinga",
     "openingHoursBreak": "Pahinga {from}–{to}",
-    "openingHoursCopyWeekdays": "Kopyahin sa Martes–Biyernes",
+    "openingHoursCopyToChecked": "Kopyahin ang oras sa iba pang may tsek na araw",
     "openingHoursOpensOn": "Oras ng pagbubukas sa {day}",
     "openingHoursClosesOn": "Oras ng pagsasara sa {day}",
     "openingHoursInvalid": "Dapat magsara ang bawat oras pagkatapos itong magbukas, at hindi puwedeng magpatong ang mga oras sa iisang araw.",

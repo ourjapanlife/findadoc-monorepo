@@ -551,7 +551,7 @@
     "openingHoursRemoveShort": "削除",
     "openingHoursAddBreak": "休憩を追加",
     "openingHoursBreak": "休憩 {from}–{to}",
-    "openingHoursCopyWeekdays": "火曜〜金曜にコピー",
+    "openingHoursCopyToChecked": "チェックした他の曜日に時間をコピー",
     "openingHoursOpensOn": "{day}の開始時刻",
     "openingHoursClosesOn": "{day}の終了時刻",
     "openingHoursInvalid": "終了時刻は開始時刻より後にし、同じ曜日の時間帯は重ならないようにしてください。",

@@ -712,7 +712,7 @@
     "openingHoursRemoveShort": "삭제",
     "openingHoursAddBreak": "휴식 시간 추가",
     "openingHoursBreak": "휴식 {from}–{to}",
-    "openingHoursCopyWeekdays": "화요일~금요일에 복사",
+    "openingHoursCopyToChecked": "선택한 다른 요일에 시간 복사",
     "openingHoursOpensOn": "{day} 시작 시간",
     "openingHoursClosesOn": "{day} 종료 시간",
     "openingHoursInvalid": "각 시간대는 시작 후에 끝나야 하며, 같은 요일의 시간대는 겹칠 수 없습니다.",

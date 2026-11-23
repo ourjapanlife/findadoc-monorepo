@@ -712,7 +712,7 @@
     "openingHoursRemoveShort": "हटाउनुहोस्",
     "openingHoursAddBreak": "विश्राम थप्नुहोस्",
     "openingHoursBreak": "विश्राम {from}–{to}",
-    "openingHoursCopyWeekdays": "मङ्गलबार–शुक्रबारमा प्रतिलिपि गर्नुहोस्",
+    "openingHoursCopyToChecked": "टिक गरिएका अन्य दिनहरूमा समय प्रतिलिपि गर्नुहोस्",
     "openingHoursOpensOn": "{day} खुल्ने समय",
     "openingHoursClosesOn": "{day} बन्द हुने समय",
     "openingHoursInvalid": "हरेक समय खुलेपछि मात्र बन्द हुनुपर्छ, र एउटै दिनका समयहरू एकअर्कामा खप्टिनु हुँदैन।",

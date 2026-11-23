@@ -551,7 +551,7 @@
     "openingHoursRemoveShort": "Удалить",
     "openingHoursAddBreak": "Добавить перерыв",
     "openingHoursBreak": "Перерыв {from}–{to}",
-    "openingHoursCopyWeekdays": "Копировать на вторник–пятницу",
+    "openingHoursCopyToChecked": "Копировать часы на другие отмеченные дни",
     "openingHoursOpensOn": "{day}: открытие",
     "openingHoursClosesOn": "{day}: закрытие",
     "openingHoursInvalid": "Каждый интервал должен заканчиваться после начала, а интервалы в один день не могут пересекаться.",
