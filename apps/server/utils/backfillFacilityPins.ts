@@ -234,10 +234,13 @@ export type AddressPin = { lat: number, lng: number, precision: AddressPrecision
 
 export type Geocoder = (street: string) => Promise<AddressPin | null>
 
-/** How far the address search's matched address goes: to the block (番, 号), the 丁目, or the town. */
+/**
+ * How far the address search's matched address goes: to the block (番, 番地, 号), the 丁目, or the
+ * town. 番地 is the lot number where there is no 住居表示, as close as 番 is in a city block.
+ */
 export function addressPrecision(matched: string): AddressPrecision {
     const value = matched.normalize('NFKC')
-    if (/[番号]$|\d$/.test(value)) {
+    if (/(番|番地|号|\d)$/.test(value)) {
         return ADDRESS_PRECISION.Block
     }
     return /丁目$/.test(value) ? ADDRESS_PRECISION.Chome : ADDRESS_PRECISION.Town
