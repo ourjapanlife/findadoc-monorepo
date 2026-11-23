@@ -282,6 +282,8 @@ export async function searchProfessionals(
         } else {
             hpSelect = hpSelect.orderBy('hps.created_date', 'desc')
         }
+        // Rows created together share a timestamp, so the id breaks ties and every page is stable.
+        hpSelect = hpSelect.orderBy('hps.id', 'asc')
 
         // Perform paged fetch after all filters are applied so the page is computed
         const matchingHps = await hpSelect.limit(limit).offset(offset).execute()
