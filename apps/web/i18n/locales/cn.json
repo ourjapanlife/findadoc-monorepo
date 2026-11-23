@@ -551,7 +551,7 @@
     "openingHoursRemoveShort": "删除",
     "openingHoursAddBreak": "添加休息时间",
     "openingHoursBreak": "休息 {from}–{to}",
-    "openingHoursCopyWeekdays": "复制到周二至周五",
+    "openingHoursCopyToChecked": "将时间复制到其他已勾选的日期",
     "openingHoursOpensOn": "{day}开始时间",
     "openingHoursClosesOn": "{day}结束时间",
     "openingHoursInvalid": "每个时段的结束时间必须晚于开始时间，同一天的时段不能重叠。",

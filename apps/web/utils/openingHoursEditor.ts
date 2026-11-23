@@ -1,4 +1,4 @@
-import { OpeningDay, type OpeningHours } from '@findadoc/graphql'
+import type { OpeningDay, OpeningHours } from '@findadoc/graphql'
 import { MAX_OPENING_BLOCKS_PER_DAY, openingMinutes } from '@findadoc/utils'
 
 /**
@@ -21,13 +21,6 @@ const LUNCH_STARTS = 12 * 60
 const LUNCH_ENDS = 13 * 60
 const BREAK_MINUTES = 60
 const AFTER_BREAK_MINUTES = 3 * 60
-
-const WEEKDAYS_AFTER_MONDAY: readonly OpeningDay[] = [
-    OpeningDay.Tuesday,
-    OpeningDay.Wednesday,
-    OpeningDay.Thursday,
-    OpeningDay.Friday
-]
 
 /** 570 → '09:30', 1440 → '24:00'. */
 export function timeLabel(minutes: number): string {
@@ -147,11 +140,20 @@ function splitInMiddle(
     ]
 }
 
-/** Gives Tuesday to Friday the same blocks as Monday. Weekends and public holidays stay as they are. */
-export function copyMondayToWeekdays(hours: readonly OpeningHours[]): OpeningHours[] {
-    const monday = hours.filter(block => block.day === OpeningDay.Monday)
+/** The other days that are ticked open: the days a copy from `from` writes to. */
+export function checkedDaysOtherThan(hours: readonly OpeningHours[], from: OpeningDay): OpeningDay[] {
+    return [...new Set(hours.map(block => block.day))].filter(day => day !== from)
+}
+
+/**
+ * Gives every other ticked day the same blocks as `from`. A closed day stays closed, so a
+ * moderator ticks the days that share these hours, then copies once.
+ */
+export function copyDayToCheckedDays(hours: readonly OpeningHours[], from: OpeningDay): OpeningHours[] {
+    const targets = checkedDaysOtherThan(hours, from)
+    const source = blocksForDay(hours, from).map(entry => entry.block)
     return [
-        ...hours.filter(block => !WEEKDAYS_AFTER_MONDAY.includes(block.day)),
-        ...WEEKDAYS_AFTER_MONDAY.flatMap(day => monday.map(block => ({ ...block, day })))
+        ...hours.filter(block => !targets.includes(block.day)),
+        ...targets.flatMap(day => source.map(block => ({ ...block, day })))
     ]
 }

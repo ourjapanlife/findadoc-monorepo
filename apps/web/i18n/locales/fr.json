@@ -588,7 +588,7 @@
     "openingHoursRemoveShort": "Supprimer",
     "openingHoursAddBreak": "Ajouter une pause",
     "openingHoursBreak": "Pause {from}–{to}",
-    "openingHoursCopyWeekdays": "Copier du mardi au vendredi",
+    "openingHoursCopyToChecked": "Copier les horaires vers les autres jours cochés",
     "openingHoursOpensOn": "Ouverture le {day}",
     "openingHoursClosesOn": "Fermeture le {day}",
     "openingHoursInvalid": "Chaque plage doit se terminer après son début, et les plages d'un même jour ne peuvent pas se chevaucher.",

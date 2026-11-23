@@ -635,7 +635,7 @@
     "openingHoursRemoveShort": "Entfernen",
     "openingHoursAddBreak": "Pause hinzufügen",
     "openingHoursBreak": "Pause {from}–{to}",
-    "openingHoursCopyWeekdays": "Auf Dienstag–Freitag übertragen",
+    "openingHoursCopyToChecked": "Zeiten auf die anderen markierten Tage übertragen",
     "openingHoursOpensOn": "{day} öffnet",
     "openingHoursClosesOn": "{day} schließt",
     "openingHoursInvalid": "Jeder Zeitraum muss nach seinem Beginn enden, und Zeiträume an einem Tag dürfen sich nicht überschneiden.",

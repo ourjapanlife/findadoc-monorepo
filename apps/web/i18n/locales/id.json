@@ -712,7 +712,7 @@
     "openingHoursRemoveShort": "Hapus",
     "openingHoursAddBreak": "Tambah jeda",
     "openingHoursBreak": "Jeda {from}–{to}",
-    "openingHoursCopyWeekdays": "Salin ke Selasa–Jumat",
+    "openingHoursCopyToChecked": "Salin jam ke hari lain yang dicentang",
     "openingHoursOpensOn": "Jam buka {day}",
     "openingHoursClosesOn": "Jam tutup {day}",
     "openingHoursInvalid": "Setiap rentang harus tutup setelah buka, dan rentang pada hari yang sama tidak boleh tumpang tindih.",

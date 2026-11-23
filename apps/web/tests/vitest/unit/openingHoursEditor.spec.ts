@@ -4,7 +4,7 @@ import {
     addBreak,
     breaksForDay,
     closingTimeOptions,
-    copyMondayToWeekdays,
+    copyDayToCheckedDays,
     openingTimeOptions
 } from '~/utils/openingHoursEditor'
 
@@ -71,16 +71,35 @@ describe('breaksForDay', () => {
     })
 })
 
-describe('copyMondayToWeekdays', () => {
-    it('replaces Tuesday to Friday with Monday and leaves the weekend', () => {
-        const copied = copyMondayToWeekdays([
-            { day: MONDAY, opens: '09:00', closes: '12:00' },
-            { day: OpeningDay.Wednesday, opens: '10:00', closes: '11:00' },
-            { day: OpeningDay.Sunday, opens: '10:00', closes: '11:00' }
-        ])
-        expect(copied.filter(block => block.day === OpeningDay.Wednesday))
-            .toEqual([{ day: OpeningDay.Wednesday, opens: '09:00', closes: '12:00' }])
-        expect(copied.filter(block => block.day === OpeningDay.Sunday)).toHaveLength(1)
+describe('copyDayToCheckedDays', () => {
+    const MORNING_AND_EVENING = [
+        { day: MONDAY, opens: '09:00', closes: '12:00' },
+        { day: MONDAY, opens: '16:30', closes: '18:30' }
+    ]
+
+    it('gives every other ticked day the same blocks, breaks included', () => {
+        const copied = copyDayToCheckedDays([
+            ...MORNING_AND_EVENING,
+            { day: OpeningDay.Wednesday, opens: '09:00', closes: '18:00' },
+            { day: OpeningDay.Saturday, opens: '10:00', closes: '11:00' }
+        ], MONDAY)
+        for (const day of [OpeningDay.Wednesday, OpeningDay.Saturday]) {
+            expect(copied.filter(block => block.day === day).map(({ opens, closes }) => ({ opens, closes })))
+                .toEqual([{ opens: '09:00', closes: '12:00' }, { opens: '16:30', closes: '18:30' }])
+        }
         expect(copied).toHaveLength(6)
+    })
+
+    it('leaves the unticked days closed', () => {
+        const copied = copyDayToCheckedDays([
+            ...MORNING_AND_EVENING,
+            { day: OpeningDay.Friday, opens: '09:00', closes: '18:00' }
+        ], MONDAY)
+        expect(copied.some(block => block.day === OpeningDay.Tuesday)).toBe(false)
+        expect(copied.some(block => block.day === OpeningDay.Sunday)).toBe(false)
+    })
+
+    it('changes nothing when no other day is ticked', () => {
+        expect(copyDayToCheckedDays(MORNING_AND_EVENING, MONDAY)).toEqual(MORNING_AND_EVENING)
     })
 })

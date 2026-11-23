@@ -6,7 +6,10 @@
         <legend class="mb-2 text-sm font-medium text-primary-text">
             {{ t('modFacilitySection.openingHoursLabel') }}
         </legend>
-        <p class="m-0 text-sm text-primary-text-muted">
+        <p
+            v-if="isEditing"
+            class="m-0 text-sm text-primary-text-muted"
+        >
             {{ t('modFacilitySection.openingHoursHint') }}
         </p>
         <p
@@ -16,7 +19,37 @@
         >
             {{ t('modFacilitySection.openingHoursUnknown') }}
         </p>
-        <ul class="m-0 flex list-none flex-col divide-y divide-accent-bg rounded-lg border border-accent-bg p-0">
+        <dl
+            v-if="!isEditing && hours.length"
+            class="m-0 flex flex-col divide-y divide-accent-bg rounded-lg border border-accent-bg"
+            data-testid="mod-facility-section-opening-hours-preview"
+        >
+            <div
+                v-for="day in OPENING_DAYS"
+                :key="day"
+                class="flex items-baseline gap-4 px-4 py-2.5"
+                :data-testid="`mod-facility-section-opening-hours-${day}`"
+            >
+                <dt class="w-36 shrink-0 text-sm font-semibold text-primary-text">
+                    {{ openingDayLabel(day, t) }}
+                </dt>
+                <dd class="m-0 flex flex-1 flex-wrap gap-2">
+                    <span
+                        v-for="entry in blocksFor(day)"
+                        :key="entry.index"
+                        class="rounded-full bg-accent-bg/60 px-2.5 py-0.5 text-sm font-medium text-primary-text tabular-nums"
+                    >{{ entry.block.opens }}–{{ entry.block.closes }}</span>
+                    <span
+                        v-if="!blocksFor(day).length"
+                        class="text-sm text-primary-text-muted"
+                    >{{ t('openingHours.closed') }}</span>
+                </dd>
+            </div>
+        </dl>
+        <ul
+            v-if="isEditing"
+            class="m-0 flex list-none flex-col divide-y divide-accent-bg rounded-lg border border-accent-bg p-0"
+        >
             <li
                 v-for="day in OPENING_DAYS"
                 :key="day"
@@ -28,7 +61,6 @@
                         type="checkbox"
                         class="size-5 accent-primary"
                         :checked="blocksFor(day).length > 0"
-                        :disabled="!isEditing"
                         :data-testid="`mod-facility-section-opening-hours-${day}-open`"
                         @change="toggleDay(day)"
                     >
@@ -59,7 +91,6 @@
                             <select
                                 class="field w-28"
                                 :value="entry.block.opens"
-                                :disabled="!isEditing"
                                 :aria-label="t('modFacilitySection.openingHoursOpensOn', { day: openingDayLabel(day, t) })"
                                 :data-testid="`mod-facility-section-opening-hours-${day}-opens-${position}`"
                                 @change="setTime(entry.index, 'opens', $event)"
@@ -79,7 +110,6 @@
                             <select
                                 class="field w-28"
                                 :value="entry.block.closes"
-                                :disabled="!isEditing"
                                 :aria-label="t('modFacilitySection.openingHoursClosesOn', { day: openingDayLabel(day, t) })"
                                 :data-testid="`mod-facility-section-opening-hours-${day}-closes-${position}`"
                                 @change="setTime(entry.index, 'closes', $event)"
@@ -100,7 +130,6 @@
                                 </option>
                             </select>
                             <button
-                                v-if="isEditing"
                                 type="button"
                                 class="btn btn-ghost btn-sm"
                                 :aria-label="t('modFacilitySection.openingHoursRemove', { day: openingDayLabel(day, t) })"
@@ -112,7 +141,6 @@
                         </div>
                     </template>
                     <div
-                        v-if="isEditing"
                         class="flex flex-wrap gap-2"
                     >
                         <button
@@ -125,13 +153,13 @@
                             {{ t('modFacilitySection.openingHoursAddBreak') }}
                         </button>
                         <button
-                            v-if="day === OpeningDay.Monday"
+                            v-if="checkedDaysOtherThan(hours, day).length"
                             type="button"
                             class="btn btn-ghost btn-sm text-primary"
-                            data-testid="mod-facility-section-opening-hours-copy-weekdays"
-                            @click="hours = copyMondayToWeekdays(hours)"
+                            :data-testid="`mod-facility-section-opening-hours-${day}-copy`"
+                            @click="hours = copyDayToCheckedDays(hours, day)"
                         >
-                            {{ t('modFacilitySection.openingHoursCopyWeekdays') }}
+                            {{ t('modFacilitySection.openingHoursCopyToChecked') }}
                         </button>
                     </div>
                 </div>
@@ -160,7 +188,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from '#imports'
-import { OpeningDay, type OpeningHours } from '@findadoc/graphql'
+import type { OpeningDay, OpeningHours } from '@findadoc/graphql'
 import { MAX_OPENING_BLOCKS_PER_DAY, OPENING_DAYS, openingHoursProblem } from '@findadoc/utils'
 import { useModerationFormEditing } from '~/composables/useModerationFormMode'
 import { openingDayLabel } from '~/utils/openingHours'
@@ -168,9 +196,10 @@ import {
     addBreak,
     blocksForDay,
     breaksForDay,
+    checkedDaysOtherThan,
     closeDay,
     closingTimeOptions,
-    copyMondayToWeekdays,
+    copyDayToCheckedDays,
     openDay,
     openingTimeOptions
 } from '~/utils/openingHoursEditor'
@@ -178,7 +207,8 @@ import {
 /**
  * Published opening hours (#294), in Japan time, from the clinic's own site or a call — never
  * from Places. Laid out like the clinic dashboard's weekly hours: a row per day, a checkbox to
- * open it, and a break is the gap between two blocks. No blocks at all is unknown. Once any
+ * open it, and a break is the gap between two blocks. A saved form opens in preview, which
+ * reads as plain times with no form controls. No blocks at all is unknown. Once any
  * block exists, a day without one is closed.
  */
 const { t } = useI18n()

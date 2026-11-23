@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
+import { defineComponent, h } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { OpeningDay, type OpeningHours } from '@findadoc/graphql'
+import { provideModerationFormEditing } from '~/composables/useModerationFormMode'
 import ModOpeningHoursField from '~/components/moderation-panel/ModOpeningHoursField.vue'
 import { validateCreateFacility, validateUpdateFacility } from '~/utils/facilitiesUtils'
 import type { FacilitySectionFields } from '~/stores/facilitiesStore'
@@ -157,16 +159,39 @@ describe('ModOpeningHoursField', () => {
         expect(wrapper.props('modelValue')).toEqual([{ day: OpeningDay.Friday, opens: '16:30', closes: '24:00' }])
     })
 
-    it('copies Monday to Tuesday through Friday', async () => {
+    it('copies one day\'s times to the other ticked days only', async () => {
         const wrapper = mountField([
             { day: OpeningDay.Monday, opens: '09:00', closes: '12:00' },
             { day: OpeningDay.Monday, opens: '16:30', closes: '18:30' },
-            { day: OpeningDay.Saturday, opens: '09:00', closes: '12:00' }
+            { day: OpeningDay.Saturday, opens: '09:00', closes: '18:00' }
         ])
-        await wrapper.get('[data-testid="mod-facility-section-opening-hours-copy-weekdays"]').trigger('click')
+        await wrapper.get('[data-testid="mod-facility-section-opening-hours-MONDAY-copy"]').trigger('click')
         const days = wrapper.props('modelValue').map(block => block.day)
-        expect(days.filter(day => day === OpeningDay.Thursday)).toHaveLength(2)
-        expect(days.filter(day => day === OpeningDay.Saturday)).toHaveLength(1)
+        expect(days.filter(day => day === OpeningDay.Saturday)).toHaveLength(2)
+        expect(days.filter(day => day === OpeningDay.Thursday)).toHaveLength(0)
+    })
+
+    it('offers no copy while no other day is ticked', () => {
+        const wrapper = mountField([{ day: OpeningDay.Monday, opens: '09:00', closes: '18:00' }])
+        expect(wrapper.find('[data-testid="mod-facility-section-opening-hours-MONDAY-copy"]').exists()).toBe(false)
+    })
+
+    it('reads as plain times in preview, with no form controls', () => {
+        // A saved form opens in preview.
+        const SavedForm = defineComponent({
+            setup() {
+                provideModerationFormEditing(false)
+                return () => h(ModOpeningHoursField, { modelValue: SPLIT_MONDAY })
+            }
+        })
+        const wrapper = mount(SavedForm, { global: { plugins: [i18n] } })
+        const monday = wrapper.get('[data-testid="mod-facility-section-opening-hours-MONDAY"]')
+        expect(monday.text()).toContain('09:00–12:30')
+        expect(monday.text()).toContain('15:00–18:00')
+        expect(wrapper.findAll('select')).toHaveLength(0)
+        expect(wrapper.findAll('input')).toHaveLength(0)
+        expect(wrapper.get('[data-testid="mod-facility-section-opening-hours-TUESDAY"]').text())
+            .toContain('openingHours.closed')
     })
 
     it('closes a day by unticking it', async () => {

@@ -712,7 +712,7 @@
     "openingHoursRemoveShort": "Remove",
     "openingHoursAddBreak": "Add a break",
     "openingHoursBreak": "Break {from}–{to}",
-    "openingHoursCopyWeekdays": "Copy to Tuesday–Friday",
+    "openingHoursCopyToChecked": "Copy times to the other ticked days",
     "openingHoursOpensOn": "{day} opens",
     "openingHoursClosesOn": "{day} closes",
     "openingHoursInvalid": "Each block must close after it opens, and blocks on one day cannot overlap.",

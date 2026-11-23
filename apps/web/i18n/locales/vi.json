@@ -546,7 +546,7 @@
     "openingHoursRemoveShort": "Xóa",
     "openingHoursAddBreak": "Thêm giờ nghỉ",
     "openingHoursBreak": "Nghỉ {from}–{to}",
-    "openingHoursCopyWeekdays": "Sao chép sang thứ Ba–thứ Sáu",
+    "openingHoursCopyToChecked": "Sao chép giờ sang các ngày đã đánh dấu khác",
     "openingHoursOpensOn": "Giờ mở cửa {day}",
     "openingHoursClosesOn": "Giờ đóng cửa {day}",
     "openingHoursInvalid": "Mỗi khung giờ phải kết thúc sau khi bắt đầu, và các khung giờ trong cùng một ngày không được chồng lên nhau.",
