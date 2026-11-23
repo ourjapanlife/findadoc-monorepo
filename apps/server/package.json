@@ -14,6 +14,8 @@
         "check:db": "node --loader ts-node/esm src/dbCheck.ts",
         "test": "vitest run --coverage",
         "test:coverage": "vitest run --coverage",
+        "backfill:ent-specialty": "node --loader ts-node/esm utils/backfillEntSpecialty.ts",
+        "backfill:ent-specialty:write": "node --loader ts-node/esm utils/backfillEntSpecialty.ts --write",
         "db:seed": "node --loader ts-node/esm scripts/seed/index.ts",
         "e2e:clinic-owner": "node --loader ts-node/esm scripts/e2e/clinicOwner.ts",
         "db:reset": "node --loader ts-node/esm scripts/db/reset.ts",

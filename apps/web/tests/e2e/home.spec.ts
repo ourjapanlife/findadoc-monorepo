@@ -69,9 +69,11 @@ test.describe('Home page', () => {
             const area = page.getByTestId('home-area')
             await expect(area.locator('option[value="hiroshima"]')).toHaveText('Hiroshima (24)')
             await expect(area.locator('option[value="tokyo"]')).toHaveCount(0)
-            // The specialty with the most clinics comes first, after "All specialties".
-            await expect(page.getByTestId('home-specialty').locator('option').nth(1)).toHaveAttribute('value', 'pediatrics')
-            await expect(page.getByTestId('home-specialty').locator('option')).toHaveCount(3)
+            // Specialties are grouped (#277), and only groups with a practiced specialty are offered.
+            const specialty = page.getByTestId('home-specialty')
+            await expect(specialty.locator('optgroup')).toHaveCount(2)
+            await expect(specialty.locator('optgroup').first().locator('option')).toHaveAttribute('value', 'dentistry')
+            await expect(specialty.locator('option')).toHaveCount(3)
         })
 
         test('the search entry carries its filters into the URL', async ({ page }) => {

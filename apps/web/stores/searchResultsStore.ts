@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch, type Ref } from 'vue'
 import type { SearchFilters } from '~/utils/searchDirectory'
-import type { Locale, Specialty } from '@findadoc/graphql'
+import type { Locale, Specialty, SpecialtyCategory } from '@findadoc/graphql'
 
 /** Results shown per "load more" step. */
 export const SEARCH_RESULTS_PER_PAGE = 25
@@ -13,12 +13,14 @@ export const SEARCH_RESULTS_PER_PAGE = 25
 export const useSearchResultsStore = defineStore('searchResultsStore', () => {
     const selectedCity: Ref<string | undefined> = ref()
     const selectedPrefecture: Ref<string | undefined> = ref()
+    const selectedSpecialtyGroup: Ref<SpecialtyCategory | undefined> = ref()
     const selectedSpecialties: Ref<Specialty[] | undefined> = ref()
     const selectedLanguages: Ref<Locale[] | undefined> = ref()
 
     const filters = computed<SearchFilters>(() => ({
         city: selectedCity.value,
         prefecture: selectedPrefecture.value,
+        specialtyGroup: selectedSpecialtyGroup.value,
         specialties: selectedSpecialties.value,
         languages: selectedLanguages.value
     }))
@@ -43,6 +45,7 @@ export const useSearchResultsStore = defineStore('searchResultsStore', () => {
     function clearFilters() {
         selectedCity.value = undefined
         selectedPrefecture.value = undefined
+        selectedSpecialtyGroup.value = undefined
         selectedSpecialties.value = undefined
         selectedLanguages.value = undefined
     }
@@ -50,6 +53,7 @@ export const useSearchResultsStore = defineStore('searchResultsStore', () => {
     return {
         selectedCity,
         selectedPrefecture,
+        selectedSpecialtyGroup,
         selectedSpecialties,
         selectedLanguages,
         filters,

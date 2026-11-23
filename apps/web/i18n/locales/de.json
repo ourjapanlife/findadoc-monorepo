@@ -234,7 +234,8 @@
   },
   "searchBar": {
     "allSpecialties": "Alle Fachgebiete",
-    "resultsFound": "Keine Ergebnisse | 1 Ergebnis gefunden | {n} Ergebnisse gefunden"
+    "resultsFound": "Keine Ergebnisse | 1 Ergebnis gefunden | {n} Ergebnisse gefunden",
+    "allSubspecialties": "Alle Fachgebiete"
   },
   "searchResultsList": {
     "loadMore": "Mehr laden",
@@ -314,7 +315,29 @@
     "traumatology": "Traumatologie",
     "urology": "Urologie",
     "surgery": "Chirurgie",
-    "proctology": "Proktologe"
+    "proctology": "Proktologe",
+    "breastSurgery": "Brustchirurg",
+    "cardiovascularSurgery": "Herz- und Gefäßchirurg",
+    "childPsychiatry": "Kinder- und Jugendpsychiater",
+    "cosmeticDermatology": "Ästhetischer Dermatologe",
+    "endocrinologyAndDiabetes": "Diabetologie & Endokrinologie",
+    "gastroenterology": "Gastroenterologe",
+    "geriatrics": "Geriatrie",
+    "hematology": "Hämatologe",
+    "hepatology": "Hepatologe (Leber)",
+    "kampoMedicine": "Kampo-Medizin",
+    "medicalOncology": "Internistischer Onkologe",
+    "nephrology": "Nephrologe (Niere)",
+    "neurosurgery": "Neurochirurg",
+    "oralSurgery": "Oralchirurg",
+    "painMedicine": "Schmerzambulanz",
+    "palliativeCare": "Palliativmedizin",
+    "pediatricDentistry": "Kinderzahnarzt",
+    "pediatricSurgery": "Kinderchirurg",
+    "psychosomaticMedicine": "Psychosomatische Medizin",
+    "pulmonology": "Pneumologe (Lunge)",
+    "reproductiveMedicine": "Kinderwunschmedizin",
+    "rheumatology": "Rheumatologe"
   },
   "specialtyCategories": {
     "childrensHealth": "Kindergesundheit",
@@ -328,7 +351,17 @@
     "physicalTherapy": "Physiotherapie",
     "primaryCare": "Hausarztversorgung",
     "sportsAndRehab": "Sport und Rehabilitation",
-    "womensHealth": "Frauengesundheit"
+    "womensHealth": "Frauengesundheit",
+    "allergyImmunityAndInfection": "Allergie, Immunologie und Infektionen",
+    "brainAndNerves": "Gehirn und Nerven",
+    "cancerAndDiagnostics": "Krebs und Diagnostik",
+    "diabetesHormonesAndKidneys": "Diabetes, Hormone und Nieren",
+    "digestiveHealth": "Verdauung",
+    "emergencyCare": "Notfallversorgung",
+    "heartAndCirculation": "Herz und Kreislauf",
+    "lungsAndBreathing": "Lunge und Atmung",
+    "pharmacyAndGenetics": "Apotheke und Genetik",
+    "surgeryAndAnesthesia": "Chirurgie und Anästhesie"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Verlassen ohne zu Speichern",
@@ -461,7 +494,10 @@
     "placeholderTextJapaneseLastName": "z. B. 山田",
     "placeholderTextJapaneseFirstName": "z. B. 花子",
     "nameNeedsReview": "Diese Namen prüfen. Einer wurde automatisch ausgefüllt oder fehlt noch.",
-    "otherLocaleNamesRemoved": "Namen in anderen Sprachen werden beim Speichern entfernt."
+    "otherLocaleNamesRemoved": "Namen in anderen Sprachen werden beim Speichern entfernt.",
+    "specialtyGroupLabel": "Fachbereich",
+    "allSpecialtyGroups": "Alle Bereiche",
+    "specialtySearchHint": "Suche auf Englisch oder Japanisch. Auch die Fachbezeichnung von der Website der Klinik funktioniert, zum Beispiel 胃腸内科."
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "Gesundheitsfachkraft-IDs",
@@ -800,7 +836,8 @@
     "missionLink": "Mehr über uns",
     "contributeHeading": "Kennen Sie eine Klinik, die uns fehlt?",
     "contributeBody": "Jede und jeder kann eine Klinik oder eine Ärztin bzw. einen Arzt vorschlagen. Unsere Moderatorinnen und Moderatoren prüfen jede Einreichung vor der Veröffentlichung.",
-    "contributeCta": "Arzt hinzufügen"
+    "contributeCta": "Arzt hinzufügen",
+    "searchSubspecialtyLabel": "Fachgebiet"
   },
   "search": {
     "filters": "Filter",

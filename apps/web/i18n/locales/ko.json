@@ -102,7 +102,8 @@
     "missionLink": "단체 소개",
     "contributeHeading": "아직 없는 병원을 알고 계신가요?",
     "contributeBody": "누구나 병원이나 의사를 제안할 수 있습니다. 공개 전에 모더레이터가 모든 제보를 확인합니다.",
-    "contributeCta": "의사 추가"
+    "contributeCta": "의사 추가",
+    "searchSubspecialtyLabel": "세부 진료과"
   },
   "common": {
     "loading": "불러오는 중",
@@ -315,7 +316,8 @@
   },
   "searchBar": {
     "allSpecialties": "모든 진료 과목",
-    "resultsFound": "결과 없음 | 결과 1건 | 결과 {n}건"
+    "resultsFound": "결과 없음 | 결과 1건 | 결과 {n}건",
+    "allSubspecialties": "모든 세부 진료과"
   },
   "searchResultsList": {
     "loadMore": "더 보기",
@@ -395,7 +397,29 @@
     "surgery": "외과",
     "physicalMedicineAndRehabilitation": "재활의학",
     "urology": "비뇨의학과 전문의",
-    "traumatology": "외상학 전문의"
+    "traumatology": "외상학 전문의",
+    "breastSurgery": "유방외과",
+    "cardiovascularSurgery": "심장혈관외과",
+    "childPsychiatry": "소아청소년정신과",
+    "cosmeticDermatology": "미용피부과",
+    "endocrinologyAndDiabetes": "당뇨병·내분비내과",
+    "gastroenterology": "소화기내과",
+    "geriatrics": "노인의학과",
+    "hematology": "혈액내과",
+    "hepatology": "간내과",
+    "kampoMedicine": "캄포 한방의학",
+    "medicalOncology": "종양내과",
+    "nephrology": "신장내과",
+    "neurosurgery": "신경외과",
+    "oralSurgery": "구강외과",
+    "painMedicine": "통증클리닉",
+    "palliativeCare": "완화의료",
+    "pediatricDentistry": "소아치과",
+    "pediatricSurgery": "소아외과",
+    "psychosomaticMedicine": "심신의학과",
+    "pulmonology": "호흡기내과",
+    "reproductiveMedicine": "난임의학",
+    "rheumatology": "류마티스내과"
   },
   "specialtyCategories": {
     "childrensHealth": "소아 건강",
@@ -409,7 +433,17 @@
     "physicalTherapy": "물리치료",
     "primaryCare": "일차 진료",
     "sportsAndRehab": "스포츠·재활",
-    "womensHealth": "여성 건강"
+    "womensHealth": "여성 건강",
+    "allergyImmunityAndInfection": "알레르기·면역·감염",
+    "brainAndNerves": "뇌·신경",
+    "cancerAndDiagnostics": "암·영상·검사",
+    "diabetesHormonesAndKidneys": "당뇨병·내분비·신장",
+    "digestiveHealth": "소화기",
+    "emergencyCare": "응급의료",
+    "heartAndCirculation": "심장·순환기",
+    "lungsAndBreathing": "호흡기",
+    "pharmacyAndGenetics": "약국·유전",
+    "surgeryAndAnesthesia": "외과·마취과"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "저장하지 않고 나가기",
@@ -579,7 +613,10 @@
     "placeholderTextJapaneseLastName": "예: 山田",
     "placeholderTextJapaneseFirstName": "예: 花子",
     "nameNeedsReview": "이름을 확인해 주세요. 둘 중 하나가 자동으로 입력되었거나 아직 비어 있습니다.",
-    "otherLocaleNamesRemoved": "저장하면 다른 언어의 이름은 삭제됩니다."
+    "otherLocaleNamesRemoved": "저장하면 다른 언어의 이름은 삭제됩니다.",
+    "specialtyGroupLabel": "진료과 분류",
+    "allSpecialtyGroups": "모든 분류",
+    "specialtySearchHint": "영어나 일본어로 검색하세요. 胃腸内科처럼 클리닉 사이트에 적힌 진료과 이름으로도 찾을 수 있습니다."
   },
   "modFacilitySection": {
     "addresses": "주소",

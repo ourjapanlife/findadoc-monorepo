@@ -102,7 +102,8 @@
     "missionLink": "Selengkapnya tentang kami",
     "contributeHeading": "Tahu klinik yang belum ada di daftar kami?",
     "contributeBody": "Siapa pun dapat mengusulkan klinik atau dokter. Moderator kami memeriksa setiap pengajuan sebelum ditayangkan.",
-    "contributeCta": "Tambahkan dokter"
+    "contributeCta": "Tambahkan dokter",
+    "searchSubspecialtyLabel": "Subspesialis"
   },
   "common": {
     "loading": "Memuat",
@@ -315,7 +316,8 @@
   },
   "searchBar": {
     "allSpecialties": "Semua Spesialisasi",
-    "resultsFound": "Tidak ada hasil | 1 hasil ditemukan | {n} hasil ditemukan"
+    "resultsFound": "Tidak ada hasil | 1 hasil ditemukan | {n} hasil ditemukan",
+    "allSubspecialties": "Semua subspesialis"
   },
   "searchResultsList": {
     "loadMore": "Muat Lebih Banyak",
@@ -395,7 +397,29 @@
     "surgery": "Bedah",
     "physicalMedicineAndRehabilitation": "Kedokteran Fisik & Rehabilitasi",
     "urology": "Dokter Urologi",
-    "traumatology": "Dokter Traumatologi"
+    "traumatology": "Dokter Traumatologi",
+    "breastSurgery": "Dokter Bedah Payudara",
+    "cardiovascularSurgery": "Dokter Bedah Jantung dan Pembuluh Darah",
+    "childPsychiatry": "Psikiater Anak",
+    "cosmeticDermatology": "Dokter Kulit Estetika",
+    "endocrinologyAndDiabetes": "Diabetes & Endokrinologi",
+    "gastroenterology": "Dokter Gastroenterologi",
+    "geriatrics": "Geriatri",
+    "hematology": "Dokter Hematologi",
+    "hepatology": "Dokter Hepatologi (Hati)",
+    "kampoMedicine": "Pengobatan Kampo",
+    "medicalOncology": "Dokter Onkologi",
+    "nephrology": "Dokter Nefrologi (Ginjal)",
+    "neurosurgery": "Dokter Bedah Saraf",
+    "oralSurgery": "Dokter Bedah Mulut",
+    "painMedicine": "Klinik Nyeri",
+    "palliativeCare": "Perawatan Paliatif",
+    "pediatricDentistry": "Dokter Gigi Anak",
+    "pediatricSurgery": "Dokter Bedah Anak",
+    "psychosomaticMedicine": "Kedokteran Psikosomatik",
+    "pulmonology": "Dokter Paru",
+    "reproductiveMedicine": "Spesialis Fertilitas",
+    "rheumatology": "Dokter Reumatologi"
   },
   "specialtyCategories": {
     "childrensHealth": "Kesehatan Anak",
@@ -409,7 +433,17 @@
     "physicalTherapy": "Fisioterapi",
     "primaryCare": "Layanan Kesehatan Primer",
     "sportsAndRehab": "Olahraga dan Rehabilitasi",
-    "womensHealth": "Kesehatan Wanita"
+    "womensHealth": "Kesehatan Wanita",
+    "allergyImmunityAndInfection": "Alergi, Imunologi, dan Infeksi",
+    "brainAndNerves": "Otak dan Saraf",
+    "cancerAndDiagnostics": "Kanker dan Diagnostik",
+    "diabetesHormonesAndKidneys": "Diabetes, Hormon, dan Ginjal",
+    "digestiveHealth": "Pencernaan",
+    "emergencyCare": "Gawat Darurat",
+    "heartAndCirculation": "Jantung dan Pembuluh Darah",
+    "lungsAndBreathing": "Paru dan Pernapasan",
+    "pharmacyAndGenetics": "Farmasi dan Genetika",
+    "surgeryAndAnesthesia": "Bedah dan Anestesi"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Keluar tanpa menyimpan",
@@ -579,7 +613,10 @@
     "placeholderTextJapaneseLastName": "mis. 山田",
     "placeholderTextJapaneseFirstName": "mis. 花子",
     "nameNeedsReview": "Periksa nama-nama ini. Salah satunya diisi otomatis atau masih kosong.",
-    "otherLocaleNamesRemoved": "Nama dalam bahasa lain dihapus saat Anda menyimpan."
+    "otherLocaleNamesRemoved": "Nama dalam bahasa lain dihapus saat Anda menyimpan.",
+    "specialtyGroupLabel": "Kelompok spesialis",
+    "allSpecialtyGroups": "Semua kelompok",
+    "specialtySearchHint": "Cari dalam bahasa Inggris atau Jepang. Nama poli dari situs klinik juga bisa, misalnya 胃腸内科."
   },
   "modFacilitySection": {
     "addresses": "Alamat",

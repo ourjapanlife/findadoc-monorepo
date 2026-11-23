@@ -234,7 +234,8 @@
   },
   "searchBar": {
     "allSpecialties": "Toutes les spécialités",
-    "resultsFound": "Aucun résultat | 1 résultat trouvé | {n} résultats trouvés"
+    "resultsFound": "Aucun résultat | 1 résultat trouvé | {n} résultats trouvés",
+    "allSubspecialties": "Toutes les sous-spécialités"
   },
   "searchResultsList": {
     "loadMore": "Charger plus",
@@ -423,7 +424,29 @@
     "physicalMedicineAndRehabilitation": "Médecine physique et réadaptation",
     "urology": "Urologue",
     "traumatology": "Traumatologue",
-    "proctology": "Proctologue"
+    "proctology": "Proctologue",
+    "breastSurgery": "Chirurgien du sein",
+    "cardiovascularSurgery": "Chirurgien cardiovasculaire",
+    "childPsychiatry": "Pédopsychiatre",
+    "cosmeticDermatology": "Dermatologue esthétique",
+    "endocrinologyAndDiabetes": "Diabétologie et endocrinologie",
+    "gastroenterology": "Gastro-entérologue",
+    "geriatrics": "Gériatrie",
+    "hematology": "Hématologue",
+    "hepatology": "Hépatologue (foie)",
+    "kampoMedicine": "Médecine Kampo",
+    "medicalOncology": "Oncologue médical",
+    "nephrology": "Néphrologue (reins)",
+    "neurosurgery": "Neurochirurgien",
+    "oralSurgery": "Chirurgien oral",
+    "painMedicine": "Centre antidouleur",
+    "palliativeCare": "Soins palliatifs",
+    "pediatricDentistry": "Dentiste pédiatrique",
+    "pediatricSurgery": "Chirurgien pédiatrique",
+    "psychosomaticMedicine": "Médecine psychosomatique",
+    "pulmonology": "Pneumologue (poumons)",
+    "reproductiveMedicine": "Spécialiste de la fertilité",
+    "rheumatology": "Rhumatologue"
   },
   "specialtyCategories": {
     "childrensHealth": "Santé des enfants",
@@ -437,7 +460,17 @@
     "physicalTherapy": "Physiothérapie",
     "primaryCare": "Soins primaires",
     "sportsAndRehab": "Sport et réadaptation",
-    "womensHealth": "Santé féminine"
+    "womensHealth": "Santé féminine",
+    "allergyImmunityAndInfection": "Allergie, immunité et infections",
+    "brainAndNerves": "Cerveau et nerfs",
+    "cancerAndDiagnostics": "Cancer et diagnostic",
+    "diabetesHormonesAndKidneys": "Diabète, hormones et reins",
+    "digestiveHealth": "Appareil digestif",
+    "emergencyCare": "Urgences",
+    "heartAndCirculation": "Cœur et circulation",
+    "lungsAndBreathing": "Poumons et respiration",
+    "pharmacyAndGenetics": "Pharmacie et génétique",
+    "surgeryAndAnesthesia": "Chirurgie et anesthésie"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "Nom de l’établissement inconnu",
@@ -668,7 +701,10 @@
     "placeholderTextJapaneseLastName": "p. ex. 山田",
     "placeholderTextJapaneseFirstName": "p. ex. 花子",
     "nameNeedsReview": "Vérifiez ces noms. L'un d'eux a été rempli automatiquement ou manque encore.",
-    "otherLocaleNamesRemoved": "Les noms dans d'autres langues sont supprimés à l'enregistrement."
+    "otherLocaleNamesRemoved": "Les noms dans d'autres langues sont supprimés à l'enregistrement.",
+    "specialtyGroupLabel": "Groupe de spécialités",
+    "allSpecialtyGroups": "Tous les groupes",
+    "specialtySearchHint": "Recherchez en anglais ou en japonais. Le nom de service indiqué sur le site de la clinique fonctionne aussi, par exemple 胃腸内科."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Langues parlées",
@@ -800,7 +836,8 @@
     "missionLink": "En savoir plus sur nous",
     "contributeHeading": "Vous connaissez une clinique qui nous manque ?",
     "contributeBody": "Toute personne peut proposer une clinique ou un médecin. Nos modérateurs vérifient chaque proposition avant sa publication.",
-    "contributeCta": "Ajouter un médecin"
+    "contributeCta": "Ajouter un médecin",
+    "searchSubspecialtyLabel": "Sous-spécialité"
   },
   "search": {
     "filters": "Filtres",

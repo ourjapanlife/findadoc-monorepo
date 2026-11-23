@@ -234,7 +234,8 @@
   },
   "searchBar": {
     "allSpecialties": "すべての専門分野",
-    "resultsFound": "結果なし | 1件の結果 | {n}件の結果"
+    "resultsFound": "結果なし | 1件の結果 | {n}件の結果",
+    "allSubspecialties": "すべての詳細"
   },
   "searchResultsList": {
     "loadMore": "さらに読み込む",
@@ -409,7 +410,10 @@
     "placeholderTextJapaneseLastName": "例: 山田",
     "placeholderTextJapaneseFirstName": "例: 花子",
     "nameNeedsReview": "この名前を確認してください。どちらかが自動で入力されたか、まだ入力されていません。",
-    "otherLocaleNamesRemoved": "他の言語の名前は保存すると削除されます。"
+    "otherLocaleNamesRemoved": "他の言語の名前は保存すると削除されます。",
+    "specialtyGroupLabel": "診療科グループ",
+    "allSpecialtyGroups": "すべてのグループ",
+    "specialtySearchHint": "英語または日本語で検索できます。胃腸内科など、クリニックのサイトに書かれた診療科名でも探せます。"
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "医療従事者の ID",
@@ -642,7 +646,7 @@
     "internalMedicine": "内科",
     "generalMedicine": "総合診療科・一般内科",
     "medicalGenetics": "遺伝子診療科",
-    "neurology": "神経内科",
+    "neurology": "脳神経内科",
     "nuclearMedicine": "核医学",
     "obstetricsAndGynecology": "産婦人科",
     "ophthalmology": "眼科・眼外科",
@@ -655,15 +659,37 @@
     "pharmacy": "薬剤師",
     "physiotherapy": "リハビリテーション科・理学療法",
     "plasticSurgery": "形成外科",
-    "psychiatry": "精神科・心療内科",
+    "psychiatry": "精神科",
     "preventiveMedicine": "予防医学",
-    "radiationOncology": "放射線腫瘍科",
+    "radiationOncology": "放射線治療科",
     "sportsMedicine": "スポーツ医学",
     "physicalMedicineAndRehabilitation": "リハビリテーション医学",
     "urology": "泌尿器科",
     "traumatology": "外傷学",
     "surgery": "外科",
-    "proctology": "肛門科医"
+    "proctology": "肛門外科",
+    "breastSurgery": "乳腺外科",
+    "cardiovascularSurgery": "心臓血管外科",
+    "childPsychiatry": "児童精神科",
+    "cosmeticDermatology": "美容皮膚科",
+    "endocrinologyAndDiabetes": "糖尿病・内分泌内科",
+    "gastroenterology": "消化器内科",
+    "geriatrics": "老年内科",
+    "hematology": "血液内科",
+    "hepatology": "肝臓内科",
+    "kampoMedicine": "漢方内科",
+    "medicalOncology": "腫瘍内科",
+    "nephrology": "腎臓内科",
+    "neurosurgery": "脳神経外科",
+    "oralSurgery": "歯科口腔外科",
+    "painMedicine": "ペインクリニック",
+    "palliativeCare": "緩和ケア内科",
+    "pediatricDentistry": "小児歯科",
+    "pediatricSurgery": "小児外科",
+    "psychosomaticMedicine": "心療内科",
+    "pulmonology": "呼吸器内科",
+    "reproductiveMedicine": "生殖医療",
+    "rheumatology": "リウマチ科"
   },
   "specialtyCategories": {
     "childrensHealth": "小児医療",
@@ -677,7 +703,17 @@
     "physicalTherapy": "理学療法",
     "primaryCare": "一般診療",
     "sportsAndRehab": "スポーツ・リハビリ",
-    "womensHealth": "女性医療"
+    "womensHealth": "女性医療",
+    "allergyImmunityAndInfection": "アレルギー・免疫・感染症",
+    "brainAndNerves": "脳・神経",
+    "cancerAndDiagnostics": "がん・画像・検査",
+    "diabetesHormonesAndKidneys": "糖尿病・内分泌・腎臓",
+    "digestiveHealth": "消化器",
+    "emergencyCare": "救急",
+    "heartAndCirculation": "心臓・循環器",
+    "lungsAndBreathing": "呼吸器",
+    "pharmacyAndGenetics": "薬局・遺伝",
+    "surgeryAndAnesthesia": "外科・麻酔科"
   },
   "noteInputField": {
     "optional": "（任意）"
@@ -806,7 +842,8 @@
     "missionLink": "私たちについて",
     "contributeHeading": "掲載されていないクリニックをご存じですか？",
     "contributeBody": "どなたでもクリニックや医師の情報をお寄せいただけます。公開前にモデレーターがすべて確認します。",
-    "contributeCta": "医師情報を追加する"
+    "contributeCta": "医師情報を追加する",
+    "searchSubspecialtyLabel": "診療科の詳細"
   },
   "search": {
     "filters": "絞り込み",

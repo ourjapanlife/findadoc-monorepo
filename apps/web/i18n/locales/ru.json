@@ -234,7 +234,8 @@
   },
   "searchBar": {
     "allSpecialties": "Все специальности",
-    "resultsFound": "Ничего не найдено | Найден 1 результат | Найдено {n} результатов"
+    "resultsFound": "Ничего не найдено | Найден 1 результат | Найдено {n} результатов",
+    "allSubspecialties": "Все направления"
   },
   "searchResultsList": {
     "loadMore": "Загрузить еще",
@@ -402,7 +403,10 @@
     "placeholderTextJapaneseLastName": "напр. 山田",
     "placeholderTextJapaneseFirstName": "напр. 花子",
     "nameNeedsReview": "Проверьте эти имена. Одно из них заполнено автоматически или ещё отсутствует.",
-    "otherLocaleNamesRemoved": "Имена на других языках удаляются при сохранении."
+    "otherLocaleNamesRemoved": "Имена на других языках удаляются при сохранении.",
+    "specialtyGroupLabel": "Группа специальностей",
+    "allSpecialtyGroups": "Все группы",
+    "specialtySearchHint": "Ищите на английском или японском. Подойдёт и название отделения с сайта клиники, например 胃腸内科."
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "ID Медицинских специалистов ",
@@ -663,7 +667,29 @@
     "physicalMedicineAndRehabilitation": "Физическая медицина и реабилитация",
     "urology": "Урология",
     "traumatology": "Травматология",
-    "proctology": "Проктолог"
+    "proctology": "Проктолог",
+    "breastSurgery": "Хирург-маммолог",
+    "cardiovascularSurgery": "Сердечно-сосудистый хирург",
+    "childPsychiatry": "Детский психиатр",
+    "cosmeticDermatology": "Косметолог-дерматолог",
+    "endocrinologyAndDiabetes": "Диабетология и эндокринология",
+    "gastroenterology": "Гастроэнтеролог",
+    "geriatrics": "Гериатрия",
+    "hematology": "Гематолог",
+    "hepatology": "Гепатолог (печень)",
+    "kampoMedicine": "Медицина кампо",
+    "medicalOncology": "Онколог",
+    "nephrology": "Нефролог (почки)",
+    "neurosurgery": "Нейрохирург",
+    "oralSurgery": "Челюстно-лицевой хирург",
+    "painMedicine": "Лечение боли",
+    "palliativeCare": "Паллиативная помощь",
+    "pediatricDentistry": "Детский стоматолог",
+    "pediatricSurgery": "Детский хирург",
+    "psychosomaticMedicine": "Психосоматическая медицина",
+    "pulmonology": "Пульмонолог (лёгкие)",
+    "reproductiveMedicine": "Репродуктолог",
+    "rheumatology": "Ревматолог"
   },
   "specialtyCategories": {
     "childrensHealth": "Детское здоровье",
@@ -677,7 +703,17 @@
     "physicalTherapy": "Физиотерапия",
     "primaryCare": "Первичная медицинская помощь",
     "sportsAndRehab": "Спорт и реабилитация",
-    "womensHealth": "Женское здоровье"
+    "womensHealth": "Женское здоровье",
+    "allergyImmunityAndInfection": "Аллергия, иммунитет и инфекции",
+    "brainAndNerves": "Мозг и нервы",
+    "cancerAndDiagnostics": "Онкология и диагностика",
+    "diabetesHormonesAndKidneys": "Диабет, гормоны и почки",
+    "digestiveHealth": "Пищеварение",
+    "emergencyCare": "Неотложная помощь",
+    "heartAndCirculation": "Сердце и сосуды",
+    "lungsAndBreathing": "Лёгкие и дыхание",
+    "pharmacyAndGenetics": "Аптека и генетика",
+    "surgeryAndAnesthesia": "Хирургия и анестезия"
   },
   "noteInputField": {
     "optional": "(необязательно)"
@@ -800,7 +836,8 @@
     "missionLink": "Подробнее о нас",
     "contributeHeading": "Знаете клинику, которой у нас нет?",
     "contributeBody": "Любой может предложить клинику или врача. Наши модераторы проверяют каждую заявку перед публикацией.",
-    "contributeCta": "Добавить врача"
+    "contributeCta": "Добавить врача",
+    "searchSubspecialtyLabel": "Направление"
   },
   "search": {
     "filters": "Фильтры",

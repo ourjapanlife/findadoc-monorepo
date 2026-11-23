@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Locale, Specialty, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
+import { Locale, Specialty, SpecialtyCategory, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
 import { buildSearchQuery,
     facilityEmail,
     facilityMapsUrl,
@@ -351,5 +351,32 @@ describe('contact normalisation', () => {
             const url = facilityMapsUrl(withContact({ googleMapsUrl: 'https://www.google.com/maps?q=1' }), true)
             expect(url).toContain(encodeURIComponent('クリニック'))
         })
+    })
+})
+
+describe('specialty group (#277)', () => {
+    it('matches every specialty in a group when only the group is picked, like a prefecture', () => {
+        const results = filterDirectory(facilities, professionals, { specialtyGroup: SpecialtyCategory.Dental })
+
+        expect(results.map(result => result.id)).toEqual(['tokyo-clinic', 'osaka-clinic'])
+        expect(results[0]?.healthcareProfessionals.map(hp => hp.id)).toEqual(['p1'])
+    })
+
+    it('narrows to the picked specialty inside the group', () => {
+        const results = filterDirectory(facilities, professionals, {
+            specialtyGroup: SpecialtyCategory.Dermatology,
+            specialties: [Specialty.Dermatology]
+        })
+
+        expect(results.map(result => result.id)).toEqual(['osaka-clinic'])
+    })
+
+    it('round-trips the group through the URL and counts it as a filter', () => {
+        const query = buildSearchQuery({ specialtyGroup: SpecialtyCategory.DigestiveHealth })
+
+        expect(query).toEqual({ group: 'digestive-health' })
+        expect(parseSearchQuery(query).specialtyGroup).toBe(SpecialtyCategory.DigestiveHealth)
+        expect(parseSearchQuery({ group: 'not-a-group' }).specialtyGroup).toBeUndefined()
+        expect(hasActiveFilters({ specialtyGroup: SpecialtyCategory.Dental })).toBe(true)
     })
 })

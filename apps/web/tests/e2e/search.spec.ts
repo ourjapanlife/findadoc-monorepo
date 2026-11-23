@@ -277,12 +277,19 @@ test.describe('Search page', () => {
 
             await expect(page.getByTestId('search-area').locator('option[value="hiroshima"]'))
                 .toHaveText('Hiroshima (24)')
+            // Only groups with a practiced specialty are offered, then only that group's specialties (#277).
+            const group = page.getByTestId('search-specialty-group')
+            await expect(group.locator('option[value="DENTAL"]')).toHaveCount(1)
+            await expect(group.locator('option[value="DERMATOLOGY"]')).toHaveCount(0)
+            await expect(page.getByTestId('search-specialty')).toBeDisabled()
+            await group.selectOption('DENTAL')
             await expect(page.getByTestId('search-specialty').locator('option[value="DENTISTRY"]')).toHaveCount(1)
-            await expect(page.getByTestId('search-specialty').locator('option[value="DERMATOLOGY"]')).toHaveCount(0)
+            await expect(page.getByTestId('search-specialty').locator('option[value="ORTHODONTICS"]')).toHaveCount(0)
         })
 
         test('updates the URL and the results as soon as a filter changes', async ({ page }) => {
             await page.goto('/search')
+            await page.getByTestId('search-specialty-group').selectOption('DERMATOLOGY')
             await page.getByTestId('search-specialty').selectOption('DERMATOLOGY')
 
             await expect(page).toHaveURL(/specialty=dermatology/)
@@ -295,13 +302,23 @@ test.describe('Search page', () => {
             await expect(page.getByTestId('search-result-card')).toHaveCount(3)
         })
 
+        test('a specialty group alone finds every specialty in it, and stays in the URL (#277)', async ({ page }) => {
+            await page.goto('/search?group=dental')
+
+            await expect(page.getByTestId('search-specialty-group')).toHaveValue('DENTAL')
+            await expect(page.getByTestId('search-specialty')).toBeEnabled()
+            await expect(page.getByRole('link', { name: 'Tokyo Family Clinic' })).toBeVisible()
+            await expect(page.getByRole('link', { name: 'Sapporo Skin Clinic' })).toHaveCount(0)
+        })
+
         test('browser back restores the previous filter state', async ({ page }) => {
             await page.goto('/search')
+            await page.getByTestId('search-specialty-group').selectOption('DENTAL')
             await page.getByTestId('search-specialty').selectOption('DENTISTRY')
             await expect(page).toHaveURL(/specialty=dentistry/)
 
-            await page.getByTestId('search-specialty').selectOption('DERMATOLOGY')
-            await expect(page).toHaveURL(/specialty=dermatology/)
+            await page.getByTestId('search-specialty').selectOption('ORTHODONTICS')
+            await expect(page).toHaveURL(/specialty=orthodontics/)
 
             await page.goBack()
 

@@ -102,7 +102,8 @@
     "missionLink": "More about us",
     "contributeHeading": "Know a clinic we are missing?",
     "contributeBody": "Anyone can suggest a clinic or a doctor. Our moderators check every submission before it goes live.",
-    "contributeCta": "Add a doctor"
+    "contributeCta": "Add a doctor",
+    "searchSubspecialtyLabel": "Subspecialty"
   },
   "common": {
     "loading": "Loading",
@@ -315,7 +316,8 @@
   },
   "searchBar": {
     "allSpecialties": "All Specialties",
-    "resultsFound": "No results | 1 result found | {n} results found"
+    "resultsFound": "No results | 1 result found | {n} results found",
+    "allSubspecialties": "All subspecialties"
   },
   "searchResultsList": {
     "loadMore": "Load More",
@@ -381,7 +383,7 @@
     "orthopedicSurgery": "Orthopedic Surgeon",
     "optometry": "Eye Doctor (Optometrist)",
     "orthodontics": "Orthodontist",
-    "otolaryngology": "Otolaryngology",
+    "otolaryngology": "ENT Specialist (Otolaryngology)",
     "pathology": "Pathologist",
     "pediatrics": "Pediatrician",
     "pharmacy": "Pharmacist",
@@ -395,7 +397,29 @@
     "surgery": "Surgery",
     "physicalMedicineAndRehabilitation": "Physical Medicine & Rehabilitation",
     "urology": "Urologist",
-    "traumatology": "Traumatologist"
+    "traumatology": "Traumatologist",
+    "breastSurgery": "Breast Surgeon",
+    "cardiovascularSurgery": "Cardiovascular Surgeon",
+    "childPsychiatry": "Child Psychiatrist",
+    "cosmeticDermatology": "Cosmetic Dermatologist",
+    "endocrinologyAndDiabetes": "Diabetes & Endocrinology",
+    "gastroenterology": "Gastroenterologist",
+    "geriatrics": "Geriatric Medicine",
+    "hematology": "Hematologist",
+    "hepatology": "Hepatologist (Liver)",
+    "kampoMedicine": "Kampo Medicine",
+    "medicalOncology": "Medical Oncologist",
+    "nephrology": "Nephrologist (Kidneys)",
+    "neurosurgery": "Neurosurgeon",
+    "oralSurgery": "Oral Surgeon",
+    "painMedicine": "Pain Clinic",
+    "palliativeCare": "Palliative Care",
+    "pediatricDentistry": "Pediatric Dentist",
+    "pediatricSurgery": "Pediatric Surgeon",
+    "psychosomaticMedicine": "Psychosomatic Medicine",
+    "pulmonology": "Pulmonologist (Lungs)",
+    "reproductiveMedicine": "Fertility Specialist",
+    "rheumatology": "Rheumatologist"
   },
   "specialtyCategories": {
     "childrensHealth": "Children's Health",
@@ -409,7 +433,17 @@
     "physicalTherapy": "Physical Therapy",
     "primaryCare": "Primary Care",
     "sportsAndRehab": "Sports and Rehab",
-    "womensHealth": "Women's Health"
+    "womensHealth": "Women's Health",
+    "allergyImmunityAndInfection": "Allergy, Immunity, and Infection",
+    "brainAndNerves": "Brain and Nerves",
+    "cancerAndDiagnostics": "Cancer Care and Diagnostics",
+    "diabetesHormonesAndKidneys": "Diabetes, Hormones, and Kidneys",
+    "digestiveHealth": "Digestive Health",
+    "emergencyCare": "Emergency Care",
+    "heartAndCirculation": "Heart and Circulation",
+    "lungsAndBreathing": "Lungs and Breathing",
+    "pharmacyAndGenetics": "Pharmacy and Genetics",
+    "surgeryAndAnesthesia": "Surgery and Anesthesia"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Exit without saving",
@@ -579,7 +613,10 @@
     "placeholderTextJapaneseLastName": "e.g. 山田",
     "placeholderTextJapaneseFirstName": "e.g. 花子",
     "nameNeedsReview": "Check these names. One of them was filled in automatically or is still missing.",
-    "otherLocaleNamesRemoved": "Names in other languages are removed when you save."
+    "otherLocaleNamesRemoved": "Names in other languages are removed when you save.",
+    "specialtyGroupLabel": "Specialty group",
+    "allSpecialtyGroups": "All groups",
+    "specialtySearchHint": "Search in English or Japanese. A department name from the clinic's site works too, such as 胃腸内科."
   },
   "modFacilitySection": {
     "addresses": "Addresses",

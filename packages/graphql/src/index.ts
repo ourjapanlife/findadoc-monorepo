@@ -2639,8 +2639,16 @@ export enum Specialty {
   AllergyAndImmunology = 'ALLERGY_AND_IMMUNOLOGY',
   /** Anesthesiology */
   Anesthesiology = 'ANESTHESIOLOGY',
+  /** Breast Surgery (乳腺外科) */
+  BreastSurgery = 'BREAST_SURGERY',
   /** Cardiology */
   Cardiology = 'CARDIOLOGY',
+  /** Cardiovascular Surgery (心臓血管外科) */
+  CardiovascularSurgery = 'CARDIOVASCULAR_SURGERY',
+  /** Child and Adolescent Psychiatry (児童精神科) */
+  ChildPsychiatry = 'CHILD_PSYCHIATRY',
+  /** Cosmetic Dermatology (美容皮膚科) */
+  CosmeticDermatology = 'COSMETIC_DERMATOLOGY',
   /** Cosmetic Surgery */
   CosmeticSurgery = 'COSMETIC_SURGERY',
   /** Dentistry */
@@ -2651,20 +2659,38 @@ export enum Specialty {
   DiagnosticRadiology = 'DIAGNOSTIC_RADIOLOGY',
   /** Emergency Medicine */
   EmergencyMedicine = 'EMERGENCY_MEDICINE',
+  /** Diabetes and Endocrinology (糖尿病・内分泌内科) */
+  EndocrinologyAndDiabetes = 'ENDOCRINOLOGY_AND_DIABETES',
   /** Ear, Nose, and Throat (ENT) */
   EntSpecialist = 'ENT_SPECIALIST',
   /** Family Medicine */
   FamilyMedicine = 'FAMILY_MEDICINE',
+  /** Gastroenterology, including 胃腸内科 and 内視鏡内科 (消化器内科) */
+  Gastroenterology = 'GASTROENTEROLOGY',
   /** General Medicine */
   GeneralMedicine = 'GENERAL_MEDICINE',
+  /** Geriatric Medicine (老年内科) */
+  Geriatrics = 'GERIATRICS',
+  /** Hematology (血液内科) */
+  Hematology = 'HEMATOLOGY',
+  /** Hepatology (肝臓内科) */
+  Hepatology = 'HEPATOLOGY',
   /** Infectious Diseases */
   InfectiousDiseases = 'INFECTIOUS_DISEASES',
   /** Internal Medicine */
   InternalMedicine = 'INTERNAL_MEDICINE',
+  /** Kampo, traditional Japanese herbal medicine (漢方内科) */
+  KampoMedicine = 'KAMPO_MEDICINE',
   /** Medical Genetics */
   MedicalGenetics = 'MEDICAL_GENETICS',
+  /** Medical Oncology (腫瘍内科) */
+  MedicalOncology = 'MEDICAL_ONCOLOGY',
+  /** Nephrology, including dialysis (腎臓内科) */
+  Nephrology = 'NEPHROLOGY',
   /** Neurology */
   Neurology = 'NEUROLOGY',
+  /** Neurosurgery (脳神経外科) */
+  Neurosurgery = 'NEUROSURGERY',
   /** Nuclear Medicine */
   NuclearMedicine = 'NUCLEAR_MEDICINE',
   /** Obstetrics and Gynecology */
@@ -2673,16 +2699,26 @@ export enum Specialty {
   Ophthalmology = 'OPHTHALMOLOGY',
   /** Optometry */
   Optometry = 'OPTOMETRY',
+  /** Oral Surgery (歯科口腔外科) */
+  OralSurgery = 'ORAL_SURGERY',
   /** Orthodontics */
   Orthodontics = 'ORTHODONTICS',
   /** Orthopedic Surgery */
   OrthopedicSurgery = 'ORTHOPEDIC_SURGERY',
   /** Otolaryngology */
   Otolaryngology = 'OTOLARYNGOLOGY',
+  /** Pain Medicine (ペインクリニック) */
+  PainMedicine = 'PAIN_MEDICINE',
+  /** Palliative Care (緩和ケア内科) */
+  PalliativeCare = 'PALLIATIVE_CARE',
   /** Pathology */
   Pathology = 'PATHOLOGY',
   /** Pediatrics */
   Pediatrics = 'PEDIATRICS',
+  /** Pediatric Dentistry (小児歯科) */
+  PediatricDentistry = 'PEDIATRIC_DENTISTRY',
+  /** Pediatric Surgery (小児外科) */
+  PediatricSurgery = 'PEDIATRIC_SURGERY',
   /** Pharmacy */
   Pharmacy = 'PHARMACY',
   /** Physical Medicine and Rehabilitation */
@@ -2697,8 +2733,16 @@ export enum Specialty {
   Proctology = 'PROCTOLOGY',
   /** Psychiatry */
   Psychiatry = 'PSYCHIATRY',
+  /** Psychosomatic Medicine (心療内科) */
+  PsychosomaticMedicine = 'PSYCHOSOMATIC_MEDICINE',
+  /** Pulmonology, respiratory medicine (呼吸器内科) */
+  Pulmonology = 'PULMONOLOGY',
   /** Radiation Oncology */
   RadiationOncology = 'RADIATION_ONCOLOGY',
+  /** Reproductive Medicine, fertility (生殖医療) */
+  ReproductiveMedicine = 'REPRODUCTIVE_MEDICINE',
+  /** Rheumatology (リウマチ科) */
+  Rheumatology = 'RHEUMATOLOGY',
   /** Sports Medicine */
   SportsMedicine = 'SPORTS_MEDICINE',
   /** General Surgery */
@@ -2711,6 +2755,12 @@ export enum Specialty {
 
 /** Grouping categories for medical specialties, used for filtering in the UI. */
 export enum SpecialtyCategory {
+  /** Allergy, immunity, and infection specialties. */
+  AllergyImmunityAndInfection = 'ALLERGY_IMMUNITY_AND_INFECTION',
+  /** Brain and nerve specialties. */
+  BrainAndNerves = 'BRAIN_AND_NERVES',
+  /** Cancer care, imaging, and diagnostic specialties. */
+  CancerAndDiagnostics = 'CANCER_AND_DIAGNOSTICS',
   /** Children's health and pediatric specialties. */
   ChildrensHealth = 'CHILDRENS_HEALTH',
   /** Cosmetic and plastic surgery specialties. */
@@ -2719,20 +2769,34 @@ export enum SpecialtyCategory {
   Dental = 'DENTAL',
   /** Dermatology specialties. */
   Dermatology = 'DERMATOLOGY',
+  /** Diabetes, hormone, and kidney specialties. */
+  DiabetesHormonesAndKidneys = 'DIABETES_HORMONES_AND_KIDNEYS',
+  /** Digestive and liver specialties. */
+  DigestiveHealth = 'DIGESTIVE_HEALTH',
+  /** Emergency care. */
+  EmergencyCare = 'EMERGENCY_CARE',
   /** Ear, Nose, and Throat specialties. */
   Ent = 'ENT',
   /** Eye and vision care specialties. */
   EyeAndVision = 'EYE_AND_VISION',
+  /** Heart and circulation specialties. */
+  HeartAndCirculation = 'HEART_AND_CIRCULATION',
+  /** Lung and breathing specialties. */
+  LungsAndBreathing = 'LUNGS_AND_BREATHING',
   /** Men's health specialties. */
   MensHealth = 'MENS_HEALTH',
   /** Mental health specialties. */
   MentalHealth = 'MENTAL_HEALTH',
+  /** Pharmacy and medical genetics. */
+  PharmacyAndGenetics = 'PHARMACY_AND_GENETICS',
   /** Physical therapy specialties. */
   PhysicalTherapy = 'PHYSICAL_THERAPY',
   /** Primary care specialties. */
   PrimaryCare = 'PRIMARY_CARE',
   /** Sports medicine and rehabilitation specialties. */
   SportsAndRehab = 'SPORTS_AND_REHAB',
+  /** General surgery and anesthesia. */
+  SurgeryAndAnesthesia = 'SURGERY_AND_ANESTHESIA',
   /** Women's health specialties. */
   WomensHealth = 'WOMENS_HEALTH'
 }

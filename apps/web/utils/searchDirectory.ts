@@ -1,5 +1,5 @@
-import { Locale, Specialty, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
-import { formatJapanPhone, PHONE_DISPLAY, toJapanE164 } from '@findadoc/utils'
+import { Locale, Specialty, SpecialtyCategory, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
+import { formatJapanPhone, PHONE_DISPLAY, SPECIALTY_CATEGORY_MEMBERS, toJapanE164 } from '@findadoc/utils'
 
 /**
  * Client-side search over the whole directory.
@@ -18,8 +18,19 @@ export type FacilitySearchResult = Facility & {
 export interface SearchFilters {
     city?: string
     prefecture?: string
+    /**
+     * A specialty group, picked before a specialty, like a prefecture before a city (#277). Alone,
+     * it matches every specialty in the group; a picked specialty narrows it.
+     */
+    specialtyGroup?: SpecialtyCategory
     specialties?: Specialty[]
     languages?: Locale[]
+}
+
+/** The specialties a search matches: the picked ones, or every one in the picked group. */
+export function effectiveSpecialties(filters: SearchFilters): readonly Specialty[] | undefined {
+    if (filters.specialties?.length) return filters.specialties
+    return filters.specialtyGroup ? SPECIALTY_CATEGORY_MEMBERS[filters.specialtyGroup] : undefined
 }
 
 export interface SearchQueryState extends SearchFilters {
@@ -68,13 +79,13 @@ function matchesLocation(facility: Facility, filters: SearchFilters): boolean {
       && placeMatches(filters.prefecture, address?.prefectureEn, address?.prefectureJa)
 }
 
-function intersects<T>(selected: T[] | undefined, actual: T[] | undefined): boolean {
+function intersects<T>(selected: readonly T[] | undefined, actual: readonly T[] | undefined): boolean {
     if (!selected?.length) return true
     return (actual ?? []).some(value => selected.includes(value))
 }
 
 function matchesProfessional(professional: HealthcareProfessional, filters: SearchFilters): boolean {
-    return intersects(filters.specialties, professional.specialties)
+    return intersects(effectiveSpecialties(filters), professional.specialties)
       && intersects(filters.languages, professional.spokenLanguages)
 }
 
@@ -110,7 +121,7 @@ export function filterDirectory(
     }
 
     const languages = filters.languages ?? []
-    const needsDoctor = (filters.specialties?.length ?? 0) > 0
+    const needsDoctor = (effectiveSpecialties(filters)?.length ?? 0) > 0
     const withDoctors: FacilitySearchResult[] = []
     const withoutDoctors: FacilitySearchResult[] = []
     for (const facility of facilities) {
@@ -178,6 +189,18 @@ export function prefectureSearchParam(name: string): string {
     return slugify(name) || name
 }
 
+const GROUP_VALUES = Object.values(SpecialtyCategory) as SpecialtyCategory[]
+
+/** `digestive-health` in the URL, like a specialty's param. */
+export function specialtyGroupSearchParam(group: SpecialtyCategory): string {
+    return group.toLowerCase().replaceAll('_', '-')
+}
+
+function parseSpecialtyGroup(raw: string | undefined): SpecialtyCategory | undefined {
+    if (!raw) return undefined
+    return GROUP_VALUES.find(group => group === raw || specialtyGroupSearchParam(group) === raw.toLowerCase())
+}
+
 function parseSpecialty(raw: string | undefined): Specialty | undefined {
     if (!raw) return undefined
     if (SPECIALTY_SET.has(raw)) return raw as Specialty
@@ -216,6 +239,7 @@ export function parseSearchQuery(query: SearchLocationQuery): SearchQueryState {
     return {
         city: parsePlace(firstString(query.city)),
         prefecture: parsePlace(firstString(query.prefecture)),
+        specialtyGroup: parseSpecialtyGroup(firstString(query.group)),
         specialties: specialty ? [specialty] : undefined,
         languages: language ? [language] : undefined,
         facilityId: firstString(query.facility),
@@ -227,6 +251,7 @@ export function parseSearchQuery(query: SearchLocationQuery): SearchQueryState {
 export function buildSearchQuery(state: SearchQueryState): Record<string, string> {
     const query: Record<string, string> = {}
 
+    if (state.specialtyGroup) query.group = specialtyGroupSearchParam(state.specialtyGroup)
     if (state.specialties?.[0]) query.specialty = specialtySearchParam(state.specialties[0])
     if (state.languages?.[0]) query.language = languageSearchParam(state.languages[0])
     if (state.prefecture) query.prefecture = prefectureSearchParam(state.prefecture)
@@ -243,6 +268,7 @@ export function sameSearchQueryState(left: SearchLocationQuery, right: SearchLoc
 
     return a.city === b.city
       && a.prefecture === b.prefecture
+      && a.specialtyGroup === b.specialtyGroup
       && (a.specialties?.[0] ?? '') === (b.specialties?.[0] ?? '')
       && (a.languages?.[0] ?? '') === (b.languages?.[0] ?? '')
       && a.facilityId === b.facilityId
@@ -250,7 +276,8 @@ export function sameSearchQueryState(left: SearchLocationQuery, right: SearchLoc
 }
 
 export function hasActiveFilters(filters: SearchFilters): boolean {
-    return !!(filters.city || filters.prefecture || filters.specialties?.length || filters.languages?.length)
+    return !!(filters.city || filters.prefecture || filters.specialtyGroup || filters.specialties?.length
+      || filters.languages?.length)
 }
 
 /**

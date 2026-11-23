@@ -234,7 +234,8 @@
   },
   "searchBar": {
     "allSpecialties": "Todas as especialidades",
-    "resultsFound": "Nenhum resultado | 1 resultado encontrado | {n} resultados encontrados"
+    "resultsFound": "Nenhum resultado | 1 resultado encontrado | {n} resultados encontrados",
+    "allSubspecialties": "Todas as subespecialidades"
   },
   "searchResultsList": {
     "loadMore": "Carregar mais",
@@ -402,7 +403,10 @@
     "placeholderTextJapaneseLastName": "p. ex. 山田",
     "placeholderTextJapaneseFirstName": "p. ex. 花子",
     "nameNeedsReview": "Confira estes nomes. Um deles foi preenchido automaticamente ou ainda está faltando.",
-    "otherLocaleNamesRemoved": "Nomes em outros idiomas são removidos ao salvar."
+    "otherLocaleNamesRemoved": "Nomes em outros idiomas são removidos ao salvar.",
+    "specialtyGroupLabel": "Grupo de especialidades",
+    "allSpecialtyGroups": "Todos os grupos",
+    "specialtySearchHint": "Pesquise em inglês ou japonês. O nome do departamento no site da clínica também funciona, por exemplo 胃腸内科."
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "ID do profissional de saúde",
@@ -663,7 +667,29 @@
     "physicalMedicineAndRehabilitation": "Medicina física e reabilitação",
     "urology": "Urologista",
     "traumatology": "Traumatologia",
-    "proctology": "Proctologista"
+    "proctology": "Proctologista",
+    "breastSurgery": "Cirurgião de mama",
+    "cardiovascularSurgery": "Cirurgião cardiovascular",
+    "childPsychiatry": "Psiquiatra infantil",
+    "cosmeticDermatology": "Dermatologista estético",
+    "endocrinologyAndDiabetes": "Diabetes e endocrinologia",
+    "gastroenterology": "Gastroenterologista",
+    "geriatrics": "Geriatria",
+    "hematology": "Hematologista",
+    "hepatology": "Hepatologista (fígado)",
+    "kampoMedicine": "Medicina Kampo",
+    "medicalOncology": "Oncologista clínico",
+    "nephrology": "Nefrologista (rins)",
+    "neurosurgery": "Neurocirurgião",
+    "oralSurgery": "Cirurgião bucomaxilofacial",
+    "painMedicine": "Clínica da dor",
+    "palliativeCare": "Cuidados paliativos",
+    "pediatricDentistry": "Odontopediatra",
+    "pediatricSurgery": "Cirurgião pediátrico",
+    "psychosomaticMedicine": "Medicina psicossomática",
+    "pulmonology": "Pneumologista (pulmões)",
+    "reproductiveMedicine": "Especialista em fertilidade",
+    "rheumatology": "Reumatologista"
   },
   "specialtyCategories": {
     "childrensHealth": "Saúde infantil",
@@ -677,7 +703,17 @@
     "physicalTherapy": "Fisioterapia",
     "primaryCare": "Cuidados primários",
     "sportsAndRehab": "Esporte e reabilitação",
-    "womensHealth": "Saúde feminina"
+    "womensHealth": "Saúde feminina",
+    "allergyImmunityAndInfection": "Alergia, imunidade e infecção",
+    "brainAndNerves": "Cérebro e nervos",
+    "cancerAndDiagnostics": "Câncer e diagnóstico",
+    "diabetesHormonesAndKidneys": "Diabetes, hormônios e rins",
+    "digestiveHealth": "Saúde digestiva",
+    "emergencyCare": "Emergência",
+    "heartAndCirculation": "Coração e circulação",
+    "lungsAndBreathing": "Pulmões e respiração",
+    "pharmacyAndGenetics": "Farmácia e genética",
+    "surgeryAndAnesthesia": "Cirurgia e anestesia"
   },
   "noteInputField": {
     "optional": "(opcional)"
@@ -800,7 +836,8 @@
     "missionLink": "Saber mais sobre nós",
     "contributeHeading": "Conhece uma clínica que nos falta?",
     "contributeBody": "Qualquer pessoa pode sugerir uma clínica ou um médico. Os nossos moderadores verificam cada submissão antes de ser publicada.",
-    "contributeCta": "Adicionar um médico"
+    "contributeCta": "Adicionar um médico",
+    "searchSubspecialtyLabel": "Subespecialidade"
   },
   "search": {
     "filters": "Filtros",
