@@ -250,7 +250,9 @@
     "callNow": "Ligar",
     "sourceCredit": "Fonte: {list} e {openData} (Ministério da Saúde, Trabalho e Bem-Estar), dados editados pela Find a Doc.",
     "sourceInstitutionList": "Lista de instituições médicas que atendem pacientes estrangeiros",
-    "sourceOpenData": "Dados abertos da Rede de Informação Médica"
+    "sourceOpenData": "Dados abertos da Rede de Informação Médica",
+    "pinCredit": "Alguns marcadores do mapa vêm da {gsi}.",
+    "pinSourceGsi": "busca de endereços da Autoridade de Informação Geoespacial do Japão"
   },
   "thankYouPage": {
     "heading": "Obrigado!",
@@ -553,7 +555,12 @@
     "additionalInfoBothLanguages": "Escreva a nota nos dois idiomas, ou deixe as duas em branco.",
     "openingHoursUntilMidnight": "Até a meia-noite",
     "supportedLanguagesLabel": "Idiomas atendidos pela clínica",
-    "supportedLanguagesHint": "Marque apenas os idiomas confirmados pelo site da clínica ou por telefone. A busca mostra a clínica para esses idiomas mesmo quando nenhum médico está cadastrado."
+    "supportedLanguagesHint": "Marque apenas os idiomas confirmados pelo site da clínica ou por telefone. A busca mostra a clínica para esses idiomas mesmo quando nenhum médico está cadastrado.",
+    "verificationLabel": "Status do cadastro",
+    "verificationHint": "Confirme uma clínica só depois que o site dela ou uma ligação confirmar o nome, o endereço e o telefone daqui. Uma clínica confirmada mostra um pequeno link \"Encontrou um erro?\". As demais pedem que os leitores ajudem a confirmá-la.",
+    "verificationUnverified": "Não verificada",
+    "verificationConfirmed": "Confirmada",
+    "verificationNeedsCity": "Adicione uma cidade antes de confirmar esta clínica."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",
@@ -621,7 +628,6 @@
     "allergyAndImmunology": "Alergista/Imunologista",
     "anesthesiology": "Anestesiologista",
     "cardiology": "Cardiologista",
-    "cosmeticSurgery": "Cirurgião estético",
     "dentistry": "Dentista",
     "dermatology": "Dermatologista",
     "diagnosticRadiology": "Radiologista",
@@ -629,9 +635,6 @@
     "emergencyMedicine": "Medicina de emergência",
     "familyMedicine": "Medicina de família",
     "cosmeticSurgery": "Cirurgião estético",
-    "orthodontics": "Ortodontista",
-    "pharmacy": "Farmácia",
-    "plasticSurgery": "Cirurgião plástico",
     "generalMedicine": "Clínico geral",
     "infectiousDiseases": "Doenças infecciosas",
     "internalMedicine": "Medicina interna",

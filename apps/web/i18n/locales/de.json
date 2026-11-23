@@ -250,7 +250,9 @@
     "callNow": "Anrufen",
     "sourceCredit": "Quelle: {list} und {openData} (Ministerium für Gesundheit, Arbeit und Soziales), bearbeitet von Find a Doc.",
     "sourceInstitutionList": "Liste der medizinischen Einrichtungen, die ausländische Patienten aufnehmen",
-    "sourceOpenData": "Offene Daten des Medizininformationsnetzes"
+    "sourceOpenData": "Offene Daten des Medizininformationsnetzes",
+    "pinCredit": "Einige Kartenmarkierungen stammen aus der {gsi}.",
+    "pinSourceGsi": "Adresssuche der japanischen Behörde für Geoinformation"
   },
   "thankYouPage": {
     "heading": "Vielen Dank!",
@@ -280,7 +282,6 @@
     "allergyAndImmunology": "Allergologe/Allergologin",
     "anesthesiology": "Anästhesist/Anästhesistin",
     "cardiology": "Kardiologe/Kardiologin",
-    "cosmeticSurgery": "Schönheitschirurg/Schönheitschirurgin",
     "dentistry": "Zahnarzt/Zahnärztin",
     "dermatology": "Dermatologe/Dermatologin",
     "diagnosticRadiology": "Radiologe/Radiologin",
@@ -288,9 +289,6 @@
     "emergencyMedicine": "Notfallmedizin",
     "familyMedicine": "Familienmedizin",
     "cosmeticSurgery": "Ästhetischer Chirurg",
-    "orthodontics": "Kieferorthopäde",
-    "pharmacy": "Apotheke",
-    "plasticSurgery": "Plastischer Chirurg",
     "infectiousDiseases": "Infektiologe/Infektiologin",
     "internalMedicine": "Internist/Internistin",
     "generalMedicine": "Allgemeinarzt/Allgemeinärztin",
@@ -609,7 +607,12 @@
     "additionalInfoBothLanguages": "Schreiben Sie den Hinweis in beiden Sprachen, oder lassen Sie beide Felder leer.",
     "openingHoursUntilMidnight": "Bis Mitternacht",
     "supportedLanguagesLabel": "Sprachen, die die Klinik unterstützt",
-    "supportedLanguagesHint": "Kreuzen Sie nur Sprachen an, die die Website der Praxis oder ein Anruf bestätigt. Die Suche zeigt die Praxis für diese Sprachen auch dann, wenn keine Ärztin und kein Arzt eingetragen ist."
+    "supportedLanguagesHint": "Kreuzen Sie nur Sprachen an, die die Website der Praxis oder ein Anruf bestätigt. Die Suche zeigt die Praxis für diese Sprachen auch dann, wenn keine Ärztin und kein Arzt eingetragen ist.",
+    "verificationLabel": "Prüfstatus des Eintrags",
+    "verificationHint": "Bestätigen Sie eine Praxis erst, wenn ihre Website oder ein Anruf Name, Adresse und Telefonnummer bestätigt. Eine bestätigte Praxis zeigt einen kleinen Link „Fehler gefunden?“. Bei allen anderen werden Lesende gebeten, beim Bestätigen zu helfen.",
+    "verificationUnverified": "Nicht geprüft",
+    "verificationConfirmed": "Bestätigt",
+    "verificationNeedsCity": "Geben Sie eine Stadt an, bevor Sie diese Praxis bestätigen."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Aktualisieren und beenden",

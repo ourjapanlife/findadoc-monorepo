@@ -250,7 +250,9 @@
     "callNow": "Appeler",
     "sourceCredit": "Source : {list} et {openData} (ministère de la Santé, du Travail et des Affaires sociales), données modifiées par Find a Doc.",
     "sourceInstitutionList": "Liste des établissements médicaux qui accueillent les patients étrangers",
-    "sourceOpenData": "Données ouvertes du réseau d’information médicale"
+    "sourceOpenData": "Données ouvertes du réseau d’information médicale",
+    "pinCredit": "Certains repères de la carte proviennent de la {gsi}.",
+    "pinSourceGsi": "recherche d’adresses de l’Autorité d’information géospatiale du Japon"
   },
   "thankYouPage": {
     "heading": "Merci !",
@@ -389,7 +391,6 @@
     "allergyAndImmunology": "Allergologue",
     "anesthesiology": "Anesthésiste",
     "cardiology": "Cardiologue",
-    "cosmeticSurgery": "Chirurgien esthétique",
     "dentistry": "Dentiste",
     "dermatology": "Dermatologue",
     "diagnosticRadiology": "Radiologue",
@@ -397,9 +398,6 @@
     "emergencyMedicine": "Médecine d'urgence",
     "familyMedicine": "Médecin de famille",
     "cosmeticSurgery": "Chirurgien esthétique",
-    "orthodontics": "Orthodontiste",
-    "pharmacy": "Pharmacie",
-    "plasticSurgery": "Chirurgien plasticien",
     "generalMedicine": "Médecin généraliste",
     "infectiousDiseases": "Maladies infectieuses",
     "internalMedicine": "Médecine interne",
@@ -565,7 +563,12 @@
     "additionalInfoBothLanguages": "Rédigez la note dans les deux langues, ou laissez les deux vides.",
     "openingHoursUntilMidnight": "Jusqu'à minuit",
     "supportedLanguagesLabel": "Langues prises en charge par la clinique",
-    "supportedLanguagesHint": "Cochez uniquement les langues confirmées par le site de la clinique ou par un appel. La recherche affiche la clinique pour ces langues même si aucun médecin n'est indiqué."
+    "supportedLanguagesHint": "Cochez uniquement les langues confirmées par le site de la clinique ou par un appel. La recherche affiche la clinique pour ces langues même si aucun médecin n'est indiqué.",
+    "verificationLabel": "Statut de la fiche",
+    "verificationHint": "Ne confirmez une clinique qu'après avoir vérifié le nom, l'adresse et le téléphone sur son site ou par un appel. Une clinique confirmée affiche un petit lien « Une erreur ? ». Pour les autres, on demande aux lecteurs d'aider à la confirmer.",
+    "verificationUnverified": "Non vérifiée",
+    "verificationConfirmed": "Confirmée",
+    "verificationNeedsCity": "Ajoutez une ville avant de confirmer cette clinique."
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",

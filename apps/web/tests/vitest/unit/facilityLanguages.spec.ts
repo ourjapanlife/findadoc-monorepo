@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { createI18n } from 'vue-i18n'
-import { Locale, type Facility } from '@findadoc/graphql'
+import { FacilityVerificationStatus, Locale, type Facility } from '@findadoc/graphql'
 import ModSupportedLanguagesField from '~/components/moderation-panel/ModSupportedLanguagesField.vue'
 import { getChangedFacilityFieldsForUpdate, type FacilitySectionFields } from '~/stores/facilitiesStore'
 import { changedSupportedLanguages, toggleSupportedLanguage } from '~/utils/facilityLanguages'
@@ -85,6 +85,7 @@ describe('facility update with languages', () => {
             additionalInfoEn: '',
             additionalInfoJa: '',
             supportedLanguages,
+            verificationStatus: FacilityVerificationStatus.Unverified,
             healthcareProfessionalIds: [],
             healthProfessionalsRelations: []
         }

@@ -250,7 +250,9 @@
     "callNow": "拨打",
     "sourceCredit": "来源：{list}、{openData}（日本厚生劳动省），由 Find a Doc 编辑整理。",
     "sourceInstitutionList": "接收外国患者的医疗机构名单",
-    "sourceOpenData": "医疗信息网开放数据"
+    "sourceOpenData": "医疗信息网开放数据",
+    "pinCredit": "部分地图标记来自{gsi}。",
+    "pinSourceGsi": "日本国土地理院地址搜索"
   },
   "thankYouPage": {
     "heading": "谢谢！",
@@ -553,7 +555,12 @@
     "additionalInfoBothLanguages": "请用两种语言填写，或两者都留空。",
     "openingHoursUntilMidnight": "营业至午夜",
     "supportedLanguagesLabel": "诊所支持的语言",
-    "supportedLanguagesHint": "只勾选经诊所网站或电话确认的语言。即使没有登记医生，按这些语言搜索时也会显示该诊所。"
+    "supportedLanguagesHint": "只勾选经诊所网站或电话确认的语言。即使没有登记医生，按这些语言搜索时也会显示该诊所。",
+    "verificationLabel": "信息核实状态",
+    "verificationHint": "只有在诊所网站或电话确认这里的名称、地址和电话后，才能标记为已确认。已确认的诊所会显示一个小的“发现错误？”链接，其他诊所会请读者帮忙确认。",
+    "verificationUnverified": "未核实",
+    "verificationConfirmed": "已确认",
+    "verificationNeedsCity": "请先设置城市，再确认这家诊所。"
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",
@@ -621,7 +628,6 @@
     "allergyAndImmunology": "过敏与免疫科医生",
     "anesthesiology": "麻醉科医生",
     "cardiology": "心脏科医生",
-    "cosmeticSurgery": "美容外科医生",
     "dentistry": "牙医",
     "dermatology": "皮肤科医生",
     "diagnosticRadiology": "放射诊断科医生",
@@ -629,9 +635,6 @@
     "emergencyMedicine": "急诊科医生",
     "familyMedicine": "家庭医学",
     "cosmeticSurgery": "美容外科医生",
-    "orthodontics": "正畸医生",
-    "pharmacy": "药房",
-    "plasticSurgery": "整形外科医生",
     "infectiousDiseases": "传染病科医生",
     "internalMedicine": "内科医生",
     "medicalGenetics": "医学遗传学医生",

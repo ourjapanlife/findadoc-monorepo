@@ -331,7 +331,9 @@
     "callNow": "전화",
     "sourceCredit": "출처: {list}, {openData}(후생노동성), Find a Doc이 가공함.",
     "sourceInstitutionList": "외국인 환자를 받는 의료기관 목록",
-    "sourceOpenData": "의료정보넷 오픈 데이터"
+    "sourceOpenData": "의료정보넷 오픈 데이터",
+    "pinCredit": "일부 지도 핀은 {gsi}에서 가져왔습니다.",
+    "pinSourceGsi": "일본 국토지리원 주소 검색"
   },
   "thankYouPage": {
     "heading": "감사합니다!",
@@ -361,7 +363,6 @@
     "allergyAndImmunology": "알레르기 전문의",
     "anesthesiology": "마취과 전문의",
     "cardiology": "심장내과 전문의",
-    "cosmeticSurgery": "미용외과 전문의",
     "dentistry": "치과의사",
     "dermatology": "피부과 전문의",
     "diagnosticRadiology": "영상의학과 전문의",
@@ -369,9 +370,6 @@
     "emergencyMedicine": "응급의학",
     "familyMedicine": "가정의학",
     "cosmeticSurgery": "미용외과",
-    "orthodontics": "치과교정과",
-    "pharmacy": "약국",
-    "plasticSurgery": "성형외과",
     "infectiousDiseases": "감염내과",
     "internalMedicine": "내과",
     "generalMedicine": "일반의학",
@@ -685,7 +683,12 @@
     "additionalInfoBothLanguages": "두 언어로 모두 작성하거나 둘 다 비워 두세요.",
     "openingHoursUntilMidnight": "자정까지",
     "supportedLanguagesLabel": "병원이 지원하는 언어",
-    "supportedLanguagesHint": "병원 웹사이트나 전화로 확인한 언어만 선택하세요. 등록된 의사가 없어도 이 언어로 검색하면 이 병원이 표시됩니다."
+    "supportedLanguagesHint": "병원 웹사이트나 전화로 확인한 언어만 선택하세요. 등록된 의사가 없어도 이 언어로 검색하면 이 병원이 표시됩니다.",
+    "verificationLabel": "등록 정보 확인 상태",
+    "verificationHint": "병원 웹사이트나 전화로 이름, 주소, 전화번호가 맞는지 확인한 뒤에만 확인됨으로 바꾸세요. 확인된 병원에는 작은 \"오류를 발견하셨나요?\" 링크가 표시됩니다. 다른 병원에는 확인을 도와 달라는 안내가 표시됩니다.",
+    "verificationUnverified": "미확인",
+    "verificationConfirmed": "확인됨",
+    "verificationNeedsCity": "이 병원을 확인하기 전에 도시를 설정하세요."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "의료기관을 업데이트하려면 의료기관 ID가 필요합니다",

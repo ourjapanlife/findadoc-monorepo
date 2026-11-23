@@ -331,7 +331,9 @@
     "callNow": "Telepon",
     "sourceCredit": "Sumber: {list} dan {openData} (Kementerian Kesehatan, Tenaga Kerja, dan Kesejahteraan), diolah oleh Find a Doc.",
     "sourceInstitutionList": "Daftar fasilitas medis yang menerima pasien asing",
-    "sourceOpenData": "Data terbuka Jaringan Informasi Medis"
+    "sourceOpenData": "Data terbuka Jaringan Informasi Medis",
+    "pinCredit": "Sebagian penanda peta berasal dari {gsi}.",
+    "pinSourceGsi": "pencarian alamat Otoritas Informasi Geospasial Jepang"
   },
   "thankYouPage": {
     "heading": "Terima kasih!",
@@ -361,7 +363,6 @@
     "allergyAndImmunology": "Dokter Alergi",
     "anesthesiology": "Dokter Anestesi",
     "cardiology": "Dokter Jantung",
-    "cosmeticSurgery": "Dokter Bedah Kosmetik",
     "dentistry": "Dokter Gigi",
     "dermatology": "Dokter Kulit",
     "diagnosticRadiology": "Dokter Radiologi",
@@ -369,9 +370,6 @@
     "emergencyMedicine": "Kedokteran Gawat Darurat",
     "familyMedicine": "Kedokteran Keluarga",
     "cosmeticSurgery": "Dokter Bedah Kosmetik",
-    "orthodontics": "Dokter Gigi Ortodonti",
-    "pharmacy": "Apotek",
-    "plasticSurgery": "Dokter Bedah Plastik",
     "infectiousDiseases": "Penyakit Infeksi",
     "internalMedicine": "Penyakit Dalam",
     "generalMedicine": "Kedokteran Umum",
@@ -685,7 +683,12 @@
     "additionalInfoBothLanguages": "Tulis catatan dalam kedua bahasa, atau kosongkan keduanya.",
     "openingHoursUntilMidnight": "Sampai tengah malam",
     "supportedLanguagesLabel": "Bahasa yang didukung klinik",
-    "supportedLanguagesHint": "Centang hanya bahasa yang dikonfirmasi oleh situs web klinik atau lewat telepon. Pencarian menampilkan klinik ini untuk bahasa tersebut meskipun belum ada dokter yang terdaftar."
+    "supportedLanguagesHint": "Centang hanya bahasa yang dikonfirmasi oleh situs web klinik atau lewat telepon. Pencarian menampilkan klinik ini untuk bahasa tersebut meskipun belum ada dokter yang terdaftar.",
+    "verificationLabel": "Status data",
+    "verificationHint": "Konfirmasi klinik hanya setelah situs web klinik atau telepon mencocokkan nama, alamat, dan nomor telepon di sini. Klinik yang terkonfirmasi menampilkan tautan kecil \"Menemukan kesalahan?\". Klinik lain meminta pembaca membantu mengonfirmasinya.",
+    "verificationUnverified": "Belum diverifikasi",
+    "verificationConfirmed": "Terkonfirmasi",
+    "verificationNeedsCity": "Tambahkan kota sebelum mengonfirmasi klinik ini."
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "ID Fasilitas diperlukan untuk memperbarui Fasilitas",

@@ -107,6 +107,11 @@
             v-if="moderationScreenStore.editFacilityScreenIsActive()"
             v-model="facilityStore.facilitySectionFields.supportedLanguages"
         />
+        <ModFacilityVerificationField
+            v-if="moderationScreenStore.editFacilityScreenIsActive()"
+            v-model="facilityStore.facilitySectionFields.verificationStatus"
+            :has-city="Boolean(facilityStore.facilitySectionFields.cityId.trim())"
+        />
         <ModAccordion
             v-if="!facilityStore.facilitySectionFields.online"
             tone="facility"

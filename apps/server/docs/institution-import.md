@@ -57,14 +57,18 @@ The import stored only a Places id, so the 1,249 facilities it created had no la
 | Match | What the script does |
 | --- | --- |
 | Same Japanese name in the same municipality, and the same street address, every number alike | Fills the pin |
-| The name or the street address agrees, not both | Fills it only when the facility is approved in the verification CSV (`--approved`, `check_map_pin_place` = ok) |
-| A ministry row with 0,0 coordinates, or no match | Leaves it for a moderator |
+| The name or the street address agrees, not both | Fills it when the facility is approved in the verification CSV (`--approved`, `check_map_pin_place` = ok), or with `--geocode` when the facility's street address lands within 150 m of the ministry pin |
+| A ministry row with 0,0 coordinates, or no match | With `--geocode`, fills the pin from the street address when the lookup finds the block (番 or 号). Otherwise leaves it for a moderator |
+
+`--geocode` looks up each facility's Japanese street address, cut before the building, in the Geospatial Information Authority's address search (国土地理院, `msearch.gsi.go.jp`), one call every 250 ms. It sends only the clinic's public address. A lot number (番地) counts as the block, since rural addresses without 住居表示 stop there. An address found only to the town or 丁目 is never used, and a street address that disagrees with a one-sided ministry pin is left for a person to decide. Facility pages credit GSI next to the ministry (`facility-pin-credit`), and only for imported facilities, so the script reads only rows with `source = MHLW_MULTILINGUAL_INSTITUTIONS`.
+
+`--closest` (with `--geocode`) places every facility the rules above leave, so none is missing from the map. In order it takes the block-level street address over a ministry pin that disagrees with it, the ministry pin when the address did not reach the block, the 丁目 or town the address reached, and last the city center. These pins are best guesses: the report lists their ids as `approximateIds`, for a moderator to check and correct on the edit form.
 
 Unzip the three CSVs, then dry-run, read the counts, and write (see `.claude/skills/production-database/SKILL.md`):
 
 ```bash
-pnpm db:prod node --loader ts-node/esm utils/backfillFacilityPins.ts --csv hospital.csv --csv clinic.csv --csv dental.csv --approved verification.csv
-pnpm db:prod --role operator node --loader ts-node/esm utils/backfillFacilityPins.ts --csv hospital.csv --csv clinic.csv --csv dental.csv --approved verification.csv --write --confirm-production
+pnpm db:prod node --loader ts-node/esm utils/backfillFacilityPins.ts --csv hospital.csv --csv clinic.csv --csv dental.csv --approved verification.csv --geocode
+pnpm db:prod --role operator node --loader ts-node/esm utils/backfillFacilityPins.ts --csv hospital.csv --csv clinic.csv --csv dental.csv --approved verification.csv --geocode --write --confirm-production
 ```
 
 Checked against the 470 facilities that already had a pin, a name-and-address match lands a median of 28 m away, and 4 of 113 more than 1 km away. Facility pages credit the ministry for imported facilities (`facility-source-credit`), with a link to each source page and a note that Find a Doc edited the data.

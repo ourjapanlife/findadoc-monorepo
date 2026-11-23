@@ -2,14 +2,23 @@ import { fileURLToPath } from 'node:url'
 import type pg from 'pg'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+    ADDRESS_PRECISION,
     addressKey,
+    addressPrecision,
     backfillFacilityPins,
+    createGsiGeocoder,
     main,
     MATCH_LEVEL,
     matchFacilityPins,
     parseApprovedIds,
+    parseGsiResponse,
     parseMinistryCsv,
+    PIN_SOURCE,
+    planClosestFill,
+    planFill,
     shouldFill,
+    streetQuery,
+    type AddressPin,
     type MinistryInstitution,
     type PinlessFacility
 } from '../utils/backfillFacilityPins.js'
@@ -108,6 +117,166 @@ describe('shouldFill', () => {
     })
 })
 
+describe('streetQuery', () => {
+    it('sends the street without the building or floor', () => {
+        expect(streetQuery(facility('f1', 'テスト中央病院', '広島市', '中区基町１０－５２ テストビル2階')))
+            .toBe('広島県広島市中区基町10-52')
+    })
+})
+
+describe('addressPrecision', () => {
+    it('reads how far down the address the lookup got', () => {
+        expect(addressPrecision('広島県広島市中区基町１０番')).toBe(ADDRESS_PRECISION.Block)
+        expect(addressPrecision('広島県呉市中央四丁目')).toBe(ADDRESS_PRECISION.Chome)
+        expect(addressPrecision('広島県広島市中区基町')).toBe(ADDRESS_PRECISION.Town)
+    })
+
+    it('counts a lot number (番地) as the block, where there is no 住居表示', () => {
+        expect(addressPrecision('広島県三次市テスト町２２７６番地')).toBe(ADDRESS_PRECISION.Block)
+    })
+})
+
+describe('parseGsiResponse', () => {
+    it('takes the first feature as latitude and longitude', () => {
+        const body = [{
+            geometry: { coordinates: [132.4596, 34.3963], type: 'Point' },
+            properties: { title: '広島県広島市中区基町１０番' }
+        }]
+        expect(parseGsiResponse(body)).toEqual({ lat: 34.3963, lng: 132.4596, precision: ADDRESS_PRECISION.Block })
+    })
+
+    it('returns null for an empty or malformed answer', () => {
+        expect(parseGsiResponse([])).toBeNull()
+        expect(parseGsiResponse([{ geometry: { coordinates: ['x', 1] }, properties: { title: 'a' } }])).toBeNull()
+        expect(parseGsiResponse({ error: 'nope' })).toBeNull()
+    })
+
+    it('refuses coordinates outside the valid range, which the pin constraint would reject', () => {
+        const at = (lng: number, lat: number) => [{ geometry: { coordinates: [lng, lat] }, properties: { title: '番' } }]
+        expect(parseGsiResponse(at(132.4596, 134.3963))).toBeNull()
+        expect(parseGsiResponse(at(232.4596, 34.3963))).toBeNull()
+    })
+})
+
+describe('planFill', () => {
+    const [both, nameOnly, addressOnly, noPin, unmatched] = matchFacilityPins([
+        facility('f1', 'テスト中央病院', '広島市', '中区基町10-52'),
+        facility('f2', 'テスト中央病院', '広島市', '中区大手町1-1'),
+        facility('f3', 'みどりクリニック', '呉市', '中央4-1-6'),
+        facility('f5', 'テスト歯科医院', '三原市', '城町1-2-1'),
+        facility('f4', '存在しない医院', '尾道市', '土堂1-1')
+    ], INSTITUTIONS)
+    // About 60 m from RENAMED, and about 2 km from it.
+    const NEAR_RENAMED: AddressPin = { lat: 34.2497, lng: 132.5662, precision: ADDRESS_PRECISION.Block }
+    const FAR_FROM_RENAMED: AddressPin = { lat: 34.2672, lng: 132.5658, precision: ADDRESS_PRECISION.Block }
+    const ONOMICHI_BLOCK: AddressPin = { lat: 34.4089, lng: 133.2050, precision: ADDRESS_PRECISION.Block }
+
+    it('uses the ministry pin when the name and the address agree, without a lookup', () => {
+        expect(both && planFill(both, new Set())).toMatchObject({ source: PIN_SOURCE.Ministry, lat: HOSPITAL.lat })
+    })
+
+    it('fills a one-sided ministry pin when the street address lands within 150 m of it', () => {
+        expect(addressOnly && planFill(addressOnly, new Set(), NEAR_RENAMED))
+            .toMatchObject({ source: PIN_SOURCE.MinistryConfirmedByAddress, lat: RENAMED.lat, lng: RENAMED.lng })
+    })
+
+    it('leaves a one-sided ministry pin the address puts far away for a person', () => {
+        expect(addressOnly && planFill(addressOnly, new Set(), FAR_FROM_RENAMED)).toBeNull()
+        expect(nameOnly && planFill(nameOnly, new Set(), null)).toBeNull()
+    })
+
+    it('uses a block-level address when the ministry has no row or a 0,0 pin', () => {
+        expect(unmatched && planFill(unmatched, new Set(), ONOMICHI_BLOCK))
+            .toMatchObject({ source: PIN_SOURCE.Address, lat: ONOMICHI_BLOCK.lat, lng: ONOMICHI_BLOCK.lng })
+        expect(noPin && planFill(noPin, new Set(), ONOMICHI_BLOCK)).toMatchObject({ source: PIN_SOURCE.Address })
+    })
+
+    it('never uses an address found only to the town or 丁目, or at 0,0', () => {
+        const town = { ...ONOMICHI_BLOCK, precision: ADDRESS_PRECISION.Town }
+        const chome = { ...ONOMICHI_BLOCK, precision: ADDRESS_PRECISION.Chome }
+        const zero = { lat: 0, lng: 0, precision: ADDRESS_PRECISION.Block }
+        expect(unmatched && planFill(unmatched, new Set(), town)).toBeNull()
+        expect(unmatched && planFill(unmatched, new Set(), chome)).toBeNull()
+        expect(unmatched && planFill(unmatched, new Set(), zero)).toBeNull()
+    })
+})
+
+describe('planClosestFill', () => {
+    const [nameOnly, noPin, unmatched] = matchFacilityPins([
+        facility('f2', 'テスト中央病院', '広島市', '中区大手町1-1'),
+        facility('f5', 'テスト歯科医院', '三原市', '城町1-2-1'),
+        facility('f4', '存在しない医院', '尾道市', '土堂1-1')
+    ], INSTITUTIONS)
+    const BLOCK: AddressPin = { lat: 34.3925, lng: 132.4555, precision: ADDRESS_PRECISION.Block }
+    const TOWN: AddressPin = { lat: 34.41, lng: 133.2, precision: ADDRESS_PRECISION.Town }
+    const CITY: AddressPin = { lat: 34.4089, lng: 133.205, precision: ADDRESS_PRECISION.Town }
+
+    it('prefers the block-level street address over a ministry pin that disagrees', () => {
+        expect(nameOnly && planClosestFill(nameOnly, BLOCK))
+            .toMatchObject({ source: PIN_SOURCE.AddressOverMinistry, lat: BLOCK.lat })
+    })
+
+    it('uses the ministry pin when the address did not reach the block', () => {
+        expect(nameOnly && planClosestFill(nameOnly, TOWN))
+            .toMatchObject({ source: PIN_SOURCE.MinistryUnconfirmed, lat: HOSPITAL.lat })
+    })
+
+    it('uses the town the address reached, then the city center, when the ministry has no pin', () => {
+        expect(noPin && planClosestFill(noPin, TOWN)).toMatchObject({ source: PIN_SOURCE.AddressApproximate })
+        expect(unmatched && planClosestFill(unmatched, null, CITY))
+            .toMatchObject({ source: PIN_SOURCE.CityCenter, lat: CITY.lat })
+    })
+
+    it('leaves a facility alone when nothing at all was found', () => {
+        expect(unmatched && planClosestFill(unmatched, null, null)).toBeNull()
+    })
+
+    it('skips an out-of-range ministry pin and falls back to the address', () => {
+        const [badMinistry] = matchFacilityPins(
+            [facility('f7', 'テスト範囲外病院', '広島市', '中区大手町1-1')],
+            [{ id: 'M9', name: 'テスト範囲外病院', address: '広島県広島市中区基町1-1', lat: 95, lng: 132 }]
+        )
+        expect(badMinistry?.level).toBe(MATCH_LEVEL.NameOnly)
+        expect(badMinistry && planClosestFill(badMinistry, TOWN))
+            .toMatchObject({ source: PIN_SOURCE.AddressApproximate, lat: TOWN.lat })
+    })
+})
+
+describe('createGsiGeocoder', () => {
+    it('sends the encoded street and reads the answer', async () => {
+        const fetchImpl = vi.fn<typeof fetch>(async () => new Response(JSON.stringify([{
+            geometry: { coordinates: [132.4596, 34.3963] }, properties: { title: '広島県広島市中区基町１０番' }
+        }])))
+        const pin = await createGsiGeocoder(fetchImpl, 0)('広島県広島市中区基町10-52')
+
+        expect(pin).toEqual({ lat: 34.3963, lng: 132.4596, precision: ADDRESS_PRECISION.Block })
+        expect(String(fetchImpl.mock.calls[0]?.[0])).toContain(encodeURIComponent('広島県広島市中区基町10-52'))
+    })
+
+    it('fails on an HTTP error instead of reading it as no match', async () => {
+        const fetchImpl = vi.fn<typeof fetch>(async () => new Response('busy', { status: 503 }))
+        await expect(createGsiGeocoder(fetchImpl, 0)('広島県')).rejects.toThrow(/503/)
+    })
+
+    it('still pauses after a failed lookup', async () => {
+        vi.useFakeTimers()
+        try {
+            const fetchImpl = vi.fn<typeof fetch>(async () => new Response('busy', { status: 503 }))
+            let settled = false
+            const lookup = createGsiGeocoder(fetchImpl, 250)('広島県').catch(() => {
+                settled = true
+            })
+            await vi.advanceTimersByTimeAsync(249)
+            expect(settled).toBe(false)
+            await vi.advanceTimersByTimeAsync(1)
+            await lookup
+            expect(settled).toBe(true)
+        } finally {
+            vi.useRealTimers()
+        }
+    })
+})
+
 describe('parseMinistryCsv', () => {
     it('reads the ministry columns', () => {
         const csv = '﻿ID,正式名称,所在地,所在地座標（緯度）,所在地座標（経度）\n'
@@ -166,6 +335,13 @@ describe('backfillFacilityPins', () => {
         expect(queries.some(query => query.text.includes('update facilities'))).toBe(false)
     })
 
+    it('reads only facilities from the ministry import, whose pages carry the credit', async () => {
+        const { client, queries } = fakeClient(PINLESS_ROWS)
+        await backfillFacilityPins(client, INSTITUTIONS, new Set(), false)
+
+        expect(queries[0]?.text).toContain('source = \'MHLW_MULTILINGUAL_INSTITUTIONS\'')
+    })
+
     it('writes the ministry pin only where the row still has none', async () => {
         const { client, queries } = fakeClient(PINLESS_ROWS)
         const report = await backfillFacilityPins(client, INSTITUTIONS, new Set(), true)
@@ -176,6 +352,72 @@ describe('backfillFacilityPins', () => {
         expect(updates[0]?.values).toEqual([HOSPITAL.lat, HOSPITAL.lng, 'f1'])
         expect(updates[0]?.text).toContain('map_latitude is null')
         expect(queries.map(query => query.text)).toContain('commit')
+    })
+
+    it('looks up only what the ministry does not settle, and writes the address pin', async () => {
+        const rows = [
+            ...PINLESS_ROWS,
+            { id: 'f4', name_ja: '存在しない医院', prefecture_ja: '広島県', city_ja: '尾道市', address_line1_ja: '土堂1-1' }
+        ]
+        const { client, queries } = fakeClient(rows)
+        const geocode = vi.fn(async (street: string) => (street.includes('尾道市')
+            ? { lat: 34.4089, lng: 133.2050, precision: ADDRESS_PRECISION.Block }
+            : null))
+        const report = await backfillFacilityPins(client, INSTITUTIONS, new Set(), true, geocode)
+        const updates = queries.filter(query => query.text.includes('update facilities'))
+
+        expect(geocode).toHaveBeenCalledTimes(2)
+        expect(report).toMatchObject({ addressLookups: 2, toFill: 2, updated: 2 })
+        expect(report.bySource).toMatchObject({ ministry: 1, ministry_confirmed_by_address: 0, address: 1 })
+        expect(report.approximateIds).toEqual([])
+        expect(updates.map(update => update.values)).toContainEqual([34.4089, 133.2050, 'f4'])
+    })
+
+    it('with closest, fills what planFill leaves and lists those ids as approximate', async () => {
+        const rows = [
+            ...PINLESS_ROWS,
+            { id: 'f4', name_ja: '存在しない医院', prefecture_ja: '広島県', city_ja: '尾道市', address_line1_ja: '土堂1-1' }
+        ]
+        const { client } = fakeClient(rows)
+        const geocode = vi.fn(async (query: string) => (query === '広島県尾道市'
+            ? { lat: 34.4089, lng: 133.2050, precision: ADDRESS_PRECISION.Town }
+            : null))
+        const report = await backfillFacilityPins(client, INSTITUTIONS, new Set(), false, geocode, true)
+
+        expect(geocode).toHaveBeenCalledWith('広島県尾道市')
+        expect(report.bySource).toMatchObject({ ministry: 1, ministry_unconfirmed: 1, city_center: 1 })
+        expect(report.approximateIds.sort()).toEqual(['f2', 'f4'])
+    })
+
+    it('with closest, looks up the city when the street answer is 0,0', async () => {
+        const rows = [
+            { id: 'f4', name_ja: '存在しない医院', prefecture_ja: '広島県', city_ja: '尾道市', address_line1_ja: '土堂1-1' }
+        ]
+        const { client } = fakeClient(rows)
+        const geocode = vi.fn(async (query: string) => (query === '広島県尾道市'
+            ? { lat: 34.4089, lng: 133.2050, precision: ADDRESS_PRECISION.Town }
+            : { lat: 0, lng: 0, precision: ADDRESS_PRECISION.Block }))
+        const report = await backfillFacilityPins(client, INSTITUTIONS, new Set(), false, geocode, true)
+
+        expect(report.bySource).toMatchObject({ city_center: 1 })
+        expect(report.approximateIds).toEqual(['f4'])
+    })
+
+    it('without closest, lists nothing as approximate', async () => {
+        const { client } = fakeClient(PINLESS_ROWS)
+        const report = await backfillFacilityPins(client, INSTITUTIONS, new Set(), false, vi.fn(async () => null))
+
+        expect(report).toMatchObject({ toFill: 1, approximateIds: [] })
+    })
+
+    it('counts a failed lookup and leaves that facility alone', async () => {
+        const { client } = fakeClient(PINLESS_ROWS)
+        const geocode = vi.fn(async () => {
+            throw new Error('GSI address search returned HTTP 503')
+        })
+        const report = await backfillFacilityPins(client, INSTITUTIONS, new Set(), false, geocode)
+
+        expect(report).toMatchObject({ addressLookups: 1, addressLookupFailures: 1, toFill: 1 })
     })
 })
 

@@ -331,7 +331,9 @@
     "callNow": "फोन गर्नुहोस्",
     "sourceCredit": "स्रोत: {list} र {openData} (स्वास्थ्य, श्रम तथा कल्याण मन्त्रालय), Find a Doc द्वारा सम्पादित।",
     "sourceInstitutionList": "विदेशी बिरामी स्वीकार गर्ने चिकित्सा संस्थाहरूको सूची",
-    "sourceOpenData": "चिकित्सा सूचना नेटको खुला डेटा"
+    "sourceOpenData": "चिकित्सा सूचना नेटको खुला डेटा",
+    "pinCredit": "नक्साका केही पिनहरू {gsi} बाट लिइएका हुन्।",
+    "pinSourceGsi": "जापानको भू-स्थानिक सूचना प्राधिकरणको ठेगाना खोज"
   },
   "thankYouPage": {
     "heading": "धन्यवाद!",
@@ -361,7 +363,6 @@
     "allergyAndImmunology": "एलर्जी विशेषज्ञ",
     "anesthesiology": "एनेस्थेसिया विशेषज्ञ",
     "cardiology": "मुटु रोग विशेषज्ञ",
-    "cosmeticSurgery": "कस्मेटिक सर्जन",
     "dentistry": "दन्त चिकित्सक",
     "dermatology": "छाला रोग विशेषज्ञ",
     "diagnosticRadiology": "रेडियोलोजिस्ट",
@@ -369,9 +370,6 @@
     "emergencyMedicine": "आकस्मिक चिकित्सा",
     "familyMedicine": "पारिवारिक चिकित्सा",
     "cosmeticSurgery": "सौन्दर्य सर्जन",
-    "orthodontics": "दाँत मिलाउने विशेषज्ञ (अर्थोडोन्टिस्ट)",
-    "pharmacy": "औषधि पसल (फार्मेसी)",
-    "plasticSurgery": "प्लास्टिक सर्जन",
     "infectiousDiseases": "सरुवा रोग",
     "internalMedicine": "आन्तरिक चिकित्सा (इन्टर्नल मेडिसिन)",
     "generalMedicine": "सामान्य चिकित्सा",
@@ -685,7 +683,12 @@
     "additionalInfoBothLanguages": "टिप्पणी दुवै भाषामा लेख्नुहोस्, वा दुवै खाली छोड्नुहोस्।",
     "openingHoursUntilMidnight": "मध्यरातसम्म",
     "supportedLanguagesLabel": "क्लिनिकले सहयोग गर्ने भाषाहरू",
-    "supportedLanguagesHint": "क्लिनिकको वेबसाइट वा फोनबाट पुष्टि भएका भाषाहरू मात्र छान्नुहोस्। कुनै डाक्टर सूचीमा नभए पनि यी भाषाहरूमा खोज्दा यो क्लिनिक देखिन्छ।"
+    "supportedLanguagesHint": "क्लिनिकको वेबसाइट वा फोनबाट पुष्टि भएका भाषाहरू मात्र छान्नुहोस्। कुनै डाक्टर सूचीमा नभए पनि यी भाषाहरूमा खोज्दा यो क्लिनिक देखिन्छ।",
+    "verificationLabel": "सूचीको पुष्टि स्थिति",
+    "verificationHint": "क्लिनिकको वेबसाइट वा फोनबाट यहाँको नाम, ठेगाना र फोन मिलेपछि मात्र पुष्टि गर्नुहोस्। पुष्टि भएको क्लिनिकमा सानो \"गल्ती भेट्नुभयो?\" लिङ्क देखिन्छ। अरू क्लिनिकमा पाठकहरूलाई पुष्टि गर्न सहयोग माग्ने कार्ड देखिन्छ।",
+    "verificationUnverified": "पुष्टि नभएको",
+    "verificationConfirmed": "पुष्टि भएको",
+    "verificationNeedsCity": "यो क्लिनिक पुष्टि गर्नुअघि सहर थप्नुहोस्।"
   },
   "modSubmissionForm": {
     "errorMessageFacilityId": "संस्था अद्यावधिक गर्न संस्थाको ID आवश्यक छ",

@@ -371,11 +371,15 @@ test.describe('Search page', () => {
             await expect(credit.getByRole('link', { name: 'Medical Information Net open data' }))
                 .toHaveAttribute('href', /mhlw\.go\.jp/)
             await expect(credit.getByRole('link').first()).toHaveAttribute('rel', 'noopener noreferrer')
+            const pinCredit = page.getByTestId('search-details-panel').getByTestId('facility-pin-credit')
+            await expect(pinCredit.getByRole('link', { name: 'Geospatial Information Authority of Japan address search' }))
+                .toHaveAttribute('href', /gsi\.go\.jp/)
 
             await page.goto('/search?facility=f1')
             await expect(page.getByTestId('search-details-panel').getByRole('heading', { name: 'Tokyo Family Clinic' }))
                 .toBeVisible()
             await expect(page.getByTestId('facility-source-credit')).toHaveCount(0)
+            await expect(page.getByTestId('facility-pin-credit')).toHaveCount(0)
         })
 
         test('the back-to-results button closes a panel opened from a shared link', async ({ page }) => {
