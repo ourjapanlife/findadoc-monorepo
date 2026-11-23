@@ -48,6 +48,9 @@ export const SUBMISSION_QUEUES: readonly SubmissionQueue[] = [
     SubmissionQueue.UserFeedback
 ]
 
+/** The status chip starts on New and Reset goes back to it. A moderator ticks more queues to add them. */
+export const DEFAULT_SUBMISSION_QUEUES: readonly SubmissionQueue[] = [SubmissionQueue.New]
+
 type SubmissionQueueCounts = Record<SubmissionQueue, number>
 
 function emptyQueueCounts(): SubmissionQueueCounts {
@@ -64,9 +67,9 @@ export const useModerationSubmissionsStore = defineStore(
         const filteredSubmissionDataForListComponent: Ref<Submission[]> = ref([])
         const submissionSearchQuery: Ref<string> = ref('')
         const didMutationFail: Ref<boolean> = ref(false)
-        // The status chip. Empty is every queue. Not kept between visits: a filter left on from an
-        // earlier visit looked like an empty queue (#313).
-        const selectedSubmissionQueues: Ref<SubmissionQueue[]> = ref([])
+        // The status chip. Not kept between visits: a filter left on from an earlier visit looked
+        // like an empty queue (#313).
+        const selectedSubmissionQueues: Ref<SubmissionQueue[]> = ref([...DEFAULT_SUBMISSION_QUEUES])
         const statusTotalCounts: Ref<SubmissionQueueCounts> = ref(emptyQueueCounts())
         // A correction row stores only the facility id. The list shows the clinic's name.
         const correctionFacilityNames: Ref<Record<string, CorrectionFacilityName>> = ref({})
@@ -183,9 +186,9 @@ export const useModerationSubmissionsStore = defineStore(
                         const filters: SubmissionSearchFilters = {
                             offset,
                             limit: itemsPerPage.value,
-                            ...(selectedSubmissionQueues.value.length > 0
-                                ? { queues: selectedSubmissionQueues.value }
-                                : {}),
+                            queues: selectedSubmissionQueues.value.length > 0
+                                ? selectedSubmissionQueues.value
+                                : [...DEFAULT_SUBMISSION_QUEUES],
                             ...(orderBy === null ? {} : { orderBy })
                         }
                         const { filteredSearchResults, totalCount } = await fetchSubmissionsWithCount(filters)
@@ -238,7 +241,7 @@ export const useModerationSubmissionsStore = defineStore(
             selectedModerationListViewChosen.value = selectedOption
         }
 
-        /** Shows these queues, or every queue for []. Starts again from the first page. */
+        /** Shows these queues, or the default (New) for []. Starts again from the first page. */
         async function setSelectedSubmissionQueues(queues: SubmissionQueue[]) {
             selectedSubmissionQueues.value = queues
             currentOffset.value = 0

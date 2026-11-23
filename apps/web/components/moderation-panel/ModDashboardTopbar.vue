@@ -54,6 +54,7 @@
                 :model-value="moderationSubmissionsStore.selectedSubmissionQueues"
                 :items="queueItems"
                 :label="t('modDashboardTopbar.statusFilter')"
+                :default-value="defaultQueues"
                 test-id="mod-submission-status-filter"
                 multiselect
                 @update:model-value="moderationSubmissionsStore.setSelectedSubmissionQueues"
@@ -68,6 +69,7 @@ import { SubmissionQueue } from '@findadoc/graphql'
 import FilterChip from '~/components/common/FilterChip.vue'
 import {
     SelectedModerationListView,
+    DEFAULT_SUBMISSION_QUEUES,
     SUBMISSION_QUEUES,
     useModerationSubmissionsStore
 } from '~/stores/moderationSubmissionsStore'
@@ -130,7 +132,9 @@ const QUEUE_LABEL_KEYS: Record<SubmissionQueue, () => string> = {
     [SubmissionQueue.UserFeedback]: () => t('modDashboardLeftNav.userFeedback')
 }
 
-/** Five queues (#22), all shown by default. A moderator unticks the ones to hide (#313). */
+const defaultQueues = [...DEFAULT_SUBMISSION_QUEUES]
+
+/** Five queues (#22). New is ticked by default, and a moderator ticks more to add them (#313). */
 const queueItems = computed(() => SUBMISSION_QUEUES.map(queue => ({
     value: queue,
     label: QUEUE_LABEL_KEYS[queue](),
