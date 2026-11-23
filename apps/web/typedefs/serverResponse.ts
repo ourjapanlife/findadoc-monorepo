@@ -74,6 +74,7 @@ export enum ErrorCode {
     SUBMISSION_STATUS_CHANGED = 'SUBMISSION_STATUS_CHANGED',
     FACILITY_NOT_PUBLISHED = 'FACILITY_NOT_PUBLISHED',
     INVALID_LISTING_URL = 'INVALID_LISTING_URL',
+    INVALID_GENDER = 'INVALID_GENDER',
     /** The request never produced GraphQL errors: a timeout, a dropped connection, or an empty failure. */
     NETWORK = 'NETWORK',
     /** A mutation got no answer: a timeout, a dropped connection, or a 502/503/504. It may have been saved (#219). */

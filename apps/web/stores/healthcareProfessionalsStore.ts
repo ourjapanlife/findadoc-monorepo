@@ -6,6 +6,7 @@ import { fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
 import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { professionalSelection } from '../utils/graphqlSelection'
 import { type Degree,
+    Gender,
     LicenseReviewStatus,
     NameReviewStatus,
     type Specialty,
@@ -49,6 +50,9 @@ function healthcareProfessionalUpdatePatch(
     }
     if (stableStringify(next.degrees ?? []) !== stableStringify(current.degrees ?? [])) {
         patch.degrees = next.degrees ?? []
+    }
+    if (next.gender !== current.gender) {
+        patch.gender = next.gender
     }
     if ((next.licenseReview ?? null) !== (current.licenseReview ?? null)) {
         patch.licenseReview = next.licenseReview ?? null
@@ -117,6 +121,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             degrees: [],
             additionalCredentials: [],
             facilityIds: [],
+            // Nobody has checked a professional's gender until a moderator sets it (#224).
+            gender: Gender.Unknown,
             id: '', // Empty string, assuming the ID will be set later
             licenseReview: null,
             nameReview: null,
@@ -129,6 +135,7 @@ export const useHealthcareProfessionalsStore = defineStore(
         const createHealthcareProfessionalSectionFields: CreateHealthcareProfessionalInput = reactive({
             degrees: [] as Degree[],
             facilityIds: [] as string[],
+            gender: Gender.Unknown,
             names: [] as LocalizedNameInput[],
             specialties: [] as Specialty[],
             spokenLanguages: [] as Locale[],
@@ -161,6 +168,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             healthcareProfessionalSectionFields.licenseReview = healthcareProfessional.licenseReview ?? null
             healthcareProfessionalSectionFields.nameReview = healthcareProfessional.nameReview ?? null
             healthcareProfessionalSectionFields.facilityIds = healthcareProfessional.facilityIds
+            healthcareProfessionalSectionFields.gender = healthcareProfessional.gender
             healthcareProfessionalSectionFields.id = healthcareProfessional.id
             healthcareProfessionalSectionFields.names = healthcareProfessional.names
             healthcareProfessionalSectionFields.specialties = healthcareProfessional.specialties
@@ -178,6 +186,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             healthcareProfessionalSectionFields.licenseReview = null
             healthcareProfessionalSectionFields.nameReview = null
             healthcareProfessionalSectionFields.facilityIds = []
+            healthcareProfessionalSectionFields.gender = Gender.Unknown
             healthcareProfessionalSectionFields.id = ''
             healthcareProfessionalSectionFields.names = []
             healthcareProfessionalSectionFields.specialties = []
@@ -283,6 +292,7 @@ export const useHealthcareProfessionalsStore = defineStore(
                         createdDate: '',
                         degrees: [],
                         facilityIds: [],
+                        gender: Gender.Unknown,
                         id: '',
                         names: [],
                         specialties: [],
@@ -368,6 +378,7 @@ export const useHealthcareProfessionalsStore = defineStore(
                     additionalInfoForPatients: createHealthcareProfessionalSectionFields.additionalInfoForPatients,
                     degrees: createHealthcareProfessionalSectionFields.degrees,
                     facilityIds: createHealthcareProfessionalSectionFields.facilityIds,
+                    gender: createHealthcareProfessionalSectionFields.gender ?? Gender.Unknown,
                     names: createHealthcareProfessionalSectionFields.names,
                     specialties: createHealthcareProfessionalSectionFields.specialties,
                     spokenLanguages: createHealthcareProfessionalSectionFields.spokenLanguages
@@ -391,6 +402,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             createHealthcareProfessionalSectionFields.additionalInfoForPatients = ''
             createHealthcareProfessionalSectionFields.degrees = []
             createHealthcareProfessionalSectionFields.facilityIds = []
+            createHealthcareProfessionalSectionFields.gender = Gender.Unknown
             createHealthcareProfessionalSectionFields.names = []
             createHealthcareProfessionalSectionFields.specialties = []
             createHealthcareProfessionalSectionFields.spokenLanguages = []

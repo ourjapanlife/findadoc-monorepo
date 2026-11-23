@@ -6,6 +6,7 @@ import {
     FacilityCorrectionReason,
     FacilitySource,
     FacilityVerificationStatus,
+    Gender,
     LicenseReviewStatus,
     NameReviewStatus,
     Locale,
@@ -101,6 +102,7 @@ export type HpSeed = {
     license_review: EnumValue<LicenseReviewStatus> | null
     license_recommendation: string | null
     name_review: EnumValue<NameReviewStatus> | null
+    gender: EnumValue<Gender>
     specialties: EnumValue<Specialty>[]
     spoken_languages: EnumValue<Locale>[]
     email: string | null
@@ -229,6 +231,7 @@ const verificationValues = enumValues(FacilityVerificationStatus)
 const sourceValues = enumValues(FacilitySource)
 const licenseReviewValues = enumValues(LicenseReviewStatus)
 const nameReviewValues = enumValues(NameReviewStatus)
+const genderValues = enumValues(Gender)
 const submissionStatuses = new Set<SubmissionStatusEnum>(['pending', 'under_review', 'approved', 'rejected'])
 const submissionKinds = new Set<SubmissionKindEnum>(['listing', 'correction'])
 const correctionReasonValues = enumValues(FacilityCorrectionReason)
@@ -321,6 +324,11 @@ export function parseSeed(value: unknown): SeedFile {
         readEnumList(hp.additional_credentials, degreeValues, `${hp.id} additional_credentials`, problems)
         readEnum(hp.license_review, licenseReviewValues, `${hp.id} license_review`, problems)
         readEnum(hp.name_review, nameReviewValues, `${hp.id} name_review`, problems)
+        if (hp.gender === null || hp.gender === undefined) {
+            problems.push(`${hp.id} gender is missing`)
+        } else {
+            readEnum(hp.gender, genderValues, `${hp.id} gender`, problems)
+        }
         readEnumList(hp.specialties, specialtyValues, `${hp.id} specialties`, problems)
         readEnumList(hp.spoken_languages, localeValues, `${hp.id} spoken_languages`, problems)
 

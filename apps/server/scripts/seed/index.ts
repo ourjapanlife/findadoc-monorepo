@@ -102,12 +102,12 @@ async function runSeed() {
                     id, names, additional_info_for_patients, degrees, primary_license,
                     additional_credentials, license_review, license_recommendation,
                     specialties, spoken_languages, email,
-                    created_date, updated_date, firestore_id, name_review
+                    created_date, updated_date, firestore_id, name_review, gender
                 ) VALUES (
                     $1, $2::jsonb, $3, $4::jsonb, $5,
                     $6::jsonb, $7, $8,
                     $9::jsonb, $10::jsonb, $11,
-                    $12, $13, $14, $15
+                    $12, $13, $14, $15, $16
                 )`,
                 [
                     hp.id,
@@ -124,7 +124,8 @@ async function runSeed() {
                     hp.created_date,
                     hp.updated_date,
                     hp.firestore_id,
-                    hp.name_review
+                    hp.name_review,
+                    hp.gender
                 ]
             )
         }

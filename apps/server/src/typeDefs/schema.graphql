@@ -238,6 +238,8 @@ type HealthcareProfessional {
   licenseRecommendation: String
   """NEEDS_REVIEW means the backfill guessed or could not fill one of the two names (#282)."""
   nameReview: NameReviewStatus
+  """The professional's gender (#224). UNKNOWN until a moderator sets it from a source."""
+  gender: Gender!
   """Medical specialties practiced."""
   specialties: [Specialty!]!
   """IDs of facilities where this professional practices."""
@@ -260,6 +262,8 @@ input CreateHealthcareProfessionalInput {
   degrees: [Degree!]
   """Medical specialties practiced."""
   specialties: [Specialty!]
+  """Gender from a source (#224). Omit it for UNKNOWN."""
+  gender: Gender
   """IDs of facilities where this professional practices."""
   facilityIds: [ID!]!
   """Free-text notes or instructions for patients."""
@@ -278,6 +282,8 @@ input UpdateHealthcareProfessionalInput {
   licenseReview: LicenseReviewStatus
   """Updated specialties."""
   specialties: [Specialty!]
+  """Updated gender (#224)."""
+  gender: Gender
   """Facility relationships to add, update, or remove."""
   facilityIds: [Relationship!]
   """Updated free-text notes or instructions for patients."""
@@ -504,6 +510,8 @@ type HealthcareProfessionalSubmission {
   degrees: [Degree!]
   """Submitted specialties."""
   specialties: [Specialty!]
+  """Gender a moderator set on the draft (#224). Absent means UNKNOWN."""
+  gender: Gender
   """Submitted free-text notes for patients."""
   additionalInfoForPatients: String
   """IDs of facilities where this professional practices."""
@@ -1147,6 +1155,18 @@ enum Degree {
   PharmD
   """Doctor of Psychology"""
   PsyD
+}
+
+"""
+A healthcare professional's gender (#224). A moderator sets it from a source, never from a name or a photo.
+"""
+enum Gender {
+  MALE
+  FEMALE
+  """The professional or clinic chose not to say."""
+  UNSPECIFIED
+  """Nobody has checked yet."""
+  UNKNOWN
 }
 
 """Moderator queue for a professional license. CONFIRMED keeps a dual license."""

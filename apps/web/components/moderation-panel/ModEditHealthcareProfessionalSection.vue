@@ -37,6 +37,7 @@
                     v-model="hpStore.healthcareProfessionalSectionFields.specialties"
                     test-id="mod-healthcare-professional-section-specialties"
                 />
+                <ModProfessionalGenderField v-model="hpStore.healthcareProfessionalSectionFields.gender" />
                 <div class="mod-picker">
                     <label
                         for="locales"

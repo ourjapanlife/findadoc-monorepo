@@ -109,6 +109,8 @@ export interface HpsTable {
     license_recommendation: string | null
     /** NEEDS_REVIEW or CONFIRMED, null when nothing needs checking (#282). */
     name_review: string | null
+    /** MALE, FEMALE, UNSPECIFIED, or UNKNOWN (#224). The database default is UNKNOWN. */
+    gender: ColumnType<gqlTypes.Gender, gqlTypes.Gender | undefined, gqlTypes.Gender>
     specialties: ColumnType<gqlTypes.Specialty[], gqlTypes.Specialty[], gqlTypes.Specialty[]>
     spoken_languages: ColumnType<gqlTypes.Locale[], gqlTypes.Locale[], gqlTypes.Locale[]>
     email: string | null

@@ -5,6 +5,7 @@ import { isPublishedLocale, uniqueLocales } from '../languages/publishedLocales.
 import type { Insertable, Selectable } from 'kysely'
 import { cleanAdditionalInfo, normalizeOpeningHours, normalizePaymentOptions } from '@findadoc/utils'
 import type { FacilityParent, ProfessionalParent } from '../typeDefs/resolverParents.js'
+import { isGender } from '../validation/validationHealthcareProfessional.js'
 
 function toLicenseReview(value: string | null | undefined): gqlTypes.LicenseReviewStatus | null {
     if (value === gqlTypes.LicenseReviewStatus.NeedsReview || value === gqlTypes.LicenseReviewStatus.Confirmed) {
@@ -20,6 +21,11 @@ function toNameReview(value: string | null | undefined): gqlTypes.NameReviewStat
     }
 
     return null
+}
+
+/** A stored gender outside the four values reads as UNKNOWN; the CHECK constraint keeps that from happening (#224). */
+function toGender(value: string | null | undefined): gqlTypes.Gender {
+    return isGender(value) ? value : gqlTypes.Gender.Unknown
 }
 
 function toPrimaryLicense(value: string | null | undefined): gqlTypes.Degree | null {
@@ -47,6 +53,7 @@ export function professionalFromRow(row: Selectable<HpsTable>): ProfessionalPare
         licenseReview: toLicenseReview(row.license_review),
         licenseRecommendation: row.license_recommendation ?? null,
         nameReview: toNameReview(row.name_review),
+        gender: toGender(row.gender),
         spokenLanguages: row.spoken_languages ?? [],
         specialties: row.specialties ?? [],
         createdDate: row.created_date,

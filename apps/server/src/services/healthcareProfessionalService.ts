@@ -62,6 +62,8 @@ export function buildHpUpdatePatch(
     }
     if (fields.spokenLanguages !== undefined) { updatePatch.spoken_languages = asJsonb(fields.spokenLanguages) }
     if (fields.specialties !== undefined) { updatePatch.specialties = asJsonb(fields.specialties) }
+    // Null leaves the stored gender alone, like an omitted field (#224).
+    if (fields.gender !== undefined && fields.gender !== null) { updatePatch.gender = fields.gender }
     if (fields.additionalInfoForPatients !== undefined) {
         updatePatch.additional_info_for_patients = fields.additionalInfoForPatients
     }
@@ -415,6 +417,8 @@ export async function createHealthcareProfessional(
                     license_recommendation: licensed.licenseRecommendation,
                     specialties: asJsonb(createInput.specialties ?? []),
                     spoken_languages: asJsonb(input.spokenLanguages ?? []),
+                    // A professional nobody has checked is UNKNOWN (#224).
+                    gender: input.gender ?? gqlTypes.Gender.Unknown,
                     additional_info_for_patients: input.additionalInfoForPatients ?? null,
                     email: null,
                     created_date: new Date().toISOString(),

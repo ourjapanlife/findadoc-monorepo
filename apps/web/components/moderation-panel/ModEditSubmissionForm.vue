@@ -105,6 +105,7 @@ import type { Submission,
     MutationUpdateSubmissionArgs,
     Facility,
     HealthcareProfessional } from '@findadoc/graphql'
+import { Gender } from '@findadoc/graphql'
 import { useI18n } from '#imports'
 import { stableStringify } from '~/utils/stableStringify'
 import { returnWithSuccessToast } from '~/composables/useModerationActionFeedback'
@@ -397,6 +398,8 @@ function initializeSubmissionFormValues(submissionData: Submission | undefined) 
         healthcareProfessionalSections.specialties
             = submissionData.healthcareProfessionals[0].specialties
     }
+    // A draft without a gender is UNKNOWN, like a new professional (#224).
+    healthcareProfessionalSections.gender = hp?.gender ?? Gender.Unknown
 
     // Always include submissionData.spokenLanguages, append hp.spokenLanguages, remove duplicates
     healthcareProfessionalSections.spokenLanguages = [
@@ -468,6 +471,7 @@ async function saveSubmissionDraft(
             additionalInfoForPatients: healthcareProfessionalsStore.healthcareProfessionalSectionFields.additionalInfoForPatients,
             degrees: healthcareProfessionalsStore.healthcareProfessionalSectionFields.degrees,
             specialties: healthcareProfessionalsStore.healthcareProfessionalSectionFields.specialties,
+            gender: healthcareProfessionalsStore.healthcareProfessionalSectionFields.gender,
             spokenLanguages: healthcareProfessionalsStore.healthcareProfessionalSectionFields.spokenLanguages,
             names: healthcareProfessionalsStore.healthcareProfessionalSectionFields.names,
             facilityIds: healthcareProfessionalsStore.healthcareProfessionalSectionFields.facilityIds

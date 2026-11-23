@@ -70,5 +70,7 @@ export enum ErrorCode {
     /** An opening-hours block has a bad time, closes before it opens, or overlaps another (#294). */
     INVALID_OPENING_HOURS = 'INVALID_OPENING_HOURS',
     /** A facility visitor note needs both English and Japanese, or neither (#294). */
-    ADDITIONAL_INFO_BOTH_LANGUAGES = 'ADDITIONAL_INFO_BOTH_LANGUAGES'
+    ADDITIONAL_INFO_BOTH_LANGUAGES = 'ADDITIONAL_INFO_BOTH_LANGUAGES',
+    /** A professional gender outside MALE, FEMALE, UNSPECIFIED, and UNKNOWN (#224). */
+    INVALID_GENDER = 'INVALID_GENDER'
 }

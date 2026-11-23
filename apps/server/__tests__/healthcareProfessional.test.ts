@@ -3,7 +3,7 @@ import { expect, describe, test } from 'vitest'
 import { Error, ErrorCode } from '../src/result.js'
 import { generateRandomCreateHealthcareProfessionalInput as generateCreateProfessionalInput } from '../src/fakeData/fakeHealthcareProfessionals.js'
 import { gqlMutation, gqlRequest } from '../utils/gqlTool.js'
-import { CreateHealthcareProfessionalInput, Degree, HealthcareProfessional, Specialty } from '@findadoc/graphql'
+import { CreateHealthcareProfessionalInput, Degree, Gender, HealthcareProfessional, Specialty } from '@findadoc/graphql'
 import { gqlApiUrl, sharedFacilityIds } from './testSetup.test.js'
 import { logger } from '../src/logger.js'
 
@@ -51,6 +51,9 @@ describe('createHealthcareProfessional', () => {
         expect(searchedProfessional.names[0].middleName).toEqual(originalInputValues.names[0].middleName || null)
         expect(searchedProfessional.degrees).toEqual(originalInputValues.degrees)
         expect(searchedProfessional.spokenLanguages).toEqual(originalInputValues.spokenLanguages)
+        // Nobody has checked a new professional's gender yet (#224).
+        expect(originalInputValues.gender).toBeUndefined()
+        expect(searchedProfessional.gender).toBe(Gender.Unknown)
         expect(searchedProfessional.createdDate).toBeDefined()
         expect(searchedProfessional.updatedDate).toBeDefined()
     })
@@ -89,7 +92,8 @@ describe('updateHealthcareProfessional', () => {
                     names: updatedValues.names,
                     degrees: updatedValues.degrees,
                     specialties: updatedValues.specialties,
-                    spokenLanguages: updatedValues.spokenLanguages
+                    spokenLanguages: updatedValues.spokenLanguages,
+                    gender: Gender.Female
                 }
             }
         } as gqlRequest
@@ -124,6 +128,7 @@ describe('updateHealthcareProfessional', () => {
         expect(persistedProfessional.degrees).toEqual(updatedValues.degrees)
         expect(persistedProfessional.specialties).toEqual(updatedValues.specialties)
         expect(persistedProfessional.spokenLanguages).toEqual(updatedValues.spokenLanguages)
+        expect(persistedProfessional.gender).toBe(Gender.Female)
     })
 })
 
@@ -534,6 +539,7 @@ export const createHealthcareProfessionalMutation = `mutation test_createHealthc
         specialties
         facilityIds
         spokenLanguages
+        gender
         createdDate
         updatedDate
         additionalInfoForPatients
@@ -553,6 +559,7 @@ const updateHealthcareProfessionalMutation = `mutation test_updateHealthcareProf
         specialties
         facilityIds
         spokenLanguages
+        gender
         createdDate
         updatedDate
         additionalInfoForPatients
@@ -572,6 +579,7 @@ const getHealthcareProfessionalByIdQuery = `query test_getHealthcareProfessional
         specialties
         facilityIds
         spokenLanguages
+        gender
         createdDate
         updatedDate
     }
