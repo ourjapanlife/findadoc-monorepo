@@ -449,7 +449,9 @@
     "chooseClinic": "Escolha uma clínica",
     "noBookingClinics": "Nenhuma clínica aceita agendamentos ainda",
     "clinicsLoadError": "Não foi possível carregar as clínicas",
-    "nameReview": "Nome a revisar"
+    "nameReview": "Nome a revisar",
+    "statusFilter": "Status",
+    "reviewFilter": "Revisão"
   },
   "modFacilitySection": {
     "addresses": "Endereços",
@@ -1461,5 +1463,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Bom saber"
+  },
+  "filterChip": {
+    "reset": "Redefinir",
+    "selected": "{count} selecionados"
   }
 }

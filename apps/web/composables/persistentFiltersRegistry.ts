@@ -5,9 +5,9 @@
 export const PERSISTENT_FILTER_STORAGE_PREFIX = 'moderation-filters:'
 
 export const persistentFilterKeys = {
-    submissions: ['tab', 'pageSize', 'offset'],
+    submissions: ['pageSize', 'offset'],
     facilities: ['pageSize', 'offset'],
-    professionals: ['licenseReview', 'nameReview', 'pageSize', 'offset'],
+    professionals: ['pageSize', 'offset'],
     bookings: ['pageSize', 'offset']
 } as const
 

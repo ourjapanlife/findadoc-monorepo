@@ -370,7 +370,9 @@
     "chooseClinic": "Scegli una clinica",
     "noBookingClinics": "Nessuna clinica accetta ancora prenotazioni",
     "clinicsLoadError": "Impossibile caricare le cliniche",
-    "nameReview": "Nome da verificare"
+    "nameReview": "Nome da verificare",
+    "statusFilter": "Stato",
+    "reviewFilter": "Revisione"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Elimina",
@@ -1461,5 +1463,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Da sapere"
+  },
+  "filterChip": {
+    "reset": "Reimposta",
+    "selected": "{count} selezionati"
   }
 }

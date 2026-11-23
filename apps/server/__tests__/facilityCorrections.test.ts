@@ -10,6 +10,7 @@ import {
     Locale,
     PaymentType,
     SubmissionKind,
+    SubmissionQueue,
     type ContactInput,
     type FacilityCorrectionInput
 } from '@findadoc/graphql'
@@ -602,6 +603,36 @@ describe('the User feedback queue', () => {
 
         expect(errorCodes(both)).toEqual([ErrorCode.INVALID_INPUT])
         expect(errorCodes(badFacility)).toEqual([ErrorCode.INVALID_ID])
+    })
+
+    it('returns any of the chosen queues together, and keeps corrections out of New (#313)', async () => {
+        const facilityId = await insertFacility({ published: true })
+        const fresh = await submitAndFind({ facilityId, reasons: [FacilityCorrectionReason.Closed] })
+        const declined = await submitAndFind({ facilityId, reasons: [FacilityCorrectionReason.Other] })
+        const approved = await submitAndFind({ facilityId, reasons: [FacilityCorrectionReason.Other] })
+        await updateSubmission(declined, { isRejected: true }, MODERATOR)
+        await updateSubmission(approved, { isApproved: true }, MODERATOR)
+
+        const feedbackOrDeclined = await searchSubmissions({
+            facilityId,
+            queues: [SubmissionQueue.UserFeedback, SubmissionQueue.Rejected],
+            limit: 50
+        })
+        const newOnly = await searchSubmissions({ facilityId, queues: [SubmissionQueue.New], limit: 50 })
+        const count = await countSubmissions({
+            facilityId,
+            queues: [SubmissionQueue.UserFeedback, SubmissionQueue.Approved]
+        })
+
+        expect(feedbackOrDeclined.data.map(submission => submission.id).sort()).toEqual([fresh, declined].sort())
+        expect(newOnly.data).toEqual([])
+        expect(count.data).toBe(2)
+    })
+
+    it('refuses queues together with a status flag', async () => {
+        const mixed = await searchSubmissions({ isOpen: true, queues: [SubmissionQueue.New] })
+
+        expect(errorCodes(mixed)).toEqual([ErrorCode.INVALID_INPUT])
     })
 
     it('counts open corrections per clinic and leaves out a clinic with none', async () => {

@@ -4,6 +4,7 @@ import { vi, beforeEach, describe, it } from 'vitest'
 import {
     FacilityCorrectionReason,
     SubmissionKind,
+    SubmissionQueue,
     type Submission,
     type SubmissionSearchFilters
 } from '@findadoc/graphql'
@@ -20,7 +21,7 @@ vi.mock('~/utils/graphql.js', () => ({
     graphQLClientRequestWithRetry: (...args: unknown[]) => graphQLClientRequestWithRetry(...args)
 }))
 
-const { SelectedSubmissionListViewTab, useModerationSubmissionsStore } = await import('~/stores/moderationSubmissionsStore')
+const { useModerationSubmissionsStore } = await import('~/stores/moderationSubmissionsStore')
 
 // Fake rows only.
 const FACILITY_ID = '6f1c2a5e-4b3d-4c2a-9e1f-0a1b2c3d4e5f'
@@ -60,6 +61,16 @@ type SubmissionsVariables = { listFilters: SubmissionSearchFilters }
 const requestedFilters: SubmissionSearchFilters[] = []
 
 const isOpen = (row: Submission) => !row.isApproved && !row.isRejected
+const isListing = (row: Submission) => row.kind === SubmissionKind.Listing
+
+/** What each queue holds, as submissionService decides it (#313). */
+const QUEUE_HOLDS: Record<SubmissionQueue, (row: Submission) => boolean> = {
+    [SubmissionQueue.New]: row => isListing(row) && isOpen(row) && !row.isUnderReview,
+    [SubmissionQueue.ForReview]: row => isListing(row) && row.isUnderReview,
+    [SubmissionQueue.Approved]: row => row.isApproved,
+    [SubmissionQueue.Rejected]: row => row.isRejected,
+    [SubmissionQueue.UserFeedback]: row => !isListing(row) && isOpen(row)
+}
 
 /** A tiny stand-in for the API: it filters by kind and status like submissionService does. */
 function answer(variables: Record<string, unknown>) {
@@ -71,7 +82,8 @@ function answer(variables: Record<string, unknown>) {
           && (!listFilters.isOpen || isOpen(row))
           && (!listFilters.isUnderReview || row.isUnderReview)
           && (!listFilters.isApproved || row.isApproved)
-          && (!listFilters.isRejected || row.isRejected))
+          && (!listFilters.isRejected || row.isRejected)
+          && (!listFilters.queues?.length || listFilters.queues.some(queue => QUEUE_HOLDS[queue](row))))
         return { data: { submissions: rows, submissionsTotalCount: rows.length }, errors: [], hasErrors: false }
     }
     if ('facilityIds' in variables) {
@@ -98,14 +110,13 @@ describe('moderationSubmissionsStore queues (#22)', () => {
 
     it('lists new and under-review corrections in User feedback, with the clinic name', async () => {
         const store = useModerationSubmissionsStore()
-        await store.setSelectedModerationListViewTabChosen(SelectedSubmissionListViewTab.UserFeedback)
+        await store.setSelectedSubmissionQueues([SubmissionQueue.UserFeedback])
 
         expect(store.filteredSubmissionDataForListComponent.map(row => row.id))
             .to.have.members(['correction-new', 'correction-review'])
         // The server filters and pages the queue: one page, never a 1000-row download.
-        expect(requestedFilters.at(-1)).to.include({
-            kind: SubmissionKind.Correction,
-            isOpen: true,
+        expect(requestedFilters.at(-1)).to.deep.include({
+            queues: [SubmissionQueue.UserFeedback],
             limit: store.itemsPerPage,
             offset: 0
         })
@@ -115,23 +126,22 @@ describe('moderationSubmissionsStore queues (#22)', () => {
 
     it('keeps corrections out of New', async () => {
         const store = useModerationSubmissionsStore()
-        await store.setSelectedModerationListViewTabChosen(SelectedSubmissionListViewTab.New)
+        await store.setSelectedSubmissionQueues([SubmissionQueue.New])
 
         expect(store.filteredSubmissionDataForListComponent.map(row => row.id)).to.deep.equal(['listing-new'])
-        expect(requestedFilters.at(-1)).to.include({ kind: SubmissionKind.Listing, isPending: true })
+        expect(requestedFilters.at(-1)?.queues).to.deep.equal([SubmissionQueue.New])
     })
 
     it('shows decided corrections in Approved next to listings', async () => {
         const store = useModerationSubmissionsStore()
-        await store.setSelectedModerationListViewTabChosen(SelectedSubmissionListViewTab.Approved)
+        await store.setSelectedSubmissionQueues([SubmissionQueue.Approved])
 
-        expect(requestedFilters.at(-1)?.kind).to.equal(undefined)
         expect(store.filteredSubmissionDataForListComponent.map(row => row.id)).to.deep.equal(['correction-approved'])
     })
 
     it('finds a correction in User feedback by its clinic name', async () => {
         const store = useModerationSubmissionsStore()
-        await store.setSelectedModerationListViewTabChosen(SelectedSubmissionListViewTab.UserFeedback)
+        await store.setSelectedSubmissionQueues([SubmissionQueue.UserFeedback])
         store.setSubmissionSearchQuery('港サンプル')
 
         expect(store.filteredSubmissionDataForListComponent).to.have.length(2)
@@ -139,7 +149,7 @@ describe('moderationSubmissionsStore queues (#22)', () => {
 
     it('knows how many open reports the clinic of each row has', async () => {
         const store = useModerationSubmissionsStore()
-        await store.setSelectedModerationListViewTabChosen(SelectedSubmissionListViewTab.UserFeedback)
+        await store.setSelectedSubmissionQueues([SubmissionQueue.UserFeedback])
 
         expect(store.openCorrectionCount(FACILITY_ID)).to.equal(2)
         expect(store.openCorrectionCount(undefined)).to.equal(0)
@@ -149,8 +159,25 @@ describe('moderationSubmissionsStore queues (#22)', () => {
         const store = useModerationSubmissionsStore()
         await store.fetchStatusCounts()
 
-        expect(store.statusTotalCounts.feedbackCount).to.equal(2)
-        expect(store.statusTotalCounts.newCount).to.equal(1)
+        expect(store.statusTotalCounts[SubmissionQueue.UserFeedback]).to.equal(2)
+        expect(store.statusTotalCounts[SubmissionQueue.New]).to.equal(1)
+    })
+
+    it('lists every queue by default, with no queue filter (#313)', async () => {
+        const store = useModerationSubmissionsStore()
+        await store.getSubmissions()
+
+        expect(store.selectedSubmissionQueues).to.deep.equal([])
+        expect(requestedFilters.at(-1)?.queues).to.equal(undefined)
+        expect(store.filteredSubmissionDataForListComponent).to.have.length(ROWS.length)
+    })
+
+    it('shows several chosen queues together', async () => {
+        const store = useModerationSubmissionsStore()
+        await store.setSelectedSubmissionQueues([SubmissionQueue.New, SubmissionQueue.Approved])
+
+        expect(store.filteredSubmissionDataForListComponent.map(row => row.id))
+            .to.have.members(['listing-new', 'correction-approved'])
     })
 })
 

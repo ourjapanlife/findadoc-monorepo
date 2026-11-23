@@ -465,7 +465,9 @@
     "chooseClinic": "क्लिनिक छान्नुहोस्",
     "noBookingClinics": "अहिलेसम्म कुनै क्लिनिकले बुकिङ लिँदैन",
     "clinicsLoadError": "क्लिनिकहरू लोड गर्न सकिएन",
-    "nameReview": "नाम जाँच आवश्यक"
+    "nameReview": "नाम जाँच आवश्यक",
+    "statusFilter": "स्थिति",
+    "reviewFilter": "समीक्षा"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "मेटाउनुहोस्",
@@ -1461,5 +1463,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "थाहा पाउनुपर्ने कुरा"
+  },
+  "filterChip": {
+    "reset": "रिसेट गर्नुहोस्",
+    "selected": "{count} छानिएको"
   }
 }

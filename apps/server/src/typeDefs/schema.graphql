@@ -359,6 +359,20 @@ enum SubmissionKind {
   CORRECTION
 }
 
+"""A moderation queue: the kind and status one dashboard filter stands for."""
+enum SubmissionQueue {
+  """New listings: sent, and not yet under review or decided."""
+  NEW
+  """Listings under review."""
+  FOR_REVIEW
+  """Approved listings and corrections."""
+  APPROVED
+  """Declined listings and corrections."""
+  REJECTED
+  """Corrections nobody has decided: new or under review."""
+  USER_FEEDBACK
+}
+
 """What a visitor says is wrong with a clinic listing."""
 enum FacilityCorrectionReason {
   """The address or the city is wrong. A moderator picks the city before approval."""
@@ -555,6 +569,8 @@ input SubmissionSearchFilters {
   isOpen: Boolean
   """Filter to listings or to corrections. Omit for both."""
   kind: SubmissionKind
+  """Filter to submissions in any of these queues. Omit or leave empty for every queue. Not with a status flag."""
+  queues: [SubmissionQueue!]
   """Filter to submissions about this facility, such as every report on one clinic."""
   facilityId: ID
   """Filter by creation date (ISO 8601)."""

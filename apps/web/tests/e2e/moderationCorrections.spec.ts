@@ -1,5 +1,6 @@
 import enUS from '../../i18n/locales/en.json' with { type: 'json' }
 import { test, expect, type APIRequestContext, type Page } from '@playwright/test'
+import { showOnlySubmissionQueue } from './moderationFilters'
 
 /*
  * A moderator reviews visitor corrections from the User feedback queue (#22). The seed holds two
@@ -27,8 +28,7 @@ async function facilityFromApi(request: APIRequestContext, id: string): Promise<
 }
 
 async function openFeedbackQueue(page: Page) {
-    await page.getByTestId('mod-submission-tab-USER_FEEDBACK').click()
-    await expect(page.getByTestId('mod-submission-tab-USER_FEEDBACK')).toHaveAttribute('aria-pressed', 'true')
+    await showOnlySubmissionQueue(page, 'USER_FEEDBACK')
 }
 
 async function facilityIdOnReview(page: Page): Promise<string> {
@@ -49,13 +49,13 @@ test.describe('Moderation user feedback', () => {
         await page.goto('/my-page?view=submissions')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByTestId('access-page-link-moderation-submissions')).toBeVisible({ timeout: 30_000 })
-        await expect(page.getByTestId('mod-submission-tab-USER_FEEDBACK')).toBeVisible()
+        await expect(page.getByTestId('mod-submission-status-filter')).toBeVisible()
     })
 
     test('opens a listing straight from its link, as a shared link or a reload does', async ({ page }) => {
         // The review screen waits for the submission to load, so a listing opened by URL must still
         // reach its edit form when the list does not hold it.
-        await page.getByTestId('mod-submission-tab-NEW').click()
+        await showOnlySubmissionQueue(page, 'NEW')
         const href = await page.getByTestId('mod-submission-list-item-1').getAttribute('href')
         expect(href).toMatch(/\/edit-submission\//)
 
@@ -63,6 +63,18 @@ test.describe('Moderation user feedback', () => {
 
         await expect(page.getByTestId('submission-form-notes')).toBeVisible({ timeout: 30_000 })
         await expect(page.getByTestId('mod-correction-review')).toHaveCount(0)
+    })
+
+    test('shows every queue by default, and Reset brings them all back (#313)', async ({ page }) => {
+        const chip = page.getByTestId('mod-submission-status-filter')
+        await expect(chip).toHaveAttribute('data-active', 'false')
+
+        await showOnlySubmissionQueue(page, 'NEW')
+        await expect(chip).toContainText(enUS.modDashboardLeftNav.new)
+
+        await chip.click()
+        await page.getByTestId('mod-submission-status-filter-reset').click()
+        await expect(chip).toHaveAttribute('data-active', 'false')
     })
 
     test('keeps corrections out of bulk selection', async ({ page }) => {
@@ -117,7 +129,7 @@ test.describe('Moderation user feedback', () => {
         const after = await facilityFromApi(request, facilityId)
         expect(after.contact?.phone).toBe(before.contact?.phone)
 
-        await page.getByTestId('mod-submission-tab-REJECTED').click()
+        await showOnlySubmissionQueue(page, 'REJECTED')
         const declinedRow = page.locator('tr', {
             has: page.getByRole('link', { name: new RegExp(enUS.clinicCorrection.reasonWrongContact, 'i') })
         })
