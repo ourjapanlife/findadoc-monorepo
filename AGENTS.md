@@ -192,6 +192,10 @@ A professional has one primary clinical license. PhD, MPH, and DSc are additiona
 
 The #1014 license backfill has run on production. `degrees` keeps the submitted list. MD+DO is `NEEDS_REVIEW` with recommendation `MD`. DDS+DMD is `NEEDS_REVIEW` with recommendation `one_dental_license`. A row with `license_review = CONFIRMED`, or one that already has `primary_license`, keeps it (`licenseColumnsForDegrees` in `apps/server/src/licenses/professionalLicense.ts`). A new professional is not given a license. The moderator chooses one.
 
+## Specialties
+
+`ENT_SPECIALIST` and `OTOLARYNGOLOGY` are the same department (耳鼻咽喉科). `OTOLARYNGOLOGY` stays, and `ENT_SPECIALIST` stays in the enum and is hidden from pickers (`HIDDEN_SPECIALTIES` in `packages/utils/src/specialties.ts`). The #277 backfill has run on production, and its script is deleted. No professional holds `ENT_SPECIALIST`. Do not store it again.
+
 ## Professional names
 
 A professional has two names: romaji (`en_US`) and Japanese (`ja_JP`), and no other locale (#282). `apps/server/docs/professional-names.md` is the rule. Only the romaji name has a middle name. A non-Japanese name is written in katakana. Creating, updating, and approving need both names; a submission draft may hold one. The #282 name backfill has run on production, and `hps_names_two_locales` enforces the two names in the database. Pages show the name for the page's language with no fallback to the other one: Japanese on a Japanese page, romaji everywhere else. `hps.name_review = NEEDS_REVIEW` is the moderator queue for a name to check. Do not guess a reading for kanji, and do not add a name dictionary dependency for it.
