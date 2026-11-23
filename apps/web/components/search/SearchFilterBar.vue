@@ -54,23 +54,49 @@
                 id="search-filters"
                 data-testid="search-filters"
                 :class="filtersOpen ? 'grid' : 'hidden landscape:grid'"
-                class="grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] landscape:grid-cols-2 landscape:items-end"
+                class="grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] landscape:grid-cols-2 landscape:items-end"
                 @submit.prevent
             >
                 <div class="min-w-0">
                     <label
-                        for="search-specialty"
+                        for="search-specialty-group"
                         class="field-label"
                     >{{ t('home.searchSpecialtyLabel') }}</label>
                     <select
-                        id="search-specialty"
-                        v-model="specialty"
-                        data-testid="search-specialty"
+                        id="search-specialty-group"
+                        v-model="specialtyGroup"
+                        data-testid="search-specialty-group"
                         class="field"
                         @change="onFilterChange"
                     >
                         <option value="">
                             {{ t('searchBar.allSpecialties') }}
+                        </option>
+                        <option
+                            v-for="option in specialtyGroupOptions"
+                            :key="option.code"
+                            :value="option.code"
+                        >
+                            {{ option.displayText }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="relative min-w-0">
+                    <label
+                        for="search-specialty"
+                        class="field-label"
+                    >{{ t('home.searchSubspecialtyLabel') }}</label>
+                    <select
+                        id="search-specialty"
+                        v-model="specialty"
+                        data-testid="search-specialty"
+                        class="field"
+                        :disabled="!specialtyGroup"
+                        @change="onFilterChange"
+                    >
+                        <option value="">
+                            {{ t('searchBar.allSubspecialties') }}
                         </option>
                         <option
                             v-for="option in specialtyOptions"
@@ -80,6 +106,14 @@
                             {{ option.displayText }}
                         </option>
                     </select>
+                    <!-- As with the city list: a disabled select takes no clicks, so this records the attempt. -->
+                    <button
+                        v-if="!specialtyGroup"
+                        type="button"
+                        class="absolute inset-0 cursor-not-allowed"
+                        :aria-label="t('home.searchSubspecialtyLabel')"
+                        @click="onSpecialtyFieldClick"
+                    />
                 </div>
 
                 <div class="min-w-0">
@@ -199,8 +233,10 @@ import { searchFilterFlags } from '~/utils/analyticsEvents'
 import { SEARCHABLE_LANGUAGES, prefectureOptionLabel } from '~/utils/homeDirectory'
 import { hasActiveFilters } from '~/utils/searchDirectory'
 import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
+import { groupOfSpecialty, groupOptions, specialtiesForGroup } from '~/utils/specialtyPicker'
+import { CATEGORY_LABEL_KEYS } from '~/utils/specialtyLabelKeys'
 import { useDirectoryCoverage } from '~/composables/useDirectoryCoverage'
-import type { Locale, Specialty } from '@findadoc/graphql'
+import type { Locale, Specialty, SpecialtyCategory } from '@findadoc/graphql'
 
 const props = defineProps<{ showMap: boolean }>()
 const emit = defineEmits<{ (e: 'update:showMap', value: boolean): void }>()
@@ -222,6 +258,18 @@ const specialty = computed({
     get: () => searchResultsStore.selectedSpecialties?.[0] ?? '',
     set: value => {
         searchResultsStore.selectedSpecialties = value ? [value as Specialty] : undefined
+    }
+})
+
+/*
+ * The group comes first, like a prefecture before a city (#277). A link with only `?specialty=`
+ * shows that specialty's group. Changing the group clears the specialty.
+ */
+const specialtyGroup = computed({
+    get: () => searchResultsStore.selectedSpecialtyGroup ?? groupOfSpecialty(specialty.value as Specialty | '') ?? '',
+    set: value => {
+        searchResultsStore.selectedSpecialtyGroup = (value || undefined) as SpecialtyCategory | undefined
+        searchResultsStore.selectedSpecialties = undefined
     }
 })
 
@@ -253,10 +301,19 @@ const {
     specialties: availableSpecialties
 } = useDirectoryCoverage(prefecture)
 
-const specialtyOptions = computed(() => availableSpecialtyOptions(
-    specialtiesStore.specialtyDisplayOptions,
+const specialtyGroupOptions = computed(() => groupOptions(
+    code => t(CATEGORY_LABEL_KEYS[code]),
     availableSpecialties.value,
-    specialty.value as Specialty | ''
+    specialtyGroup.value || undefined
+))
+
+const specialtyOptions = computed(() => specialtiesForGroup(
+    availableSpecialtyOptions(
+        specialtiesStore.specialtyDisplayOptions,
+        availableSpecialties.value,
+        specialty.value as Specialty | ''
+    ),
+    specialtyGroup.value || undefined
 ))
 
 const languageOptions = computed(() =>
@@ -281,6 +338,11 @@ function onFilterChange() {
     track('Filters changed', searchFilterFlags(searchResultsStore.filters))
 }
 
+function onSpecialtyFieldClick() {
+    if (specialtyGroup.value) return
+    track('Filter unavailable', { control: 'specialty' })
+}
+
 function onCityFieldClick() {
     if (prefecture.value) return
     track('Filter unavailable', { control: 'city' })
@@ -292,7 +354,8 @@ function clearFromBar() {
 }
 
 const activeFilterCount = computed(() =>
-    [specialty.value, language.value, prefecture.value, searchResultsStore.selectedCity].filter(Boolean).length)
+    [specialtyGroup.value, specialty.value, language.value, prefecture.value, searchResultsStore.selectedCity]
+        .filter(Boolean).length)
 
 const countText = computed(() => {
     if (isLoading.value) return t('search.loading')

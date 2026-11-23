@@ -27,13 +27,20 @@
                 <option value="">
                     {{ t('searchBar.allSpecialties') }}
                 </option>
-                <option
-                    v-for="option in specialtyOptions"
-                    :key="option.code"
-                    :value="specialtyQueryParam(option.code)"
+                <!-- Grouped like the search page's two-step picker (#277), with no script before hydration. -->
+                <optgroup
+                    v-for="group in specialtyGroups"
+                    :key="group.code"
+                    :label="group.displayText"
                 >
-                    {{ option.displayText }}
-                </option>
+                    <option
+                        v-for="option in group.options"
+                        :key="option.code"
+                        :value="specialtyQueryParam(option.code)"
+                    >
+                        {{ option.displayText }}
+                    </option>
+                </optgroup>
             </select>
         </div>
 
@@ -106,6 +113,8 @@ import { localeDisplayOptions } from '~/stores/localeStore'
 import { languageName } from '~/utils/languageName'
 import { SEARCHABLE_LANGUAGES, prefectureOptionLabel } from '~/utils/homeDirectory'
 import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
+import { groupOptions, specialtiesForGroup } from '~/utils/specialtyPicker'
+import { CATEGORY_LABEL_KEYS } from '~/utils/specialtyLabelKeys'
 import { useDirectoryCoverage } from '~/composables/useDirectoryCoverage'
 
 // The template compares vue-i18n's locale, not localeStore: the store only updates when someone
@@ -146,6 +155,10 @@ const specialtyOptions = computed(() => availableSpecialtyOptions(
     availableSpecialties.value,
     ''
 ))
+
+const specialtyGroups = computed(() => groupOptions(code => t(CATEGORY_LABEL_KEYS[code]), availableSpecialties.value, undefined)
+    .map(group => ({ ...group, options: specialtiesForGroup(specialtyOptions.value, group.code) }))
+    .filter(group => group.options.length > 0))
 
 const languageOptions = computed(() =>
     SEARCHABLE_LANGUAGES

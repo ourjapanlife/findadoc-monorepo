@@ -234,7 +234,8 @@
   },
   "searchBar": {
     "allSpecialties": "Tất cả chuyên khoa",
-    "resultsFound": "Không có kết quả | 1 kết quả | {n} kết quả"
+    "resultsFound": "Không có kết quả | 1 kết quả | {n} kết quả",
+    "allSubspecialties": "Tất cả chuyên khoa sâu"
   },
   "searchResultsList": {
     "loadMore": "Tải thêm",
@@ -444,7 +445,10 @@
     "placeholderTextJapaneseLastName": "Ví.dụ. 山田",
     "placeholderTextJapaneseFirstName": "Ví.dụ. 花子",
     "nameNeedsReview": "Hãy kiểm tra các tên này. Một tên được điền tự động hoặc vẫn còn thiếu.",
-    "otherLocaleNamesRemoved": "Tên bằng các ngôn ngữ khác sẽ bị xóa khi bạn lưu."
+    "otherLocaleNamesRemoved": "Tên bằng các ngôn ngữ khác sẽ bị xóa khi bạn lưu.",
+    "specialtyGroupLabel": "Nhóm chuyên khoa",
+    "allSpecialtyGroups": "Tất cả các nhóm",
+    "specialtySearchHint": "Tìm bằng tiếng Anh hoặc tiếng Nhật. Tên khoa ghi trên trang của phòng khám cũng được, ví dụ 胃腸内科."
   },
   "modFacilitySection": {
     "addresses": "Địa chỉ.",
@@ -660,7 +664,29 @@
     "physicalMedicineAndRehabilitation": "Y học vật lý và phục hồi chức năng",
     "urology": "Bác sĩ Tiết niệu",
     "traumatology": "Chấn thương học",
-    "proctology": "Bác sĩ chuyên khoa hậu môn"
+    "proctology": "Bác sĩ chuyên khoa hậu môn",
+    "breastSurgery": "Bác sĩ phẫu thuật vú",
+    "cardiovascularSurgery": "Bác sĩ phẫu thuật tim mạch",
+    "childPsychiatry": "Bác sĩ tâm thần nhi",
+    "cosmeticDermatology": "Bác sĩ da liễu thẩm mỹ",
+    "endocrinologyAndDiabetes": "Đái tháo đường và Nội tiết",
+    "gastroenterology": "Bác sĩ tiêu hóa",
+    "geriatrics": "Lão khoa",
+    "hematology": "Bác sĩ huyết học",
+    "hepatology": "Bác sĩ gan",
+    "kampoMedicine": "Y học Kampo",
+    "medicalOncology": "Bác sĩ ung bướu",
+    "nephrology": "Bác sĩ thận",
+    "neurosurgery": "Bác sĩ phẫu thuật thần kinh",
+    "oralSurgery": "Bác sĩ phẫu thuật răng miệng",
+    "painMedicine": "Phòng khám giảm đau",
+    "palliativeCare": "Chăm sóc giảm nhẹ",
+    "pediatricDentistry": "Nha sĩ nhi khoa",
+    "pediatricSurgery": "Bác sĩ phẫu thuật nhi",
+    "psychosomaticMedicine": "Y học tâm thể",
+    "pulmonology": "Bác sĩ hô hấp",
+    "reproductiveMedicine": "Bác sĩ hiếm muộn",
+    "rheumatology": "Bác sĩ cơ xương khớp"
   },
   "specialtyCategories": {
     "childrensHealth": "Sức khỏe trẻ em",
@@ -674,7 +700,17 @@
     "physicalTherapy": "Vật lý trị liệu",
     "primaryCare": "Chăm sóc ban đầu",
     "sportsAndRehab": "Thể thao và phục hồi",
-    "womensHealth": "Sức khỏe phụ nữ"
+    "womensHealth": "Sức khỏe phụ nữ",
+    "allergyImmunityAndInfection": "Dị ứng, miễn dịch và nhiễm trùng",
+    "brainAndNerves": "Não và thần kinh",
+    "cancerAndDiagnostics": "Ung thư và chẩn đoán",
+    "diabetesHormonesAndKidneys": "Đái tháo đường, nội tiết và thận",
+    "digestiveHealth": "Tiêu hóa",
+    "emergencyCare": "Cấp cứu",
+    "heartAndCirculation": "Tim mạch",
+    "lungsAndBreathing": "Phổi và hô hấp",
+    "pharmacyAndGenetics": "Dược và di truyền",
+    "surgeryAndAnesthesia": "Phẫu thuật và gây mê"
   },
   "noteInputField": {
     "optional": "(không bắt buộc)"
@@ -797,7 +833,8 @@
     "missionLink": "Tìm hiểu thêm về chúng tôi",
     "contributeHeading": "Bạn biết phòng khám nào chúng tôi còn thiếu?",
     "contributeBody": "Bất kỳ ai cũng có thể đề xuất một phòng khám hoặc bác sĩ. Người kiểm duyệt của chúng tôi xem xét mọi đề xuất trước khi đăng.",
-    "contributeCta": "Thêm bác sĩ"
+    "contributeCta": "Thêm bác sĩ",
+    "searchSubspecialtyLabel": "Chuyên khoa sâu"
   },
   "search": {
     "filters": "Bộ lọc",

@@ -102,7 +102,8 @@
     "missionLink": "हाम्रो बारेमा थप",
     "contributeHeading": "हाम्रो सूचीमा नभएको क्लिनिक थाहा छ?",
     "contributeBody": "जो कोहीले क्लिनिक वा डाक्टर सुझाव दिन सक्नुहुन्छ। प्रकाशित हुनुअघि हाम्रा मोडरेटरहरूले हरेक विवरण जाँच गर्छन्।",
-    "contributeCta": "डाक्टर थप्नुहोस्"
+    "contributeCta": "डाक्टर थप्नुहोस्",
+    "searchSubspecialtyLabel": "उप-विशेषज्ञता"
   },
   "common": {
     "loading": "लोड हुँदैछ",
@@ -315,7 +316,8 @@
   },
   "searchBar": {
     "allSpecialties": "सबै विशेषज्ञता",
-    "resultsFound": "कुनै नतिजा छैन | 1 नतिजा भेटियो | {n} नतिजा भेटिए"
+    "resultsFound": "कुनै नतिजा छैन | 1 नतिजा भेटियो | {n} नतिजा भेटिए",
+    "allSubspecialties": "सबै उप-विशेषज्ञता"
   },
   "searchResultsList": {
     "loadMore": "थप लोड गर्नुहोस्",
@@ -395,7 +397,29 @@
     "surgery": "शल्यचिकित्सा (सर्जरी)",
     "physicalMedicineAndRehabilitation": "शारीरिक चिकित्सा तथा पुनर्स्थापना",
     "urology": "मूत्र रोग विशेषज्ञ",
-    "traumatology": "चोटपटक उपचार विशेषज्ञ"
+    "traumatology": "चोटपटक उपचार विशेषज्ञ",
+    "breastSurgery": "स्तन शल्यचिकित्सक",
+    "cardiovascularSurgery": "मुटु तथा रक्तनली शल्यचिकित्सक",
+    "childPsychiatry": "बाल मनोचिकित्सक",
+    "cosmeticDermatology": "सौन्दर्य छाला विशेषज्ञ",
+    "endocrinologyAndDiabetes": "मधुमेह तथा अन्तःस्रावी विज्ञान",
+    "gastroenterology": "पाचन रोग विशेषज्ञ",
+    "geriatrics": "वृद्ध चिकित्सा",
+    "hematology": "रक्त रोग विशेषज्ञ",
+    "hepatology": "कलेजो रोग विशेषज्ञ",
+    "kampoMedicine": "काम्पो चिकित्सा",
+    "medicalOncology": "क्यान्सर रोग विशेषज्ञ",
+    "nephrology": "मृगौला रोग विशेषज्ञ",
+    "neurosurgery": "स्नायु शल्यचिकित्सक",
+    "oralSurgery": "मुख शल्यचिकित्सक",
+    "painMedicine": "दुखाइ उपचार क्लिनिक",
+    "palliativeCare": "प्यालिएटिभ हेरचाह",
+    "pediatricDentistry": "बाल दन्त चिकित्सक",
+    "pediatricSurgery": "बाल शल्यचिकित्सक",
+    "psychosomaticMedicine": "मनोदैहिक चिकित्सा",
+    "pulmonology": "फोक्सो रोग विशेषज्ञ",
+    "reproductiveMedicine": "प्रजनन विशेषज्ञ",
+    "rheumatology": "बाथ रोग विशेषज्ञ"
   },
   "specialtyCategories": {
     "childrensHealth": "बालबालिकाको स्वास्थ्य",
@@ -409,7 +433,17 @@
     "physicalTherapy": "फिजियोथेरापी",
     "primaryCare": "प्राथमिक उपचार",
     "sportsAndRehab": "खेलकुद र पुनर्स्थापना",
-    "womensHealth": "महिलाको स्वास्थ्य"
+    "womensHealth": "महिलाको स्वास्थ्य",
+    "allergyImmunityAndInfection": "एलर्जी, प्रतिरक्षा र संक्रमण",
+    "brainAndNerves": "मस्तिष्क र स्नायु",
+    "cancerAndDiagnostics": "क्यान्सर र परीक्षण",
+    "diabetesHormonesAndKidneys": "मधुमेह, हर्मोन र मृगौला",
+    "digestiveHealth": "पाचन स्वास्थ्य",
+    "emergencyCare": "आपतकालीन उपचार",
+    "heartAndCirculation": "मुटु र रक्तसञ्चार",
+    "lungsAndBreathing": "फोक्सो र श्वासप्रश्वास",
+    "pharmacyAndGenetics": "फार्मेसी र आनुवंशिकी",
+    "surgeryAndAnesthesia": "शल्यक्रिया र एनेस्थेसिया"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "सेभ नगरी बाहिर निस्कनुहोस्",
@@ -577,7 +611,10 @@
     "placeholderTextJapaneseLastName": "जस्तै: 山田",
     "placeholderTextJapaneseFirstName": "जस्तै: 花子",
     "nameNeedsReview": "यी नामहरू जाँच गर्नुहोस्। एउटा स्वतः भरिएको छ वा अझै छैन।",
-    "otherLocaleNamesRemoved": "सेभ गर्दा अन्य भाषाका नामहरू हटाइन्छन्।"
+    "otherLocaleNamesRemoved": "सेभ गर्दा अन्य भाषाका नामहरू हटाइन्छन्।",
+    "specialtyGroupLabel": "विशेषज्ञता समूह",
+    "allSpecialtyGroups": "सबै समूह",
+    "specialtySearchHint": "अंग्रेजी वा जापानीमा खोज्नुहोस्। क्लिनिकको साइटमा लेखिएको विभागको नाम, जस्तै 胃腸内科, पनि चल्छ।"
   },
   "modFacilitySection": {
     "addresses": "ठेगानाहरू",

@@ -27,11 +27,17 @@ export {
 } from './publishedLocales.js'
 export {
     categoriesOfSpecialty,
+    HIDDEN_SPECIALTIES,
     SPECIALTY_CATEGORY_DISPLAY_ORDER,
     SPECIALTY_CATEGORY_LABELS,
     SPECIALTY_CATEGORY_MEMBERS,
     SPECIALTY_DISPLAY_ORDER,
+    SPECIALTY_GROUP,
+    SPECIALTY_JA_ALIASES,
     SPECIALTY_LABELS,
+    SPECIALTY_PICKER_GROUPS,
+    specialtiesInGroup,
+    specialtyForJapaneseName,
     type VocabularyLabels
 } from './specialties.js'
 export { PUBLISHED_LANGUAGE_NAMES, type LanguageNames } from './languageNames.js'

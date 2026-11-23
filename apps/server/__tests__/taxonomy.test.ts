@@ -33,10 +33,12 @@ describe('specialties query (#24)', () => {
         expect(specialties.find(specialty => specialty.code === Specialty.Psychiatry)).toEqual({
             code: Specialty.Psychiatry,
             nameEn: 'Psychiatrist',
-            nameJa: '精神科・心療内科',
+            nameJa: '精神科',
             categories: [SpecialtyCategory.MentalHealth]
         })
-        expect(specialties.find(specialty => specialty.code === Specialty.Pharmacy)?.categories).toEqual([])
+        // #277 filed every specialty under a group; Pharmacy used to have none.
+        expect(specialties.find(specialty => specialty.code === Specialty.Pharmacy)?.categories)
+            .toEqual([SpecialtyCategory.PharmacyAndGenetics])
     })
 })
 

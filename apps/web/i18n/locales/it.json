@@ -272,7 +272,8 @@
   },
   "searchBar": {
     "allSpecialties": "Tutte le specialità",
-    "resultsFound": "Nessun risultato | 1 risultato trovato | {n} risultati trovati"
+    "resultsFound": "Nessun risultato | 1 risultato trovato | {n} risultati trovati",
+    "allSubspecialties": "Tutte le sottospecialità"
   },
   "searchResultsList": {
     "loadMore": "Carica altro",
@@ -482,7 +483,10 @@
     "placeholderTextJapaneseLastName": "es. 山田",
     "placeholderTextJapaneseFirstName": "es. 花子",
     "nameNeedsReview": "Controlla questi nomi. Uno è stato compilato automaticamente o manca ancora.",
-    "otherLocaleNamesRemoved": "I nomi in altre lingue vengono rimossi al salvataggio."
+    "otherLocaleNamesRemoved": "I nomi in altre lingue vengono rimossi al salvataggio.",
+    "specialtyGroupLabel": "Gruppo di specialità",
+    "allSpecialtyGroups": "Tutti i gruppi",
+    "specialtySearchHint": "Cerca in inglese o in giapponese. Funziona anche il nome del reparto indicato sul sito della clinica, per esempio 胃腸内科."
   },
   "modFacilitySection": {
     "addresses": "Indirizzi",
@@ -651,7 +655,29 @@
     "traumatology": "Traumatologia",
     "urology": "Urologo/Urologa",
     "surgery": "Chirurgia",
-    "proctology": "Proctologo"
+    "proctology": "Proctologo",
+    "breastSurgery": "Chirurgo senologo",
+    "cardiovascularSurgery": "Cardiochirurgo",
+    "childPsychiatry": "Neuropsichiatra infantile",
+    "cosmeticDermatology": "Dermatologo estetico",
+    "endocrinologyAndDiabetes": "Diabetologia ed endocrinologia",
+    "gastroenterology": "Gastroenterologo",
+    "geriatrics": "Geriatria",
+    "hematology": "Ematologo",
+    "hepatology": "Epatologo (fegato)",
+    "kampoMedicine": "Medicina Kampo",
+    "medicalOncology": "Oncologo medico",
+    "nephrology": "Nefrologo (reni)",
+    "neurosurgery": "Neurochirurgo",
+    "oralSurgery": "Chirurgo orale",
+    "painMedicine": "Terapia del dolore",
+    "palliativeCare": "Cure palliative",
+    "pediatricDentistry": "Dentista pediatrico",
+    "pediatricSurgery": "Chirurgo pediatrico",
+    "psychosomaticMedicine": "Medicina psicosomatica",
+    "pulmonology": "Pneumologo (polmoni)",
+    "reproductiveMedicine": "Specialista in fertilità",
+    "rheumatology": "Reumatologo"
   },
   "specialtyCategories": {
     "childrensHealth": "Salute dei bambini",
@@ -665,7 +691,17 @@
     "physicalTherapy": "Fisioterapia",
     "primaryCare": "Cure primarie",
     "sportsAndRehab": "Sport e riabilitazione",
-    "womensHealth": "Salute femminile"
+    "womensHealth": "Salute femminile",
+    "allergyImmunityAndInfection": "Allergia, immunità e infezioni",
+    "brainAndNerves": "Cervello e nervi",
+    "cancerAndDiagnostics": "Tumori e diagnostica",
+    "diabetesHormonesAndKidneys": "Diabete, ormoni e reni",
+    "digestiveHealth": "Apparato digerente",
+    "emergencyCare": "Pronto soccorso",
+    "heartAndCirculation": "Cuore e circolazione",
+    "lungsAndBreathing": "Polmoni e respirazione",
+    "pharmacyAndGenetics": "Farmacia e genetica",
+    "surgeryAndAnesthesia": "Chirurgia e anestesia"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Lingue parlate",
@@ -797,7 +833,8 @@
     "missionLink": "Chi siamo",
     "contributeHeading": "Conosci una clinica che ci manca?",
     "contributeBody": "Chiunque può segnalare una clinica o un medico. I nostri moderatori verificano ogni segnalazione prima della pubblicazione.",
-    "contributeCta": "Aggiungi un medico"
+    "contributeCta": "Aggiungi un medico",
+    "searchSubspecialtyLabel": "Sottospecialità"
   },
   "search": {
     "filters": "Filtri",

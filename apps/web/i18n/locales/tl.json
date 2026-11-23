@@ -234,7 +234,8 @@
   },
   "searchBar": {
     "allSpecialties": "Lahat ng Espesyalidad",
-    "resultsFound": "Walang resulta | 1 resulta | {n} resulta"
+    "resultsFound": "Walang resulta | 1 resulta | {n} resulta",
+    "allSubspecialties": "Lahat ng subespesyalidad"
   },
   "searchResultsList": {
     "loadMore": "โหลดเพิ่มเติม",
@@ -613,7 +614,10 @@
     "placeholderTextJapaneseLastName": "hal. 山田",
     "placeholderTextJapaneseFirstName": "hal. 花子",
     "nameNeedsReview": "Suriin ang mga pangalang ito. Awtomatikong napunan ang isa o wala pa ito.",
-    "otherLocaleNamesRemoved": "Matatanggal ang mga pangalan sa ibang wika kapag nag-save ka."
+    "otherLocaleNamesRemoved": "Matatanggal ang mga pangalan sa ibang wika kapag nag-save ka.",
+    "specialtyGroupLabel": "Grupo ng espesyalidad",
+    "allSpecialtyGroups": "Lahat ng grupo",
+    "specialtySearchHint": "Maghanap sa Ingles o Hapon. Gumagana rin ang pangalan ng departamento mula sa site ng klinika, gaya ng 胃腸内科."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Mga wikang sinasalita",
@@ -660,7 +664,29 @@
     "surgery": "Siruhiya",
     "physicalMedicineAndRehabilitation": "Medisinang pisikal at rehabilitasyon",
     "urology": "Urologo",
-    "proctology": "Proktolohista"
+    "proctology": "Proktolohista",
+    "breastSurgery": "Siruhano sa Suso",
+    "cardiovascularSurgery": "Siruhano sa Puso at Ugat",
+    "childPsychiatry": "Psychiatrist para sa Bata",
+    "cosmeticDermatology": "Dermatologo para sa Pagpapaganda",
+    "endocrinologyAndDiabetes": "Diyabetes at Endokrinolohiya",
+    "gastroenterology": "Gastroenterologo",
+    "geriatrics": "Medisina para sa Matatanda",
+    "hematology": "Hematologo",
+    "hepatology": "Hepatologo (Atay)",
+    "kampoMedicine": "Medisinang Kampo",
+    "medicalOncology": "Onkologo",
+    "nephrology": "Nephrologo (Bato)",
+    "neurosurgery": "Siruhano sa Utak at Nerbiyos",
+    "oralSurgery": "Siruhano sa Bibig",
+    "painMedicine": "Klinika para sa Pananakit",
+    "palliativeCare": "Palyatibong Pangangalaga",
+    "pediatricDentistry": "Dentista para sa Bata",
+    "pediatricSurgery": "Siruhano para sa Bata",
+    "psychosomaticMedicine": "Psikosomatikong Medisina",
+    "pulmonology": "Pulmonologo (Baga)",
+    "reproductiveMedicine": "Espesyalista sa Pagkamayabong",
+    "rheumatology": "Rheumatologo"
   },
   "specialtyCategories": {
     "childrensHealth": "Kalusugan ng mga Bata",
@@ -674,7 +700,17 @@
     "physicalTherapy": "Terapiyang pisikal",
     "primaryCare": "Pangunahing Pag-aalaga",
     "sportsAndRehab": "Sports at Rehabilitasyon",
-    "womensHealth": "Kalusugan ng mga Babae"
+    "womensHealth": "Kalusugan ng mga Babae",
+    "allergyImmunityAndInfection": "Allergy, Imyunidad, at Impeksiyon",
+    "brainAndNerves": "Utak at Nerbiyos",
+    "cancerAndDiagnostics": "Kanser at Pagsusuri",
+    "diabetesHormonesAndKidneys": "Diyabetes, Hormone, at Bato",
+    "digestiveHealth": "Panunaw",
+    "emergencyCare": "Pang-emerhensiyang Pangangalaga",
+    "heartAndCirculation": "Puso at Sirkulasyon",
+    "lungsAndBreathing": "Baga at Paghinga",
+    "pharmacyAndGenetics": "Parmasya at Henetika",
+    "surgeryAndAnesthesia": "Operasyon at Anestisya"
   },
   "noteInputField": {
     "optional": "(opsyonal)"
@@ -797,7 +833,8 @@
     "missionLink": "Higit pa tungkol sa amin",
     "contributeHeading": "May alam ka bang klinikang wala pa sa amin?",
     "contributeBody": "Sinuman ay maaaring magmungkahi ng klinika o doktor. Sinusuri ng aming mga moderator ang bawat isinumite bago ito mailathala.",
-    "contributeCta": "Magdagdag ng doktor"
+    "contributeCta": "Magdagdag ng doktor",
+    "searchSubspecialtyLabel": "Subespesyalidad"
   },
   "search": {
     "filters": "Mga filter",

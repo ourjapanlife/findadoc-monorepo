@@ -927,8 +927,16 @@ enum Specialty {
   ALLERGY_AND_IMMUNOLOGY
   """Anesthesiology"""
   ANESTHESIOLOGY
+  """Breast Surgery (乳腺外科)"""
+  BREAST_SURGERY
   """Cardiology"""
   CARDIOLOGY
+  """Cardiovascular Surgery (心臓血管外科)"""
+  CARDIOVASCULAR_SURGERY
+  """Child and Adolescent Psychiatry (児童精神科)"""
+  CHILD_PSYCHIATRY
+  """Cosmetic Dermatology (美容皮膚科)"""
+  COSMETIC_DERMATOLOGY
   """Cosmetic Surgery"""
   COSMETIC_SURGERY
   """Dentistry"""
@@ -939,20 +947,38 @@ enum Specialty {
   DIAGNOSTIC_RADIOLOGY
   """Emergency Medicine"""
   EMERGENCY_MEDICINE
+  """Diabetes and Endocrinology (糖尿病・内分泌内科)"""
+  ENDOCRINOLOGY_AND_DIABETES
   """Ear, Nose, and Throat (ENT)"""
   ENT_SPECIALIST
   """Family Medicine"""
   FAMILY_MEDICINE
+  """Gastroenterology, including 胃腸内科 and 内視鏡内科 (消化器内科)"""
+  GASTROENTEROLOGY
   """General Medicine"""
   GENERAL_MEDICINE
+  """Geriatric Medicine (老年内科)"""
+  GERIATRICS
+  """Hematology (血液内科)"""
+  HEMATOLOGY
+  """Hepatology (肝臓内科)"""
+  HEPATOLOGY
   """Infectious Diseases"""
   INFECTIOUS_DISEASES
   """Internal Medicine"""
   INTERNAL_MEDICINE
+  """Kampo, traditional Japanese herbal medicine (漢方内科)"""
+  KAMPO_MEDICINE
   """Medical Genetics"""
   MEDICAL_GENETICS
+  """Medical Oncology (腫瘍内科)"""
+  MEDICAL_ONCOLOGY
+  """Nephrology, including dialysis (腎臓内科)"""
+  NEPHROLOGY
   """Neurology"""
   NEUROLOGY
+  """Neurosurgery (脳神経外科)"""
+  NEUROSURGERY
   """Nuclear Medicine"""
   NUCLEAR_MEDICINE
   """Obstetrics and Gynecology"""
@@ -961,22 +987,32 @@ enum Specialty {
   OPHTHALMOLOGY
   """Optometry"""
   OPTOMETRY
+  """Oral Surgery (歯科口腔外科)"""
+  ORAL_SURGERY
   """Orthodontics"""
   ORTHODONTICS
   """Orthopedic Surgery"""
   ORTHOPEDIC_SURGERY
   """Otolaryngology"""
   OTOLARYNGOLOGY
+  """Pain Medicine (ペインクリニック)"""
+  PAIN_MEDICINE
+  """Palliative Care (緩和ケア内科)"""
+  PALLIATIVE_CARE
   """Pathology"""
   PATHOLOGY
   """Pediatrics"""
   PEDIATRICS
+  """Pediatric Dentistry (小児歯科)"""
+  PEDIATRIC_DENTISTRY
+  """Pediatric Surgery (小児外科)"""
+  PEDIATRIC_SURGERY
   """Pharmacy"""
   PHARMACY
-  """Physiotherapy"""
-  PHYSIOTHERAPY
   """Physical Medicine and Rehabilitation"""
   PHYSICAL_MEDICINE_AND_REHABILITATION
+  """Physiotherapy"""
+  PHYSIOTHERAPY
   """Plastic Surgery"""
   PLASTIC_SURGERY
   """Preventive Medicine"""
@@ -985,8 +1021,16 @@ enum Specialty {
   PROCTOLOGY
   """Psychiatry"""
   PSYCHIATRY
+  """Psychosomatic Medicine (心療内科)"""
+  PSYCHOSOMATIC_MEDICINE
+  """Pulmonology, respiratory medicine (呼吸器内科)"""
+  PULMONOLOGY
   """Radiation Oncology"""
   RADIATION_ONCOLOGY
+  """Reproductive Medicine, fertility (生殖医療)"""
+  REPRODUCTIVE_MEDICINE
+  """Rheumatology (リウマチ科)"""
+  RHEUMATOLOGY
   """Sports Medicine"""
   SPORTS_MEDICINE
   """General Surgery"""
@@ -999,6 +1043,12 @@ enum Specialty {
 
 """Grouping categories for medical specialties, used for filtering in the UI."""
 enum SpecialtyCategory {
+  """Allergy, immunity, and infection specialties."""
+  ALLERGY_IMMUNITY_AND_INFECTION
+  """Brain and nerve specialties."""
+  BRAIN_AND_NERVES
+  """Cancer care, imaging, and diagnostic specialties."""
+  CANCER_AND_DIAGNOSTICS
   """Children's health and pediatric specialties."""
   CHILDRENS_HEALTH
   """Cosmetic and plastic surgery specialties."""
@@ -1007,20 +1057,34 @@ enum SpecialtyCategory {
   DENTAL
   """Dermatology specialties."""
   DERMATOLOGY
+  """Diabetes, hormone, and kidney specialties."""
+  DIABETES_HORMONES_AND_KIDNEYS
+  """Digestive and liver specialties."""
+  DIGESTIVE_HEALTH
+  """Emergency care."""
+  EMERGENCY_CARE
   """Ear, Nose, and Throat specialties."""
   ENT
   """Eye and vision care specialties."""
   EYE_AND_VISION
-  """Mental health specialties."""
-  MENTAL_HEALTH
+  """Heart and circulation specialties."""
+  HEART_AND_CIRCULATION
+  """Lung and breathing specialties."""
+  LUNGS_AND_BREATHING
   """Men's health specialties."""
   MENS_HEALTH
+  """Mental health specialties."""
+  MENTAL_HEALTH
+  """Pharmacy and medical genetics."""
+  PHARMACY_AND_GENETICS
   """Physical therapy specialties."""
   PHYSICAL_THERAPY
   """Primary care specialties."""
   PRIMARY_CARE
   """Sports medicine and rehabilitation specialties."""
   SPORTS_AND_REHAB
+  """General surgery and anesthesia."""
+  SURGERY_AND_ANESTHESIA
   """Women's health specialties."""
   WOMENS_HEALTH
 }

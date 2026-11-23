@@ -234,7 +234,8 @@
   },
   "searchBar": {
     "allSpecialties": "所有专科",
-    "resultsFound": "无结果 | 1 条结果 | {n} 条结果"
+    "resultsFound": "无结果 | 1 条结果 | {n} 条结果",
+    "allSubspecialties": "全部细分专科"
   },
   "searchResultsList": {
     "loadMore": "加载更多",
@@ -409,7 +410,10 @@
     "placeholderTextJapaneseLastName": "例如 山田",
     "placeholderTextJapaneseFirstName": "例如 花子",
     "nameNeedsReview": "请核对这些姓名。其中一个是自动填写的，或者仍然缺失。",
-    "otherLocaleNamesRemoved": "保存时会删除其他语言的姓名。"
+    "otherLocaleNamesRemoved": "保存时会删除其他语言的姓名。",
+    "specialtyGroupLabel": "专科类别",
+    "allSpecialtyGroups": "全部类别",
+    "specialtySearchHint": "可用英语或日语搜索，也可以输入诊所网站上的科室名称，例如“胃腸内科”。"
   },
   "modSubmissionForm": {
     "healthcareProfessionalId": "医师ID",
@@ -660,7 +664,29 @@
     "traumatology": "创伤学",
     "generalMedicine": "全科医生",
     "surgery": "外科医生",
-    "proctology": "直肠科医生"
+    "proctology": "直肠科医生",
+    "breastSurgery": "乳腺外科医生",
+    "cardiovascularSurgery": "心血管外科医生",
+    "childPsychiatry": "儿童精神科医生",
+    "cosmeticDermatology": "美容皮肤科医生",
+    "endocrinologyAndDiabetes": "糖尿病与内分泌科",
+    "gastroenterology": "消化科医生",
+    "geriatrics": "老年医学科",
+    "hematology": "血液科医生",
+    "hepatology": "肝病科医生",
+    "kampoMedicine": "汉方医学",
+    "medicalOncology": "肿瘤内科医生",
+    "nephrology": "肾内科医生",
+    "neurosurgery": "神经外科医生",
+    "oralSurgery": "口腔外科医生",
+    "painMedicine": "疼痛门诊",
+    "palliativeCare": "姑息治疗",
+    "pediatricDentistry": "儿童牙医",
+    "pediatricSurgery": "小儿外科医生",
+    "psychosomaticMedicine": "心身医学科",
+    "pulmonology": "呼吸科医生",
+    "reproductiveMedicine": "生殖医学专家",
+    "rheumatology": "风湿科医生"
   },
   "specialtyCategories": {
     "childrensHealth": "儿童健康",
@@ -674,7 +700,17 @@
     "physicalTherapy": "物理治疗",
     "primaryCare": "初级保健",
     "sportsAndRehab": "运动康复",
-    "womensHealth": "女性健康"
+    "womensHealth": "女性健康",
+    "allergyImmunityAndInfection": "过敏、免疫与感染",
+    "brainAndNerves": "脑与神经",
+    "cancerAndDiagnostics": "肿瘤与检查",
+    "diabetesHormonesAndKidneys": "糖尿病、内分泌与肾脏",
+    "digestiveHealth": "消化系统",
+    "emergencyCare": "急诊",
+    "heartAndCirculation": "心脏与循环",
+    "lungsAndBreathing": "呼吸系统",
+    "pharmacyAndGenetics": "药房与遗传",
+    "surgeryAndAnesthesia": "外科与麻醉"
   },
   "noteInputField": {
     "optional": "（可选）"
@@ -797,7 +833,8 @@
     "missionLink": "了解我们",
     "contributeHeading": "有我们遗漏的诊所吗？",
     "contributeBody": "任何人都可以提交诊所或医生信息。我们的审核人员会在发布前逐一核实。",
-    "contributeCta": "添加医生"
+    "contributeCta": "添加医生",
+    "searchSubspecialtyLabel": "细分专科"
   },
   "search": {
     "filters": "筛选",

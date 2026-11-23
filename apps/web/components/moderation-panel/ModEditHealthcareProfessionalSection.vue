@@ -33,24 +33,10 @@
                     v-model:degrees="hpStore.healthcareProfessionalSectionFields.degrees"
                     v-model:license-review="hpStore.healthcareProfessionalSectionFields.licenseReview"
                 />
-                <div class="mod-picker">
-                    <label
-                        for="specialties"
-                        class="field-label"
-                    >
-                        {{ t("modHealthcareProfessionalSection.selectSpecialties") }}
-                    </label>
-                    <ModSearchBar
-                        v-model="hpStore.healthcareProfessionalSectionFields.specialties"
-                        data-test-id="mod-healthcare-professional-section-specialties"
-                        :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextSpecialties')"
-                        :no-match-text="t('modHealthcareProfessionalSection.noSpecialtiesWereFound')"
-                        :fields-to-display-callback="specialtiesToDisplayCallback"
-                        :default-suggestions="Object.values(Specialty)"
-                        @search-input-change="handleSpecialtyInputChange"
-                    />
-                    <ModTokenList :labels="tokenLabels(hpStore.healthcareProfessionalSectionFields.specialties)" />
-                </div>
+                <ModSpecialtyPicker
+                    v-model="hpStore.healthcareProfessionalSectionFields.specialties"
+                    test-id="mod-healthcare-professional-section-specialties"
+                />
                 <div class="mod-picker">
                     <label
                         for="locales"
@@ -104,10 +90,9 @@ import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessional
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useModerationScreenStore } from '~/stores/moderationScreenStore'
 import { useLocaleStore } from '~/stores/localeStore'
-import { Locale, NameReviewStatus, Specialty } from '@findadoc/graphql'
+import { Locale, NameReviewStatus } from '@findadoc/graphql'
 import { useI18n } from '#imports'
 import { stableStringify } from '~/utils/stableStringify'
-import { filterByCaseInsensitiveIncludes } from '~/utils/moderationSearchUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 import { provideModerationFormEditing, useModerationFormEditing } from '~/composables/useModerationFormMode'
 // Keeps track of if the search bar inputs have been autofilled with existing facilities
@@ -147,18 +132,11 @@ watch(
     { flush: 'sync' }
 )
 
-const tokenLabels = (values: readonly unknown[] | null | undefined) =>
-    (values ?? []).map(item => String(item))
 const spokenLanguageLabels = computed(() =>
     (hpStore.healthcareProfessionalSectionFields.spokenLanguages ?? [])
         .map(locale => localesStore.formatLanguageCodeToSimpleText(locale)))
 const facilityRemoveLabel = (name: string) =>
     t('modHealthcareProfessionalSection.removeFacility', { name })
-
-const handleSpecialtyInputChange = (filteredItems: Ref<Specialty[]>, inputValue: string) => {
-    const arrayOfSpecialties = Object.values(Specialty) as Specialty[]
-    filteredItems.value = filterByCaseInsensitiveIncludes(arrayOfSpecialties, inputValue)
-}
 
 const handleLocaleInputChange = (filteredItems: Ref<Locale[]>, inputValue: string) => {
     const arrayOfLocales = Object.values(Locale) as Locale[]
@@ -171,7 +149,6 @@ const handleLocaleInputChange = (filteredItems: Ref<Locale[]>, inputValue: strin
     filteredItems.value = localesStore.getLocaleByNameInput(inputValue)
 }
 
-const specialtiesToDisplayCallback = (specialty: Specialty) => [specialty]
 const localesToDisplayCallback = (locale: Locale) => [localesStore.formatLanguageCodeToSimpleText(locale)]
 
 onBeforeMount(async () => {
