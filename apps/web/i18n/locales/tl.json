@@ -332,7 +332,9 @@
     "chooseClinic": "Pumili ng klinika",
     "noBookingClinics": "Wala pang klinikang tumatanggap ng booking",
     "clinicsLoadError": "Hindi ma-load ang mga klinika",
-    "nameReview": "Kailangang suriin ang pangalan"
+    "nameReview": "Kailangang suriin ang pangalan",
+    "statusFilter": "Katayuan",
+    "reviewFilter": "Pagsusuri"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Burahin",
@@ -1460,5 +1462,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Mabuting malaman"
+  },
+  "filterChip": {
+    "reset": "I-reset",
+    "selected": "{count} ang napili"
   }
 }

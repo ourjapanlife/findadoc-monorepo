@@ -332,7 +332,9 @@
     "chooseClinic": "Chọn phòng khám",
     "noBookingClinics": "Chưa có phòng khám nào nhận đặt lịch",
     "clinicsLoadError": "Không thể tải danh sách phòng khám",
-    "nameReview": "Cần kiểm tra tên"
+    "nameReview": "Cần kiểm tra tên",
+    "statusFilter": "Trạng thái",
+    "reviewFilter": "Xem xét"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Xóa",
@@ -1460,5 +1462,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Cần biết"
+  },
+  "filterChip": {
+    "reset": "Đặt lại",
+    "selected": "Đã chọn {count}"
   }
 }

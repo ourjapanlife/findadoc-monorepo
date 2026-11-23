@@ -299,12 +299,24 @@ export function validateSubmissionSearchFilters(filters: gqlTypes.SubmissionSear
 
 const STATUS_FILTER_FLAGS = ['isPending', 'isOpen', 'isUnderReview', 'isApproved', 'isRejected'] as const
 
-/** One status filter at a time: isOpen already covers new and under review. */
+/** Every queue at most once each. */
+export const SUBMISSION_QUEUES_MAX = Object.values(gqlTypes.SubmissionQueue).length
+
+/**
+ * One status filter at a time: isOpen already covers new and under review. Queues stand in for
+ * the status flags, so a request uses one or the other.
+ */
 function validateSubmissionStatusFilters(
     filters: gqlTypes.SubmissionSearchFilters,
     validateSearchResults: Result<unknown>
 ): void {
-    if (STATUS_FILTER_FLAGS.filter(flag => filters[flag] === true).length > 1) {
+    const flags = STATUS_FILTER_FLAGS.filter(flag => filters[flag] === true).length
+    const queues = filters.queues ?? []
+    if (queues.length > SUBMISSION_QUEUES_MAX) {
+        validateSearchResults.hasErrors = true
+        validateSearchResults.errors?.push({ field: 'queues', errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 })
+    }
+    if (flags > 1 || (flags > 0 && queues.length > 0)) {
         validateSearchResults.hasErrors = true
         validateSearchResults.errors?.push({ field: 'status', errorCode: ErrorCode.INVALID_INPUT, httpStatus: 400 })
     }

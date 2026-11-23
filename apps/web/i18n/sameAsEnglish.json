@@ -55,7 +55,8 @@
     "bookingPage.options.consultationLanguage.tl",
     "clinicDashboard.export.columns.status",
     "clinicDashboard.export.columns.name",
-    "clinicCorrection.optional"
+    "clinicCorrection.optional",
+    "modDashboardTopbar.statusFilter"
   ],
   "it": [
     "common.menu",
@@ -67,7 +68,8 @@
   "pt": [
     "common.menu",
     "submitPage.previewLocation",
-    "clinicPage.onlineBreadcrumb"
+    "clinicPage.onlineBreadcrumb",
+    "modDashboardTopbar.statusFilter"
   ],
   "tl": [
     "common.menu",
@@ -103,6 +105,7 @@
     "contactPage.emailLabel",
     "moderationTable.status",
     "search.email",
-    "submitPage.previewLocation"
+    "submitPage.previewLocation",
+    "modDashboardTopbar.statusFilter"
   ]
 }

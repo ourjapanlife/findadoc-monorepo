@@ -69,6 +69,14 @@ function healthcareProfessionalUpdatePatch(
     return patch
 }
 
+/** The professional review queues the moderation review chip offers (#282, #1014). */
+export const PROFESSIONAL_REVIEW_QUEUE = {
+    License: 'LICENSE',
+    Name: 'NAME'
+} as const
+
+export type ProfessionalReviewQueue = typeof PROFESSIONAL_REVIEW_QUEUE[keyof typeof PROFESSIONAL_REVIEW_QUEUE]
+
 export const useHealthcareProfessionalsStore = defineStore(
     'healthcareProfessionalsStore',
     () => {
@@ -89,19 +97,11 @@ export const useHealthcareProfessionalsStore = defineStore(
         )
         const listSearchQuery = ref('')
         const listOrder: Ref<ListOrder | null> = ref(null)
-        const licenseReviewFilter = usePersistentFilters(
-            'professionals',
-            'licenseReview',
-            null as LicenseReviewStatus | null,
-            [LicenseReviewStatus.NeedsReview]
-        )
+        // The review chip: at most one of these is on (#313). Not kept between visits: a filter
+        // left on from an earlier visit looked like an empty list.
+        const licenseReviewFilter: Ref<LicenseReviewStatus | null> = ref(null)
         // Names the backfill generated or could not fill (#282).
-        const nameReviewFilter = usePersistentFilters(
-            'professionals',
-            'nameReview',
-            null as NameReviewStatus | null,
-            [NameReviewStatus.NeedsReview]
-        )
+        const nameReviewFilter: Ref<NameReviewStatus | null> = ref(null)
         const healthcareProfessionalList: Ref<HealthcareProfessional[]> = ref([])
         const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
         let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
@@ -453,14 +453,18 @@ export const useHealthcareProfessionalsStore = defineStore(
             }, 300)
         }
 
-        function setLicenseReviewFilter(enabled: boolean) {
-            licenseReviewFilter.value = enabled ? LicenseReviewStatus.NeedsReview : null
-            currentOffset.value = 0
-            return loadHealthcareProfessionalList()
-        }
+        /** The review chip's choice: one review queue, or null for every professional. */
+        const reviewQueue = computed<ProfessionalReviewQueue | null>(() => {
+            if (licenseReviewFilter.value !== null) {
+                return PROFESSIONAL_REVIEW_QUEUE.License
+            }
+            return nameReviewFilter.value === null ? null : PROFESSIONAL_REVIEW_QUEUE.Name
+        })
 
-        function setNameReviewFilter(enabled: boolean) {
-            nameReviewFilter.value = enabled ? NameReviewStatus.NeedsReview : null
+        /** Shows one review queue, or every professional for null. Never both: that list was often empty. */
+        function setReviewQueue(queue: ProfessionalReviewQueue | null) {
+            licenseReviewFilter.value = queue === PROFESSIONAL_REVIEW_QUEUE.License ? LicenseReviewStatus.NeedsReview : null
+            nameReviewFilter.value = queue === PROFESSIONAL_REVIEW_QUEUE.Name ? NameReviewStatus.NeedsReview : null
             currentOffset.value = 0
             return loadHealthcareProfessionalList()
         }
@@ -477,9 +481,9 @@ export const useHealthcareProfessionalsStore = defineStore(
             setListOrder,
             licenseReviewFilter,
             setListSearchQuery,
-            setLicenseReviewFilter,
+            reviewQueue,
             nameReviewFilter,
-            setNameReviewFilter,
+            setReviewQueue,
             updateHealthcareProfessional,
             selectedHealthcareProfessionalId,
             deleteHealthcareProfessional,

@@ -37,30 +37,32 @@ describe('usePersistentFilters', () => {
     })
 
     it('restores a stored filter on the next visit', () => {
-        localStorage.setItem(persistentFilterStorageKey('submissions', 'tab'), '"APPROVED"')
+        localStorage.setItem(persistentFilterStorageKey('submissions', 'pageSize'), '50')
         const scope = effectScope()
-        const tab = scope.run(() => usePersistentFilters(
-            'submissions',
-            'tab',
-            'NEW',
-            ['NEW', 'FOR_REVIEW', 'APPROVED', 'REJECTED']
-        ))!
-        expect(tab.value).toBe('APPROVED')
+        const pageSize = scope.run(() => usePersistentFilters('submissions', 'pageSize', 25, [25, 50, 100]))!
+        expect(pageSize.value).toBe(50)
         scope.stop()
     })
 
     it('resets a scalar that is no longer allowed', async () => {
-        localStorage.setItem(persistentFilterStorageKey('professionals', 'licenseReview'), '"CONFIRMED"')
+        localStorage.setItem(persistentFilterStorageKey('submissions', 'pageSize'), '10')
         const scope = effectScope()
-        const licenseReview = scope.run(() => usePersistentFilters(
-            'professionals',
-            'licenseReview',
-            null,
-            ['NEEDS_REVIEW']
-        ))!
+        const pageSize = scope.run(() => usePersistentFilters('submissions', 'pageSize', 25, [25, 50]))!
         await nextTick()
-        expect(licenseReview.value).toBeNull()
-        expect(localStorage.getItem(persistentFilterStorageKey('professionals', 'licenseReview'))).toBe('null')
+        expect(pageSize.value).toBe(25)
+        expect(localStorage.getItem(persistentFilterStorageKey('submissions', 'pageSize'))).toBe('25')
+        scope.stop()
+    })
+
+    it('drops the old submissions tab and review filters, which no longer persist (#313)', () => {
+        localStorage.setItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}submissions:tab`, '"APPROVED"')
+        localStorage.setItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}professionals:licenseReview`, '"NEEDS_REVIEW"')
+        localStorage.setItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}professionals:nameReview`, '"NEEDS_REVIEW"')
+        const scope = effectScope()
+        scope.run(() => usePersistentFilters('submissions', 'offset', 0))
+        expect(localStorage.getItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}submissions:tab`)).toBeNull()
+        expect(localStorage.getItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}professionals:licenseReview`)).toBeNull()
+        expect(localStorage.getItem(`${PERSISTENT_FILTER_STORAGE_PREFIX}professionals:nameReview`)).toBeNull()
         scope.stop()
     })
 
@@ -78,14 +80,15 @@ describe('usePersistentFilters', () => {
     })
 
     it('prunes an array to the values that are still allowed', async () => {
+        // No registered key holds a list today; offset stands in to test the array rule.
         localStorage.setItem(
-            persistentFilterStorageKey('submissions', 'tab'),
+            persistentFilterStorageKey('bookings', 'offset'),
             JSON.stringify(['NEW', 'RETIRED'])
         )
         const scope = effectScope()
         const tabs = scope.run(() => usePersistentFilters(
-            'submissions',
-            'tab',
+            'bookings',
+            'offset',
             [] as string[],
             ['NEW']
         ))!

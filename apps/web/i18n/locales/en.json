@@ -465,7 +465,9 @@
     "chooseClinic": "Choose a clinic",
     "noBookingClinics": "No clinics take bookings yet",
     "clinicsLoadError": "Could not load clinics",
-    "nameReview": "Needs name review"
+    "nameReview": "Needs name review",
+    "statusFilter": "Status",
+    "reviewFilter": "Review"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Delete",
@@ -1460,5 +1462,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Good to know"
+  },
+  "filterChip": {
+    "reset": "Reset",
+    "selected": "{count} selected"
   }
 }

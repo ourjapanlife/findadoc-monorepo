@@ -449,7 +449,9 @@
     "chooseClinic": "选择诊所",
     "noBookingClinics": "目前还没有接受预约的诊所",
     "clinicsLoadError": "无法加载诊所",
-    "nameReview": "需要核对姓名"
+    "nameReview": "需要核对姓名",
+    "statusFilter": "状态",
+    "reviewFilter": "审核"
   },
   "modFacilitySection": {
     "addresses": "地址",
@@ -1460,5 +1462,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "须知"
+  },
+  "filterChip": {
+    "reset": "重置",
+    "selected": "已选 {count} 项"
   }
 }

@@ -449,7 +449,9 @@
     "chooseClinic": "Выберите клинику",
     "noBookingClinics": "Пока ни одна клиника не принимает записи",
     "clinicsLoadError": "Не удалось загрузить клиники",
-    "nameReview": "Нужно проверить имя"
+    "nameReview": "Нужно проверить имя",
+    "statusFilter": "Статус",
+    "reviewFilter": "Проверка"
   },
   "modFacilitySection": {
     "addresses": "Адреса",
@@ -1460,5 +1462,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Полезно знать"
+  },
+  "filterChip": {
+    "reset": "Сбросить",
+    "selected": "Выбрано: {count}"
   }
 }

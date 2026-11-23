@@ -465,7 +465,9 @@
     "chooseClinic": "Pilih klinik",
     "noBookingClinics": "Belum ada klinik yang menerima reservasi",
     "clinicsLoadError": "Tidak dapat memuat klinik",
-    "nameReview": "Nama perlu diperiksa"
+    "nameReview": "Nama perlu diperiksa",
+    "statusFilter": "Status",
+    "reviewFilter": "Tinjauan"
   },
   "modEditFacilityOrHPTopbar": {
     "delete": "Hapus",
@@ -1460,5 +1462,9 @@
   },
   "facilityAdditionalInfo": {
     "title": "Perlu diketahui"
+  },
+  "filterChip": {
+    "reset": "Atur ulang",
+    "selected": "{count} dipilih"
   }
 }
