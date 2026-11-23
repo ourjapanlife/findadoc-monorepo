@@ -10,7 +10,7 @@ export function submissionStatusChip(page: Page): Locator {
     return page.getByTestId('mod-submission-status-filter')
 }
 
-/** Leaves one queue ticked on the status chip: reset to every queue, then untick the rest. */
+/** Leaves one queue ticked on the status chip: reset to New, tick the queue, then untick New. */
 export async function showOnlySubmissionQueue(page: Page, queue: SubmissionQueueId): Promise<void> {
     const chip = submissionStatusChip(page)
     await chip.click()
@@ -19,9 +19,14 @@ export async function showOnlySubmissionQueue(page: Page, queue: SubmissionQueue
         await reset.click()
         await chip.click()
     }
-    for (const other of SUBMISSION_QUEUES.filter(item => item !== queue)) {
-        await page.getByTestId(`mod-submission-status-filter-option-${other}`).click()
+    if (queue !== 'NEW') {
+        await page.getByTestId(`mod-submission-status-filter-option-${queue}`).click()
+        await page.getByTestId('mod-submission-status-filter-option-NEW').click()
+    }
+    for (const item of SUBMISSION_QUEUES) {
+        const option = page.getByTestId(`mod-submission-status-filter-option-${item}`)
+        await (item === queue ? expect(option).toBeChecked() : expect(option).not.toBeChecked())
     }
     await page.keyboard.press('Escape')
-    await expect(chip).toHaveAttribute('data-active', 'true')
+    await expect(chip).toHaveAttribute('data-active', queue === 'NEW' ? 'false' : 'true')
 }

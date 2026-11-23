@@ -33,7 +33,7 @@ test.describe('Moderation dashboard', () => {
 
     test('shows the submission queues New, Under review, Approved, Declined, and User feedback',
          async ({ page }) => {
-             // Every queue is shown, and ticked, until a moderator unticks one (#313).
+             // Every queue is listed. Only New is ticked until a moderator adds another (#313).
              const chip = submissionStatusChip(page)
              await expect(chip).toHaveAttribute('data-active', 'false')
              await chip.click()
@@ -45,8 +45,10 @@ test.describe('Moderation dashboard', () => {
                  enUS.modDashboardLeftNav.rejected,
                  enUS.modDashboardLeftNav.userFeedback
              ]) {
-                 await expect(menu.getByRole('checkbox', { name: new RegExp(label, 'i') })).toBeChecked()
+                 await expect(menu.getByRole('checkbox', { name: new RegExp(label, 'i') })).toBeVisible()
              }
+             await expect(page.getByTestId('mod-submission-status-filter-option-NEW')).toBeChecked()
+             await expect(page.getByTestId('mod-submission-status-filter-option-APPROVED')).not.toBeChecked()
          })
 })
 
