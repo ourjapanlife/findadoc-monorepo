@@ -11,17 +11,18 @@ import {
 const MONDAY = OpeningDay.Monday
 
 describe('the time lists', () => {
-    it('offer quarter hours, and close only after the block opens, up to 24:00', () => {
-        expect(openingTimeOptions('09:00')).toContain('16:30')
-        expect(openingTimeOptions('09:00')).not.toContain('24:00')
+    it('offer five-minute steps, and close only after the block opens, up to 24:00', () => {
+        expect(openingTimeOptions('09:00')).toContain('08:50')
+        expect(openingTimeOptions('09:00').at(-1)).toBe('23:55')
         const closes = closingTimeOptions('12:00', '18:00')
-        expect(closes[0]).toBe('12:15')
+        expect(closes).toContain('12:10')
+        expect(closes[0]).toBe('12:05')
         expect(closes.at(-1)).toBe('24:00')
     })
 
-    it('keep a saved time that is off the quarter hour', () => {
-        expect(openingTimeOptions('08:50')).toContain('08:50')
-        expect(closingTimeOptions('08:50', '12:10')).toContain('12:10')
+    it('keep a saved time that is off the step', () => {
+        expect(openingTimeOptions('08:52')).toContain('08:52')
+        expect(closingTimeOptions('08:52', '12:13')).toContain('12:13')
     })
 })
 
@@ -38,6 +39,18 @@ describe('addBreak', () => {
             { day: MONDAY, opens: '09:00', closes: '12:00' },
             { day: MONDAY, opens: '13:00', closes: '16:00' }
         ])
+    })
+
+    it('splits an evening block that runs to 24:00 in its middle instead of overlapping it', () => {
+        expect(addBreak([{ day: MONDAY, opens: '18:00', closes: '24:00' }], MONDAY)).toEqual([
+            { day: MONDAY, opens: '18:00', closes: '20:30' },
+            { day: MONDAY, opens: '21:30', closes: '24:00' }
+        ])
+    })
+
+    it('keeps a late block too short to split as it is', () => {
+        const late: OpeningHours[] = [{ day: MONDAY, opens: '23:00', closes: '24:00' }]
+        expect(addBreak(late, MONDAY)).toEqual(late)
     })
 
     it('stops at four blocks a day', () => {

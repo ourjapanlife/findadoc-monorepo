@@ -578,7 +578,7 @@
     "openingHoursRemoveShort": "Rimuovi",
     "openingHoursAddBreak": "Aggiungi una pausa",
     "openingHoursBreak": "Pausa {from}–{to}",
-    "openingHoursCopyWeekdays": "Copia da martedì a venerdì",
+    "openingHoursCopyWeekdays": "Copia su martedì–venerdì",
     "openingHoursOpensOn": "Apertura {day}",
     "openingHoursClosesOn": "Chiusura {day}",
     "openingHoursInvalid": "Ogni fascia deve chiudere dopo l'apertura e le fasce dello stesso giorno non possono sovrapporsi.",

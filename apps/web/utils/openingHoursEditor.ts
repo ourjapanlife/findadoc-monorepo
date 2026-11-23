@@ -6,8 +6,11 @@ import { MAX_OPENING_BLOCKS_PER_DAY, openingMinutes } from '@findadoc/utils'
  * and a break is the gap between two blocks: nothing about a break is stored on its own.
  */
 
-/** The step the time pickers offer. A saved time off the step still shows as itself. */
-export const OPENING_STEP_MINUTES = 15
+/**
+ * The step the time pickers offer. Five minutes covers the times clinics publish (08:50, 12:10)
+ * and keeps the list short enough to scroll. A saved time off the step still shows as itself.
+ */
+export const OPENING_STEP_MINUTES = 5
 export const END_OF_DAY = '24:00'
 
 const DAY_MINUTES = 24 * 60
@@ -48,7 +51,7 @@ function withCurrent(times: string[], current: string): string[] {
     return [...times, current].sort()
 }
 
-/** Every time a block can open at, 00:00 to 23:45. */
+/** Every time a block can open at, 00:00 to 23:55. */
 export function openingTimeOptions(current: string): string[] {
     return withCurrent(stepTimes(0, DAY_MINUTES - OPENING_STEP_MINUTES), current)
 }
@@ -95,7 +98,8 @@ export function closeDay(hours: readonly OpeningHours[], day: OpeningDay): Openi
 /**
  * Adds a break to a day. A day's last block that spans lunch is split at 12:00–13:00, so a full
  * day becomes morning and afternoon at once. Otherwise a new block starts an hour after the last
- * one closes. The moderator then moves either end.
+ * one closes, or, when that runs past 24:00, the last block is split in its middle. The added
+ * block never overlaps one that is there. The moderator then moves either end.
  */
 export function addBreak(hours: readonly OpeningHours[], day: OpeningDay): OpeningHours[] {
     const blocks = blocksForDay(hours, day)
@@ -114,8 +118,33 @@ export function addBreak(hours: readonly OpeningHours[], day: OpeningDay): Openi
             { day, opens: timeLabel(LUNCH_ENDS), closes: last.block.closes }
         ]
     }
-    const start = Math.min((closes ?? DEFAULT_CLOSES) + BREAK_MINUTES, DAY_MINUTES - OPENING_STEP_MINUTES)
-    return [...hours, { day, opens: timeLabel(start), closes: timeLabel(Math.min(start + AFTER_BREAK_MINUTES, DAY_MINUTES)) }]
+    const start = (closes ?? DEFAULT_CLOSES) + BREAK_MINUTES
+    if (start + OPENING_STEP_MINUTES <= DAY_MINUTES) {
+        const after = { day, opens: timeLabel(start), closes: timeLabel(Math.min(start + AFTER_BREAK_MINUTES, DAY_MINUTES)) }
+        return [...hours, after]
+    }
+    return splitInMiddle(hours, last, opens, closes)
+}
+
+/**
+ * No block fits after the last one (18:00–24:00), so the hour's break goes in its middle instead.
+ * A block too short to split keeps its hours: adding one would overlap it.
+ */
+function splitInMiddle(
+    hours: readonly OpeningHours[],
+    last: { block: OpeningHours, index: number },
+    opens: number | null,
+    closes: number | null
+): OpeningHours[] {
+    if (opens === null || closes === null || closes - opens < BREAK_MINUTES + 2 * OPENING_STEP_MINUTES) {
+        return [...hours]
+    }
+    const half = (closes - opens - BREAK_MINUTES) / 2
+    const breakStarts = opens + Math.max(OPENING_STEP_MINUTES, Math.floor(half / OPENING_STEP_MINUTES) * OPENING_STEP_MINUTES)
+    return [
+        ...hours.map((block, index) => (index === last.index ? { ...block, closes: timeLabel(breakStarts) } : block)),
+        { day: last.block.day, opens: timeLabel(breakStarts + BREAK_MINUTES), closes: last.block.closes }
+    ]
 }
 
 /** Gives Tuesday to Friday the same blocks as Monday. Weekends and public holidays stay as they are. */
