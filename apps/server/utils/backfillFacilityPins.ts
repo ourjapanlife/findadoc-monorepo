@@ -209,7 +209,10 @@ export function parseMinistryCsv(text: string): MinistryInstitution[] {
 
 /** True when the matched ministry row has coordinates we can use. */
 export function hasMinistryPin(match: PinMatch): boolean {
-    return match.institution !== undefined && hasUsableMapPin(match.institution.lat, match.institution.lng)
+    const institution = match.institution
+    // In range too: facilities_pin_required refuses anything else, and one refusal rolls back the run.
+    return institution !== undefined && hasUsableMapPin(institution.lat, institution.lng)
+        && Math.abs(institution.lat) <= 90 && Math.abs(institution.lng) <= 180
 }
 
 const APPROVED_VALUES = new Set(['ok', 'yes', 'y', 'approved', '✓', '✔'])
@@ -422,7 +425,8 @@ async function lookUpAddresses(
         try {
             const address = await geocode(match.street)
             result.addresses.set(match.facilityId, address)
-            if (closest && !address && !hasMinistryPin(match) && match.city !== '') {
+            const streetUsable = hasUsableMapPin(address?.lat, address?.lng)
+            if (closest && !streetUsable && !hasMinistryPin(match) && match.city !== '') {
                 result.cityCenters.set(match.facilityId, await geocode(match.city))
             }
         } catch {

@@ -230,6 +230,16 @@ describe('planClosestFill', () => {
     it('leaves a facility alone when nothing at all was found', () => {
         expect(unmatched && planClosestFill(unmatched, null, null)).toBeNull()
     })
+
+    it('skips an out-of-range ministry pin and falls back to the address', () => {
+        const [badMinistry] = matchFacilityPins(
+            [facility('f7', 'テスト範囲外病院', '広島市', '中区大手町1-1')],
+            [{ id: 'M9', name: 'テスト範囲外病院', address: '広島県広島市中区基町1-1', lat: 95, lng: 132 }]
+        )
+        expect(badMinistry?.level).toBe(MATCH_LEVEL.NameOnly)
+        expect(badMinistry && planClosestFill(badMinistry, TOWN))
+            .toMatchObject({ source: PIN_SOURCE.AddressApproximate, lat: TOWN.lat })
+    })
 })
 
 describe('createGsiGeocoder', () => {
@@ -377,6 +387,20 @@ describe('backfillFacilityPins', () => {
         expect(geocode).toHaveBeenCalledWith('広島県尾道市')
         expect(report.bySource).toMatchObject({ ministry: 1, ministry_unconfirmed: 1, city_center: 1 })
         expect(report.approximateIds.sort()).toEqual(['f2', 'f4'])
+    })
+
+    it('with closest, looks up the city when the street answer is 0,0', async () => {
+        const rows = [
+            { id: 'f4', name_ja: '存在しない医院', prefecture_ja: '広島県', city_ja: '尾道市', address_line1_ja: '土堂1-1' }
+        ]
+        const { client } = fakeClient(rows)
+        const geocode = vi.fn(async (query: string) => (query === '広島県尾道市'
+            ? { lat: 34.4089, lng: 133.2050, precision: ADDRESS_PRECISION.Town }
+            : { lat: 0, lng: 0, precision: ADDRESS_PRECISION.Block }))
+        const report = await backfillFacilityPins(client, INSTITUTIONS, new Set(), false, geocode, true)
+
+        expect(report.bySource).toMatchObject({ city_center: 1 })
+        expect(report.approximateIds).toEqual(['f4'])
     })
 
     it('without closest, lists nothing as approximate', async () => {
