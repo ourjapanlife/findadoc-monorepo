@@ -128,8 +128,9 @@ export function contactForStorage(
 }
 
 /**
- * Merges a contact update with the stored contact so omitted address and Maps URL
- * are not wiped on a phone-only (or similar) patch.
+ * Merges a contact update with the stored contact so omitted email, website, address,
+ * and Maps URL are not wiped on a phone-only (or similar) patch. The moderation form
+ * sends email and website only when they change, so an address edit omits them.
  */
 export function contactUpdateForStorage(
     contact: gqlTypes.ContactInput,
@@ -138,6 +139,12 @@ export function contactUpdateForStorage(
 ): gqlTypes.ContactInput {
     const merged: gqlTypes.ContactInput = {
         ...contact,
+        email: contact.email !== undefined
+            ? contact.email
+            : (existingContact?.email ?? ''),
+        website: contact.website !== undefined
+            ? contact.website
+            : (existingContact?.website ?? ''),
         address: contact.address !== undefined
             ? contact.address
             : addressInputFromStored(existingContact?.address),
@@ -170,7 +177,7 @@ export function facilityPartialForStorage(
  * Builds a partial update patch for Facility rows.
  * When online becomes true, address, city, map, and place id are cleared.
  * Pass existingContact when contact is not in the update so phone is preserved.
- * An omitted address or Maps URL on a contact update keeps the stored value.
+ * An omitted email, website, address, or Maps URL on a contact update keeps the stored value.
  */
 export function buildFacilityUpdatePatch(
     fields: Partial<gqlTypes.UpdateFacilityInput>,

@@ -69,6 +69,14 @@ function healthcareProfessionalUpdatePatch(
     return patch
 }
 
+/**
+ * Languages a new professional starts with. A doctor practising in Japan speaks Japanese,
+ * so the create form preselects it; the moderator can still remove it.
+ */
+export function defaultSpokenLanguages(): Locale[] {
+    return [Locale.JaJp]
+}
+
 /** The professional review queues the moderation review chip offers (#282, #1014). */
 export const PROFESSIONAL_REVIEW_QUEUE = {
     License: 'LICENSE',
@@ -131,7 +139,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             facilityIds: [] as string[],
             names: [] as LocalizedNameInput[],
             specialties: [] as Specialty[],
-            spokenLanguages: [] as Locale[],
+            spokenLanguages: defaultSpokenLanguages(),
             additionalInfoForPatients: ''
         })
 
@@ -393,7 +401,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             createHealthcareProfessionalSectionFields.facilityIds = []
             createHealthcareProfessionalSectionFields.names = []
             createHealthcareProfessionalSectionFields.specialties = []
-            createHealthcareProfessionalSectionFields.spokenLanguages = []
+            createHealthcareProfessionalSectionFields.spokenLanguages = defaultSpokenLanguages()
         }
 
         async function deleteHealthcareProfessional(
