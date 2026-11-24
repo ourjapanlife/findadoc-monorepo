@@ -65,16 +65,24 @@ test.describe('Moderation user feedback', () => {
         await expect(page.getByTestId('mod-correction-review')).toHaveCount(0)
     })
 
-    test('shows every queue by default, and Reset brings them all back (#313)', async ({ page }) => {
+    test('starts on New, adds queues, and Reset goes back to New (#313)', async ({ page }) => {
         const chip = page.getByTestId('mod-submission-status-filter')
         await expect(chip).toHaveAttribute('data-active', 'false')
-
-        await showOnlySubmissionQueue(page, 'NEW')
         await expect(chip).toContainText(enUS.modDashboardLeftNav.new)
+
+        await chip.click()
+        await page.getByTestId('mod-submission-status-filter-option-APPROVED').click()
+        await expect(page.getByTestId('mod-submission-status-filter-option-NEW')).toBeChecked()
+        await expect(page.getByTestId('mod-submission-status-filter-option-APPROVED')).toBeChecked()
+        await page.keyboard.press('Escape')
+        await expect(chip).toHaveAttribute('data-active', 'true')
+        await expect(chip).toContainText(enUS.modDashboardLeftNav.approved)
 
         await chip.click()
         await page.getByTestId('mod-submission-status-filter-reset').click()
         await expect(chip).toHaveAttribute('data-active', 'false')
+        await chip.click()
+        await expect(page.getByTestId('mod-submission-status-filter-option-APPROVED')).not.toBeChecked()
     })
 
     test('keeps corrections out of bulk selection', async ({ page }) => {
