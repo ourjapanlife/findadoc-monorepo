@@ -9,11 +9,12 @@ import {
     CreateHealthcareProfessionalInput,
     Facility,
     HealthcareProfessional,
+    Locale,
     RelationshipAction,
     Specialty,
     UpdateFacilityInput
 } from '@findadoc/graphql'
-import { gqlApiUrl } from './testSetup.test.js'
+import { gqlApiUrl, sharedFacilityIds } from './testSetup.test.js'
 import { createFacilityMutation } from './facilities.test.js'
 import { createHealthcareProfessionalMutation } from './healthcareProfessional.test.js'
 
@@ -160,6 +161,67 @@ describe('searchHealthcareProfessionals: facilityIds filter', () => {
 
         expect(errors[0].field).toBe('facilityIds')
         expect(errors[0].errorCode).toBe(ErrorCode.INVALID_ID)
+    })
+})
+
+describe('searchHealthcareProfessionals: name query', () => {
+    let exact: HealthcareProfessional
+    let nearby: HealthcareProfessional
+
+    const createNamed = async (firstName: string, japaneseFirstName: string) => {
+        const input = generateCreateProfessionalInput({ facilityIds: [sharedFacilityIds[0] ?? ''] })
+
+        input.names = [
+            { firstName, lastName: 'Vexmarbury', locale: Locale.EnUs },
+            { firstName: japaneseFirstName, lastName: '鷺宮', locale: Locale.JaJp }
+        ]
+        const result = await request(gqlApiUrl).post('').send({
+            query: createHealthcareProfessionalMutation,
+            variables: { input }
+        } as gqlMutation<CreateHealthcareProfessionalInput>)
+
+        expect(result.body?.errors).toBeUndefined()
+        return result.body.data.createHealthcareProfessional as HealthcareProfessional
+    }
+
+    const foundIds = async (query: string) => {
+        const result = await request(gqlApiUrl).post('').send({
+            query: searchHealthcareProfessionalsWithCount,
+            variables: { filters: { query, limit: 20 } }
+        } as gqlRequest)
+
+        expect(result.body.errors).toBeUndefined()
+        const ownIds = [exact.id, nearby.id]
+
+        // The test database keeps rows from earlier runs, so only this block's professionals count.
+        return (result.body.data.healthcareProfessionals as HealthcareProfessional[])
+            .map(p => p.id)
+            .filter(id => ownIds.includes(id))
+    }
+
+    beforeAll(async () => {
+        exact = await createNamed('Quillon', '澪')
+        nearby = await createNamed('Quillan', '凛')
+    })
+
+    test('matches first and last name in either order', async () => {
+        // Quillan is one letter off, so it follows the exact match.
+        expect(await foundIds('Quillon Vexmarbury')).toEqual([exact.id, nearby.id])
+        expect(await foundIds('vexmarbury quillon')).toEqual([exact.id, nearby.id])
+    })
+
+    test('matches a Japanese name with or without a space, in either order', async () => {
+        expect(await foundIds('鷺宮澪')).toEqual([exact.id])
+        expect(await foundIds('澪　鷺宮')).toEqual([exact.id])
+    })
+
+    test('forgives a typo in a romaji name and lists exact matches first', async () => {
+        expect(await foundIds('Vexmarbry')).toHaveLength(2)
+        expect(await foundIds('Quillan Vexmarbury')).toEqual([nearby.id, exact.id])
+    })
+
+    test('needs every word to match', async () => {
+        expect(await foundIds('Quillon Zzyzxwq')).toEqual([])
     })
 })
 
