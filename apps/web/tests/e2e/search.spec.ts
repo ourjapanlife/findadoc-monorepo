@@ -254,6 +254,38 @@ test.describe('Search page', () => {
             await expect(page.getByRole('link', { name: 'Tokyo Family Clinic' })).toBeVisible()
         })
 
+        test('collapses the filters to a one-line summary and opens them again', async ({ page }) => {
+            await page.goto('/search?specialty=dentistry&language=en&prefecture=tokyo')
+
+            const toggle = page.getByTestId('search-filters-toggle')
+            const filters = page.getByTestId('search-filters')
+            const summary = page.getByTestId('search-filter-summary')
+            await expect(filters).toBeVisible()
+            await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+            await expect(summary).toBeHidden()
+
+            await toggle.click()
+
+            await expect(filters).toBeHidden()
+            await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+            await expect(summary).toHaveText(`${enUS.specialties.dentistry} · English · Tokyo`)
+            await expect(page.getByTestId('search-result-card')).toHaveCount(1)
+
+            await toggle.click()
+
+            await expect(filters).toBeVisible()
+            await expect(summary).toBeHidden()
+        })
+
+        test('names the region in the summary when no prefecture is picked', async ({ page }) => {
+            await page.goto('/search?language=en&region=kanto')
+
+            await expect(page.getByTestId('search-filters-toggle')).toHaveAttribute('aria-expanded', 'true')
+            await page.getByTestId('search-filters-toggle').click()
+
+            await expect(page.getByTestId('search-filter-summary')).toHaveText(`English · ${enUS.regions.kanto}`)
+        })
+
         test('offers the prefectures and specialties the directory has (#21)', async ({ page }) => {
             await page.route(isApiRequest, async (route: Route) => {
                 if (!graphqlOperation(route.request())?.query?.includes('DirectoryCoverage')) {
@@ -534,6 +566,13 @@ test.describe('Search page', () => {
 
             await expect(page.getByTestId('search-filters')).toBeVisible()
             await expect(page.getByTestId('search-specialty')).toBeVisible()
+        })
+
+        test('shows the chosen filters while the bar is collapsed', async ({ page }) => {
+            await page.goto('/search?language=en&prefecture=tokyo')
+
+            await expect(page.getByTestId('search-filters')).toBeHidden()
+            await expect(page.getByTestId('search-filter-summary')).toHaveText('English · Tokyo')
         })
 
         test('clinic page links are real hrefs in portrait too', async ({ page }) => {
