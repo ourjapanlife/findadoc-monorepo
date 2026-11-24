@@ -79,6 +79,9 @@
     "searchLanguageLabel": "In which language?",
     "searchAreaLabel": "Where?",
     "searchAnyArea": "Anywhere in Japan",
+    "searchPrefectureLabel": "Prefecture",
+    "searchAnyPrefecture": "Any prefecture",
+    "searchAnyPrefectureInRegion": "Anywhere in this region",
     "searchCityLabel": "City",
     "searchAnyCity": "Any city",
     "searchAnyLanguage": "Any language",
@@ -444,6 +447,16 @@
     "lungsAndBreathing": "Lungs and Breathing",
     "pharmacyAndGenetics": "Pharmacy and Genetics",
     "surgeryAndAnesthesia": "Surgery and Anesthesia"
+  },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "chubu": "Chubu",
+    "kansai": "Kansai",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu & Okinawa"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Exit without saving",

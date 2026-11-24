@@ -54,7 +54,7 @@
                 id="search-filters"
                 data-testid="search-filters"
                 :class="filtersOpen ? 'grid' : 'hidden landscape:grid'"
-                class="grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] landscape:grid-cols-2 landscape:items-end"
+                class="grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_auto] landscape:grid-cols-2 landscape:items-end"
                 @submit.prevent
             >
                 <div class="min-w-0">
@@ -143,9 +143,34 @@
 
                 <div class="min-w-0">
                     <label
-                        for="search-area"
+                        for="search-region"
                         class="field-label"
                     >{{ t('home.searchAreaLabel') }}</label>
+                    <select
+                        id="search-region"
+                        v-model="region"
+                        data-testid="search-region"
+                        class="field"
+                        @change="onFilterChange"
+                    >
+                        <option value="">
+                            {{ t('home.searchAnyArea') }}
+                        </option>
+                        <option
+                            v-for="code in regionOptions"
+                            :key="code"
+                            :value="code"
+                        >
+                            {{ t(REGION_LABEL_KEYS[code]) }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="min-w-0">
+                    <label
+                        for="search-area"
+                        class="field-label"
+                    >{{ t('home.searchPrefectureLabel') }}</label>
                     <select
                         id="search-area"
                         v-model="prefecture"
@@ -154,10 +179,10 @@
                         @change="onFilterChange"
                     >
                         <option value="">
-                            {{ t('home.searchAnyArea') }}
+                            {{ region ? t('home.searchAnyPrefectureInRegion') : t('home.searchAnyPrefecture') }}
                         </option>
                         <option
-                            v-for="entry in prefectures"
+                            v-for="entry in prefectureOptions"
                             :key="entry.name"
                             :value="entry.name.toLowerCase()"
                         >
@@ -232,6 +257,13 @@ import { useUmami } from '~/composables/useUmamiTracking'
 import { searchFilterFlags } from '~/utils/analyticsEvents'
 import { SEARCHABLE_LANGUAGES, prefectureOptionLabel } from '~/utils/homeDirectory'
 import { hasActiveFilters } from '~/utils/searchDirectory'
+import {
+    REGION_LABEL_KEYS,
+    isJapanRegion,
+    prefecturesInRegion,
+    regionOfPrefecture,
+    regionsWithPrefectures
+} from '~/utils/japanRegions'
 import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
 import { groupOfSpecialty, groupOptions, specialtiesForGroup } from '~/utils/specialtyPicker'
 import { CATEGORY_LABEL_KEYS } from '~/utils/specialtyLabelKeys'
@@ -280,11 +312,29 @@ const language = computed({
     }
 })
 
+/*
+ * Region, then prefecture, then city. A link with only `?prefecture=` shows that prefecture's
+ * region. Changing the region clears the prefecture and city below it; picking a prefecture
+ * records its region, so clearing the prefecture again falls back to the whole region.
+ */
+const region = computed({
+    get: () => searchResultsStore.selectedRegion ?? regionOfPrefecture(searchResultsStore.selectedPrefecture) ?? '',
+    set: value => {
+        searchResultsStore.selectedRegion = isJapanRegion(value) ? value : undefined
+        searchResultsStore.selectedPrefecture = undefined
+        searchResultsStore.selectedCity = undefined
+    }
+})
+
 const prefecture = computed({
     get: () => searchResultsStore.selectedPrefecture?.toLowerCase() ?? '',
     set: value => {
         searchResultsStore.selectedPrefecture = value || undefined
         searchResultsStore.selectedCity = undefined
+        const prefectureRegion = regionOfPrefecture(value)
+        if (prefectureRegion !== undefined) {
+            searchResultsStore.selectedRegion = prefectureRegion
+        }
     }
 })
 
@@ -300,6 +350,10 @@ const {
     cities: cityOptions,
     specialties: availableSpecialties
 } = useDirectoryCoverage(prefecture)
+
+const regionOptions = computed(() => regionsWithPrefectures(prefectures.value, region.value || undefined))
+
+const prefectureOptions = computed(() => prefecturesInRegion(prefectures.value, region.value || undefined))
 
 const specialtyGroupOptions = computed(() => groupOptions(
     code => t(CATEGORY_LABEL_KEYS[code]),
@@ -354,7 +408,7 @@ function clearFromBar() {
 }
 
 const activeFilterCount = computed(() =>
-    [specialtyGroup.value, specialty.value, language.value, prefecture.value, searchResultsStore.selectedCity]
+    [specialtyGroup.value, specialty.value, language.value, region.value, prefecture.value, searchResultsStore.selectedCity]
         .filter(Boolean).length)
 
 const countText = computed(() => {

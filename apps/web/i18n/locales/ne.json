@@ -79,6 +79,9 @@
     "searchLanguageLabel": "कुन भाषामा?",
     "searchAreaLabel": "कहाँ?",
     "searchAnyArea": "जापानको जुनसुकै ठाउँ",
+    "searchPrefectureLabel": "प्रिफेक्चर",
+    "searchAnyPrefecture": "जुनसुकै प्रिफेक्चर",
+    "searchAnyPrefectureInRegion": "यो क्षेत्रमा जहाँसुकै",
     "searchCityLabel": "सहर",
     "searchAnyCity": "जुनसुकै सहर",
     "searchAnyLanguage": "जुनसुकै भाषा",
@@ -444,6 +447,16 @@
     "lungsAndBreathing": "फोक्सो र श्वासप्रश्वास",
     "pharmacyAndGenetics": "फार्मेसी र आनुवंशिकी",
     "surgeryAndAnesthesia": "शल्यक्रिया र एनेस्थेसिया"
+  },
+  "regions": {
+    "hokkaido": "होक्काइडो",
+    "tohoku": "तोहोकु",
+    "kanto": "कान्तो",
+    "chubu": "चुबु",
+    "kansai": "कान्साई",
+    "chugoku": "चुगोकु",
+    "shikoku": "सिकोकु",
+    "kyushu": "क्युशु र ओकिनावा"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "सेभ नगरी बाहिर निस्कनुहोस्",

@@ -43,6 +43,7 @@ describe('track', () => {
         track('Filters changed', {
             has_specialty: 'yes',
             has_language: 'no',
+            has_region: 'yes',
             has_prefecture: 'yes',
             has_city: 'no'
         })

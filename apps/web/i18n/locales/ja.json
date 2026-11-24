@@ -725,6 +725,16 @@
     "pharmacyAndGenetics": "薬局・遺伝",
     "surgeryAndAnesthesia": "外科・麻酔科"
   },
+  "regions": {
+    "hokkaido": "北海道",
+    "tohoku": "東北",
+    "kanto": "関東",
+    "chubu": "中部",
+    "kansai": "関西",
+    "chugoku": "中国",
+    "shikoku": "四国",
+    "kyushu": "九州・沖縄"
+  },
   "noteInputField": {
     "optional": "（任意）"
   },
@@ -829,6 +839,9 @@
     "searchLanguageLabel": "希望する言語は？",
     "searchAreaLabel": "エリアは？",
     "searchAnyArea": "日本全国",
+    "searchPrefectureLabel": "都道府県",
+    "searchAnyPrefecture": "すべての都道府県",
+    "searchAnyPrefectureInRegion": "この地方のすべて",
     "searchCityLabel": "市区町村",
     "searchAnyCity": "すべての市区町村",
     "searchAnyLanguage": "すべての言語",

@@ -287,6 +287,31 @@ test.describe('Search page', () => {
             await expect(page.getByTestId('search-specialty').locator('option[value="ORTHODONTICS"]')).toHaveCount(0)
         })
 
+        test('searches a whole region, then narrows to a prefecture inside it', async ({ page }) => {
+            await page.goto('/search')
+            await page.getByTestId('search-region').selectOption('KANTO')
+
+            await expect(page).toHaveURL(/region=kanto/)
+            await expect(page.getByTestId('search-result-card')).toHaveCount(1)
+            await expect(page.getByRole('link', { name: 'Tokyo Family Clinic' })).toBeVisible()
+            // Only that region's prefectures are offered.
+            const prefecture = page.getByTestId('search-area')
+            await expect(prefecture.locator('option[value="tokyo"]')).toHaveCount(1)
+            await expect(prefecture.locator('option[value="osaka"]')).toHaveCount(0)
+
+            await prefecture.selectOption('tokyo')
+            await expect(page).toHaveURL(/prefecture=tokyo/)
+            await expect(page.getByTestId('search-city')).toBeEnabled()
+        })
+
+        test('shows the region of a prefecture-only link', async ({ page }) => {
+            await page.goto('/search?prefecture=osaka')
+
+            await expect(page.getByTestId('search-region')).toHaveValue('KANSAI')
+            await expect(page.getByTestId('search-result-card')).toHaveCount(1)
+            await expect(page.getByRole('link', { name: 'Osaka Dental' })).toBeVisible()
+        })
+
         test('updates the URL and the results as soon as a filter changes', async ({ page }) => {
             await page.goto('/search')
             await page.getByTestId('search-specialty-group').selectOption('DERMATOLOGY')

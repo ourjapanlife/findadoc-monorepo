@@ -79,6 +79,9 @@
     "searchLanguageLabel": "어떤 언어로 진료받으시겠어요?",
     "searchAreaLabel": "어느 지역인가요?",
     "searchAnyArea": "일본 전역",
+    "searchPrefectureLabel": "도도부현",
+    "searchAnyPrefecture": "모든 도도부현",
+    "searchAnyPrefectureInRegion": "이 지방 전체",
     "searchCityLabel": "시·구",
     "searchAnyCity": "모든 시·구",
     "searchAnyLanguage": "모든 언어",
@@ -444,6 +447,16 @@
     "lungsAndBreathing": "호흡기",
     "pharmacyAndGenetics": "약국·유전",
     "surgeryAndAnesthesia": "외과·마취과"
+  },
+  "regions": {
+    "hokkaido": "홋카이도",
+    "tohoku": "도호쿠",
+    "kanto": "간토",
+    "chubu": "주부",
+    "kansai": "간사이",
+    "chugoku": "주고쿠",
+    "shikoku": "시코쿠",
+    "kyushu": "규슈·오키나와"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "저장하지 않고 나가기",

@@ -380,3 +380,33 @@ describe('specialty group (#277)', () => {
         expect(hasActiveFilters({ specialtyGroup: SpecialtyCategory.Dental })).toBe(true)
     })
 })
+
+describe('region', () => {
+    it('matches every prefecture in the region when only the region is picked', () => {
+        const kansai = filterDirectory(facilities, professionals, { region: 'KANSAI' })
+        const kanto = filterDirectory(facilities, professionals, { region: 'KANTO' })
+
+        expect(kansai.map(result => result.id)).toEqual(['osaka-clinic'])
+        expect(kanto.map(result => result.id)).toEqual(['tokyo-clinic', 'empty-clinic'])
+    })
+
+    it('narrows to the picked prefecture inside the region', () => {
+        const results = filterDirectory(facilities, professionals, { region: 'KANTO', prefecture: 'tokyo' })
+
+        expect(results.map(result => result.id)).toEqual(['tokyo-clinic', 'empty-clinic'])
+    })
+
+    it('round-trips the region through the URL and counts it as a filter', () => {
+        const query = buildSearchQuery({ region: 'KYUSHU' })
+
+        expect(query).toEqual({ region: 'kyushu' })
+        expect(parseSearchQuery(query).region).toBe('KYUSHU')
+        expect(hasActiveFilters({ region: 'KYUSHU' })).toBe(true)
+    })
+
+    it('drops a region that contradicts the prefecture in the same link', () => {
+        expect(parseSearchQuery({ region: 'kansai', prefecture: 'tokyo' }).region).toBeUndefined()
+        expect(parseSearchQuery({ region: 'kanto', prefecture: 'tokyo' }).region).toBe('KANTO')
+        expect(parseSearchQuery({ region: 'nowhere' }).region).toBeUndefined()
+    })
+})

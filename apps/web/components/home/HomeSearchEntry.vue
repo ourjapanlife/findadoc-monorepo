@@ -82,13 +82,20 @@
                 <option value="">
                     {{ t('home.searchAnyArea') }}
                 </option>
-                <option
-                    v-for="prefecture in prefectures"
-                    :key="prefecture.name"
-                    :value="prefectureQueryParam(prefecture.name)"
+                <!-- Prefectures under their region, so the list reads north to south by area. -->
+                <optgroup
+                    v-for="group in prefectureGroups"
+                    :key="group.region"
+                    :label="t(REGION_LABEL_KEYS[group.region])"
                 >
-                    {{ prefectureOptionLabel(prefecture, locale === 'ja-JP') }}
-                </option>
+                    <option
+                        v-for="prefecture in group.prefectures"
+                        :key="prefecture.name"
+                        :value="prefectureQueryParam(prefecture.name)"
+                    >
+                        {{ prefectureOptionLabel(prefecture, locale === 'ja-JP') }}
+                    </option>
+                </optgroup>
             </select>
         </div>
 
@@ -116,6 +123,7 @@ import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
 import { groupOptions, specialtiesForGroup } from '~/utils/specialtyPicker'
 import { CATEGORY_LABEL_KEYS } from '~/utils/specialtyLabelKeys'
 import { useDirectoryCoverage } from '~/composables/useDirectoryCoverage'
+import { REGION_LABEL_KEYS, prefecturesInRegion, regionsWithPrefectures } from '~/utils/japanRegions'
 
 // The template compares vue-i18n's locale, not localeStore: the store only updates when someone
 // uses the language picker, so a direct Japanese load would still read en-US. i18n says "ja-JP".
@@ -125,6 +133,9 @@ const { track } = useUmami()
 
 // The homepage has no prefecture of its own, so only the country-wide lists load.
 const { prefectures, specialties: availableSpecialties } = useDirectoryCoverage(ref(''))
+
+const prefectureGroups = computed(() => regionsWithPrefectures(prefectures.value, undefined)
+    .map(region => ({ region, prefectures: prefecturesInRegion(prefectures.value, region) })))
 
 /** Same encoding as the search URL: `dentistry`, `en`, `tokyo`. */
 function specialtyQueryParam(code: string): string {

@@ -1,5 +1,6 @@
 import { Locale, Specialty, SpecialtyCategory, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
 import { formatJapanPhone, PHONE_DISPLAY, SPECIALTY_CATEGORY_MEMBERS, toJapanE164 } from '@findadoc/utils'
+import { parseRegion, regionOfPrefecture, regionSearchParam, type JapanRegion } from './japanRegions'
 
 /**
  * Client-side search over the whole directory.
@@ -18,6 +19,11 @@ export type FacilitySearchResult = Facility & {
 export interface SearchFilters {
     city?: string
     prefecture?: string
+    /**
+     * A region, picked before a prefecture. Alone, it matches every prefecture in the region;
+     * a picked prefecture narrows it.
+     */
+    region?: JapanRegion
     /**
      * A specialty group, picked before a specialty, like a prefecture before a city (#277). Alone,
      * it matches every specialty in the group; a picked specialty narrows it.
@@ -77,6 +83,12 @@ function matchesLocation(facility: Facility, filters: SearchFilters): boolean {
 
     return placeMatches(filters.city, address?.cityEn, address?.cityJa)
       && placeMatches(filters.prefecture, address?.prefectureEn, address?.prefectureJa)
+      && regionMatches(filters.region, address?.prefectureEn, address?.prefectureJa)
+}
+
+function regionMatches(selected: JapanRegion | undefined, en: string | undefined, ja: string | undefined): boolean {
+    if (selected === undefined) return true
+    return (regionOfPrefecture(en) ?? regionOfPrefecture(ja)) === selected
 }
 
 function intersects<T>(selected: readonly T[] | undefined, actual: readonly T[] | undefined): boolean {
@@ -218,6 +230,16 @@ function parsePlace(raw: string | undefined): string | undefined {
     return slugify(raw) || raw
 }
 
+/** A region that contradicts the prefecture in the same link is dropped; the prefecture is narrower. */
+function parseRegionFor(raw: string | undefined, prefecture: string | undefined): JapanRegion | undefined {
+    const region = parseRegion(raw)
+    const prefectureRegion = regionOfPrefecture(prefecture)
+    if (region !== undefined && prefectureRegion !== undefined && region !== prefectureRegion) {
+        return undefined
+    }
+    return region
+}
+
 function parsePage(raw: string | undefined): number | undefined {
     if (!raw || !/^\d+$/.test(raw)) return undefined
     const page = Number(raw)
@@ -235,10 +257,12 @@ function parsePage(raw: string | undefined): number | undefined {
 export function parseSearchQuery(query: SearchLocationQuery): SearchQueryState {
     const specialty = parseSpecialty(firstString(query.specialty))
     const language = parseLanguage(firstString(query.language))
+    const prefecture = parsePlace(firstString(query.prefecture))
 
     return {
         city: parsePlace(firstString(query.city)),
-        prefecture: parsePlace(firstString(query.prefecture)),
+        prefecture,
+        region: parseRegionFor(firstString(query.region), prefecture),
         specialtyGroup: parseSpecialtyGroup(firstString(query.group)),
         specialties: specialty ? [specialty] : undefined,
         languages: language ? [language] : undefined,
@@ -254,6 +278,7 @@ export function buildSearchQuery(state: SearchQueryState): Record<string, string
     if (state.specialtyGroup) query.group = specialtyGroupSearchParam(state.specialtyGroup)
     if (state.specialties?.[0]) query.specialty = specialtySearchParam(state.specialties[0])
     if (state.languages?.[0]) query.language = languageSearchParam(state.languages[0])
+    if (state.region) query.region = regionSearchParam(state.region)
     if (state.prefecture) query.prefecture = prefectureSearchParam(state.prefecture)
     if (state.city) query.city = parsePlace(state.city) ?? state.city
     if ((state.page ?? 1) > 1) query.page = String(state.page)
@@ -268,6 +293,7 @@ export function sameSearchQueryState(left: SearchLocationQuery, right: SearchLoc
 
     return a.city === b.city
       && a.prefecture === b.prefecture
+      && a.region === b.region
       && a.specialtyGroup === b.specialtyGroup
       && (a.specialties?.[0] ?? '') === (b.specialties?.[0] ?? '')
       && (a.languages?.[0] ?? '') === (b.languages?.[0] ?? '')
@@ -276,7 +302,7 @@ export function sameSearchQueryState(left: SearchLocationQuery, right: SearchLoc
 }
 
 export function hasActiveFilters(filters: SearchFilters): boolean {
-    return !!(filters.city || filters.prefecture || filters.specialtyGroup || filters.specialties?.length
+    return !!(filters.city || filters.prefecture || filters.region || filters.specialtyGroup || filters.specialties?.length
       || filters.languages?.length)
 }
 

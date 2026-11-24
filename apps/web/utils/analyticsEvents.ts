@@ -54,6 +54,7 @@ export const eventCatalog = {
     'Filters changed': {
         has_specialty: YES_NO,
         has_language: YES_NO,
+        has_region: YES_NO,
         has_prefecture: YES_NO,
         has_city: YES_NO
     },
@@ -198,6 +199,7 @@ export function searchFilterFlags(filters: {
     specialtyGroup?: string
     specialties?: readonly unknown[]
     languages?: readonly unknown[]
+    region?: string
     prefecture?: string
     city?: string
 }): EventProps['Filters changed'] {
@@ -205,6 +207,7 @@ export function searchFilterFlags(filters: {
         // A specialty group alone is still a specialty filter (#277).
         has_specialty: yesNo(Boolean(filters.specialties?.length || filters.specialtyGroup)),
         has_language: yesNo(Boolean(filters.languages?.length)),
+        has_region: yesNo(Boolean(filters.region)),
         has_prefecture: yesNo(Boolean(filters.prefecture)),
         has_city: yesNo(Boolean(filters.city))
     }

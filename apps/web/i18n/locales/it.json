@@ -716,6 +716,16 @@
     "pharmacyAndGenetics": "Farmacia e genetica",
     "surgeryAndAnesthesia": "Chirurgia e anestesia"
   },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "chubu": "Chubu",
+    "kansai": "Kansai",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu e Okinawa"
+  },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Lingue parlate",
     "lastName": "Nome",
@@ -823,6 +833,9 @@
     "searchLanguageLabel": "In quale lingua?",
     "searchAreaLabel": "Dove?",
     "searchAnyArea": "In tutto il Giappone",
+    "searchPrefectureLabel": "Prefettura",
+    "searchAnyPrefecture": "Qualsiasi prefettura",
+    "searchAnyPrefectureInRegion": "Ovunque in questa regione",
     "searchCityLabel": "Città",
     "searchAnyCity": "Qualsiasi città",
     "searchAnyLanguage": "Qualsiasi lingua",
