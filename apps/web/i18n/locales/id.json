@@ -518,6 +518,14 @@
     "back": "Kembali",
     "hasUnsavedChanges": "Ada perubahan yang belum disimpan. Apakah Anda yakin ingin keluar?"
   },
+  "modCopyId": {
+    "facilityId": "ID fasilitas",
+    "healthcareProfessionalId": "ID tenaga kesehatan",
+    "copy": "Salin",
+    "copied": "Disalin",
+    "copyFailed": "ID tidak dapat disalin. Pilih lalu salin secara manual.",
+    "copyLabel": "Salin {label} {id}"
+  },
   "modEditSubmissionTopNav": {
     "update": "Perbarui",
     "updateAndExit": "Perbarui & Keluar",
@@ -748,7 +756,9 @@
     "rejectSubmissionConfirmationButton": "Ya, tolak pengajuan ini",
     "successMessageUpdated": "Pengajuan berhasil diperbarui",
     "successMessageApproved": "Pengajuan berhasil disetujui",
-    "submissionRejected": "Pengajuan ditolak"
+    "submissionRejected": "Pengajuan ditolak",
+    "linkedRecordsFailed": "Fasilitas atau tenaga kesehatan yang tertaut tidak dapat dimuat. Menyetujui sekarang akan menambahkannya sebagai data baru. Coba lagi.",
+    "retryLinkedRecords": "Coba lagi"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Bahasa yang digunakan",

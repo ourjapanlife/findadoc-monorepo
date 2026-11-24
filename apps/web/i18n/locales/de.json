@@ -517,7 +517,9 @@
     "placeholderTextNoteInput": "z. B. warte auf Rückruf der Klinik",
     "successMessageUpdated": "Einreichung aktualisiert",
     "successMessageApproved": "Einreichung genehmigt",
-    "useExistingFacility": "Diese Klinik verwenden"
+    "useExistingFacility": "Diese Klinik verwenden",
+    "linkedRecordsFailed": "Die verknüpfte Einrichtung oder Fachkraft konnte nicht geladen werden. Eine Freigabe würde sie jetzt neu anlegen. Versuchen Sie es erneut.",
+    "retryLinkedRecords": "Erneut versuchen"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "Name der Einrichtung unbekannt",
@@ -667,6 +669,14 @@
     "hasUnsavedChanges": "Es gibt ungespeicherte Änderungen. Wirklich verlassen?",
     "deleteConfirmationFacility": "Einrichtung {facility} mit der ID {id} wirklich löschen?",
     "deleteConfirmationHealthcareProfessional": "Gesundheitsfachkraft {healthcareProfessional} mit der ID {id} wirklich löschen?"
+  },
+  "modCopyId": {
+    "facilityId": "Einrichtungs-ID",
+    "healthcareProfessionalId": "Fachkraft-ID",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "copyFailed": "Die ID konnte nicht kopiert werden. Markieren und kopieren Sie sie von Hand.",
+    "copyLabel": "{label} {id} kopieren"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Das hat nicht funktioniert. Bitte versuchen Sie es erneut.",

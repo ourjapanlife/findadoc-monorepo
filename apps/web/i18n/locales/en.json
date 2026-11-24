@@ -518,6 +518,14 @@
     "back": "Back",
     "hasUnsavedChanges": "You have unsaved changes. Are you sure you want to leave?"
   },
+  "modCopyId": {
+    "facilityId": "Facility ID",
+    "healthcareProfessionalId": "Professional ID",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyFailed": "The ID could not be copied. Select it and copy it by hand.",
+    "copyLabel": "Copy {label} {id}"
+  },
   "modEditSubmissionTopNav": {
     "update": "Update",
     "updateAndExit": "Update & Exit",
@@ -748,7 +756,9 @@
     "rejectSubmissionConfirmationMessage": "Are you sure you want to reject this submission?",
     "rejectSubmissionConfirmationButton": "Yes, reject the submission",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "linkedRecordsFailed": "The linked clinic or professional could not be loaded. Approving now would add it as new. Try again.",
+    "retryLinkedRecords": "Try again"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Spoken languages",

@@ -97,6 +97,7 @@ const columns = computed((): ModerationTableColumn[] => {
     if (healthcareProfessionalsModerationListViewChosen.value) {
         return [
             { id: 'name', label: t('moderationTable.name') },
+            { id: 'facility', label: t('moderationTable.facility') },
             { id: 'created', label: t('modListContainerItem.createdDate'), sortField: 'createdDate' },
             { id: 'updated', label: t('modListContainerItem.updatedDate'), sortField: 'updatedDate' }
         ]
@@ -135,6 +136,7 @@ const rows = computed((): ModerationTableRow[] => {
             badges: [],
             cells: {
                 name: professionalLabel(professional),
+                facility: linkedFacilitiesCell(professional),
                 created: formatToReadableDate(professional.createdDate),
                 updated: formatToReadableDate(professional.updatedDate)
             }
@@ -276,6 +278,15 @@ onMounted(async () => {
 function professionalLabel(professional: HealthcareProfessional): string {
     const name = healthcareProfessionalsStore.displayChosenLocaleForHealthcareProfessional(professional)
     return [name.lastName, name.firstName, name.middleName].filter(part => part).join(' ')
+}
+
+/** The clinics a professional works at, by English name, or the Japanese name when there is none. */
+function linkedFacilitiesCell(professional: HealthcareProfessional): string {
+    return professional.facilityIds
+        .map(id => healthcareProfessionalsStore.linkedFacilityNames[id])
+        .map(facility => facility?.nameEn || facility?.nameJa || '')
+        .filter(name => name)
+        .join(', ')
 }
 
 function submissionBadges(submission: Submission): ModerationTableBadge[] {

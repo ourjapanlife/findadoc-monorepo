@@ -433,7 +433,9 @@
     "placeholderTextNoteInput": "例如：等待诊所回电",
     "successMessageUpdated": "提交已更新",
     "successMessageApproved": "提交已批准",
-    "useExistingFacility": "使用此医疗机构"
+    "useExistingFacility": "使用此医疗机构",
+    "linkedRecordsFailed": "无法加载关联的机构或医疗人员。现在批准会将其作为新记录添加。请重试。",
+    "retryLinkedRecords": "重试"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "医疗机构名称未知",
@@ -583,6 +585,14 @@
     "hasUnsavedChanges": "有未保存的更改。确定离开吗？",
     "deleteConfirmationFacility": "确定删除医疗机构：{facility}，ID：{id}？",
     "deleteConfirmationHealthcareProfessional": "确定删除医疗人员：{healthcareProfessional}，ID：{id}？"
+  },
+  "modCopyId": {
+    "facilityId": "机构 ID",
+    "healthcareProfessionalId": "医疗人员 ID",
+    "copy": "复制",
+    "copied": "已复制",
+    "copyFailed": "无法复制 ID。请选中后手动复制。",
+    "copyLabel": "复制{label} {id}"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "操作未成功，请重试。",

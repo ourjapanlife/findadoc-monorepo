@@ -83,7 +83,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeMount, onUnmounted, ref, watch, type Ref } from 'vue'
+import { computed, nextTick, onUnmounted, ref, watch, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAppToast } from '~/composables/useAppToast'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
@@ -151,44 +151,56 @@ const handleLocaleInputChange = (filteredItems: Ref<Locale[]>, inputValue: strin
 
 const localesToDisplayCallback = (locale: Locale) => [localesStore.formatLanguageCodeToSimpleText(locale)]
 
-onBeforeMount(async () => {
-    if (moderationScreenStore.editSubmissionScreenIsActive()) {
-        isHealthcareProfessionalInitialized.value = true
+const routeHealthcareProfessionalId = computed(() => (typeof route.params.id === 'string' ? route.params.id : ''))
+// Only the latest load may fill the form, so a slow answer for an older id is dropped.
+let healthcareProfessionalSectionLoads = 0
+
+/** Fills the form from the professional in the URL. A reload fetches it by id instead of starting empty. */
+async function initializeHealthcareProfessionalSection(id: string) {
+    const load = ++healthcareProfessionalSectionLoads
+    isHealthcareProfessionalInitialized.value = false
+    // Leaving the edit route clears the id before this section unmounts. There is nothing to load.
+    if (!id) {
         return
     }
+
     loadingStore.setIsLoading(true)
-
-    // Wait for the route to be fully resolved
-    await nextTick()
-    // Ensure the route param `id` is available before proceeding
-    const id = route.params.id
-
-    if (!id) {
-        console.error(t('modHealthcareProfessionalSection.errorMessageHealthcareProfessionalId'))
+    const professional = await hpStore.loadSelectedHealthcareProfessional(id)
+    if (load !== healthcareProfessionalSectionLoads) {
+        return
+    }
+    loadingStore.setIsLoading(false)
+    if (professional === undefined) {
         toast.error(t('modHealthcareProfessionalSection.errorMessageHealthcareProfessionalId'))
         return
     }
 
-    if (!hpStore.healthcareProfessionalsData.length) {
-        await hpStore.getHealthcareProfessionals()
+    // Wait for the fields to render before the form counts as clean.
+    await nextTick()
+    if (load !== healthcareProfessionalSectionLoads) {
+        return
     }
-
-    await nextTick()
-
-    hpStore
-        .setSelectedHealthcareProfessional(hpStore.selectedHealthcareProfessionalId)
-
-    await nextTick()
-
     isHealthcareProfessionalInitialized.value = true
     makeHpFormNonDirty()
     moderationSubmissionUnsavedStore.registerEditFormTryLeave(tryLeaveHpForm)
-    loadingStore.setIsLoading(false)
+}
 
-    await nextTick()
-})
+// The submission screen fills this section itself. Elsewhere the URL id drives it, so a reload
+// or a link to another record loads that record.
+const loadsFromRoute = !moderationScreenStore.editSubmissionScreenIsActive()
+if (loadsFromRoute) {
+    watch(routeHealthcareProfessionalId, initializeHealthcareProfessionalSection, { immediate: true })
+} else {
+    isHealthcareProfessionalInitialized.value = true
+}
 
 onUnmounted(() => {
+    // A load still in flight must not fill the next screen, such as a submission's fields, or leave the loader on.
+    healthcareProfessionalSectionLoads++
+    if (loadsFromRoute) {
+        hpStore.cancelSelectedHealthcareProfessionalLoad()
+        loadingStore.setIsLoading(false)
+    }
     moderationSubmissionUnsavedStore.registerEditFormTryLeave(null)
 })
 </script>

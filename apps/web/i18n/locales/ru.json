@@ -426,7 +426,9 @@
     "placeholderTextNoteInput": "напр. ждём звонка из клиники",
     "successMessageUpdated": "Заявка обновлена",
     "successMessageApproved": "Заявка одобрена",
-    "useExistingFacility": "Использовать эту клинику"
+    "useExistingFacility": "Использовать эту клинику",
+    "linkedRecordsFailed": "Не удалось загрузить связанное учреждение или специалиста. Одобрение сейчас добавит его как новое. Попробуйте ещё раз.",
+    "retryLinkedRecords": "Повторить"
   },
   "login": {
     "checkingauth": "Проверка входа…",
@@ -583,6 +585,14 @@
     "hasUnsavedChanges": "Есть несохранённые изменения. Выйти?",
     "deleteConfirmationFacility": "Удалить учреждение {facility}, ID {id}?",
     "deleteConfirmationHealthcareProfessional": "Удалить специалиста {healthcareProfessional}, ID {id}?"
+  },
+  "modCopyId": {
+    "facilityId": "ID учреждения",
+    "healthcareProfessionalId": "ID специалиста",
+    "copy": "Копировать",
+    "copied": "Скопировано",
+    "copyFailed": "Не удалось скопировать ID. Выделите и скопируйте его вручную.",
+    "copyLabel": "Копировать {label} {id}"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Не удалось выполнить действие. Попробуйте ещё раз.",

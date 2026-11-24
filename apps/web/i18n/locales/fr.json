@@ -379,7 +379,9 @@
     "placeholderTextNoteInput": "p. ex. en attente d’un rappel de la clinique",
     "successMessageUpdated": "Soumission mise à jour",
     "successMessageApproved": "Soumission approuvée",
-    "useExistingFacility": "Utiliser cette clinique"
+    "useExistingFacility": "Utiliser cette clinique",
+    "linkedRecordsFailed": "L’établissement ou le professionnel lié n’a pas pu être chargé. L’approuver maintenant le créerait comme nouveau. Réessayez.",
+    "retryLinkedRecords": "Réessayer"
   },
   "login": {
     "checkingauth": "Vérification de l’authentification…",
@@ -620,6 +622,14 @@
     "hasUnsavedChanges": "Des modifications ne sont pas enregistrées. Quitter quand même ?",
     "deleteConfirmationFacility": "Supprimer l’établissement {facility}, ID {id} ?",
     "deleteConfirmationHealthcareProfessional": "Supprimer le professionnel de santé {healthcareProfessional}, ID {id} ?"
+  },
+  "modCopyId": {
+    "facilityId": "ID de l’établissement",
+    "healthcareProfessionalId": "ID du professionnel",
+    "copy": "Copier",
+    "copied": "Copié",
+    "copyFailed": "Impossible de copier l’ID. Sélectionnez-le et copiez-le à la main.",
+    "copyLabel": "Copier {label} {id}"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Cela n’a pas fonctionné. Veuillez réessayer.",

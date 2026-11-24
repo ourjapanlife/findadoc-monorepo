@@ -518,6 +518,14 @@
     "back": "पछाडि",
     "hasUnsavedChanges": "तपाईंका परिवर्तनहरू सेभ भएका छैनन्। के तपाईं यहाँबाट जान निश्चित हुनुहुन्छ?"
   },
+  "modCopyId": {
+    "facilityId": "सुविधा ID",
+    "healthcareProfessionalId": "स्वास्थ्यकर्मी ID",
+    "copy": "प्रतिलिपि",
+    "copied": "प्रतिलिपि गरियो",
+    "copyFailed": "ID प्रतिलिपि गर्न सकिएन। छानेर आफैं प्रतिलिपि गर्नुहोस्।",
+    "copyLabel": "{label} {id} प्रतिलिपि गर्नुहोस्"
+  },
   "modEditSubmissionTopNav": {
     "update": "अद्यावधिक गर्नुहोस्",
     "updateAndExit": "अद्यावधिक गरेर बाहिर निस्कनुहोस्",
@@ -748,7 +756,9 @@
     "rejectSubmissionConfirmationButton": "हो, विवरण अस्वीकार गर्नुहोस्",
     "successMessageUpdated": "विवरण सफलतापूर्वक अद्यावधिक गरियो",
     "successMessageApproved": "विवरण सफलतापूर्वक स्वीकृत गरियो",
-    "submissionRejected": "आवेदन अस्वीकार गरियो"
+    "submissionRejected": "आवेदन अस्वीकार गरियो",
+    "linkedRecordsFailed": "जोडिएको सुविधा वा स्वास्थ्यकर्मी लोड गर्न सकिएन। अहिले स्वीकृत गर्दा यसलाई नयाँ रूपमा थपिनेछ। फेरि प्रयास गर्नुहोस्।",
+    "retryLinkedRecords": "फेरि प्रयास गर्नुहोस्"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "बोल्ने भाषाहरू",

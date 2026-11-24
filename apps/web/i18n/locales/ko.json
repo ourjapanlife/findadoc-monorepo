@@ -518,6 +518,14 @@
     "back": "뒤로",
     "hasUnsavedChanges": "저장하지 않은 변경 사항이 있습니다. 정말 나가시겠습니까?"
   },
+  "modCopyId": {
+    "facilityId": "시설 ID",
+    "healthcareProfessionalId": "의료인 ID",
+    "copy": "복사",
+    "copied": "복사됨",
+    "copyFailed": "ID를 복사할 수 없습니다. 선택해서 직접 복사하세요.",
+    "copyLabel": "{label} {id} 복사"
+  },
   "modEditSubmissionTopNav": {
     "update": "업데이트",
     "updateAndExit": "업데이트 후 나가기",
@@ -748,7 +756,9 @@
     "rejectSubmissionConfirmationButton": "예, 제보를 거절합니다",
     "successMessageUpdated": "제보가 업데이트되었습니다",
     "successMessageApproved": "제보가 승인되었습니다",
-    "useExistingFacility": "이 의료기관 사용"
+    "useExistingFacility": "이 의료기관 사용",
+    "linkedRecordsFailed": "연결된 시설 또는 의료인을 불러오지 못했습니다. 지금 승인하면 새 항목으로 추가됩니다. 다시 시도하세요.",
+    "retryLinkedRecords": "다시 시도"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "구사 언어",

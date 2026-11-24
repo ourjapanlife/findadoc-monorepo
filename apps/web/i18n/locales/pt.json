@@ -426,7 +426,9 @@
     "placeholderTextNoteInput": "p. ex. aguardando retorno da clínica",
     "successMessageUpdated": "Envio atualizado",
     "successMessageApproved": "Envio aprovado",
-    "useExistingFacility": "Usar esta clínica"
+    "useExistingFacility": "Usar esta clínica",
+    "linkedRecordsFailed": "Não foi possível carregar a instituição ou o profissional vinculado. Aprovar agora o adicionaria como novo. Tente novamente.",
+    "retryLinkedRecords": "Tentar novamente"
   },
   "login": {
     "checkingauth": "Verificando a autenticação…",
@@ -583,6 +585,14 @@
     "hasUnsavedChanges": "Há alterações não salvas. Sair mesmo assim?",
     "deleteConfirmationFacility": "Excluir a unidade {facility}, ID {id}?",
     "deleteConfirmationHealthcareProfessional": "Excluir o profissional de saúde {healthcareProfessional}, ID {id}?"
+  },
+  "modCopyId": {
+    "facilityId": "ID da instituição",
+    "healthcareProfessionalId": "ID do profissional",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "copyFailed": "Não foi possível copiar o ID. Selecione e copie manualmente.",
+    "copyLabel": "Copiar {label} {id}"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Não foi possível concluir. Tente novamente.",

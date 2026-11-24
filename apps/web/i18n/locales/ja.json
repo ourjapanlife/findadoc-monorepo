@@ -433,7 +433,9 @@
     "labelModNoteInput": "モデレーターのメモ",
     "placeholderTextNoteInput": "例: クリニックからの折り返し待ち",
     "successMessageUpdated": "投稿を更新しました",
-    "successMessageApproved": "投稿を承認しました"
+    "successMessageApproved": "投稿を承認しました",
+    "linkedRecordsFailed": "紐づいた施設または医療従事者を読み込めませんでした。このまま承認すると新規として追加されます。もう一度お試しください。",
+    "retryLinkedRecords": "もう一度試す"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "医療機関名が不明",
@@ -583,6 +585,14 @@
     "hasUnsavedChanges": "保存していない変更があります。このページを離れますか？",
     "deleteConfirmationFacility": "医療機関「{facility}」（ID: {id}）を削除しますか？",
     "deleteConfirmationHealthcareProfessional": "医療従事者「{healthcareProfessional}」（ID: {id}）を削除しますか？"
+  },
+  "modCopyId": {
+    "facilityId": "施設ID",
+    "healthcareProfessionalId": "医療従事者ID",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "copyFailed": "IDをコピーできませんでした。選択して手動でコピーしてください。",
+    "copyLabel": "{label} {id} をコピー"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "うまくいきませんでした。もう一度お試しください。",

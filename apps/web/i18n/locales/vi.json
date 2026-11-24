@@ -352,6 +352,14 @@
     "deleteConfirmationFacility": "Xóa cơ sở {facility}, ID: {id}?",
     "deleteConfirmationHealthcareProfessional": "Xóa nhân viên y tế {healthcareProfessional}, ID: {id}?"
   },
+  "modCopyId": {
+    "facilityId": "Mã cơ sở",
+    "healthcareProfessionalId": "Mã chuyên gia",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "copyFailed": "Không thể sao chép mã. Hãy chọn và sao chép thủ công.",
+    "copyLabel": "Sao chép {label} {id}"
+  },
   "modEditSubmissionTopNav": {
     "updateAndExit": "Lưu và thoát.",
     "approve": "Phê duyệt",
@@ -582,7 +590,9 @@
     "placeholderTextNoteInput": "vd. đang chờ phòng khám gọi lại",
     "successMessageUpdated": "Đã cập nhật nội dung gửi",
     "successMessageApproved": "Đã duyệt nội dung gửi",
-    "useExistingFacility": "Dùng cơ sở này"
+    "useExistingFacility": "Dùng cơ sở này",
+    "linkedRecordsFailed": "Không thể tải cơ sở hoặc chuyên gia được liên kết. Nếu duyệt bây giờ, mục này sẽ được thêm như mới. Hãy thử lại.",
+    "retryLinkedRecords": "Thử lại"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Không thể hoàn tất. Vui lòng thử lại.",

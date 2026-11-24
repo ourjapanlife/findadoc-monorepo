@@ -3,14 +3,21 @@
         class="facility-hp-topbar-actions flex w-full min-w-0 flex-col gap-2 p-2 font-bold
         landscape:flex-row landscape:items-center landscape:justify-between"
     >
-        <button
-            type="button"
-            :class="[buttonBaseClass, backButtonClass, buttonOutlineClass, buttonPaddingClass]"
-            data-testid="mod-edit-facility-hp-topbar-back"
-            @click="navigateBackToDashboard"
-        >
-            {{ t('modEditFacilityOrHPTopbar.back') }}
-        </button>
+        <div class="flex min-w-0 flex-wrap items-center gap-2">
+            <button
+                type="button"
+                :class="[buttonBaseClass, backButtonClass, buttonOutlineClass, buttonPaddingClass]"
+                data-testid="mod-edit-facility-hp-topbar-back"
+                @click="navigateBackToDashboard"
+            >
+                {{ t('modEditFacilityOrHPTopbar.back') }}
+            </button>
+            <ModCopyId
+                v-if="selectedId"
+                :id="selectedId"
+                :label="selectedIdLabel"
+            />
+        </div>
         <div
             class="grid w-full min-w-0 grid-cols-2 gap-2
             landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end
@@ -57,6 +64,7 @@ import { storeToRefs } from 'pinia'
 import { useAppToast } from '~/composables/useAppToast'
 import { usePendingAction } from '~/composables/usePendingAction'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
+import ModCopyId from '~/components/moderation-panel/ModCopyId.vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from '#imports'
 import { useFacilitiesStore, getChangedFacilityFieldsForUpdate } from '~/stores/facilitiesStore'
@@ -86,6 +94,10 @@ const modalStore = useModalStore()
 
 // Initialize the value of the selected Id based off of Moderation Screen
 const selectedId: ComputedRef<string> = computed(() => setSelectedId())
+
+const selectedIdLabel = computed(() => (moderationScreenStore.editFacilityScreenIsActive()
+    ? t('modCopyId.facilityId')
+    : t('modCopyId.healthcareProfessionalId')))
 
 // Deep snapshots (not live store refs). Topbar mounts before edit sections finish loading — capture once data exists.
 const originalFacilityData: Ref<Facility | undefined> = ref()
