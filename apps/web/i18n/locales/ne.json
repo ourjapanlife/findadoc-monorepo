@@ -862,6 +862,8 @@
     "resultsRegion": "खोज नतिजा",
     "moreProfessionals": "+{n} थप",
     "professionalsAtFacility": "कुनै स्वास्थ्यकर्मी सूचीमा छैनन् | 1 स्वास्थ्यकर्मी | {n} स्वास्थ्यकर्मी",
+    "showMoreProfessionals": "थप {n} देखाउनुहोस्",
+    "showAllProfessionals": "सबै {n} देखाउनुहोस्",
     "noProfessionalsYet": "अहिलेसम्म कुनै डाक्टर सूचीमा छैनन्",
     "noProfessionalsNote": "यस क्लिनिकका डाक्टरहरूको विवरण हामीसँग अझै छैन। माथिको क्लिनिकको जानकारी भने लागू हुन्छ।",
     "addProfessional": "यहाँका डाक्टरलाई चिन्नुहुन्छ? थप्नुहोस्",

@@ -856,6 +856,8 @@
     "resultsRegion": "Résultats de recherche",
     "moreProfessionals": "+{n} de plus",
     "professionalsAtFacility": "Aucun professionnel | 1 professionnel | {n} professionnels",
+    "showMoreProfessionals": "Afficher {n} de plus",
+    "showAllProfessionals": "Tout afficher ({n})",
     "noProfessionalsYet": "Aucun médecin répertorié pour l’instant",
     "noProfessionalsNote": "Nous n’avons pas encore d’informations sur les médecins de cette clinique. Les informations sur la clinique ci-dessus restent valables.",
     "addProfessional": "Vous connaissez un médecin ici ? Ajoutez-le",

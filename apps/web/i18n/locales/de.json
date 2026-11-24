@@ -856,6 +856,8 @@
     "resultsRegion": "Suchergebnisse",
     "moreProfessionals": "+{n} weitere",
     "professionalsAtFacility": "Keine Fachkraft | 1 Fachkraft | {n} Fachkräfte",
+    "showMoreProfessionals": "{n} weitere anzeigen",
+    "showAllProfessionals": "Alle {n} anzeigen",
     "noProfessionalsYet": "Noch keine Ärztinnen oder Ärzte eingetragen",
     "noProfessionalsNote": "Zu einzelnen Ärztinnen und Ärzten dieser Praxis liegen uns noch keine Angaben vor. Die Praxisangaben oben gelten trotzdem.",
     "addProfessional": "Kennen Sie hier eine Ärztin oder einen Arzt? Jetzt hinzufügen",

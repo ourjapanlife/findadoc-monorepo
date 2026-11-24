@@ -856,6 +856,8 @@
     "resultsRegion": "Mga resulta ng paghahanap",
     "moreProfessionals": "+{n} pa",
     "professionalsAtFacility": "Walang propesyonal | 1 propesyonal | {n} propesyonal",
+    "showMoreProfessionals": "Ipakita ang {n} pa",
+    "showAllProfessionals": "Ipakita lahat ({n})",
     "noProfessionalsYet": "Wala pang nakalistang doktor",
     "noProfessionalsNote": "Wala pa kaming impormasyon tungkol sa mga doktor sa klinikang ito. Tama pa rin ang impormasyon ng klinika sa itaas.",
     "addProfessional": "May kilala kang doktor dito? Idagdag",

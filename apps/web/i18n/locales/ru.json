@@ -856,6 +856,8 @@
     "resultsRegion": "Результаты поиска",
     "moreProfessionals": "ещё {n}",
     "professionalsAtFacility": "Нет специалистов | 1 специалист | {n} специалистов",
+    "showMoreProfessionals": "Показать ещё {n}",
+    "showAllProfessionals": "Показать всех ({n})",
     "noProfessionalsYet": "Врачи пока не указаны",
     "noProfessionalsNote": "У нас пока нет сведений о врачах этой клиники. Информация о клинике выше остаётся актуальной.",
     "addProfessional": "Знаете врача здесь? Добавьте",

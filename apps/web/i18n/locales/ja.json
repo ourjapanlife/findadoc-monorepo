@@ -862,6 +862,8 @@
     "resultsRegion": "検索結果",
     "moreProfessionals": "他 {n} 名",
     "professionalsAtFacility": "医療従事者の掲載なし | 医療従事者 1 名 | 医療従事者 {n} 名",
+    "showMoreProfessionals": "さらに {n} 名を表示",
+    "showAllProfessionals": "全 {n} 名を表示",
     "noProfessionalsYet": "医師の掲載はまだありません",
     "noProfessionalsNote": "このクリニックの個々の医師の情報はまだありません。上記のクリニック情報はそのままご利用いただけます。",
     "addProfessional": "ここの医師をご存じですか？追加する",
