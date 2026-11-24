@@ -856,6 +856,8 @@
     "resultsRegion": "검색 결과",
     "moreProfessionals": "+{n}명 더 보기",
     "professionalsAtFacility": "등록된 의료인 없음 | 의료인 1명 | 의료인 {n}명",
+    "showMoreProfessionals": "{n}명 더 보기",
+    "showAllProfessionals": "전체 {n}명 보기",
     "noProfessionalsYet": "아직 등록된 의사가 없습니다",
     "noProfessionalsNote": "이 의료기관의 개별 의사 정보는 아직 없습니다. 위의 의료기관 정보는 그대로 유효합니다.",
     "addProfessional": "이곳의 의사를 알고 계신가요? 추가하기",

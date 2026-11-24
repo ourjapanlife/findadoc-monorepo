@@ -862,6 +862,8 @@
     "resultsRegion": "Hasil pencarian",
     "moreProfessionals": "+{n} lainnya",
     "professionalsAtFacility": "Tidak ada tenaga kesehatan yang tercantum | 1 tenaga kesehatan | {n} tenaga kesehatan",
+    "showMoreProfessionals": "Tampilkan {n} lagi",
+    "showAllProfessionals": "Tampilkan semua ({n})",
     "noProfessionalsYet": "Belum ada dokter yang tercantum",
     "noProfessionalsNote": "Kami belum memiliki informasi tentang dokter di klinik ini. Informasi klinik di atas tetap berlaku.",
     "addProfessional": "Kenal dokter di sini? Tambahkan",

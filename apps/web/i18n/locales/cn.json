@@ -856,6 +856,8 @@
     "resultsRegion": "搜索结果",
     "moreProfessionals": "还有 {n} 个",
     "professionalsAtFacility": "暂无人员 | 1 位人员 | {n} 位人员",
+    "showMoreProfessionals": "再显示 {n} 位",
+    "showAllProfessionals": "显示全部 {n} 位",
     "noProfessionalsYet": "暂未列出医生",
     "noProfessionalsNote": "我们还没有这家诊所具体医生的信息。上方的诊所信息仍然有效。",
     "addProfessional": "认识这里的医生？添加医生",

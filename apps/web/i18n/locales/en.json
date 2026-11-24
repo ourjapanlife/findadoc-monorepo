@@ -862,6 +862,8 @@
     "resultsRegion": "Search results",
     "moreProfessionals": "+{n} more",
     "professionalsAtFacility": "No professionals listed | 1 professional | {n} professionals",
+    "showMoreProfessionals": "Show {n} more",
+    "showAllProfessionals": "Show all {n}",
     "noProfessionalsYet": "No doctors listed yet",
     "noProfessionalsNote": "We don't have details about individual doctors at this clinic yet. The clinic details above still apply.",
     "addProfessional": "Know a doctor here? Add them",
