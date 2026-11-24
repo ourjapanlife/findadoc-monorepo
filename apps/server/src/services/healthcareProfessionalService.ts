@@ -10,7 +10,8 @@ import { asJsonb } from '../../utils/dbUtils.js'
 import type { SelectQueryBuilder } from 'kysely'
 import type { Database } from '../typeDefs/kyselyTypes.js'
 import type { ProfessionalParent } from '../typeDefs/resolverParents.js'
-import { likeContainsPattern, listQueryValue } from '../search/listQuery.js'
+import { listQueryValue } from '../search/listQuery.js'
+import { nameQueryWords, professionalNameExact, professionalNameMatches } from '../search/nameSearch.js'
 import { databaseOrderColumn, PROFESSIONAL_ORDER_COLUMNS } from '../search/orderColumn.js'
 import { licenseColumnsForDegrees } from '../licenses/professionalLicense.js'
 import { professionalFromRow, professionalWithFacilityIds } from '../services/mappersEntityService.js'
@@ -76,8 +77,8 @@ export function applyHpFilters<O>(
 ): SelectQueryBuilder<Database, 'hps', O> {
     let filtered = query
 
-    const queryText = listQueryValue(filters.query)
-    if (queryText) { filtered = filtered.where('hps.search_text', 'ilike', likeContainsPattern(queryText)) }
+    const nameWords = nameQueryWords(listQueryValue(filters.query) ?? '')
+    if (nameWords.length) { filtered = filtered.where(eb => professionalNameMatches(eb, nameWords)) }
     if (filters.degrees?.length) { filtered = filtered.where('hps.degrees', '@>', asJsonb(filters.degrees)) }
     if (filters.licenseReview) { filtered = filtered.where('hps.license_review', '=', filters.licenseReview) }
     if (filters.nameReview) { filtered = filtered.where('hps.name_review', '=', filters.nameReview) }
@@ -280,6 +281,11 @@ export async function searchProfessionals(
                 orderBy?.orderDirection === 'desc' ? 'desc' : 'asc'
             )
         } else {
+            // A typed name lists the exact matches before the near ones.
+            const nameWords = nameQueryWords(listQueryValue(filters.query) ?? '')
+            if (nameWords.length) {
+                hpSelect = hpSelect.orderBy(eb => professionalNameExact(eb, nameWords), 'desc')
+            }
             hpSelect = hpSelect.orderBy('hps.created_date', 'desc')
         }
         // Rows created together share a timestamp, so the id breaks ties and every page is stable.

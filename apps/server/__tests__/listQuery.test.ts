@@ -34,6 +34,6 @@ describe('listQueryValue', () => {
         expect(facilities.sql).toContain('"facilities"."search_text" ilike $1')
         expect(facilities.parameters).toEqual(['%Tokyo%'])
         expect(professionals.sql).toContain('"hps"."search_text" ilike $1')
-        expect(professionals.parameters).toEqual(['%Ada%'])
+        expect(professionals.parameters).toEqual(['%ada%'])
     })
 })
