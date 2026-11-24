@@ -3,6 +3,7 @@
 -- word, sit within one or two edits of one of its words (levenshtein from fuzzystrmatch).
 -- search_text also carries each name run together both ways (YamadaTaro, TaroYamada), so a
 -- Japanese name typed with no space (山田太郎) matches in either order.
+-- search_text is NFKC-normalized like the query, so half-width ﾀﾛｳ and タロウ match each other.
 --
 -- fuzzystrmatch goes in public: the API role has USAGE on public and none on extensions.
 
@@ -44,7 +45,7 @@ BEGIN
       END IF;
     END LOOP;
   END IF;
-  RETURN result;
+  RETURN normalize(result, NFKC);
 END;
 $$;
 

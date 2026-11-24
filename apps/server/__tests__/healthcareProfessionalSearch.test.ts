@@ -14,7 +14,7 @@ import {
     Specialty,
     UpdateFacilityInput
 } from '@findadoc/graphql'
-import { gqlApiUrl, sharedFacilityIds } from './testSetup.test.js'
+import { gqlApiUrl } from './testSetup.test.js'
 import { createFacilityMutation } from './facilities.test.js'
 import { createHealthcareProfessionalMutation } from './healthcareProfessional.test.js'
 
@@ -168,8 +168,10 @@ describe('searchHealthcareProfessionals: name query', () => {
     let exact: HealthcareProfessional
     let nearby: HealthcareProfessional
 
+    let facility: Facility
+
     const createNamed = async (firstName: string, japaneseFirstName: string) => {
-        const input = generateCreateProfessionalInput({ facilityIds: [sharedFacilityIds[0] ?? ''] })
+        const input = generateCreateProfessionalInput({ facilityIds: [facility.id] })
 
         input.names = [
             { firstName, lastName: 'Vexmarbury', locale: Locale.EnUs },
@@ -184,24 +186,28 @@ describe('searchHealthcareProfessionals: name query', () => {
         return result.body.data.createHealthcareProfessional as HealthcareProfessional
     }
 
+    // The test database keeps rows from earlier runs, so the search is limited to this run's facility.
     const foundIds = async (query: string) => {
         const result = await request(gqlApiUrl).post('').send({
             query: searchHealthcareProfessionalsWithCount,
-            variables: { filters: { query, limit: 20 } }
+            variables: { filters: { query, facilityIds: [facility.id], limit: 20 } }
         } as gqlRequest)
 
         expect(result.body.errors).toBeUndefined()
-        const ownIds = [exact.id, nearby.id]
-
-        // The test database keeps rows from earlier runs, so only this block's professionals count.
-        return (result.body.data.healthcareProfessionals as HealthcareProfessional[])
-            .map(p => p.id)
-            .filter(id => ownIds.includes(id))
+        return (result.body.data.healthcareProfessionals as HealthcareProfessional[]).map(p => p.id)
     }
 
     beforeAll(async () => {
+        const facilityResult = await request(gqlApiUrl).post('').send({
+            query: createFacilityMutation,
+            variables: { input: generateRandomCreateFacilityInput() }
+        } as gqlMutation<CreateFacilityInput>)
+
+        expect(facilityResult.body?.errors).toBeUndefined()
+        facility = facilityResult.body.data.createFacility as Facility
         exact = await createNamed('Quillon', '澪')
-        nearby = await createNamed('Quillan', '凛')
+        // Half-width katakana, which the name check accepts.
+        nearby = await createNamed('Quillan', 'ﾘﾝ')
     })
 
     test('matches first and last name in either order', async () => {
@@ -213,6 +219,11 @@ describe('searchHealthcareProfessionals: name query', () => {
     test('matches a Japanese name with or without a space, in either order', async () => {
         expect(await foundIds('鷺宮澪')).toEqual([exact.id])
         expect(await foundIds('澪　鷺宮')).toEqual([exact.id])
+    })
+
+    test('matches half-width and full-width katakana alike', async () => {
+        expect(await foundIds('ﾘﾝ')).toEqual([nearby.id])
+        expect(await foundIds('鷺宮リン')).toEqual([nearby.id])
     })
 
     test('forgives a typo in a romaji name and lists exact matches first', async () => {

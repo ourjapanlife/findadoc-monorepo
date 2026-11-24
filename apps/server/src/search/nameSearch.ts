@@ -5,6 +5,9 @@ import { likeContainsPattern } from './listQuery.js'
 /** More words than a name has is noise, and each word adds a scan of the row's words. */
 export const NAME_QUERY_MAX_WORDS = 8
 
+/** levenshtein_less_equal refuses a longer argument (fuzzystrmatch). */
+const LEVENSHTEIN_MAX_LENGTH = 255
+
 /** Romaji and other Latin-script words. Kana and kanji are matched exactly (see nameWordMaxEdits). */
 const LATIN_WORD = /^[\p{Script=Latin}'-]+$/u
 
@@ -24,7 +27,8 @@ export function nameQueryWords(query: string): string[] {
  * is a different name (山本 is not 山田).
  */
 export function nameWordMaxEdits(word: string): number {
-    if (!LATIN_WORD.test(word)) {
+    // NFKC can stretch a query word past the limit (ﬃ is three letters), so a long word matches exactly.
+    if (word.length > LEVENSHTEIN_MAX_LENGTH || !LATIN_WORD.test(word)) {
         return 0
     }
     if (word.length >= 8) {
@@ -50,7 +54,10 @@ function nameWordMatches(eb: ExpressionBuilder<Database, 'hps'>, word: string): 
 
     const nearWord = sql<SqlBool>`exists (
         select 1 from regexp_split_to_table(lower(${sql.ref('hps.search_text')}), ${'\\s+'}) as name_word(value)
-        where public.levenshtein_less_equal(name_word.value, ${word}, ${maxEdits}) <= ${maxEdits}
+        where case
+            when length(name_word.value) > ${LEVENSHTEIN_MAX_LENGTH} then false
+            else public.levenshtein_less_equal(name_word.value, ${word}, ${maxEdits}) <= ${maxEdits}
+        end
     )`
 
     return eb.or([containsWord(eb, word), nearWord])

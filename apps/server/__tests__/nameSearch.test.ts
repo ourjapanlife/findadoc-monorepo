@@ -32,6 +32,13 @@ describe('nameWordMaxEdits', () => {
         expect(nameWordMaxEdits('lovelace')).toBe(2)
     })
 
+    it('matches a word too long for levenshtein exactly', () => {
+        const stretched = nameQueryWords('ﬃ'.repeat(86))[0] ?? ''
+
+        expect(stretched).toHaveLength(258)
+        expect(nameWordMaxEdits(stretched)).toBe(0)
+    })
+
     it('matches kana and kanji exactly', () => {
         expect(nameWordMaxEdits('山本太郎です')).toBe(0)
         expect(nameWordMaxEdits('やまもとたろう')).toBe(0)
