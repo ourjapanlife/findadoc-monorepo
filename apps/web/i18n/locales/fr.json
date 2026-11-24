@@ -621,6 +621,14 @@
     "deleteConfirmationFacility": "Supprimer l’établissement {facility}, ID {id} ?",
     "deleteConfirmationHealthcareProfessional": "Supprimer le professionnel de santé {healthcareProfessional}, ID {id} ?"
   },
+  "modCopyId": {
+    "facilityId": "ID de l’établissement",
+    "healthcareProfessionalId": "ID du professionnel",
+    "copy": "Copier",
+    "copied": "Copié",
+    "copyFailed": "Impossible de copier l’ID. Sélectionnez-le et copiez-le à la main.",
+    "copyLabel": "Copier {label} {id}"
+  },
   "serverErrorMessages": {
     "genericErrorMessage": "Cela n’a pas fonctionné. Veuillez réessayer.",
     "facilityFieldsIncomplete": "Renseignez les champs obligatoires de l’établissement avant de continuer.",

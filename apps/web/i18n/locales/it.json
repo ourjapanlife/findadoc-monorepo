@@ -390,6 +390,14 @@
     "deleteConfirmationFacility": "Eliminare la struttura {facility}, ID {id}?",
     "deleteConfirmationHealthcareProfessional": "Eliminare il professionista sanitario {healthcareProfessional}, ID {id}?"
   },
+  "modCopyId": {
+    "facilityId": "ID struttura",
+    "healthcareProfessionalId": "ID professionista",
+    "copy": "Copia",
+    "copied": "Copiato",
+    "copyFailed": "Impossibile copiare l’ID. Selezionalo e copialo a mano.",
+    "copyLabel": "Copia {label} {id}"
+  },
   "modEditSubmissionTopNav": {
     "updateAndExit": "Aggiorna & Esci",
     "approve": "Approva",

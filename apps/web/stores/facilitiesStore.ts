@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, type Ref, reactive } from 'vue'
 import { gql } from 'graphql-request'
-import { fetchFacilitiesWithCount } from '../utils/graphqlHelpers'
+import { fetchFacilitiesWithCount, fetchFacilityById } from '../utils/graphqlHelpers'
 import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { facilitySelection } from '../utils/graphqlSelection'
 import type {
@@ -381,6 +381,34 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         ) ?? facilityData.value.find(
             (facility: Facility) => facility.id === facilityId
         )
+    }
+
+    // Counts loadSelectedFacility calls, so a slow answer for an older id is dropped.
+    let selectedFacilityLoads = 0
+
+    /**
+     * Selects the facility an edit form shows. The list in memory holds one page, so after a
+     * reload or a shared link the facility is fetched by id instead of opening an empty form.
+     * Returns undefined when it does not exist, the request failed, or a newer load started.
+     */
+    async function loadSelectedFacility(facilityId: string): Promise<Facility | undefined> {
+        const load = ++selectedFacilityLoads
+        setSelectedFacilityData(facilityId)
+        if (selectedFacilityData.value !== undefined) {
+            return selectedFacilityData.value
+        }
+        let loaded: Facility | undefined
+        try {
+            loaded = await fetchFacilityById(facilityId)
+        } catch (error) {
+            console.error(`Error fetching facility: ${JSON.stringify(error)}`)
+        }
+        if (load !== selectedFacilityLoads) {
+            return undefined
+        }
+        // eslint-disable-next-line require-atomic-updates -- the load counter above drops a stale answer
+        selectedFacilityData.value = loaded
+        return loaded
     }
 
     // eslint-disable-next-line complexity
@@ -773,6 +801,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         deleteFacility,
         selectedFacilityData,
         setSelectedFacilityData,
+        loadSelectedFacility,
         initializeFacilitySectionValues,
         resetFacilitySectionFields,
         resetCreateFacilityFields,

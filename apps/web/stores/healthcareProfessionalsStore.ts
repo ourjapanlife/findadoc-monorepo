@@ -2,7 +2,7 @@ import type { Maybe } from 'graphql/jsutils/Maybe'
 import { defineStore } from 'pinia'
 import { reactive, ref, type Ref, computed } from 'vue'
 import { gql } from 'graphql-request'
-import { fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
+import { fetchHealthcareProfessionalById, fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
 import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { professionalSelection } from '../utils/graphqlSelection'
 import { type Degree,
@@ -18,7 +18,6 @@ import { type Degree,
     RelationshipAction,
     type CreateHealthcareProfessionalInput,
     type MutationCreateHealthcareProfessionalArgs,
-    type Query,
     type UpdateHealthcareProfessionalInput } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import { stableStringify } from '~/utils/stableStringify'
@@ -157,6 +156,39 @@ export const useHealthcareProfessionalsStore = defineStore(
             if (foundHP) {
                 updateHealthcareProfessionalSectionFields(foundHP)
             }
+        }
+
+        // Counts loadSelectedHealthcareProfessional calls, so a slow answer for an older id is dropped.
+        let selectedHealthcareProfessionalLoads = 0
+
+        /**
+         * Selects the professional an edit form shows and fills its fields. After a reload or a
+         * shared link the professional may not be on the page in memory, so it is fetched by id.
+         * Returns undefined when it does not exist, the request failed, or a newer load started.
+         */
+        async function loadSelectedHealthcareProfessional(
+            healthcareProfessionalId: string
+        ): Promise<HealthcareProfessional | undefined> {
+            const load = ++selectedHealthcareProfessionalLoads
+            setSelectedHealthcareProfessional(healthcareProfessionalId)
+            if (selectedHealthcareProfessionalData.value !== undefined) {
+                return selectedHealthcareProfessionalData.value
+            }
+            let loaded: HealthcareProfessional | undefined
+            try {
+                loaded = await fetchHealthcareProfessionalById(healthcareProfessionalId)
+            } catch (error) {
+                console.error(`Error fetching healthcare professional: ${JSON.stringify(error)}`)
+            }
+            if (load !== selectedHealthcareProfessionalLoads) {
+                return undefined
+            }
+            // eslint-disable-next-line require-atomic-updates -- the load counter above drops a stale answer
+            selectedHealthcareProfessionalData.value = loaded
+            if (loaded !== undefined) {
+                updateHealthcareProfessionalSectionFields(loaded)
+            }
+            return loaded
         }
 
         function updateHealthcareProfessionalSectionFields(healthcareProfessional: HealthcareProfessional) {
@@ -499,6 +531,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             unsavedChangesResetTick,
             displayChosenLocaleForHealthcareProfessional,
             setSelectedHealthcareProfessional,
+            loadSelectedHealthcareProfessional,
             selectedHealthcareProfessionalData,
             createHealthcareProfessional,
             createHealthcareProfessionalSectionFields,
@@ -514,37 +547,6 @@ export const useHealthcareProfessionalsStore = defineStore(
         }
     }
 )
-
-export async function getHealthcareProfessionalById(id: string): Promise<HealthcareProfessional[]> {
-    try {
-        const queryData = {
-            healthcareProfessionalId: id
-        }
-        const result = await graphQLClientRequestWithRetry<Query>(
-            gqlClient.request.bind(gqlClient),
-            getHealthcareProfessionalByIdGqlQuery,
-            queryData,
-            { retryAmount: 1, abortAfterMs: 10000 }
-        )
-
-        if (!result.data?.healthcareProfessional) {
-            throw new Error(useTranslation('healthcareProfessionalsErrors.idDoesNotExist'))
-        }
-
-        return [result.data.healthcareProfessional]
-    } catch (error: unknown) {
-        console.error(useTranslation('healthcareProfessionalsErrors.retrievingById'), `${id}: ${JSON.stringify(error)}`)
-        return []
-    }
-}
-
-const getHealthcareProfessionalByIdGqlQuery = gql`
-    query HealthcareProfessionals($healthcareProfessionalId: ID!) {
-        healthcareProfessional(id: $healthcareProfessionalId) {
-            ${professionalSelection}
-        }
-    }
-`
 
 const updateHealthcareProfessionalGqlMutation = gql`
 mutation Mutation($id: ID!, $input: UpdateHealthcareProfessionalInput!) {

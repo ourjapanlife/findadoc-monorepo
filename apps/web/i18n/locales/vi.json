@@ -352,6 +352,14 @@
     "deleteConfirmationFacility": "Xóa cơ sở {facility}, ID: {id}?",
     "deleteConfirmationHealthcareProfessional": "Xóa nhân viên y tế {healthcareProfessional}, ID: {id}?"
   },
+  "modCopyId": {
+    "facilityId": "Mã cơ sở",
+    "healthcareProfessionalId": "Mã chuyên gia",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "copyFailed": "Không thể sao chép mã. Hãy chọn và sao chép thủ công.",
+    "copyLabel": "Sao chép {label} {id}"
+  },
   "modEditSubmissionTopNav": {
     "updateAndExit": "Lưu và thoát.",
     "approve": "Phê duyệt",

@@ -369,7 +369,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type Ref, ref, computed, onBeforeMount, onUnmounted, nextTick, watch } from 'vue'
+import { type Ref, ref, computed, onUnmounted, nextTick, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAppToast } from '~/composables/useAppToast'
 import { useRoute } from 'vue-router'
@@ -593,51 +593,60 @@ function applyEditCity(city: CityOption | null) {
     fields.cityJa = city.nameJa
 }
 
-onBeforeMount(async () => {
-    // This onBeforeMount can be skipped on other screens since this logic is handled there when active
-    if (moderationScreenStore.editSubmissionScreenIsActive()) {
-        isFacilitySectionInitialized.value = true
+const routeFacilityId = computed(() => (typeof route.params.id === 'string' ? route.params.id : ''))
+// Only the latest load may fill the form, so a slow answer for an older id is dropped.
+let facilitySectionLoads = 0
+
+/** Fills the form from the facility in the URL. A reload fetches it by id instead of starting empty. */
+async function initializeFacilitySection(id: string) {
+    const load = ++facilitySectionLoads
+    isFacilitySectionInitialized.value = false
+    // Leaving the edit route clears the id before this section unmounts. There is nothing to load.
+    if (!id) {
         return
     }
 
-    isFacilitySectionInitialized.value = false
-    // Wait for the route to be fully resolved
-
     loadingStore.setIsLoading(true)
-    await nextTick()
-    // Ensure the route param `id` is available before proceeding
-    const id = route.params.id
-    if (!id) {
-        console.error(t('modFacilitySection.errorMessageFacilityId'))
+    const [facility] = await Promise.all([
+        facilityStore.loadSelectedFacility(id),
+        healthcareProfessionalsStore.healthcareProfessionalsData.length
+            ? Promise.resolve()
+            : healthcareProfessionalsStore.getHealthcareProfessionals()
+    ])
+    if (load !== facilitySectionLoads) {
+        return
+    }
+    loadingStore.setIsLoading(false)
+    if (facility === undefined) {
         toast.error(t('modFacilitySection.errorMessageFacilityId'))
         return
     }
-    // This will fetch the facilities if sent here by link or a page is refreshed
-    if (!facilityStore.facilityData.length) {
-        await facilityStore.getFacilities()
-    }
-    // This will fetch the healthcare professionals if sent here by link or a page is refreshed
-    if (!healthcareProfessionalsStore.healthcareProfessionalsData.length) {
-        await healthcareProfessionalsStore.getHealthcareProfessionals()
-    }
-    facilityStore.selectedFacilityId = id as string
 
-    facilityStore.setSelectedFacilityData(facilityStore.selectedFacilityId)
-    facilityStore.initializeFacilitySectionValues(facilityStore.selectedFacilityData)
-
+    facilityStore.initializeFacilitySectionValues(facility)
     defaultHealthcareProfessionalSuggestions.value = healthcareProfessionalsStore.healthcareProfessionalsData
 
-    // Ensure UI updates are reflected with the autofill values
+    // Wait for the fields to render before the form counts as clean.
     await nextTick()
+    if (load !== facilitySectionLoads) {
+        return
+    }
     isFacilitySectionInitialized.value = true
     makeFacilityFormNonDirty()
     moderationSubmissionUnsavedStore.registerEditFormTryLeave(tryLeaveFacilityForm)
-    loadingStore.setIsLoading(false)
-    // Ensure UI updates are reflected
-    await nextTick()
-})
+}
+
+// The submission screen fills this section itself. Elsewhere the URL id drives it, so a reload
+// or a link to another record loads that record.
+if (moderationScreenStore.editSubmissionScreenIsActive()) {
+    isFacilitySectionInitialized.value = true
+} else {
+    watch(routeFacilityId, initializeFacilitySection, { immediate: true })
+}
 
 onUnmounted(() => {
+    // A load still in flight must not fill the next screen or leave the loader on.
+    facilitySectionLoads++
+    loadingStore.setIsLoading(false)
     moderationSubmissionUnsavedStore.registerEditFormTryLeave(null)
 })
 </script>

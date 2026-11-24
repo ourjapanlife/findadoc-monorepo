@@ -668,6 +668,14 @@
     "deleteConfirmationFacility": "Einrichtung {facility} mit der ID {id} wirklich löschen?",
     "deleteConfirmationHealthcareProfessional": "Gesundheitsfachkraft {healthcareProfessional} mit der ID {id} wirklich löschen?"
   },
+  "modCopyId": {
+    "facilityId": "Einrichtungs-ID",
+    "healthcareProfessionalId": "Fachkraft-ID",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "copyFailed": "Die ID konnte nicht kopiert werden. Markieren und kopieren Sie sie von Hand.",
+    "copyLabel": "{label} {id} kopieren"
+  },
   "serverErrorMessages": {
     "genericErrorMessage": "Das hat nicht funktioniert. Bitte versuchen Sie es erneut.",
     "facilityFieldsIncomplete": "Füllen Sie die Pflichtfelder der Klinik aus, bevor Sie fortfahren.",

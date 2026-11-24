@@ -114,6 +114,7 @@ import { ErrorCode } from '~/typedefs/serverResponse'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import { ModerationSubmissionActionType, useModerationSubmissionActions } from '~/composables/useModerationSubmissionActions'
 import { mapIdsToEntities } from '~/utils/moderationSearchUtils'
+import { fetchFacilityById, fetchHealthcareProfessionalsWithCount } from '~/utils/graphqlHelpers'
 import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
 import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
@@ -301,6 +302,52 @@ function createSubmissionDeepCopy(submissionData: Submission): Submission {
             spokenLanguages: hp.spokenLanguages ? [...hp.spokenLanguages] : [],
             facilityIds: hp.facilityIds ? [...hp.facilityIds] : []
         })) || []
+    }
+}
+
+// Only the latest fill may set the linked records, so a slow answer for an older submission is dropped.
+let linkedRecordLoads = 0
+
+/**
+ * The pickers keep only the first page in memory. After a reload a linked clinic or professional
+ * outside it would look unlinked, and approving would treat it as new, so those are read by id.
+ */
+async function loadMissingLinkedRecords() {
+    const load = ++linkedRecordLoads
+    const missingFacilityIds = healthcareProfessionalSectionFields.value.facilityIds
+        .filter(id => !currentFacilityRelations.value.some(facility => facility.id === id))
+    const missingProfessionalIds = facilitySectionFields.value.healthcareProfessionalIds
+        .filter(id => !currentExistingHealthcareProfessionals.value.some(professional => professional.id === id))
+    if (!missingFacilityIds.length && !missingProfessionalIds.length) {
+        return
+    }
+    try {
+        const [facilities, professionals] = await Promise.all([
+            Promise.all(missingFacilityIds.map(id => fetchFacilityById(id))),
+            missingProfessionalIds.length
+                ? fetchHealthcareProfessionalsWithCount({
+                    ids: missingProfessionalIds,
+                    offset: 0,
+                    limit: missingProfessionalIds.length
+                })
+                : Promise.resolve({ filteredSearchResults: [] as HealthcareProfessional[] })
+        ])
+        if (load !== linkedRecordLoads) {
+            return
+        }
+        currentFacilityRelations.value = mapIdsToEntities(
+            healthcareProfessionalSectionFields.value.facilityIds,
+            [
+                ...currentFacilityRelations.value,
+                ...facilities.filter((facility): facility is Facility => facility !== undefined)
+            ]
+        )
+        currentExistingHealthcareProfessionals.value = mapIdsToEntities(
+            facilitySectionFields.value.healthcareProfessionalIds,
+            [...currentExistingHealthcareProfessionals.value, ...professionals.filteredSearchResults]
+        )
+    } catch (error) {
+        console.error(`Error fetching linked records: ${JSON.stringify(error)}`)
     }
 }
 
@@ -706,6 +753,7 @@ onMounted(async () => {
     await nextTick()
 
     initializeSubmissionFormValues(moderationSubmissionStore.selectedSubmissionData)
+    await loadMissingLinkedRecords()
 
     await nextTick()
     makeNonDirty()

@@ -584,6 +584,14 @@
     "deleteConfirmationFacility": "医療機関「{facility}」（ID: {id}）を削除しますか？",
     "deleteConfirmationHealthcareProfessional": "医療従事者「{healthcareProfessional}」（ID: {id}）を削除しますか？"
   },
+  "modCopyId": {
+    "facilityId": "施設ID",
+    "healthcareProfessionalId": "医療従事者ID",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "copyFailed": "IDをコピーできませんでした。選択して手動でコピーしてください。",
+    "copyLabel": "{label} {id} をコピー"
+  },
   "serverErrorMessages": {
     "genericErrorMessage": "うまくいきませんでした。もう一度お試しください。",
     "facilityFieldsIncomplete": "続ける前に、必須の医療機関の項目を入力してください。",

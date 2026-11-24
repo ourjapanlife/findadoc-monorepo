@@ -82,6 +82,38 @@ export async function fetchFacilitiesWithCount(
 }
 
 /**
+ * Loads one facility by id. An edit form opened by a link or a reload has only the first
+ * page in memory, so a facility outside it would otherwise open as an empty form.
+ * Returns undefined when the id does not exist.
+ */
+export async function fetchFacilityById(id: string): Promise<Facility | undefined> {
+    const response = await graphQLClientRequestWithRetry<{ facility: Facility | null }>(
+        gqlClient.request.bind(gqlClient),
+        facilityByIdGqlQuery,
+        { id },
+        { retryAmount: 1, abortAfterMs: 15000 }
+    )
+    if (response.errors?.length) {
+        throw new Error('Failed to retrieve facility data.')
+    }
+    return response.data?.facility ?? undefined
+}
+
+/** Loads one healthcare professional by id, for the same reason as `fetchFacilityById`. */
+export async function fetchHealthcareProfessionalById(id: string): Promise<HealthcareProfessional | undefined> {
+    const response = await graphQLClientRequestWithRetry<{ healthcareProfessional: HealthcareProfessional | null }>(
+        gqlClient.request.bind(gqlClient),
+        healthcareProfessionalByIdGqlQuery,
+        { id },
+        { retryAmount: 1, abortAfterMs: 15000 }
+    )
+    if (response.errors?.length) {
+        throw new Error('Failed to retrieve healthcare professional data.')
+    }
+    return response.data?.healthcareProfessional ?? undefined
+}
+
+/**
  * Fetches a paginated list of submissions along with their total count.
  * This function is used to retrieve data from the submission service.
  */
@@ -132,6 +164,22 @@ export const facilitiesAndCountGqlQuery = gql`
             ${facilitySelection}
         }
         facilitiesTotalCount(filters: $countFilters)
+    }
+`
+
+const facilityByIdGqlQuery = gql`
+    query FacilityById($id: ID!) {
+        facility(id: $id) {
+            ${facilitySelection}
+        }
+    }
+`
+
+const healthcareProfessionalByIdGqlQuery = gql`
+    query HealthcareProfessionalById($id: ID!) {
+        healthcareProfessional(id: $id) {
+            ${professionalSelection}
+        }
     }
 `
 

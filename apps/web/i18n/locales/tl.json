@@ -352,6 +352,14 @@
     "deleteConfirmationFacility": "Burahin ang pasilidad na {facility}, ID: {id}?",
     "deleteConfirmationHealthcareProfessional": "Burahin ang propesyonal na {healthcareProfessional}, ID: {id}?"
   },
+  "modCopyId": {
+    "facilityId": "ID ng pasilidad",
+    "healthcareProfessionalId": "ID ng propesyonal",
+    "copy": "Kopyahin",
+    "copied": "Nakopya",
+    "copyFailed": "Hindi makopya ang ID. Piliin ito at kopyahin nang mano-mano.",
+    "copyLabel": "Kopyahin ang {label} {id}"
+  },
   "modEditSubmissionTopNav": {
     "updateAndExit": "I-Update at I-Exit",
     "approve": "Aprubado",

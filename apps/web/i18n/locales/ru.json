@@ -584,6 +584,14 @@
     "deleteConfirmationFacility": "Удалить учреждение {facility}, ID {id}?",
     "deleteConfirmationHealthcareProfessional": "Удалить специалиста {healthcareProfessional}, ID {id}?"
   },
+  "modCopyId": {
+    "facilityId": "ID учреждения",
+    "healthcareProfessionalId": "ID специалиста",
+    "copy": "Копировать",
+    "copied": "Скопировано",
+    "copyFailed": "Не удалось скопировать ID. Выделите и скопируйте его вручную.",
+    "copyLabel": "Копировать {label} {id}"
+  },
   "serverErrorMessages": {
     "genericErrorMessage": "Не удалось выполнить действие. Попробуйте ещё раз.",
     "facilityFieldsIncomplete": "Заполните обязательные поля клиники, прежде чем продолжить.",

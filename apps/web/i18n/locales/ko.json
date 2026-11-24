@@ -518,6 +518,14 @@
     "back": "뒤로",
     "hasUnsavedChanges": "저장하지 않은 변경 사항이 있습니다. 정말 나가시겠습니까?"
   },
+  "modCopyId": {
+    "facilityId": "시설 ID",
+    "healthcareProfessionalId": "의료인 ID",
+    "copy": "복사",
+    "copied": "복사됨",
+    "copyFailed": "ID를 복사할 수 없습니다. 선택해서 직접 복사하세요.",
+    "copyLabel": "{label} {id} 복사"
+  },
   "modEditSubmissionTopNav": {
     "update": "업데이트",
     "updateAndExit": "업데이트 후 나가기",
