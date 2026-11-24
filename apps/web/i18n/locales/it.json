@@ -628,7 +628,9 @@
     "placeholderTextNoteInput": "es. in attesa di una richiamata dalla clinica",
     "successMessageUpdated": "Invio aggiornato",
     "successMessageApproved": "Invio approvato",
-    "useExistingFacility": "Usa questa clinica"
+    "useExistingFacility": "Usa questa clinica",
+    "linkedRecordsFailed": "Impossibile caricare la struttura o il professionista collegato. Approvando ora verrebbe aggiunto come nuovo. Riprova.",
+    "retryLinkedRecords": "Riprova"
   },
   "specialties": {
     "allergyAndImmunology": "Allergologo/Allergologa",

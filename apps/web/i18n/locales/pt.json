@@ -426,7 +426,9 @@
     "placeholderTextNoteInput": "p. ex. aguardando retorno da clínica",
     "successMessageUpdated": "Envio atualizado",
     "successMessageApproved": "Envio aprovado",
-    "useExistingFacility": "Usar esta clínica"
+    "useExistingFacility": "Usar esta clínica",
+    "linkedRecordsFailed": "Não foi possível carregar a instituição ou o profissional vinculado. Aprovar agora o adicionaria como novo. Tente novamente.",
+    "retryLinkedRecords": "Tentar novamente"
   },
   "login": {
     "checkingauth": "Verificando a autenticação…",

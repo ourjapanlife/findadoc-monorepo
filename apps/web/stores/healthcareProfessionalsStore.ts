@@ -34,6 +34,7 @@ import { useLocaleStore } from '~/stores/localeStore'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { useTranslation } from '~/composables/useTranslation'
 import { toastModerationLoadError } from '~/utils/moderationListToast'
+import { fetchCorrectionFacilityNames, type CorrectionFacilityName } from '~/utils/moderationCorrections'
 import { hasServerErrors } from '~/utils/moderationUtils'
 
 function healthcareProfessionalUpdatePatch(
@@ -113,6 +114,8 @@ export const useHealthcareProfessionalsStore = defineStore(
         const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
         let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
         let professionalListRequest = 0
+        // Names of the clinics linked to professionals on the moderation list, by facility id.
+        const linkedFacilityNames: Ref<Record<string, CorrectionFacilityName>> = ref({})
         /** True while the latest list request is in flight, so the table shows Chiko instead of "no results". */
         const isListLoading: Ref<boolean> = ref(false)
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalHealthcareProfessionalsCount.value)
@@ -160,6 +163,11 @@ export const useHealthcareProfessionalsStore = defineStore(
 
         // Counts loadSelectedHealthcareProfessional calls, so a slow answer for an older id is dropped.
         let selectedHealthcareProfessionalLoads = 0
+
+        /** Drops a load still in flight, so it cannot fill the fields of the screen opened next. */
+        function cancelSelectedHealthcareProfessionalLoad() {
+            selectedHealthcareProfessionalLoads++
+        }
 
         /**
          * Selects the professional an edit form shows and fills its fields. After a reload or a
@@ -251,6 +259,22 @@ export const useHealthcareProfessionalsStore = defineStore(
             totalHealthcareProfessionalsCount.value = totalCount
         }
 
+        /** Loads the clinic names this page links to. A failure leaves the column empty, not the list. */
+        async function loadLinkedFacilityNames(professionals: readonly HealthcareProfessional[]) {
+            const missing = professionals
+                .flatMap(professional => professional.facilityIds)
+                .filter(id => linkedFacilityNames.value[id] === undefined)
+            if (missing.length === 0) {
+                return
+            }
+            try {
+                const names = await fetchCorrectionFacilityNames(missing)
+                linkedFacilityNames.value = { ...linkedFacilityNames.value, ...names }
+            } catch (error) {
+                console.error(`Error fetching linked facility names: ${JSON.stringify(error)}`)
+            }
+        }
+
         async function loadHealthcareProfessionalList() {
             const request = ++professionalListRequest
             isListLoading.value = true
@@ -273,6 +297,8 @@ export const useHealthcareProfessionalsStore = defineStore(
                         return { rows: filteredSearchResults, totalCount }
                     }
                 )
+                if (request !== professionalListRequest) return
+                await loadLinkedFacilityNames(page.rows)
                 if (request !== professionalListRequest) return
                 applyProfessionalPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
@@ -532,6 +558,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             displayChosenLocaleForHealthcareProfessional,
             setSelectedHealthcareProfessional,
             loadSelectedHealthcareProfessional,
+            cancelSelectedHealthcareProfessionalLoad,
+            linkedFacilityNames,
             selectedHealthcareProfessionalData,
             createHealthcareProfessional,
             createHealthcareProfessionalSectionFields,

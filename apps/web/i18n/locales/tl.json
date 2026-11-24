@@ -543,7 +543,9 @@
     "placeholderTextNoteInput": "hal. hinihintay ang tawag ng klinika",
     "successMessageUpdated": "Na-update ang pagsusumite",
     "successMessageApproved": "Naaprubahan ang pagsusumite",
-    "useExistingFacility": "Gamitin ang klinikang ito"
+    "useExistingFacility": "Gamitin ang klinikang ito",
+    "linkedRecordsFailed": "Hindi ma-load ang naka-link na pasilidad o propesyonal. Kapag inaprubahan ngayon, idaragdag ito bilang bago. Subukang muli.",
+    "retryLinkedRecords": "Subukang muli"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "Hindi ito natuloy. Pakisubukan muli.",

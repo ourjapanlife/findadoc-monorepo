@@ -756,7 +756,9 @@
     "rejectSubmissionConfirmationButton": "हो, विवरण अस्वीकार गर्नुहोस्",
     "successMessageUpdated": "विवरण सफलतापूर्वक अद्यावधिक गरियो",
     "successMessageApproved": "विवरण सफलतापूर्वक स्वीकृत गरियो",
-    "submissionRejected": "आवेदन अस्वीकार गरियो"
+    "submissionRejected": "आवेदन अस्वीकार गरियो",
+    "linkedRecordsFailed": "जोडिएको सुविधा वा स्वास्थ्यकर्मी लोड गर्न सकिएन। अहिले स्वीकृत गर्दा यसलाई नयाँ रूपमा थपिनेछ। फेरि प्रयास गर्नुहोस्।",
+    "retryLinkedRecords": "फेरि प्रयास गर्नुहोस्"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "बोल्ने भाषाहरू",

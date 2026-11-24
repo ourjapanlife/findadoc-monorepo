@@ -756,7 +756,9 @@
     "rejectSubmissionConfirmationButton": "Ya, tolak pengajuan ini",
     "successMessageUpdated": "Pengajuan berhasil diperbarui",
     "successMessageApproved": "Pengajuan berhasil disetujui",
-    "submissionRejected": "Pengajuan ditolak"
+    "submissionRejected": "Pengajuan ditolak",
+    "linkedRecordsFailed": "Fasilitas atau tenaga kesehatan yang tertaut tidak dapat dimuat. Menyetujui sekarang akan menambahkannya sebagai data baru. Coba lagi.",
+    "retryLinkedRecords": "Coba lagi"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Bahasa yang digunakan",

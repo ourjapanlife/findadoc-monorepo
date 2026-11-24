@@ -433,7 +433,9 @@
     "placeholderTextNoteInput": "例如：等待诊所回电",
     "successMessageUpdated": "提交已更新",
     "successMessageApproved": "提交已批准",
-    "useExistingFacility": "使用此医疗机构"
+    "useExistingFacility": "使用此医疗机构",
+    "linkedRecordsFailed": "无法加载关联的机构或医疗人员。现在批准会将其作为新记录添加。请重试。",
+    "retryLinkedRecords": "重试"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "医疗机构名称未知",

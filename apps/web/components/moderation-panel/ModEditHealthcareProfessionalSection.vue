@@ -187,16 +187,20 @@ async function initializeHealthcareProfessionalSection(id: string) {
 
 // The submission screen fills this section itself. Elsewhere the URL id drives it, so a reload
 // or a link to another record loads that record.
-if (moderationScreenStore.editSubmissionScreenIsActive()) {
-    isHealthcareProfessionalInitialized.value = true
-} else {
+const loadsFromRoute = !moderationScreenStore.editSubmissionScreenIsActive()
+if (loadsFromRoute) {
     watch(routeHealthcareProfessionalId, initializeHealthcareProfessionalSection, { immediate: true })
+} else {
+    isHealthcareProfessionalInitialized.value = true
 }
 
 onUnmounted(() => {
-    // A load still in flight must not fill the next screen or leave the loader on.
+    // A load still in flight must not fill the next screen, such as a submission's fields, or leave the loader on.
     healthcareProfessionalSectionLoads++
-    loadingStore.setIsLoading(false)
+    if (loadsFromRoute) {
+        hpStore.cancelSelectedHealthcareProfessionalLoad()
+        loadingStore.setIsLoading(false)
+    }
     moderationSubmissionUnsavedStore.registerEditFormTryLeave(null)
 })
 </script>

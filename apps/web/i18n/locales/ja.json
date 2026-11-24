@@ -433,7 +433,9 @@
     "labelModNoteInput": "モデレーターのメモ",
     "placeholderTextNoteInput": "例: クリニックからの折り返し待ち",
     "successMessageUpdated": "投稿を更新しました",
-    "successMessageApproved": "投稿を承認しました"
+    "successMessageApproved": "投稿を承認しました",
+    "linkedRecordsFailed": "紐づいた施設または医療従事者を読み込めませんでした。このまま承認すると新規として追加されます。もう一度お試しください。",
+    "retryLinkedRecords": "もう一度試す"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "医療機関名が不明",

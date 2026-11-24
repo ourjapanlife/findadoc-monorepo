@@ -622,6 +622,10 @@ async function initializeFacilitySection(id: string) {
         return
     }
 
+    // A pending add or remove belongs to the facility it was made on, not the one opened next.
+    // Cleared here, not in initializeFacilitySectionValues: a save calls that and must keep edits made meanwhile.
+    facilityStore.facilitySectionFields.healthProfessionalsRelations = []
+    selectedHealthcareProfessionals.value = []
     facilityStore.initializeFacilitySectionValues(facility)
     defaultHealthcareProfessionalSuggestions.value = healthcareProfessionalsStore.healthcareProfessionalsData
 
@@ -637,16 +641,20 @@ async function initializeFacilitySection(id: string) {
 
 // The submission screen fills this section itself. Elsewhere the URL id drives it, so a reload
 // or a link to another record loads that record.
-if (moderationScreenStore.editSubmissionScreenIsActive()) {
-    isFacilitySectionInitialized.value = true
-} else {
+const loadsFromRoute = !moderationScreenStore.editSubmissionScreenIsActive()
+if (loadsFromRoute) {
     watch(routeFacilityId, initializeFacilitySection, { immediate: true })
+} else {
+    isFacilitySectionInitialized.value = true
 }
 
 onUnmounted(() => {
     // A load still in flight must not fill the next screen or leave the loader on.
     facilitySectionLoads++
-    loadingStore.setIsLoading(false)
+    if (loadsFromRoute) {
+        facilityStore.cancelSelectedFacilityLoad()
+        loadingStore.setIsLoading(false)
+    }
     moderationSubmissionUnsavedStore.registerEditFormTryLeave(null)
 })
 </script>

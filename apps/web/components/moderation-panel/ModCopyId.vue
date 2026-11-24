@@ -39,7 +39,7 @@
         <span
             class="sr-only"
             aria-live="polite"
-        >{{ copied ? t('modCopyId.copied') : '' }}</span>
+        >{{ announcement }}</span>
     </button>
 </template>
 
@@ -60,7 +60,18 @@ const COPIED_FOR_MS = 2000
 const { t } = useI18n()
 const toast = useAppToast()
 const copied = ref(false)
+// Separate from `copied`: a second copy must change the live region's text, or it is not announced again.
+const announcement = ref('')
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
+let announceFrame: number | undefined
+
+function stopTimers() {
+    clearTimeout(copiedTimer)
+    if (announceFrame !== undefined) {
+        cancelAnimationFrame(announceFrame)
+        announceFrame = undefined
+    }
+}
 
 /** Moderators search by id, so the record's id is one click away. */
 async function copyId() {
@@ -70,19 +81,25 @@ async function copyId() {
         toast.error(t('modCopyId.copyFailed'))
         return
     }
+    stopTimers()
     copied.value = true
-    clearTimeout(copiedTimer)
+    announcement.value = ''
+    announceFrame = requestAnimationFrame(() => {
+        announceFrame = undefined
+        announcement.value = t('modCopyId.copied')
+    })
     copiedTimer = setTimeout(() => {
         copied.value = false
+        announcement.value = ''
     }, COPIED_FOR_MS)
 }
 
 // Another record on the same screen starts with the copy label again.
 watch(() => props.id, () => {
+    stopTimers()
     copied.value = false
+    announcement.value = ''
 })
 
-onUnmounted(() => {
-    clearTimeout(copiedTimer)
-})
+onUnmounted(stopTimers)
 </script>

@@ -1,6 +1,11 @@
 import { setActivePinia, createPinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
+import {
+    FacilityVerificationStatus,
+    Locale,
+    type Facility,
+    type HealthcareProfessional
+} from '@findadoc/graphql'
 
 const graphQLClientRequestWithRetry = vi.fn()
 
@@ -13,15 +18,34 @@ const { useFacilitiesStore } = await import('~/stores/facilitiesStore')
 const { useHealthcareProfessionalsStore } = await import('~/stores/healthcareProfessionalsStore')
 
 // Fake rows only.
-const FACILITY = { id: 'facility-off-first-page', nameEn: 'Example Clinic', nameJa: '例クリニック' } as Facility
+const FACILITY = {
+    id: 'facility-off-first-page',
+    nameEn: 'Example Clinic',
+    nameJa: '例クリニック',
+    bookingEnabled: false,
+    contact: { googleMapsUrl: 'https://maps.google.com/?cid=1', phone: '03-0000-0000' },
+    healthcareProfessionalIds: [],
+    online: false,
+    openingHours: [],
+    supportedLanguages: [],
+    verificationStatus: FacilityVerificationStatus.Unverified,
+    createdDate: '2026-11-01T00:00:00.000Z',
+    updatedDate: '2026-11-01T00:00:00.000Z'
+} satisfies Facility
 const PROFESSIONAL = {
     id: 'professional-off-first-page',
-    names: [],
-    facilityIds: [],
+    names: [
+        { firstName: 'Taro', lastName: 'Example', locale: Locale.EnUs },
+        { firstName: '太郎', lastName: '例', locale: Locale.JaJp }
+    ],
+    additionalCredentials: [],
     degrees: [],
+    facilityIds: [],
     specialties: [],
-    spokenLanguages: []
-} as unknown as HealthcareProfessional
+    spokenLanguages: [],
+    createdDate: '2026-11-01T00:00:00.000Z',
+    updatedDate: '2026-11-01T00:00:00.000Z'
+} satisfies HealthcareProfessional
 
 function variablesOf(call: unknown[]): Record<string, unknown> {
     return call[2] as Record<string, unknown>
@@ -79,6 +103,22 @@ describe('moderation edit forms after a reload', () => {
 
         expect(loaded?.id).toBe(PROFESSIONAL.id)
         expect(store.healthcareProfessionalSectionFields.id).toBe(PROFESSIONAL.id)
+        expect(store.healthcareProfessionalSectionFields.createdDate).toBe(PROFESSIONAL.createdDate)
+    })
+
+    it('drops a professional answer that lands after the editor left', async () => {
+        let answer: (value: unknown) => void = () => undefined
+        graphQLClientRequestWithRetry.mockImplementationOnce(() => new Promise(resolve => {
+            answer = resolve
+        }))
+        const store = useHealthcareProfessionalsStore()
+
+        const pending = store.loadSelectedHealthcareProfessional(PROFESSIONAL.id)
+        store.cancelSelectedHealthcareProfessionalLoad()
+        answer({ data: { healthcareProfessional: PROFESSIONAL } })
+
+        expect(await pending).toBeUndefined()
+        expect(store.healthcareProfessionalSectionFields.id).toBe('')
     })
 
     it('returns nothing for an id that does not exist', async () => {
@@ -87,5 +127,34 @@ describe('moderation edit forms after a reload', () => {
 
         expect(await store.loadSelectedHealthcareProfessional('missing')).toBeUndefined()
         expect(store.selectedHealthcareProfessionalData).toBeUndefined()
+    })
+})
+
+describe('professional moderation list', () => {
+    beforeEach(() => {
+        setActivePinia(createPinia())
+        graphQLClientRequestWithRetry.mockReset()
+    })
+
+    it('loads the names of the clinics each professional is linked to', async () => {
+        graphQLClientRequestWithRetry.mockImplementation((_request: unknown, _query: unknown, variables: unknown) => {
+            if (typeof variables === 'object' && variables !== null && 'listFilters' in variables) {
+                return Promise.resolve({
+                    data: {
+                        healthcareProfessionals: [{ ...PROFESSIONAL, facilityIds: [FACILITY.id] }],
+                        healthcareProfessionalsTotalCount: 1
+                    }
+                })
+            }
+            return Promise.resolve({
+                hasErrors: false,
+                data: { f0: { id: FACILITY.id, nameEn: FACILITY.nameEn, nameJa: FACILITY.nameJa } }
+            })
+        })
+        const store = useHealthcareProfessionalsStore()
+
+        await store.loadHealthcareProfessionalList()
+
+        expect(store.linkedFacilityNames[FACILITY.id]?.nameEn).toBe(FACILITY.nameEn)
     })
 })

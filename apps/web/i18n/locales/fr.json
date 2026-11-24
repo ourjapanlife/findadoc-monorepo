@@ -379,7 +379,9 @@
     "placeholderTextNoteInput": "p. ex. en attente d’un rappel de la clinique",
     "successMessageUpdated": "Soumission mise à jour",
     "successMessageApproved": "Soumission approuvée",
-    "useExistingFacility": "Utiliser cette clinique"
+    "useExistingFacility": "Utiliser cette clinique",
+    "linkedRecordsFailed": "L’établissement ou le professionnel lié n’a pas pu être chargé. L’approuver maintenant le créerait comme nouveau. Réessayez.",
+    "retryLinkedRecords": "Réessayer"
   },
   "login": {
     "checkingauth": "Vérification de l’authentification…",

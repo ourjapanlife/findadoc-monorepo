@@ -386,6 +386,11 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
     // Counts loadSelectedFacility calls, so a slow answer for an older id is dropped.
     let selectedFacilityLoads = 0
 
+    /** Drops a load still in flight, so it cannot select a facility on the screen opened next. */
+    function cancelSelectedFacilityLoad() {
+        selectedFacilityLoads++
+    }
+
     /**
      * Selects the facility an edit form shows. The list in memory holds one page, so after a
      * reload or a shared link the facility is fetched by id instead of opening an empty form.
@@ -802,6 +807,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         selectedFacilityData,
         setSelectedFacilityData,
         loadSelectedFacility,
+        cancelSelectedFacilityLoad,
         initializeFacilitySectionValues,
         resetFacilitySectionFields,
         resetCreateFacilityFields,

@@ -756,7 +756,9 @@
     "rejectSubmissionConfirmationButton": "예, 제보를 거절합니다",
     "successMessageUpdated": "제보가 업데이트되었습니다",
     "successMessageApproved": "제보가 승인되었습니다",
-    "useExistingFacility": "이 의료기관 사용"
+    "useExistingFacility": "이 의료기관 사용",
+    "linkedRecordsFailed": "연결된 시설 또는 의료인을 불러오지 못했습니다. 지금 승인하면 새 항목으로 추가됩니다. 다시 시도하세요.",
+    "retryLinkedRecords": "다시 시도"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "구사 언어",

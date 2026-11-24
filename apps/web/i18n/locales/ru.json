@@ -426,7 +426,9 @@
     "placeholderTextNoteInput": "напр. ждём звонка из клиники",
     "successMessageUpdated": "Заявка обновлена",
     "successMessageApproved": "Заявка одобрена",
-    "useExistingFacility": "Использовать эту клинику"
+    "useExistingFacility": "Использовать эту клинику",
+    "linkedRecordsFailed": "Не удалось загрузить связанное учреждение или специалиста. Одобрение сейчас добавит его как новое. Попробуйте ещё раз.",
+    "retryLinkedRecords": "Повторить"
   },
   "login": {
     "checkingauth": "Проверка входа…",

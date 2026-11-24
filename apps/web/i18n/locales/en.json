@@ -756,7 +756,9 @@
     "rejectSubmissionConfirmationMessage": "Are you sure you want to reject this submission?",
     "rejectSubmissionConfirmationButton": "Yes, reject the submission",
     "successMessageUpdated": "Submission updated successfully",
-    "successMessageApproved": "Submission approved successfully"
+    "successMessageApproved": "Submission approved successfully",
+    "linkedRecordsFailed": "The linked clinic or professional could not be loaded. Approving now would add it as new. Try again.",
+    "retryLinkedRecords": "Try again"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Spoken languages",
