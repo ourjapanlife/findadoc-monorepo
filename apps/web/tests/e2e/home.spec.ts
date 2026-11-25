@@ -120,11 +120,22 @@ test.describe('Home page', () => {
             expect(url.searchParams.get('prefecture')).toBe('tokyo')
         })
 
-        // Before hydration the whole-region option arrives as `prefecture=kanto`; search reads it as the region.
+        /*
+         * Before hydration the whole-region option arrives as `prefecture=kanto`; search reads it as the region.
+         * The app scripts are blocked so the submit is the browser's own GET, not the hydrated handler.
+         */
         test('a whole region picked before hydration still searches that region', async ({ page }) => {
-            await page.goto('/', { waitUntil: 'commit' })
+            await page.route('**/_nuxt/**', route => route.abort())
+            await page.goto('/')
             await page.getByTestId('home-area').selectOption('kanto')
+            const nativeSubmit = page.waitForRequest(request =>
+                request.isNavigationRequest() && new URL(request.url()).pathname.endsWith('/search'))
             await page.getByTestId('home-search-submit').click()
+            const submitted = new URL((await nativeSubmit).url())
+            expect(submitted.searchParams.get('prefecture')).toBe('kanto')
+
+            await page.unroute('**/_nuxt/**')
+            await page.goto(`${submitted.pathname}${submitted.search}`)
 
             await expect(page).toHaveURL(/[?&]region=kanto/)
             await expect(page.getByTestId('search-region')).toHaveValue('KANTO')
