@@ -23,6 +23,8 @@ describe('japanRegions', () => {
         expect(regionOfPrefecture('Tokyo')).toBe('KANTO')
         expect(regionOfPrefecture('osaka')).toBe('KANSAI')
         expect(regionOfPrefecture('沖縄県')).toBe('KYUSHU')
+        expect(regionOfPrefecture('niigata')).toBe('KOSHINETSU_HOKURIKU')
+        expect(regionOfPrefecture('三重県')).toBe('TOKAI')
         expect(regionOfPrefecture('Tōkyō')).toBe('KANTO')
         expect(regionOfPrefecture('Tokyo.')).toBe('KANTO')
         expect(regionOfPrefecture('Atlantis')).toBeUndefined()
@@ -36,11 +38,24 @@ describe('japanRegions', () => {
         expect(regionFromAreaValue(undefined)).toBeUndefined()
     })
 
+    it('groups prefectures like the SUUMO area picker', () => {
+        expect(JAPAN_REGIONS).toEqual([
+            'HOKKAIDO', 'TOHOKU', 'KANTO', 'KOSHINETSU_HOKURIKU', 'TOKAI', 'KANSAI', 'CHUGOKU', 'SHIKOKU', 'KYUSHU'
+        ])
+        expect(REGION_PREFECTURES.KOSHINETSU_HOKURIKU)
+            .toEqual(['Niigata', 'Toyama', 'Ishikawa', 'Fukui', 'Yamanashi', 'Nagano'])
+        expect(REGION_PREFECTURES.TOKAI).toEqual(['Gifu', 'Shizuoka', 'Aichi', 'Mie'])
+        expect(REGION_PREFECTURES.KANSAI).toEqual(['Shiga', 'Kyoto', 'Osaka', 'Hyogo', 'Nara', 'Wakayama'])
+    })
+
     it('reads a region from the URL and refuses anything else', () => {
         expect(parseRegion('kanto')).toBe('KANTO')
         expect(parseRegion('KYUSHU')).toBe('KYUSHU')
         expect(parseRegion('tokyo')).toBeUndefined()
         expect(regionSearchParam('HOKKAIDO')).toBe('hokkaido')
+        expect(regionSearchParam('KOSHINETSU_HOKURIKU')).toBe('koshinetsu-hokuriku')
+        expect(parseRegion('koshinetsu-hokuriku')).toBe('KOSHINETSU_HOKURIKU')
+        expect(parseRegion('chubu')).toBeUndefined()
     })
 
     it('narrows a prefecture list to one region and keeps all of it with no region', () => {

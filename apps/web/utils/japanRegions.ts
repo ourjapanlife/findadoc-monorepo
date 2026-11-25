@@ -1,15 +1,16 @@
 import { listPrefectureJapanEn, listPrefectureJapanJa } from './prefectureNames'
 
 /**
- * The eight regions search offers before a prefecture: region, then prefecture, then city.
- * This is the common eight-region split. Okinawa is filed with Kyushu, and Mie with Kansai,
- * because that is how people in Japan usually group them.
+ * The nine regions search offers before a prefecture: region, then prefecture, then city.
+ * They follow SUUMO's area picker, which people searching in Japan already know: Chubu is
+ * split into Koshinetsu & Hokuriku and Tokai, Mie is in Tokai, and Okinawa is with Kyushu.
  */
 export const JAPAN_REGION = {
     HOKKAIDO: 'HOKKAIDO',
     TOHOKU: 'TOHOKU',
     KANTO: 'KANTO',
-    CHUBU: 'CHUBU',
+    KOSHINETSU_HOKURIKU: 'KOSHINETSU_HOKURIKU',
+    TOKAI: 'TOKAI',
     KANSAI: 'KANSAI',
     CHUGOKU: 'CHUGOKU',
     SHIKOKU: 'SHIKOKU',
@@ -26,8 +27,9 @@ export const REGION_PREFECTURES: Readonly<Record<JapanRegion, readonly string[]>
     HOKKAIDO: ['Hokkaido'],
     TOHOKU: ['Aomori', 'Iwate', 'Miyagi', 'Akita', 'Yamagata', 'Fukushima'],
     KANTO: ['Ibaraki', 'Tochigi', 'Gunma', 'Saitama', 'Chiba', 'Tokyo', 'Kanagawa'],
-    CHUBU: ['Niigata', 'Toyama', 'Ishikawa', 'Fukui', 'Yamanashi', 'Nagano', 'Gifu', 'Shizuoka', 'Aichi'],
-    KANSAI: ['Mie', 'Shiga', 'Kyoto', 'Osaka', 'Hyogo', 'Nara', 'Wakayama'],
+    KOSHINETSU_HOKURIKU: ['Niigata', 'Toyama', 'Ishikawa', 'Fukui', 'Yamanashi', 'Nagano'],
+    TOKAI: ['Gifu', 'Shizuoka', 'Aichi', 'Mie'],
+    KANSAI: ['Shiga', 'Kyoto', 'Osaka', 'Hyogo', 'Nara', 'Wakayama'],
     CHUGOKU: ['Tottori', 'Shimane', 'Okayama', 'Hiroshima', 'Yamaguchi'],
     SHIKOKU: ['Tokushima', 'Kagawa', 'Ehime', 'Kochi'],
     KYUSHU: ['Fukuoka', 'Saga', 'Nagasaki', 'Kumamoto', 'Oita', 'Miyazaki', 'Kagoshima', 'Okinawa']
@@ -38,7 +40,8 @@ export const REGION_LABEL_KEYS: Readonly<Record<JapanRegion, string>> = {
     HOKKAIDO: 'regions.hokkaido',
     TOHOKU: 'regions.tohoku',
     KANTO: 'regions.kanto',
-    CHUBU: 'regions.chubu',
+    KOSHINETSU_HOKURIKU: 'regions.koshinetsuHokuriku',
+    TOKAI: 'regions.tokai',
     KANSAI: 'regions.kansai',
     CHUGOKU: 'regions.chugoku',
     SHIKOKU: 'regions.shikoku',
@@ -61,9 +64,9 @@ export function isJapanRegion(value: unknown): value is JapanRegion {
     return typeof value === 'string' && (JAPAN_REGIONS as readonly string[]).includes(value)
 }
 
-/** `kanto` in the URL. */
+/** `kanto` or `koshinetsu-hokuriku` in the URL, hyphenated like the other search params. */
 export function regionSearchParam(region: JapanRegion): string {
-    return region.toLowerCase()
+    return region.toLowerCase().replaceAll('_', '-')
 }
 
 /** A region from a URL param or an enum value, or undefined for anything else. */
@@ -71,7 +74,7 @@ export function parseRegion(raw: string | undefined): JapanRegion | undefined {
     if (raw === undefined) {
         return undefined
     }
-    const upper = raw.trim().toUpperCase()
+    const upper = raw.trim().toUpperCase().replaceAll('-', '_')
     return isJapanRegion(upper) ? upper : undefined
 }
 
