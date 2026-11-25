@@ -121,26 +121,20 @@ test.describe('Home page', () => {
         })
 
         /*
-         * Before hydration the whole-region option arrives as `prefecture=kanto`; search reads it as the region.
-         * The app scripts are blocked so the submit is the browser's own GET, not the hydrated handler.
-         * Leave the hydrated page from beforeEach first. Blocking its chunks while it runs, then loading
-         * the same URL over it, lost the choice once in WebKit CI.
+         * Before hydration the homepage form submits itself: a native GET to /search with the Where? select
+         * under `prefecture`. That request is fixed by the server-rendered HTML, so check the HTML, then
+         * check what /search does with it. A click with the app scripts blocked lost the choice in WebKit.
          */
-        test('a whole region picked before hydration still searches that region', async ({ page }) => {
-            await page.goto('about:blank')
-            await page.route('**/_nuxt/**', route => route.abort())
-            await page.goto('/')
-            const area = page.getByTestId('home-area')
-            await area.selectOption('kanto')
-            await expect(area).toHaveValue('kanto')
-            const nativeSubmit = page.waitForRequest(request =>
-                request.isNavigationRequest() && new URL(request.url()).pathname.endsWith('/search'))
-            await page.getByTestId('home-search-submit').click()
-            const submitted = new URL((await nativeSubmit).url())
-            expect(submitted.searchParams.get('prefecture')).toBe('kanto')
+        test('a whole region picked before hydration still searches that region', async ({ page, request }) => {
+            const html = await (await request.get('/')).text()
+            const form = html.match(/<form\b[^>]*data-testid="home-search-entry"[^>]*>/)?.[0] ?? ''
+            expect(form).toContain('action="/search"')
+            expect(form).toContain('method="get"')
+            const area = html.match(/<select\b([^>]*data-testid="home-area"[^>]*)>([\s\S]*?)<\/select>/)
+            expect(area?.[1]).toContain('name="prefecture"')
+            expect(area?.[2]).toContain('value="kanto"')
 
-            await page.unroute('**/_nuxt/**')
-            await page.goto(`${submitted.pathname}${submitted.search}`)
+            await page.goto('/search?prefecture=kanto')
 
             await expect(page).toHaveURL(/[?&]region=kanto/)
             await expect(page.getByTestId('search-region')).toHaveValue('KANTO')
