@@ -123,11 +123,16 @@ test.describe('Home page', () => {
         /*
          * Before hydration the whole-region option arrives as `prefecture=kanto`; search reads it as the region.
          * The app scripts are blocked so the submit is the browser's own GET, not the hydrated handler.
+         * Leave the hydrated page from beforeEach first. Blocking its chunks while it runs, then loading
+         * the same URL over it, lost the choice once in WebKit CI.
          */
         test('a whole region picked before hydration still searches that region', async ({ page }) => {
+            await page.goto('about:blank')
             await page.route('**/_nuxt/**', route => route.abort())
             await page.goto('/')
-            await page.getByTestId('home-area').selectOption('kanto')
+            const area = page.getByTestId('home-area')
+            await area.selectOption('kanto')
+            await expect(area).toHaveValue('kanto')
             const nativeSubmit = page.waitForRequest(request =>
                 request.isNavigationRequest() && new URL(request.url()).pathname.endsWith('/search'))
             await page.getByTestId('home-search-submit').click()
