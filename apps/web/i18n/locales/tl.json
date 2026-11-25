@@ -725,6 +725,17 @@
     "pharmacyAndGenetics": "Parmasya at Henetika",
     "surgeryAndAnesthesia": "Operasyon at Anestisya"
   },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "koshinetsuHokuriku": "Koshinetsu at Hokuriku",
+    "tokai": "Tokai",
+    "kansai": "Kansai",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu at Okinawa"
+  },
   "noteInputField": {
     "optional": "(opsyonal)"
   },
@@ -823,6 +834,10 @@
     "searchLanguageLabel": "Sa anong wika?",
     "searchAreaLabel": "Saan?",
     "searchAnyArea": "Kahit saan sa Japan",
+    "searchWholeRegion": "Buong {region}",
+    "searchPrefectureLabel": "Prepektura",
+    "searchAnyPrefecture": "Anumang prepektura",
+    "searchAnyPrefectureInRegion": "Kahit saan sa rehiyong ito",
     "searchCityLabel": "Lungsod",
     "searchAnyCity": "Anumang lungsod",
     "searchAnyLanguage": "Kahit anong wika",

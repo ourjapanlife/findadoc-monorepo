@@ -89,6 +89,20 @@ test.describe('Home page', () => {
             expect(url.searchParams.get('prefecture')).toBe('tokyo')
         })
 
+        test('the search entry can search a whole region', async ({ page }) => {
+            const area = page.getByTestId('home-area')
+            await expect(area.locator('optgroup').filter({ has: page.locator('option[value="tokyo"]') })
+                .locator('option').first()).toHaveAttribute('value', 'kanto')
+
+            await area.selectOption('kanto')
+            await page.getByTestId('home-search-submit').click()
+
+            await expect(page).toHaveURL(/\/search\?/)
+            const url = new URL(page.url())
+            expect(url.searchParams.get('region')).toBe('kanto')
+            expect(url.searchParams.get('prefecture')).toBeNull()
+        })
+
         /*
          * The homepage is prerendered, so the form is clickable before Vue hydrates.
          * Submitting at that moment must still reach /search with the filters rather
@@ -104,6 +118,27 @@ test.describe('Home page', () => {
             const url = new URL(page.url())
             expect(url.searchParams.get('specialty')).toBe('dentistry')
             expect(url.searchParams.get('prefecture')).toBe('tokyo')
+        })
+
+        /*
+         * Before hydration the homepage form submits itself: a native GET to /search with the Where? select
+         * under `prefecture`. That request is fixed by the server-rendered HTML, so check the HTML, then
+         * check what /search does with it. A click with the app scripts blocked lost the choice in WebKit.
+         */
+        test('a whole region picked before hydration still searches that region', async ({ page, request }) => {
+            const html = await (await request.get('/')).text()
+            const form = html.match(/<form\b[^>]*data-testid="home-search-entry"[^>]*>/)?.[0] ?? ''
+            expect(form).toContain('action="/search"')
+            expect(form).toContain('method="get"')
+            const area = html.match(/<select\b([^>]*data-testid="home-area"[^>]*)>([\s\S]*?)<\/select>/)
+            expect(area?.[1]).toContain('name="prefecture"')
+            expect(area?.[2]).toContain('value="kanto"')
+
+            await page.goto('/search?prefecture=kanto')
+
+            await expect(page).toHaveURL(/[?&]region=kanto/)
+            await expect(page.getByTestId('search-region')).toHaveValue('KANTO')
+            expect(new URL(page.url()).searchParams.get('prefecture')).toBeNull()
         })
 
         test('a category tile prefers an indexable specialty facet', async ({ page }) => {

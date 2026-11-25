@@ -725,6 +725,17 @@
     "pharmacyAndGenetics": "Dược và di truyền",
     "surgeryAndAnesthesia": "Phẫu thuật và gây mê"
   },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "koshinetsuHokuriku": "Koshinetsu và Hokuriku",
+    "tokai": "Tokai",
+    "kansai": "Kansai",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu và Okinawa"
+  },
   "noteInputField": {
     "optional": "(không bắt buộc)"
   },
@@ -823,6 +834,10 @@
     "searchLanguageLabel": "Bằng ngôn ngữ nào?",
     "searchAreaLabel": "Ở đâu?",
     "searchAnyArea": "Toàn Nhật Bản",
+    "searchWholeRegion": "Toàn vùng {region}",
+    "searchPrefectureLabel": "Tỉnh",
+    "searchAnyPrefecture": "Mọi tỉnh",
+    "searchAnyPrefectureInRegion": "Mọi nơi trong vùng này",
     "searchCityLabel": "Thành phố",
     "searchAnyCity": "Mọi thành phố",
     "searchAnyLanguage": "Mọi ngôn ngữ",

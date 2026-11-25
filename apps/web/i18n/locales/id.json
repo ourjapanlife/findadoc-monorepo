@@ -79,6 +79,10 @@
     "searchLanguageLabel": "Dalam bahasa apa?",
     "searchAreaLabel": "Di mana?",
     "searchAnyArea": "Di mana saja di Jepang",
+    "searchWholeRegion": "Seluruh {region}",
+    "searchPrefectureLabel": "Prefektur",
+    "searchAnyPrefecture": "Semua prefektur",
+    "searchAnyPrefectureInRegion": "Di mana saja di wilayah ini",
     "searchCityLabel": "Kota",
     "searchAnyCity": "Semua kota",
     "searchAnyLanguage": "Semua bahasa",
@@ -444,6 +448,17 @@
     "lungsAndBreathing": "Paru dan Pernapasan",
     "pharmacyAndGenetics": "Farmasi dan Genetika",
     "surgeryAndAnesthesia": "Bedah dan Anestesi"
+  },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "koshinetsuHokuriku": "Koshinetsu dan Hokuriku",
+    "tokai": "Tokai",
+    "kansai": "Kansai",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu dan Okinawa"
   },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Keluar tanpa menyimpan",

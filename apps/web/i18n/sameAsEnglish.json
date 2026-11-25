@@ -28,7 +28,14 @@
     "paymentOptions.brands.jcb",
     "paymentOptions.brands.dinersClub",
     "paymentOptions.brands.unionPay",
-    "paymentOptions.brands.payPay"
+    "paymentOptions.brands.payPay",
+    "regions.hokkaido",
+    "regions.tohoku",
+    "regions.kanto",
+    "regions.tokai",
+    "regions.kansai",
+    "regions.chugoku",
+    "regions.shikoku"
   ],
   "fr": [
     "common.menu",

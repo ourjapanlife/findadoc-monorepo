@@ -363,6 +363,17 @@
     "pharmacyAndGenetics": "Apotheke und Genetik",
     "surgeryAndAnesthesia": "Chirurgie und Anästhesie"
   },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "koshinetsuHokuriku": "Koshinetsu und Hokuriku",
+    "tokai": "Tokai",
+    "kansai": "Kansai",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu und Okinawa"
+  },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Verlassen ohne zu Speichern",
     "create": "Erstellen",
@@ -823,6 +834,10 @@
     "searchLanguageLabel": "In welcher Sprache?",
     "searchAreaLabel": "Wo?",
     "searchAnyArea": "Überall in Japan",
+    "searchWholeRegion": "Ganz {region}",
+    "searchPrefectureLabel": "Präfektur",
+    "searchAnyPrefecture": "Beliebige Präfektur",
+    "searchAnyPrefectureInRegion": "Überall in dieser Region",
     "searchCityLabel": "Stadt",
     "searchAnyCity": "Beliebige Stadt",
     "searchAnyLanguage": "Beliebige Sprache",

@@ -8,6 +8,7 @@ import {
     prefectureOptionLabel,
     SEARCHABLE_LANGUAGES,
     TOP_PREFECTURES,
+    totalFacilities,
     type PrefectureEntry
 } from '@/utils/homeDirectory'
 import { Specialty, Locale } from '@findadoc/graphql'
@@ -43,6 +44,19 @@ describe('prefectureOptionLabel', () => {
         expect(prefectureOptionLabel({ name: 'Hiroshima', nameJa: '広島県', approximateFacilities: 24 }, true))
             .to.equal('広島県 (24)')
         expect(prefectureOptionLabel({ name: 'Hiroshima', nameJa: '広島県' }, false)).to.equal('Hiroshima')
+    })
+})
+
+describe('totalFacilities', () => {
+    it('sums a region only when every prefecture has a count', () => {
+        expect(totalFacilities([
+            { name: 'Osaka', nameJa: '大阪府', approximateFacilities: 30 },
+            { name: 'Kyoto', nameJa: '京都府', approximateFacilities: 12 }
+        ])).to.equal(42)
+        expect(totalFacilities([
+            { name: 'Osaka', nameJa: '大阪府', approximateFacilities: 30 },
+            { name: 'Kyoto', nameJa: '京都府' }
+        ])).to.equal(undefined)
     })
 })
 

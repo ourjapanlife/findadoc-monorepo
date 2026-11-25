@@ -725,6 +725,17 @@
     "pharmacyAndGenetics": "Аптека и генетика",
     "surgeryAndAnesthesia": "Хирургия и анестезия"
   },
+  "regions": {
+    "hokkaido": "Хоккайдо",
+    "tohoku": "Тохоку",
+    "kanto": "Канто",
+    "koshinetsuHokuriku": "Косинэцу и Хокурику",
+    "tokai": "Токай",
+    "kansai": "Кансай",
+    "chugoku": "Тюгоку",
+    "shikoku": "Сикоку",
+    "kyushu": "Кюсю и Окинава"
+  },
   "noteInputField": {
     "optional": "(необязательно)"
   },
@@ -823,6 +834,10 @@
     "searchLanguageLabel": "На каком языке?",
     "searchAreaLabel": "Где?",
     "searchAnyArea": "По всей Японии",
+    "searchWholeRegion": "Весь регион {region}",
+    "searchPrefectureLabel": "Префектура",
+    "searchAnyPrefecture": "Любая префектура",
+    "searchAnyPrefectureInRegion": "Везде в этом регионе",
     "searchCityLabel": "Город",
     "searchAnyCity": "Любой город",
     "searchAnyLanguage": "Любой язык",
