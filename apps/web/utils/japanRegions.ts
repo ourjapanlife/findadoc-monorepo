@@ -77,7 +77,8 @@ export function parseRegion(raw: string | undefined): JapanRegion | undefined {
 
 /**
  * The region a prefecture belongs to, from its English name, its URL slug (`tokyo`), or its
- * Japanese name (`東京都`). Macrons and other accents are ignored (`Tōkyō`). Undefined for anything that is not one of the 47.
+ * Japanese name (`東京都`). Accents and stray punctuation are ignored (`Tōkyō`, `Tokyo.`).
+ * Undefined for anything that is not one of the 47.
  */
 export function regionOfPrefecture(prefecture: string | null | undefined): JapanRegion | undefined {
     if (prefecture === null || prefecture === undefined) {
@@ -87,9 +88,17 @@ export function regionOfPrefecture(prefecture: string | null | undefined): Japan
     return REGION_BY_PREFECTURE.get(foldLatin(trimmed)) ?? REGION_BY_PREFECTURE.get(trimmed)
 }
 
-/** `Tōkyō` → `tokyo`, the same folding the prefecture filter's slugs use, so both filters agree. */
+/**
+ * `Tōkyō` or `Tokyo.` → `tokyo`: the same folding as `slugify` in `searchDirectory.ts`, so the
+ * region filter agrees with the prefecture filter on the same name.
+ */
 function foldLatin(value: string): string {
-    return value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    return value
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+        .replace(/^-+|-+$/g, '')
 }
 
 /** The entries whose prefecture is in the region, in their given order. No region keeps them all. */

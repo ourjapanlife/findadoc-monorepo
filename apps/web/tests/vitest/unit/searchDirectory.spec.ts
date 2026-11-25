@@ -405,6 +405,15 @@ describe('region', () => {
             .toEqual(['macron-clinic'])
     })
 
+    it('agrees with the prefecture filter on an English name with trailing punctuation', () => {
+        const punctuated = [facility('dotted-clinic', [], { prefectureEn: 'Tokyo.', prefectureJa: undefined })]
+
+        expect(filterDirectory(punctuated, [], { prefecture: 'tokyo' }).map(result => result.id))
+            .toEqual(['dotted-clinic'])
+        expect(filterDirectory(punctuated, [], { region: 'KANTO' }).map(result => result.id))
+            .toEqual(['dotted-clinic'])
+    })
+
     it('round-trips the region through the URL and counts it as a filter', () => {
         const query = buildSearchQuery({ region: 'KYUSHU' })
 

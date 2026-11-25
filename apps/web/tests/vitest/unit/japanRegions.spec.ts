@@ -23,6 +23,7 @@ describe('japanRegions', () => {
         expect(regionOfPrefecture('osaka')).toBe('KANSAI')
         expect(regionOfPrefecture('沖縄県')).toBe('KYUSHU')
         expect(regionOfPrefecture('Tōkyō')).toBe('KANTO')
+        expect(regionOfPrefecture('Tokyo.')).toBe('KANTO')
         expect(regionOfPrefecture('Atlantis')).toBeUndefined()
         expect(regionOfPrefecture(undefined)).toBeUndefined()
     })
