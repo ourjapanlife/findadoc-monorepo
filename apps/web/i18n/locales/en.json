@@ -79,6 +79,7 @@
     "searchLanguageLabel": "In which language?",
     "searchAreaLabel": "Where?",
     "searchAnyArea": "Anywhere in Japan",
+    "searchWholeRegion": "All of {region}",
     "searchPrefectureLabel": "Prefecture",
     "searchAnyPrefecture": "Any prefecture",
     "searchAnyPrefectureInRegion": "Anywhere in this region",

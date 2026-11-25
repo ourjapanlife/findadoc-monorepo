@@ -37,7 +37,7 @@ describe('track', () => {
     it('sends each catalog event with only its own properties', () => {
         const sent = installTracker()
 
-        track('Search submitted', { has_specialty: 'yes', has_language: 'no', has_prefecture: 'no' })
+        track('Search submitted', { has_specialty: 'yes', has_language: 'no', has_region: 'yes', has_prefecture: 'no' })
         track('Browse clicked', { kind: 'specialty' })
         track('Filters opened')
         track('Filters changed', {

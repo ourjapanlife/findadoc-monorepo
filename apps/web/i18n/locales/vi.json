@@ -833,6 +833,7 @@
     "searchLanguageLabel": "Bằng ngôn ngữ nào?",
     "searchAreaLabel": "Ở đâu?",
     "searchAnyArea": "Toàn Nhật Bản",
+    "searchWholeRegion": "Toàn vùng {region}",
     "searchPrefectureLabel": "Tỉnh",
     "searchAnyPrefecture": "Mọi tỉnh",
     "searchAnyPrefectureInRegion": "Mọi nơi trong vùng này",

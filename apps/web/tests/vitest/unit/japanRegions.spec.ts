@@ -4,6 +4,7 @@ import {
     REGION_PREFECTURES,
     parseRegion,
     prefecturesInRegion,
+    regionFromAreaValue,
     regionOfPrefecture,
     regionSearchParam,
     regionsWithPrefectures
@@ -26,6 +27,13 @@ describe('japanRegions', () => {
         expect(regionOfPrefecture('Tokyo.')).toBe('KANTO')
         expect(regionOfPrefecture('Atlantis')).toBeUndefined()
         expect(regionOfPrefecture(undefined)).toBeUndefined()
+    })
+
+    it('reads a whole-region area value, and leaves a prefecture to be a prefecture', () => {
+        expect(regionFromAreaValue('kanto')).toBe('KANTO')
+        expect(regionFromAreaValue('hokkaido')).toBeUndefined()
+        expect(regionFromAreaValue('tokyo')).toBeUndefined()
+        expect(regionFromAreaValue(undefined)).toBeUndefined()
     })
 
     it('reads a region from the URL and refuses anything else', () => {

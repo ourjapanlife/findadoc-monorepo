@@ -833,6 +833,7 @@
     "searchLanguageLabel": "Sa anong wika?",
     "searchAreaLabel": "Saan?",
     "searchAnyArea": "Kahit saan sa Japan",
+    "searchWholeRegion": "Buong {region}",
     "searchPrefectureLabel": "Prepektura",
     "searchAnyPrefecture": "Anumang prepektura",
     "searchAnyPrefectureInRegion": "Kahit saan sa rehiyong ito",

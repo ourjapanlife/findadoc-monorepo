@@ -79,6 +79,7 @@
     "searchLanguageLabel": "어떤 언어로 진료받으시겠어요?",
     "searchAreaLabel": "어느 지역인가요?",
     "searchAnyArea": "일본 전역",
+    "searchWholeRegion": "{region} 전체",
     "searchPrefectureLabel": "도도부현",
     "searchAnyPrefecture": "모든 도도부현",
     "searchAnyPrefectureInRegion": "이 지방 전체",

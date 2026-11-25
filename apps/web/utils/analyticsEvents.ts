@@ -45,6 +45,7 @@ export const eventCatalog = {
     'Search submitted': {
         has_specialty: YES_NO,
         has_language: YES_NO,
+        has_region: YES_NO,
         has_prefecture: YES_NO
     },
     'Browse clicked': {
@@ -176,11 +177,13 @@ export function yesNo(value: boolean): 'yes' | 'no' {
 export function searchSubmittedProps(input: {
     specialty: boolean
     language: boolean
+    region: boolean
     prefecture: boolean
 }): EventProps['Search submitted'] {
     return {
         has_specialty: yesNo(input.specialty),
         has_language: yesNo(input.language),
+        has_region: yesNo(input.region),
         has_prefecture: yesNo(input.prefecture)
     }
 }

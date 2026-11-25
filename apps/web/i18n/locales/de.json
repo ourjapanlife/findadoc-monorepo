@@ -833,6 +833,7 @@
     "searchLanguageLabel": "In welcher Sprache?",
     "searchAreaLabel": "Wo?",
     "searchAnyArea": "Überall in Japan",
+    "searchWholeRegion": "Ganz {region}",
     "searchPrefectureLabel": "Präfektur",
     "searchAnyPrefecture": "Beliebige Präfektur",
     "searchAnyPrefectureInRegion": "Überall in dieser Region",

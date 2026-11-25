@@ -79,6 +79,7 @@
     "searchLanguageLabel": "कुन भाषामा?",
     "searchAreaLabel": "कहाँ?",
     "searchAnyArea": "जापानको जुनसुकै ठाउँ",
+    "searchWholeRegion": "सम्पूर्ण {region}",
     "searchPrefectureLabel": "प्रिफेक्चर",
     "searchAnyPrefecture": "जुनसुकै प्रिफेक्चर",
     "searchAnyPrefectureInRegion": "यो क्षेत्रमा जहाँसुकै",

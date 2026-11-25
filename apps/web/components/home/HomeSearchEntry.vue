@@ -82,12 +82,22 @@
                 <option value="">
                     {{ t('home.searchAnyArea') }}
                 </option>
-                <!-- Prefectures under their region, so the list reads north to south by area. -->
+                <!--
+                    Prefectures under their region, north to south. A region of several prefectures
+                    starts with a whole-region option, so a search can cover just that area.
+                -->
                 <optgroup
                     v-for="group in prefectureGroups"
                     :key="group.region"
                     :label="t(REGION_LABEL_KEYS[group.region])"
                 >
+                    <option
+                        v-if="group.wholeRegion"
+                        :value="group.wholeRegion.value"
+                        :data-testid="`home-area-region-${group.wholeRegion.value}`"
+                    >
+                        {{ group.wholeRegion.label }}
+                    </option>
                     <option
                         v-for="prefecture in group.prefectures"
                         :key="prefecture.name"
@@ -111,6 +121,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import type { PrefectureEntry } from '~/utils/homeDirectory'
 import { useI18n } from 'vue-i18n'
 import { navigateTo } from '#imports'
 import { useUmami } from '~/composables/useUmamiTracking'
@@ -118,12 +129,20 @@ import { searchSubmittedProps } from '~/utils/analyticsEvents'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
 import { languageName } from '~/utils/languageName'
-import { SEARCHABLE_LANGUAGES, prefectureOptionLabel } from '~/utils/homeDirectory'
+import { SEARCHABLE_LANGUAGES, prefectureOptionLabel, totalFacilities } from '~/utils/homeDirectory'
 import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
 import { groupOptions, specialtiesForGroup } from '~/utils/specialtyPicker'
 import { CATEGORY_LABEL_KEYS } from '~/utils/specialtyLabelKeys'
 import { useDirectoryCoverage } from '~/composables/useDirectoryCoverage'
-import { REGION_LABEL_KEYS, prefecturesInRegion, regionsWithPrefectures } from '~/utils/japanRegions'
+import {
+    REGION_LABEL_KEYS,
+    REGION_PREFECTURES,
+    prefecturesInRegion,
+    regionFromAreaValue,
+    regionSearchParam,
+    regionsWithPrefectures,
+    type JapanRegion
+} from '~/utils/japanRegions'
 
 // The template compares vue-i18n's locale, not localeStore: the store only updates when someone
 // uses the language picker, so a direct Japanese load would still read en-US. i18n says "ja-JP".
@@ -134,8 +153,24 @@ const { track } = useUmami()
 // The homepage has no prefecture of its own, so only the country-wide lists load.
 const { prefectures, specialties: availableSpecialties } = useDirectoryCoverage(ref(''))
 
+/** "All of Kanto (120)". Hokkaido is one prefecture, so its prefecture option already covers it. */
+function wholeRegionOption(region: JapanRegion, entries: readonly PrefectureEntry[]) {
+    if (REGION_PREFECTURES[region].length < 2) {
+        return undefined
+    }
+    const name = t('home.searchWholeRegion', { region: t(REGION_LABEL_KEYS[region]) })
+    const total = totalFacilities(entries)
+    return {
+        value: regionSearchParam(region),
+        label: total === undefined ? name : `${name} (${total})`
+    }
+}
+
 const prefectureGroups = computed(() => regionsWithPrefectures(prefectures.value, undefined)
-    .map(region => ({ region, prefectures: prefecturesInRegion(prefectures.value, region) })))
+    .map(region => {
+        const entries = prefecturesInRegion(prefectures.value, region)
+        return { region, prefectures: entries, wholeRegion: wholeRegionOption(region, entries) }
+    }))
 
 /** Same encoding as the search URL: `dentistry`, `en`, `tokyo`. */
 function specialtyQueryParam(code: string): string {
@@ -195,9 +230,17 @@ function submitSearch(event: Event) {
         }
     }
 
+    // A whole-region option shares the list's name; send it as the search page's own region param.
+    const region = regionFromAreaValue(query.prefecture)
+    if (region !== undefined) {
+        delete query.prefecture
+        query.region = regionSearchParam(region)
+    }
+
     track('Search submitted', searchSubmittedProps({
         specialty: Boolean(query.specialty),
         language: Boolean(query.language),
+        region: Boolean(query.region),
         prefecture: Boolean(query.prefecture)
     }))
     void navigateTo({ path: '/search', query })

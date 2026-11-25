@@ -1,6 +1,6 @@
 import { Locale, Specialty, SpecialtyCategory, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
 import { formatJapanPhone, PHONE_DISPLAY, SPECIALTY_CATEGORY_MEMBERS, toJapanE164 } from '@findadoc/utils'
-import { parseRegion, regionOfPrefecture, regionSearchParam, type JapanRegion } from './japanRegions'
+import { parseRegion, regionFromAreaValue, regionOfPrefecture, regionSearchParam, type JapanRegion } from './japanRegions'
 
 /**
  * Client-side search over the whole directory.
@@ -257,12 +257,15 @@ function parsePage(raw: string | undefined): number | undefined {
 export function parseSearchQuery(query: SearchLocationQuery): SearchQueryState {
     const specialty = parseSpecialty(firstString(query.specialty))
     const language = parseLanguage(firstString(query.language))
-    const prefecture = parsePlace(firstString(query.prefecture))
+    const placeParam = parsePlace(firstString(query.prefecture))
+    // `?prefecture=kanto` is the homepage's whole-region option submitted before hydration.
+    const regionFromPlace = regionFromAreaValue(placeParam)
+    const prefecture = regionFromPlace === undefined ? placeParam : undefined
 
     return {
         city: parsePlace(firstString(query.city)),
         prefecture,
-        region: parseRegionFor(firstString(query.region), prefecture),
+        region: parseRegionFor(firstString(query.region), prefecture) ?? regionFromPlace,
         specialtyGroup: parseSpecialtyGroup(firstString(query.group)),
         specialties: specialty ? [specialty] : undefined,
         languages: language ? [language] : undefined,

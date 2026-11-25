@@ -833,6 +833,7 @@
     "searchLanguageLabel": "使用哪种语言？",
     "searchAreaLabel": "在哪里？",
     "searchAnyArea": "日本全国",
+    "searchWholeRegion": "{region}全域",
     "searchPrefectureLabel": "都道府县",
     "searchAnyPrefecture": "所有都道府县",
     "searchAnyPrefectureInRegion": "该地区所有地方",

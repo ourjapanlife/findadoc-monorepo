@@ -101,6 +101,14 @@ function foldLatin(value: string): string {
         .replace(/^-+|-+$/g, '')
 }
 
+/**
+ * The region an area value names, when it is a region slug (`kanto`) and not a prefecture.
+ * The homepage's one "Where?" list holds both, so `hokkaido` stays the prefecture.
+ */
+export function regionFromAreaValue(value: string | undefined): JapanRegion | undefined {
+    return regionOfPrefecture(value) === undefined ? parseRegion(value) : undefined
+}
+
 /** The entries whose prefecture is in the region, in their given order. No region keeps them all. */
 export function prefecturesInRegion<T extends { name: string }>(
     entries: readonly T[],

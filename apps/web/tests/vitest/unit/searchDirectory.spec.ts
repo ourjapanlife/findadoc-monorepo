@@ -9,7 +9,8 @@ import { buildSearchQuery,
     facilityWebsiteUrl,
     filterDirectory,
     hasActiveFilters,
-    parseSearchQuery } from '~/utils/searchDirectory'
+    parseSearchQuery,
+    sameSearchQueryState } from '~/utils/searchDirectory'
 import { normalizePhoneInput, validatePhoneNumber } from '~/utils/formValidations'
 
 function facility(
@@ -420,6 +421,13 @@ describe('region', () => {
         expect(query).toEqual({ region: 'kyushu' })
         expect(parseSearchQuery(query).region).toBe('KYUSHU')
         expect(hasActiveFilters({ region: 'KYUSHU' })).toBe(true)
+    })
+
+    it('reads a region slug in the prefecture param as that region, as the homepage submits it', () => {
+        expect(parseSearchQuery({ prefecture: 'kanto' })).toMatchObject({ region: 'KANTO', prefecture: undefined })
+        expect(sameSearchQueryState({ prefecture: 'kanto' }, { region: 'kanto' })).toBe(true)
+        expect(parseSearchQuery({ prefecture: 'hokkaido' })).toMatchObject({ region: undefined, prefecture: 'hokkaido' })
+        expect(parseSearchQuery({ region: 'kansai', prefecture: 'kanto' }).region).toBe('KANSAI')
     })
 
     it('drops a region that contradicts the prefecture in the same link', () => {

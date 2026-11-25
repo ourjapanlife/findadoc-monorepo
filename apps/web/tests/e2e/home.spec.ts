@@ -89,6 +89,20 @@ test.describe('Home page', () => {
             expect(url.searchParams.get('prefecture')).toBe('tokyo')
         })
 
+        test('the search entry can search a whole region', async ({ page }) => {
+            const area = page.getByTestId('home-area')
+            await expect(area.locator('optgroup').filter({ has: page.locator('option[value="tokyo"]') })
+                .locator('option').first()).toHaveAttribute('value', 'kanto')
+
+            await area.selectOption('kanto')
+            await page.getByTestId('home-search-submit').click()
+
+            await expect(page).toHaveURL(/\/search\?/)
+            const url = new URL(page.url())
+            expect(url.searchParams.get('region')).toBe('kanto')
+            expect(url.searchParams.get('prefecture')).toBeNull()
+        })
+
         /*
          * The homepage is prerendered, so the form is clickable before Vue hydrates.
          * Submitting at that moment must still reach /search with the filters rather
@@ -104,6 +118,17 @@ test.describe('Home page', () => {
             const url = new URL(page.url())
             expect(url.searchParams.get('specialty')).toBe('dentistry')
             expect(url.searchParams.get('prefecture')).toBe('tokyo')
+        })
+
+        // Before hydration the whole-region option arrives as `prefecture=kanto`; search reads it as the region.
+        test('a whole region picked before hydration still searches that region', async ({ page }) => {
+            await page.goto('/', { waitUntil: 'commit' })
+            await page.getByTestId('home-area').selectOption('kanto')
+            await page.getByTestId('home-search-submit').click()
+
+            await expect(page).toHaveURL(/[?&]region=kanto/)
+            await expect(page.getByTestId('search-region')).toHaveValue('KANTO')
+            expect(new URL(page.url()).searchParams.get('prefecture')).toBeNull()
         })
 
         test('a category tile prefers an indexable specialty facet', async ({ page }) => {

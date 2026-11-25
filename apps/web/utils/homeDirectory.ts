@@ -31,6 +31,21 @@ export function prefectureOptionLabel(entry: PrefectureEntry, japanese: boolean)
 }
 
 /**
+ * Facilities across the given prefectures, for a whole-region option. Undefined when any count
+ * is unknown, so a partial sum is never shown as the region's total.
+ */
+export function totalFacilities(entries: readonly PrefectureEntry[]): number | undefined {
+    let total = 0
+    for (const entry of entries) {
+        if (entry.approximateFacilities === undefined) {
+            return undefined
+        }
+        total += entry.approximateFacilities
+    }
+    return total
+}
+
+/**
  * Every prefecture in code order, north to south, with no count. Only the fallback when the
  * build has no directory and the API has not answered: the pickers otherwise list what the
  * directory has, most facilities first (`#directory-stats`, then `availablePrefectures`).
