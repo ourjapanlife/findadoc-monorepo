@@ -253,6 +253,22 @@
                 >
                     {{ t('search.clearFilters') }}
                 </button>
+
+                <p
+                    v-if="isRemembered"
+                    data-testid="search-remembered"
+                    class="col-span-full m-0 text-xs text-primary-text-muted"
+                >
+                    {{ t('search.rememberedOnDevice') }}
+                    <button
+                        type="button"
+                        data-testid="search-forget-remembered"
+                        class="font-medium text-primary underline"
+                        @click="forgetRememberedSearch"
+                    >
+                        {{ t('search.forgetRemembered') }}
+                    </button>
+                </p>
             </form>
         </div>
     </div>
@@ -266,6 +282,7 @@ import SVGFiltersIcon from '~/assets/icons/equalizer-icon.svg'
 import SVGMapPinIcon from '~/assets/icons/map-pin-icon.svg'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
 import { useSearchDirectory } from '~/composables/useSearchDirectory'
+import { useRememberedSearch } from '~/composables/useRememberedSearch'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
 import { languageName } from '~/utils/languageName'
@@ -294,6 +311,7 @@ const searchResultsStore = useSearchResultsStore()
 const { isLoading, hasLoadError, totalResults } = useSearchDirectory()
 const specialtiesStore = useSpecialtiesStore()
 const { track } = useUmami()
+const { isRemembered, remember: rememberSearch, forget: forgetRememberedSearch } = useRememberedSearch()
 
 /*
  * Null until mounted: the server cannot know the orientation, so CSS picks the first state
@@ -422,8 +440,10 @@ function toggleMap() {
     track('Map toggled', { state: next ? 'shown' : 'hidden' })
 }
 
+/** A visitor's own pick is what gets remembered; a link someone shared does not overwrite it. */
 function onFilterChange() {
     track('Filters changed', searchFilterFlags(searchResultsStore.filters))
+    rememberSearch(searchResultsStore.filters)
 }
 
 function onSpecialtyFieldClick() {
@@ -438,6 +458,7 @@ function onCityFieldClick() {
 
 function clearFromBar() {
     searchResultsStore.clearFilters()
+    forgetRememberedSearch()
     track('Filters cleared', { from: 'filter_bar' })
 }
 

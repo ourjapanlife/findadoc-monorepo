@@ -867,6 +867,8 @@
   "search": {
     "filters": "Filtres",
     "clearFilters": "Effacer les filtres",
+    "rememberedOnDevice": "Votre langue et votre région sont mémorisées sur cet appareil.",
+    "forgetRemembered": "Oublier",
     "showMap": "Afficher la carte",
     "hideMap": "Masquer la carte",
     "loading": "Chargement de l’annuaire…",

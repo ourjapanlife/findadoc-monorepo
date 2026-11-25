@@ -873,6 +873,8 @@
   "search": {
     "filters": "Filters",
     "clearFilters": "Clear filters",
+    "rememberedOnDevice": "Your language and area are remembered on this device.",
+    "forgetRemembered": "Forget",
     "showMap": "Show map",
     "hideMap": "Hide map",
     "loading": "Loading the directory…",

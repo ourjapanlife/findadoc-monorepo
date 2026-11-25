@@ -873,6 +873,8 @@
   "search": {
     "filters": "絞り込み",
     "clearFilters": "条件をクリア",
+    "rememberedOnDevice": "言語と地域はこの端末に保存されています。",
+    "forgetRemembered": "消去",
     "showMap": "地図を表示",
     "hideMap": "地図を隠す",
     "loading": "データを読み込んでいます…",

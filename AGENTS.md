@@ -180,6 +180,10 @@ Before a change is done:
 
 `facilities.supported_languages` is language support with no named professional. Do not create a healthcare professional to hold a hospital-level language. A language-only search matches that list or one professional who speaks every requested language. A specialty filter still requires the same professional to match both. Existing `spoken_languages` stay on the professional, including `en_US` and `ja_JP`. A Locale that is not on the allowlist is not a facet. `/search` follows the same rule in the browser (`filterDirectory` in `apps/web/utils/searchDirectory.ts`): a facility with no listed doctor is still a result, and the clinic page and search card show its own languages (#21).
 
+## Remembered search
+
+`/search` remembers the visitor's last language and area (region, prefecture, city) in their own browser (`apps/web/utils/rememberedSearch.ts`, key `search.remembered`). It fills only what the URL leaves blank, and never touches a link with `facility` or `page`. Only the visitor's own pick in the filter bar or on the homepage writes it; a shared link does not. An entry not picked again for 90 days, or holding a value that is no longer a search option, is removed on read. Clear filters and the "Forget" link remove it. Do not add the specialty or anything typed: a specialty can say something about a visitor's health. It is never sent to the API or to analytics. The privacy policy's "recent filters are saved in your own browser" covers it.
+
 ## Institutions list
 
 The #21 multilingual institutions import has run on production, and its scripts are deleted. `apps/server/docs/institution-import.md` records what it did. Every row is staged in `institution_import_rows`, which stays as the record of where each facility came from. Red rows were skipped, a match filled empty fields only, and a new facility is `UNVERIFIED` with one Places id. The import wrote no professional, payment, or insurance. Rows with outcome `needs_review` wait for a moderator. Do not bring the scripts back to re-run it; a new list is a new import.

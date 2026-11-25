@@ -867,6 +867,8 @@
   "search": {
     "filters": "筛选",
     "clearFilters": "清除筛选",
+    "rememberedOnDevice": "您的语言和地区已保存在此设备上。",
+    "forgetRemembered": "清除",
     "showMap": "显示地图",
     "hideMap": "隐藏地图",
     "loading": "正在加载目录…",

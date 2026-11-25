@@ -867,6 +867,8 @@
   "search": {
     "filters": "Filtros",
     "clearFilters": "Limpar filtros",
+    "rememberedOnDevice": "Seu idioma e sua região ficam salvos neste dispositivo.",
+    "forgetRemembered": "Esquecer",
     "showMap": "Mostrar mapa",
     "hideMap": "Ocultar mapa",
     "loading": "Carregando o diretório…",

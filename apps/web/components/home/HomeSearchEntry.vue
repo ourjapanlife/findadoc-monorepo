@@ -125,6 +125,8 @@ import type { PrefectureEntry } from '~/utils/homeDirectory'
 import { useI18n } from 'vue-i18n'
 import { navigateTo } from '#imports'
 import { useUmami } from '~/composables/useUmamiTracking'
+import { useRememberedSearch } from '~/composables/useRememberedSearch'
+import { parseSearchQuery } from '~/utils/searchDirectory'
 import { searchSubmittedProps } from '~/utils/analyticsEvents'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
@@ -149,6 +151,7 @@ import {
 const { t, locale } = useI18n()
 const specialtiesStore = useSpecialtiesStore()
 const { track } = useUmami()
+const { rememberOver } = useRememberedSearch()
 
 // The homepage has no prefecture of its own, so only the country-wide lists load.
 const { prefectures, specialties: availableSpecialties } = useDirectoryCoverage(ref(''))
@@ -243,6 +246,8 @@ function submitSearch(event: Event) {
         region: Boolean(query.region),
         prefecture: Boolean(query.prefecture)
     }))
+    // "Any language" here is the form's default, not a choice, so it keeps a remembered language.
+    rememberOver(parseSearchQuery(query))
     void navigateTo({ path: '/search', query })
 }
 </script>

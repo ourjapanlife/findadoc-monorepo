@@ -873,6 +873,8 @@
   "search": {
     "filters": "Filter",
     "clearFilters": "Hapus filter",
+    "rememberedOnDevice": "Bahasa dan wilayah Anda disimpan di perangkat ini.",
+    "forgetRemembered": "Lupakan",
     "showMap": "Tampilkan peta",
     "hideMap": "Sembunyikan peta",
     "loading": "Memuat direktori…",

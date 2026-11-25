@@ -867,6 +867,8 @@
   "search": {
     "filters": "필터",
     "clearFilters": "필터 지우기",
+    "rememberedOnDevice": "언어와 지역이 이 기기에 저장되어 있습니다.",
+    "forgetRemembered": "삭제",
     "showMap": "지도 보기",
     "hideMap": "지도 숨기기",
     "loading": "목록을 불러오는 중…",

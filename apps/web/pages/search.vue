@@ -42,14 +42,17 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter, type LocationQuery, type LocationQueryRaw } from 'vue-router'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
 import { useSearchDirectory } from '~/composables/useSearchDirectory'
+import { useRememberedSearch } from '~/composables/useRememberedSearch'
 import { resetSearchDetailsContact, takeSearchDetailsActed, track } from '~/utils/analyticsEvents'
 import { buildSearchQuery, parseSearchQuery, sameSearchQueryState } from '~/utils/searchDirectory'
+import { rememberedFill } from '~/utils/rememberedSearch'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const searchResultsStore = useSearchResultsStore()
 const { activeFacility } = useSearchDirectory()
+const { restore: restoreRememberedSearch } = useRememberedSearch()
 
 const SHOW_MAP_STORAGE_KEY = 'search.showMap'
 const showMap = ref(false)
@@ -132,8 +135,17 @@ watch(() => route.query, query => {
     }
 })
 
+/** Set when the store changed to fill in a remembered search, so the URL is rewritten, not pushed. */
+let replaceNextQuery = false
+
 watch(queryFromStore, query => {
     if (sameQuery(query, route.query)) return
+
+    if (replaceNextQuery) {
+        replaceNextQuery = false
+        void router.replace({ query })
+        return
+    }
 
     /*
      * Same filters in a different spelling (`DENTISTRY` vs `dentistry`) rewrite in place.
@@ -184,7 +196,30 @@ function closeDetails() {
     router.replace({ query: rest })
 }
 
+/**
+ * Fills a blank language or area with the one remembered on this device. The link's own
+ * filters always win. A link to one facility or a later page is left as it is, because a
+ * filled filter could hide what it points at. Client only, so the prerendered page is the
+ * same for everyone. Replaces the URL, so Back does not return to the unfilled search.
+ */
+function fillFromRememberedSearch() {
+    const remembered = restoreRememberedSearch()
+    if (searchResultsStore.activeFacilityId !== undefined || searchResultsStore.currentPage > 1) {
+        return
+    }
+    const fill = rememberedFill(searchResultsStore.filters, remembered)
+    if (fill === undefined) {
+        return
+    }
+    replaceNextQuery = true
+    searchResultsStore.selectedLanguages = fill.languages ?? searchResultsStore.selectedLanguages
+    searchResultsStore.selectedRegion = fill.region ?? searchResultsStore.selectedRegion
+    searchResultsStore.selectedPrefecture = fill.prefecture ?? searchResultsStore.selectedPrefecture
+    searchResultsStore.selectedCity = fill.city ?? searchResultsStore.selectedCity
+}
+
 onMounted(() => {
+    fillFromRememberedSearch()
     try {
         showMap.value = localStorage.getItem(SHOW_MAP_STORAGE_KEY) === 'true'
     } catch {

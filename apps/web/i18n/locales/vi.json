@@ -867,6 +867,8 @@
   "search": {
     "filters": "Bộ lọc",
     "clearFilters": "Xóa bộ lọc",
+    "rememberedOnDevice": "Ngôn ngữ và khu vực của bạn được lưu trên thiết bị này.",
+    "forgetRemembered": "Xóa",
     "showMap": "Hiện bản đồ",
     "hideMap": "Ẩn bản đồ",
     "loading": "Đang tải danh bạ…",

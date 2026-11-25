@@ -867,6 +867,8 @@
   "search": {
     "filters": "Mga filter",
     "clearFilters": "I-clear ang mga filter",
+    "rememberedOnDevice": "Naaalala ng device na ito ang iyong wika at lugar.",
+    "forgetRemembered": "Kalimutan",
     "showMap": "Ipakita ang mapa",
     "hideMap": "Itago ang mapa",
     "loading": "Ikinakarga ang direktoryo…",
