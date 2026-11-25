@@ -30,10 +30,13 @@ export const useSearchResultsStore = defineStore('searchResultsStore', () => {
 
     const currentPage = ref(1)
 
-    // A new filter combination starts from the first page.
+    /*
+     * A new filter combination starts from the first page. Sync, so the reset lands before
+     * search.vue restores `page` from a link; a queued reset would undo `?page=2`.
+     */
     watch(filters, () => {
         currentPage.value = 1
-    })
+    }, { flush: 'sync' })
 
     const activeFacilityId: Ref<string | undefined> = ref()
 

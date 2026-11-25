@@ -396,6 +396,15 @@ describe('region', () => {
         expect(results.map(result => result.id)).toEqual(['tokyo-clinic', 'empty-clinic'])
     })
 
+    it('agrees with the prefecture filter on an accented English name with no Japanese name', () => {
+        const accented = [facility('macron-clinic', [], { prefectureEn: 'Tōkyō', prefectureJa: undefined })]
+
+        expect(filterDirectory(accented, [], { prefecture: 'tokyo' }).map(result => result.id))
+            .toEqual(['macron-clinic'])
+        expect(filterDirectory(accented, [], { region: 'KANTO' }).map(result => result.id))
+            .toEqual(['macron-clinic'])
+    })
+
     it('round-trips the region through the URL and counts it as a filter', () => {
         const query = buildSearchQuery({ region: 'KYUSHU' })
 
