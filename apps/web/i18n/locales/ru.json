@@ -459,6 +459,7 @@
     "statusFilter": "Статус",
     "reviewFilter": "Проверка",
     "archiveFilter": "Архив",
+    "archiveFilterActive": "Только активные",
     "archiveFilterArchived": "Только архивные",
     "archiveFilterAll": "Активные и архивные",
     "archivedBadge": "В архиве"

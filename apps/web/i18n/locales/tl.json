@@ -337,6 +337,7 @@
     "statusFilter": "Katayuan",
     "reviewFilter": "Pagsusuri",
     "archiveFilter": "Mga naka-archive",
+    "archiveFilterActive": "Aktibo lang",
     "archiveFilterArchived": "Naka-archive lang",
     "archiveFilterAll": "Aktibo at naka-archive",
     "archivedBadge": "Naka-archive"

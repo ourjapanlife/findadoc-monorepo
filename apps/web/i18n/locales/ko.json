@@ -520,6 +520,7 @@
     "statusFilter": "상태",
     "reviewFilter": "검토",
     "archiveFilter": "보관",
+    "archiveFilterActive": "활성 항목만",
     "archiveFilterArchived": "보관된 항목만",
     "archiveFilterAll": "공개 및 보관된 항목",
     "archivedBadge": "보관됨"

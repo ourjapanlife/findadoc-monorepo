@@ -337,6 +337,7 @@
     "statusFilter": "Trạng thái",
     "reviewFilter": "Xem xét",
     "archiveFilter": "Lưu trữ",
+    "archiveFilterActive": "Chỉ mục đang hoạt động",
     "archiveFilterArchived": "Chỉ mục đã lưu trữ",
     "archiveFilterAll": "Đang hoạt động và đã lưu trữ",
     "archivedBadge": "Đã lưu trữ"

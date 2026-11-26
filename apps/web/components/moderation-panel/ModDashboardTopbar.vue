@@ -51,6 +51,7 @@
                 :model-value="archiveSelection"
                 :items="archiveItems"
                 :label="t('modDashboardTopbar.archiveFilter')"
+                :default-value="defaultArchiveSelection"
                 test-id="mod-archive-filter"
                 @update:model-value="setArchiveSelection"
             />
@@ -138,8 +139,11 @@ const showArchiveFilter = computed(() =>
     moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.Facilities
     || moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.HealthcareProfessionals)
 
-/** Archived records are kept but hidden from the public. Empty lists the active ones only. */
+/** Archived records are kept but hidden from the public. The list starts on the active ones. */
+const defaultArchiveSelection = [ArchiveFilter.Active]
+
 const archiveItems = computed(() => [
+    { value: ArchiveFilter.Active, label: t('modDashboardTopbar.archiveFilterActive') },
     { value: ArchiveFilter.Archived, label: t('modDashboardTopbar.archiveFilterArchived') },
     { value: ArchiveFilter.All, label: t('modDashboardTopbar.archiveFilterAll') }
 ])
@@ -148,7 +152,7 @@ const archiveSelection = computed<ArchiveFilter[]>(() => {
     const current = moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.Facilities
         ? facilitiesStore.archiveFilter
         : healthcareProfessionalsStore.archiveFilter
-    return current === ArchiveFilter.Active ? [] : [current]
+    return [current]
 })
 
 function setArchiveSelection(selection: ArchiveFilter[]) {

@@ -520,6 +520,7 @@
     "statusFilter": "स्थिति",
     "reviewFilter": "समीक्षा",
     "archiveFilter": "अभिलेख",
+    "archiveFilterActive": "सक्रिय मात्र",
     "archiveFilterArchived": "अभिलेखमा राखिएका मात्र",
     "archiveFilterAll": "सक्रिय र अभिलेखमा राखिएका",
     "archivedBadge": "अभिलेखमा राखिएको"

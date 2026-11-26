@@ -520,6 +520,7 @@
     "statusFilter": "Status",
     "reviewFilter": "Review",
     "archiveFilter": "Archive",
+    "archiveFilterActive": "Active only",
     "archiveFilterArchived": "Archived only",
     "archiveFilterAll": "Active and archived",
     "archivedBadge": "Archived"

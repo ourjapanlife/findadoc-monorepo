@@ -459,6 +459,7 @@
     "statusFilter": "Status",
     "reviewFilter": "Revisão",
     "archiveFilter": "Arquivo",
+    "archiveFilterActive": "Somente ativos",
     "archiveFilterArchived": "Somente arquivados",
     "archiveFilterAll": "Ativos e arquivados",
     "archivedBadge": "Arquivado"

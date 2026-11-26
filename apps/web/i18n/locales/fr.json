@@ -507,6 +507,7 @@
     "statusFilter": "Statut",
     "reviewFilter": "Vérification",
     "archiveFilter": "Archives",
+    "archiveFilterActive": "Actifs uniquement",
     "archiveFilterArchived": "Archivés uniquement",
     "archiveFilterAll": "Actifs et archivés",
     "archivedBadge": "Archivé"

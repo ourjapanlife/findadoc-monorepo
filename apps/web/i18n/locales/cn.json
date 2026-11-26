@@ -459,6 +459,7 @@
     "statusFilter": "状态",
     "reviewFilter": "审核",
     "archiveFilter": "归档",
+    "archiveFilterActive": "仅有效",
     "archiveFilterArchived": "仅已归档",
     "archiveFilterAll": "公开和已归档",
     "archivedBadge": "已归档"

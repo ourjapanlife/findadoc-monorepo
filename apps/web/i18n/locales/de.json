@@ -554,6 +554,7 @@
     "statusFilter": "Status",
     "reviewFilter": "Prüfung",
     "archiveFilter": "Archiv",
+    "archiveFilterActive": "Nur aktive",
     "archiveFilterArchived": "Nur archivierte",
     "archiveFilterAll": "Aktive und archivierte",
     "archivedBadge": "Archiviert"

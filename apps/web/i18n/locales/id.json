@@ -520,6 +520,7 @@
     "statusFilter": "Status",
     "reviewFilter": "Tinjauan",
     "archiveFilter": "Arsip",
+    "archiveFilterActive": "Hanya yang aktif",
     "archiveFilterArchived": "Hanya yang diarsipkan",
     "archiveFilterAll": "Aktif dan diarsipkan",
     "archivedBadge": "Diarsipkan"

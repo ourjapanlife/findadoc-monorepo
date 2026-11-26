@@ -459,6 +459,7 @@
     "statusFilter": "ステータス",
     "reviewFilter": "レビュー",
     "archiveFilter": "アーカイブ",
+    "archiveFilterActive": "有効なもののみ",
     "archiveFilterArchived": "アーカイブ済みのみ",
     "archiveFilterAll": "公開中とアーカイブ済み",
     "archivedBadge": "アーカイブ済み"
