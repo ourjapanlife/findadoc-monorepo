@@ -2,12 +2,16 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {
     ANONYMOUS_USER_SUB,
     authorize,
+    authorizeAnyScope,
     buildUserContext,
     getEffectiveScopes,
     isAuthenticatedUser,
     Role,
-    Scope
+    Scope,
+    withAnyScope
 } from '../src/auth'
+import { logger } from '../src/logger'
+import type { GraphQLResolveInfo } from 'graphql'
 import { envVariables } from '../utils/environmentVariables'
 import { FastifyRequest } from 'fastify'
 
@@ -219,6 +223,86 @@ describe('authorize()', () => {
         }
 
         expect(authorize(findadocAdmin, [Scope['delete:facilities']])).toBe(true)
+    })
+})
+
+describe('authorizeAnyScope()', () => {
+    const reader = { sub: 'auth0|reader', name: 'Reader', email: 'reader@example.com', roles: [Role.User], scope: '' }
+
+    function spyOnLogs() {
+        return {
+            warn: vi.spyOn(logger, 'warn').mockImplementation(() => logger),
+            info: vi.spyOn(logger, 'info').mockImplementation(() => logger)
+        }
+    }
+
+    it('allows a user who holds a later accepted scope without logging a denial for an earlier one', () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const logs = spyOnLogs()
+
+        expect(authorizeAnyScope(reader, [Scope['write:facilities'], Scope['read:facilities']])).toBe(true)
+        expect(logs.warn).not.toHaveBeenCalled()
+        expect(logs.info).toHaveBeenCalledTimes(1)
+        expect(logs.info).toHaveBeenCalledWith(
+            'Auth: ✅ User auth0|reader is authorized for the required scopes: read:facilities'
+        )
+    })
+
+    it('denies a user with none of the accepted scopes and logs the denial once', () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const logs = spyOnLogs()
+
+        expect(authorizeAnyScope(reader, [Scope['write:facilities'], Scope['delete:facilities']])).toBe(false)
+        expect(logs.warn).toHaveBeenCalledTimes(2)
+        expect(logs.warn).toHaveBeenNthCalledWith(
+            1,
+            'Auth: ❌ User auth0|reader is NOT authorized for the required scopes: write:facilities, delete:facilities'
+        )
+        expect(logs.warn.mock.calls[1]?.[0]).toMatch(/^Auth: User's current roles User and scopes: /)
+        expect(logs.info).not.toHaveBeenCalled()
+    })
+
+    it('denies a missing user', () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const logs = spyOnLogs()
+
+        expect(authorizeAnyScope(undefined as unknown as typeof reader, [Scope['read:facilities']])).toBe(false)
+        expect(logs.warn).toHaveBeenCalledWith('Auth: User is not defined')
+    })
+
+    it('skips the check in the testing environment', () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(true)
+
+        expect(authorizeAnyScope(reader, [Scope['delete:facilities']])).toBe(true)
+    })
+
+    it('allows no one for an empty list', () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(true)
+
+        expect(authorizeAnyScope(reader, [])).toBe(false)
+    })
+})
+
+describe('withAnyScope()', () => {
+    const info = {} as GraphQLResolveInfo
+    const reader = { sub: 'auth0|reader', name: 'Reader', email: 'reader@example.com', roles: [Role.User], scope: '' }
+
+    it('runs the resolver on a later accepted scope with no denial warning', () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const warn = vi.spyOn(logger, 'warn').mockImplementation(() => logger)
+        vi.spyOn(logger, 'info').mockImplementation(() => logger)
+        const resolver = withAnyScope([Scope['write:facilities'], Scope['read:facilities']], () => 'ran')
+
+        expect(resolver({}, {}, { user: reader }, info)).toBe('ran')
+        expect(warn).not.toHaveBeenCalled()
+    })
+
+    it('throws UNAUTHORIZED when no accepted scope matches', () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        vi.spyOn(logger, 'warn').mockImplementation(() => logger)
+        const resolver = withAnyScope([Scope['write:facilities'], Scope['delete:facilities']], () => 'ran')
+
+        expect(() => resolver({}, {}, { user: reader }, info)).toThrow('User is not authorized')
     })
 })
 
