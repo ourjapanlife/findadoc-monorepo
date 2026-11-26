@@ -1,5 +1,5 @@
 /// <reference types="vitest/globals" />
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, type Ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { expect } from 'chai'
 import { createI18n } from 'vue-i18n'
@@ -88,6 +88,51 @@ describe('moderation search picker keyboard use', () => {
 
         expect(selected.value).to.deep.equal(['ja_JP'])
         expect(active?.getAttribute('aria-selected')).to.equal('true')
+        wrapper.unmount()
+    })
+
+    it('moves the highlight back to a real row when a search reply has fewer results', async () => {
+        const handedOver: Ref<string[]>[] = []
+        const Host = defineComponent({
+            components: { ModSearchBar },
+            setup() {
+                return {
+                    selected: ref<string[]>([]),
+                    languages: LANGUAGES,
+                    display: (code: string) => [code],
+                    keepResults: (filtered: Ref<string[]>) => {
+                        handedOver.push(filtered)
+                    }
+                }
+            },
+            template: `
+                <ModSearchBar
+                    v-model="selected"
+                    place-holder-text="Search"
+                    no-match-text="None"
+                    :fields-to-display-callback="display"
+                    :default-suggestions="languages"
+                    @search-input-change="keepResults"
+                />
+            `
+        })
+        const wrapper = mount(Host, { attachTo: document.body })
+        const input = wrapper.get('input')
+
+        await input.trigger('focus')
+        await input.trigger('keydown', { key: 'ArrowDown' })
+        await input.trigger('keydown', { key: 'ArrowDown' })
+        const results = handedOver.at(-1)
+        if (results === undefined) {
+            throw new Error('expected the search bar to hand over its results')
+        }
+        // The late search reply has one row, and the highlight was on the third
+        results.value = ['en_US']
+        await flushPromises()
+
+        const activeId = input.attributes('aria-activedescendant')
+        const active = activeId === undefined ? null : document.getElementById(activeId)
+        expect(active?.textContent).to.include('en_US')
         wrapper.unmount()
     })
 })

@@ -374,5 +374,9 @@ onUnmounted(stopTrackingMenu)
 
 watch(() => filteredItems.value, value => {
     searchResultCount.value = value.length
+    // A late search reply can be shorter than the list the highlight was moved in: keep it on a real row
+    if (selectedItemIndex.value >= value.length) {
+        selectedItemIndex.value = 0
+    }
 })
 </script>
