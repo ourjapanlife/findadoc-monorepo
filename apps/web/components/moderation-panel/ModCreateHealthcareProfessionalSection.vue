@@ -35,6 +35,7 @@
                     <ModSearchBar
                         v-if="createHealthcareProfessionalSectionFields.spokenLanguages"
                         v-model="createHealthcareProfessionalSectionFields.spokenLanguages"
+                        input-id="locales"
                         data-testid="mod-healthcare-professional-section-spoken-locales"
                         :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextLocales')"
                         :no-match-text="t('modHealthcareProfessionalSection.noLocalesWereFound')"

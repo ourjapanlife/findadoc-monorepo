@@ -58,6 +58,7 @@
         </label>
         <ModSearchBar
             v-model="credentialsModel"
+            input-id="additional-credentials"
             data-testid="mod-healthcare-professional-additional-credentials"
             :place-holder-text="t('modHealthcareProfessionalSection.placeholderAdditionalCredentials')"
             :no-match-text="t('modHealthcareProfessionalSection.noDegreesWereFound')"

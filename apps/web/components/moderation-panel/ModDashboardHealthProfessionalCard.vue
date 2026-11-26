@@ -97,37 +97,35 @@
                             healthcareProfessionalNameByLocale.locale) }}
                     </p>
                 </div>
-                <div
-                    v-if="isEditOrCreateFacility
+                <!-- A hidden trash can is no button at all, so Tab never stops on an invisible control. -->
+                <button
+                    v-if="showTrashCan && isEditOrCreateFacility
                         && !isHealthcareProfessionalReadyForRemoval(healthcareProfessional?.id)"
                     id="remove-related-healthcare-professional-to-facility"
+                    type="button"
                     class="mod-edit-only flex w-8 shrink-0 cursor-pointer items-center justify-center
                         p-1 text-sm font-bold text-secondary"
-                    role="button"
-                    tabindex="0"
                     aria-label="Remove healthcare professional from facility"
                     @click="() => removeHealthcareProfessional(healthcareProfessional?.id)"
-                    @keydown.enter="() => removeHealthcareProfessional(healthcareProfessional?.id)"
-                    @keydown.space.prevent="() => removeHealthcareProfessional(healthcareProfessional?.id)"
                 >
-                    <SVGTrashCan v-show="showTrashCan" />
-                </div>
+                    <SVGTrashCan aria-hidden="true" />
+                </button>
 
-                <div
+                <button
                     v-if="isEditOrCreateFacility
                         && isHealthcareProfessionalReadyForRemoval(healthcareProfessional?.id)"
                     id="undo-remove-related-healthcare-professional-to-facility"
+                    type="button"
                     class="mod-edit-only flex w-8 shrink-0 cursor-pointer items-center justify-center
                         p-1 text-sm font-bold text-secondary"
-                    role="button"
-                    tabindex="0"
                     aria-label="Undo removal of healthcare professional from facility"
                     @click="() => undoRemovalOfHealthcareProfessional(healthcareProfessional?.id)"
-                    @keydown.enter="() => undoRemovalOfHealthcareProfessional(healthcareProfessional?.id)"
-                    @keydown.space.prevent="() => undoRemovalOfHealthcareProfessional(healthcareProfessional?.id)"
                 >
-                    <SVGUndoIcon class="flex size-6 items-center justify-center" />
-                </div>
+                    <SVGUndoIcon
+                        class="flex size-6 items-center justify-center"
+                        aria-hidden="true"
+                    />
+                </button>
                 <div
                     v-if="isEditOrCreateHealthcareProfessional || isEditSubmission"
                     class="mod-edit-only flex w-8 shrink-0 cursor-pointer items-center

@@ -56,6 +56,7 @@
                     </ExistingFacilityNotice>
                     <ModSearchBar
                         v-model="selectedFacilityRelationsModel"
+                        input-id="mod-edit-submission-form-facilities"
                         :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextFacilitySearchBar')"
                         :no-match-text="t('modHealthcareProfessionalSection.noFacilitiesWereFound')"
                         :fields-to-display-callback="facilitiesFieldsToDisplayCallback"
@@ -86,6 +87,7 @@
                     </label>
                     <ModSearchBar
                         v-model="selectedHealthcareProfessionalsModel"
+                        input-id="mod-edit-submission-form-healthcare-professionals"
                         data-testid="mod-facility-section-doctor-search"
                         :place-holder-text="t('modFacilitySection.placeholderTextHealthcareProfessionalSearchbar')"
                         :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"

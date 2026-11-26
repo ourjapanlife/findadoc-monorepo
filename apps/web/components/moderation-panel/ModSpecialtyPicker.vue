@@ -34,6 +34,7 @@
         </label>
         <ModSearchBar
             v-model="selected"
+            input-id="specialties"
             :data-test-id="testId"
             :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextSpecialties')"
             :no-match-text="t('modHealthcareProfessionalSection.noSpecialtiesWereFound')"
