@@ -180,6 +180,19 @@ export function canReadModeratorNotes(user: User | null | undefined): boolean {
     return getEffectiveScopes(user).includes(Scope['write:facilities'])
 }
 
+/**
+ * Archived facilities are kept but hidden from the public. Only users who can edit
+ * facilities (moderators and admins) read them, their reason, or a list that includes them.
+ */
+export function canReadArchivedFacilities(user: User | null | undefined): boolean {
+    return getEffectiveScopes(user).includes(Scope['write:facilities'])
+}
+
+/** Like canReadArchivedFacilities, for users who can edit healthcare professionals. */
+export function canReadArchivedProfessionals(user: User | null | undefined): boolean {
+    return getEffectiveScopes(user).includes(Scope['write:healthcareprofessionals'])
+}
+
 export interface UserContext {
     user: User
     clientIp?: string

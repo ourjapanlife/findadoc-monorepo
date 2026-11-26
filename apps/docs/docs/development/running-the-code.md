@@ -93,7 +93,7 @@ The DNS zone stays in Route 53. Do not change the nameservers. Amplify already s
 
 ### New clinic and doctor pages
 
-Clinic and doctor pages are written at build time, so a clinic or doctor created, renamed, or deleted in moderation is not on the site until the next build. The `Directory refresh` workflow (`.github/workflows/directory-refresh.yml`) runs once a day. It compares every clinic and doctor in the public API with the live `sitemap.xml` and runs the `Web` workflow only when a page is missing or out of date. When the API does not answer in full, the check fails and nothing is rebuilt. Run it from the Actions tab to publish a change sooner, or run the check locally:
+Clinic and doctor pages are written at build time, so a clinic or doctor created, renamed, or archived in moderation is not on the site, or not gone from it, until the next build. Moderators archive a clinic or doctor with a reason instead of deleting it: the record and its links are kept, the API hides it from every public read, and a moderator can unarchive it. The `Directory refresh` workflow (`.github/workflows/directory-refresh.yml`) runs once a day. It compares every clinic and doctor in the public API with the live `sitemap.xml` and runs the `Web` workflow only when a page is missing or out of date. When the API does not answer in full, the check fails and nothing is rebuilt. Run it from the Actions tab to publish a change sooner, or run the check locally:
 
 ```bash
 pnpm --filter @findadoc/web check:directory-drift

@@ -241,100 +241,71 @@ describe('updateFacility', () => {
     })
 })
 
-describe('deleteFacility', () => {
-    test('deletes a new facility', async () => {
-        // -- Create a new facility that we plan to delete --
-        const createFacilityRequest = {
+describe('archiveFacility', () => {
+    test('hides a facility from public reads, keeps the record, and unarchives it', async () => {
+        const createFacilityResult = await request(gqlApiUrl).post('').send({
             query: createFacilityMutation,
-            variables: {
-                input: generateRandomCreateFacilityInput() satisfies gqlType.CreateFacilityInput
-            }
-        } as gqlMutation<gqlType.CreateFacilityInput>
+            variables: { input: generateRandomCreateFacilityInput() satisfies gqlType.CreateFacilityInput }
+        })
+        expect(createFacilityResult.body?.errors).toBeUndefined()
+        const facilityId = (createFacilityResult.body.data.createFacility as gqlType.Facility).id
+        const getFacilityByIdRequest = { query: getFacilityByIdQuery, variables: { id: facilityId } } as gqlRequest
 
-        const createFacilityResult = await request(gqlApiUrl).post('').send(createFacilityRequest)
+        const tooLong = await request(gqlApiUrl).post('').send({
+            query: archiveFacilityMutation,
+            variables: { id: facilityId, reason: 'x'.repeat(501) }
+        })
+        const tooLongErrors = tooLong.body?.errors[0].extensions.errors as Error[]
+        expect(tooLongErrors).toEqual([
+            { field: 'reason', errorCode: ErrorCode.INVALID_LENGTH_TOO_LONG, httpStatus: 400 }
+        ])
 
-        //should not have errors
-        const createErrors = createFacilityResult.body?.errors
+        const archived = await request(gqlApiUrl).post('').send({
+            query: archiveFacilityMutation,
+            variables: { id: facilityId, reason: 'Clinic closed' }
+        })
+        expect(archived.body?.errors).toBeUndefined()
+        expect(archived.body.data.archiveFacility.archivedAt).toBeTruthy()
+        // The test user cannot edit facilities, so the moderator note stays hidden.
+        expect(archived.body.data.archiveFacility.archivedReason).toBeNull()
 
-        if (createErrors) {
-            logger.error(JSON.stringify(createErrors))
-            expect(createErrors).toBeUndefined()
-        }
+        // A public read by id behaves like a deleted facility.
+        const missing = await request(gqlApiUrl).post('').send(getFacilityByIdRequest)
+        const missingErrors = missing.body?.errors[0].extensions.errors as Error[]
+        expect(missingErrors).toHaveLength(1)
+        expect(missingErrors[0].field).toBe('getFacilityById')
+        expect(missingErrors[0].errorCode).toBe(ErrorCode.NOT_FOUND)
 
-        const originalInputValues = createFacilityRequest.variables.input
-        const newFacility = createFacilityResult.body.data.createFacility as gqlType.Facility
-        const newFacilityId = newFacility.id
+        const listed = await request(gqlApiUrl).post('').send({
+            query: searchFacilitiesQuery,
+            variables: { filters: { query: facilityId } }
+        })
+        expect(listed.body.data.facilities).toEqual([])
 
-        const getFacilityByIdRequest = {
-            query: getFacilityByIdQuery,
-            variables: {
-                id: newFacility.id
-            }
-        } as gqlRequest
+        // Only a moderator may ask for archived records.
+        const archivedList = await request(gqlApiUrl).post('').send({
+            query: searchFacilitiesQuery,
+            variables: { filters: { query: facilityId, archive: gqlType.ArchiveFilter.All } }
+        })
+        expect(archivedList.body?.errors[0].extensions.code).toBe('UNAUTHORIZED')
 
-        // -- Query the facility by id --
-        const getFacilityResult = await request(gqlApiUrl).post('').send(getFacilityByIdRequest)
+        const restored = await request(gqlApiUrl).post('').send({
+            query: unarchiveFacilityMutation,
+            variables: { id: facilityId }
+        })
+        expect(restored.body?.errors).toBeUndefined()
+        expect(restored.body.data.unarchiveFacility.archivedAt).toBeNull()
 
-        //should not have errors
-        const queryErrors = createFacilityResult.body?.errors
+        const restoredAgain = await request(gqlApiUrl).post('').send({
+            query: unarchiveFacilityMutation,
+            variables: { id: facilityId }
+        })
+        const notArchived = restoredAgain.body?.errors[0].extensions.errors as Error[]
+        expect(notArchived[0].errorCode).toBe(ErrorCode.NOT_ARCHIVED)
 
-        if (queryErrors) {
-            logger.error(JSON.stringify(queryErrors))
-            expect(queryErrors).toBeUndefined()
-        }
-
-        const searchedFacility = getFacilityResult.body.data.facility as gqlType.Facility
-
-        // We want to ensure the facility was created before we delete it. 
-        expect(searchedFacility.contact).toEqual(originalInputValues.contact)
-        expect(searchedFacility.id).toBeDefined()
-
-        const deleteFacilityRequest = {
-            query: deleteFacilityMutation,
-            variables: {
-                id: newFacilityId
-            }
-        } as gqlRequest
-
-        // -- Let's try to delete the facility! --
-        const deleteFacilityResult = await request(gqlApiUrl).post('').send(deleteFacilityRequest)
-
-        //should not have errors
-        const deleteErrors = deleteFacilityResult.body?.errors
-
-        if (deleteErrors) {
-            logger.error(JSON.stringify(deleteErrors))
-            expect(deleteErrors).toBeUndefined()
-        }
-
-        // we should have a success response
-        expect(deleteFacilityResult.body.data.deleteFacility.isSuccessful).toBe(true)
-
-        // -- Let's try to fetch the facility again to confirm it's deleted --
-        const missingFacilityQueryResult = await request(gqlApiUrl).post('').send(getFacilityByIdRequest)
-
-        //should have an error that it doesn't exist
-        const validQueryGqlErrors = missingFacilityQueryResult.body?.errors
-        const validQueryErrors = validQueryGqlErrors[0].extensions.errors as Error[]
-        
-        logger.error(JSON.stringify(validQueryErrors))
-        expect(validQueryErrors.length).toBe(1)
-        expect(validQueryErrors[0]).toBeDefined()
-        expect(validQueryErrors[0].field).toBe('getFacilityById')
-        expect(validQueryErrors[0].errorCode).toBe(ErrorCode.NOT_FOUND)
-
-        // -- Let's try to delete the facility again! We should receive an error now that it doesn't exist --
-        const deleteAgainFacilityResult = await request(gqlApiUrl).post('').send(deleteFacilityRequest)
-
-        //should have an error that it doesn't exist
-        const deleteAgainErrors = deleteAgainFacilityResult.body?.errors[0].extensions.errors as Error[]
-
-        logger.error(JSON.stringify(deleteAgainErrors))
-        expect(deleteAgainFacilityResult.body?.deleteFacility).toBeFalsy()
-        expect(deleteAgainErrors.length).toBe(1)
-        expect(deleteAgainErrors[0]).toBeDefined()
-        expect(deleteAgainErrors[0].field).toBe('deleteFacility')
-        expect(deleteAgainErrors[0].errorCode).toBe(ErrorCode.INVALID_ID)
+        const found = await request(gqlApiUrl).post('').send(getFacilityByIdRequest)
+        expect(found.body?.errors).toBeUndefined()
+        expect(found.body.data.facility.id).toBe(facilityId)
     })
 })
 
@@ -407,9 +378,18 @@ const updateFacilityMutation = `mutation test_updateFacility($id: ID!, $input: U
     }
 }`
 
-const deleteFacilityMutation = `mutation test_deleteFacility($id: ID!) {
-    deleteFacility(id: $id) {
-        isSuccessful
+const archiveFacilityMutation = `mutation test_archiveFacility($id: ID!, $reason: String!) {
+    archiveFacility(id: $id, reason: $reason) {
+        id
+        archivedAt
+        archivedReason
+    }
+}`
+
+const unarchiveFacilityMutation = `mutation test_unarchiveFacility($id: ID!) {
+    unarchiveFacility(id: $id) {
+        id
+        archivedAt
     }
 }`
 
@@ -444,5 +424,11 @@ const getFacilityByIdQuery = `query test_getfacilityById($id: ID!) {
             paymentType
             paymentBrands
         }
+    }
+}`
+
+const searchFacilitiesQuery = `query test_searchArchivedFacilities($filters: FacilitySearchFilters!) {
+    facilities(filters: $filters) {
+        id
     }
 }`

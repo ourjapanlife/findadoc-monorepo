@@ -158,3 +158,47 @@ describe('professional moderation list', () => {
         expect(store.linkedFacilityNames[FACILITY.id]?.nameEn).toBe(FACILITY.nameEn)
     })
 })
+
+describe('archiving from the edit form', () => {
+    const ARCHIVED_AT = '2026-11-26T00:00:00.000Z'
+
+    beforeEach(() => {
+        setActivePinia(createPinia())
+        graphQLClientRequestWithRetry.mockReset()
+    })
+
+    function answerArchive(field: string, saved: unknown) {
+        graphQLClientRequestWithRetry.mockImplementation((_request: unknown, _query: unknown, variables: unknown) => {
+            if (typeof variables === 'object' && variables !== null && 'reason' in variables) {
+                return Promise.resolve({ data: { [field]: saved } })
+            }
+            return Promise.resolve({ data: {} })
+        })
+    }
+
+    it('keeps a facility archived after selecting another one and coming back', async () => {
+        answerArchive('archiveFacility', { ...FACILITY, archivedAt: ARCHIVED_AT })
+        const store = useFacilitiesStore()
+        store.facilityData = [FACILITY, { ...FACILITY, id: 'other-facility' }]
+        await store.loadSelectedFacility(FACILITY.id)
+
+        await store.setFacilityArchived(FACILITY.id, { reason: 'Closed' })
+        await store.loadSelectedFacility('other-facility')
+        const reselected = await store.loadSelectedFacility(FACILITY.id)
+
+        expect(reselected?.archivedAt).toBe(ARCHIVED_AT)
+    })
+
+    it('keeps a professional archived after selecting another one and coming back', async () => {
+        answerArchive('archiveHealthcareProfessional', { ...PROFESSIONAL, archivedAt: ARCHIVED_AT })
+        const store = useHealthcareProfessionalsStore()
+        store.healthcareProfessionalsData = [PROFESSIONAL, { ...PROFESSIONAL, id: 'other-professional' }]
+        await store.loadSelectedHealthcareProfessional(PROFESSIONAL.id)
+
+        await store.setHealthcareProfessionalArchived(PROFESSIONAL.id, { reason: 'Retired' })
+        await store.loadSelectedHealthcareProfessional('other-professional')
+        const reselected = await store.loadSelectedHealthcareProfessional(PROFESSIONAL.id)
+
+        expect(reselected?.archivedAt).toBe(ARCHIVED_AT)
+    })
+})

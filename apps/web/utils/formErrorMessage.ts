@@ -32,6 +32,9 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     CORRECTION_CITY_REQUIRED: 'serverErrorMessages.correctionCityRequired',
     SUBMISSION_KIND_MISMATCH: 'serverErrorMessages.submissionKindMismatch',
     SUBMISSION_STATUS_CHANGED: 'serverErrorMessages.submissionStatusChanged',
+    // Moderators archive facilities and professionals instead of deleting them.
+    ALREADY_ARCHIVED: 'serverErrorMessages.alreadyArchived',
+    NOT_ARCHIVED: 'serverErrorMessages.notArchived',
     CREATEPROFFESIONAL_FACILITYIDS_REQUIRED: 'serverErrorMessages.clinicRequired',
     UPDATEPROFFESIONAL_FACILITYIDS_REQUIRED: 'serverErrorMessages.clinicRequired',
     CONTAINS_JAPANESE_CHARACTER: 'serverErrorMessages.japaneseInEnglishField',

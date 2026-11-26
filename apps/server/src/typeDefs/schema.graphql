@@ -72,6 +72,26 @@ type Facility {
   additionalInfoEn: String
   """Short note for visitors in Japanese (#294). Set together with additionalInfoEn, or neither."""
   additionalInfoJa: String
+  """
+  When a moderator archived this facility. Null while it is active.
+  Archived facilities are hidden from the public, and only moderators can read them.
+  """
+  archivedAt: String
+  """Why a moderator archived this facility. Null when active, and for anyone who cannot edit facilities."""
+  archivedReason: String
+}
+
+"""
+Which records a moderation list returns. Archived records are kept but hidden from the public.
+Only ACTIVE is open to everyone. ARCHIVED and ALL need the scope to edit that kind of record.
+"""
+enum ArchiveFilter {
+  """Records that are not archived. The default."""
+  ACTIVE
+  """Only archived records."""
+  ARCHIVED
+  """Active and archived records."""
+  ALL
 }
 
 """Input for creating a new facility."""
@@ -206,6 +226,8 @@ input FacilitySearchFilters {
   Combined with spokenLanguages, the same professional must match both.
   """
   specialties: [Specialty!]
+  """Active (the default), archived, or both. ARCHIVED and ALL are for moderators."""
+  archive: ArchiveFilter
   """Filter by creation date (ISO 8601)."""
   createdDate: String
   """Filter by last updated date (ISO 8601)."""
@@ -248,6 +270,13 @@ type HealthcareProfessional {
   updatedDate: String!
   """Free-text notes or instructions for patients."""
   additionalInfoForPatients: String
+  """
+  When a moderator archived this professional. Null while active.
+  Archived professionals are hidden from the public, and only moderators can read them.
+  """
+  archivedAt: String
+  """Why a moderator archived this professional. Null when active, and for anyone who cannot edit professionals."""
+  archivedReason: String
 }
 
 """Input for creating a new healthcare professional."""
@@ -307,6 +336,8 @@ input HealthcareProfessionalSearchFilters {
   specialties: [Specialty!]
   """Filter to professionals linked to at least one of these facility IDs."""
   facilityIds: [ID!]
+  """Active (the default), archived, or both. ARCHIVED and ALL are for moderators."""
+  archive: ArchiveFilter
   """Filter by creation date (ISO 8601)."""
   createdDate: String
   """Filter by last updated date (ISO 8601)."""
@@ -2631,8 +2662,14 @@ type Mutation {
     input: UpdateHealthcareProfessionalInput!
   ): HealthcareProfessional!
 
-  """Delete a healthcare professional by ID."""
-  deleteHealthcareProfessional(id: ID!): DeleteResult!
+  """
+  Archive a healthcare professional: hide them from the public and keep the record and its facility links.
+  The reason is required, at most 500 characters, and only moderators can read it.
+  """
+  archiveHealthcareProfessional(id: ID!, reason: String!): HealthcareProfessional!
+
+  """Bring an archived healthcare professional back. Clears the archive reason."""
+  unarchiveHealthcareProfessional(id: ID!): HealthcareProfessional!
 
   """Create a new facility record."""
   createFacility(input: CreateFacilityInput!): Facility!
@@ -2646,8 +2683,15 @@ type Mutation {
   """
   confirmFacilityPlaceId(facilityId: ID!, placeId: String!): Facility!
 
-  """Delete a facility by ID."""
-  deleteFacility(id: ID!): DeleteResult!
+  """
+  Archive a facility: hide it from the public and booking, and keep the record, its professional
+  links, and its import rows. The reason is required, at most 500 characters, and only moderators
+  can read it. A facility with an upcoming requested or confirmed appointment is refused.
+  """
+  archiveFacility(id: ID!, reason: String!): Facility!
+
+  """Bring an archived facility back. Clears the archive reason."""
+  unarchiveFacility(id: ID!): Facility!
 
   """Create a new community submission for a healthcare professional or facility."""
   createSubmission(input: CreateSubmissionInput!): Submission!

@@ -42,9 +42,13 @@ function refused(field: string, errorCode: ErrorCode, httpStatus: number): Resul
 
 type Publication = 'missing' | 'unpublished' | 'published'
 
-/** Published means the clinic page exists: a city, and not UNVERIFIED_LOCATION. */
-function publicationOf(facility: { city_id: string | null, verification_status: string } | undefined): Publication {
-    if (facility === undefined) {
+/** Published means the clinic page exists: a city, and not UNVERIFIED_LOCATION. An archived clinic is gone. */
+function publicationOf(facility: {
+    city_id: string | null
+    verification_status: string
+    archived_at: string | null
+} | undefined): Publication {
+    if (facility === undefined || facility.archived_at !== null) {
         return 'missing'
     }
     if (facility.city_id === null
@@ -60,7 +64,7 @@ function publicationOf(facility: { city_id: string | null, verification_status: 
  */
 async function lockedPublication(transaction: Transaction<Database>, facilityId: string): Promise<Publication> {
     const facility = await transaction.selectFrom('facilities')
-        .select(['city_id', 'verification_status'])
+        .select(['city_id', 'verification_status', 'archived_at'])
         .where('id', '=', facilityId)
         .forShare()
         .executeTakeFirst()
@@ -169,7 +173,7 @@ export async function approveCorrectionInTransaction(
 
     // Locked for the rest of the approval, so publication cannot change before the write.
     const stored = await transaction.selectFrom('facilities')
-        .select(['contact', 'city_id', 'verification_status'])
+        .select(['contact', 'city_id', 'verification_status', 'archived_at'])
         .where('id', '=', facilityId)
         .forUpdate()
         .executeTakeFirst()

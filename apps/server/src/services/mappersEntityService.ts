@@ -51,7 +51,8 @@ export function professionalFromRow(row: Selectable<HpsTable>): ProfessionalPare
         specialties: row.specialties ?? [],
         createdDate: row.created_date,
         updatedDate: row.updated_date,
-        additionalInfoForPatients: row.additional_info_for_patients ?? null
+        additionalInfoForPatients: row.additional_info_for_patients ?? null,
+        ...archiveFields(row)
     }
 }
 
@@ -84,7 +85,22 @@ export function facilityFromRow(row: Selectable<FacilitiesTable>): FacilityParen
         ...supportedLanguageFields(row),
         ...japaneseInsuranceFields(row),
         ...visitorInfoFields(row),
-        ...facilityLocationFields(row)
+        ...facilityLocationFields(row),
+        ...archiveFields(row)
+    }
+}
+
+/**
+ * When and why a moderator archived the row. The reason is a moderator note: the
+ * archivedReason field resolver hides it from anyone who cannot edit the record.
+ */
+export function archiveFields(row: {
+    archived_at?: string | null
+    archived_reason?: string | null
+}): { archivedAt: string | null, archivedReason: string | null } {
+    return {
+        archivedAt: row.archived_at ?? null,
+        archivedReason: row.archived_at ? row.archived_reason ?? null : null
     }
 }
 

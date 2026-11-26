@@ -78,19 +78,19 @@ describe('serverErrorsFromGraphQL', () => {
         expect(errors).toEqual([{ message: 'User is not authorized', code: 'UNAUTHORIZED', field: undefined }])
     })
 
-    it('keeps the number of bookings that stop a clinic from being deleted', () => {
+    it('keeps the number of upcoming bookings that stop a clinic from being archived', () => {
         const errors = serverErrorsFromGraphQL([{
             message: 'Validation Failed',
             extensions: {
                 code: 'BAD_USER_INPUT',
-                errors: [{ field: 'deleteFacility', errorCode: 'FACILITY_HAS_BOOKINGS', httpStatus: 409, count: 3 }]
+                errors: [{ field: 'archiveFacility', errorCode: 'FACILITY_HAS_UPCOMING_BOOKINGS', httpStatus: 409, count: 3 }]
             }
         }])
 
         expect(errors).toEqual([{
             message: 'Validation Failed',
-            code: 'FACILITY_HAS_BOOKINGS',
-            field: 'deleteFacility',
+            code: 'FACILITY_HAS_UPCOMING_BOOKINGS',
+            field: 'archiveFacility',
             count: 3
         }])
     })

@@ -70,12 +70,32 @@ export function buildHpUpdatePatch(
     return updatePatch
 }
 
+/** Whether a read by id may return an archived professional. Only moderators may. */
+export type ArchivedReadOptions = { includeArchived?: boolean }
+
+/**
+ * Keeps the professionals the archive filter asks for. Unset is ACTIVE, so a public read never
+ * sees an archived professional; the resolver only lets moderators ask for ARCHIVED or ALL.
+ */
+export function applyHpArchiveFilter<O>(
+    query: SelectQueryBuilder<Database, 'hps', O>,
+    archive: gqlTypes.ArchiveFilter | null | undefined
+): SelectQueryBuilder<Database, 'hps', O> {
+    if (archive === gqlTypes.ArchiveFilter.All) {
+        return query
+    }
+
+    return archive === gqlTypes.ArchiveFilter.Archived
+        ? query.where('hps.archived_at', 'is not', null)
+        : query.where('hps.archived_at', 'is', null)
+}
+
 // Applies JSONB array filters (degrees, specialties, languages) and the facility filter to an HP query.
 export function applyHpFilters<O>(
   query: SelectQueryBuilder<Database, 'hps', O>,
   filters: gqlTypes.HealthcareProfessionalSearchFilters
 ): SelectQueryBuilder<Database, 'hps', O> {
-    let filtered = query
+    let filtered = applyHpArchiveFilter(query, filters.archive)
 
     const nameWords = nameQueryWords(listQueryValue(filters.query) ?? '')
     if (nameWords.length) { filtered = filtered.where(eb => professionalNameMatches(eb, nameWords)) }
@@ -100,10 +120,16 @@ export function applyHpFilters<O>(
 /**
  * Loads the facility ids for each professional from the junction table in one query.
  * The per-request DataLoader in loaders.ts batches every professional in a response into one call.
+ * Archived facilities are left out unless includeArchived is set, so a public doctor page never
+ * links to a clinic page that is gone. The links themselves are kept.
  * @param hpIds Professional ids to look up.
+ * @param options includeArchived keeps archived facilities, for moderators.
  * @returns A map from professional id to its facility ids. A professional with none is not in the map.
  */
-export async function facilityIdsByHpIds(hpIds: string[]): Promise<Map<string, string[]>> {
+export async function facilityIdsByHpIds(
+    hpIds: string[],
+    options: ArchivedReadOptions = {}
+): Promise<Map<string, string[]>> {
     const facilityIdsByHp = new Map<string, string[]>()
 
     if (!hpIds.length) {
@@ -112,8 +138,10 @@ export async function facilityIdsByHpIds(hpIds: string[]): Promise<Map<string, s
 
     const relations = await db
         .selectFrom('hps_facilities')
-        .select(['hps_id', 'facilities_id'])
-        .where('hps_id', 'in', hpIds)
+        .innerJoin('facilities', 'facilities.id', 'hps_facilities.facilities_id')
+        .select(['hps_facilities.hps_id', 'hps_facilities.facilities_id'])
+        .where('hps_facilities.hps_id', 'in', hpIds)
+        .$if(options.includeArchived !== true, query => query.where('facilities.archived_at', 'is', null))
         .execute()
 
     for (const relation of relations) {
@@ -168,11 +196,14 @@ export function resolveFacilityIdFromRelationships(
 
 /**
  * Gets the Healthcare Professional from the database that matches on the id.
+ * An archived professional is NOT_FOUND, like a deleted one, unless includeArchived is set for a moderator.
  * @param id The id of the professional.
+ * @param options includeArchived returns an archived professional too.
  * @returns A Healthcare Professional object, without its facility ids.
  */
 export async function getHealthcareProfessionalById(
-    id: string
+    id: string,
+    options: ArchivedReadOptions = {}
 ): Promise<Result<ProfessionalParent>> {
     try {
         const validationResult = validateIdInput(id)
@@ -195,6 +226,7 @@ export async function getHealthcareProfessionalById(
             .selectFrom('hps')
             .selectAll()
             .where('id', '=', id)
+            .$if(options.includeArchived !== true, query => query.where('archived_at', 'is', null))
             .executeTakeFirst()
 
         // A missing professional is the caller's to handle, not a server failure (and not a Sentry event).
@@ -672,117 +704,6 @@ export const updateHealthcareProfessional = async (
             hasErrors: true,
             errors: [{
                 field: 'updateHealthcareProfessional',
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                httpStatus: 500
-            }]
-        }
-    }
-}
-
-/**
- * Deletes a Healthcare Professional from the database.
- * - Fetch existing HP (validation)
- * - Delete HP (CASCADE automatically deletes hps_facilities relations)
- * - Create audit log
- * - All operations are atomic: if audit log fails, deletion is rolled back 
- * ON DELETE CASCADE:
- * The database schema has ON DELETE CASCADE on hps_facilities.hps_id,
- * so when we delete the HP, all relations are automatically deleted.
- * No need to manually delete from hps_facilities.
- * @param id - The ID of the professional to delete
- * @param updatedBy - User performing the deletion (for audit)
- * @returns Result indicating success or failure
- */
-export async function deleteHealthcareProfessional(
-    id: string,
-    updatedBy: string
-): Promise<Result<gqlTypes.DeleteResult>> {
-    try {
-        // Validate ID format before starting transaction
-        const validationResult = validateIdInput(id)
-
-        if (validationResult.hasErrors) {
-            logger.warn(`Validation Error: invalid id for deleteHealthcareProfessional: ${id}`)
-            return {
-                data: { isSuccessful: false },
-                hasErrors: true,
-                errors: validationResult.errors
-            }
-        }
-
-        // Execute deletion in atomic transaction
-        await db.transaction().execute(async transaction => {
-            // Fetch existing HP (for validation and audit log)
-            const existingHp = await transaction
-                .selectFrom('hps')
-                .selectAll()
-                .where('id', '=', id)
-                .executeTakeFirst()
-
-            if (!existingHp) {
-                throw new Error('HP_NOT_FOUND')
-            }
-
-            // Fetch related facility IDs (for audit log)
-            // Note: These will be automatically deleted by CASCADE,
-            // but we need them for the audit log's oldValue
-            const relations = await transaction
-                .selectFrom('hps_facilities')
-                .select('facilities_id')
-                .where('hps_id', '=', id)
-                .execute()
-
-            const facilityIds = relations.map(row => row.facilities_id)
-
-            // Delete the HP
-            // CASCADE will automatically delete rows in hps_facilities
-            await transaction
-                .deleteFrom('hps')
-                .where('id', '=', id)
-                .execute()
-
-            // Create audit log entry
-            // Map Kysely row to GraphQL for audit log
-            const oldGqlHp = professionalWithFacilityIds(existingHp, facilityIds)
-
-            await createAuditLog(transaction, {
-                actionType: gqlTypes.ActionType.Delete,
-                objectType: gqlTypes.ObjectType.HealthcareProfessional,
-                updatedBy,
-                oldValue: oldGqlHp
-            })
-        })
-
-        logger.info(`DB-DELETE: healthcare professional ${id} was deleted`)
-
-        return {
-            data: { isSuccessful: true },
-            hasErrors: false
-        }
-    } catch (error) {
-        const errorMessage = (error as Error).message
-
-        // Handle HP_NOT_FOUND error
-        if (errorMessage === 'HP_NOT_FOUND') {
-            logger.warn(`deleteHealthcareProfessional: professional not found: ${id}`)
-            return {
-                data: { isSuccessful: false },
-                hasErrors: true,
-                errors: [{
-                    field: 'deleteHealthcareProfessional',
-                    errorCode: ErrorCode.INVALID_ID,
-                    httpStatus: 404
-                }]
-            }
-        }
-
-        // Generic error
-        logger.error(`ERROR: Error deleting professional ${id}`, errorLogFields(error))
-        return {
-            data: { isSuccessful: false },
-            hasErrors: true,
-            errors: [{
-                field: 'deleteHealthcareProfessional',
                 errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
                 httpStatus: 500
             }]

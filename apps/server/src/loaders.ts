@@ -6,20 +6,31 @@ import { getCitiesByIds } from './services/cityService.js'
 import { hpIdsByFacilityIds } from './services/facilityService.js'
 import { facilityIdsByHpIds } from './services/healthcareProfessionalService.js'
 
+/** Whether relation ids may name archived rows. Only moderators see them (canReadArchived* in auth.ts). */
+export type LoaderOptions = {
+    includeArchivedFacilities?: boolean
+    includeArchivedProfessionals?: boolean
+}
+
 /**
  * Batch loaders for one GraphQL request. Every facility or professional in a response
  * asks for its relation ids and its city here, and each loader answers them with one query.
  * A new set is made per request, so nothing is cached across requests.
+ * Archived rows are left out of the relation ids unless the options let this viewer see them.
  */
-export function createLoaders() {
+export function createLoaders(options: LoaderOptions = {}) {
     return {
         healthcareProfessionalIdsByFacility: new DataLoader<string, string[]>(async facilityIds => {
-            const byFacility = await hpIdsByFacilityIds([...facilityIds])
+            const byFacility = await hpIdsByFacilityIds([...facilityIds], {
+                includeArchived: options.includeArchivedProfessionals === true
+            })
 
             return facilityIds.map(id => byFacility.get(id) ?? [])
         }),
         facilityIdsByProfessional: new DataLoader<string, string[]>(async hpIds => {
-            const byProfessional = await facilityIdsByHpIds([...hpIds])
+            const byProfessional = await facilityIdsByHpIds([...hpIds], {
+                includeArchived: options.includeArchivedFacilities === true
+            })
 
             return hpIds.map(id => byProfessional.get(id) ?? [])
         }),
