@@ -8,8 +8,14 @@
                 focus-within:border-primary"
         >
             <input
+                :id="searchInputId"
                 ref="searchInputElement"
                 type="text"
+                role="combobox"
+                aria-autocomplete="list"
+                :aria-expanded="isInputFocused"
+                :aria-controls="listId"
+                :aria-activedescendant="activeOptionId"
                 :placeholder="placeHolderText"
                 :data-testid="`${dataTestId}`"
                 :disabled="!isEditing"
@@ -30,8 +36,11 @@
             >
                 {{ searchResultCount }}
             </span>
+            <!-- Not a tab stop: Tab goes from the input to the next field, not to this icon. -->
             <button
                 type="button"
+                tabindex="-1"
+                aria-hidden="true"
                 :disabled="!isEditing"
                 @click="searchInputElement?.focus()"
             >
@@ -47,10 +56,15 @@
                 v-if="isInputFocused"
                 :id="listId"
                 ref="resultListElement"
+                role="listbox"
+                aria-multiselectable="true"
+                :aria-label="placeHolderText"
                 class="fixed z-40 flex flex-col divide-y divide-accent-bg overflow-x-hidden overflow-y-auto
                     rounded-lg border border-accent-bg bg-primary-bg shadow-raised"
                 :style="menuStyle"
             >
+                <!-- Options are worked from the combobox input (arrows, Enter) and never focused: no key handler. -->
+                <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
                 <li
                     v-for="(item, index) in filteredItems"
                     :id="`${listId}-item-${index}`"
@@ -62,14 +76,11 @@
                     ]"
                     :data-result-index="index"
                     data-testid="mod-search-bar-search-result"
-                    role="button"
-                    tabindex="0"
+                    role="option"
+                    :aria-selected="isSelected(item)"
                     @click="handleListItemClick"
                     @mousedown="handleListItemMouseDown"
-                    @mouseover="() => { handleListItemMouseOver(index) }"
-                    @focus="() => { handleListItemMouseOver(index) }"
-                    @keydown.enter="handleListItem"
-                    @keydown.space.prevent="handleListItem"
+                    @mousemove="() => { handleListItemMouseOver(index) }"
                 >
                     <div class="flex min-w-0 items-center gap-3 px-3 py-2">
                         <div class="flex min-w-0 flex-col">
@@ -96,6 +107,7 @@
                 <!-- The directory search is still running: not a "no match" yet. -->
                 <li
                     v-if="searching && !filteredItems.length"
+                    role="presentation"
                     data-testid="mod-search-bar-searching"
                     class="m-3 flex cursor-default justify-center"
                 >
@@ -104,6 +116,7 @@
                 <!-- Fallback for empty search results -->
                 <li
                     v-else-if="!filteredItems.length"
+                    role="presentation"
                     data-testid="mod-search-bar-search-no-match"
                     class="m-3 cursor-default"
                 >
@@ -149,12 +162,21 @@ type Props = {
     defaultSuggestions: ArrayType<T>[]
     // True while an API search for the typed text is in flight
     searching?: boolean
+    // Id for the input, so a field label's `for` names it
+    inputId?: string
 
     //Optional test id for testing the component
     dataTestId?: string
 }
 
-const { placeHolderText, noMatchText, fieldsToDisplayCallback, defaultSuggestions, searching = false } = defineProps<Props>()
+const {
+    placeHolderText,
+    noMatchText,
+    fieldsToDisplayCallback,
+    defaultSuggestions,
+    searching = false,
+    inputId
+} = defineProps<Props>()
 
 const showResultId = (item: { id?: unknown }) => {
     const id = item.id === null || item.id === undefined ? '' : String(item.id)
@@ -173,6 +195,16 @@ const filteredItems = ref<ArrayType<T>[]>([])
 const selectedItemIndex = ref(0)
 const searchResultCount = ref(0)
 const isInputFocused = ref(false)
+const searchInputId = computed(() => inputId ?? `${listId}-input`)
+
+/*
+ * Options never take focus. Focus stays in the input, arrows move the highlight, and Enter toggles it,
+ * so Tab always moves to the next field. aria-activedescendant tells assistive tech and browser agents
+ * which option is highlighted.
+ */
+const activeOptionId = computed(() => (isInputFocused.value && filteredItems.value.length
+    ? `${listId}-item-${selectedItemIndex.value}`
+    : undefined))
 
 const menuStyle = computed(() => {
     const box = menuBox.value
@@ -342,5 +374,9 @@ onUnmounted(stopTrackingMenu)
 
 watch(() => filteredItems.value, value => {
     searchResultCount.value = value.length
+    // A late search reply can be shorter than the list the highlight was moved in: keep it on a real row
+    if (selectedItemIndex.value >= value.length) {
+        selectedItemIndex.value = 0
+    }
 })
 </script>

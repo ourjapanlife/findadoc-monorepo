@@ -46,6 +46,7 @@
                     </label>
                     <ModSearchBar
                         v-model="hpStore.healthcareProfessionalSectionFields.spokenLanguages"
+                        input-id="locales"
                         data-test-id="mod-healthcare-professional-section-spoken-locales"
                         :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextLocales')"
                         :no-match-text="t('modHealthcareProfessionalSection.noLocalesWereFound')"
