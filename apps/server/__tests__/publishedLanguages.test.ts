@@ -68,7 +68,10 @@ describe('published language allowlist', () => {
             firestore_id: null,
             search_text: '',
             created_date: '2023-08-28T00:00:00.000Z',
-            updated_date: '2023-08-28T00:00:00.000Z'
+            updated_date: '2023-08-28T00:00:00.000Z',
+            archived_at: null,
+            archived_reason: null,
+            archived_by: null
         } as Selectable<HpsTable>)
 
         expect(professional.spokenLanguages).toEqual([Locale.EnUs, Locale.JaJp])

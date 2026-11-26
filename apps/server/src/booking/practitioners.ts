@@ -178,6 +178,8 @@ export async function listFacilityPractitioners(facilityId: string | null): Prom
             .innerJoin('hps_facilities', 'hps_facilities.hps_id', 'hps.id')
             .select(['hps.id', 'hps.names', 'hps.spoken_languages', 'hps.specialties'])
             .where('hps_facilities.facilities_id', '=', facilityId)
+            // An archived doctor is hidden from patients and from new schedules.
+            .where('hps.archived_at', 'is', null)
             .orderBy('hps.id')
             .execute(),
         db.selectFrom('clinic_weekly_hours')

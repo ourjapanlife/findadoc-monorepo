@@ -457,7 +457,11 @@
     "clinicsLoadError": "Não foi possível carregar as clínicas",
     "nameReview": "Nome a revisar",
     "statusFilter": "Status",
-    "reviewFilter": "Revisão"
+    "reviewFilter": "Revisão",
+    "archiveFilter": "Arquivo",
+    "archiveFilterArchived": "Somente arquivados",
+    "archiveFilterAll": "Ativos e arquivados",
+    "archivedBadge": "Arquivado"
   },
   "modFacilitySection": {
     "addresses": "Endereços",
@@ -573,18 +577,32 @@
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Atualizar e sair",
-    "delete": "Excluir",
     "update": "Atualizar",
     "facilityUpdatedSuccessfully": "Unidade atualizada",
-    "deleteButtonText": "EXCLUIR PARA SEMPRE",
-    "facilityDeletedSuccessfully": "Unidade excluída",
-    "facilityHasBookings": "Esta clínica não pode ser excluída enquanto tiver reservas ({count}). Os registros de reserva são mantidos para os pacientes.",
-    "healthcareProfessionalDeletedSuccessfully": "Profissional de saúde excluído",
     "healthcareProfessionalUpdatedSuccessfully": "Profissional de saúde atualizado",
     "back": "Voltar",
     "hasUnsavedChanges": "Há alterações não salvas. Sair mesmo assim?",
-    "deleteConfirmationFacility": "Excluir a unidade {facility}, ID {id}?",
-    "deleteConfirmationHealthcareProfessional": "Excluir o profissional de saúde {healthcareProfessional}, ID {id}?"
+    "archive": "Arquivar",
+    "unarchive": "Desarquivar",
+    "archiveButtonText": "Arquivar e ocultar",
+    "archiveTitleFacility": "Arquivar esta instituição?",
+    "archiveTitleHealthcareProfessional": "Arquivar este profissional de saúde?",
+    "archiveExplanationFacility": "A instituição {facility} (ID: {id}) será ocultada da pesquisa, da página da clínica e das reservas. Nada é excluído: o registro, os médicos e o histórico são mantidos, e você pode desarquivá-la depois.",
+    "archiveExplanationHealthcareProfessional": "O profissional de saúde {healthcareProfessional} (ID: {id}) será ocultado da pesquisa e da página do médico. Nada é excluído: o registro e os vínculos com instituições são mantidos, e você pode desarquivá-lo depois.",
+    "archiveReasonLabel": "Motivo do arquivamento (obrigatório)",
+    "archiveReasonPlaceholder": "Por exemplo: a clínica fechou",
+    "archiveReasonRequired": "Informe um motivo antes de arquivar.",
+    "facilityArchivedSuccessfully": "Instituição arquivada. Ela não aparece mais para o público.",
+    "healthcareProfessionalArchivedSuccessfully": "Profissional de saúde arquivado. Não aparece mais para o público.",
+    "facilityUnarchivedSuccessfully": "Instituição desarquivada. Ela está pública novamente.",
+    "healthcareProfessionalUnarchivedSuccessfully": "Profissional de saúde desarquivado. Está público novamente.",
+    "unarchiveConfirmationFacility": "Mostrar a instituição {facility} (ID: {id}) ao público novamente?",
+    "unarchiveConfirmationHealthcareProfessional": "Mostrar o profissional de saúde {healthcareProfessional} (ID: {id}) ao público novamente?",
+    "facilityHasUpcomingBookings": "Esta clínica não pode ser arquivada enquanto tiver reservas futuras ({count}). A clínica precisa respondê-las primeiro.",
+    "archivedBannerTitle": "Arquivado",
+    "archivedBannerFacility": "Esta instituição está oculta para o público. O registro é mantido.",
+    "archivedBannerHealthcareProfessional": "Este profissional de saúde está oculto para o público. O registro é mantido.",
+    "archivedReason": "Motivo: {reason}"
   },
   "modCopyId": {
     "facilityId": "ID da instituição",
@@ -630,7 +648,9 @@
     "professionalNameLocaleNotAllowed": "Um profissional de saúde só tem um nome em romaji e um nome em japonês.",
     "japaneseMiddleNameNotAllowed": "O nome em japonês não tem nome do meio.",
     "invalidOpeningHours": "Verifique o horário: cada faixa precisa fechar depois de abrir, e faixas no mesmo dia não podem se sobrepor.",
-    "additionalInfoBothLanguages": "Escreva a nota para visitantes em inglês e em japonês, ou deixe as duas em branco."
+    "additionalInfoBothLanguages": "Escreva a nota para visitantes em inglês e em japonês, ou deixe as duas em branco.",
+    "alreadyArchived": "Este registro já está arquivado. Recarregue a página para vê-lo.",
+    "notArchived": "Este registro não está arquivado. Recarregue a página para vê-lo."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Idiomas falados",

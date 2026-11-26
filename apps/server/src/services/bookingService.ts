@@ -590,6 +590,10 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
     try {
         inserted = await db.transaction().execute(async transaction => {
             await lockClinicBookings(transaction, bookingLockKey(target))
+            // archiveFacility takes the same lock, so a clinic archived after the target was read books nothing.
+            if (target.facilityId !== null && await facilityIsArchived(target.facilityId, transaction)) {
+                throw new Error('BOOKING_CLINIC_ARCHIVED')
+            }
             // Plan again under the lock: an interpreter save or the on/off switch takes the
             // same lock, so these settings cannot change before the visit is held (#205).
             const locked = await lanesForChoice(target, practitionerId, input.spokenLanguages, transaction)
@@ -689,6 +693,9 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         if (error instanceof Error && error.message === 'BOOKING_SLOT_TAKEN') {
             return validationError('startsAt')
         }
+        if (error instanceof Error && error.message === 'BOOKING_CLINIC_ARCHIVED') {
+            return validationError('clinicSiteId')
+        }
         if (error instanceof Error && error.message === 'BOOKING_OPEN_REQUEST_LIMIT') {
             return {
                 data: undefined as never,
@@ -728,6 +735,14 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
 }
 
 type AvailabilityExecutor = Pick<typeof db, 'selectFrom'>
+
+async function facilityIsArchived(facilityId: string, executor: AvailabilityExecutor): Promise<boolean> {
+    const row = await executor.selectFrom('facilities')
+        .select('archived_at')
+        .where('id', '=', facilityId)
+        .executeTakeFirst()
+    return row === undefined || row.archived_at !== null
+}
 
 /** Requests from this email that the clinic has not answered and that have not ended. Case-insensitive. */
 async function countOpenRequestsForEmail(

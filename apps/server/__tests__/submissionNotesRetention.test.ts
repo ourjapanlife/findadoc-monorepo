@@ -9,7 +9,6 @@ import type { BookingAccess } from '../src/booking/access.js'
 import { DEFAULT_BOOKING_FORM_ID } from '../src/booking/formDefinitions.js'
 import { fakeGooglePlaceId, generateRandomCreateFacilityInput } from '../src/fakeData/fakeFacilities.js'
 import { generateRandomCreateSubmissionInput, generateRandomUpdateSubmissionInput } from '../src/fakeData/fakeSubmissions.js'
-import * as facilityService from '../src/services/facilityService.js'
 import * as staffBookingService from '../src/services/staffBookingService.js'
 import { createSubmission, updateSubmission } from '../src/services/submissionService.js'
 import { purgeExpiredSubmissionNotes } from '../src/submissions/notesPurge.js'
@@ -20,6 +19,7 @@ import {
 } from '../src/submissions/notesRetention.js'
 import { SUBMISSION_STATUS } from '../src/typeDefs/kyselyTypes.js'
 import { asJsonb } from '../utils/dbUtils.js'
+import { removeTestFacility } from './fixtures/removeTestFacility.js'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const QUARTER_HOUR_MS = 15 * 60 * 1000
@@ -344,7 +344,7 @@ describe('approving a submission (#236)', () => {
             await db.deleteFrom('hps').where('id', 'in', professionalIds).execute()
         }
         for (const id of facilityIds) {
-            await facilityService.deleteFacility(id, TEST_USER)
+            await removeTestFacility(id)
         }
     })
 

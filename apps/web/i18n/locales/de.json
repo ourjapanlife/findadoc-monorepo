@@ -552,7 +552,11 @@
     "clinicsLoadError": "Praxen konnten nicht geladen werden",
     "nameReview": "Name muss geprüft werden",
     "statusFilter": "Status",
-    "reviewFilter": "Prüfung"
+    "reviewFilter": "Prüfung",
+    "archiveFilter": "Archiv",
+    "archiveFilterArchived": "Nur archivierte",
+    "archiveFilterAll": "Aktive und archivierte",
+    "archivedBadge": "Archiviert"
   },
   "modFacilitySection": {
     "addresses": "Adressen",
@@ -668,18 +672,32 @@
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Aktualisieren und beenden",
-    "delete": "Löschen",
     "update": "Aktualisieren",
     "facilityUpdatedSuccessfully": "Einrichtung aktualisiert",
-    "deleteButtonText": "ENDGÜLTIG LÖSCHEN",
-    "facilityDeletedSuccessfully": "Einrichtung gelöscht",
-    "facilityHasBookings": "Diese Klinik kann nicht gelöscht werden, solange sie Buchungen hat ({count}). Buchungsdaten werden für die Patientinnen und Patienten aufbewahrt.",
-    "healthcareProfessionalDeletedSuccessfully": "Gesundheitsfachkraft gelöscht",
     "healthcareProfessionalUpdatedSuccessfully": "Gesundheitsfachkraft aktualisiert",
     "back": "Zurück",
     "hasUnsavedChanges": "Es gibt ungespeicherte Änderungen. Wirklich verlassen?",
-    "deleteConfirmationFacility": "Einrichtung {facility} mit der ID {id} wirklich löschen?",
-    "deleteConfirmationHealthcareProfessional": "Gesundheitsfachkraft {healthcareProfessional} mit der ID {id} wirklich löschen?"
+    "archive": "Archivieren",
+    "unarchive": "Archivierung aufheben",
+    "archiveButtonText": "Archivieren und ausblenden",
+    "archiveTitleFacility": "Diese Einrichtung archivieren?",
+    "archiveTitleHealthcareProfessional": "Diese medizinische Fachkraft archivieren?",
+    "archiveExplanationFacility": "Die Einrichtung {facility} (ID: {id}) wird in der Suche, auf ihrer Klinikseite und bei Buchungen ausgeblendet. Nichts wird gelöscht: Der Eintrag, seine Ärztinnen und Ärzte und sein Verlauf bleiben erhalten, und du kannst die Archivierung später aufheben.",
+    "archiveExplanationHealthcareProfessional": "Die medizinische Fachkraft {healthcareProfessional} (ID: {id}) wird in der Suche und auf ihrer Arztseite ausgeblendet. Nichts wird gelöscht: Der Eintrag und seine Verknüpfungen zu Einrichtungen bleiben erhalten, und du kannst die Archivierung später aufheben.",
+    "archiveReasonLabel": "Grund für die Archivierung (Pflichtfeld)",
+    "archiveReasonPlaceholder": "Zum Beispiel: Die Klinik ist geschlossen",
+    "archiveReasonRequired": "Gib vor dem Archivieren einen Grund ein.",
+    "facilityArchivedSuccessfully": "Einrichtung archiviert. Sie ist öffentlich nicht mehr sichtbar.",
+    "healthcareProfessionalArchivedSuccessfully": "Medizinische Fachkraft archiviert. Sie ist öffentlich nicht mehr sichtbar.",
+    "facilityUnarchivedSuccessfully": "Archivierung der Einrichtung aufgehoben. Sie ist wieder öffentlich.",
+    "healthcareProfessionalUnarchivedSuccessfully": "Archivierung der medizinischen Fachkraft aufgehoben. Sie ist wieder öffentlich.",
+    "unarchiveConfirmationFacility": "Die Einrichtung {facility} (ID: {id}) wieder öffentlich anzeigen?",
+    "unarchiveConfirmationHealthcareProfessional": "Die medizinische Fachkraft {healthcareProfessional} (ID: {id}) wieder öffentlich anzeigen?",
+    "facilityHasUpcomingBookings": "Diese Klinik kann nicht archiviert werden, solange sie anstehende Buchungen hat ({count}). Die Klinik muss sie zuerst beantworten.",
+    "archivedBannerTitle": "Archiviert",
+    "archivedBannerFacility": "Diese Einrichtung ist öffentlich ausgeblendet. Ihr Eintrag bleibt erhalten.",
+    "archivedBannerHealthcareProfessional": "Diese medizinische Fachkraft ist öffentlich ausgeblendet. Ihr Eintrag bleibt erhalten.",
+    "archivedReason": "Grund: {reason}"
   },
   "modCopyId": {
     "facilityId": "Einrichtungs-ID",
@@ -725,7 +743,9 @@
     "professionalNameLocaleNotAllowed": "Eine medizinische Fachkraft hat nur einen Namen in Romaji und einen auf Japanisch.",
     "japaneseMiddleNameNotAllowed": "Der japanische Name hat keinen zweiten Vornamen.",
     "invalidOpeningHours": "Prüfen Sie die Öffnungszeiten: Jeder Zeitraum muss nach seinem Beginn enden, und Zeiträume an einem Tag dürfen sich nicht überschneiden.",
-    "additionalInfoBothLanguages": "Schreiben Sie den Hinweis für Besucher auf Englisch und Japanisch, oder lassen Sie beide Felder leer."
+    "additionalInfoBothLanguages": "Schreiben Sie den Hinweis für Besucher auf Englisch und Japanisch, oder lassen Sie beide Felder leer.",
+    "alreadyArchived": "Dieser Eintrag ist bereits archiviert. Lade die Seite neu, um ihn zu sehen.",
+    "notArchived": "Dieser Eintrag ist nicht archiviert. Lade die Seite neu, um ihn zu sehen."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Gesprochene Sprachen",

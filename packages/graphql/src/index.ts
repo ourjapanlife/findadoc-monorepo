@@ -26,6 +26,19 @@ export enum ActionType {
   Update = 'UPDATE'
 }
 
+/**
+ * Which records a moderation list returns. Archived records are kept but hidden from the public.
+ * Only ACTIVE is open to everyone. ARCHIVED and ALL need the scope to edit that kind of record.
+ */
+export enum ArchiveFilter {
+  /** Records that are not archived. The default. */
+  Active = 'ACTIVE',
+  /** Active and archived records. */
+  All = 'ALL',
+  /** Only archived records. */
+  Archived = 'ARCHIVED'
+}
+
 /** A record of a create, update, or delete action performed on an entity. */
 export type AuditLog = {
   __typename?: 'AuditLog';
@@ -1142,6 +1155,13 @@ export type Facility = {
   /** Short note for visitors in Japanese (#294). Set together with additionalInfoEn, or neither. */
   additionalInfoJa?: Maybe<Scalars['String']['output']>;
   /**
+   * When a moderator archived this facility. Null while it is active.
+   * Archived facilities are hidden from the public, and only moderators can read them.
+   */
+  archivedAt?: Maybe<Scalars['String']['output']>;
+  /** Why a moderator archived this facility. Null when active, and for anyone who cannot edit facilities. */
+  archivedReason?: Maybe<Scalars['String']['output']>;
+  /**
    * True once the clinic owner has saved booking settings for this facility.
    * The clinic page shows Book, and patients may book, only then.
    */
@@ -1304,6 +1324,8 @@ export type FacilityPlaceCandidate = {
 
 /** Search filters for querying facilities. All filters are combined with AND logic. */
 export type FacilitySearchFilters = {
+  /** Active (the default), archived, or both. ARCHIVED and ALL are for moderators. */
+  archive?: InputMaybe<ArchiveFilter>;
   /** Filter by contact information. */
   contact?: InputMaybe<ContactInput>;
   /** Filter by creation date (ISO 8601). */
@@ -1391,6 +1413,13 @@ export type HealthcareProfessional = {
   additionalCredentials: Array<Degree>;
   /** Free-text notes or instructions for patients. */
   additionalInfoForPatients?: Maybe<Scalars['String']['output']>;
+  /**
+   * When a moderator archived this professional. Null while active.
+   * Archived professionals are hidden from the public, and only moderators can read them.
+   */
+  archivedAt?: Maybe<Scalars['String']['output']>;
+  /** Why a moderator archived this professional. Null when active, and for anyone who cannot edit professionals. */
+  archivedReason?: Maybe<Scalars['String']['output']>;
   /** ISO 8601 timestamp of when this record was created. */
   createdDate: Scalars['String']['output'];
   /** Academic or professional degrees held. */
@@ -1419,6 +1448,8 @@ export type HealthcareProfessional = {
 
 /** Search filters for querying healthcare professionals. All filters are combined with AND logic. */
 export type HealthcareProfessionalSearchFilters = {
+  /** Active (the default), archived, or both. ARCHIVED and ALL are for moderators. */
+  archive?: InputMaybe<ArchiveFilter>;
   /** Filter by creation date (ISO 8601). */
   createdDate?: InputMaybe<Scalars['String']['input']>;
   /** Filter by degrees. */
@@ -1713,6 +1744,17 @@ export type MapsPlacePreview = {
 export type Mutation = {
   __typename?: 'Mutation';
   /**
+   * Archive a facility: hide it from the public and booking, and keep the record, its professional
+   * links, and its import rows. The reason is required, at most 500 characters, and only moderators
+   * can read it. A facility with an upcoming requested or confirmed appointment is refused.
+   */
+  archiveFacility: Facility;
+  /**
+   * Archive a healthcare professional: hide them from the public and keep the record and its facility links.
+   * The reason is required, at most 500 characters, and only moderators can read it.
+   */
+  archiveHealthcareProfessional: HealthcareProfessional;
+  /**
    * Short-lived GET URL for a booking upload. Identity files are never inlined in GraphQL.
    * INLINE (the default) opens the file in the browser; ATTACHMENT saves a copy.
    */
@@ -1754,10 +1796,6 @@ export type Mutation = {
   deleteClinicAvailabilityWindow: DeleteResult;
   /** Remove an interpreter. Refused while an upcoming visit holds them (INTERPRETER_HAS_BOOKINGS). */
   deleteClinicInterpreter: DeleteResult;
-  /** Delete a facility by ID. */
-  deleteFacility: DeleteResult;
-  /** Delete a healthcare professional by ID. */
-  deleteHealthcareProfessional: DeleteResult;
   /** Delete a submission by ID. */
   deleteSubmission: DeleteResult;
   /** Invite an email to one clinic. Admins invite anyone; an owner invites staff. */
@@ -1782,6 +1820,10 @@ export type Mutation = {
    * per-address budget. The report waits for a moderator as a CORRECTION submission.
    */
   submitFacilityCorrection: FacilityCorrectionResult;
+  /** Bring an archived facility back. Clears the archive reason. */
+  unarchiveFacility: Facility;
+  /** Bring an archived healthcare professional back. Clears the archive reason. */
+  unarchiveHealthcareProfessional: HealthcareProfessional;
   /** Staff confirm, decline, cancel, complete, or mark a confirmed visit unpaid. Declined and cancelled free the slot. */
   updateBookingAppointmentStatus: BookingAppointment;
   /** Change how the clinic takes the initial fee (online consult v2 §3.3). The clinic owner only. */
@@ -1798,6 +1840,18 @@ export type Mutation = {
   updateSubmission: Submission;
   /** Update an existing user by ID. */
   updateUser: User;
+};
+
+
+export type MutationArchiveFacilityArgs = {
+  id: Scalars['ID']['input'];
+  reason: Scalars['String']['input'];
+};
+
+
+export type MutationArchiveHealthcareProfessionalArgs = {
+  id: Scalars['ID']['input'];
+  reason: Scalars['String']['input'];
 };
 
 
@@ -1878,16 +1932,6 @@ export type MutationDeleteClinicInterpreterArgs = {
 };
 
 
-export type MutationDeleteFacilityArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationDeleteHealthcareProfessionalArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
 export type MutationDeleteSubmissionArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1931,6 +1975,16 @@ export type MutationSubmitBookingArgs = {
 
 export type MutationSubmitFacilityCorrectionArgs = {
   input: FacilityCorrectionInput;
+};
+
+
+export type MutationUnarchiveFacilityArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationUnarchiveHealthcareProfessionalArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -3188,6 +3242,7 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   ActionType: ActionType;
+  ArchiveFilter: ArchiveFilter;
   AuditLog: ResolverTypeWrapper<AuditLog>;
   AvailableCity: ResolverTypeWrapper<AvailableCity>;
   AvailablePrefecture: ResolverTypeWrapper<AvailablePrefecture>;
@@ -3966,6 +4021,8 @@ export type DeleteResultResolvers<ContextType = any, ParentType extends Resolver
 export type FacilityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Facility'] = ResolversParentTypes['Facility']> = {
   additionalInfoEn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   additionalInfoJa?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  archivedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  archivedReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   bookingEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   cityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -4032,6 +4089,8 @@ export type FacilitySubmissionResolvers<ContextType = any, ParentType extends Re
 export type HealthcareProfessionalResolvers<ContextType = any, ParentType extends ResolversParentTypes['HealthcareProfessional'] = ResolversParentTypes['HealthcareProfessional']> = {
   additionalCredentials?: Resolver<Array<ResolversTypes['Degree']>, ParentType, ContextType>;
   additionalInfoForPatients?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  archivedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  archivedReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   degrees?: Resolver<Array<ResolversTypes['Degree']>, ParentType, ContextType>;
   facilityIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -4094,6 +4153,8 @@ export type MapsPlacePreviewResolvers<ContextType = any, ParentType extends Reso
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  archiveFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationArchiveFacilityArgs, 'id' | 'reason'>>;
+  archiveHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationArchiveHealthcareProfessionalArgs, 'id' | 'reason'>>;
   bookingUploadDownloadUrl?: Resolver<ResolversTypes['BookingUploadDownloadUrl'], ParentType, ContextType, RequireFields<MutationBookingUploadDownloadUrlArgs, 'uploadId'>>;
   cancelBookingByToken?: Resolver<ResolversTypes['PatientBookingView'], ParentType, ContextType, RequireFields<MutationCancelBookingByTokenArgs, 'input'>>;
   confirmFacilityPlaceId?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationConfirmFacilityPlaceIdArgs, 'facilityId' | 'placeId'>>;
@@ -4109,8 +4170,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteClinicAvailabilityClosure?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteClinicAvailabilityClosureArgs, 'id'>>;
   deleteClinicAvailabilityWindow?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteClinicAvailabilityWindowArgs, 'id'>>;
   deleteClinicInterpreter?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteClinicInterpreterArgs, 'id'>>;
-  deleteFacility?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteFacilityArgs, 'id'>>;
-  deleteHealthcareProfessional?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteHealthcareProfessionalArgs, 'id'>>;
   deleteSubmission?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationDeleteSubmissionArgs, 'id'>>;
   inviteClinicMember?: Resolver<ResolversTypes['ClinicMember'], ParentType, ContextType, RequireFields<MutationInviteClinicMemberArgs, 'input'>>;
   recordCityPlaceId?: Resolver<ResolversTypes['City'], ParentType, ContextType, RequireFields<MutationRecordCityPlaceIdArgs, 'cityId' | 'placeId'>>;
@@ -4120,6 +4179,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setClinicWeeklyHours?: Resolver<Array<ResolversTypes['ClinicWeeklyHours']>, ParentType, ContextType, RequireFields<MutationSetClinicWeeklyHoursArgs, 'input'>>;
   submitBooking?: Resolver<ResolversTypes['BookingSubmissionResult'], ParentType, ContextType, RequireFields<MutationSubmitBookingArgs, 'input'>>;
   submitFacilityCorrection?: Resolver<ResolversTypes['FacilityCorrectionResult'], ParentType, ContextType, RequireFields<MutationSubmitFacilityCorrectionArgs, 'input'>>;
+  unarchiveFacility?: Resolver<ResolversTypes['Facility'], ParentType, ContextType, RequireFields<MutationUnarchiveFacilityArgs, 'id'>>;
+  unarchiveHealthcareProfessional?: Resolver<ResolversTypes['HealthcareProfessional'], ParentType, ContextType, RequireFields<MutationUnarchiveHealthcareProfessionalArgs, 'id'>>;
   updateBookingAppointmentStatus?: Resolver<ResolversTypes['BookingAppointment'], ParentType, ContextType, RequireFields<MutationUpdateBookingAppointmentStatusArgs, 'input'>>;
   updateBookingPaymentSettings?: Resolver<ResolversTypes['BookingPaymentSettings'], ParentType, ContextType, RequireFields<MutationUpdateBookingPaymentSettingsArgs, 'input'>>;
   updateBookingSettings?: Resolver<ResolversTypes['BookingSettings'], ParentType, ContextType, RequireFields<MutationUpdateBookingSettingsArgs, 'input'>>;

@@ -505,7 +505,11 @@
     "clinicsLoadError": "Impossible de charger les cliniques",
     "nameReview": "Nom à vérifier",
     "statusFilter": "Statut",
-    "reviewFilter": "Vérification"
+    "reviewFilter": "Vérification",
+    "archiveFilter": "Archives",
+    "archiveFilterArchived": "Archivés uniquement",
+    "archiveFilterAll": "Actifs et archivés",
+    "archivedBadge": "Archivé"
   },
   "modFacilitySection": {
     "addresses": "Adresses",
@@ -621,18 +625,32 @@
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Mettre à jour et quitter",
-    "delete": "Supprimer",
     "update": "Mettre à jour",
     "facilityUpdatedSuccessfully": "Établissement mis à jour",
-    "deleteButtonText": "SUPPRIMER DÉFINITIVEMENT",
-    "facilityDeletedSuccessfully": "Établissement supprimé",
-    "facilityHasBookings": "Cette clinique ne peut pas être supprimée tant qu’elle a des réservations ({count}). Les dossiers de réservation sont conservés pour les patients.",
-    "healthcareProfessionalDeletedSuccessfully": "Professionnel de santé supprimé",
     "healthcareProfessionalUpdatedSuccessfully": "Professionnel de santé mis à jour",
     "back": "Retour",
     "hasUnsavedChanges": "Des modifications ne sont pas enregistrées. Quitter quand même ?",
-    "deleteConfirmationFacility": "Supprimer l’établissement {facility}, ID {id} ?",
-    "deleteConfirmationHealthcareProfessional": "Supprimer le professionnel de santé {healthcareProfessional}, ID {id} ?"
+    "archive": "Archiver",
+    "unarchive": "Désarchiver",
+    "archiveButtonText": "Archiver et masquer",
+    "archiveTitleFacility": "Archiver cet établissement ?",
+    "archiveTitleHealthcareProfessional": "Archiver ce professionnel de santé ?",
+    "archiveExplanationFacility": "L'établissement {facility} (ID : {id}) n'apparaîtra plus dans la recherche, sur sa page de clinique ni dans les réservations. Rien n'est supprimé : la fiche, ses médecins et son historique sont conservés, et vous pourrez la désarchiver plus tard.",
+    "archiveExplanationHealthcareProfessional": "Le professionnel de santé {healthcareProfessional} (ID : {id}) n'apparaîtra plus dans la recherche ni sur sa page médecin. Rien n'est supprimé : la fiche et ses liens avec les établissements sont conservés, et vous pourrez la désarchiver plus tard.",
+    "archiveReasonLabel": "Motif de l'archivage (obligatoire)",
+    "archiveReasonPlaceholder": "Par exemple : la clinique a fermé",
+    "archiveReasonRequired": "Indiquez un motif avant d'archiver.",
+    "facilityArchivedSuccessfully": "Établissement archivé. Il n'est plus visible par le public.",
+    "healthcareProfessionalArchivedSuccessfully": "Professionnel de santé archivé. Il n'est plus visible par le public.",
+    "facilityUnarchivedSuccessfully": "Établissement désarchivé. Il est de nouveau public.",
+    "healthcareProfessionalUnarchivedSuccessfully": "Professionnel de santé désarchivé. Il est de nouveau public.",
+    "unarchiveConfirmationFacility": "Rendre l'établissement {facility} (ID : {id}) de nouveau visible par le public ?",
+    "unarchiveConfirmationHealthcareProfessional": "Rendre le professionnel de santé {healthcareProfessional} (ID : {id}) de nouveau visible par le public ?",
+    "facilityHasUpcomingBookings": "Cette clinique ne peut pas être archivée tant qu'elle a des réservations à venir ({count}). La clinique doit d'abord y répondre.",
+    "archivedBannerTitle": "Archivé",
+    "archivedBannerFacility": "Cet établissement est masqué pour le public. Sa fiche est conservée.",
+    "archivedBannerHealthcareProfessional": "Ce professionnel de santé est masqué pour le public. Sa fiche est conservée.",
+    "archivedReason": "Motif : {reason}"
   },
   "modCopyId": {
     "facilityId": "ID de l’établissement",
@@ -678,7 +696,9 @@
     "professionalNameLocaleNotAllowed": "Un professionnel de santé a seulement un nom en romaji et un nom en japonais.",
     "japaneseMiddleNameNotAllowed": "Le nom japonais n'a pas de deuxième prénom.",
     "invalidOpeningHours": "Vérifiez les horaires : chaque plage doit se terminer après son début, et les plages d'un même jour ne peuvent pas se chevaucher.",
-    "additionalInfoBothLanguages": "Rédigez la note pour les visiteurs en anglais et en japonais, ou laissez les deux vides."
+    "additionalInfoBothLanguages": "Rédigez la note pour les visiteurs en anglais et en japonais, ou laissez les deux vides.",
+    "alreadyArchived": "Cette fiche est déjà archivée. Rechargez la page pour la voir.",
+    "notArchived": "Cette fiche n'est pas archivée. Rechargez la page pour la voir."
   },
   "modHealthcareProfessionalSection": {
     "healthcareProfessionalMedicalInfoHeading": "Informations sur le professionnel de santé",

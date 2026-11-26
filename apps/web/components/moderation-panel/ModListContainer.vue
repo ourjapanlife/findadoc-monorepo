@@ -50,6 +50,7 @@ import {
 } from '~/utils/moderationSubmissionStatus'
 import { CORRECTION_REASON_OPTIONS } from '~/utils/facilityCorrection'
 import { runBulkSubmissionAction } from '~/utils/moderationTable'
+import { isArchived } from '~/utils/archive'
 
 const { t } = useI18n()
 
@@ -118,7 +119,7 @@ const rows = computed((): ModerationTableRow[] => {
             href: `/my-page/edit-facility/${facility.id}`,
             testId: `mod-facility-list-item-${index + 1}`,
             linkColumn: 'englishName',
-            badges: [],
+            badges: archivedBadges(facility),
             cells: {
                 englishName: facility.nameEn ?? '',
                 japaneseName: facility.nameJa ?? '',
@@ -133,7 +134,7 @@ const rows = computed((): ModerationTableRow[] => {
             href: `/my-page/edit-healthcare-professional/${professional.id}`,
             testId: `mod-healthcare-professional-list-item-${index + 1}`,
             linkColumn: 'name',
-            badges: [],
+            badges: archivedBadges(professional),
             cells: {
                 name: professionalLabel(professional),
                 facility: linkedFacilitiesCell(professional),
@@ -287,6 +288,13 @@ function linkedFacilitiesCell(professional: HealthcareProfessional): string {
         .map(facility => facility?.nameEn || facility?.nameJa || '')
         .filter(name => name)
         .join(', ')
+}
+
+/** Archived rows only appear when the moderator asks for them, and they say so. */
+function archivedBadges(record: { archivedAt?: string | null }): ModerationTableBadge[] {
+    return isArchived(record)
+        ? [{ label: t('modDashboardTopbar.archivedBadge'), className: 'bg-warning/80' }]
+        : []
 }
 
 function submissionBadges(submission: Submission): ModerationTableBadge[] {

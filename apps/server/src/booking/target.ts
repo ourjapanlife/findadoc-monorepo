@@ -115,7 +115,7 @@ export async function settingsForFacility(facilityId: string | null): Promise<{
 
 async function targetFromFacility(facilityId: string): Promise<BookingTarget | undefined> {
     const facility = await db.selectFrom('facilities')
-        .select(['id', 'name_en', 'name_ja'])
+        .select(['id', 'name_en', 'name_ja', 'archived_at'])
         .where('id', '=', facilityId)
         .executeTakeFirst()
     if (facility === undefined) {
@@ -157,7 +157,8 @@ async function targetFromFacility(facilityId: string): Promise<BookingTarget | u
         allowedDurations: settings.allowedDurations,
         defaultDuration: settings.defaultDuration,
         formDefinitionIds: settings.formDefinitionIds,
-        bookingEnabled: settings.enabled
+        // An archived clinic keeps its bookings for staff, but patients cannot book it.
+        bookingEnabled: settings.enabled && facility.archived_at === null
     }
 }
 

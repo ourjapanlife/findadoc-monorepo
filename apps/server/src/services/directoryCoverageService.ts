@@ -84,6 +84,7 @@ async function loadAvailablePrefectures(): Promise<Result<AvailablePrefecture[]>
                 eb => eb.fn.countAll<string>().as('facility_count')
             ])
             .where('facilities.online', '=', false)
+            .where('facilities.archived_at', 'is', null)
             .groupBy([
                 sql`facilities.contact->'address'->>'prefectureEn'`,
                 sql`facilities.contact->'address'->>'prefectureJa'`
@@ -139,6 +140,7 @@ async function loadAvailableCities(prefectureKey: string | undefined): Promise<R
                 eb => eb.fn.countAll<string>().as('facility_count')
             ])
             .where('facilities.online', '=', false)
+            .where('facilities.archived_at', 'is', null)
             .groupBy(['cities.id', 'prefectures.id'])
 
         if (prefectureKey) {
@@ -196,12 +198,16 @@ async function loadAvailableSpecialties(prefectureKey: string | undefined): Prom
                 join => join.onTrue()
             )
             .leftJoin('hps_facilities', 'hps_facilities.hps_id', 'hps.id')
-            .leftJoin('facilities', 'facilities.id', 'hps_facilities.facilities_id')
+            // An archived facility counts for nothing, and neither does an archived professional.
+            .leftJoin('facilities', join => join
+                .onRef('facilities.id', '=', 'hps_facilities.facilities_id')
+                .on('facilities.archived_at', 'is', null))
             .select([
                 'specialty.value as specialty',
                 sql<string>`count(distinct hps.id)`.as('professional_count'),
                 sql<string>`count(distinct facilities.id)`.as('facility_count')
             ])
+            .where('hps.archived_at', 'is', null)
             .groupBy('specialty.value')
 
         if (prefectureKey) {
@@ -220,7 +226,7 @@ type SpecialtyCountRow = { specialty: string, professional_count: string, facili
 
 /**
  * Turns grouped specialty rows into picker entries, most facilities first, then most
- * professionals. Deleting a facility keeps its professionals, so a specialty that only they hold
+ * professionals. Archiving a facility keeps its professionals, so a specialty that only they hold
  * finds no facility; the picker must not offer it. An unknown specialty value is dropped.
  */
 export function specialtyCoverageFromRows(rows: readonly SpecialtyCountRow[]): AvailableSpecialty[] {
