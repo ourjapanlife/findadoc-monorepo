@@ -2202,7 +2202,11 @@ export type Query = {
    * submitBooking and createBookingUploadUrl refuse with BOOKING_REGION_UNAVAILABLE otherwise.
    */
   bookingAvailable: Scalars['Boolean']['output'];
-  /** One clinic for the dashboard header. Null when the user may not open it. */
+  /**
+   * One clinic for the dashboard header. Needs a clinic scope: an admin's clinic-account scope or a
+   * member's own-clinic booking scope. Anyone else gets UNAUTHORIZED (403). With a scope, null when
+   * the user may not open this clinic or it does not exist.
+   */
   bookingClinic?: Maybe<BookingClinic>;
   /** Every clinic set up for booking, for the admin clinic-account picker. Admins only. Reads no bookings (#192). */
   bookingClinics: Array<BookingClinic>;

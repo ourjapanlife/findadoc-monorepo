@@ -6,9 +6,10 @@ import { db } from '../src/kyselyClient.js'
 import resolvers from '../src/resolvers.js'
 import { Role, Scope, type UserContext } from '../src/auth.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
-import { facilityRolesFrom, withClinicScope } from '../src/booking/facilityRoles.js'
+import { bookingAccessForContext, facilityRolesFrom, withClinicScope } from '../src/booking/facilityRoles.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
 import { envVariables } from '../utils/environmentVariables.js'
+import { logger } from '../src/logger.js'
 
 const info = {} as GraphQLResolveInfo
 // Admins invite members to any clinic. They read no booking without a membership (#192).
@@ -110,5 +111,26 @@ describe('facility roles from clinic_memberships', () => {
         await expect(settings({}, {}, staffRequest(), info)).rejects.toThrow('User is not authorized')
         await expect(read({}, {}, outsiderRequest(), info)).rejects.toThrow('User is not authorized')
         expect(resolver).toHaveBeenCalledTimes(1)
+    })
+
+    it('lets a member in on the own-clinic scope with no denial warning for the admin scope (#194)', async () => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        await clinicAccessService.inviteClinicMember(
+            { facilityId: facilityId(), email: 'quiet-staff@example.com', role: ClinicMemberRole.Staff },
+            admin,
+            'test|admin'
+        )
+        const context = requestFrom('auth0|quiet-staff', 'quiet-staff@example.com')
+        // Load the memberships first. The admin probe in bookingAccessFor logs on its own.
+        await bookingAccessForContext(context)
+        const warn = vi.spyOn(logger, 'warn').mockImplementation(() => logger)
+        vi.spyOn(logger, 'info').mockImplementation(() => logger)
+        const resolver = withClinicScope(
+            [Scope['write:clinic_memberships'], Scope['read:own_clinic_bookings']],
+            async () => 'ran'
+        )
+
+        expect(await resolver({}, {}, context, info)).toBe('ran')
+        expect(warn).not.toHaveBeenCalled()
     })
 })

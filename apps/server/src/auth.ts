@@ -187,13 +187,13 @@ export interface UserContext {
     viewerCountry?: string
 }
 
+type ScopeMatch = 'every' | 'any'
+
 /**
- * Checks if the user is authorized for the given scope.
- * @param request - The Fastify request object containing the decoded JWT.
- * @param requiredScope - The scope to check for authorization. Ex. `read:facilities` or `write:healthcareprofessionals`.
- * @returns {boolean} - True if authorized, false otherwise.
+ * Shared by authorize and authorizeAny. Effective scopes are computed once, and the check logs
+ * one result for the whole list, so a grant on one accepted scope logs no denial for another (#194).
  */
-export function authorize(user: User, requiredScopes: Scope[]): boolean {
+function checkScopes(user: User, scopes: Scope[], match: ScopeMatch): boolean {
     try {
         // Check if we're in a testing environment such as CI/CD or local testing
         // In these cases, we want to skip auth checks to allow for easier testing.
@@ -209,21 +209,47 @@ export function authorize(user: User, requiredScopes: Scope[]): boolean {
         const allUserScopes = getEffectiveScopes(user)
         const currentUserRoles = (user.roles as Role[]) || []
 
-        const hasRequiredScopes = requiredScopes.every((scope: Scope) => allUserScopes.includes(scope))
+        const grantedScopes = scopes.filter(scope => allUserScopes.includes(scope))
+        const isAuthorized = match === 'every'
+            ? grantedScopes.length === scopes.length
+            : grantedScopes.length > 0
 
-        if (!hasRequiredScopes) {
-            logger.warn(`Auth: ❌ User ${user.sub} is NOT authorized for the required scopes: ${requiredScopes.join(', ')}`)
+        if (!isAuthorized) {
+            logger.warn(`Auth: ❌ User ${user.sub} is NOT authorized for the required scopes: ${scopes.join(', ')}`)
             logger.warn(`Auth: User's current roles ${currentUserRoles.join(', ')} and scopes: ${allUserScopes.join(', ')}.`)
         } else {
-            logger.info(`Auth: ✅ User ${user.sub} is authorized for the required scopes: ${requiredScopes.join(', ')}`)
+            const loggedScopes = match === 'every' ? scopes : grantedScopes
+            logger.info(`Auth: ✅ User ${user.sub} is authorized for the required scopes: ${loggedScopes.join(', ')}`)
         }
 
-        return hasRequiredScopes
+        return isAuthorized
     } catch (err) {
         // Have we updated roles in Auth0 that don't match our required scopes?
         logger.error('Error parsing user object', errorLogFields(err))
         return false
     }
+}
+
+/**
+ * Checks if the user is authorized for the given scope.
+ * @param request - The Fastify request object containing the decoded JWT.
+ * @param requiredScope - The scope to check for authorization. Ex. `read:facilities` or `write:healthcareprofessionals`.
+ * @returns {boolean} - True if authorized, false otherwise.
+ */
+export function authorize(user: User, requiredScopes: Scope[]): boolean {
+    return checkScopes(user, requiredScopes, 'every')
+}
+
+/**
+ * True when the user holds at least one of the accepted scopes. One check for the whole list,
+ * so a user allowed by a later scope gets no denial warning for an earlier one (#194).
+ * An empty list allows no one, even under the testing bypass.
+ */
+export function authorizeAny(user: User, acceptedScopes: Scope[]): boolean {
+    if (acceptedScopes.length === 0) {
+        return false
+    }
+    return checkScopes(user, acceptedScopes, 'any')
 }
 
 /** JWT-less requests are stamped with this sub (see initializeAuth). */
@@ -311,7 +337,7 @@ export function withAnyScope<TParent, TArgs, TContext extends UserContext, TResu
     acceptedScopes: Scope[],
     resolver: Resolver<TParent, TArgs, TContext, TResult>
 ): Resolver<TParent, TArgs, TContext, TResult> {
-    return guardResolver(user => acceptedScopes.some(scope => authorize(user, [scope])), resolver)
+    return guardResolver(user => authorizeAny(user, acceptedScopes), resolver)
 }
 
 /** Namespaced email claims. Clinic invites are claimed only when the email is verified. */
