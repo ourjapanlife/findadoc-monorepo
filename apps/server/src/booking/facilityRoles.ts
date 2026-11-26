@@ -1,5 +1,5 @@
 import { GraphQLError, type GraphQLResolveInfo } from 'graphql'
-import { Role, Scope, authorizeAny, type User, type UserContext } from '../auth.js'
+import { Role, Scope, authorizeAnyScope, type User, type UserContext } from '../auth.js'
 import { MEMBERSHIP_ROLE, bookingAccessFor, type BookingAccess } from './access.js'
 
 /**
@@ -57,7 +57,7 @@ export function withClinicScope<TParent, TArgs, TContext extends UserContext, TR
 ): Resolver<TParent, TArgs, TContext, Promise<TResult>> {
     return async (parent, args, context, info) => {
         const user = await userWithFacilityRoles(context)
-        if (!authorizeAny(user, acceptedScopes)) {
+        if (!authorizeAnyScope(user, acceptedScopes)) {
             throw new GraphQLError('User is not authorized', {
                 extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
             })

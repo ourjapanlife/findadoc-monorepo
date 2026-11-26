@@ -190,7 +190,7 @@ export interface UserContext {
 type ScopeMatch = 'every' | 'any'
 
 /**
- * Shared by authorize and authorizeAny. Effective scopes are computed once, and the check logs
+ * Shared by authorize and authorizeAnyScope. Effective scopes are computed once, and the check logs
  * one result for the whole list, so a grant on one accepted scope logs no denial for another (#194).
  */
 function checkScopes(user: User, scopes: Scope[], match: ScopeMatch): boolean {
@@ -245,7 +245,7 @@ export function authorize(user: User, requiredScopes: Scope[]): boolean {
  * so a user allowed by a later scope gets no denial warning for an earlier one (#194).
  * An empty list allows no one, even under the testing bypass.
  */
-export function authorizeAny(user: User, acceptedScopes: Scope[]): boolean {
+export function authorizeAnyScope(user: User, acceptedScopes: Scope[]): boolean {
     if (acceptedScopes.length === 0) {
         return false
     }
@@ -337,7 +337,7 @@ export function withAnyScope<TParent, TArgs, TContext extends UserContext, TResu
     acceptedScopes: Scope[],
     resolver: Resolver<TParent, TArgs, TContext, TResult>
 ): Resolver<TParent, TArgs, TContext, TResult> {
-    return guardResolver(user => authorizeAny(user, acceptedScopes), resolver)
+    return guardResolver(user => authorizeAnyScope(user, acceptedScopes), resolver)
 }
 
 /** Namespaced email claims. Clinic invites are claimed only when the email is verified. */

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {
     ANONYMOUS_USER_SUB,
     authorize,
-    authorizeAny,
+    authorizeAnyScope,
     buildUserContext,
     getEffectiveScopes,
     isAuthenticatedUser,
@@ -226,7 +226,7 @@ describe('authorize()', () => {
     })
 })
 
-describe('authorizeAny()', () => {
+describe('authorizeAnyScope()', () => {
     const reader = { sub: 'auth0|reader', name: 'Reader', email: 'reader@example.com', roles: [Role.User], scope: '' }
 
     function spyOnLogs() {
@@ -240,7 +240,7 @@ describe('authorizeAny()', () => {
         vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
         const logs = spyOnLogs()
 
-        expect(authorizeAny(reader, [Scope['write:facilities'], Scope['read:facilities']])).toBe(true)
+        expect(authorizeAnyScope(reader, [Scope['write:facilities'], Scope['read:facilities']])).toBe(true)
         expect(logs.warn).not.toHaveBeenCalled()
         expect(logs.info).toHaveBeenCalledTimes(1)
         expect(logs.info).toHaveBeenCalledWith(
@@ -252,7 +252,7 @@ describe('authorizeAny()', () => {
         vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
         const logs = spyOnLogs()
 
-        expect(authorizeAny(reader, [Scope['write:facilities'], Scope['delete:facilities']])).toBe(false)
+        expect(authorizeAnyScope(reader, [Scope['write:facilities'], Scope['delete:facilities']])).toBe(false)
         expect(logs.warn).toHaveBeenCalledTimes(2)
         expect(logs.warn).toHaveBeenNthCalledWith(
             1,
@@ -266,20 +266,20 @@ describe('authorizeAny()', () => {
         vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
         const logs = spyOnLogs()
 
-        expect(authorizeAny(undefined as unknown as typeof reader, [Scope['read:facilities']])).toBe(false)
+        expect(authorizeAnyScope(undefined as unknown as typeof reader, [Scope['read:facilities']])).toBe(false)
         expect(logs.warn).toHaveBeenCalledWith('Auth: User is not defined')
     })
 
     it('skips the check in the testing environment', () => {
         vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(true)
 
-        expect(authorizeAny(reader, [Scope['delete:facilities']])).toBe(true)
+        expect(authorizeAnyScope(reader, [Scope['delete:facilities']])).toBe(true)
     })
 
     it('allows no one for an empty list', () => {
         vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(true)
 
-        expect(authorizeAny(reader, [])).toBe(false)
+        expect(authorizeAnyScope(reader, [])).toBe(false)
     })
 })
 
