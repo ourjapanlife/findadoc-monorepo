@@ -219,10 +219,12 @@
                 class="m-0 flex list-none flex-col gap-3 p-0"
             >
                 <li
-                    v-for="professional in professionals"
+                    v-for="(professional, index) in visibleProfessionals"
                     :key="professional.id"
+                    :ref="element => setProfessionalItem(element, index)"
                     data-testid="search-details-professional"
                     class="card flex flex-col gap-3 p-4"
+                    tabindex="-1"
                 >
                     <div class="flex flex-col">
                         <NuxtLink
@@ -276,6 +278,32 @@
                     </p>
                 </li>
             </ul>
+            <!--
+                A clinic can list dozens of doctors. Show a page at a time so the correction prompt
+                below the list stays in reach.
+            -->
+            <div
+                v-if="hiddenProfessionalCount"
+                class="flex flex-wrap gap-2"
+            >
+                <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    data-testid="search-details-show-more-professionals"
+                    @click="showMoreProfessionals"
+                >
+                    {{ showMoreText }}
+                </button>
+                <button
+                    v-if="hiddenProfessionalCount > PROFESSIONALS_PAGE_SIZE"
+                    type="button"
+                    class="btn btn-ghost btn-sm"
+                    data-testid="search-details-show-all-professionals"
+                    @click="showAllProfessionals"
+                >
+                    {{ showAllText }}
+                </button>
+            </div>
         </section>
 
         <!--
@@ -332,7 +360,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch, type ComponentPublicInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { FacilitySource } from '@findadoc/graphql'
 import OpenMapsButton from '~/components/common/OpenMapsButton.vue'
@@ -454,6 +482,46 @@ const listsNoDoctors = computed(() => !props.facility.healthcareProfessionals.le
   && !(props.facility.healthcareProfessionalIds ?? []).length)
 
 const professionalsCountText = computed(() => t('search.professionalsAtFacility', professionals.value.length))
+
+/** How many doctors the details show at first, and how many each "Show more" adds. */
+const PROFESSIONALS_PAGE_SIZE = 5
+
+const visibleProfessionalCount = ref(PROFESSIONALS_PAGE_SIZE)
+const visibleProfessionals = computed(() => professionals.value.slice(0, visibleProfessionalCount.value))
+const hiddenProfessionalCount = computed(() => Math.max(professionals.value.length - visibleProfessionalCount.value, 0))
+const showMoreText = computed(() => t('search.showMoreProfessionals', {
+    n: Math.min(hiddenProfessionalCount.value, PROFESSIONALS_PAGE_SIZE)
+}))
+const showAllText = computed(() => t('search.showAllProfessionals', { n: professionals.value.length }))
+
+// The search panel reuses this component when the reader opens another clinic.
+watch(() => props.facility.id, () => {
+    visibleProfessionalCount.value = PROFESSIONALS_PAGE_SIZE
+})
+
+const professionalItems: HTMLElement[] = []
+
+function setProfessionalItem(element: Element | ComponentPublicInstance | null, index: number) {
+    if (element instanceof HTMLElement) {
+        professionalItems[index] = element
+    }
+}
+
+/** Reveals more doctors and moves focus to the first new one, so keyboard and screen reader users keep their place. */
+async function revealProfessionals(count: number) {
+    const firstNewIndex = visibleProfessionalCount.value
+    visibleProfessionalCount.value = count
+    await nextTick()
+    professionalItems[firstNewIndex]?.focus()
+}
+
+function showMoreProfessionals() {
+    return revealProfessionals(visibleProfessionalCount.value + PROFESSIONALS_PAGE_SIZE)
+}
+
+function showAllProfessionals() {
+    return revealProfessionals(professionals.value.length)
+}
 
 function trackContact(name: 'Call clicked' | 'Website clicked' | 'Email clicked' | 'Maps clicked') {
     if (props.surface === 'search_details') noteSearchDetailsContact()

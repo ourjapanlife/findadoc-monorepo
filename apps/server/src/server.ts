@@ -13,7 +13,7 @@ import { ApolloServerPluginCacheControlDisabled } from '@apollo/server/plugin/di
 import { envVariables } from '../utils/environmentVariables.js'
 import { isAllowedApiOrigin } from './apiCors.js'
 import { apiRateLimitOptions } from './apiRateLimit.js'
-import { buildUserContext, initializeAuth } from './auth.js'
+import { buildUserContext, canReadArchivedFacilities, canReadArchivedProfessionals, initializeAuth } from './auth.js'
 import { createLoaders, type ApiContext } from './loaders.js'
 import { PREFLIGHT_HEADERS, csrfPreventionPlugin, publicCachePlugin } from './publicCache.js'
 import loadSchema from './schema.js'
@@ -153,10 +153,16 @@ export const buildApiServer = async (): Promise<FastifyInstance> => {
         handler: fastifyApolloHandler(apolloServer, {
             //this is where we add the Auth0 user authentication to the context. We can access this context in the resolvers
             //each request also gets its own batch loaders for relation ids (see loaders.ts)
-            context: async (request): Promise<ApiContext> => ({
-                ...await buildUserContext(request),
-                loaders: createLoaders()
-            })
+            context: async (request): Promise<ApiContext> => {
+                const userContext = await buildUserContext(request)
+                return {
+                    ...userContext,
+                    loaders: createLoaders({
+                        includeArchivedFacilities: canReadArchivedFacilities(userContext.user),
+                        includeArchivedProfessionals: canReadArchivedProfessionals(userContext.user)
+                    })
+                }
+            }
         })
     })
 

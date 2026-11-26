@@ -8,6 +8,7 @@ import { generateRandomCreateSubmissionInput, generateRandomUpdateSubmissionInpu
 import { ErrorCode } from '../src/result.js'
 import * as facilityService from '../src/services/facilityService.js'
 import * as submissionService from '../src/services/submissionService.js'
+import { removeTestFacility } from './fixtures/removeTestFacility.js'
 
 const MODERATOR = 'test|moderator'
 const NOT_A_MAPS_LINK = 'https://example.com/clinic'
@@ -31,7 +32,7 @@ async function createFacility(googlePlaceId: string | null = fakeGooglePlaceId()
 
 afterAll(async () => {
     for (const id of createdFacilityIds) {
-        await facilityService.deleteFacility(id, MODERATOR)
+        await removeTestFacility(id)
     }
 })
 

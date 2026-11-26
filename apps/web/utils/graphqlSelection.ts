@@ -91,6 +91,8 @@ const citySelection = selection<City>({
 export const facilitySelection = selection<Facility>({
     additionalInfoEn: true,
     additionalInfoJa: true,
+    archivedAt: true,
+    archivedReason: true,
     bookingEnabled: true,
     city: block('city', citySelection),
     cityId: true,
@@ -118,6 +120,8 @@ export const facilitySelection = selection<Facility>({
 export const professionalSelection = selection<HealthcareProfessional>({
     additionalCredentials: true,
     additionalInfoForPatients: true,
+    archivedAt: true,
+    archivedReason: true,
     createdDate: true,
     degrees: true,
     facilityIds: true,

@@ -140,7 +140,9 @@
     "professionalNameLocaleNotAllowed": "Un professionista sanitario ha solo un nome in romaji e un nome in giapponese.",
     "japaneseMiddleNameNotAllowed": "Il nome giapponese non ha un secondo nome.",
     "invalidOpeningHours": "Controlla gli orari: ogni fascia deve chiudere dopo l'apertura e le fasce dello stesso giorno non possono sovrapporsi.",
-    "additionalInfoBothLanguages": "Scrivi la nota per i visitatori in inglese e in giapponese, oppure lascia vuoti entrambi i campi."
+    "additionalInfoBothLanguages": "Scrivi la nota per i visitatori in inglese e in giapponese, oppure lascia vuoti entrambi i campi.",
+    "alreadyArchived": "Questa scheda è già archiviata. Ricarica la pagina per vederla.",
+    "notArchived": "Questa scheda non è archiviata. Ricarica la pagina per vederla."
   },
   "footer": {
     "poweredBy": "Offerto da {name}",
@@ -373,22 +375,49 @@
     "clinicsLoadError": "Impossibile caricare le cliniche",
     "nameReview": "Nome da verificare",
     "statusFilter": "Stato",
-    "reviewFilter": "Revisione"
+    "reviewFilter": "Revisione",
+    "archiveFilter": "Archivio",
+    "archiveFilterActive": "Solo attivi",
+    "archiveFilterArchived": "Solo archiviati",
+    "archiveFilterAll": "Attivi e archiviati",
+    "archivedBadge": "Archiviato"
   },
   "modEditFacilityOrHPTopbar": {
-    "delete": "Elimina",
-    "deleteButtonText": "ELIMINA DEFINITIVAMENTE",
     "update": "Aggiorna",
     "updateAndExit": "Aggiorna & Esci",
-    "facilityDeletedSuccessfully": "Struttura eliminata con successo",
-    "facilityHasBookings": "Questa clinica non può essere eliminata finché ha prenotazioni ({count}). I dati delle prenotazioni vengono conservati per i pazienti.",
     "facilityUpdatedSuccessfully": "Struttura aggiornata con successo",
-    "healthcareProfessionalDeletedSuccessfully": "Professionista sanitario eliminato con successo",
     "healthcareProfessionalUpdatedSuccessfully": "Professionista sanitario aggiornato con successo",
     "back": "Indietro",
     "hasUnsavedChanges": "Ci sono modifiche non salvate. Uscire comunque?",
-    "deleteConfirmationFacility": "Eliminare la struttura {facility}, ID {id}?",
-    "deleteConfirmationHealthcareProfessional": "Eliminare il professionista sanitario {healthcareProfessional}, ID {id}?"
+    "archive": "Archivia",
+    "unarchive": "Ripristina dall'archivio",
+    "archiveButtonText": "Archivia e nascondi",
+    "archiveTitleFacility": "Archiviare questa struttura?",
+    "archiveTitleHealthcareProfessional": "Archiviare questo professionista sanitario?",
+    "archiveExplanationFacility": "La struttura {facility} (ID: {id}) non comparirà più nella ricerca, nella sua pagina della clinica e nelle prenotazioni. Non viene eliminato nulla: la scheda, i suoi medici e la sua cronologia restano, e potrai ripristinarla dall'archivio in seguito.",
+    "archiveExplanationHealthcareProfessional": "Il professionista sanitario {healthcareProfessional} (ID: {id}) non comparirà più nella ricerca e nella sua pagina medico. Non viene eliminato nulla: la scheda e i collegamenti alle strutture restano, e potrai ripristinarla dall'archivio in seguito.",
+    "archiveReasonLabel": "Motivo dell'archiviazione (obbligatorio)",
+    "archiveReasonPlaceholder": "Ad esempio: la clinica ha chiuso",
+    "archiveReasonRequired": "Inserisci un motivo prima di archiviare.",
+    "facilityArchivedSuccessfully": "Struttura archiviata. Non è più visibile al pubblico.",
+    "healthcareProfessionalArchivedSuccessfully": "Professionista sanitario archiviato. Non è più visibile al pubblico.",
+    "facilityUnarchivedSuccessfully": "Struttura ripristinata dall'archivio. È di nuovo pubblica.",
+    "healthcareProfessionalUnarchivedSuccessfully": "Professionista sanitario ripristinato dall'archivio. È di nuovo pubblico.",
+    "unarchiveConfirmationFacility": "Mostrare di nuovo al pubblico la struttura {facility} (ID: {id})?",
+    "unarchiveConfirmationHealthcareProfessional": "Mostrare di nuovo al pubblico il professionista sanitario {healthcareProfessional} (ID: {id})?",
+    "facilityHasUpcomingBookings": "Questa clinica non può essere archiviata finché ha prenotazioni in arrivo ({count}). Ognuna deve prima essere rifiutata, annullata o già passata.",
+    "archivedBannerTitle": "Archiviato",
+    "archivedBannerFacility": "Questa struttura è nascosta al pubblico. La sua scheda è conservata.",
+    "archivedBannerHealthcareProfessional": "Questo professionista sanitario è nascosto al pubblico. La sua scheda è conservata.",
+    "archivedReason": "Motivo: {reason}"
+  },
+  "modCopyId": {
+    "facilityId": "ID struttura",
+    "healthcareProfessionalId": "ID professionista",
+    "copy": "Copia",
+    "copied": "Copiato",
+    "copyFailed": "Impossibile copiare l’ID. Selezionalo e copialo a mano.",
+    "copyLabel": "Copia {label} {id}"
   },
   "modEditSubmissionTopNav": {
     "updateAndExit": "Aggiorna & Esci",
@@ -626,7 +655,9 @@
     "placeholderTextNoteInput": "es. in attesa di una richiamata dalla clinica",
     "successMessageUpdated": "Invio aggiornato",
     "successMessageApproved": "Invio approvato",
-    "useExistingFacility": "Usa questa clinica"
+    "useExistingFacility": "Usa questa clinica",
+    "linkedRecordsFailed": "Impossibile caricare la struttura o il professionista collegato. Approvando ora verrebbe aggiunto come nuovo. Riprova.",
+    "retryLinkedRecords": "Riprova"
   },
   "specialties": {
     "allergyAndImmunology": "Allergologo/Allergologa",
@@ -711,6 +742,17 @@
     "lungsAndBreathing": "Polmoni e respirazione",
     "pharmacyAndGenetics": "Farmacia e genetica",
     "surgeryAndAnesthesia": "Chirurgia e anestesia"
+  },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "koshinetsuHokuriku": "Koshinetsu e Hokuriku",
+    "tokai": "Tokai",
+    "kansai": "Kansai",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu e Okinawa"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Lingue parlate",
@@ -819,6 +861,10 @@
     "searchLanguageLabel": "In quale lingua?",
     "searchAreaLabel": "Dove?",
     "searchAnyArea": "In tutto il Giappone",
+    "searchWholeRegion": "Tutta la regione {region}",
+    "searchPrefectureLabel": "Prefettura",
+    "searchAnyPrefecture": "Qualsiasi prefettura",
+    "searchAnyPrefectureInRegion": "Ovunque in questa regione",
     "searchCityLabel": "Città",
     "searchAnyCity": "Qualsiasi città",
     "searchAnyLanguage": "Qualsiasi lingua",
@@ -862,6 +908,8 @@
     "resultsRegion": "Risultati della ricerca",
     "moreProfessionals": "+{n} altri",
     "professionalsAtFacility": "Nessun professionista | 1 professionista | {n} professionisti",
+    "showMoreProfessionals": "Mostra altri {n}",
+    "showAllProfessionals": "Mostra tutti ({n})",
     "noProfessionalsYet": "Nessun medico ancora elencato",
     "noProfessionalsNote": "Non abbiamo ancora informazioni sui singoli medici di questa clinica. Le informazioni sulla clinica qui sopra restano valide.",
     "addProfessional": "Conosci un medico qui? Aggiungilo",

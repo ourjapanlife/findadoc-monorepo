@@ -439,7 +439,9 @@
     "labelModNoteInput": "モデレーターのメモ",
     "placeholderTextNoteInput": "例: クリニックからの折り返し待ち",
     "successMessageUpdated": "投稿を更新しました",
-    "successMessageApproved": "投稿を承認しました"
+    "successMessageApproved": "投稿を承認しました",
+    "linkedRecordsFailed": "紐づいた施設または医療従事者を読み込めませんでした。このまま承認すると新規として追加されます。もう一度お試しください。",
+    "retryLinkedRecords": "もう一度試す"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "医療機関名が不明",
@@ -461,7 +463,12 @@
     "clinicsLoadError": "クリニックを読み込めませんでした",
     "nameReview": "名前の確認が必要",
     "statusFilter": "ステータス",
-    "reviewFilter": "レビュー"
+    "reviewFilter": "レビュー",
+    "archiveFilter": "アーカイブ",
+    "archiveFilterActive": "有効なもののみ",
+    "archiveFilterArchived": "アーカイブ済みのみ",
+    "archiveFilterAll": "公開中とアーカイブ済み",
+    "archivedBadge": "アーカイブ済み"
   },
   "modFacilitySection": {
     "addresses": "住所",
@@ -577,18 +584,40 @@
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新して終了",
-    "delete": "削除",
     "update": "更新",
     "facilityUpdatedSuccessfully": "医療機関を更新しました",
-    "deleteButtonText": "完全に削除",
-    "facilityDeletedSuccessfully": "医療機関を削除しました",
-    "facilityHasBookings": "予約（{count}件）があるため、このクリニックは削除できません。予約の記録は患者のために保管されます。",
-    "healthcareProfessionalDeletedSuccessfully": "医療従事者を削除しました",
     "healthcareProfessionalUpdatedSuccessfully": "医療従事者を更新しました",
     "back": "戻る",
     "hasUnsavedChanges": "保存していない変更があります。このページを離れますか？",
-    "deleteConfirmationFacility": "医療機関「{facility}」（ID: {id}）を削除しますか？",
-    "deleteConfirmationHealthcareProfessional": "医療従事者「{healthcareProfessional}」（ID: {id}）を削除しますか？"
+    "archive": "アーカイブ",
+    "unarchive": "アーカイブを解除",
+    "archiveButtonText": "アーカイブして非公開にする",
+    "archiveTitleFacility": "この医療機関をアーカイブしますか？",
+    "archiveTitleHealthcareProfessional": "この医療従事者をアーカイブしますか？",
+    "archiveExplanationFacility": "医療機関「{facility}」（ID: {id}）は、検索、クリニックページ、予約に表示されなくなります。削除はされません。記録、医師、履歴は保管され、後でアーカイブを解除できます。",
+    "archiveExplanationHealthcareProfessional": "医療従事者「{healthcareProfessional}」（ID: {id}）は、検索と医師ページに表示されなくなります。削除はされません。記録と医療機関とのつながりは保管され、後でアーカイブを解除できます。",
+    "archiveReasonLabel": "アーカイブの理由（必須）",
+    "archiveReasonPlaceholder": "例：閉院した",
+    "archiveReasonRequired": "アーカイブする前に理由を入力してください。",
+    "facilityArchivedSuccessfully": "医療機関をアーカイブしました。一般には表示されません。",
+    "healthcareProfessionalArchivedSuccessfully": "医療従事者をアーカイブしました。一般には表示されません。",
+    "facilityUnarchivedSuccessfully": "医療機関のアーカイブを解除しました。再び公開されます。",
+    "healthcareProfessionalUnarchivedSuccessfully": "医療従事者のアーカイブを解除しました。再び公開されます。",
+    "unarchiveConfirmationFacility": "医療機関「{facility}」（ID: {id}）を再び公開しますか？",
+    "unarchiveConfirmationHealthcareProfessional": "医療従事者「{healthcareProfessional}」（ID: {id}）を再び公開しますか？",
+    "facilityHasUpcomingBookings": "今後の予約（{count}件）があるため、このクリニックはアーカイブできません。各予約が辞退・キャンセルされるか、予約日時が過ぎるまでお待ちください。",
+    "archivedBannerTitle": "アーカイブ済み",
+    "archivedBannerFacility": "この医療機関は一般に表示されていません。記録は保管されています。",
+    "archivedBannerHealthcareProfessional": "この医療従事者は一般に表示されていません。記録は保管されています。",
+    "archivedReason": "理由：{reason}"
+  },
+  "modCopyId": {
+    "facilityId": "施設ID",
+    "healthcareProfessionalId": "医療従事者ID",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "copyFailed": "IDをコピーできませんでした。選択して手動でコピーしてください。",
+    "copyLabel": "{label} {id} をコピー"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "うまくいきませんでした。もう一度お試しください。",
@@ -626,7 +655,9 @@
     "professionalNameLocaleNotAllowed": "医療従事者の名前はローマ字と日本語の2つだけです。",
     "japaneseMiddleNameNotAllowed": "日本語の名前にはミドルネームを入れません。",
     "invalidOpeningHours": "診療時間を確認してください。終了時刻は開始時刻より後にし、同じ曜日の時間帯は重ならないようにしてください。",
-    "additionalInfoBothLanguages": "来院者向けのご案内は英語と日本語の両方で書くか、両方とも空欄にしてください。"
+    "additionalInfoBothLanguages": "来院者向けのご案内は英語と日本語の両方で書くか、両方とも空欄にしてください。",
+    "alreadyArchived": "この記録はすでにアーカイブされています。ページを再読み込みしてください。",
+    "notArchived": "この記録はアーカイブされていません。ページを再読み込みしてください。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "対応言語",
@@ -720,6 +751,17 @@
     "lungsAndBreathing": "呼吸器",
     "pharmacyAndGenetics": "薬局・遺伝",
     "surgeryAndAnesthesia": "外科・麻酔科"
+  },
+  "regions": {
+    "hokkaido": "北海道",
+    "tohoku": "東北",
+    "kanto": "関東",
+    "koshinetsuHokuriku": "甲信越・北陸",
+    "tokai": "東海",
+    "kansai": "関西",
+    "chugoku": "中国",
+    "shikoku": "四国",
+    "kyushu": "九州・沖縄"
   },
   "noteInputField": {
     "optional": "（任意）"
@@ -825,6 +867,10 @@
     "searchLanguageLabel": "希望する言語は？",
     "searchAreaLabel": "エリアは？",
     "searchAnyArea": "日本全国",
+    "searchWholeRegion": "{region}全域",
+    "searchPrefectureLabel": "都道府県",
+    "searchAnyPrefecture": "すべての都道府県",
+    "searchAnyPrefectureInRegion": "この地方のすべて",
     "searchCityLabel": "市区町村",
     "searchAnyCity": "すべての市区町村",
     "searchAnyLanguage": "すべての言語",
@@ -868,6 +914,8 @@
     "resultsRegion": "検索結果",
     "moreProfessionals": "他 {n} 名",
     "professionalsAtFacility": "医療従事者の掲載なし | 医療従事者 1 名 | 医療従事者 {n} 名",
+    "showMoreProfessionals": "さらに {n} 名を表示",
+    "showAllProfessionals": "全 {n} 名を表示",
     "noProfessionalsYet": "医師の掲載はまだありません",
     "noProfessionalsNote": "このクリニックの個々の医師の情報はまだありません。上記のクリニック情報はそのままご利用いただけます。",
     "addProfessional": "ここの医師をご存じですか？追加する",

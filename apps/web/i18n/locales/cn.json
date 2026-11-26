@@ -439,7 +439,9 @@
     "placeholderTextNoteInput": "例如：等待诊所回电",
     "successMessageUpdated": "提交已更新",
     "successMessageApproved": "提交已批准",
-    "useExistingFacility": "使用此医疗机构"
+    "useExistingFacility": "使用此医疗机构",
+    "linkedRecordsFailed": "无法加载关联的机构或医疗人员。现在批准会将其作为新记录添加。请重试。",
+    "retryLinkedRecords": "重试"
   },
   "modPanelSubmissionLeftNavbar": {
     "facilityNameUnknown": "医疗机构名称未知",
@@ -461,7 +463,12 @@
     "clinicsLoadError": "无法加载诊所",
     "nameReview": "需要核对姓名",
     "statusFilter": "状态",
-    "reviewFilter": "审核"
+    "reviewFilter": "审核",
+    "archiveFilter": "归档",
+    "archiveFilterActive": "仅有效",
+    "archiveFilterArchived": "仅已归档",
+    "archiveFilterAll": "公开和已归档",
+    "archivedBadge": "已归档"
   },
   "modFacilitySection": {
     "addresses": "地址",
@@ -577,18 +584,40 @@
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "更新并退出",
-    "delete": "删除",
     "update": "更新",
     "facilityUpdatedSuccessfully": "医疗机构已更新",
-    "deleteButtonText": "永久删除",
-    "facilityDeletedSuccessfully": "医疗机构已删除",
-    "facilityHasBookings": "该诊所有预约（{count} 条），因此无法删除。预约记录会为患者保留。",
-    "healthcareProfessionalDeletedSuccessfully": "医疗人员已删除",
     "healthcareProfessionalUpdatedSuccessfully": "医疗人员已更新",
     "back": "返回",
     "hasUnsavedChanges": "有未保存的更改。确定离开吗？",
-    "deleteConfirmationFacility": "确定删除医疗机构：{facility}，ID：{id}？",
-    "deleteConfirmationHealthcareProfessional": "确定删除医疗人员：{healthcareProfessional}，ID：{id}？"
+    "archive": "归档",
+    "unarchive": "取消归档",
+    "archiveButtonText": "归档并隐藏",
+    "archiveTitleFacility": "要归档此医疗机构吗？",
+    "archiveTitleHealthcareProfessional": "要归档此医疗专业人员吗？",
+    "archiveExplanationFacility": "医疗机构“{facility}”（ID：{id}）将不再出现在搜索、诊所页面和预约中。不会删除任何内容：记录、医生和历史都会保留，之后可以取消归档。",
+    "archiveExplanationHealthcareProfessional": "医疗专业人员“{healthcareProfessional}”（ID：{id}）将不再出现在搜索和医生页面中。不会删除任何内容：记录及其与医疗机构的关联都会保留，之后可以取消归档。",
+    "archiveReasonLabel": "归档原因（必填）",
+    "archiveReasonPlaceholder": "例如：诊所已关闭",
+    "archiveReasonRequired": "归档前请填写原因。",
+    "facilityArchivedSuccessfully": "医疗机构已归档，公众将看不到它。",
+    "healthcareProfessionalArchivedSuccessfully": "医疗专业人员已归档，公众将看不到。",
+    "facilityUnarchivedSuccessfully": "医疗机构已取消归档，重新公开。",
+    "healthcareProfessionalUnarchivedSuccessfully": "医疗专业人员已取消归档，重新公开。",
+    "unarchiveConfirmationFacility": "要重新公开医疗机构“{facility}”（ID：{id}）吗？",
+    "unarchiveConfirmationHealthcareProfessional": "要重新公开医疗专业人员“{healthcareProfessional}”（ID：{id}）吗？",
+    "facilityHasUpcomingBookings": "此诊所还有即将到来的预约（{count}），无法归档。每个预约都需要先被拒绝、取消，或已过预约时间。",
+    "archivedBannerTitle": "已归档",
+    "archivedBannerFacility": "此医疗机构对公众隐藏，记录仍然保留。",
+    "archivedBannerHealthcareProfessional": "此医疗专业人员对公众隐藏，记录仍然保留。",
+    "archivedReason": "原因：{reason}"
+  },
+  "modCopyId": {
+    "facilityId": "机构 ID",
+    "healthcareProfessionalId": "医疗人员 ID",
+    "copy": "复制",
+    "copied": "已复制",
+    "copyFailed": "无法复制 ID。请选中后手动复制。",
+    "copyLabel": "复制{label} {id}"
   },
   "serverErrorMessages": {
     "genericErrorMessage": "操作未成功，请重试。",
@@ -626,7 +655,9 @@
     "professionalNameLocaleNotAllowed": "医疗人员只有罗马字姓名和日文姓名。",
     "japaneseMiddleNameNotAllowed": "日文姓名没有中间名。",
     "invalidOpeningHours": "请检查营业时间：每个时段的结束时间必须晚于开始时间，同一天的时段不能重叠。",
-    "additionalInfoBothLanguages": "请用英语和日语填写访客说明，或两者都留空。"
+    "additionalInfoBothLanguages": "请用英语和日语填写访客说明，或两者都留空。",
+    "alreadyArchived": "此记录已归档。请重新加载页面查看。",
+    "notArchived": "此记录未归档。请重新加载页面查看。"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "使用语言",
@@ -720,6 +751,17 @@
     "lungsAndBreathing": "呼吸系统",
     "pharmacyAndGenetics": "药房与遗传",
     "surgeryAndAnesthesia": "外科与麻醉"
+  },
+  "regions": {
+    "hokkaido": "北海道",
+    "tohoku": "东北",
+    "kanto": "关东",
+    "koshinetsuHokuriku": "甲信越・北陆",
+    "tokai": "东海",
+    "kansai": "关西",
+    "chugoku": "中国",
+    "shikoku": "四国",
+    "kyushu": "九州・冲绳"
   },
   "noteInputField": {
     "optional": "（可选）"
@@ -819,6 +861,10 @@
     "searchLanguageLabel": "使用哪种语言？",
     "searchAreaLabel": "在哪里？",
     "searchAnyArea": "日本全国",
+    "searchWholeRegion": "{region}全域",
+    "searchPrefectureLabel": "都道府县",
+    "searchAnyPrefecture": "所有都道府县",
+    "searchAnyPrefectureInRegion": "该地区所有地方",
     "searchCityLabel": "城市",
     "searchAnyCity": "所有城市",
     "searchAnyLanguage": "所有语言",
@@ -862,6 +908,8 @@
     "resultsRegion": "搜索结果",
     "moreProfessionals": "还有 {n} 个",
     "professionalsAtFacility": "暂无人员 | 1 位人员 | {n} 位人员",
+    "showMoreProfessionals": "再显示 {n} 位",
+    "showAllProfessionals": "显示全部 {n} 位",
     "noProfessionalsYet": "暂未列出医生",
     "noProfessionalsNote": "我们还没有这家诊所具体医生的信息。上方的诊所信息仍然有效。",
     "addProfessional": "认识这里的医生？添加医生",

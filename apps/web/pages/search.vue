@@ -81,6 +81,9 @@ function applyQuery(query: LocationQuery) {
     if (searchResultsStore.selectedPrefecture !== state.prefecture) {
         searchResultsStore.selectedPrefecture = state.prefecture
     }
+    if (searchResultsStore.selectedRegion !== state.region) {
+        searchResultsStore.selectedRegion = state.region
+    }
     if (searchResultsStore.selectedSpecialtyGroup !== state.specialtyGroup) {
         searchResultsStore.selectedSpecialtyGroup = state.specialtyGroup
     }

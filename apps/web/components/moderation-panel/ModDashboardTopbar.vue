@@ -35,15 +35,25 @@
             </div>
         </div>
         <div
-            v-if="showReviewFilter"
+            v-if="showReviewFilter || showArchiveFilter"
             class="flex w-full min-w-0 flex-wrap items-center gap-2"
         >
             <FilterChip
+                v-if="showReviewFilter"
                 :model-value="reviewSelection"
                 :items="reviewItems"
                 :label="t('modDashboardTopbar.reviewFilter')"
                 test-id="mod-review-filter"
                 @update:model-value="setReviewSelection"
+            />
+            <FilterChip
+                v-if="showArchiveFilter"
+                :model-value="archiveSelection"
+                :items="archiveItems"
+                :label="t('modDashboardTopbar.archiveFilter')"
+                :default-value="defaultArchiveSelection"
+                test-id="mod-archive-filter"
+                @update:model-value="setArchiveSelection"
             />
         </div>
         <div
@@ -54,6 +64,7 @@
                 :model-value="moderationSubmissionsStore.selectedSubmissionQueues"
                 :items="queueItems"
                 :label="t('modDashboardTopbar.statusFilter')"
+                :default-value="defaultQueues"
                 test-id="mod-submission-status-filter"
                 multiselect
                 @update:model-value="moderationSubmissionsStore.setSelectedSubmissionQueues"
@@ -64,10 +75,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { SubmissionQueue } from '@findadoc/graphql'
+import { ArchiveFilter, SubmissionQueue } from '@findadoc/graphql'
+import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import FilterChip from '~/components/common/FilterChip.vue'
 import {
     SelectedModerationListView,
+    DEFAULT_SUBMISSION_QUEUES,
     SUBMISSION_QUEUES,
     useModerationSubmissionsStore
 } from '~/stores/moderationSubmissionsStore'
@@ -82,6 +95,7 @@ import { useI18n } from '#imports'
 const { t } = useI18n()
 const moderationSubmissionsStore = useModerationSubmissionsStore()
 const healthcareProfessionalsStore = useHealthcareProfessionalsStore()
+const facilitiesStore = useFacilitiesStore()
 const accessStore = useCurrentUserAccessStore()
 
 const showAddHpButton = computed(() =>
@@ -121,6 +135,35 @@ function setReviewSelection(selection: ProfessionalReviewQueue[]) {
     healthcareProfessionalsStore.setReviewQueue(selection[0] ?? null)
 }
 
+const showArchiveFilter = computed(() =>
+    moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.Facilities
+    || moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.HealthcareProfessionals)
+
+/** Archived records are kept but hidden from the public. The list starts on the active ones. */
+const defaultArchiveSelection = [ArchiveFilter.Active]
+
+const archiveItems = computed(() => [
+    { value: ArchiveFilter.Active, label: t('modDashboardTopbar.archiveFilterActive') },
+    { value: ArchiveFilter.Archived, label: t('modDashboardTopbar.archiveFilterArchived') },
+    { value: ArchiveFilter.All, label: t('modDashboardTopbar.archiveFilterAll') }
+])
+
+const archiveSelection = computed<ArchiveFilter[]>(() => {
+    const current = moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.Facilities
+        ? facilitiesStore.archiveFilter
+        : healthcareProfessionalsStore.archiveFilter
+    return [current]
+})
+
+function setArchiveSelection(selection: ArchiveFilter[]) {
+    const next = selection[0] ?? ArchiveFilter.Active
+    if (moderationSubmissionsStore.selectedModerationListViewChosen === SelectedModerationListView.Facilities) {
+        facilitiesStore.setArchiveFilter(next)
+        return
+    }
+    healthcareProfessionalsStore.setArchiveFilter(next)
+}
+
 // Literal t() calls, so i18n/cleanUnusedLocaleKeys.js sees each key as used.
 const QUEUE_LABEL_KEYS: Record<SubmissionQueue, () => string> = {
     [SubmissionQueue.New]: () => t('modDashboardLeftNav.new'),
@@ -130,7 +173,9 @@ const QUEUE_LABEL_KEYS: Record<SubmissionQueue, () => string> = {
     [SubmissionQueue.UserFeedback]: () => t('modDashboardLeftNav.userFeedback')
 }
 
-/** Five queues (#22), all shown by default. A moderator unticks the ones to hide (#313). */
+const defaultQueues = [...DEFAULT_SUBMISSION_QUEUES]
+
+/** Five queues (#22). New is ticked by default, and a moderator ticks more to add them (#313). */
 const queueItems = computed(() => SUBMISSION_QUEUES.map(queue => ({
     value: queue,
     label: QUEUE_LABEL_KEYS[queue](),

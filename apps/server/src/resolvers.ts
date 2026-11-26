@@ -6,7 +6,9 @@ import {
     UserContext,
     Scope,
     getEffectiveScopes,
-    canReadModeratorNotes
+    canReadModeratorNotes,
+    canReadArchivedFacilities,
+    canReadArchivedProfessionals
 } from './auth.js'
 import { bookingAccessForContext, userWithFacilityRoles, withClinicScope } from './booking/facilityRoles.js'
 import { allowBookingCall, type BookingBudget } from './booking/rateLimits.js'
@@ -32,6 +34,7 @@ import * as clinicAccessService from './services/clinicAccessService.js'
 import * as interpreterService from './services/interpreterService.js'
 import * as paymentSettingsService from './services/paymentSettingsService.js'
 import * as taxonomyService from './services/taxonomyService.js'
+import * as archiveService from './services/archiveService.js'
 import { envVariables } from '../utils/environmentVariables.js'
 import { ErrorCode, Result } from './result.js'
 import { logger } from './logger.js'
@@ -238,27 +241,36 @@ const resolvers = {
             args.to,
             await bookingAccessForContext(context)
         )),
-        facility: withScope(Scope['read:facilities'], async (_parent: unknown, args: { id: string; })
+        facility: withScope(Scope['read:facilities'], async (_parent: unknown, args: { id: string; },
+            context: UserContext)
         : Promise<FacilityParent> => {
-            const queryResults = await facilityService.getFacilityById(args.id)
+            const queryResults = await facilityService.getFacilityById(args.id, {
+                includeArchived: canReadArchivedFacilities(context.user)
+            })
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data
         }),
         facilityByGooglePlaceId: withScope(Scope['read:facilities'], async (
             _parent: unknown,
-            args: { placeId: string }
+            args: { placeId: string },
+            context: UserContext
         ): Promise<FacilityParent | null> => {
-            const queryResults = await facilityService.getFacilityByGooglePlaceId(args.placeId.trim())
+            const queryResults = await facilityService.getFacilityByGooglePlaceId(args.placeId.trim(), {
+                includeArchived: canReadArchivedFacilities(context.user)
+            })
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data
         }),
         facilityMatchingMapsUrl: withScope(Scope['read:facilities'], async (
             _parent: unknown,
-            args: { url: string }
+            args: { url: string },
+            context: UserContext
         ): Promise<FacilityParent | null> => {
-            const queryResults = await facilityService.getFacilityMatchingMapsUrl(args.url.trim())
+            const queryResults = await facilityService.getFacilityMatchingMapsUrl(args.url.trim(), {
+                includeArchived: canReadArchivedFacilities(context.user)
+            })
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data
@@ -291,31 +303,40 @@ const resolvers = {
         facilities: withScope(Scope['read:facilities'], async (_parent: unknown, args: { filters: gqlType.FacilitySearchFilters }, context: UserContext,
             info: GraphQLResolveInfo)
         : Promise<FacilityParent[]> => {
+            assertArchiveFilterAllowed(args.filters?.archive, canReadArchivedFacilities(context.user))
             const queryResults = await facilityService.searchFacilities(args.filters, facilityListMaxLimit(info))
 
             convertErrorsToGqlErrors(queryResults)
             return queryResults.data
         }),
-        facilitiesTotalCount: withScope(Scope['read:facilities'], async (_parent: unknown, args: { filters: gqlType.FacilitySearchFilters })
+        facilitiesTotalCount: withScope(Scope['read:facilities'], async (_parent: unknown, args: {
+            filters: gqlType.FacilitySearchFilters
+        }, context: UserContext)
         : Promise<number> => {
+            assertArchiveFilterAllowed(args.filters?.archive, canReadArchivedFacilities(context.user))
             const countResults = await facilityService.countFacilities(args.filters)
 
             convertErrorsToGqlErrors(countResults)
             return countResults.data
         }),
 
-        healthcareProfessional: withScope(Scope['read:healthcareprofessionals'], async (_parent: unknown, args: { id: string; })
+        healthcareProfessional: withScope(Scope['read:healthcareprofessionals'], async (_parent: unknown, args: {
+            id: string
+        }, context: UserContext)
         : Promise<ProfessionalParent> => {
             const matchingHealthcareProfessionalResult =
-                await healthcareProfessionalService.getHealthcareProfessionalById(args.id)
+                await healthcareProfessionalService.getHealthcareProfessionalById(args.id, {
+                    includeArchived: canReadArchivedProfessionals(context.user)
+                })
 
             convertErrorsToGqlErrors(matchingHealthcareProfessionalResult)
             return matchingHealthcareProfessionalResult.data
         }),
         healthcareProfessionals: withScope(Scope['read:healthcareprofessionals'], async (_parent: unknown, args: {
             filters: gqlType.HealthcareProfessionalSearchFilters
-        })
+        }, context: UserContext)
         : Promise<ProfessionalParent[]> => {
+            assertArchiveFilterAllowed(args.filters?.archive, canReadArchivedProfessionals(context.user))
             const queryResults = await healthcareProfessionalService.searchProfessionals(args.filters)
 
             convertErrorsToGqlErrors(queryResults)
@@ -325,8 +346,9 @@ const resolvers = {
 
         healthcareProfessionalsTotalCount: withScope(Scope['read:healthcareprofessionals'], async (_parent: unknown, args: {
             filters: gqlType.HealthcareProfessionalSearchFilters
-        })
+        }, context: UserContext)
         : Promise<number> => {
+            assertArchiveFilterAllowed(args.filters?.archive, canReadArchivedProfessionals(context.user))
             const countResults =
                 await healthcareProfessionalService.countProfessionals(args.filters)
 
@@ -472,13 +494,19 @@ const resolvers = {
         },
         // Internal. The public only sees japaneseInsurance.
         japaneseInsuranceSource: (parent: FacilityParent, _args: unknown, context: ApiContext): string | null =>
-            canReadModeratorNotes(context.user) ? parent.japaneseInsuranceSource ?? null : null
+            canReadModeratorNotes(context.user) ? parent.japaneseInsuranceSource ?? null : null,
+        // A moderator note. Only users who can see archived facilities read it.
+        archivedReason: (parent: FacilityParent, _args: unknown, context: ApiContext): string | null =>
+            canReadArchivedFacilities(context.user) ? parent.archivedReason ?? null : null
     },
 
     HealthcareProfessional: {
         facilityIds: (parent: ProfessionalParent, _args: unknown, context: ApiContext)
         : string[] | Promise<string[]> =>
-            parent.facilityIds ?? context.loaders.facilityIdsByProfessional.load(parent.id)
+            parent.facilityIds ?? context.loaders.facilityIdsByProfessional.load(parent.id),
+        // A moderator note. Only users who can see archived professionals read it.
+        archivedReason: (parent: ProfessionalParent, _args: unknown, context: ApiContext): string | null =>
+            canReadArchivedProfessionals(context.user) ? parent.archivedReason ?? null : null
     },
 
     Mutation: {
@@ -514,13 +542,23 @@ const resolvers = {
             return result.data as gqlType.Facility
         }),
 
-        deleteFacility: withScope(Scope['delete:facilities'], async (_parent: unknown, args: {
-            id: string
-        }, context: UserContext): Promise<gqlType.DeleteResult> => {
-            const deleteFacilityResult = await facilityService.deleteFacility(args.id, context.user.sub)
+        // Archiving replaced deleting. It takes the scope the delete took, and nothing is deleted.
+        archiveFacility: withScope(Scope['delete:facilities'], async (_parent: unknown, args: {
+            id: string,
+            reason: string
+        }, context: UserContext): Promise<FacilityParent> => {
+            const result = await archiveService.archiveFacility(args.id, args.reason, context.user.sub)
 
-            convertErrorsToGqlErrors(deleteFacilityResult)
-            return deleteFacilityResult.data
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+        unarchiveFacility: withScope(Scope['delete:facilities'], async (_parent: unknown, args: {
+            id: string
+        }, context: UserContext): Promise<FacilityParent> => {
+            const result = await archiveService.unarchiveFacility(args.id, context.user.sub)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
         }),
 
         createHealthcareProfessional: withScope(Scope['write:healthcareprofessionals'], async (_parent: unknown, args: {
@@ -544,14 +582,22 @@ const resolvers = {
             return updateHealthcareProfessionalResult.data
         }),
 
-        deleteHealthcareProfessional: withScope(Scope['delete:healthcareprofessionals'], async (_parent: unknown, args: {
-            id: string
-        }, context: UserContext): Promise<gqlType.DeleteResult> => {
-            const deleteHealthcareProfessionalResult = await healthcareProfessionalService
-                .deleteHealthcareProfessional(args.id, context.user.sub)
+        archiveHealthcareProfessional: withScope(Scope['delete:healthcareprofessionals'], async (_parent: unknown, args: {
+            id: string,
+            reason: string
+        }, context: UserContext): Promise<ProfessionalParent> => {
+            const result = await archiveService.archiveHealthcareProfessional(args.id, args.reason, context.user.sub)
 
-            convertErrorsToGqlErrors(deleteHealthcareProfessionalResult)
-            return deleteHealthcareProfessionalResult.data
+            convertErrorsToGqlErrors(result)
+            return result.data
+        }),
+        unarchiveHealthcareProfessional: withScope(Scope['delete:healthcareprofessionals'], async (_parent: unknown, args: {
+            id: string
+        }, context: UserContext): Promise<ProfessionalParent> => {
+            const result = await archiveService.unarchiveHealthcareProfessional(args.id, context.user.sub)
+
+            convertErrorsToGqlErrors(result)
+            return result.data
         }),
 
         createSubmission: withAnyScope([Scope['write:submissions'], Scope['create:submissions']], async (_parent: unknown, args: {
@@ -886,6 +932,24 @@ function enforceBookingBudget(budget: BookingBudget, clientIp: string | undefine
         data: undefined,
         hasErrors: true,
         errors: [{ field: 'clientIp', errorCode: ErrorCode.TOO_MANY_REQUESTS, httpStatus: 429 }]
+    })
+}
+
+/**
+ * The public only lists active records. Asking for ARCHIVED or ALL without the scope to edit
+ * that kind of record is refused, not quietly narrowed, so a moderation list never looks complete
+ * when it is not.
+ */
+export function assertArchiveFilterAllowed(
+    archive: gqlType.ArchiveFilter | null | undefined,
+    canReadArchived: boolean
+): void {
+    if (archive === null || archive === undefined || archive === gqlType.ArchiveFilter.Active || canReadArchived) {
+        return
+    }
+
+    throw new GraphQLError('User is not authorized', {
+        extensions: { code: 'UNAUTHORIZED', http: { status: 403 } }
     })
 }
 

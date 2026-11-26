@@ -163,13 +163,13 @@ describe('moderationSubmissionsStore queues (#22)', () => {
         expect(store.statusTotalCounts[SubmissionQueue.New]).to.equal(1)
     })
 
-    it('lists every queue by default, with no queue filter (#313)', async () => {
+    it('starts on the New queue (#313)', async () => {
         const store = useModerationSubmissionsStore()
         await store.getSubmissions()
 
-        expect(store.selectedSubmissionQueues).to.deep.equal([])
-        expect(requestedFilters.at(-1)?.queues).to.equal(undefined)
-        expect(store.filteredSubmissionDataForListComponent).to.have.length(ROWS.length)
+        expect(store.selectedSubmissionQueues).to.deep.equal([SubmissionQueue.New])
+        expect(requestedFilters.at(-1)?.queues).to.deep.equal([SubmissionQueue.New])
+        expect(store.filteredSubmissionDataForListComponent.map(row => row.id)).to.deep.equal(['listing-new'])
     })
 
     it('shows several chosen queues together', async () => {

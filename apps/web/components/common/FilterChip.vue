@@ -74,39 +74,40 @@ import { computed, ref } from 'vue'
 import { PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
 import { useI18n } from '#imports'
 import SvgAccordionArrow from '~/assets/icons/accordion-arrow.svg'
-import { chipSelectionAfterToggle } from '~/utils/filterChip'
+import { chipSelectionAfterToggle, isChipDefaultSelection } from '~/utils/filterChip'
 
 /**
- * A filter chip with a dropdown (#313). The model is the chosen values; an empty list is the
- * default and means no filter. With `multiselect`, every option shows ticked by default and a
- * moderator unticks what to hide; without it, picking one option filters to it. The chip is
- * filled while a filter is on, so a filter left on is never hard to spot, and Reset clears it.
+ * A filter chip with a dropdown (#313). The model is what is ticked. `defaultValue` is where the
+ * chip starts and what Reset returns to; with none, the default is no filter. With
+ * `multiselect`, a moderator ticks more options to add them. Without it, picking one option
+ * filters to it. The chip is filled while the selection is not the default, so a filter left on
+ * is never hard to spot.
  */
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     items: { value: T, label: string, count?: number }[]
     label: string
     testId: string
     multiselect?: boolean
-}>()
+    defaultValue?: T[]
+}>(), {
+    multiselect: false,
+    defaultValue: () => []
+})
 
 const selected = defineModel<T[]>({ required: true })
 
 const { t } = useI18n()
 const open = ref(false)
 
-const isActive = computed(() => selected.value.length > 0)
+const isActive = computed(() => !isChipDefaultSelection(selected.value, props.defaultValue))
 
 function isShownChecked(value: T): boolean {
-    return selected.value.length === 0 ? Boolean(props.multiselect) : selected.value.includes(value)
+    return selected.value.includes(value)
 }
 
-/** The last ticked box in a multiselect stays ticked: hiding everything is not a filter. */
+/** The last ticked box in a multiselect stays ticked: showing nothing is not a filter. */
 function isLastChecked(value: T): boolean {
-    if (!props.multiselect) {
-        return false
-    }
-    const shown = selected.value.length === 0 ? props.items.map(item => item.value) : selected.value
-    return shown.length === 1 && shown[0] === value
+    return props.multiselect && selected.value.length === 1 && selected.value[0] === value
 }
 
 function toggle(value: T): void {
@@ -114,17 +115,17 @@ function toggle(value: T): void {
         selected.value,
         value,
         props.items.map(item => item.value),
-        Boolean(props.multiselect)
+        props.multiselect
     )
 }
 
 function reset(): void {
-    selected.value = []
+    selected.value = [...props.defaultValue]
     open.value = false
 }
 
 const chipText = computed(() => {
-    if (!isActive.value) {
+    if (selected.value.length === 0) {
         return props.label
     }
     const names = props.items.filter(item => selected.value.includes(item.value)).map(item => item.label)

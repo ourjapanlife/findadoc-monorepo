@@ -24,9 +24,12 @@ describe('listQueryValue', () => {
         expect(likeContainsPattern('100%_clinic')).toBe('%100\\%\\_clinic%')
     })
 
-    it('does not filter a facility or professional list when the query is blank', () => {
-        expect(facilityFilterQuery('   ').sql).not.toContain('where')
-        expect(professionalFilterQuery('   ').sql).not.toContain('where')
+    it('does not filter a facility or professional list by text when the query is blank', () => {
+        // The only condition left is the archive filter: the public never lists archived rows.
+        expect(facilityFilterQuery('   ').sql).not.toContain('search_text')
+        expect(facilityFilterQuery('   ').sql).toContain('where "facilities"."archived_at" is null')
+        expect(professionalFilterQuery('   ').sql).not.toContain('search_text')
+        expect(professionalFilterQuery('   ').sql).toContain('where "hps"."archived_at" is null')
 
         const facilities = facilityFilterQuery('Tokyo')
         const professionals = professionalFilterQuery('Ada')
@@ -34,6 +37,6 @@ describe('listQueryValue', () => {
         expect(facilities.sql).toContain('"facilities"."search_text" ilike $1')
         expect(facilities.parameters).toEqual(['%Tokyo%'])
         expect(professionals.sql).toContain('"hps"."search_text" ilike $1')
-        expect(professionals.parameters).toEqual(['%Ada%'])
+        expect(professionals.parameters).toEqual(['%ada%'])
     })
 })

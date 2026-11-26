@@ -56,7 +56,10 @@ function row(gender: string): Selectable<HpsTable> {
         firestore_id: null,
         search_text: '',
         created_date: '2026-11-24T00:00:00.000Z',
-        updated_date: '2026-11-24T00:00:00.000Z'
+        updated_date: '2026-11-24T00:00:00.000Z',
+        archived_at: null,
+        archived_reason: null,
+        archived_by: null
     }
 }
 

@@ -79,6 +79,10 @@
     "searchLanguageLabel": "어떤 언어로 진료받으시겠어요?",
     "searchAreaLabel": "어느 지역인가요?",
     "searchAnyArea": "일본 전역",
+    "searchWholeRegion": "{region} 전체",
+    "searchPrefectureLabel": "도도부현",
+    "searchAnyPrefecture": "모든 도도부현",
+    "searchAnyPrefectureInRegion": "이 지방 전체",
     "searchCityLabel": "시·구",
     "searchAnyCity": "모든 시·구",
     "searchAnyLanguage": "모든 언어",
@@ -178,7 +182,9 @@
     "professionalNameLocaleNotAllowed": "의료인의 이름은 로마자 이름과 일본어 이름 두 가지뿐입니다.",
     "japaneseMiddleNameNotAllowed": "일본어 이름에는 중간 이름이 없습니다.",
     "invalidOpeningHours": "진료 시간을 확인하세요. 각 시간대는 시작 후에 끝나야 하며, 같은 요일의 시간대는 겹칠 수 없습니다.",
-    "additionalInfoBothLanguages": "방문자 안내는 영어와 일본어로 모두 작성하거나 둘 다 비워 두세요."
+    "additionalInfoBothLanguages": "방문자 안내는 영어와 일본어로 모두 작성하거나 둘 다 비워 두세요.",
+    "alreadyArchived": "이 기록은 이미 보관되었습니다. 페이지를 새로고침하세요.",
+    "notArchived": "이 기록은 보관되지 않았습니다. 페이지를 새로고침하세요."
   },
   "footer": {
     "poweredBy": "{name} 제공",
@@ -445,6 +451,17 @@
     "pharmacyAndGenetics": "약국·유전",
     "surgeryAndAnesthesia": "외과·마취과"
   },
+  "regions": {
+    "hokkaido": "홋카이도",
+    "tohoku": "도호쿠",
+    "kanto": "간토",
+    "koshinetsuHokuriku": "고신에쓰·호쿠리쿠",
+    "tokai": "도카이",
+    "kansai": "간사이",
+    "chugoku": "주고쿠",
+    "shikoku": "시코쿠",
+    "kyushu": "규슈·오키나와"
+  },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "저장하지 않고 나가기",
     "create": "만들기",
@@ -501,22 +518,49 @@
     "clinicsLoadError": "클리닉을 불러올 수 없습니다",
     "nameReview": "이름 확인이 필요함",
     "statusFilter": "상태",
-    "reviewFilter": "검토"
+    "reviewFilter": "검토",
+    "archiveFilter": "보관",
+    "archiveFilterActive": "활성 항목만",
+    "archiveFilterArchived": "보관된 항목만",
+    "archiveFilterAll": "공개 및 보관된 항목",
+    "archivedBadge": "보관됨"
   },
   "modEditFacilityOrHPTopbar": {
-    "delete": "삭제",
-    "deleteButtonText": "영구 삭제",
     "update": "업데이트",
     "updateAndExit": "업데이트 후 나가기",
-    "deleteConfirmationFacility": "의료기관 {facility}(ID: {id})을(를) 삭제하시겠습니까?",
-    "deleteConfirmationHealthcareProfessional": "의료인 {healthcareProfessional}(ID: {id})을(를) 삭제하시겠습니까?",
-    "facilityDeletedSuccessfully": "의료기관이 삭제되었습니다",
-    "facilityHasBookings": "이 병원에는 예약({count}건)이 있어 삭제할 수 없습니다. 예약 기록은 환자를 위해 보관됩니다.",
     "facilityUpdatedSuccessfully": "의료기관이 업데이트되었습니다",
-    "healthcareProfessionalDeletedSuccessfully": "의료인이 삭제되었습니다",
     "healthcareProfessionalUpdatedSuccessfully": "의료인이 업데이트되었습니다",
     "back": "뒤로",
-    "hasUnsavedChanges": "저장하지 않은 변경 사항이 있습니다. 정말 나가시겠습니까?"
+    "hasUnsavedChanges": "저장하지 않은 변경 사항이 있습니다. 정말 나가시겠습니까?",
+    "archive": "보관",
+    "unarchive": "보관 해제",
+    "archiveButtonText": "보관하고 숨기기",
+    "archiveTitleFacility": "이 의료기관을 보관할까요?",
+    "archiveTitleHealthcareProfessional": "이 의료인을 보관할까요?",
+    "archiveExplanationFacility": "의료기관 {facility}(ID: {id})은(는) 검색, 클리닉 페이지, 예약에서 숨겨집니다. 삭제되는 것은 없습니다. 기록, 의사, 이력은 보존되며 나중에 보관을 해제할 수 있습니다.",
+    "archiveExplanationHealthcareProfessional": "의료인 {healthcareProfessional}(ID: {id})은(는) 검색과 의사 페이지에서 숨겨집니다. 삭제되는 것은 없습니다. 기록과 의료기관 연결은 보존되며 나중에 보관을 해제할 수 있습니다.",
+    "archiveReasonLabel": "보관 사유(필수)",
+    "archiveReasonPlaceholder": "예: 클리닉이 폐업함",
+    "archiveReasonRequired": "보관하기 전에 사유를 입력하세요.",
+    "facilityArchivedSuccessfully": "의료기관을 보관했습니다. 일반에게 표시되지 않습니다.",
+    "healthcareProfessionalArchivedSuccessfully": "의료인을 보관했습니다. 일반에게 표시되지 않습니다.",
+    "facilityUnarchivedSuccessfully": "의료기관 보관을 해제했습니다. 다시 공개됩니다.",
+    "healthcareProfessionalUnarchivedSuccessfully": "의료인 보관을 해제했습니다. 다시 공개됩니다.",
+    "unarchiveConfirmationFacility": "의료기관 {facility}(ID: {id})을(를) 다시 공개할까요?",
+    "unarchiveConfirmationHealthcareProfessional": "의료인 {healthcareProfessional}(ID: {id})을(를) 다시 공개할까요?",
+    "facilityHasUpcomingBookings": "예정된 예약({count})이 있어 이 클리닉을 보관할 수 없습니다. 각 예약이 먼저 거절 또는 취소되거나 예약 시간이 지나야 합니다.",
+    "archivedBannerTitle": "보관됨",
+    "archivedBannerFacility": "이 의료기관은 일반에게 숨겨져 있습니다. 기록은 보존됩니다.",
+    "archivedBannerHealthcareProfessional": "이 의료인은 일반에게 숨겨져 있습니다. 기록은 보존됩니다.",
+    "archivedReason": "사유: {reason}"
+  },
+  "modCopyId": {
+    "facilityId": "시설 ID",
+    "healthcareProfessionalId": "의료인 ID",
+    "copy": "복사",
+    "copied": "복사됨",
+    "copyFailed": "ID를 복사할 수 없습니다. 선택해서 직접 복사하세요.",
+    "copyLabel": "{label} {id} 복사"
   },
   "modEditSubmissionTopNav": {
     "update": "업데이트",
@@ -754,7 +798,9 @@
     "rejectSubmissionConfirmationButton": "예, 제보를 거절합니다",
     "successMessageUpdated": "제보가 업데이트되었습니다",
     "successMessageApproved": "제보가 승인되었습니다",
-    "useExistingFacility": "이 의료기관 사용"
+    "useExistingFacility": "이 의료기관 사용",
+    "linkedRecordsFailed": "연결된 시설 또는 의료인을 불러오지 못했습니다. 지금 승인하면 새 항목으로 추가됩니다. 다시 시도하세요.",
+    "retryLinkedRecords": "다시 시도"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "구사 언어",
@@ -862,6 +908,8 @@
     "resultsRegion": "검색 결과",
     "moreProfessionals": "+{n}명 더 보기",
     "professionalsAtFacility": "등록된 의료인 없음 | 의료인 1명 | 의료인 {n}명",
+    "showMoreProfessionals": "{n}명 더 보기",
+    "showAllProfessionals": "전체 {n}명 보기",
     "noProfessionalsYet": "아직 등록된 의사가 없습니다",
     "noProfessionalsNote": "이 의료기관의 개별 의사 정보는 아직 없습니다. 위의 의료기관 정보는 그대로 유효합니다.",
     "addProfessional": "이곳의 의사를 알고 계신가요? 추가하기",

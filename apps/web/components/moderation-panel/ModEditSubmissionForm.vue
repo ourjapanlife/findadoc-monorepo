@@ -1,6 +1,26 @@
 <template>
     <Loader />
-    <div :data-mod-mode="isEditing ? 'edit' : 'preview'">
+    <div
+        v-if="linkedRecordsFailed"
+        role="alert"
+        class="flex flex-col items-start gap-3 rounded-xl border border-error bg-error/10 p-4 text-primary-text"
+        data-testid="mod-submission-linked-records-error"
+    >
+        <p>{{ t('modSubmissionForm.linkedRecordsFailed') }}</p>
+        <button
+            type="button"
+            class="inline-flex min-h-11 items-center rounded-full border-2 border-primary-text-muted bg-secondary-bg px-5
+            py-2 font-bold text-primary-text hover:bg-accent-bg/20"
+            data-testid="mod-submission-linked-records-retry"
+            @click="retryLinkedRecords"
+        >
+            {{ t('modSubmissionForm.retryLinkedRecords') }}
+        </button>
+    </div>
+    <div
+        v-else
+        :data-mod-mode="isEditing ? 'edit' : 'preview'"
+    >
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p class="text-sm text-primary-text-muted">
                 {{ isEditing ? t('modForm.editHint') : t('modForm.previewHint') }}
@@ -36,6 +56,7 @@
                     </ExistingFacilityNotice>
                     <ModSearchBar
                         v-model="selectedFacilityRelationsModel"
+                        input-id="mod-edit-submission-form-facilities"
                         :place-holder-text="t('modHealthcareProfessionalSection.placeholderTextFacilitySearchBar')"
                         :no-match-text="t('modHealthcareProfessionalSection.noFacilitiesWereFound')"
                         :fields-to-display-callback="facilitiesFieldsToDisplayCallback"
@@ -66,6 +87,7 @@
                     </label>
                     <ModSearchBar
                         v-model="selectedHealthcareProfessionalsModel"
+                        input-id="mod-edit-submission-form-healthcare-professionals"
                         data-testid="mod-facility-section-doctor-search"
                         :place-holder-text="t('modFacilitySection.placeholderTextHealthcareProfessionalSearchbar')"
                         :no-match-text="t('modFacilitySection.noHealthcareProfessionalFound')"
@@ -115,6 +137,7 @@ import { ErrorCode } from '~/typedefs/serverResponse'
 import { handleModerationResponseErrors } from '~/composables/useModerationResponseHandling'
 import { ModerationSubmissionActionType, useModerationSubmissionActions } from '~/composables/useModerationSubmissionActions'
 import { mapIdsToEntities } from '~/utils/moderationSearchUtils'
+import { fetchFacilityById, fetchHealthcareProfessionalsWithCount } from '~/utils/graphqlHelpers'
 import { useDirectoryPickerSearch } from '~/composables/useDirectoryPickerSearch'
 import { useExistingFacilityMatch } from '~/composables/useExistingFacilityMatch'
 import { formatFirstLocalizedFullName } from '~/utils/nameUtils'
@@ -303,6 +326,65 @@ function createSubmissionDeepCopy(submissionData: Submission): Submission {
             facilityIds: hp.facilityIds ? [...hp.facilityIds] : []
         })) || []
     }
+}
+
+// Only the latest fill may set the linked records, so a slow answer for an older submission is dropped.
+let linkedRecordLoads = 0
+
+/**
+ * The pickers keep only the first page in memory. After a reload a linked clinic or professional
+ * outside it would look unlinked, and approving would treat it as new, so those are read by id.
+ */
+async function loadMissingLinkedRecords(): Promise<boolean> {
+    const load = ++linkedRecordLoads
+    const missingFacilityIds = healthcareProfessionalSectionFields.value.facilityIds
+        .filter(id => !currentFacilityRelations.value.some(facility => facility.id === id))
+    const missingProfessionalIds = facilitySectionFields.value.healthcareProfessionalIds
+        .filter(id => !currentExistingHealthcareProfessionals.value.some(professional => professional.id === id))
+    if (!missingFacilityIds.length && !missingProfessionalIds.length) {
+        return true
+    }
+    try {
+        const [facilities, professionals] = await Promise.all([
+            Promise.all(missingFacilityIds.map(id => fetchFacilityById(id))),
+            missingProfessionalIds.length
+                ? fetchHealthcareProfessionalsWithCount({
+                    ids: missingProfessionalIds,
+                    offset: 0,
+                    limit: missingProfessionalIds.length
+                })
+                : Promise.resolve({ filteredSearchResults: [] as HealthcareProfessional[] })
+        ])
+        // A newer fill decides for itself.
+        if (load !== linkedRecordLoads) {
+            return true
+        }
+        currentFacilityRelations.value = mapIdsToEntities(
+            healthcareProfessionalSectionFields.value.facilityIds,
+            [
+                ...currentFacilityRelations.value,
+                ...facilities.filter((facility): facility is Facility => facility !== undefined)
+            ]
+        )
+        currentExistingHealthcareProfessionals.value = mapIdsToEntities(
+            facilitySectionFields.value.healthcareProfessionalIds,
+            [...currentExistingHealthcareProfessionals.value, ...professionals.filteredSearchResults]
+        )
+        return true
+    } catch (error) {
+        console.error(`Error fetching linked records: ${JSON.stringify(error)}`)
+        return false
+    }
+}
+
+// Set when a linked clinic or professional could not load. Approving then would treat the link as new.
+const linkedRecordsFailed = ref(false)
+
+async function retryLinkedRecords() {
+    linkedRecordsFailed.value = false
+    loadingStore.setIsLoading(true)
+    linkedRecordsFailed.value = !await loadMissingLinkedRecords()
+    loadingStore.setIsLoading(false)
 }
 
 function initializeSubmissionFormValues(submissionData: Submission | undefined) {
@@ -642,6 +724,11 @@ watch(
 
         lastHandledActionId.value = action.id
 
+        if (linkedRecordsFailed.value && action.type === ModerationSubmissionActionType.Approve) {
+            toast.error(t('modSubmissionForm.linkedRecordsFailed'))
+            return
+        }
+
         switch (action.type) {
             case ModerationSubmissionActionType.Approve:
                 useNuxtApp().$withConfirmation(async () => {
@@ -681,12 +768,17 @@ watch(
     }
 )
 
+// Bumped on unmount, so a mount that finishes loading after the user left registers nothing.
+let mountGeneration = 0
+
 onUnmounted(() => {
+    mountGeneration++
     moderationSubmissionUnsavedStore.registerEditFormTryLeave(null)
     moderationSubmissionUnsavedStore.setEditSubmissionFormDirty(false)
 })
 
 onMounted(async () => {
+    const generation = ++mountGeneration
     isEditSubmissionFormInitialized.value = false
 
     loadingStore.setIsLoading(true)
@@ -710,11 +802,18 @@ onMounted(async () => {
     await nextTick()
 
     initializeSubmissionFormValues(moderationSubmissionStore.selectedSubmissionData)
+    linkedRecordsFailed.value = !await loadMissingLinkedRecords()
+    if (generation !== mountGeneration) {
+        return
+    }
 
     await nextTick()
     makeNonDirty()
 
     await nextTick()
+    if (generation !== mountGeneration) {
+        return
+    }
 
     isEditSubmissionFormInitialized.value = true
     moderationSubmissionUnsavedStore.registerEditFormTryLeave(tryLeave)

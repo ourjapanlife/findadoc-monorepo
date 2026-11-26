@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { chipSelectionAfterToggle } from '~/utils/filterChip'
+import { chipSelectionAfterToggle, isChipDefaultSelection } from '~/utils/filterChip'
 
 const ALL = ['NEW', 'FOR_REVIEW', 'APPROVED'] as const
 type Queue = typeof ALL[number]
@@ -9,12 +9,12 @@ function toggle(selected: Queue[], value: Queue, multiselect = true): Queue[] {
 }
 
 describe('chipSelectionAfterToggle', () => {
-    it('unticks one option from the default, where every option shows ticked', () => {
-        expect(toggle([], 'APPROVED')).toEqual(['NEW', 'FOR_REVIEW'])
+    it('adds a ticked option to the selection', () => {
+        expect(toggle(['NEW'], 'APPROVED')).toEqual(['NEW', 'APPROVED'])
     })
 
-    it('goes back to the default when the last unticked option is ticked again', () => {
-        expect(toggle(['NEW', 'FOR_REVIEW'], 'APPROVED')).toEqual([])
+    it('removes an unticked option from the selection', () => {
+        expect(toggle(['NEW', 'APPROVED'], 'NEW')).toEqual(['APPROVED'])
     })
 
     it('keeps the options in their listed order', () => {
@@ -29,5 +29,15 @@ describe('chipSelectionAfterToggle', () => {
         expect(toggle([], 'NEW', false)).toEqual(['NEW'])
         expect(toggle(['NEW'], 'APPROVED', false)).toEqual(['APPROVED'])
         expect(toggle(['APPROVED'], 'APPROVED', false)).toEqual([])
+    })
+})
+
+describe('isChipDefaultSelection', () => {
+    it('matches the default in any order', () => {
+        expect(isChipDefaultSelection<Queue>(['APPROVED', 'NEW'], ['NEW', 'APPROVED'])).toBe(true)
+    })
+
+    it('does not match once an option is added', () => {
+        expect(isChipDefaultSelection<Queue>(['NEW', 'APPROVED'], ['NEW'])).toBe(false)
     })
 })

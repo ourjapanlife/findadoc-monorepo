@@ -9,7 +9,8 @@ import { buildSearchQuery,
     facilityWebsiteUrl,
     filterDirectory,
     hasActiveFilters,
-    parseSearchQuery } from '~/utils/searchDirectory'
+    parseSearchQuery,
+    sameSearchQueryState } from '~/utils/searchDirectory'
 import { normalizePhoneInput, validatePhoneNumber } from '~/utils/formValidations'
 
 function facility(
@@ -378,5 +379,60 @@ describe('specialty group (#277)', () => {
         expect(parseSearchQuery(query).specialtyGroup).toBe(SpecialtyCategory.DigestiveHealth)
         expect(parseSearchQuery({ group: 'not-a-group' }).specialtyGroup).toBeUndefined()
         expect(hasActiveFilters({ specialtyGroup: SpecialtyCategory.Dental })).toBe(true)
+    })
+})
+
+describe('region', () => {
+    it('matches every prefecture in the region when only the region is picked', () => {
+        const kansai = filterDirectory(facilities, professionals, { region: 'KANSAI' })
+        const kanto = filterDirectory(facilities, professionals, { region: 'KANTO' })
+
+        expect(kansai.map(result => result.id)).toEqual(['osaka-clinic'])
+        expect(kanto.map(result => result.id)).toEqual(['tokyo-clinic', 'empty-clinic'])
+    })
+
+    it('narrows to the picked prefecture inside the region', () => {
+        const results = filterDirectory(facilities, professionals, { region: 'KANTO', prefecture: 'tokyo' })
+
+        expect(results.map(result => result.id)).toEqual(['tokyo-clinic', 'empty-clinic'])
+    })
+
+    it('agrees with the prefecture filter on an accented English name with no Japanese name', () => {
+        const accented = [facility('macron-clinic', [], { prefectureEn: 'Tōkyō', prefectureJa: undefined })]
+
+        expect(filterDirectory(accented, [], { prefecture: 'tokyo' }).map(result => result.id))
+            .toEqual(['macron-clinic'])
+        expect(filterDirectory(accented, [], { region: 'KANTO' }).map(result => result.id))
+            .toEqual(['macron-clinic'])
+    })
+
+    it('agrees with the prefecture filter on an English name with trailing punctuation', () => {
+        const punctuated = [facility('dotted-clinic', [], { prefectureEn: 'Tokyo.', prefectureJa: undefined })]
+
+        expect(filterDirectory(punctuated, [], { prefecture: 'tokyo' }).map(result => result.id))
+            .toEqual(['dotted-clinic'])
+        expect(filterDirectory(punctuated, [], { region: 'KANTO' }).map(result => result.id))
+            .toEqual(['dotted-clinic'])
+    })
+
+    it('round-trips the region through the URL and counts it as a filter', () => {
+        const query = buildSearchQuery({ region: 'KYUSHU' })
+
+        expect(query).toEqual({ region: 'kyushu' })
+        expect(parseSearchQuery(query).region).toBe('KYUSHU')
+        expect(hasActiveFilters({ region: 'KYUSHU' })).toBe(true)
+    })
+
+    it('reads a region slug in the prefecture param as that region, as the homepage submits it', () => {
+        expect(parseSearchQuery({ prefecture: 'kanto' })).toMatchObject({ region: 'KANTO', prefecture: undefined })
+        expect(sameSearchQueryState({ prefecture: 'kanto' }, { region: 'kanto' })).toBe(true)
+        expect(parseSearchQuery({ prefecture: 'hokkaido' })).toMatchObject({ region: undefined, prefecture: 'hokkaido' })
+        expect(parseSearchQuery({ region: 'kansai', prefecture: 'kanto' }).region).toBe('KANSAI')
+    })
+
+    it('drops a region that contradicts the prefecture in the same link', () => {
+        expect(parseSearchQuery({ region: 'kansai', prefecture: 'tokyo' }).region).toBeUndefined()
+        expect(parseSearchQuery({ region: 'kanto', prefecture: 'tokyo' }).region).toBe('KANTO')
+        expect(parseSearchQuery({ region: 'nowhere' }).region).toBeUndefined()
     })
 })

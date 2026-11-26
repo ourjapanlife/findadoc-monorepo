@@ -17,9 +17,9 @@
                     <button
                         type="button"
                         data-testid="search-filters-toggle"
-                        :aria-expanded="filtersOpen"
+                        :aria-expanded="filtersOpen ?? false"
                         aria-controls="search-filters"
-                        class="btn btn-secondary btn-sm landscape:hidden"
+                        class="btn btn-secondary btn-sm"
                         @click="toggleFilters"
                     >
                         <SVGFiltersIcon
@@ -32,6 +32,11 @@
                             class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5
                                    text-xs font-bold text-primary-text-inverted"
                         >{{ activeFilterCount }}</span>
+                        <SVGAccordionArrow
+                            class="size-3 shrink-0 fill-current transition-transform"
+                            :class="filtersOpen ? 'rotate-180' : ''"
+                            aria-hidden="true"
+                        />
                     </button>
                     <button
                         type="button"
@@ -49,12 +54,22 @@
                 </div>
             </div>
 
-            <!-- Filters: always visible in landscape, collapsible in portrait -->
+            <!-- What the collapsed bar is filtering on, so the visitor does not have to open it to check. -->
+            <p
+                v-if="filterSummary"
+                data-testid="search-filter-summary"
+                class="m-0 truncate text-sm text-primary-text"
+                :class="summaryClass"
+            >
+                {{ filterSummary }}
+            </p>
+
+            <!-- Filters: open by default in landscape, closed in portrait; the toggle collapses them in both. -->
             <form
                 id="search-filters"
                 data-testid="search-filters"
-                :class="filtersOpen ? 'grid' : 'hidden landscape:grid'"
-                class="grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] landscape:grid-cols-2 landscape:items-end"
+                :class="formClass"
+                class="grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_auto] landscape:grid-cols-2 landscape:items-end"
                 @submit.prevent
             >
                 <div class="min-w-0">
@@ -143,9 +158,34 @@
 
                 <div class="min-w-0">
                     <label
-                        for="search-area"
+                        for="search-region"
                         class="field-label"
                     >{{ t('home.searchAreaLabel') }}</label>
+                    <select
+                        id="search-region"
+                        v-model="region"
+                        data-testid="search-region"
+                        class="field"
+                        @change="onFilterChange"
+                    >
+                        <option value="">
+                            {{ t('home.searchAnyArea') }}
+                        </option>
+                        <option
+                            v-for="code in regionOptions"
+                            :key="code"
+                            :value="code"
+                        >
+                            {{ t(REGION_LABEL_KEYS[code]) }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="min-w-0">
+                    <label
+                        for="search-area"
+                        class="field-label"
+                    >{{ t('home.searchPrefectureLabel') }}</label>
                     <select
                         id="search-area"
                         v-model="prefecture"
@@ -154,10 +194,10 @@
                         @change="onFilterChange"
                     >
                         <option value="">
-                            {{ t('home.searchAnyArea') }}
+                            {{ region ? t('home.searchAnyPrefectureInRegion') : t('home.searchAnyPrefecture') }}
                         </option>
                         <option
-                            v-for="entry in prefectures"
+                            v-for="entry in prefectureOptions"
                             :key="entry.name"
                             :value="entry.name.toLowerCase()"
                         >
@@ -219,8 +259,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import SVGAccordionArrow from '~/assets/icons/accordion-arrow.svg'
 import SVGFiltersIcon from '~/assets/icons/equalizer-icon.svg'
 import SVGMapPinIcon from '~/assets/icons/map-pin-icon.svg'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
@@ -232,6 +273,13 @@ import { useUmami } from '~/composables/useUmamiTracking'
 import { searchFilterFlags } from '~/utils/analyticsEvents'
 import { SEARCHABLE_LANGUAGES, prefectureOptionLabel } from '~/utils/homeDirectory'
 import { hasActiveFilters } from '~/utils/searchDirectory'
+import {
+    REGION_LABEL_KEYS,
+    isJapanRegion,
+    prefecturesInRegion,
+    regionOfPrefecture,
+    regionsWithPrefectures
+} from '~/utils/japanRegions'
 import { availableSpecialtyOptions } from '~/utils/directoryCoverage'
 import { groupOfSpecialty, groupOptions, specialtiesForGroup } from '~/utils/specialtyPicker'
 import { CATEGORY_LABEL_KEYS } from '~/utils/specialtyLabelKeys'
@@ -247,7 +295,25 @@ const { isLoading, hasLoadError, totalResults } = useSearchDirectory()
 const specialtiesStore = useSpecialtiesStore()
 const { track } = useUmami()
 
-const filtersOpen = ref(false)
+/*
+ * Null until mounted: the server cannot know the orientation, so CSS picks the first state
+ * (open in landscape, closed in portrait). After mount the toggle owns it in both.
+ */
+const filtersOpen = ref<boolean | null>(null)
+
+const formClass = computed(() => {
+    if (filtersOpen.value === null) return 'hidden landscape:grid'
+    return filtersOpen.value ? 'grid' : 'hidden'
+})
+
+const summaryClass = computed(() => {
+    if (filtersOpen.value === null) return 'landscape:hidden'
+    return filtersOpen.value ? 'hidden' : ''
+})
+
+onMounted(() => {
+    filtersOpen.value = window.matchMedia('(orientation: landscape)').matches
+})
 
 /*
  * The same three controls as the homepage entry form, plus a city list from the city table,
@@ -280,11 +346,29 @@ const language = computed({
     }
 })
 
+/*
+ * Region, then prefecture, then city. A link with only `?prefecture=` shows that prefecture's
+ * region. Changing the region clears the prefecture and city below it; picking a prefecture
+ * records its region, so clearing the prefecture again falls back to the whole region.
+ */
+const region = computed({
+    get: () => searchResultsStore.selectedRegion ?? regionOfPrefecture(searchResultsStore.selectedPrefecture) ?? '',
+    set: value => {
+        searchResultsStore.selectedRegion = isJapanRegion(value) ? value : undefined
+        searchResultsStore.selectedPrefecture = undefined
+        searchResultsStore.selectedCity = undefined
+    }
+})
+
 const prefecture = computed({
     get: () => searchResultsStore.selectedPrefecture?.toLowerCase() ?? '',
     set: value => {
         searchResultsStore.selectedPrefecture = value || undefined
         searchResultsStore.selectedCity = undefined
+        const prefectureRegion = regionOfPrefecture(value)
+        if (prefectureRegion !== undefined) {
+            searchResultsStore.selectedRegion = prefectureRegion
+        }
     }
 })
 
@@ -300,6 +384,10 @@ const {
     cities: cityOptions,
     specialties: availableSpecialties
 } = useDirectoryCoverage(prefecture)
+
+const regionOptions = computed(() => regionsWithPrefectures(prefectures.value, region.value || undefined))
+
+const prefectureOptions = computed(() => prefecturesInRegion(prefectures.value, region.value || undefined))
 
 const specialtyGroupOptions = computed(() => groupOptions(
     code => t(CATEGORY_LABEL_KEYS[code]),
@@ -354,8 +442,29 @@ function clearFromBar() {
 }
 
 const activeFilterCount = computed(() =>
-    [specialtyGroup.value, specialty.value, language.value, prefecture.value, searchResultsStore.selectedCity]
+    [specialtyGroup.value, specialty.value, language.value, region.value, prefecture.value, searchResultsStore.selectedCity]
         .filter(Boolean).length)
+
+/** The chosen filters' labels in the order of the controls, for the collapsed bar. */
+const filterSummary = computed(() => {
+    const isJapanese = locale.value === 'ja-JP'
+    const prefectureEntry = prefectures.value.find(entry => entry.name.toLowerCase() === prefecture.value)
+    const cityEntry = cityOptions.value.find(option => option.slug === city.value)
+    // A specialty names its group already, so the group is shown only on its own.
+    const specialtyOption = specialtyOptions.value.find(option => option.code === specialty.value)
+    const groupOption = specialtyGroupOptions.value.find(option => option.code === specialtyGroup.value)
+    const specialtyLabel = specialtyOption?.displayText ?? groupOption?.displayText
+    // Likewise a prefecture names its region, so the region is shown only on its own.
+    const prefectureLabel = isJapanese ? prefectureEntry?.nameJa : prefectureEntry?.name
+    const regionLabel = isJapanRegion(region.value) ? t(REGION_LABEL_KEYS[region.value]) : undefined
+    const labels = [
+        specialtyLabel,
+        language.value ? languageName(language.value, locale.value) : undefined,
+        prefectureLabel ?? regionLabel,
+        cityEntry ? (isJapanese ? cityEntry.nameJa : cityEntry.nameEn) : undefined
+    ]
+    return labels.filter((label): label is string => !!label).join(' · ')
+})
 
 const countText = computed(() => {
     if (isLoading.value) return t('search.loading')

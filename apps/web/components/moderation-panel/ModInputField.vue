@@ -1,6 +1,9 @@
 <template>
     <div class="flex flex-col">
-        <label class="field-label">
+        <label
+            :for="inputId"
+            class="field-label"
+        >
             {{ label }}
             <span
                 v-if="!required"
@@ -10,6 +13,7 @@
             </span>
         </label>
         <input
+            :id="inputId"
             v-model="model"
             :type="type"
             :placeholder="placeholder"
@@ -31,12 +35,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type PropType, type Ref, watch, nextTick } from 'vue'
+import { ref, type PropType, type Ref, watch, nextTick, useId } from 'vue'
 import { useI18n } from '#imports'
 import { useModerationFormEditing } from '~/composables/useModerationFormMode'
 
 const { t } = useI18n()
 const isEditing = useModerationFormEditing()
+// Links the label to the input so the field has a name when tabbed to
+const inputId = useId()
 
 const isTheInputValueValid: Ref<boolean> = ref(true)
 const validationCheckedPreviously: Ref<boolean> = ref(false)

@@ -54,6 +54,12 @@ export interface FacilitiesTable {
     additional_info_ja: ColumnType<string | null, string | null | undefined, string | null>
     online: Generated<boolean>
     search_text: Generated<string>
+    /** When a moderator archived the row. Null is active; archived rows stay out of public reads. */
+    archived_at: ColumnType<string | null, string | null | undefined, string | null>
+    /** Why it was archived. Set exactly when archived_at is set (CHECK *_archive_reason). */
+    archived_reason: ColumnType<string | null, string | null | undefined, string | null>
+    /** Auth0 sub of the moderator who archived it, like audit_logs.updated_by. */
+    archived_by: ColumnType<string | null, string | null | undefined, string | null>
 }
 
 export interface PrefecturesTable {
@@ -118,6 +124,12 @@ export interface HpsTable {
     updated_date: string
     firestore_id: string | null
     search_text: Generated<string>
+    /** When a moderator archived the row. Null is active; archived rows stay out of public reads. */
+    archived_at: ColumnType<string | null, string | null | undefined, string | null>
+    /** Why it was archived. Set exactly when archived_at is set (CHECK *_archive_reason). */
+    archived_reason: ColumnType<string | null, string | null | undefined, string | null>
+    /** Auth0 sub of the moderator who archived it, like audit_logs.updated_by. */
+    archived_by: ColumnType<string | null, string | null | undefined, string | null>
 }
 
 /**

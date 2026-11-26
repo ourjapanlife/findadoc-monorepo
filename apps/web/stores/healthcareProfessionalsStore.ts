@@ -2,24 +2,23 @@ import type { Maybe } from 'graphql/jsutils/Maybe'
 import { defineStore } from 'pinia'
 import { reactive, ref, type Ref, computed } from 'vue'
 import { gql } from 'graphql-request'
-import { fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
+import { fetchHealthcareProfessionalById, fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
 import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { professionalSelection } from '../utils/graphqlSelection'
-import { type Degree,
+import { ArchiveFilter,
+    type Degree,
     Gender,
     LicenseReviewStatus,
     NameReviewStatus,
     type Specialty,
-    Locale, type DeleteResult, type HealthcareProfessional,
+    Locale, type HealthcareProfessional,
     type LocalizedNameInput,
     type Mutation,
-    type MutationDeleteHealthcareProfessionalArgs,
     type MutationUpdateHealthcareProfessionalArgs,
     type Relationship,
     RelationshipAction,
     type CreateHealthcareProfessionalInput,
     type MutationCreateHealthcareProfessionalArgs,
-    type Query,
     type UpdateHealthcareProfessionalInput } from '@findadoc/graphql'
 import { gqlClient, graphQLClientRequestWithRetry } from '~/utils/graphql'
 import { stableStringify } from '~/utils/stableStringify'
@@ -36,6 +35,7 @@ import { useLocaleStore } from '~/stores/localeStore'
 import type { ServerResponse } from '~/typedefs/serverResponse'
 import { useTranslation } from '~/composables/useTranslation'
 import { toastModerationLoadError } from '~/utils/moderationListToast'
+import { fetchCorrectionFacilityNames, type CorrectionFacilityName } from '~/utils/moderationCorrections'
 import { hasServerErrors } from '~/utils/moderationUtils'
 
 function healthcareProfessionalUpdatePatch(
@@ -73,6 +73,14 @@ function healthcareProfessionalUpdatePatch(
     return patch
 }
 
+/**
+ * Languages a new professional starts with. A doctor practising in Japan speaks Japanese,
+ * so the create form preselects it; the moderator can still remove it.
+ */
+export function defaultSpokenLanguages(): Locale[] {
+    return [Locale.JaJp]
+}
+
 /** The professional review queues the moderation review chip offers (#282, #1014). */
 export const PROFESSIONAL_REVIEW_QUEUE = {
     License: 'LICENSE',
@@ -100,6 +108,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             MODERATION_PAGE_SIZES
         )
         const listSearchQuery = ref('')
+        // Archived professionals are hidden from the public. ACTIVE is the default list.
+        const archiveFilter = ref<ArchiveFilter>(ArchiveFilter.Active)
         const listOrder: Ref<ListOrder | null> = ref(null)
         // The review chip: at most one of these is on (#313). Not kept between visits: a filter
         // left on from an earlier visit looked like an empty list.
@@ -110,6 +120,8 @@ export const useHealthcareProfessionalsStore = defineStore(
         const filteredHealthcareProfessionalsData = computed(() => healthcareProfessionalList.value)
         let professionalSearchTimer: ReturnType<typeof setTimeout> | undefined
         let professionalListRequest = 0
+        // Names of the clinics linked to professionals on the moderation list, by facility id.
+        const linkedFacilityNames: Ref<Record<string, CorrectionFacilityName>> = ref({})
         /** True while the latest list request is in flight, so the table shows Chiko instead of "no results". */
         const isListLoading: Ref<boolean> = ref(false)
         const hasNextPage = computed(() => currentOffset.value + itemsPerPage.value < totalHealthcareProfessionalsCount.value)
@@ -138,7 +150,7 @@ export const useHealthcareProfessionalsStore = defineStore(
             gender: Gender.Unknown,
             names: [] as LocalizedNameInput[],
             specialties: [] as Specialty[],
-            spokenLanguages: [] as Locale[],
+            spokenLanguages: defaultSpokenLanguages(),
             additionalInfoForPatients: ''
         })
 
@@ -156,6 +168,44 @@ export const useHealthcareProfessionalsStore = defineStore(
             if (foundHP) {
                 updateHealthcareProfessionalSectionFields(foundHP)
             }
+        }
+
+        // Counts loadSelectedHealthcareProfessional calls, so a slow answer for an older id is dropped.
+        let selectedHealthcareProfessionalLoads = 0
+
+        /** Drops a load still in flight, so it cannot fill the fields of the screen opened next. */
+        function cancelSelectedHealthcareProfessionalLoad() {
+            selectedHealthcareProfessionalLoads++
+        }
+
+        /**
+         * Selects the professional an edit form shows and fills its fields. After a reload or a
+         * shared link the professional may not be on the page in memory, so it is fetched by id.
+         * Returns undefined when it does not exist, the request failed, or a newer load started.
+         */
+        async function loadSelectedHealthcareProfessional(
+            healthcareProfessionalId: string
+        ): Promise<HealthcareProfessional | undefined> {
+            const load = ++selectedHealthcareProfessionalLoads
+            setSelectedHealthcareProfessional(healthcareProfessionalId)
+            if (selectedHealthcareProfessionalData.value !== undefined) {
+                return selectedHealthcareProfessionalData.value
+            }
+            let loaded: HealthcareProfessional | undefined
+            try {
+                loaded = await fetchHealthcareProfessionalById(healthcareProfessionalId)
+            } catch (error) {
+                console.error(`Error fetching healthcare professional: ${JSON.stringify(error)}`)
+            }
+            if (load !== selectedHealthcareProfessionalLoads) {
+                return undefined
+            }
+            // eslint-disable-next-line require-atomic-updates -- the load counter above drops a stale answer
+            selectedHealthcareProfessionalData.value = loaded
+            if (loaded !== undefined) {
+                updateHealthcareProfessionalSectionFields(loaded)
+            }
+            return loaded
         }
 
         function updateHealthcareProfessionalSectionFields(healthcareProfessional: HealthcareProfessional) {
@@ -220,6 +270,22 @@ export const useHealthcareProfessionalsStore = defineStore(
             totalHealthcareProfessionalsCount.value = totalCount
         }
 
+        /** Loads the clinic names this page links to. A failure leaves the column empty, not the list. */
+        async function loadLinkedFacilityNames(professionals: readonly HealthcareProfessional[]) {
+            const missing = professionals
+                .flatMap(professional => professional.facilityIds)
+                .filter(id => linkedFacilityNames.value[id] === undefined)
+            if (missing.length === 0) {
+                return
+            }
+            try {
+                const names = await fetchCorrectionFacilityNames(missing)
+                linkedFacilityNames.value = { ...linkedFacilityNames.value, ...names }
+            } catch (error) {
+                console.error(`Error fetching linked facility names: ${JSON.stringify(error)}`)
+            }
+        }
+
         async function loadHealthcareProfessionalList() {
             const request = ++professionalListRequest
             isListLoading.value = true
@@ -233,6 +299,7 @@ export const useHealthcareProfessionalsStore = defineStore(
                         const filters = {
                             offset,
                             limit: itemsPerPage.value,
+                            archive: archiveFilter.value,
                             ...(query ? { query } : {}),
                             ...(orderBy === null ? {} : { orderBy }),
                             ...(licenseReviewFilter.value ? { licenseReview: licenseReviewFilter.value } : {}),
@@ -242,6 +309,8 @@ export const useHealthcareProfessionalsStore = defineStore(
                         return { rows: filteredSearchResults, totalCount }
                     }
                 )
+                if (request !== professionalListRequest) return
+                await loadLinkedFacilityNames(page.rows)
                 if (request !== professionalListRequest) return
                 applyProfessionalPage(page.offset, page.rows, page.totalCount)
             } catch (error) {
@@ -405,35 +474,55 @@ export const useHealthcareProfessionalsStore = defineStore(
             createHealthcareProfessionalSectionFields.gender = Gender.Unknown
             createHealthcareProfessionalSectionFields.names = []
             createHealthcareProfessionalSectionFields.specialties = []
-            createHealthcareProfessionalSectionFields.spokenLanguages = []
+            createHealthcareProfessionalSectionFields.spokenLanguages = defaultSpokenLanguages()
         }
 
-        async function deleteHealthcareProfessional(
-            inputArgs: MutationDeleteHealthcareProfessionalArgs
-        ): Promise<ServerResponse<DeleteResult>> {
-            const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
-                gqlClient.request.bind(gqlClient),
-                deleteHealthcareProfessionalGqlMutation,
-                inputArgs,
-                { abortAfterMs: 15000 }
-            )
-
-            const deleteResult = serverResponse.data?.deleteHealthcareProfessional as DeleteResult | undefined
-
-            const mappedResponse: ServerResponse<DeleteResult> = {
-                ...serverResponse,
-                data: deleteResult as DeleteResult
+        /**
+         * Archives the selected professional with the moderator's reason, or brings them back.
+         * Nothing is deleted, and the facility links stay.
+         */
+        async function setHealthcareProfessionalArchived(
+            professionalId: string,
+            archive: { reason: string } | null
+        ): Promise<ServerResponse<HealthcareProfessional>> {
+            const response = archive === null
+                ? await graphQLClientRequestWithRetry<Mutation>(
+                    gqlClient.request.bind(gqlClient),
+                    unarchiveHealthcareProfessionalGqlMutation,
+                    { id: professionalId },
+                    { abortAfterMs: 15000 }
+                )
+                : await graphQLClientRequestWithRetry<Mutation>(
+                    gqlClient.request.bind(gqlClient),
+                    archiveHealthcareProfessionalGqlMutation,
+                    { id: professionalId, reason: archive.reason },
+                    { abortAfterMs: 15000 }
+                )
+            const saved = archive === null
+                ? response.data?.unarchiveHealthcareProfessional
+                : response.data?.archiveHealthcareProfessional
+            const serverResponse: ServerResponse<HealthcareProfessional> = {
+                ...response,
+                data: saved as HealthcareProfessional
             }
 
-            if (!hasServerErrors(serverResponse) && deleteResult?.isSuccessful) {
-                await Promise.all([getHealthcareProfessionals(), loadHealthcareProfessionalList()])
-                if (selectedHealthcareProfessionalId.value === inputArgs.id) {
-                    selectedHealthcareProfessionalId.value = ''
-                    selectedHealthcareProfessionalData.value = undefined
+            if (!hasServerErrors(response) && saved !== undefined && saved !== null) {
+                if (selectedHealthcareProfessionalId.value === professionalId) {
+                    selectedHealthcareProfessionalData.value = saved
                 }
+                // The picker cache keeps a copy too. Reselecting the professional must not bring back the old state.
+                healthcareProfessionalsData.value = healthcareProfessionalsData.value.map(professional =>
+                    (professional.id === professionalId ? saved : professional))
+                await loadHealthcareProfessionalList()
             }
 
-            return mappedResponse
+            return serverResponse
+        }
+
+        function setArchiveFilter(value: ArchiveFilter) {
+            archiveFilter.value = value
+            currentOffset.value = 0
+            return loadHealthcareProfessionalList()
         }
 
         // Japanese in the Japanese dashboard, romaji in every other language. Every professional has
@@ -498,11 +587,16 @@ export const useHealthcareProfessionalsStore = defineStore(
             setReviewQueue,
             updateHealthcareProfessional,
             selectedHealthcareProfessionalId,
-            deleteHealthcareProfessional,
+            setHealthcareProfessionalArchived,
+            archiveFilter,
+            setArchiveFilter,
             healthcareProfessionalSectionFields,
             unsavedChangesResetTick,
             displayChosenLocaleForHealthcareProfessional,
             setSelectedHealthcareProfessional,
+            loadSelectedHealthcareProfessional,
+            cancelSelectedHealthcareProfessionalLoad,
+            linkedFacilityNames,
             selectedHealthcareProfessionalData,
             createHealthcareProfessional,
             createHealthcareProfessionalSectionFields,
@@ -519,37 +613,6 @@ export const useHealthcareProfessionalsStore = defineStore(
     }
 )
 
-export async function getHealthcareProfessionalById(id: string): Promise<HealthcareProfessional[]> {
-    try {
-        const queryData = {
-            healthcareProfessionalId: id
-        }
-        const result = await graphQLClientRequestWithRetry<Query>(
-            gqlClient.request.bind(gqlClient),
-            getHealthcareProfessionalByIdGqlQuery,
-            queryData,
-            { retryAmount: 1, abortAfterMs: 10000 }
-        )
-
-        if (!result.data?.healthcareProfessional) {
-            throw new Error(useTranslation('healthcareProfessionalsErrors.idDoesNotExist'))
-        }
-
-        return [result.data.healthcareProfessional]
-    } catch (error: unknown) {
-        console.error(useTranslation('healthcareProfessionalsErrors.retrievingById'), `${id}: ${JSON.stringify(error)}`)
-        return []
-    }
-}
-
-const getHealthcareProfessionalByIdGqlQuery = gql`
-    query HealthcareProfessionals($healthcareProfessionalId: ID!) {
-        healthcareProfessional(id: $healthcareProfessionalId) {
-            ${professionalSelection}
-        }
-    }
-`
-
 const updateHealthcareProfessionalGqlMutation = gql`
 mutation Mutation($id: ID!, $input: UpdateHealthcareProfessionalInput!) {
   updateHealthcareProfessional(id: $id, input: $input) {
@@ -558,10 +621,18 @@ mutation Mutation($id: ID!, $input: UpdateHealthcareProfessionalInput!) {
 }
 `
 
-const deleteHealthcareProfessionalGqlMutation = gql`
+const archiveHealthcareProfessionalGqlMutation = gql`
+mutation Mutation($id: ID!, $reason: String!) {
+  archiveHealthcareProfessional(id: $id, reason: $reason) {
+    ${professionalSelection}
+  }
+}
+`
+
+const unarchiveHealthcareProfessionalGqlMutation = gql`
 mutation Mutation($id: ID!) {
-  deleteHealthcareProfessional(id: $id) {
-    isSuccessful
+  unarchiveHealthcareProfessional(id: $id) {
+    ${professionalSelection}
   }
 }
 `

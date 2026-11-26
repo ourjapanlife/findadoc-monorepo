@@ -79,6 +79,10 @@
     "searchLanguageLabel": "Dalam bahasa apa?",
     "searchAreaLabel": "Di mana?",
     "searchAnyArea": "Di mana saja di Jepang",
+    "searchWholeRegion": "Seluruh {region}",
+    "searchPrefectureLabel": "Prefektur",
+    "searchAnyPrefecture": "Semua prefektur",
+    "searchAnyPrefectureInRegion": "Di mana saja di wilayah ini",
     "searchCityLabel": "Kota",
     "searchAnyCity": "Semua kota",
     "searchAnyLanguage": "Semua bahasa",
@@ -178,7 +182,9 @@
     "professionalNameLocaleNotAllowed": "Tenaga kesehatan hanya punya nama dalam romaji dan nama dalam bahasa Jepang.",
     "japaneseMiddleNameNotAllowed": "Nama dalam bahasa Jepang tidak punya nama tengah.",
     "invalidOpeningHours": "Periksa jam buka: setiap rentang harus tutup setelah buka, dan rentang pada hari yang sama tidak boleh tumpang tindih.",
-    "additionalInfoBothLanguages": "Tulis catatan untuk pengunjung dalam bahasa Inggris dan Jepang, atau kosongkan keduanya."
+    "additionalInfoBothLanguages": "Tulis catatan untuk pengunjung dalam bahasa Inggris dan Jepang, atau kosongkan keduanya.",
+    "alreadyArchived": "Data ini sudah diarsipkan. Muat ulang halaman untuk melihatnya.",
+    "notArchived": "Data ini tidak diarsipkan. Muat ulang halaman untuk melihatnya."
   },
   "footer": {
     "poweredBy": "Didukung oleh {name}",
@@ -445,6 +451,17 @@
     "pharmacyAndGenetics": "Farmasi dan Genetika",
     "surgeryAndAnesthesia": "Bedah dan Anestesi"
   },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "koshinetsuHokuriku": "Koshinetsu dan Hokuriku",
+    "tokai": "Tokai",
+    "kansai": "Kansai",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu dan Okinawa"
+  },
   "modCreateFacilityOrHPTopbar": {
     "confirmExit": "Keluar tanpa menyimpan",
     "create": "Buat",
@@ -501,22 +518,49 @@
     "clinicsLoadError": "Tidak dapat memuat klinik",
     "nameReview": "Nama perlu diperiksa",
     "statusFilter": "Status",
-    "reviewFilter": "Tinjauan"
+    "reviewFilter": "Tinjauan",
+    "archiveFilter": "Arsip",
+    "archiveFilterActive": "Hanya yang aktif",
+    "archiveFilterArchived": "Hanya yang diarsipkan",
+    "archiveFilterAll": "Aktif dan diarsipkan",
+    "archivedBadge": "Diarsipkan"
   },
   "modEditFacilityOrHPTopbar": {
-    "delete": "Hapus",
-    "deleteButtonText": "HAPUS PERMANEN",
     "update": "Perbarui",
     "updateAndExit": "Perbarui & Keluar",
-    "deleteConfirmationFacility": "Apakah Anda yakin ingin menghapus Fasilitas: {facility}, dengan ID: {id}?",
-    "deleteConfirmationHealthcareProfessional": "Apakah Anda yakin ingin menghapus Tenaga Kesehatan: {healthcareProfessional}, dengan ID: {id}?",
-    "facilityDeletedSuccessfully": "Fasilitas berhasil dihapus",
-    "facilityHasBookings": "Klinik ini tidak dapat dihapus selama masih memiliki reservasi ({count}). Catatan reservasi disimpan untuk pasien.",
     "facilityUpdatedSuccessfully": "Fasilitas berhasil diperbarui",
-    "healthcareProfessionalDeletedSuccessfully": "Tenaga Kesehatan berhasil dihapus",
     "healthcareProfessionalUpdatedSuccessfully": "Tenaga Kesehatan berhasil diperbarui",
     "back": "Kembali",
-    "hasUnsavedChanges": "Ada perubahan yang belum disimpan. Apakah Anda yakin ingin keluar?"
+    "hasUnsavedChanges": "Ada perubahan yang belum disimpan. Apakah Anda yakin ingin keluar?",
+    "archive": "Arsipkan",
+    "unarchive": "Batalkan arsip",
+    "archiveButtonText": "Arsipkan dan sembunyikan",
+    "archiveTitleFacility": "Arsipkan fasilitas ini?",
+    "archiveTitleHealthcareProfessional": "Arsipkan tenaga kesehatan ini?",
+    "archiveExplanationFacility": "Fasilitas {facility} (ID: {id}) akan disembunyikan dari pencarian, halaman kliniknya, dan pemesanan. Tidak ada yang dihapus: data, dokter, dan riwayatnya tetap disimpan, dan Anda dapat membatalkan arsip nanti.",
+    "archiveExplanationHealthcareProfessional": "Tenaga kesehatan {healthcareProfessional} (ID: {id}) akan disembunyikan dari pencarian dan halaman dokternya. Tidak ada yang dihapus: data dan tautannya ke fasilitas tetap disimpan, dan Anda dapat membatalkan arsip nanti.",
+    "archiveReasonLabel": "Alasan pengarsipan (wajib)",
+    "archiveReasonPlaceholder": "Contoh: klinik sudah tutup",
+    "archiveReasonRequired": "Masukkan alasan sebelum mengarsipkan.",
+    "facilityArchivedSuccessfully": "Fasilitas diarsipkan. Fasilitas ini tidak terlihat oleh publik.",
+    "healthcareProfessionalArchivedSuccessfully": "Tenaga kesehatan diarsipkan. Tidak terlihat oleh publik.",
+    "facilityUnarchivedSuccessfully": "Arsip fasilitas dibatalkan. Fasilitas kembali publik.",
+    "healthcareProfessionalUnarchivedSuccessfully": "Arsip tenaga kesehatan dibatalkan. Kembali publik.",
+    "unarchiveConfirmationFacility": "Tampilkan lagi fasilitas {facility} (ID: {id}) kepada publik?",
+    "unarchiveConfirmationHealthcareProfessional": "Tampilkan lagi tenaga kesehatan {healthcareProfessional} (ID: {id}) kepada publik?",
+    "facilityHasUpcomingBookings": "Klinik ini tidak dapat diarsipkan selama masih ada pemesanan mendatang ({count}). Setiap pemesanan harus ditolak, dibatalkan, atau sudah lewat terlebih dahulu.",
+    "archivedBannerTitle": "Diarsipkan",
+    "archivedBannerFacility": "Fasilitas ini disembunyikan dari publik. Datanya tetap disimpan.",
+    "archivedBannerHealthcareProfessional": "Tenaga kesehatan ini disembunyikan dari publik. Datanya tetap disimpan.",
+    "archivedReason": "Alasan: {reason}"
+  },
+  "modCopyId": {
+    "facilityId": "ID fasilitas",
+    "healthcareProfessionalId": "ID tenaga kesehatan",
+    "copy": "Salin",
+    "copied": "Disalin",
+    "copyFailed": "ID tidak dapat disalin. Pilih lalu salin secara manual.",
+    "copyLabel": "Salin {label} {id}"
   },
   "modEditSubmissionTopNav": {
     "update": "Perbarui",
@@ -754,7 +798,9 @@
     "rejectSubmissionConfirmationButton": "Ya, tolak pengajuan ini",
     "successMessageUpdated": "Pengajuan berhasil diperbarui",
     "successMessageApproved": "Pengajuan berhasil disetujui",
-    "submissionRejected": "Pengajuan ditolak"
+    "submissionRejected": "Pengajuan ditolak",
+    "linkedRecordsFailed": "Fasilitas atau tenaga kesehatan yang tertaut tidak dapat dimuat. Menyetujui sekarang akan menambahkannya sebagai data baru. Coba lagi.",
+    "retryLinkedRecords": "Coba lagi"
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Bahasa yang digunakan",
@@ -868,6 +914,8 @@
     "resultsRegion": "Hasil pencarian",
     "moreProfessionals": "+{n} lainnya",
     "professionalsAtFacility": "Tidak ada tenaga kesehatan yang tercantum | 1 tenaga kesehatan | {n} tenaga kesehatan",
+    "showMoreProfessionals": "Tampilkan {n} lagi",
+    "showAllProfessionals": "Tampilkan semua ({n})",
     "noProfessionalsYet": "Belum ada dokter yang tercantum",
     "noProfessionalsNote": "Kami belum memiliki informasi tentang dokter di klinik ini. Informasi klinik di atas tetap berlaku.",
     "addProfessional": "Kenal dokter di sini? Tambahkan",
