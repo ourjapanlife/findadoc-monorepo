@@ -221,6 +221,11 @@ export type BookingForm = {
   languages: Array<Locale>;
   /** True when the clinic has interpretation on and at least one interpreter (#205). */
   offersInterpretation: Scalars['Boolean']['output'];
+  /**
+   * True when the patient may ask for SMS as well as email (#206). The contact step then shows
+   * an "also send me text messages" box; when it is ticked the email is optional.
+   */
+  offersSms: Scalars['Boolean']['output'];
   /** Doctors at this clinic the patient may choose. */
   practitioners: Array<BookingPractitioner>;
   themePrimary?: Maybe<Scalars['String']['output']>;
@@ -371,6 +376,8 @@ export type BookingSettings = {
   allowedDurations: Array<Scalars['Int']['output']>;
   /** True when this user may turn offersInterpretation on or off. Clinic members may not. */
   canChangeInterpretation: Scalars['Boolean']['output'];
+  /** True when this user may turn offersSms on or off. Clinic members may not. */
+  canChangeSms: Scalars['Boolean']['output'];
   /** Languages the clinic lists: its own, its doctors', and its interpreters'. */
   clinicLanguages: Array<Locale>;
   /** The offered length the Book page preselects. */
@@ -386,6 +393,8 @@ export type BookingSettings = {
   offerableFormDefinitionIds: Array<Scalars['String']['output']>;
   /** The clinic may use interpreters (#205). Admins turn it on; it is meant to be a paid add-on. */
   offersInterpretation: Scalars['Boolean']['output'];
+  /** Patients may ask for SMS as well as email (#206). Admins turn it on; it is meant to be a paid add-on. */
+  offersSms: Scalars['Boolean']['output'];
 };
 
 /** Read-only staff detail. Scalar answers only; files are separate download links. */
@@ -418,6 +427,8 @@ export type BookingSubmissionDetail = {
   /** The chosen or assigned doctor's names. Empty when no doctor was named. */
   practitionerNames: Array<LocalizedName>;
   service?: Maybe<Scalars['String']['output']>;
+  /** The patient asked for SMS as well as email (#206). Then there may be no email answer. */
+  smsOptIn: Scalars['Boolean']['output'];
   /** Languages the patient asked for. */
   spokenLanguages: Array<Locale>;
   startsAt?: Maybe<Scalars['String']['output']>;
@@ -1808,6 +1819,8 @@ export type Mutation = {
   saveClinicInterpreter: ClinicInterpreter;
   /** Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on. */
   setBookingInterpretation: BookingSettings;
+  /** Let patients ask for SMS as well as email, or stop (#206). Admins only; it is meant to be a paid add-on. */
+  setBookingSms: BookingSettings;
   /** Replace the clinic's usual week. Members and moderators. */
   setClinicWeeklyHours: Array<ClinicWeeklyHours>;
   /**
@@ -1960,6 +1973,11 @@ export type MutationSaveClinicInterpreterArgs = {
 
 export type MutationSetBookingInterpretationArgs = {
   input: SetBookingInterpretationInput;
+};
+
+
+export type MutationSetBookingSmsArgs = {
+  input: SetBookingSmsInput;
 };
 
 
@@ -2682,6 +2700,11 @@ export type SetBookingInterpretationInput = {
   offersInterpretation: Scalars['Boolean']['input'];
 };
 
+export type SetBookingSmsInput = {
+  facilityId: Scalars['ID']['input'];
+  offersSms: Scalars['Boolean']['input'];
+};
+
 export type SetClinicWeeklyHoursInput = {
   /** Facility id, clinic site id, or clinic site slug. */
   facilityId: Scalars['ID']['input'];
@@ -2996,6 +3019,11 @@ export type SubmitBookingInput = {
   practitionerId?: InputMaybe<Scalars['ID']['input']>;
   /** Optional service or appointment-type key from the Book URL. */
   service?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The patient asked for SMS as well as email (#206). Omitted means false. Refused unless the
+   * clinic offers SMS. When true the email answer is optional; one that is given is kept.
+   */
+  smsOptIn?: InputMaybe<Scalars['Boolean']['input']>;
   /** Languages the patient needs. At most 10. */
   spokenLanguages?: InputMaybe<Array<Locale>>;
   /** Required start inside a staff availability window. ISO 8601 UTC. */
@@ -3382,6 +3410,7 @@ export type ResolversTypes = {
   SaveClinicInterpreterInput: SaveClinicInterpreterInput;
   SchemaVersion: SchemaVersion;
   SetBookingInterpretationInput: SetBookingInterpretationInput;
+  SetBookingSmsInput: SetBookingSmsInput;
   SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   Specialty: Specialty;
   SpecialtyCategory: SpecialtyCategory;
@@ -3510,6 +3539,7 @@ export type ResolversParentTypes = {
   Reservation: Reservation;
   SaveClinicInterpreterInput: SaveClinicInterpreterInput;
   SetBookingInterpretationInput: SetBookingInterpretationInput;
+  SetBookingSmsInput: SetBookingSmsInput;
   SetClinicWeeklyHoursInput: SetClinicWeeklyHoursInput;
   SpecialtyCategoryDefinition: SpecialtyCategoryDefinition;
   SpecialtyDefinition: SpecialtyDefinition;
@@ -3598,6 +3628,7 @@ export type BookingFormResolvers<ContextType = any, ParentType extends Resolvers
   interpreters?: Resolver<Array<ResolversTypes['BookingFormInterpreter']>, ParentType, ContextType>;
   languages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
   offersInterpretation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  offersSms?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   practitioners?: Resolver<Array<ResolversTypes['BookingPractitioner']>, ParentType, ContextType>;
   themePrimary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -3671,12 +3702,14 @@ export type BookingPractitionerResolvers<ContextType = any, ParentType extends R
 export type BookingSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingSettings'] = ResolversParentTypes['BookingSettings']> = {
   allowedDurations?: Resolver<Array<ResolversTypes['Int']>, ParentType, ContextType>;
   canChangeInterpretation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  canChangeSms?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   clinicLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
   defaultDuration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   facilityId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   formDefinitionIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   offerableFormDefinitionIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   offersInterpretation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  offersSms?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
 export type BookingSubmissionDetailResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookingSubmissionDetail'] = ResolversParentTypes['BookingSubmissionDetail']> = {
@@ -3700,6 +3733,7 @@ export type BookingSubmissionDetailResolvers<ContextType = any, ParentType exten
   practitionerId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   practitionerNames?: Resolver<Array<ResolversTypes['LocalizedName']>, ParentType, ContextType>;
   service?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  smsOptIn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   spokenLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
   startsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['BookingSubmissionStatus'], ParentType, ContextType>;
@@ -4180,6 +4214,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeClinicMember?: Resolver<ResolversTypes['DeleteResult'], ParentType, ContextType, RequireFields<MutationRemoveClinicMemberArgs, 'id'>>;
   saveClinicInterpreter?: Resolver<ResolversTypes['ClinicInterpreter'], ParentType, ContextType, RequireFields<MutationSaveClinicInterpreterArgs, 'input'>>;
   setBookingInterpretation?: Resolver<ResolversTypes['BookingSettings'], ParentType, ContextType, RequireFields<MutationSetBookingInterpretationArgs, 'input'>>;
+  setBookingSms?: Resolver<ResolversTypes['BookingSettings'], ParentType, ContextType, RequireFields<MutationSetBookingSmsArgs, 'input'>>;
   setClinicWeeklyHours?: Resolver<Array<ResolversTypes['ClinicWeeklyHours']>, ParentType, ContextType, RequireFields<MutationSetClinicWeeklyHoursArgs, 'input'>>;
   submitBooking?: Resolver<ResolversTypes['BookingSubmissionResult'], ParentType, ContextType, RequireFields<MutationSubmitBookingArgs, 'input'>>;
   submitFacilityCorrection?: Resolver<ResolversTypes['FacilityCorrectionResult'], ParentType, ContextType, RequireFields<MutationSubmitFacilityCorrectionArgs, 'input'>>;

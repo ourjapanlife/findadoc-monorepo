@@ -23,6 +23,7 @@ import type {
     DeleteResult,
     SaveClinicInterpreterInput,
     SetBookingInterpretationInput,
+    SetBookingSmsInput,
     SetClinicWeeklyHoursInput,
     UpdateBookingSettingsInput
 } from '@findadoc/graphql'
@@ -63,6 +64,7 @@ const BOOKING_LIST_ITEM_FIELDS = `
 
 const BOOKING_DETAIL_FIELDS = `
   ${BOOKING_SUBMISSION_FIELDS}
+  smsOptIn
   cancelledBy
   statusReason
   statusReasonPurgedAt
@@ -125,6 +127,8 @@ const SETTINGS_FIELDS = `
   offerableFormDefinitionIds
   offersInterpretation
   canChangeInterpretation
+  offersSms
+  canChangeSms
   clinicLanguages
 `
 
@@ -621,6 +625,20 @@ export async function setBookingInterpretation(input: SetBookingInterpretationIn
         WRITE
     )
     return data?.setBookingInterpretation ?? null
+}
+
+const setSmsMutation = gql`
+  mutation SetBookingSms($input: SetBookingSmsInput!) {
+    setBookingSms(input: $input) {
+      ${SETTINGS_FIELDS}
+    }
+  }
+`
+
+/** Admins only (#206). The API refuses a clinic member, owners included. */
+export async function setBookingSms(input: SetBookingSmsInput): Promise<BookingSettings | null> {
+    const data = await request<{ setBookingSms: BookingSettings }>(setSmsMutation, { input }, WRITE)
+    return data?.setBookingSms ?? null
 }
 
 const INTERPRETER_FIELDS = `

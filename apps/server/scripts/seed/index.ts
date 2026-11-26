@@ -37,6 +37,7 @@ async function runSeed() {
         await client.query('DELETE FROM clinic_weekly_hours')
         await client.query('DELETE FROM booking_settings')
         await client.query('DELETE FROM booking_payment_settings')
+        await client.query('DELETE FROM booking_sms')
         await client.query('DELETE FROM booking_interpretation')
         await client.query('DELETE FROM clinic_interpreter_hours')
         await client.query('DELETE FROM clinic_interpreters')

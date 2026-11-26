@@ -1110,7 +1110,8 @@
       "openRequestLimit": "Cette adresse e-mail a déjà des demandes en attente auprès de cette clinique. Attendez la réponse de la clinique, ou annulez-en une avec le lien reçu par e-mail.",
       "confirmations": "Cochez les deux cases avant d'envoyer la demande",
       "regionUnavailable": "La prise de rendez-vous est actuellement réservée aux personnes qui se trouvent au Japon.",
-      "phoneJapan": "Saisissez un numéro de téléphone japonais, par exemple 090-1234-5678"
+      "phoneJapan": "Saisissez un numéro de téléphone japonais, par exemple 090-1234-5678",
+      "smsNotOffered": "Cette clinique ne peut pas envoyer de SMS pour le moment. Décochez les SMS et indiquez un e-mail."
     },
     "slotLabel": "Horaire souhaité",
     "slotLoading": "Chargement des créneaux…",
@@ -1232,6 +1233,11 @@
       "email": "Courriel",
       "website": "Site web",
       "clinicLink": "Retour à {clinic}"
+    },
+    "manageLinkHelpSms": "Conservez ce lien privé. Il affiche votre demande et vous permet de l’annuler. Le même lien figure dans votre SMS de confirmation.",
+    "smsOptIn": {
+      "label": "M’envoyer aussi des SMS",
+      "help": "Nous enverrons aussi les messages concernant cette demande à votre numéro de téléphone. Si vous n’avez pas d’e-mail, laissez ce champ vide."
     }
   },
   "bookingDashboard": {
@@ -1297,7 +1303,10 @@
     "preview": "Aperçu",
     "previewOf": "Ouvrir {name} dans un nouvel onglet",
     "purgedNote": "Ce fichier a été supprimé.",
-    "downloadNote": "Une copie téléchargée relève de la clinique, qui doit la protéger et la supprimer quand elle n'est plus utile."
+    "downloadNote": "Une copie téléchargée relève de la clinique, qui doit la protéger et la supprimer quand elle n'est plus utile.",
+    "smsOptIn": "Messages par SMS",
+    "smsOptInYes": "Oui. Il peut ne pas y avoir d’e-mail.",
+    "smsOptInNo": "Non, e-mail uniquement"
   },
   "bookingAvailability": {
     "clinicLabel": "Site de clinique",
@@ -1366,7 +1375,10 @@
       "save": "Enregistrer les paramètres",
       "interpretation": "Nous proposons l’interprétariat/la traduction : tout médecin peut recevoir les patients dans chacune de nos langues",
       "interpretationHelp": "L’activation ajoute un interprète pour toutes les langues à toutes les heures d’ouverture. Modifiez-le ci-dessous pour choisir les langues, les horaires ou le nombre de rendez-vous simultanés.",
-      "interpretationLocked": "Find a Doc active cette option pour votre clinique. Contactez-nous pour la modifier."
+      "interpretationLocked": "Find a Doc active cette option pour votre clinique. Contactez-nous pour la modifier.",
+      "sms": "Les patients peuvent aussi choisir les SMS",
+      "smsHelp": "La page de réservation demande s’il faut aussi envoyer des SMS. Un patient qui choisit les SMS peut laisser l’e-mail vide, donc certaines demandes n’auront qu’un numéro de téléphone.",
+      "smsLocked": "Find a Doc active cette option pour votre clinique. Contactez-nous pour la modifier."
     },
     "payment": {
       "heading": "Paiement",

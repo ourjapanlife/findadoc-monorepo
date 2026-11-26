@@ -169,6 +169,14 @@
                         {{ detail.interpreterLabel }}
                     </dd>
                 </div>
+                <div>
+                    <dt class="text-sm text-primary-text-muted">
+                        {{ t('bookingDashboard.smsOptIn') }}
+                    </dt>
+                    <dd data-testid="booking-detail-sms-opt-in">
+                        {{ detail.smsOptIn ? t('bookingDashboard.smsOptInYes') : t('bookingDashboard.smsOptInNo') }}
+                    </dd>
+                </div>
             </dl>
 
             <section class="flex flex-col gap-3">

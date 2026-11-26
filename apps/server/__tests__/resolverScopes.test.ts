@@ -59,6 +59,7 @@ const clinicFields = new Set([
     'updateBookingPaymentSettings',
     'createPaymentQrUploadUrl',
     'setBookingInterpretation',
+    'setBookingSms',
     'saveClinicInterpreter',
     'deleteClinicInterpreter'
 ])
@@ -131,7 +132,8 @@ describe('root resolver scopes', () => {
         'clinicMembers',
         'inviteClinicMember',
         'removeClinicMember',
-        'setBookingInterpretation'
+        'setBookingInterpretation',
+        'setBookingSms'
     ])
     const adminRefusedFields = clinicRootFields.filter(([name]) => !adminSetupFields.has(fieldName(name)))
 

@@ -92,6 +92,10 @@ export const PAYMENT_METHODS = ['creditCard', 'bankTransfer', 'payPay'] as const
 /** The answer that names the payment method. Staff lists and the export read it from the stored answers. */
 export const PAYMENT_METHOD_FIELD_ID = 'paymentMethod'
 
+/** The contact fields every form has. With SMS (#206) email is not asked and phone is required. */
+export const EMAIL_FIELD_ID = 'email'
+export const PHONE_FIELD_ID = 'phone'
+
 export type PaymentMethod = typeof PAYMENT_METHODS[number]
 
 export function isPaymentMethod(value: unknown): value is PaymentMethod {
@@ -106,7 +110,7 @@ export const INSURANCE_TYPES = ['insuranceCard', 'eligibilityCertificate', 'myna
 
 const contactAndVisitFields: BookingFormField[] = [
     field({
-        id: 'email',
+        id: EMAIL_FIELD_ID,
         stepKey: 'contact',
         type: BookingFormFieldType.Email,
         required: true,
@@ -115,7 +119,7 @@ const contactAndVisitFields: BookingFormField[] = [
         maxLength: 254
     }),
     field({
-        id: 'phone',
+        id: PHONE_FIELD_ID,
         stepKey: 'contact',
         type: BookingFormFieldType.Phone,
         required: true,
@@ -470,10 +474,10 @@ export function isOfferedFormId(offeredFormIds: readonly string[], formId: strin
     return parseFormDefinitionIds(offeredFormIds).includes(formId)
 }
 
-/** A form without the clinic's doctors, languages, and interpretation (#205), which come from the database. */
+/** A form without the clinic's doctors, languages, interpretation (#205), and SMS (#206), which come from the database. */
 export type AssembledBookingForm = Omit<
     BookingForm,
-    'practitioners' | 'languages' | 'offersInterpretation' | 'interpreters'
+    'practitioners' | 'languages' | 'offersInterpretation' | 'interpreters' | 'offersSms'
 >
 
 export function assembleBookingForm(input: {

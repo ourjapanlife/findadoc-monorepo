@@ -155,6 +155,38 @@ describe('booking forms', () => {
         })
     })
 
+    describe('SMS as well as email (#206)', () => {
+        const fields = formSourceById(DEFAULT_BOOKING_FORM_ID)?.fields ?? []
+        const withoutEmail = [
+            { fieldId: 'phone', value: '090-1234-5678' },
+            { fieldId: 'fullName', value: 'Test Patient' },
+            { fieldId: 'reason', value: 'Checkup' }
+        ]
+
+        it('requires an email without SMS', () => {
+            expect(collectAnswers({ fields }, withoutEmail).errors?.[0]?.field).toBe('email')
+        })
+
+        it('does not require an email with SMS', () => {
+            const result = collectAnswers({ fields }, withoutEmail, true)
+            expect(result.hasErrors).toBe(false)
+            expect(result.data?.storedAnswers.email).toBeUndefined()
+        })
+
+        it('keeps and checks an email given with SMS', () => {
+            const kept = collectAnswers({ fields }, [{ fieldId: 'email', value: 'patient@example.com' }, ...withoutEmail], true)
+            expect(kept.data?.storedAnswers.email).toBe('patient@example.com')
+            const invalid = collectAnswers({ fields }, [{ fieldId: 'email', value: 'not-an-email' }, ...withoutEmail], true)
+            expect(invalid.errors?.[0]?.field).toBe('email')
+        })
+
+        it('still requires the phone with SMS, even where the form leaves it optional', () => {
+            const optionalPhone = fields.map(field => (field.id === 'phone' ? { ...field, required: false } : field))
+            const noPhone = withoutEmail.filter(answer => answer.fieldId !== 'phone')
+            expect(collectAnswers({ fields: optionalPhone }, noPhone, true).errors?.[0]?.field).toBe('phone')
+        })
+    })
+
     describe('a submitted online consult form', () => {
         const fields = formSourceById(SHOWCASE_BOOKING_FORM_ID)?.fields ?? []
         const base = [

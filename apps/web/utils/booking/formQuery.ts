@@ -13,9 +13,10 @@ import { ErrorCode, type ServerResponse } from '~/typedefs/serverResponse'
 /**
  * Why a public booking call failed. `rateLimited` and `openRequestLimit` have their own
  * sentence on the form (#160), and `regionUnavailable` means the visitor is not in Japan (#173).
+ * `smsNotOffered` means the clinic stopped offering SMS after the page loaded (#206).
  * Anything else is `failed`.
  */
-export type BookingRefusal = 'failed' | 'rateLimited' | 'openRequestLimit' | 'regionUnavailable'
+export type BookingRefusal = 'failed' | 'rateLimited' | 'openRequestLimit' | 'regionUnavailable' | 'smsNotOffered'
 
 export function bookingRefusal(response: Pick<ServerResponse<unknown>, 'errors'>): BookingRefusal {
     const codes = (response.errors ?? []).map(error => error.code)
@@ -28,6 +29,9 @@ export function bookingRefusal(response: Pick<ServerResponse<unknown>, 'errors'>
     if (codes.includes(ErrorCode.OPEN_REQUEST_LIMIT)) {
         return 'openRequestLimit'
     }
+    if (codes.includes(ErrorCode.SMS_NOT_OFFERED)) {
+        return 'smsNotOffered'
+    }
     return 'failed'
 }
 
@@ -36,6 +40,7 @@ export function isBookingRefusal(value: unknown): value is BookingRefusal {
       || value === 'rateLimited'
       || value === 'openRequestLimit'
       || value === 'regionUnavailable'
+      || value === 'smsNotOffered'
 }
 
 /** Both Book page boxes: "I am currently in Japan" and the health-data consent (#173). */
@@ -89,6 +94,7 @@ const BOOKING_FORM_FIELDS = `
   languages
   offersInterpretation
   interpreters { languages }
+  offersSms
 `
 
 const bookingFormQuery = gql`
@@ -236,6 +242,7 @@ export async function submitBookingForm(input: {
     practitionerId?: string | null
     spokenLanguages?: Locale[]
     service?: string | null
+    smsOptIn?: boolean
 } & BookingConfirmations): Promise<BookingSubmissionResult | BookingRefusal> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ submitBooking: BookingSubmissionResult }>(

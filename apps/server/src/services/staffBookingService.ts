@@ -254,6 +254,7 @@ export async function getBookingSubmissionDetail(
             'booking.form_version',
             'booking.answers',
             'booking.answers_purged_at',
+            'booking.sms_opt_in',
             'booking.created_date',
             'booking.updated_date',
             'site.slug',
@@ -310,6 +311,7 @@ export async function getBookingSubmissionDetail(
         appointmentId: row.appointment_id,
         appointmentStatus: appointmentStatusFromRow(row.appointment_status),
         paymentMethod: paymentMethodFromAnswer(answersRecord[PAYMENT_METHOD_FIELD_ID]),
+        smsOptIn: row.sms_opt_in,
         cancelledBy: cancelledByFromRow(row.cancelled_by),
         statusReason: row.status_reason,
         statusReasonPurgedAt: row.status_reason_purged_at === null

@@ -45,6 +45,7 @@ async function submit(
         spokenLanguages?: Locale[]
         confirmedInJapan?: boolean
         healthDataConsent?: boolean
+        smsOptIn?: boolean
     } = {}
 ) {
     return bookingService.submitBooking({
@@ -85,6 +86,7 @@ describe('booking flow', () => {
         await db.deleteFrom('clinic_memberships').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_interpretation').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_sms').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('clinic_interpreters').where('facility_id', '=', facilityId).execute()
         if (createdPractitionerIds.length > 0) {
             await db.deleteFrom('hps_facilities').where('hps_id', 'in', createdPractitionerIds).execute()
@@ -747,6 +749,98 @@ describe('booking flow', () => {
             { facilityId, offersInterpretation: false },
             adminWithNoClinic
         )
+    })
+
+    it('lets only an admin turn SMS on or off (#206)', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const owner: BookingAccess = {
+            isAdmin: false,
+            memberships: new Map([[facilityId, MEMBERSHIP_ROLE.OWNER]])
+        }
+        const staff: BookingAccess = { ...owner, memberships: new Map([[facilityId, MEMBERSHIP_ROLE.STAFF]]) }
+
+        for (const member of [owner, staff, outsider]) {
+            const refused = await clinicAccessService.setBookingSms({ facilityId, offersSms: true }, member)
+            expect(refused.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+        }
+        const ownerView = await clinicAccessService.getBookingSettings(facilityId, owner)
+        expect(ownerView?.offersSms).toBe(false)
+        expect(ownerView?.canChangeSms).toBe(false)
+        expect((await bookingService.getBookingForm(facilityId))?.offersSms).toBe(false)
+
+        try {
+            const allowed = await clinicAccessService.setBookingSms({ facilityId, offersSms: true }, adminWithNoClinic)
+            expect(allowed.data.offersSms).toBe(true)
+            expect(allowed.data.canChangeSms).toBe(true)
+            expect((await bookingService.getBookingForm(facilityId))?.offersSms).toBe(true)
+
+            const ownerOff = await clinicAccessService.setBookingSms({ facilityId, offersSms: false }, owner)
+            expect(ownerOff.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+            expect((await clinicAccessService.getBookingSettings(facilityId, owner))?.offersSms).toBe(true)
+
+            expect((await clinicAccessService.setBookingSms(
+                { facilityId: '00000000-0000-4000-8000-000000000000', offersSms: true },
+                adminWithNoClinic
+            )).errors?.[0]?.field).toBe('facilityId')
+            expect((await clinicAccessService.setBookingSms(
+                { facilityId: 'not-a-uuid', offersSms: true },
+                adminWithNoClinic
+            )).errors?.[0]).toMatchObject({ field: 'facilityId', errorCode: ErrorCode.INVALID_INPUT })
+        } finally {
+            await clinicAccessService.setBookingSms({ facilityId, offersSms: false }, adminWithNoClinic)
+        }
+        expect((await bookingService.getBookingForm(facilityId))?.offersSms).toBe(false)
+    })
+
+    it('takes a request with no email only when the patient asks for SMS at a clinic that offers it (#206)', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const at = (minutes: number) => iso(6 * 24 * 60 + minutes)
+        const window = await availabilityService.createClinicAvailabilityWindow(
+            { clinicSiteId: facilityId, startsAt: at(0), endsAt: at(120) },
+            'test|staff',
+            adminOwner
+        )
+        expect(window.hasErrors).toBe(false)
+        const storedRequest = (id: string) => db.selectFrom('booking_submissions')
+            .select(['sms_opt_in', 'answers'])
+            .where('id', '=', id)
+            .executeTakeFirstOrThrow()
+        const answersOf = (row: { answers: unknown }): Record<string, string> =>
+            (typeof row.answers === 'string' ? JSON.parse(row.answers) : row.answers) as Record<string, string>
+
+        // SMS off: no email is refused, and a hand-made SMS request is refused too.
+        const noEmail = await submit(facilityId, at(0), '')
+        expect(noEmail.errors?.[0]?.field).toBe('email')
+        const smsWhenOff = await submit(facilityId, at(0), '', { smsOptIn: true })
+        expect(smsWhenOff.errors?.[0]).toMatchObject({ field: 'smsOptIn', errorCode: ErrorCode.SMS_NOT_OFFERED })
+        expect(await bookingService.getAvailableBookingStarts(facilityId, at(-60), at(180), 60)).toContain(at(0))
+
+        try {
+            await clinicAccessService.setBookingSms({ facilityId, offersSms: true }, adminWithNoClinic)
+            // Without the box ticked, email is still required.
+            expect((await submit(facilityId, at(0), '')).errors?.[0]?.field).toBe('email')
+
+            // SMS only: no email at all.
+            const smsOnly = await submit(facilityId, at(0), '', { smsOptIn: true })
+            expect(smsOnly.hasErrors).toBe(false)
+            createdSubmissionIds.push(smsOnly.data.id)
+            const smsOnlyRow = await storedRequest(smsOnly.data.id)
+            expect(smsOnlyRow.sms_opt_in).toBe(true)
+            expect(answersOf(smsOnlyRow).email).toBeUndefined()
+            expect(answersOf(smsOnlyRow).phone).toBe('090-1234-5678')
+            const detail = await staffBookingService.getBookingSubmissionDetail(smsOnly.data.id, adminOwner)
+            expect(detail?.smsOptIn).toBe(true)
+
+            // SMS and email: the email is kept, so messages can go to both.
+            const both = await submit(facilityId, at(60), 'both@example.com', { smsOptIn: true })
+            expect(both.hasErrors).toBe(false)
+            createdSubmissionIds.push(both.data.id)
+            const bothRow = await storedRequest(both.data.id)
+            expect(bothRow.sms_opt_in).toBe(true)
+            expect(answersOf(bothRow).email).toBe('both@example.com')
+        } finally {
+            await clinicAccessService.setBookingSms({ facilityId, offersSms: false }, adminWithNoClinic)
+        }
     })
 
     it('lets an owner invite staff but not another owner', async () => {

@@ -49,6 +49,8 @@ export enum ErrorCode {
     FORBIDDEN = 'FORBIDDEN',
     TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS',
     OPEN_REQUEST_LIMIT = 'OPEN_REQUEST_LIMIT',
+    /** The patient chose SMS at a clinic that does not offer it (#206). */
+    SMS_NOT_OFFERED = 'SMS_NOT_OFFERED',
     /** A facility with an upcoming requested or confirmed appointment is not archived. count says how many. */
     FACILITY_HAS_UPCOMING_BOOKINGS = 'FACILITY_HAS_UPCOMING_BOOKINGS',
     /** The facility or professional is already archived. Reload to see the reason. */

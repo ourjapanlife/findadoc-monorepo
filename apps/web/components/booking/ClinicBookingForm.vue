@@ -52,7 +52,7 @@
                 class="flex flex-col gap-1"
             >
                 <p class="text-sm">
-                    {{ t('bookingPage.manageLinkHelp') }}
+                    {{ smsOnly ? t('bookingPage.manageLinkHelpSms') : t('bookingPage.manageLinkHelp') }}
                 </p>
                 <NuxtLink
                     :to="manageUrl"
@@ -106,6 +106,29 @@
                     />
 
                     <div
+                        v-if="showSmsOptIn"
+                        class="flex flex-col gap-1"
+                        data-testid="clinic-booking-sms-opt-in"
+                    >
+                        <label class="flex cursor-pointer items-start gap-3">
+                            <input
+                                v-model="smsOptIn"
+                                type="checkbox"
+                                class="mt-0.5 size-5 shrink-0 accent-primary"
+                                aria-describedby="booking-sms-opt-in-help"
+                                data-testid="clinic-booking-sms-opt-in-toggle"
+                            >
+                            <span class="font-semibold">{{ t('bookingPage.smsOptIn.label') }}</span>
+                        </label>
+                        <p
+                            id="booking-sms-opt-in-help"
+                            class="ml-8 text-sm text-primary-text-muted"
+                        >
+                            {{ t('bookingPage.smsOptIn.help') }}
+                        </p>
+                    </div>
+
+                    <div
                         v-for="field in visibleFields"
                         :key="field.id"
                         class="flex flex-col"
@@ -117,7 +140,7 @@
                         >
                             {{ fieldLabel(field) }}
                             <span
-                                v-if="!field.required"
+                                v-if="!isRequired(field)"
                                 class="ml-1 font-normal text-primary-text-muted"
                             >({{ t('bookingPage.optional') }})</span>
                         </label>
@@ -127,7 +150,7 @@
                         >
                             {{ fieldLabel(field) }}
                             <span
-                                v-if="!field.required"
+                                v-if="!isRequired(field)"
                                 class="ml-1 font-normal text-primary-text-muted"
                             >({{ t('bookingPage.optional') }})</span>
                         </span>
@@ -138,7 +161,7 @@
                             :value="fieldText(values[field.id])"
                             class="field"
                             type="number"
-                            :required="field.required"
+                            :required="isRequired(field)"
                             :min="field.min ?? undefined"
                             :max="field.max ?? undefined"
                             :placeholder="fieldPlaceholder(field)"
@@ -153,7 +176,7 @@
                             v-model="values[field.id]"
                             class="field"
                             type="date"
-                            :required="field.required"
+                            :required="isRequired(field)"
                             :min="japanDateYearsFromToday(field.min)"
                             :max="japanDateYearsFromToday(field.max)"
                             :autocomplete="autocompleteFor(field)"
@@ -168,7 +191,7 @@
                             v-model="values[field.id]"
                             class="field"
                             :type="inputType(field.type)"
-                            :required="field.required"
+                            :required="isRequired(field)"
                             :maxlength="field.maxLength ?? undefined"
                             :placeholder="fieldPlaceholder(field)"
                             :autocomplete="autocompleteFor(field)"
@@ -182,7 +205,7 @@
                             :id="`booking-${field.id}`"
                             v-model="values[field.id]"
                             class="field min-h-28"
-                            :required="field.required"
+                            :required="isRequired(field)"
                             :maxlength="field.maxLength ?? undefined"
                             :placeholder="fieldPlaceholder(field)"
                             :autocomplete="autocompleteFor(field)"
@@ -203,7 +226,7 @@
                                 class="sr-only"
                                 :accept="field.accept ?? undefined"
                                 :capture="field.id === 'selfie' ? 'user' : undefined"
-                                :required="field.required && !uploadIds[field.id]"
+                                :required="isRequired(field) && !uploadIds[field.id]"
                                 :aria-label="fieldLabel(field)"
                                 :data-testid="`clinic-booking-field-${field.id}`"
                                 @change="onFileChange(field, $event)"
@@ -227,7 +250,7 @@
                             :id="`booking-${field.id}`"
                             v-model="values[field.id]"
                             class="field"
-                            :required="field.required"
+                            :required="isRequired(field)"
                             :autocomplete="autocompleteFor(field)"
                             :aria-describedby="fieldHint(field) ? `booking-${field.id}-hint` : undefined"
                             :data-testid="`clinic-booking-field-${field.id}`"
@@ -380,6 +403,9 @@ import Stepper from '~/components/common/Stepper.vue'
 import BookingDoctorPicker from '~/components/booking/BookingDoctorPicker.vue'
 import BookingInsuranceGuide from '~/components/booking/BookingInsuranceGuide.vue'
 
+const EMAIL_FIELD_ID = 'email'
+const PHONE_FIELD_ID = 'phone'
+
 const props = withDefaults(defineProps<{
     form: BookingForm
     query?: BookingQuery
@@ -419,6 +445,11 @@ const practitionerId = ref<string | null>(props.form.practitioners.some(practiti
     ? props.query.practitioner ?? null
     : null)
 const spokenLanguages = ref<Locale[]>([])
+// SMS as well as email (#206). The box shows only when the clinic offers SMS, and starts unticked.
+const smsOptIn = ref(false)
+const bySms = computed(() => props.form.offersSms && smsOptIn.value)
+// Set at submit: SMS with no email, so the manage link arrives by SMS only.
+const smsOnly = ref(false)
 const clinicKey = computed(() => bookingClinicKey(props.form))
 const stepIndex = ref(0)
 
@@ -443,6 +474,30 @@ const visibleFields = computed(() =>
 function isShown(field: BookingFormField): boolean {
     return fieldIsShown(field, fieldId => fieldText(values[fieldId]))
 }
+
+/**
+ * With SMS (#206) the email is optional, for a patient who has none, and the phone is
+ * required because it is how the clinic reaches them. The API applies the same rule.
+ */
+function isRequired(field: BookingFormField): boolean {
+    if (!bySms.value) {
+        return field.required
+    }
+    return field.id === PHONE_FIELD_ID || (field.required && field.id !== EMAIL_FIELD_ID)
+}
+
+// The box sits on the step that asks for email, which is the contact step on every form.
+const showSmsOptIn = computed(() => props.form.offersSms
+  && props.form.fields.some(field => field.id === EMAIL_FIELD_ID && field.stepKey === currentStepKey.value))
+
+// Ticking or unticking changes whether email and phone are required, so a shown error is checked again.
+watch(smsOptIn, () => {
+    for (const fieldId of [EMAIL_FIELD_ID, PHONE_FIELD_ID]) {
+        if (touched[fieldId]) {
+            validateField(fieldId)
+        }
+    }
+})
 const isLastStep = computed(() => stepIndex.value >= formSteps.value.length - 1)
 const showSlot = computed(() => {
     if (formSteps.value.some(step => step.key === 'visit')) {
@@ -489,6 +544,7 @@ if (resumedDraft !== null) {
     selectedStart.value = resumedDraft.startsAt
     practitionerId.value = resumedDraft.practitionerId
     spokenLanguages.value = resumedDraft.spokenLanguages as Locale[]
+    smsOptIn.value = resumedDraft.smsOptIn
     const lastStep = Math.max(formSteps.value.length - 1, 0)
     stepIndex.value = Math.min(Math.max(resumedDraft.stepIndex, 0), lastStep)
     for (const [id, uploadId] of Object.entries(resumedDraft.uploadIds)) {
@@ -582,6 +638,7 @@ function rememberCurrentDraft(): void {
         startsAt: selectedStart.value,
         practitionerId: practitionerId.value,
         spokenLanguages: [...spokenLanguages.value],
+        smsOptIn: smsOptIn.value,
         stepIndex: stepIndex.value,
         uploadIds: { ...uploadIds },
         fileNames: { ...fileNames },
@@ -758,7 +815,7 @@ function validateField(fieldId: string): boolean {
 
     if (field.type === BookingFormFieldType.File) {
         const hasFile = Boolean(uploadIds[field.id] || pendingFiles[field.id])
-        if (field.required && !hasFile) {
+        if (isRequired(field) && !hasFile) {
             fieldErrors[field.id] = t('bookingPage.errors.required')
             return false
         }
@@ -768,7 +825,7 @@ function validateField(fieldId: string): boolean {
 
     const raw = fieldText(values[field.id])
     if (raw === '') {
-        if (field.required) {
+        if (isRequired(field)) {
             fieldErrors[field.id] = t('bookingPage.errors.required')
             return false
         }
@@ -893,6 +950,9 @@ function refusalMessage(refusal: BookingRefusal, otherwise: string): string {
     if (refusal === 'regionUnavailable') {
         return t('bookingPage.errors.regionUnavailable')
     }
+    if (refusal === 'smsNotOffered') {
+        return t('bookingPage.errors.smsNotOffered')
+    }
     return otherwise
 }
 
@@ -952,6 +1012,9 @@ async function onSubmit() {
             return
         }
 
+        // Read before the request: the patient could change the box or the email while it is in flight.
+        const sentSmsOptIn = bySms.value
+        const sentSmsOnly = sentSmsOptIn && fieldText(values[EMAIL_FIELD_ID]) === ''
         const result = await submitBookingForm({
             clinicSiteId: clinicKey.value,
             formDefinitionId: props.form.id,
@@ -963,6 +1026,7 @@ async function onSubmit() {
             practitionerId: practitionerId.value,
             spokenLanguages: spokenLanguages.value,
             service: props.query.service,
+            smsOptIn: sentSmsOptIn,
             confirmedInJapan: confirmations.confirmedInJapan,
             healthDataConsent: confirmations.healthDataConsent
         })
@@ -974,6 +1038,7 @@ async function onSubmit() {
 
         makeNonDirty()
         submitted.value = true
+        smsOnly.value = sentSmsOnly
         submissionId.value = result.id
         pendingPayment.value = result.appointmentStatus === BookingAppointmentStatus.PendingPayment
         manageUrl.value = result.manageToken

@@ -7,6 +7,7 @@ import {
     type DeleteResult,
     type InviteClinicMemberInput,
     type SetBookingInterpretationInput,
+    type SetBookingSmsInput,
     type UpdateBookingSettingsInput
 } from '@findadoc/graphql'
 import { sql } from 'kysely'
@@ -32,8 +33,11 @@ import {
 import { clinicLanguages, facilityLanguagesFor, listFacilityPractitioners } from '../booking/practitioners.js'
 import { OPEN_REQUEST_STATUSES } from '../booking/lifecycle.js'
 import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedule.js'
+import { canChangeSms, offersSms, setSms } from '../booking/sms.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
+import { errorLogFields, logger } from '../logger.js'
+import { UUID_REGEX } from '../validation/validateFacility.js'
 import { ErrorCode, Result } from '../result.js'
 
 /**
@@ -317,9 +321,12 @@ async function offerableFormIds(facilityId: string, access: BookingAccess): Prom
 }
 
 async function bookingSettingsFor(facilityId: string, access: BookingAccess): Promise<BookingSettings> {
-    const [settings, interpretation, practitioners, facilityLanguages, interpreters, offerable] = await Promise.all([
+    const [
+        settings, interpretation, sms, practitioners, facilityLanguages, interpreters, offerable
+    ] = await Promise.all([
         settingsForFacility(facilityId),
         offersInterpretation(facilityId),
+        offersSms(facilityId),
         listFacilityPractitioners(facilityId),
         facilityLanguagesFor(facilityId),
         listInterpreters(facilityId),
@@ -333,6 +340,8 @@ async function bookingSettingsFor(facilityId: string, access: BookingAccess): Pr
         offerableFormDefinitionIds: offerable,
         offersInterpretation: interpretation,
         canChangeInterpretation: canChangeInterpretation(access),
+        offersSms: sms,
+        canChangeSms: canChangeSms(access),
         clinicLanguages: clinicLanguages(practitioners, facilityLanguages, interpreters.map(item => item.languages))
     }
 }
@@ -358,6 +367,42 @@ export async function setBookingInterpretation(
     }
     await setInterpretation(input.facilityId, input.offersInterpretation)
     return { data: await bookingSettingsFor(input.facilityId, access), hasErrors: false }
+}
+
+/**
+ * Lets a clinic's patients choose SMS instead of email, or stops it (#206). Only
+ * canChangeSms may, so an owner cannot give their clinic a paid add-on. It does not
+ * open booking: that still waits for the clinic's own settings.
+ */
+export async function setBookingSms(
+    input: SetBookingSmsInput,
+    access: BookingAccess
+): Promise<Result<BookingSettings>> {
+    if (!canChangeSms(access)) {
+        return forbidden('offersSms')
+    }
+    if (!UUID_REGEX.test(input.facilityId)) {
+        return invalid('facilityId')
+    }
+    try {
+        const facility = await db.selectFrom('facilities')
+            .select('id')
+            .where('id', '=', input.facilityId)
+            .executeTakeFirst()
+        if (facility === undefined) {
+            return invalid('facilityId')
+        }
+        // setSms is idempotent, so a retry after a failed settings read is safe.
+        await setSms(input.facilityId, input.offersSms)
+        return { data: await bookingSettingsFor(input.facilityId, access), hasErrors: false }
+    } catch (error) {
+        logger.error('setBookingSms failed', { facilityId: input.facilityId, ...errorLogFields(error) })
+        return {
+            data: undefined as never,
+            hasErrors: true,
+            errors: [{ field: 'offersSms', errorCode: ErrorCode.INTERNAL_SERVER_ERROR, httpStatus: 500 }]
+        }
+    }
 }
 
 export async function updateBookingSettings(

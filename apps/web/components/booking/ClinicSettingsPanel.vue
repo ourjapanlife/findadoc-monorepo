@@ -179,6 +179,18 @@
                 :clinic-languages="settings.clinicLanguages"
             />
         </section>
+
+        <section
+            v-if="settings"
+            class="card flex flex-col gap-3 p-5 shadow-card landscape:p-6"
+            data-testid="clinic-settings-sms"
+        >
+            <ClinicSmsSwitch
+                :facility-id="props.facilityId"
+                :settings="settings"
+                @saved="onSmsSaved"
+            />
+        </section>
     </div>
 </template>
 
@@ -189,6 +201,7 @@ import type { BookingFormType, BookingSettings } from '@findadoc/graphql'
 import ClinicInterpretationSwitch from '~/components/booking/ClinicInterpretationSwitch.vue'
 import ClinicInterpretersEditor from '~/components/booking/ClinicInterpretersEditor.vue'
 import ClinicPaymentSettings from '~/components/booking/ClinicPaymentSettings.vue'
+import ClinicSmsSwitch from '~/components/booking/ClinicSmsSwitch.vue'
 import ClinicWeeklyHoursEditor from '~/components/booking/ClinicWeeklyHoursEditor.vue'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import { useAppToast } from '~/composables/useAppToast'
@@ -275,9 +288,21 @@ async function saveSettings(): Promise<void> {
 
 // Interpretation saves on its own (ClinicInterpretationSwitch). Turning it on can add the
 // default interpreter, so the interpreter list reloads.
+// The interpretation and SMS switches save on their own, so their answers can arrive in either
+// order. Each takes only the fields it owns, so a late answer does not undo the other switch.
 function onInterpretationSaved(saved: BookingSettings): void {
-    settings.value = saved
+    const current = settings.value
+    settings.value = current === null
+        ? saved
+        : { ...saved, offersSms: current.offersSms, canChangeSms: current.canChangeSms }
     interpretersKey.value += 1
+}
+
+function onSmsSaved(saved: BookingSettings): void {
+    const current = settings.value
+    settings.value = current === null
+        ? saved
+        : { ...current, offersSms: saved.offersSms, canChangeSms: saved.canChangeSms }
 }
 
 onMounted(load)
