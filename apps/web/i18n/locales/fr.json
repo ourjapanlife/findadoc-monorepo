@@ -646,7 +646,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "Professionnel de santé désarchivé. Il est de nouveau public.",
     "unarchiveConfirmationFacility": "Rendre l'établissement {facility} (ID : {id}) de nouveau visible par le public ?",
     "unarchiveConfirmationHealthcareProfessional": "Rendre le professionnel de santé {healthcareProfessional} (ID : {id}) de nouveau visible par le public ?",
-    "facilityHasUpcomingBookings": "Cette clinique ne peut pas être archivée tant qu'elle a des réservations à venir ({count}). La clinique doit d'abord y répondre.",
+    "facilityHasUpcomingBookings": "Cette clinique ne peut pas être archivée tant qu'elle a des réservations à venir ({count}). Chacune doit d'abord être refusée, annulée ou passée.",
     "archivedBannerTitle": "Archivé",
     "archivedBannerFacility": "Cet établissement est masqué pour le public. Sa fiche est conservée.",
     "archivedBannerHealthcareProfessional": "Ce professionnel de santé est masqué pour le public. Sa fiche est conservée.",

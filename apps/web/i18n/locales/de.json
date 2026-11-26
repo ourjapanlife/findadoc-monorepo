@@ -693,7 +693,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "Archivierung der medizinischen Fachkraft aufgehoben. Sie ist wieder öffentlich.",
     "unarchiveConfirmationFacility": "Die Einrichtung {facility} (ID: {id}) wieder öffentlich anzeigen?",
     "unarchiveConfirmationHealthcareProfessional": "Die medizinische Fachkraft {healthcareProfessional} (ID: {id}) wieder öffentlich anzeigen?",
-    "facilityHasUpcomingBookings": "Diese Klinik kann nicht archiviert werden, solange sie anstehende Buchungen hat ({count}). Die Klinik muss sie zuerst beantworten.",
+    "facilityHasUpcomingBookings": "Diese Klinik kann nicht archiviert werden, solange sie anstehende Buchungen hat ({count}). Jede muss zuerst abgelehnt, storniert oder vorbei sein.",
     "archivedBannerTitle": "Archiviert",
     "archivedBannerFacility": "Diese Einrichtung ist öffentlich ausgeblendet. Ihr Eintrag bleibt erhalten.",
     "archivedBannerHealthcareProfessional": "Diese medizinische Fachkraft ist öffentlich ausgeblendet. Ihr Eintrag bleibt erhalten.",

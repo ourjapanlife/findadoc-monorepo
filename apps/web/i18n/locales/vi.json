@@ -364,7 +364,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "Đã bỏ lưu trữ nhân viên y tế. Người này đã công khai trở lại.",
     "unarchiveConfirmationFacility": "Hiển thị lại cơ sở {facility} (ID: {id}) cho công chúng?",
     "unarchiveConfirmationHealthcareProfessional": "Hiển thị lại nhân viên y tế {healthcareProfessional} (ID: {id}) cho công chúng?",
-    "facilityHasUpcomingBookings": "Không thể lưu trữ phòng khám này khi còn lịch hẹn sắp tới ({count}). Phòng khám cần phản hồi các lịch hẹn đó trước.",
+    "facilityHasUpcomingBookings": "Không thể lưu trữ phòng khám này khi còn lịch hẹn sắp tới ({count}). Mỗi lịch hẹn cần được từ chối, hủy hoặc đã qua trước.",
     "archivedBannerTitle": "Đã lưu trữ",
     "archivedBannerFacility": "Cơ sở này đang bị ẩn với công chúng. Hồ sơ vẫn được giữ lại.",
     "archivedBannerHealthcareProfessional": "Nhân viên y tế này đang bị ẩn với công chúng. Hồ sơ vẫn được giữ lại.",

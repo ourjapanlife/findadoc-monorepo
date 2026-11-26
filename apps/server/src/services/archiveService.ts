@@ -5,6 +5,7 @@ import { ErrorCode, type Result } from '../result.js'
 import { logger, errorLogFields } from '../logger.js'
 import { createAuditLog } from './auditLogServiceSupabase.js'
 import { lockClinicBookings } from '../booking/target.js'
+import { SLOT_HOLDING_STATUSES } from '../booking/lifecycle.js'
 import { validateArchiveId, validateArchiveInput } from '../validation/validateArchive.js'
 import { facilityWithProfessionalIds, professionalWithFacilityIds } from './mappersEntityService.js'
 import type { Database } from '../typeDefs/kyselyTypes.js'
@@ -12,10 +13,7 @@ import type { FacilityParent, ProfessionalParent } from '../typeDefs/resolverPar
 
 // Moderators archive a facility or a professional instead of deleting it. The row, its
 // hps_facilities links, its bookings, and its institution_import_rows all stay. Public reads
-// leave archived rows out in the query (see ARCHIVE_FILTER and the services that read them).
-
-/** Appointment statuses that still hold a visit. A facility with one in the future is not archived. */
-const OPEN_APPOINTMENT_STATUSES = ['requested', 'confirmed']
+// leave archived rows out in the query (see the services that read them).
 
 /** An expected refusal inside an archive transaction. The transaction rolls back and the code goes back. */
 class ArchiveRefused extends Error {
@@ -46,15 +44,15 @@ function serverErrorResult<T>(field: string): Result<T> {
 }
 
 /**
- * Requested or confirmed visits at the facility that have not ended. Archiving hides the
- * clinic from patients, so it waits until the clinic has answered or held these (#169).
+ * Slot-holding visits (requested, pending payment, or confirmed) at the facility that have not
+ * ended. Archiving hides the clinic from patients, so it waits until none is left (#169).
  * Past bookings do not block: nothing is deleted, so their records stay.
  */
 async function countUpcomingAppointments(transaction: Transaction<Database>, facilityId: string): Promise<number> {
     const row = await transaction.selectFrom('booking_appointments')
         .select(eb => eb.fn.countAll<string>().as('count'))
         .where('facility_id', '=', facilityId)
-        .where('status', 'in', OPEN_APPOINTMENT_STATUSES)
+        .where('status', 'in', SLOT_HOLDING_STATUSES)
         .where('ends_at', '>', new Date().toISOString())
         .executeTakeFirst()
 
@@ -151,9 +149,11 @@ async function setProfessionalArchive(
     updatedBy: string
 ): Promise<ProfessionalParent> {
     return db.transaction().execute(async transaction => {
+        // Lock the row so a concurrent archive waits, and the audit predecessor is the row this update changes.
         const existing = await transaction.selectFrom('hps')
             .selectAll()
             .where('id', '=', id)
+            .forUpdate()
             .executeTakeFirst()
 
         if (existing === undefined) {

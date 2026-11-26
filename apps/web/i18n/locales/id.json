@@ -547,7 +547,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "Arsip tenaga kesehatan dibatalkan. Kembali publik.",
     "unarchiveConfirmationFacility": "Tampilkan lagi fasilitas {facility} (ID: {id}) kepada publik?",
     "unarchiveConfirmationHealthcareProfessional": "Tampilkan lagi tenaga kesehatan {healthcareProfessional} (ID: {id}) kepada publik?",
-    "facilityHasUpcomingBookings": "Klinik ini tidak dapat diarsipkan selama masih ada pemesanan mendatang ({count}). Klinik harus menanggapinya terlebih dahulu.",
+    "facilityHasUpcomingBookings": "Klinik ini tidak dapat diarsipkan selama masih ada pemesanan mendatang ({count}). Setiap pemesanan harus ditolak, dibatalkan, atau sudah lewat terlebih dahulu.",
     "archivedBannerTitle": "Diarsipkan",
     "archivedBannerFacility": "Fasilitas ini disembunyikan dari publik. Datanya tetap disimpan.",
     "archivedBannerHealthcareProfessional": "Tenaga kesehatan ini disembunyikan dari publik. Datanya tetap disimpan.",

@@ -547,7 +547,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "Healthcare professional unarchived. They are public again.",
     "unarchiveConfirmationFacility": "Show the facility {facility} (ID: {id}) to the public again?",
     "unarchiveConfirmationHealthcareProfessional": "Show the healthcare professional {healthcareProfessional} (ID: {id}) to the public again?",
-    "facilityHasUpcomingBookings": "This clinic cannot be archived while it has upcoming bookings ({count}). The clinic must answer them first.",
+    "facilityHasUpcomingBookings": "This clinic cannot be archived while it has upcoming bookings ({count}). Each one must be declined, cancelled, or past first.",
     "archivedBannerTitle": "Archived",
     "archivedBannerFacility": "This facility is hidden from the public. Its record is kept.",
     "archivedBannerHealthcareProfessional": "This healthcare professional is hidden from the public. Their record is kept.",

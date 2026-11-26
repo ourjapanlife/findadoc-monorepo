@@ -21,6 +21,16 @@ function notOnArchivedFacility(eb: ExpressionBuilder<Database, 'clinic_sites'>) 
     ))
 }
 
+/** A clinic site doctor linked to an archived professional is hidden. A doctor with no hp_id stays. */
+function notArchivedProfessional(eb: ExpressionBuilder<Database, 'clinic_site_doctors'>) {
+    return eb.not(eb.exists(
+        eb.selectFrom('hps')
+            .select('hps.id')
+            .whereRef('hps.id', '=', 'clinic_site_doctors.hp_id')
+            .where('hps.archived_at', 'is not', null)
+    ))
+}
+
 /** The columns a redirect or sitemap needs. The full page adds the hero and theme. */
 type SiteSummaryRow = {
     id: string
@@ -360,6 +370,7 @@ export async function getClinicSiteBySlug(slug: string): Promise<ClinicSite | nu
         db.selectFrom('clinic_site_doctors')
             .select(['id', 'sort_order', 'name_ja', 'name_en', 'image_path', 'object_position', 'hp_id'])
             .where('clinic_site_id', '=', site.id)
+            .where(eb => notArchivedProfessional(eb))
             .orderBy('sort_order')
             .execute(),
         db.selectFrom('clinic_site_locales')

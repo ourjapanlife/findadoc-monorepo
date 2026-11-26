@@ -9,6 +9,8 @@ import { generateRandomCreateFacilityInput } from '../src/fakeData/fakeFacilitie
 import { generateRandomCreateHealthcareProfessionalInput } from '../src/fakeData/fakeHealthcareProfessionals.js'
 import { ErrorCode } from '../src/result.js'
 import * as archiveService from '../src/services/archiveService.js'
+import { getClinicSiteBySlug } from '../src/services/clinicSiteService.js'
+import { featureIdToPlaceId } from '../src/places/mapsLink.js'
 import * as availabilityService from '../src/services/availabilityService.js'
 import * as bookingService from '../src/services/bookingService.js'
 import * as clinicAccessService from '../src/services/clinicAccessService.js'
@@ -269,6 +271,12 @@ describe('archiveFacility with bookings', () => {
             .executeTakeFirst()
         expect(stillActive?.archived_at).toBeNull()
 
+        // A visit waiting on payment still holds its slot, so it blocks too.
+        await db.updateTable('booking_appointments').set({ status: 'pending_payment' })
+            .where('facility_id', '=', facilityId).execute()
+        const refusedPending = await archiveService.archiveFacility(facilityId, 'Closed', MODERATOR)
+        expect(refusedPending.errors?.[0]?.errorCode).toBe(ErrorCode.FACILITY_HAS_UPCOMING_BOOKINGS)
+
         // Once the clinic declines it, nothing holds the clinic open, and the booking is kept.
         await db.updateTable('booking_appointments').set({ status: 'declined' }).where('facility_id', '=', facilityId)
             .execute()
@@ -333,5 +341,93 @@ describe('archiveHealthcareProfessional', () => {
         expect(restored.data.archivedAt).toBeNull()
         const publicRead = await healthcareProfessionalService.getHealthcareProfessionalById(professionalId)
         expect(publicRead.hasErrors).toBe(false)
+    })
+})
+
+describe('archived facilities and Maps links', () => {
+    const suffix = Date.now().toString(36)
+    const name = `Archive Maps Test Clinic ${suffix}`
+    const linkName = name.replaceAll(' ', '+')
+
+    async function setMapsIdentity(id: string, values: {
+        name: string
+        placeId?: string
+        latitude: number
+        longitude: number
+    }) {
+        await db.updateTable('facilities')
+            .set({
+                name_en: values.name,
+                map_latitude: values.latitude,
+                map_longitude: values.longitude,
+                ...(values.placeId === undefined ? {} : { google_place_id: values.placeId })
+            })
+            .where('id', '=', id)
+            .execute()
+    }
+
+    it('does not fall back to a same-named clinic when the exact place id is archived', async () => {
+        const archivedId = await createFacility()
+        const otherId = await createFacility()
+        const featureId = `0x6018${suffix.padStart(10, '0').slice(-10)}:0x1`
+        await setMapsIdentity(archivedId, {
+            name, placeId: featureIdToPlaceId(...featureId.split(':') as [string, string]), latitude: 33.1, longitude: 131.1
+        })
+        await setMapsIdentity(otherId, { name, latitude: 33.2, longitude: 131.2 })
+        await archiveService.archiveFacility(archivedId, 'Closed', MODERATOR)
+        const url = `https://www.google.com/maps/place/${linkName}/@33.1,131.1,17z/data=!3m1!4b1!4m6!3m5!1s${featureId}`
+
+        expect((await facilityService.getFacilityMatchingMapsUrl(url)).data).toBeNull()
+        expect((await facilityService.getFacilityMatchingMapsUrl(url, { includeArchived: true })).data?.id)
+            .toBe(archivedId)
+    })
+
+    it('keeps a name-and-pin conflict when the named clinic is archived', async () => {
+        const namedId = await createFacility()
+        const pinnedId = await createFacility()
+        const conflictName = `Conflict Named Clinic ${suffix}`
+        await setMapsIdentity(namedId, { name: conflictName, latitude: 33.3, longitude: 131.3 })
+        await setMapsIdentity(pinnedId, { name: `Other Pin Clinic ${suffix}`, latitude: 33.456789, longitude: 131.456789 })
+        await archiveService.archiveFacility(namedId, 'Closed', MODERATOR)
+        const url = `https://www.google.com/maps/place/${conflictName.replaceAll(' ', '+')}/@33.456789,131.456789,17z`
+
+        expect((await facilityService.getFacilityMatchingMapsUrl(url)).data).toBeNull()
+    })
+})
+
+describe('archived professionals on clinic sites', () => {
+    it('leave the public doctor list and keep the row', async () => {
+        const facilityId = await createFacility()
+        const professionalId = await createProfessional(facilityId)
+        const slug = `archive-doctor-${Date.now().toString(36)}`
+        const site = await db.insertInto('clinic_sites')
+            .values({
+                facility_id: facilityId,
+                slug,
+                status: 'preview',
+                share_image_path: '/clinic-landings/archive-test/hero.jpg',
+                hero_path: '/clinic-landings/archive-test/hero.jpg',
+                theme: JSON.stringify({})
+            })
+            .returning('id')
+            .executeTakeFirstOrThrow()
+        const doctor = { clinic_site_id: site.id, image_path: '/d.jpg', object_position: 'center' }
+        await db.insertInto('clinic_site_doctors').values([
+            { ...doctor, sort_order: 0, name_ja: '例 太郎', name_en: 'Taro Example', hp_id: professionalId },
+            { ...doctor, sort_order: 1, name_ja: '例 花子', name_en: 'Hanako Example', hp_id: null }
+        ]).execute()
+
+        try {
+            await archiveService.archiveHealthcareProfessional(professionalId, 'Left the clinic', MODERATOR)
+
+            const page = await getClinicSiteBySlug(slug)
+            expect(page?.doctors.map(row => row.nameEn)).toEqual(['Hanako Example'])
+            const rows = await db.selectFrom('clinic_site_doctors').select('id').where('clinic_site_id', '=', site.id)
+                .execute()
+            expect(rows).toHaveLength(2)
+        } finally {
+            await db.deleteFrom('clinic_site_doctors').where('clinic_site_id', '=', site.id).execute()
+            await db.deleteFrom('clinic_sites').where('id', '=', site.id).execute()
+        }
     })
 })

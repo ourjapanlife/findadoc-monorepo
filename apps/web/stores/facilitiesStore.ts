@@ -775,6 +775,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
             if (selectedFacilityId.value === facilityId) {
                 selectedFacilityData.value = saved
             }
+            // The picker cache keeps a copy too. Reselecting the facility must not bring back the old state.
+            facilityData.value = facilityData.value.map(facility => (facility.id === facilityId ? saved : facility))
             await loadFacilityList()
         }
 

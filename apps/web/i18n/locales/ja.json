@@ -598,7 +598,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "医療従事者のアーカイブを解除しました。再び公開されます。",
     "unarchiveConfirmationFacility": "医療機関「{facility}」（ID: {id}）を再び公開しますか？",
     "unarchiveConfirmationHealthcareProfessional": "医療従事者「{healthcareProfessional}」（ID: {id}）を再び公開しますか？",
-    "facilityHasUpcomingBookings": "今後の予約（{count}件）があるため、このクリニックはアーカイブできません。先にクリニックが予約に対応する必要があります。",
+    "facilityHasUpcomingBookings": "今後の予約（{count}件）があるため、このクリニックはアーカイブできません。各予約が辞退・キャンセルされるか、予約日時が過ぎるまでお待ちください。",
     "archivedBannerTitle": "アーカイブ済み",
     "archivedBannerFacility": "この医療機関は一般に表示されていません。記録は保管されています。",
     "archivedBannerHealthcareProfessional": "この医療従事者は一般に表示されていません。記録は保管されています。",

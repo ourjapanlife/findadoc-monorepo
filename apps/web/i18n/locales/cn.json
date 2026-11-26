@@ -598,7 +598,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "医疗专业人员已取消归档，重新公开。",
     "unarchiveConfirmationFacility": "要重新公开医疗机构“{facility}”（ID：{id}）吗？",
     "unarchiveConfirmationHealthcareProfessional": "要重新公开医疗专业人员“{healthcareProfessional}”（ID：{id}）吗？",
-    "facilityHasUpcomingBookings": "此诊所还有即将到来的预约（{count}），无法归档。诊所需要先处理这些预约。",
+    "facilityHasUpcomingBookings": "此诊所还有即将到来的预约（{count}），无法归档。每个预约都需要先被拒绝、取消，或已过预约时间。",
     "archivedBannerTitle": "已归档",
     "archivedBannerFacility": "此医疗机构对公众隐藏，记录仍然保留。",
     "archivedBannerHealthcareProfessional": "此医疗专业人员对公众隐藏，记录仍然保留。",

@@ -124,6 +124,8 @@ import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import { ErrorCode } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
 import { hasBothProfessionalNames } from '~/utils/professionalNames'
+import { formatHealthcareProfessionalName } from '~/utils/nameUtils'
+import { toGqlLocale } from '~/utils/activeLocale'
 import { hasServerErrors, leaveToModerationDashboard, getModerationDashboardViewForScreen } from '~/utils/moderationUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 
@@ -196,7 +198,7 @@ const hasPendingChanges = computed(() => hasPendingFormChanges())
 const toast = useAppToast()
 const { pending, isPending, run } = usePendingAction()
 
-const { t, te } = useI18n()
+const { t, te, locale } = useI18n()
 
 const buttonBaseClass = 'inline-flex min-h-11 min-w-0 max-w-full items-center justify-center gap-2 rounded-full border-2'
   + ' break-words text-center text-sm font-bold leading-tight landscape:text-base'
@@ -387,10 +389,10 @@ const selectedRecord = computed(() => (moderationScreenStore.editFacilityScreenI
 const selectedIsArchived = computed(() => isArchived(selectedRecord.value))
 const selectedArchivedReason = computed(() => selectedRecord.value?.archivedReason ?? '')
 
-const professionalName = computed(() => {
-    const name = healthcareProfessionalsStore.selectedHealthcareProfessionalData?.names?.[0]
-    return name === undefined ? '' : [name.firstName, name.lastName].filter(part => part).join(' ')
-})
+const professionalName = computed(() => formatHealthcareProfessionalName(
+    healthcareProfessionalsStore.selectedHealthcareProfessionalData?.names,
+    toGqlLocale(locale.value)
+))
 
 const archivedBannerText = computed(() => (moderationScreenStore.editFacilityScreenIsActive()
     ? t('modEditFacilityOrHPTopbar.archivedBannerFacility')

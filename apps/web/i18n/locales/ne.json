@@ -547,7 +547,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "स्वास्थ्यकर्मी अभिलेखबाट निकालियो। उहाँ फेरि सार्वजनिक हुनुहुन्छ।",
     "unarchiveConfirmationFacility": "स्वास्थ्य संस्था {facility} (ID: {id}) फेरि सार्वजनिक रूपमा देखाउने?",
     "unarchiveConfirmationHealthcareProfessional": "स्वास्थ्यकर्मी {healthcareProfessional} (ID: {id}) फेरि सार्वजनिक रूपमा देखाउने?",
-    "facilityHasUpcomingBookings": "आउँदा बुकिङहरू ({count}) भएसम्म यो क्लिनिक अभिलेखमा राख्न सकिँदैन। क्लिनिकले पहिले तिनको जवाफ दिनुपर्छ।",
+    "facilityHasUpcomingBookings": "आउँदा बुकिङहरू ({count}) भएसम्म यो क्लिनिक अभिलेखमा राख्न सकिँदैन। पहिले हरेक बुकिङ अस्वीकार वा रद्द हुनुपर्छ, वा त्यसको समय बितिसकेको हुनुपर्छ।",
     "archivedBannerTitle": "अभिलेखमा राखिएको",
     "archivedBannerFacility": "यो स्वास्थ्य संस्था सार्वजनिक रूपमा लुकाइएको छ। यसको रेकर्ड सुरक्षित छ।",
     "archivedBannerHealthcareProfessional": "यो स्वास्थ्यकर्मी सार्वजनिक रूपमा लुकाइएको छ। रेकर्ड सुरक्षित छ।",

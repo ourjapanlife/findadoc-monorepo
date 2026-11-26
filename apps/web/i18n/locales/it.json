@@ -404,7 +404,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "Professionista sanitario ripristinato dall'archivio. È di nuovo pubblico.",
     "unarchiveConfirmationFacility": "Mostrare di nuovo al pubblico la struttura {facility} (ID: {id})?",
     "unarchiveConfirmationHealthcareProfessional": "Mostrare di nuovo al pubblico il professionista sanitario {healthcareProfessional} (ID: {id})?",
-    "facilityHasUpcomingBookings": "Questa clinica non può essere archiviata finché ha prenotazioni in arrivo ({count}). La clinica deve prima rispondere.",
+    "facilityHasUpcomingBookings": "Questa clinica non può essere archiviata finché ha prenotazioni in arrivo ({count}). Ognuna deve prima essere rifiutata, annullata o già passata.",
     "archivedBannerTitle": "Archiviato",
     "archivedBannerFacility": "Questa struttura è nascosta al pubblico. La sua scheda è conservata.",
     "archivedBannerHealthcareProfessional": "Questo professionista sanitario è nascosto al pubblico. La sua scheda è conservata.",

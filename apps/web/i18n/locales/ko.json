@@ -547,7 +547,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "의료인 보관을 해제했습니다. 다시 공개됩니다.",
     "unarchiveConfirmationFacility": "의료기관 {facility}(ID: {id})을(를) 다시 공개할까요?",
     "unarchiveConfirmationHealthcareProfessional": "의료인 {healthcareProfessional}(ID: {id})을(를) 다시 공개할까요?",
-    "facilityHasUpcomingBookings": "예정된 예약({count})이 있어 이 클리닉을 보관할 수 없습니다. 클리닉이 먼저 예약에 응답해야 합니다.",
+    "facilityHasUpcomingBookings": "예정된 예약({count})이 있어 이 클리닉을 보관할 수 없습니다. 각 예약이 먼저 거절 또는 취소되거나 예약 시간이 지나야 합니다.",
     "archivedBannerTitle": "보관됨",
     "archivedBannerFacility": "이 의료기관은 일반에게 숨겨져 있습니다. 기록은 보존됩니다.",
     "archivedBannerHealthcareProfessional": "이 의료인은 일반에게 숨겨져 있습니다. 기록은 보존됩니다.",

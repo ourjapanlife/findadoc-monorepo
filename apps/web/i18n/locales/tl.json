@@ -364,7 +364,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "Inalis sa archive ang propesyonal sa kalusugan. Nakikita na ulit siya ng publiko.",
     "unarchiveConfirmationFacility": "Ipakita ulit sa publiko ang pasilidad na {facility} (ID: {id})?",
     "unarchiveConfirmationHealthcareProfessional": "Ipakita ulit sa publiko ang propesyonal sa kalusugan na {healthcareProfessional} (ID: {id})?",
-    "facilityHasUpcomingBookings": "Hindi ma-a-archive ang klinikang ito habang may paparating na booking ({count}). Kailangan muna itong sagutin ng klinika.",
+    "facilityHasUpcomingBookings": "Hindi ma-a-archive ang klinikang ito habang may paparating na booking ({count}). Kailangan munang tanggihan, kanselahin, o lumipas na ang bawat isa.",
     "archivedBannerTitle": "Naka-archive",
     "archivedBannerFacility": "Nakatago sa publiko ang pasilidad na ito. Nananatili ang record nito.",
     "archivedBannerHealthcareProfessional": "Nakatago sa publiko ang propesyonal sa kalusugan na ito. Nananatili ang record.",

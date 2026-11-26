@@ -598,7 +598,7 @@
     "healthcareProfessionalUnarchivedSuccessfully": "Медицинский специалист возвращён из архива. Он снова виден всем.",
     "unarchiveConfirmationFacility": "Снова показать учреждение {facility} (ID: {id}) посетителям?",
     "unarchiveConfirmationHealthcareProfessional": "Снова показать медицинского специалиста {healthcareProfessional} (ID: {id}) посетителям?",
-    "facilityHasUpcomingBookings": "Эту клинику нельзя архивировать, пока у неё есть предстоящие бронирования ({count}). Сначала клиника должна на них ответить.",
+    "facilityHasUpcomingBookings": "Эту клинику нельзя архивировать, пока у неё есть предстоящие бронирования ({count}). Сначала каждое из них должно быть отклонено, отменено или уже пройти.",
     "archivedBannerTitle": "В архиве",
     "archivedBannerFacility": "Это учреждение скрыто от посетителей. Его запись сохранена.",
     "archivedBannerHealthcareProfessional": "Этот медицинский специалист скрыт от посетителей. Его запись сохранена.",

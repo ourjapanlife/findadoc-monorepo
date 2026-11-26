@@ -369,6 +369,8 @@ export async function getFacilityByGooglePlaceId(
             .select('id')
             .where('google_place_id', '=', placeId)
             .$if(options.includeArchived !== true, query => query.where('archived_at', 'is', null))
+            // An active clinic with this id wins over an archived one.
+            .orderBy(eb => eb('archived_at', 'is not', null))
             .orderBy('updated_date', 'desc')
             .limit(1)
             .executeTakeFirst()
@@ -419,17 +421,24 @@ export async function getFacilityMatchingMapsUrl(
             return { data: null, hasErrors: false }
         }
 
+        // Match against archived clinics too, then hide an archived match. Otherwise an archived
+        // clinic's exact place id, or its name in a name-and-pin conflict, falls through to another clinic.
+        const hideArchived = options.includeArchived !== true
+
         if (target.placeId) {
-            const byPlace = await getFacilityByGooglePlaceId(target.placeId, options)
-            if (byPlace.hasErrors || byPlace.data) {
+            const byPlace = await getFacilityByGooglePlaceId(target.placeId, { includeArchived: true })
+            if (byPlace.hasErrors) {
                 return byPlace
+            }
+            if (byPlace.data) {
+                const archived = hideArchived && byPlace.data.archivedAt !== null
+                return { data: archived ? null : byPlace.data, hasErrors: false }
             }
         }
 
         const rows = await db
             .selectFrom('facilities')
-            .select(['id', 'name_en', 'name_ja', 'map_latitude', 'map_longitude'])
-            .$if(options.includeArchived !== true, query => query.where('archived_at', 'is', null))
+            .select(['id', 'name_en', 'name_ja', 'map_latitude', 'map_longitude', 'archived_at'])
             .execute()
         const matchId = matchingFacilityId(target, rows.map(row => ({
             id: row.id,
@@ -438,11 +447,12 @@ export async function getFacilityMatchingMapsUrl(
             latitude: row.map_latitude,
             longitude: row.map_longitude
         })))
-        if (!matchId) {
+        const matchedRow = rows.find(row => row.id === matchId)
+        if (matchedRow === undefined || (hideArchived && matchedRow.archived_at !== null)) {
             return { data: null, hasErrors: false }
         }
 
-        const facility = await getFacilityById(matchId, options)
+        const facility = await getFacilityById(matchedRow.id, options)
         if (facility.hasErrors) {
             return { data: null, hasErrors: true, errors: facility.errors }
         }

@@ -498,6 +498,9 @@ export const useHealthcareProfessionalsStore = defineStore(
                 if (selectedHealthcareProfessionalId.value === professionalId) {
                     selectedHealthcareProfessionalData.value = saved
                 }
+                // The picker cache keeps a copy too. Reselecting the professional must not bring back the old state.
+                healthcareProfessionalsData.value = healthcareProfessionalsData.value.map(professional =>
+                    (professional.id === professionalId ? saved : professional))
                 await loadHealthcareProfessionalList()
             }
 
