@@ -127,9 +127,8 @@ describe('updateHealthcareProfessional', () => {
     })
 })
 
-describe('deleteHealthcareProfessional', () => {
-    test('deletes a new healthcare professional', async () => {
-        // -- Create a new professional that we plan to delete --
+describe('archiveHealthcareProfessional', () => {
+    test('hides a professional from public reads, keeps the record, and unarchives it', async () => {
         const createRequest = {
             query: createHealthcareProfessionalMutation,
             variables: {
@@ -140,188 +139,58 @@ describe('deleteHealthcareProfessional', () => {
         } as gqlMutation<CreateHealthcareProfessionalInput>
 
         const createResult = await request(gqlApiUrl).post('').send(createRequest)
+        expect(createResult.body?.errors).toBeUndefined()
+        const professionalId = (createResult.body.data.createHealthcareProfessional as HealthcareProfessional).id
+        const getByIdRequest = { query: getHealthcareProfessionalByIdQuery, variables: { id: professionalId } }
 
-        //should not have errors
-        const createErrors = createResult.body?.errors
+        const blank = await request(gqlApiUrl).post('').send({
+            query: archiveProfessionalMutation,
+            variables: { id: professionalId, reason: '   ' }
+        })
+        const blankErrors = blank.body?.errors[0].extensions.errors as Error[]
+        expect(blankErrors).toEqual([{ field: 'reason', errorCode: ErrorCode.REQUIRED, httpStatus: 400 }])
 
-        if (createErrors) {
-            logger.error(JSON.stringify(createErrors))
-            expect(createErrors).toBeUndefined()
-        }
+        const archived = await request(gqlApiUrl).post('').send({
+            query: archiveProfessionalMutation,
+            variables: { id: professionalId, reason: 'Retired from practice' }
+        })
+        expect(archived.body?.errors).toBeUndefined()
+        const archivedProfessional = archived.body.data.archiveHealthcareProfessional as HealthcareProfessional
+        expect(archivedProfessional.archivedAt).toBeTruthy()
+        // The test user cannot edit professionals, so the moderator note stays hidden.
+        expect(archivedProfessional.archivedReason).toBeNull()
+        expect(archivedProfessional.facilityIds).toEqual(sharedFacilityIds)
 
-        const originalInputValues = createRequest.variables.input
-        const newProfessional = createResult.body.data.createHealthcareProfessional as HealthcareProfessional
-        const newProfessionalId = newProfessional.id
+        // A public read by id behaves like a missing professional.
+        const missing = await request(gqlApiUrl).post('').send(getByIdRequest)
+        const missingErrors = missing.body?.errors[0].extensions.errors as Error[]
+        expect(missingErrors[0].field).toBe('getHealthcareProfessionalById')
+        expect(missingErrors[0].errorCode).toBe(ErrorCode.NOT_FOUND)
 
-        const getByIdRequest = {
-            query: getHealthcareProfessionalByIdQuery,
-            variables: {
-                id: newProfessional.id
-            }
-        } as gqlRequest
+        const listed = await request(gqlApiUrl).post('').send({
+            query: searchHealthcareProfessionals,
+            variables: { filters: { ids: [professionalId] } }
+        })
+        expect(listed.body.data.healthcareProfessionals).toEqual([])
 
-        // -- Query the professional by id --
-        const validQueryResult = await request(gqlApiUrl).post('').send(getByIdRequest)
+        const again = await request(gqlApiUrl).post('').send({
+            query: archiveProfessionalMutation,
+            variables: { id: professionalId, reason: 'Retired from practice' }
+        })
+        const againErrors = again.body?.errors[0].extensions.errors as Error[]
+        expect(againErrors[0].field).toBe('archiveHealthcareProfessional')
+        expect(againErrors[0].errorCode).toBe(ErrorCode.ALREADY_ARCHIVED)
 
-        //should not have errors
-        const queryErrors = createResult.body?.errors
+        const restored = await request(gqlApiUrl).post('').send({
+            query: unarchiveProfessionalMutation,
+            variables: { id: professionalId }
+        })
+        expect(restored.body?.errors).toBeUndefined()
+        expect(restored.body.data.unarchiveHealthcareProfessional.archivedAt).toBeNull()
 
-        if (queryErrors) {
-            logger.error(JSON.stringify(queryErrors))
-            expect(queryErrors).toBeUndefined()
-        }
-
-        const searchedProfessional = validQueryResult.body.data.healthcareProfessional as HealthcareProfessional
-
-        // We want to ensure the professional was created before we delete it.
-        expect(searchedProfessional.spokenLanguages).toEqual(originalInputValues.spokenLanguages)
-        expect(searchedProfessional.id).toBeDefined()
-
-        const deleteRequest = {
-            query: deleteProfessionalMutation,
-            variables: {
-                id: newProfessionalId
-            }
-        } as gqlRequest
-
-        // -- Let's try to delete the professional! --
-        const deleteResult = await request(gqlApiUrl).post('').send(deleteRequest)
-
-        //should not have errors
-        const deleteErrors = deleteResult.body?.errors
-
-        if (deleteErrors) {
-            logger.error(JSON.stringify(deleteErrors))
-            expect(deleteErrors).toBeUndefined()
-        }
-
-        // we should have a success response
-        expect(deleteResult.body.data.deleteHealthcareProfessional.isSuccessful).toBe(true)
-
-        // -- Let's try to fetch the professional again to confirm it's deleted --
-        const missingQueryResult = await request(gqlApiUrl).post('').send(getByIdRequest)
-
-        //should have an error that it doesn't exist
-        const validQueryGqlErrors = missingQueryResult.body?.errors
-        const validQueryErrors = validQueryGqlErrors[0].extensions.errors as Error[]
-
-        logger.error(JSON.stringify(validQueryErrors))
-        expect(validQueryErrors.length).toBe(1)
-        expect(validQueryErrors[0]).toBeDefined()
-        expect(validQueryErrors[0].field).toBe('getHealthcareProfessionalById')
-        expect(validQueryErrors[0].errorCode).toBe(ErrorCode.NOT_FOUND)
-
-        // -- Let's try to delete the professional again! We should receive an error now that it doesn't exist --
-        const deleteAgainResult = await request(gqlApiUrl).post('').send(deleteRequest)
-
-        //should have an error that it doesn't exist
-        const deleteAgainErrors = deleteAgainResult.body?.errors[0].extensions.errors as Error[]
-
-        logger.error(JSON.stringify(deleteAgainErrors))
-        expect(deleteAgainResult.body?.deleteHealthcareProfessional).toBeFalsy()
-        expect(deleteAgainErrors.length).toBe(1)
-        expect(deleteAgainErrors[0]).toBeDefined()
-        expect(deleteAgainErrors[0].field).toBe('deleteHealthcareProfessional')
-        expect(deleteAgainErrors[0].errorCode).toBe(ErrorCode.INVALID_ID)
-    })
-})
-
-describe('deleteHealthcareProfessional', () => {
-    test('deletes a new healthcare professional', async () => {
-        // -- Create a new professional that we plan to delete --
-        const createRequest = {
-            query: createHealthcareProfessionalMutation,
-            variables: {
-                input: generateCreateProfessionalInput({
-                    facilityIds: sharedFacilityIds
-                }) satisfies CreateHealthcareProfessionalInput
-            }
-        } as gqlMutation<CreateHealthcareProfessionalInput>
-
-        const createResult = await request(gqlApiUrl).post('').send(createRequest)
-
-        //should not have errors
-        const createErrors = createResult.body?.errors
-
-        if (createErrors) {
-            logger.error(JSON.stringify(createErrors))
-            expect(createErrors).toBeUndefined()
-        }
-
-        const originalInputValues = createRequest.variables.input
-        const newProfessional = createResult.body.data.createHealthcareProfessional as HealthcareProfessional
-        const newProfessionalId = newProfessional.id
-
-        const getByIdRequest = {
-            query: getHealthcareProfessionalByIdQuery,
-            variables: {
-                id: newProfessional.id
-            }
-        } as gqlRequest
-
-        // -- Query the professional by id --
-        const validQueryResult = await request(gqlApiUrl).post('').send(getByIdRequest)
-
-        //should not have errors
-        const queryErrors = createResult.body?.errors
-
-        if (queryErrors) {
-            logger.error(JSON.stringify(queryErrors))
-            expect(queryErrors).toBeUndefined()
-        }
-
-        const searchedProfessional = validQueryResult.body.data.healthcareProfessional as HealthcareProfessional
-
-        // We want to ensure the professional was created before we delete it.
-        expect(searchedProfessional.spokenLanguages).toEqual(originalInputValues.spokenLanguages)
-        expect(searchedProfessional.id).toBeDefined()
-
-        const deleteRequest = {
-            query: deleteProfessionalMutation,
-            variables: {
-                id: newProfessionalId
-            }
-        } as gqlRequest
-
-        // -- Let's try to delete the professional! --
-        const deleteResult = await request(gqlApiUrl).post('').send(deleteRequest)
-
-        //should not have errors
-        const deleteErrors = deleteResult.body?.errors
-
-        if (deleteErrors) {
-            logger.error(JSON.stringify(deleteErrors))
-            expect(deleteErrors).toBeUndefined()
-        }
-
-        // we should have a success response
-        expect(deleteResult.body.data.deleteHealthcareProfessional.isSuccessful).toBe(true)
-
-        // -- Let's try to fetch the professional again to confirm it's deleted --
-        const missingQueryResult = await request(gqlApiUrl).post('').send(getByIdRequest)
-
-        //should have an error that it doesn't exist
-        const validQueryGqlErrors = missingQueryResult.body?.errors
-        const validQueryErrors = validQueryGqlErrors[0].extensions.errors as Error[]
-
-        logger.error(JSON.stringify(validQueryErrors))
-        expect(validQueryErrors.length).toBe(1)
-        expect(validQueryErrors[0]).toBeDefined()
-        expect(validQueryErrors[0].field).toBe('getHealthcareProfessionalById')
-        expect(validQueryErrors[0].errorCode).toBe(ErrorCode.NOT_FOUND)
-
-        // -- Let's try to delete the professional again! We should receive an error now that it doesn't exist --
-        const deleteAgainResult = await request(gqlApiUrl).post('').send(deleteRequest)
-
-        //should have an error that it doesn't exist
-        const deleteAgainErrors = deleteAgainResult.body?.errors[0].extensions.errors as Error[]
-
-        logger.error(JSON.stringify(deleteAgainErrors))
-        expect(deleteAgainResult.body?.deleteHealthcareProfessional).toBeFalsy()
-        expect(deleteAgainErrors.length).toBe(1)
-        expect(deleteAgainErrors[0]).toBeDefined()
-        expect(deleteAgainErrors[0].field).toBe('deleteHealthcareProfessional')
-        expect(deleteAgainErrors[0].errorCode).toBe(ErrorCode.INVALID_ID)
+        const found = await request(gqlApiUrl).post('').send(getByIdRequest)
+        expect(found.body?.errors).toBeUndefined()
+        expect(found.body.data.healthcareProfessional.id).toBe(professionalId)
     })
 })
 
@@ -594,8 +463,18 @@ const searchHealthcareProfessionalsWithDetails = `query test_searchHealthcarePro
     }
 }`
 
-const deleteProfessionalMutation = `mutation test_deleteHealthcareProfessional($id: ID!) {
-    deleteHealthcareProfessional(id: $id) {
-        isSuccessful
+const archiveProfessionalMutation = `mutation test_archiveHealthcareProfessional($id: ID!, $reason: String!) {
+    archiveHealthcareProfessional(id: $id, reason: $reason) {
+        id
+        archivedAt
+        archivedReason
+        facilityIds
+    }
+}`
+
+const unarchiveProfessionalMutation = `mutation test_unarchiveHealthcareProfessional($id: ID!) {
+    unarchiveHealthcareProfessional(id: $id) {
+        id
+        archivedAt
     }
 }`

@@ -1,7 +1,17 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { GraphQLResolveInfo } from 'graphql'
-import resolvers from '../src/resolvers.js'
-import { ANONYMOUS_USER_SUB, Role, Scope, withAnyScope, withScope, type UserContext } from '../src/auth.js'
+import { ArchiveFilter } from '@findadoc/graphql'
+import resolvers, { assertArchiveFilterAllowed } from '../src/resolvers.js'
+import {
+    ANONYMOUS_USER_SUB,
+    Role,
+    Scope,
+    canReadArchivedFacilities,
+    canReadArchivedProfessionals,
+    withAnyScope,
+    withScope,
+    type UserContext
+} from '../src/auth.js'
 import { envVariables } from '../utils/environmentVariables.js'
 
 function contextWithScopes(...scopes: Scope[]): UserContext {
@@ -213,5 +223,64 @@ describe('withAnyScope', () => {
         expect(guarded({}, {}, contextWithScopes(Scope['create:submissions']), info)).toBe('ran')
         expect(() => guarded({}, {}, contextWithScopes(Scope['read:submissions']), info)).toThrow('User is not authorized')
         expect(resolver).toHaveBeenCalledTimes(1)
+    })
+})
+
+describe('archive scopes', () => {
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    const moderatorContext: UserContext = {
+        user: { sub: 'test|moderator', name: 'Moderator', email: 'mod@example.com', roles: [Role.Moderator], scope: '' }
+    }
+    const mutation = (name: string) => resolvers.Mutation[name as keyof typeof resolvers.Mutation] as AnyResolver
+    const query = (name: string) => resolvers.Query[name as keyof typeof resolvers.Query] as AnyResolver
+
+    it.each([
+        'archiveFacility', 'unarchiveFacility', 'archiveHealthcareProfessional', 'unarchiveHealthcareProfessional'
+    ])('%s lets a moderator through to validation and refuses a signed-in user', async name => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const args = { id: 'not-a-uuid', reason: 'Closed' }
+
+        await expect(Promise.resolve().then(() => mutation(name)({}, args, moderatorContext, info)))
+            .rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } })
+        await expect(Promise.resolve().then(() => mutation(name)({}, args, anonymousContext, info)))
+            .rejects.toMatchObject(unauthorized)
+    })
+
+    it('removes the hard-delete mutations', () => {
+        expect(Object.keys(resolvers.Mutation)).not.toContain('deleteFacility')
+        expect(Object.keys(resolvers.Mutation)).not.toContain('deleteHealthcareProfessional')
+    })
+
+    it.each([
+        'facilities', 'facilitiesTotalCount', 'healthcareProfessionals', 'healthcareProfessionalsTotalCount'
+    ])('%s refuses archived records to the public', async name => {
+        vi.spyOn(envVariables, 'isTestingEnvironment').mockReturnValue(false)
+        const archived = { filters: { archive: ArchiveFilter.Archived } }
+
+        await expect(Promise.resolve().then(() => query(name)({}, archived, anonymousContext, info)))
+            .rejects.toMatchObject(unauthorized)
+    })
+})
+
+describe('assertArchiveFilterAllowed', () => {
+    it('lets anyone list active records and only moderators list archived ones', () => {
+        expect(() => assertArchiveFilterAllowed(undefined, false)).not.toThrow()
+        expect(() => assertArchiveFilterAllowed(ArchiveFilter.Active, false)).not.toThrow()
+        expect(() => assertArchiveFilterAllowed(ArchiveFilter.All, true)).not.toThrow()
+        expect(() => assertArchiveFilterAllowed(ArchiveFilter.All, false)).toThrow('User is not authorized')
+        expect(() => assertArchiveFilterAllowed(ArchiveFilter.Archived, false)).toThrow('User is not authorized')
+    })
+
+    it('matches the moderator check: moderators and admins, not users or clinic members', () => {
+        const user = (roles: Role[]) => ({ sub: 'user', name: '', email: '', roles, scope: '' })
+
+        expect(canReadArchivedFacilities(user([Role.Moderator]))).toBe(true)
+        expect(canReadArchivedProfessionals(user([Role.Admin]))).toBe(true)
+        expect(canReadArchivedFacilities(user([Role.User]))).toBe(false)
+        expect(canReadArchivedProfessionals(user([Role.FacilityOwner, Role.FacilityStaff]))).toBe(false)
+        expect(canReadArchivedFacilities(null)).toBe(false)
     })
 })

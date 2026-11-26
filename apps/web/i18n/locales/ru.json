@@ -457,7 +457,12 @@
     "clinicsLoadError": "Не удалось загрузить клиники",
     "nameReview": "Нужно проверить имя",
     "statusFilter": "Статус",
-    "reviewFilter": "Проверка"
+    "reviewFilter": "Проверка",
+    "archiveFilter": "Архив",
+    "archiveFilterActive": "Только активные",
+    "archiveFilterArchived": "Только архивные",
+    "archiveFilterAll": "Активные и архивные",
+    "archivedBadge": "В архиве"
   },
   "modFacilitySection": {
     "addresses": "Адреса",
@@ -573,18 +578,32 @@
   },
   "modEditFacilityOrHPTopbar": {
     "updateAndExit": "Обновить и выйти",
-    "delete": "Удалить",
     "update": "Обновить",
     "facilityUpdatedSuccessfully": "Учреждение обновлено",
-    "deleteButtonText": "УДАЛИТЬ НАВСЕГДА",
-    "facilityDeletedSuccessfully": "Учреждение удалено",
-    "facilityHasBookings": "Эту клинику нельзя удалить, пока у неё есть записи ({count}). Записи сохраняются для пациентов.",
-    "healthcareProfessionalDeletedSuccessfully": "Специалист удалён",
     "healthcareProfessionalUpdatedSuccessfully": "Специалист обновлён",
     "back": "Назад",
     "hasUnsavedChanges": "Есть несохранённые изменения. Выйти?",
-    "deleteConfirmationFacility": "Удалить учреждение {facility}, ID {id}?",
-    "deleteConfirmationHealthcareProfessional": "Удалить специалиста {healthcareProfessional}, ID {id}?"
+    "archive": "В архив",
+    "unarchive": "Вернуть из архива",
+    "archiveButtonText": "Архивировать и скрыть",
+    "archiveTitleFacility": "Архивировать это учреждение?",
+    "archiveTitleHealthcareProfessional": "Архивировать этого медицинского специалиста?",
+    "archiveExplanationFacility": "Учреждение {facility} (ID: {id}) будет скрыто из поиска, со страницы клиники и из бронирования. Ничего не удаляется: запись, её врачи и история сохраняются, и позже её можно вернуть из архива.",
+    "archiveExplanationHealthcareProfessional": "Медицинский специалист {healthcareProfessional} (ID: {id}) будет скрыт из поиска и со страницы врача. Ничего не удаляется: запись и её связи с учреждениями сохраняются, и позже её можно вернуть из архива.",
+    "archiveReasonLabel": "Причина архивирования (обязательно)",
+    "archiveReasonPlaceholder": "Например: клиника закрылась",
+    "archiveReasonRequired": "Укажите причину перед архивированием.",
+    "facilityArchivedSuccessfully": "Учреждение перенесено в архив. Оно скрыто от посетителей.",
+    "healthcareProfessionalArchivedSuccessfully": "Медицинский специалист перенесён в архив. Он скрыт от посетителей.",
+    "facilityUnarchivedSuccessfully": "Учреждение возвращено из архива. Оно снова видно всем.",
+    "healthcareProfessionalUnarchivedSuccessfully": "Медицинский специалист возвращён из архива. Он снова виден всем.",
+    "unarchiveConfirmationFacility": "Снова показать учреждение {facility} (ID: {id}) посетителям?",
+    "unarchiveConfirmationHealthcareProfessional": "Снова показать медицинского специалиста {healthcareProfessional} (ID: {id}) посетителям?",
+    "facilityHasUpcomingBookings": "Эту клинику нельзя архивировать, пока у неё есть предстоящие бронирования ({count}). Сначала каждое из них должно быть отклонено, отменено или уже пройти.",
+    "archivedBannerTitle": "В архиве",
+    "archivedBannerFacility": "Это учреждение скрыто от посетителей. Его запись сохранена.",
+    "archivedBannerHealthcareProfessional": "Этот медицинский специалист скрыт от посетителей. Его запись сохранена.",
+    "archivedReason": "Причина: {reason}"
   },
   "modCopyId": {
     "facilityId": "ID учреждения",
@@ -630,7 +649,9 @@
     "professionalNameLocaleNotAllowed": "У медицинского специалиста есть только имя ромадзи и имя на японском.",
     "japaneseMiddleNameNotAllowed": "В японском имени нет второго имени.",
     "invalidOpeningHours": "Проверьте часы работы: каждый интервал должен заканчиваться после начала, а интервалы в один день не могут пересекаться.",
-    "additionalInfoBothLanguages": "Напишите заметку для посетителей на английском и японском или оставьте оба поля пустыми."
+    "additionalInfoBothLanguages": "Напишите заметку для посетителей на английском и японском или оставьте оба поля пустыми.",
+    "alreadyArchived": "Эта запись уже в архиве. Обновите страницу, чтобы её увидеть.",
+    "notArchived": "Эта запись не в архиве. Обновите страницу, чтобы её увидеть."
   },
   "modDashboardHealthcareProfessionalCard": {
     "spokenLanguages": "Языки общения",

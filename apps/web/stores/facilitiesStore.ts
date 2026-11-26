@@ -7,7 +7,6 @@ import { facilitySelection } from '../utils/graphqlSelection'
 import type {
     Facility,
     Mutation,
-    MutationDeleteFacilityArgs,
     MutationUpdateFacilityArgs,
     Relationship,
     FacilitySearchFilters,
@@ -44,7 +43,7 @@ import {
 import { changedPaymentOptions, paymentOptionsInput } from '~/utils/paymentOptions'
 import { changedOpeningHours, openingHoursInput } from '~/utils/openingHours'
 import { changedSupportedLanguages } from '~/utils/facilityLanguages'
-import { FacilityVerificationStatus } from '@findadoc/graphql'
+import { ArchiveFilter, FacilityVerificationStatus } from '@findadoc/graphql'
 import {
     changedVerificationStatus,
     facilityVerificationChoice,
@@ -288,6 +287,8 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         MODERATION_PAGE_SIZES
     )
     const listSearchQuery = ref('')
+    // Archived facilities are hidden from the public. ACTIVE is the default list.
+    const archiveFilter = ref<ArchiveFilter>(ArchiveFilter.Active)
     const listOrder: Ref<ListOrder | null> = ref(null)
     const facilityList: Ref<Facility[]> = ref([])
     const filteredFacilityData = computed(() => facilityList.value)
@@ -526,6 +527,7 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
                     const filters: FacilitySearchFilters = {
                         offset,
                         limit: itemsPerPage.value,
+                        archive: archiveFilter.value,
                         ...(query ? { query } : {}),
                         ...(orderBy === null ? {} : { orderBy })
                     }
@@ -742,28 +744,49 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         createFacilityFields.supportedLanguages = []
     }
 
-    async function deleteFacility(
-  facilityId: MutationDeleteFacilityArgs
-    ): Promise<ServerResponse<Mutation>> {
-        const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
-            gqlClient.request.bind(gqlClient),
-            deleteExistingFacilityGqlMutation,
-            facilityId,
-            { abortAfterMs: 15000 }
-        )
+    /**
+     * Archives the selected facility with the moderator's reason, or brings it back.
+     * Nothing is deleted. On success the edit screen shows the saved archive state.
+     */
+    async function setFacilityArchived(
+        facilityId: string,
+        archive: { reason: string } | null
+    ): Promise<ServerResponse<Facility>> {
+        const response = archive === null
+            ? await graphQLClientRequestWithRetry<Mutation>(
+                gqlClient.request.bind(gqlClient),
+                unarchiveFacilityGqlMutation,
+                { id: facilityId },
+                { abortAfterMs: 15000 }
+            )
+            : await graphQLClientRequestWithRetry<Mutation>(
+                gqlClient.request.bind(gqlClient),
+                archiveFacilityGqlMutation,
+                { id: facilityId, reason: archive.reason },
+                { abortAfterMs: 15000 }
+            )
+        const saved = archive === null ? response.data?.unarchiveFacility : response.data?.archiveFacility
+        const serverResponse: ServerResponse<Facility> = {
+            ...response,
+            data: saved as Facility
+        }
 
-        if (
-            !hasServerErrors(serverResponse)
-            && serverResponse.data?.deleteFacility?.isSuccessful
-        ) {
-            await Promise.all([getFacilities(), loadFacilityList()])
-            if (selectedFacilityId.value === facilityId.id) {
-                selectedFacilityId.value = ''
-                selectedFacilityData.value = undefined
+        if (!hasServerErrors(response) && saved !== undefined && saved !== null) {
+            if (selectedFacilityId.value === facilityId) {
+                selectedFacilityData.value = saved
             }
+            // The picker cache keeps a copy too. Reselecting the facility must not bring back the old state.
+            facilityData.value = facilityData.value.map(facility => (facility.id === facilityId ? saved : facility))
+            await loadFacilityList()
         }
 
         return serverResponse
+    }
+
+    function setArchiveFilter(value: ArchiveFilter) {
+        archiveFilter.value = value
+        currentOffset.value = 0
+        return loadFacilityList()
     }
 
     function setItemsPerPage(newLimit: number) {
@@ -803,7 +826,9 @@ export const useFacilitiesStore = defineStore('facilitiesStore', () => {
         facilitySectionFields,
         unsavedChangesResetTick,
         selectedFacilityId,
-        deleteFacility,
+        setFacilityArchived,
+        archiveFilter,
+        setArchiveFilter,
         selectedFacilityData,
         setSelectedFacilityData,
         loadSelectedFacility,
@@ -828,10 +853,18 @@ const updateExistingFacilityGqlMutation = gql`
     }
 `
 
-const deleteExistingFacilityGqlMutation = gql`
+const archiveFacilityGqlMutation = gql`
+    mutation Mutation($id: ID!, $reason: String!) {
+        archiveFacility(id: $id, reason: $reason) {
+            ${facilitySelection}
+        }
+    }
+`
+
+const unarchiveFacilityGqlMutation = gql`
     mutation Mutation($id: ID!) {
-        deleteFacility(id: $id) {
-            isSuccessful
+        unarchiveFacility(id: $id) {
+            ${facilitySelection}
         }
     }
 `

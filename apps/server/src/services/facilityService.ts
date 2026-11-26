@@ -279,7 +279,7 @@ export function applyFacilityFilters<O>(
   query: SelectQueryBuilder<Database, 'facilities', O>,
   filters: gqlTypes.FacilitySearchFilters
 ): SelectQueryBuilder<Database, 'facilities', O> {
-    let filtered = query
+    let filtered = applyFacilityArchiveFilter(query, filters.archive)
 
     // Text filters (case-insensitive contains)
     if (filters.nameEn) {
@@ -316,6 +316,7 @@ export function applyFacilityFilters<O>(
                 .innerJoin('hps', 'hps.id', 'hps_facilities.hps_id')
                 .select('hps.id')
                 .whereRef('hps_facilities.facilities_id', '=', 'facilities.id')
+                .where('hps.archived_at', 'is', null)
                 .where('hps.specialties', '@>', asJsonb(specialties))
                 .$if(spokenLanguages.length > 0, professionals =>
                     professionals.where('hps.spoken_languages', '@>', asJsonb(spokenLanguages)))
@@ -324,6 +325,26 @@ export function applyFacilityFilters<O>(
 
     return filtered
 }
+
+/**
+ * Keeps the facilities the archive filter asks for. Unset is ACTIVE, so a public read never
+ * sees an archived facility; the resolver only lets moderators ask for ARCHIVED or ALL.
+ */
+export function applyFacilityArchiveFilter<O>(
+    query: SelectQueryBuilder<Database, 'facilities', O>,
+    archive: gqlTypes.ArchiveFilter | null | undefined
+): SelectQueryBuilder<Database, 'facilities', O> {
+    if (archive === gqlTypes.ArchiveFilter.All) {
+        return query
+    }
+
+    return archive === gqlTypes.ArchiveFilter.Archived
+        ? query.where('facilities.archived_at', 'is not', null)
+        : query.where('facilities.archived_at', 'is', null)
+}
+
+/** Whether a read by id or by place may return an archived facility. Only moderators may. */
+export type ArchivedReadOptions = { includeArchived?: boolean }
 
 /** Specialty search stays on one professional. Language-only search does not. */
 export function matchesThroughProfessional(filters: gqlTypes.FacilitySearchFilters): boolean {
@@ -335,7 +356,8 @@ export function matchesThroughProfessional(filters: gqlTypes.FacilitySearchFilte
  * An invalid id is not a match.
  */
 export async function getFacilityByGooglePlaceId(
-    placeId: string
+    placeId: string,
+    options: ArchivedReadOptions = {}
 ): Promise<Result<FacilityParent | null>> {
     if (!/^[A-Za-z0-9_-]{8,}$/.test(placeId)) {
         return { data: null, hasErrors: false }
@@ -346,6 +368,9 @@ export async function getFacilityByGooglePlaceId(
             .selectFrom('facilities')
             .select('id')
             .where('google_place_id', '=', placeId)
+            .$if(options.includeArchived !== true, query => query.where('archived_at', 'is', null))
+            // An active clinic with this id wins over an archived one.
+            .orderBy(eb => eb('archived_at', 'is not', null))
             .orderBy('updated_date', 'desc')
             .limit(1)
             .executeTakeFirst()
@@ -354,7 +379,7 @@ export async function getFacilityByGooglePlaceId(
             return { data: null, hasErrors: false }
         }
 
-        const facility = await getFacilityById(match.id)
+        const facility = await getFacilityById(match.id, options)
         if (facility.hasErrors) {
             return { data: null, hasErrors: true, errors: facility.errors }
         }
@@ -380,7 +405,8 @@ export async function getFacilityByGooglePlaceId(
  * the clinic name inside the link, or a pin within 80 meters, is the same check.
  */
 export async function getFacilityMatchingMapsUrl(
-    url: string
+    url: string,
+    options: ArchivedReadOptions = {}
 ): Promise<Result<FacilityParent | null>> {
     const trimmed = url.trim()
     if (!trimmed || trimmed.length > 2000) {
@@ -395,16 +421,24 @@ export async function getFacilityMatchingMapsUrl(
             return { data: null, hasErrors: false }
         }
 
+        // Match against archived clinics too, then hide an archived match. Otherwise an archived
+        // clinic's exact place id, or its name in a name-and-pin conflict, falls through to another clinic.
+        const hideArchived = options.includeArchived !== true
+
         if (target.placeId) {
-            const byPlace = await getFacilityByGooglePlaceId(target.placeId)
-            if (byPlace.hasErrors || byPlace.data) {
+            const byPlace = await getFacilityByGooglePlaceId(target.placeId, { includeArchived: true })
+            if (byPlace.hasErrors) {
                 return byPlace
+            }
+            if (byPlace.data) {
+                const archived = hideArchived && byPlace.data.archivedAt !== null
+                return { data: archived ? null : byPlace.data, hasErrors: false }
             }
         }
 
         const rows = await db
             .selectFrom('facilities')
-            .select(['id', 'name_en', 'name_ja', 'map_latitude', 'map_longitude'])
+            .select(['id', 'name_en', 'name_ja', 'map_latitude', 'map_longitude', 'archived_at'])
             .execute()
         const matchId = matchingFacilityId(target, rows.map(row => ({
             id: row.id,
@@ -413,11 +447,12 @@ export async function getFacilityMatchingMapsUrl(
             latitude: row.map_latitude,
             longitude: row.map_longitude
         })))
-        if (!matchId) {
+        const matchedRow = rows.find(row => row.id === matchId)
+        if (matchedRow === undefined || (hideArchived && matchedRow.archived_at !== null)) {
             return { data: null, hasErrors: false }
         }
 
-        const facility = await getFacilityById(matchId)
+        const facility = await getFacilityById(matchedRow.id, options)
         if (facility.hasErrors) {
             return { data: null, hasErrors: true, errors: facility.errors }
         }
@@ -448,11 +483,14 @@ export async function contactWithCanonicalMapsUrl<T extends { googleMapsUrl?: st
 
 /**
  * Gets the Facility from the database that matches on the id.
+ * An archived facility is NOT_FOUND, like a deleted one, unless includeArchived is set for a moderator.
  * @param id The id of the Facility.
+ * @param options includeArchived returns an archived facility too.
  * @returns A Facility object, without its professional ids.
  */
 export const getFacilityById = async (
-    id: string
+    id: string,
+    options: ArchivedReadOptions = {}
 ): Promise<Result<FacilityParent>> => {
     try {
         // Validate the incoming id
@@ -475,6 +513,7 @@ export const getFacilityById = async (
             .selectFrom('facilities')
             .selectAll()
             .where('id', '=', id)
+            .$if(options.includeArchived !== true, query => query.where('archived_at', 'is', null))
             .executeTakeFirst()
 
         // A missing facility is the caller's to handle, not a server failure (and not a Sentry event).
@@ -532,10 +571,16 @@ async function getFacilityIdsByHpIds(hpIds: string[]): Promise<Set<string>> {
 /**
  * Loads the professional ids for each facility from the junction table in one query.
  * The per-request DataLoader in loaders.ts batches every facility in a response into one call.
+ * Archived professionals are left out unless includeArchived is set, so a public clinic page
+ * never links to a doctor page that is gone. The links themselves are kept.
  * @param facilityIds Facility ids to look up.
+ * @param options includeArchived keeps archived professionals, for moderators.
  * @returns A map from facility id to its professional ids. A facility with none is not in the map.
  */
-export async function hpIdsByFacilityIds(facilityIds: string[]): Promise<Map<string, string[]>> {
+export async function hpIdsByFacilityIds(
+    facilityIds: string[],
+    options: ArchivedReadOptions = {}
+): Promise<Map<string, string[]>> {
     const hpIdsByFacility = new Map<string, string[]>()
 
     if (!facilityIds.length) {
@@ -544,8 +589,10 @@ export async function hpIdsByFacilityIds(facilityIds: string[]): Promise<Map<str
 
     const relations = await db
         .selectFrom('hps_facilities')
-        .select(['hps_id', 'facilities_id'])
-        .where('facilities_id', 'in', facilityIds)
+        .innerJoin('hps', 'hps.id', 'hps_facilities.hps_id')
+        .select(['hps_facilities.hps_id', 'hps_facilities.facilities_id'])
+        .where('hps_facilities.facilities_id', 'in', facilityIds)
+        .$if(options.includeArchived !== true, query => query.where('hps.archived_at', 'is', null))
         .execute()
 
     for (const relation of relations) {
@@ -573,6 +620,7 @@ async function facilityIdsAdvertisingLanguages(languages: gqlTypes.Locale[]): Pr
         FROM hps_facilities
         JOIN hps ON hps.id = hps_facilities.hps_id
         WHERE hps.spoken_languages @> ${requested}::jsonb
+          AND hps.archived_at IS NULL
           AND hps_facilities.facilities_id IS NOT NULL
     `.execute(db)
 
@@ -1337,162 +1385,6 @@ async function processHealthcareProfessionalRelationshipChanges(
 }
 
 /** Thrown inside the delete transaction so it rolls back. */
-class FacilityHasBookingsError extends Error {
-    constructor(readonly bookingCount: number) {
-        super(`Facility has ${bookingCount} bookings`)
-    }
-}
-
-/**
- * Patient records that keep a facility from being deleted: every booking request,
- * and any upload or appointment not attached to one. The booking tables reference
- * facilities with ON DELETE RESTRICT so these are never deleted with a clinic.
- */
-async function countFacilityBookings(transaction: Transaction<Database>, facilityId: string): Promise<number> {
-    const { rows: [row] } = await sql<{ count: number }>`
-        SELECT
-            (SELECT count(*) FROM booking_submissions WHERE facility_id = ${facilityId})
-          + (SELECT count(*) FROM booking_uploads WHERE facility_id = ${facilityId} AND booking_submission_id IS NULL)
-          + (SELECT count(*) FROM booking_appointments WHERE facility_id = ${facilityId} AND booking_submission_id IS NULL)
-          AS count
-    `.execute(transaction)
-
-    return Number(row?.count ?? 0)
-}
-
-/**
- * This deletes a Facility from the database.
- * If the Facility doesn't exist, it will return a validation error.
- * A facility with bookings is refused with FACILITY_HAS_BOOKINGS and the number of bookings.
- * Without bookings, its booking settings and extra open times are deleted with it.
- * @param id The ID of the facility in the database to delete.
- */
-export async function deleteFacility(
-    id: string,
-    updatedBy: string
-): Promise<Result<gqlTypes.DeleteResult>> {
-    try {
-        // Validate the facility ID format
-        const validationResult = validateIdInput(id)
-
-        if (validationResult.hasErrors) {
-            logger.warn(`Validation Error: invalid id for deleteFacility: ${id}`)
-            return {
-                data: { isSuccessful: false },
-                hasErrors: true,
-                errors: validationResult.errors
-            }
-        }
-
-        // Execute deletion and audit log in a single atomic transaction
-        await db.transaction().execute(async transaction => {
-            // Fetch the existing facility to verify it exists and for audit log
-            const existingFacility = await transaction
-                .selectFrom('facilities')
-                .selectAll()
-                .where('id', '=', id)
-                .executeTakeFirst()
-
-            // If facility doesn't exist, throw error to rollback transaction
-            if (!existingFacility) {
-                throw new Error(`Facility not found: ${id}`)
-            }
-
-            // Fetch related HP IDs for the audit log
-            // (Relations will be deleted automatically by ON DELETE CASCADE)
-            const relations = await transaction
-                .selectFrom('hps_facilities')
-                .select('hps_id')
-                .where('facilities_id', '=', id)
-                .execute()
-
-            const hpIds = relations.map(r => r.hps_id)
-
-            const bookingCount = await countFacilityBookings(transaction, id)
-
-            if (bookingCount > 0) {
-                throw new FacilityHasBookingsError(bookingCount)
-            }
-
-            // Clinic setup with no patient data. Weekly hours, closures, and members cascade.
-            await transaction.deleteFrom('booking_settings').where('facility_id', '=', id).execute()
-            // Payment settings are clinic data. The QR object stays in storage: the API role may not delete.
-            await transaction.deleteFrom('booking_payment_settings').where('facility_id', '=', id).execute()
-            await transaction.deleteFrom('clinic_availability_windows').where('facility_id', '=', id).execute()
-
-            // Delete the facility
-            // ON DELETE CASCADE will automatically delete rows in hps_facilities
-            await transaction
-                .deleteFrom('facilities')
-                .where('id', '=', id)
-                .execute()
-
-            //Create audit log entry
-            // If this fails, the entire transaction (including the delete) is rolled back
-            const oldGqlFacility = facilityWithProfessionalIds(existingFacility, hpIds)
-
-            await createAuditLog(transaction, {
-                actionType: gqlTypes.ActionType.Delete,
-                objectType: gqlTypes.ObjectType.Facility,
-                updatedBy,
-                oldValue: oldGqlFacility
-            })
-        })
-
-        logger.info(`\nDB-DELETE: facility ${id} was deleted.`)
-
-        return {
-            data: { isSuccessful: true },
-            hasErrors: false
-        }
-    } catch (error) {
-        // If we reach here, the transaction was automatically rolled back
-        // The facility still exists in the database no manual cleanup needed
-
-        if (error instanceof FacilityHasBookingsError) {
-            logger.warn(`deleteFacility: facility ${id} has ${error.bookingCount} bookings`)
-            return {
-                data: { isSuccessful: false },
-                hasErrors: true,
-                errors: [{
-                    field: 'deleteFacility',
-                    errorCode: ErrorCode.FACILITY_HAS_BOOKINGS,
-                    httpStatus: 409,
-                    count: error.bookingCount
-                }]
-            }
-        }
-
-        // Check if it's a "not found" error vs other database errors
-        const errorMessage = (error as Error).message
-
-        if (errorMessage.includes('Facility not found')) {
-            logger.warn(`deleteFacility: facility not found: ${id}`)
-            return {
-                data: { isSuccessful: false },
-                hasErrors: true,
-                errors: [{
-                    field: 'deleteFacility',
-                    errorCode: ErrorCode.INVALID_ID,
-                    httpStatus: 404
-                }]
-            }
-        }
-
-        logger.error(`ERROR: Error deleting facility ${id}`, errorLogFields(error))
-
-        return {
-            data: { isSuccessful: false },
-            hasErrors: true,
-            errors: [{
-                field: 'deleteFacility',
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                httpStatus: 500
-            }]
-        }
-    }
-}
-
 /**
  * Facilities published under one city. Rows with no city stay out of this list.
  */
@@ -1516,6 +1408,7 @@ export async function listPublishedCityFacilities(
             .selectAll()
             .where('city_id', '=', cityResult.data.id)
             .where('verification_status', '<>', gqlTypes.FacilityVerificationStatus.UnverifiedLocation)
+            .where('archived_at', 'is', null)
             .execute()
 
         return { data: rows.map(row => facilityFromRow(row)), hasErrors: false }

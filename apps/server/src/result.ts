@@ -8,7 +8,7 @@ export type Error = {
     field: string,
     errorCode: ErrorCode,
     httpStatus?: number,
-    /** How many rows the error is about, such as the bookings that keep a facility from being deleted. */
+    /** How many rows the error is about, such as the upcoming bookings that keep a facility from being archived. */
     count?: number,
 }
 
@@ -51,7 +51,12 @@ export enum ErrorCode {
     OPEN_REQUEST_LIMIT = 'OPEN_REQUEST_LIMIT',
     /** The patient chose SMS at a clinic that does not offer it (#206). */
     SMS_NOT_OFFERED = 'SMS_NOT_OFFERED',
-    FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS',
+    /** A facility with an upcoming requested or confirmed appointment is not archived. count says how many. */
+    FACILITY_HAS_UPCOMING_BOOKINGS = 'FACILITY_HAS_UPCOMING_BOOKINGS',
+    /** The facility or professional is already archived. Reload to see the reason. */
+    ALREADY_ARCHIVED = 'ALREADY_ARCHIVED',
+    /** Unarchive was asked for a facility or professional that is not archived. */
+    NOT_ARCHIVED = 'NOT_ARCHIVED',
     INTERPRETER_HAS_BOOKINGS = 'INTERPRETER_HAS_BOOKINGS',
     /** A facility that is not online needs a Google place id (#228). */
     PLACE_ID_REQUIRED = 'PLACE_ID_REQUIRED',

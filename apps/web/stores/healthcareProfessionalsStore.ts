@@ -5,14 +5,14 @@ import { gql } from 'graphql-request'
 import { fetchHealthcareProfessionalById, fetchHealthcareProfessionalsWithCount } from '../utils/graphqlHelpers'
 import { DIRECTORY_PICKER_LIMIT } from '../utils/moderationSearchUtils'
 import { professionalSelection } from '../utils/graphqlSelection'
-import { type Degree,
+import { ArchiveFilter,
+    type Degree,
     LicenseReviewStatus,
     NameReviewStatus,
     type Specialty,
-    Locale, type DeleteResult, type HealthcareProfessional,
+    Locale, type HealthcareProfessional,
     type LocalizedNameInput,
     type Mutation,
-    type MutationDeleteHealthcareProfessionalArgs,
     type MutationUpdateHealthcareProfessionalArgs,
     type Relationship,
     RelationshipAction,
@@ -104,6 +104,8 @@ export const useHealthcareProfessionalsStore = defineStore(
             MODERATION_PAGE_SIZES
         )
         const listSearchQuery = ref('')
+        // Archived professionals are hidden from the public. ACTIVE is the default list.
+        const archiveFilter = ref<ArchiveFilter>(ArchiveFilter.Active)
         const listOrder: Ref<ListOrder | null> = ref(null)
         // The review chip: at most one of these is on (#313). Not kept between visits: a filter
         // left on from an earlier visit looked like an empty list.
@@ -288,6 +290,7 @@ export const useHealthcareProfessionalsStore = defineStore(
                         const filters = {
                             offset,
                             limit: itemsPerPage.value,
+                            archive: archiveFilter.value,
                             ...(query ? { query } : {}),
                             ...(orderBy === null ? {} : { orderBy }),
                             ...(licenseReviewFilter.value ? { licenseReview: licenseReviewFilter.value } : {}),
@@ -462,32 +465,52 @@ export const useHealthcareProfessionalsStore = defineStore(
             createHealthcareProfessionalSectionFields.spokenLanguages = defaultSpokenLanguages()
         }
 
-        async function deleteHealthcareProfessional(
-            inputArgs: MutationDeleteHealthcareProfessionalArgs
-        ): Promise<ServerResponse<DeleteResult>> {
-            const serverResponse = await graphQLClientRequestWithRetry<Mutation>(
-                gqlClient.request.bind(gqlClient),
-                deleteHealthcareProfessionalGqlMutation,
-                inputArgs,
-                { abortAfterMs: 15000 }
-            )
-
-            const deleteResult = serverResponse.data?.deleteHealthcareProfessional as DeleteResult | undefined
-
-            const mappedResponse: ServerResponse<DeleteResult> = {
-                ...serverResponse,
-                data: deleteResult as DeleteResult
+        /**
+         * Archives the selected professional with the moderator's reason, or brings them back.
+         * Nothing is deleted, and the facility links stay.
+         */
+        async function setHealthcareProfessionalArchived(
+            professionalId: string,
+            archive: { reason: string } | null
+        ): Promise<ServerResponse<HealthcareProfessional>> {
+            const response = archive === null
+                ? await graphQLClientRequestWithRetry<Mutation>(
+                    gqlClient.request.bind(gqlClient),
+                    unarchiveHealthcareProfessionalGqlMutation,
+                    { id: professionalId },
+                    { abortAfterMs: 15000 }
+                )
+                : await graphQLClientRequestWithRetry<Mutation>(
+                    gqlClient.request.bind(gqlClient),
+                    archiveHealthcareProfessionalGqlMutation,
+                    { id: professionalId, reason: archive.reason },
+                    { abortAfterMs: 15000 }
+                )
+            const saved = archive === null
+                ? response.data?.unarchiveHealthcareProfessional
+                : response.data?.archiveHealthcareProfessional
+            const serverResponse: ServerResponse<HealthcareProfessional> = {
+                ...response,
+                data: saved as HealthcareProfessional
             }
 
-            if (!hasServerErrors(serverResponse) && deleteResult?.isSuccessful) {
-                await Promise.all([getHealthcareProfessionals(), loadHealthcareProfessionalList()])
-                if (selectedHealthcareProfessionalId.value === inputArgs.id) {
-                    selectedHealthcareProfessionalId.value = ''
-                    selectedHealthcareProfessionalData.value = undefined
+            if (!hasServerErrors(response) && saved !== undefined && saved !== null) {
+                if (selectedHealthcareProfessionalId.value === professionalId) {
+                    selectedHealthcareProfessionalData.value = saved
                 }
+                // The picker cache keeps a copy too. Reselecting the professional must not bring back the old state.
+                healthcareProfessionalsData.value = healthcareProfessionalsData.value.map(professional =>
+                    (professional.id === professionalId ? saved : professional))
+                await loadHealthcareProfessionalList()
             }
 
-            return mappedResponse
+            return serverResponse
+        }
+
+        function setArchiveFilter(value: ArchiveFilter) {
+            archiveFilter.value = value
+            currentOffset.value = 0
+            return loadHealthcareProfessionalList()
         }
 
         // Japanese in the Japanese dashboard, romaji in every other language. Every professional has
@@ -552,7 +575,9 @@ export const useHealthcareProfessionalsStore = defineStore(
             setReviewQueue,
             updateHealthcareProfessional,
             selectedHealthcareProfessionalId,
-            deleteHealthcareProfessional,
+            setHealthcareProfessionalArchived,
+            archiveFilter,
+            setArchiveFilter,
             healthcareProfessionalSectionFields,
             unsavedChangesResetTick,
             displayChosenLocaleForHealthcareProfessional,
@@ -584,10 +609,18 @@ mutation Mutation($id: ID!, $input: UpdateHealthcareProfessionalInput!) {
 }
 `
 
-const deleteHealthcareProfessionalGqlMutation = gql`
+const archiveHealthcareProfessionalGqlMutation = gql`
+mutation Mutation($id: ID!, $reason: String!) {
+  archiveHealthcareProfessional(id: $id, reason: $reason) {
+    ${professionalSelection}
+  }
+}
+`
+
+const unarchiveHealthcareProfessionalGqlMutation = gql`
 mutation Mutation($id: ID!) {
-  deleteHealthcareProfessional(id: $id) {
-    isSuccessful
+  unarchiveHealthcareProfessional(id: $id) {
+    ${professionalSelection}
   }
 }
 `

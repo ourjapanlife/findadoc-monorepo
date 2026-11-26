@@ -6,8 +6,30 @@ import {
     type ClinicSiteSummary,
     type ClinicWordmark
 } from '@findadoc/graphql'
+import type { ExpressionBuilder } from 'kysely'
 import { db } from '../kyselyClient.js'
+import type { Database } from '../typeDefs/kyselyTypes.js'
 import { logger } from '../logger.js'
+
+/** A clinic site whose facility is archived is gone, like the clinic page. A site with no facility stays. */
+function notOnArchivedFacility(eb: ExpressionBuilder<Database, 'clinic_sites'>) {
+    return eb.not(eb.exists(
+        eb.selectFrom('facilities')
+            .select('facilities.id')
+            .whereRef('facilities.id', '=', 'clinic_sites.facility_id')
+            .where('facilities.archived_at', 'is not', null)
+    ))
+}
+
+/** A clinic site doctor linked to an archived professional is hidden. A doctor with no hp_id stays. */
+function notArchivedProfessional(eb: ExpressionBuilder<Database, 'clinic_site_doctors'>) {
+    return eb.not(eb.exists(
+        eb.selectFrom('hps')
+            .select('hps.id')
+            .whereRef('hps.id', '=', 'clinic_site_doctors.hp_id')
+            .where('hps.archived_at', 'is not', null)
+    ))
+}
 
 /** The columns a redirect or sitemap needs. The full page adds the hero and theme. */
 type SiteSummaryRow = {
@@ -332,6 +354,7 @@ export async function getClinicSiteBySlug(slug: string): Promise<ClinicSite | nu
         .select(['id', 'facility_id', 'slug', 'status', 'share_image_path', 'hero_path', 'theme'])
         .where('slug', '=', slug)
         .where('status', '!=', 'draft')
+        .where(eb => notOnArchivedFacility(eb))
         .executeTakeFirst()
 
     if (site === undefined) {
@@ -347,6 +370,7 @@ export async function getClinicSiteBySlug(slug: string): Promise<ClinicSite | nu
         db.selectFrom('clinic_site_doctors')
             .select(['id', 'sort_order', 'name_ja', 'name_en', 'image_path', 'object_position', 'hp_id'])
             .where('clinic_site_id', '=', site.id)
+            .where(eb => notArchivedProfessional(eb))
             .orderBy('sort_order')
             .execute(),
         db.selectFrom('clinic_site_locales')
@@ -368,6 +392,7 @@ export async function listPublicClinicSites(): Promise<ClinicSiteSummary[]> {
     const rows = await db.selectFrom('clinic_sites')
         .select(['id', 'facility_id', 'slug', 'status', 'share_image_path'])
         .where('status', '!=', 'draft')
+        .where(eb => notOnArchivedFacility(eb))
         .orderBy('slug')
         .execute()
     if (rows.length === 0) {

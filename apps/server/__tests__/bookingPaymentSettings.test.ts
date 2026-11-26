@@ -33,6 +33,8 @@ import {
 } from '../src/storage/clinicAssetStorage.js'
 import { isSafeBookingObjectKey, isSafeLocalObjectKey, storeLocalBookingUpload } from '../src/storage/objectStorage.js'
 import { isHttpsUrl, validatePaymentSettings } from '../src/validation/validatePaymentSettings.js'
+import * as archiveService from '../src/services/archiveService.js'
+import { removeTestFacility } from './fixtures/removeTestFacility.js'
 
 const API = 'http://127.0.0.1:4000'
 // An admin who is also the clinic owner of the clinics under test. Being an admin alone reads no booking (#192).
@@ -389,17 +391,18 @@ describe('booking payment settings', () => {
         expect(saved.data.cardUrl).toBe('https://example.com/pay')
     })
 
-    it('is deleted with the facility', async () => {
+    it('is kept when the facility is archived, so unarchiving restores it', async () => {
         const created = await facilityService.createFacility(generateRandomCreateFacilityInput(), 'test|moderator')
         const id = created.data.id
         adminOwner.memberships.set(id, 'owner')
         await paymentSettingsService.updateBookingPaymentSettings(settingsInput(id), adminOwner, API)
 
-        const deleted = await facilityService.deleteFacility(id, 'test|moderator')
-        expect(deleted.hasErrors).toBe(false)
+        const archived = await archiveService.archiveFacility(id, 'Closed', 'test|moderator')
+        expect(archived.hasErrors).toBe(false)
         const rows = await db.selectFrom('booking_payment_settings').select('facility_id')
             .where('facility_id', '=', id).execute()
-        expect(rows).toEqual([])
+        expect(rows).toEqual([{ facility_id: id }])
+        await removeTestFacility(id)
     })
 })
 

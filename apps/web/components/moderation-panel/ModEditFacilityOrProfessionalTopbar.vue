@@ -1,60 +1,103 @@
 <template>
-    <div
-        class="facility-hp-topbar-actions flex w-full min-w-0 flex-col gap-2 p-2 font-bold
-        landscape:flex-row landscape:items-center landscape:justify-between"
-    >
-        <div class="flex min-w-0 flex-wrap items-center gap-2">
-            <button
-                type="button"
-                :class="[buttonBaseClass, backButtonClass, buttonOutlineClass, buttonPaddingClass]"
-                data-testid="mod-edit-facility-hp-topbar-back"
-                @click="navigateBackToDashboard"
+    <div class="flex w-full min-w-0 flex-col">
+        <div
+            class="facility-hp-topbar-actions flex w-full min-w-0 flex-col gap-2 p-2 font-bold
+            landscape:flex-row landscape:items-center landscape:justify-between"
+        >
+            <div class="flex min-w-0 flex-wrap items-center gap-2">
+                <button
+                    type="button"
+                    :class="[buttonBaseClass, backButtonClass, buttonOutlineClass, buttonPaddingClass]"
+                    data-testid="mod-edit-facility-hp-topbar-back"
+                    @click="navigateBackToDashboard"
+                >
+                    {{ t('modEditFacilityOrHPTopbar.back') }}
+                </button>
+                <ModCopyId
+                    v-if="selectedId"
+                    :id="selectedId"
+                    :label="selectedIdLabel"
+                />
+            </div>
+            <div
+                class="grid w-full min-w-0 grid-cols-2 gap-2
+                landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end
+                portrait:[&>*:last-child:nth-child(odd)]:col-span-2"
             >
-                {{ t('modEditFacilityOrHPTopbar.back') }}
-            </button>
-            <ModCopyId
-                v-if="selectedId"
-                :id="selectedId"
-                :label="selectedIdLabel"
-            />
+                <button
+                    type="button"
+                    :disabled="!hasPendingChanges || pending"
+                    :aria-busy="isPending('update')"
+                    :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
+                    data-testid="mod-edit-facility-hp-topbar-update"
+                    @click="run('update', saveChanges)"
+                >
+                    <ButtonSpinner v-if="isPending('update')" />
+                    {{ t('modEditFacilityOrHPTopbar.update') }}
+                </button>
+                <button
+                    type="button"
+                    :disabled="!hasPendingChanges || pending"
+                    :aria-busy="isPending('updateAndExit')"
+                    :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
+                    data-testid="mod-edit-facility-hp-topbar-update-and-exit"
+                    @click="run('updateAndExit', saveChangesAndExit)"
+                >
+                    <ButtonSpinner v-if="isPending('updateAndExit')" />
+                    {{ t('modEditFacilityOrHPTopbar.updateAndExit') }}
+                </button>
+                <button
+                    v-if="selectedIsArchived"
+                    type="button"
+                    :disabled="pending"
+                    :aria-busy="isPending('unarchive')"
+                    :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
+                    data-testid="mod-edit-facility-hp-topbar-unarchive"
+                    @click="openUnarchiveConfirmation"
+                >
+                    <ButtonSpinner v-if="isPending('unarchive')" />
+                    {{ t('modEditFacilityOrHPTopbar.unarchive') }}
+                </button>
+                <button
+                    v-else
+                    type="button"
+                    :class="[buttonBaseClass, actionButtonClass, buttonDangerClass, buttonPaddingClass]"
+                    data-testid="mod-edit-facility-hp-topbar-archive"
+                    :disabled="pending || !selectedId"
+                    @click="archiveDialogOpen = true"
+                >
+                    {{ t('modEditFacilityOrHPTopbar.archive') }}
+                </button>
+            </div>
         </div>
         <div
-            class="grid w-full min-w-0 grid-cols-2 gap-2
-            landscape:flex landscape:w-auto landscape:max-w-full landscape:flex-1 landscape:flex-wrap landscape:justify-end
-            portrait:[&>*:last-child:nth-child(odd)]:col-span-2"
+            v-if="selectedIsArchived"
+            role="status"
+            class="mx-2 mb-2 rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-primary-text"
+            data-testid="mod-edit-archived-banner"
         >
-            <button
-                type="button"
-                :disabled="!hasPendingChanges || pending"
-                :aria-busy="isPending('update')"
-                :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
-                data-testid="mod-edit-facility-hp-topbar-update"
-                @click="run('update', saveChanges)"
+            <p class="font-bold">
+                {{ t('modEditFacilityOrHPTopbar.archivedBannerTitle') }}
+            </p>
+            <p>
+                {{ archivedBannerText }}
+            </p>
+            <p
+                v-if="selectedArchivedReason"
+                class="mt-1 whitespace-pre-line"
+                data-testid="mod-edit-archived-reason"
             >
-                <ButtonSpinner v-if="isPending('update')" />
-                {{ t('modEditFacilityOrHPTopbar.update') }}
-            </button>
-            <button
-                type="button"
-                :disabled="!hasPendingChanges || pending"
-                :aria-busy="isPending('updateAndExit')"
-                :class="[buttonBaseClass, actionButtonClass, buttonOutlineClass, buttonPaddingClass]"
-                data-testid="mod-edit-facility-hp-topbar-update-and-exit"
-                @click="run('updateAndExit', saveChangesAndExit)"
-            >
-                <ButtonSpinner v-if="isPending('updateAndExit')" />
-                {{ t('modEditFacilityOrHPTopbar.updateAndExit') }}
-            </button>
-            <button
-                type="button"
-                :class="[buttonBaseClass, actionButtonClass, buttonDangerClass, buttonPaddingClass]"
-                data-testid="mod-edit-facility-hp-topbar-delete"
-                :disabled="pending"
-                @click="openDeleteConfirmation"
-            >
-                {{ t('modEditFacilityOrHPTopbar.delete') }}
-            </button>
+                {{ t('modEditFacilityOrHPTopbar.archivedReason', { reason: selectedArchivedReason }) }}
+            </p>
         </div>
+        <ModArchiveDialog
+            :open="archiveDialogOpen"
+            :title="archiveDialogTitle"
+            :message="archiveDialogMessage"
+            :pending="isPending('archive')"
+            @cancel="archiveDialogOpen = false"
+            @confirm="reason => run('archive', () => archiveSelected(reason))"
+        />
     </div>
 </template>
 
@@ -65,6 +108,8 @@ import { useAppToast } from '~/composables/useAppToast'
 import { usePendingAction } from '~/composables/usePendingAction'
 import ButtonSpinner from '~/components/common/ButtonSpinner.vue'
 import ModCopyId from '~/components/moderation-panel/ModCopyId.vue'
+import ModArchiveDialog from '~/components/moderation-panel/ModArchiveDialog.vue'
+import { isArchived } from '~/utils/archive'
 import { useRouter } from 'vue-router'
 import { useI18n } from '#imports'
 import { useFacilitiesStore, getChangedFacilityFieldsForUpdate } from '~/stores/facilitiesStore'
@@ -79,6 +124,8 @@ import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
 import { ErrorCode } from '~/typedefs/serverResponse'
 import { arraysAreEqual } from '~/utils/arrayUtils'
 import { hasBothProfessionalNames } from '~/utils/professionalNames'
+import { formatHealthcareProfessionalName } from '~/utils/nameUtils'
+import { toGqlLocale } from '~/utils/activeLocale'
 import { hasServerErrors, leaveToModerationDashboard, getModerationDashboardViewForScreen } from '~/utils/moderationUtils'
 import { useModerationSubmissionUnsavedStore } from '~/stores/moderationSubmissionUnsavedStore'
 
@@ -151,7 +198,7 @@ const hasPendingChanges = computed(() => hasPendingFormChanges())
 const toast = useAppToast()
 const { pending, isPending, run } = usePendingAction()
 
-const { t, te } = useI18n()
+const { t, te, locale } = useI18n()
 
 const buttonBaseClass = 'inline-flex min-h-11 min-w-0 max-w-full items-center justify-center gap-2 rounded-full border-2'
   + ' break-words text-center text-sm font-bold leading-tight landscape:text-base'
@@ -333,82 +380,106 @@ const saveChangesAndExit = async () => {
     }
 }
 
-const openDeleteConfirmation = () => {
-    const deletingFacility = moderationScreenStore.editFacilityScreenIsActive()
-    const professional = healthcareProfessionalsStore.selectedHealthcareProfessionalData
-    const name = professional?.names?.[0]
-    const professionalName = name === undefined
-        ? ''
-        : [name.firstName, name.lastName].filter(part => part).join(' ')
-    useNuxtApp().$withConfirmation(async () => {
-        // Awaited so the dialog keeps its spinner until the request finishes.
-        await deleteFacilityOrHealthcareProfessional()
-    }, {
-        title: t('modEditFacilityOrHPTopbar.delete'),
-        message: deletingFacility
-            ? t('modEditFacilityOrHPTopbar.deleteConfirmationFacility', {
-                id: selectedId.value,
-                facility: facilitiesStore.selectedFacilityData?.nameEn
-            })
-            : t('modEditFacilityOrHPTopbar.deleteConfirmationHealthcareProfessional', {
-                id: selectedId.value,
-                healthcareProfessional: professionalName
-            }),
-        textConfirm: t('modEditFacilityOrHPTopbar.deleteButtonText'),
-        textCancel: t('common.cancel'),
-        destructive: true
+const archiveDialogOpen = ref(false)
+
+const selectedRecord = computed(() => (moderationScreenStore.editFacilityScreenIsActive()
+    ? facilitiesStore.selectedFacilityData
+    : healthcareProfessionalsStore.selectedHealthcareProfessionalData))
+
+const selectedIsArchived = computed(() => isArchived(selectedRecord.value))
+const selectedArchivedReason = computed(() => selectedRecord.value?.archivedReason ?? '')
+
+const professionalName = computed(() => formatHealthcareProfessionalName(
+    healthcareProfessionalsStore.selectedHealthcareProfessionalData?.names,
+    toGqlLocale(locale.value)
+))
+
+const archivedBannerText = computed(() => (moderationScreenStore.editFacilityScreenIsActive()
+    ? t('modEditFacilityOrHPTopbar.archivedBannerFacility')
+    : t('modEditFacilityOrHPTopbar.archivedBannerHealthcareProfessional')))
+
+const archiveDialogTitle = computed(() => (moderationScreenStore.editFacilityScreenIsActive()
+    ? t('modEditFacilityOrHPTopbar.archiveTitleFacility')
+    : t('modEditFacilityOrHPTopbar.archiveTitleHealthcareProfessional')))
+
+const archiveDialogMessage = computed(() => (moderationScreenStore.editFacilityScreenIsActive()
+    ? t('modEditFacilityOrHPTopbar.archiveExplanationFacility', {
+        id: selectedId.value,
+        facility: facilitiesStore.selectedFacilityData?.nameEn ?? ''
     })
+    : t('modEditFacilityOrHPTopbar.archiveExplanationHealthcareProfessional', {
+        id: selectedId.value,
+        healthcareProfessional: professionalName.value
+    })))
+
+/** Archives the open record with the reason from the dialog. The record stays, hidden from the public. */
+const archiveSelected = async (reason: string) => {
+    const archivingFacility = moderationScreenStore.editFacilityScreenIsActive()
+    const response = archivingFacility
+        ? await facilitiesStore.setFacilityArchived(selectedId.value, { reason })
+        : await healthcareProfessionalsStore.setHealthcareProfessionalArchived(selectedId.value, { reason })
+
+    // Patients with an upcoming visit must hear from the clinic first (#169).
+    const upcoming = response.errors?.find(error => error.code === ErrorCode.FACILITY_HAS_UPCOMING_BOOKINGS)
+    if (upcoming !== undefined) {
+        toast.error(t('modEditFacilityOrHPTopbar.facilityHasUpcomingBookings', { count: upcoming.count ?? 0 }))
+        return response
+    }
+
+    if (handleModerationResponseErrors(response, toast, t, te)) {
+        return response
+    }
+
+    archiveDialogOpen.value = false
+    return returnWithSuccessToast(
+        response,
+        toast,
+        t,
+        archivingFacility
+            ? 'modEditFacilityOrHPTopbar.facilityArchivedSuccessfully'
+            : 'modEditFacilityOrHPTopbar.healthcareProfessionalArchivedSuccessfully'
+    )
 }
 
-const deleteFacilityOrHealthcareProfessional = async () => {
-    if (moderationScreenStore.editFacilityScreenIsActive()) {
-        const deleteFacilityArgs = {
-            id: selectedId.value
-        }
-        const response = await facilitiesStore.deleteFacility(deleteFacilityArgs)
+const unarchiveSelected = async () => {
+    const restoringFacility = moderationScreenStore.editFacilityScreenIsActive()
+    const response = restoringFacility
+        ? await facilitiesStore.setFacilityArchived(selectedId.value, null)
+        : await healthcareProfessionalsStore.setHealthcareProfessionalArchived(selectedId.value, null)
 
-        // Booking records are kept for patients, so a clinic with bookings stays (#169).
-        const hasBookings = response.errors?.find(error => error.code === ErrorCode.FACILITY_HAS_BOOKINGS)
-        if (hasBookings !== undefined) {
-            toast.error(t('modEditFacilityOrHPTopbar.facilityHasBookings', { count: hasBookings.count ?? 0 }))
-            return response
-        }
-
-        if (handleModerationResponseErrors(response, toast, t, te)) {
-            return response
-        }
-        returnWithSuccessToast(
-            response,
-            toast,
-            t,
-            'modEditFacilityOrHPTopbar.facilityDeletedSuccessfully'
-        )
-        // Redirect to the dashboard since the facility no longer exists
-        await leaveToModerationDashboard(router, moderationScreenStore, modalStore)
+    if (handleModerationResponseErrors(response, toast, t, te)) {
         return response
     }
 
-    if (moderationScreenStore.editHealthcareProfessionalScreenIsActive()) {
-        const deleteHealthcareProfessionalArgs = {
-            id: selectedId.value
-        }
+    return returnWithSuccessToast(
+        response,
+        toast,
+        t,
+        restoringFacility
+            ? 'modEditFacilityOrHPTopbar.facilityUnarchivedSuccessfully'
+            : 'modEditFacilityOrHPTopbar.healthcareProfessionalUnarchivedSuccessfully'
+    )
+}
 
-        const response = await healthcareProfessionalsStore.deleteHealthcareProfessional(deleteHealthcareProfessionalArgs)
-
-        if (handleModerationResponseErrors(response, toast, t, te)) {
-            return response
-        }
-
-        returnWithSuccessToast(
-            response,
-            toast,
-            t,
-            'modEditFacilityOrHPTopbar.healthcareProfessionalDeletedSuccessfully'
-        )
-        // Redirect to the dashboard since the healthcare professional no longer exists
-        await leaveToModerationDashboard(router, moderationScreenStore, modalStore)
-        return response
-    }
+const openUnarchiveConfirmation = () => {
+    const restoringFacility = moderationScreenStore.editFacilityScreenIsActive()
+    useNuxtApp().$withConfirmation(async () => {
+        // Awaited so the dialog keeps its spinner until the request finishes.
+        await run('unarchive', unarchiveSelected)
+    }, {
+        title: t('modEditFacilityOrHPTopbar.unarchive'),
+        message: restoringFacility
+            ? t('modEditFacilityOrHPTopbar.unarchiveConfirmationFacility', {
+                id: selectedId.value,
+                facility: facilitiesStore.selectedFacilityData?.nameEn ?? ''
+            })
+            : t('modEditFacilityOrHPTopbar.unarchiveConfirmationHealthcareProfessional', {
+                id: selectedId.value,
+                healthcareProfessional: professionalName.value
+            }),
+        textConfirm: t('modEditFacilityOrHPTopbar.unarchive'),
+        textCancel: t('common.cancel')
+    })
 }
 
 const navigateBackToDashboard = () => {
