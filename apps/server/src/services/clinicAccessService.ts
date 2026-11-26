@@ -36,6 +36,8 @@ import { isAppointmentDuration, resolveDefaultDuration } from '../booking/schedu
 import { canChangeSms, offersSms, setSms } from '../booking/sms.js'
 import { resolveBookingTarget, settingsForFacility } from '../booking/target.js'
 import { db } from '../kyselyClient.js'
+import { errorLogFields, logger } from '../logger.js'
+import { UUID_REGEX } from '../validation/validateFacility.js'
 import { ErrorCode, Result } from '../result.js'
 
 /**
@@ -379,15 +381,28 @@ export async function setBookingSms(
     if (!canChangeSms(access)) {
         return forbidden('offersSms')
     }
-    const facility = await db.selectFrom('facilities')
-        .select('id')
-        .where('id', '=', input.facilityId)
-        .executeTakeFirst()
-    if (facility === undefined) {
+    if (!UUID_REGEX.test(input.facilityId)) {
         return invalid('facilityId')
     }
-    await setSms(input.facilityId, input.offersSms)
-    return { data: await bookingSettingsFor(input.facilityId, access), hasErrors: false }
+    try {
+        const facility = await db.selectFrom('facilities')
+            .select('id')
+            .where('id', '=', input.facilityId)
+            .executeTakeFirst()
+        if (facility === undefined) {
+            return invalid('facilityId')
+        }
+        // setSms is idempotent, so a retry after a failed settings read is safe.
+        await setSms(input.facilityId, input.offersSms)
+        return { data: await bookingSettingsFor(input.facilityId, access), hasErrors: false }
+    } catch (error) {
+        logger.error('setBookingSms failed', { facilityId: input.facilityId, ...errorLogFields(error) })
+        return {
+            data: undefined as never,
+            hasErrors: true,
+            errors: [{ field: 'offersSms', errorCode: ErrorCode.INTERNAL_SERVER_ERROR, httpStatus: 500 }]
+        }
+    }
 }
 
 export async function updateBookingSettings(

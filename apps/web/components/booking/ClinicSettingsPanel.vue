@@ -288,13 +288,21 @@ async function saveSettings(): Promise<void> {
 
 // Interpretation saves on its own (ClinicInterpretationSwitch). Turning it on can add the
 // default interpreter, so the interpreter list reloads.
+// The interpretation and SMS switches save on their own, so their answers can arrive in either
+// order. Each takes only the fields it owns, so a late answer does not undo the other switch.
 function onInterpretationSaved(saved: BookingSettings): void {
-    settings.value = saved
+    const current = settings.value
+    settings.value = current === null
+        ? saved
+        : { ...saved, offersSms: current.offersSms, canChangeSms: current.canChangeSms }
     interpretersKey.value += 1
 }
 
 function onSmsSaved(saved: BookingSettings): void {
-    settings.value = saved
+    const current = settings.value
+    settings.value = current === null
+        ? saved
+        : { ...current, offersSms: saved.offersSms, canChangeSms: saved.canChangeSms }
 }
 
 onMounted(load)

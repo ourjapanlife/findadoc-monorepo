@@ -782,6 +782,10 @@ describe('booking flow', () => {
                 { facilityId: '00000000-0000-4000-8000-000000000000', offersSms: true },
                 adminWithNoClinic
             )).errors?.[0]?.field).toBe('facilityId')
+            expect((await clinicAccessService.setBookingSms(
+                { facilityId: 'not-a-uuid', offersSms: true },
+                adminWithNoClinic
+            )).errors?.[0]).toMatchObject({ field: 'facilityId', errorCode: ErrorCode.INVALID_INPUT })
         } finally {
             await clinicAccessService.setBookingSms({ facilityId, offersSms: false }, adminWithNoClinic)
         }

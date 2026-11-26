@@ -1012,6 +1012,9 @@ async function onSubmit() {
             return
         }
 
+        // Read before the request: the patient could change the box or the email while it is in flight.
+        const sentSmsOptIn = bySms.value
+        const sentSmsOnly = sentSmsOptIn && fieldText(values[EMAIL_FIELD_ID]) === ''
         const result = await submitBookingForm({
             clinicSiteId: clinicKey.value,
             formDefinitionId: props.form.id,
@@ -1023,7 +1026,7 @@ async function onSubmit() {
             practitionerId: practitionerId.value,
             spokenLanguages: spokenLanguages.value,
             service: props.query.service,
-            smsOptIn: bySms.value,
+            smsOptIn: sentSmsOptIn,
             confirmedInJapan: confirmations.confirmedInJapan,
             healthDataConsent: confirmations.healthDataConsent
         })
@@ -1035,7 +1038,7 @@ async function onSubmit() {
 
         makeNonDirty()
         submitted.value = true
-        smsOnly.value = bySms.value && fieldText(values[EMAIL_FIELD_ID]) === ''
+        smsOnly.value = sentSmsOnly
         submissionId.value = result.id
         pendingPayment.value = result.appointmentStatus === BookingAppointmentStatus.PendingPayment
         manageUrl.value = result.manageToken
