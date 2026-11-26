@@ -1,5 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { BookingAppointmentStatus, ClinicMemberRole, HoursRecurrence, Locale } from '@findadoc/graphql'
+import {
+    BookingAppointmentStatus,
+    BookingContactChannel,
+    ClinicMemberRole,
+    HoursRecurrence,
+    Locale
+} from '@findadoc/graphql'
 import { sharedFacilityIds } from './testSetup.test.js'
 import { db } from '../src/kyselyClient.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
@@ -45,6 +51,7 @@ async function submit(
         spokenLanguages?: Locale[]
         confirmedInJapan?: boolean
         healthDataConsent?: boolean
+        contactChannel?: BookingContactChannel
     } = {}
 ) {
     return bookingService.submitBooking({
@@ -85,6 +92,7 @@ describe('booking flow', () => {
         await db.deleteFrom('clinic_memberships').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_settings').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('booking_interpretation').where('facility_id', '=', facilityId).execute()
+        await db.deleteFrom('booking_sms').where('facility_id', '=', facilityId).execute()
         await db.deleteFrom('clinic_interpreters').where('facility_id', '=', facilityId).execute()
         if (createdPractitionerIds.length > 0) {
             await db.deleteFrom('hps_facilities').where('hps_id', 'in', createdPractitionerIds).execute()
@@ -747,6 +755,88 @@ describe('booking flow', () => {
             { facilityId, offersInterpretation: false },
             adminWithNoClinic
         )
+    })
+
+    it('lets only an admin turn SMS on or off (#206)', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const owner: BookingAccess = {
+            isAdmin: false,
+            memberships: new Map([[facilityId, MEMBERSHIP_ROLE.OWNER]])
+        }
+        const staff: BookingAccess = { ...owner, memberships: new Map([[facilityId, MEMBERSHIP_ROLE.STAFF]]) }
+
+        for (const member of [owner, staff, outsider]) {
+            const refused = await clinicAccessService.setBookingSms({ facilityId, offersSms: true }, member)
+            expect(refused.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+        }
+        const ownerView = await clinicAccessService.getBookingSettings(facilityId, owner)
+        expect(ownerView?.offersSms).toBe(false)
+        expect(ownerView?.canChangeSms).toBe(false)
+        expect((await bookingService.getBookingForm(facilityId))?.offersSms).toBe(false)
+
+        try {
+            const allowed = await clinicAccessService.setBookingSms({ facilityId, offersSms: true }, adminWithNoClinic)
+            expect(allowed.data.offersSms).toBe(true)
+            expect(allowed.data.canChangeSms).toBe(true)
+            expect((await bookingService.getBookingForm(facilityId))?.offersSms).toBe(true)
+
+            const ownerOff = await clinicAccessService.setBookingSms({ facilityId, offersSms: false }, owner)
+            expect(ownerOff.errors?.[0]?.errorCode).toBe(ErrorCode.FORBIDDEN)
+            expect((await clinicAccessService.getBookingSettings(facilityId, owner))?.offersSms).toBe(true)
+
+            expect((await clinicAccessService.setBookingSms(
+                { facilityId: '00000000-0000-4000-8000-000000000000', offersSms: true },
+                adminWithNoClinic
+            )).errors?.[0]?.field).toBe('facilityId')
+        } finally {
+            await clinicAccessService.setBookingSms({ facilityId, offersSms: false }, adminWithNoClinic)
+        }
+        expect((await bookingService.getBookingForm(facilityId))?.offersSms).toBe(false)
+    })
+
+    it('takes a request with no email only by SMS at a clinic that offers it (#206)', async () => {
+        const facilityId = sharedFacilityIds[0]!
+        const at = (minutes: number) => iso(6 * 24 * 60 + minutes)
+        const window = await availabilityService.createClinicAvailabilityWindow(
+            { clinicSiteId: facilityId, startsAt: at(0), endsAt: at(60) },
+            'test|staff',
+            adminOwner
+        )
+        expect(window.hasErrors).toBe(false)
+
+        // SMS off: no email is refused, and a hand-made SMS request is refused too.
+        const noEmail = await submit(facilityId, at(0), '')
+        expect(noEmail.errors?.[0]?.field).toBe('email')
+        const smsWhenOff = await submit(facilityId, at(0), '', { contactChannel: BookingContactChannel.Sms })
+        expect(smsWhenOff.errors?.[0]).toMatchObject({
+            field: 'contactChannel',
+            errorCode: ErrorCode.SMS_NOT_OFFERED
+        })
+        expect(await bookingService.getAvailableBookingStarts(facilityId, at(-60), at(120), 60)).toEqual([at(0)])
+
+        try {
+            await clinicAccessService.setBookingSms({ facilityId, offersSms: true }, adminWithNoClinic)
+            // An email sent with SMS is discarded, so the request holds no email at all.
+            const bySms = await submit(facilityId, at(0), 'discarded@example.com', {
+                contactChannel: BookingContactChannel.Sms
+            })
+            expect(bySms.hasErrors).toBe(false)
+            createdSubmissionIds.push(bySms.data.id)
+
+            const stored = await db.selectFrom('booking_submissions')
+                .select(['contact_channel', 'answers'])
+                .where('id', '=', bySms.data.id)
+                .executeTakeFirstOrThrow()
+            expect(stored.contact_channel).toBe('sms')
+            const storedAnswers = typeof stored.answers === 'string' ? JSON.parse(stored.answers) : stored.answers
+            expect(storedAnswers.email).toBeUndefined()
+            expect(storedAnswers.phone).toBe('090-1234-5678')
+
+            const detail = await staffBookingService.getBookingSubmissionDetail(bySms.data.id, adminOwner)
+            expect(detail?.contactChannel).toBe(BookingContactChannel.Sms)
+        } finally {
+            await clinicAccessService.setBookingSms({ facilityId, offersSms: false }, adminWithNoClinic)
+        }
     })
 
     it('lets an owner invite staff but not another owner', async () => {

@@ -70,7 +70,9 @@
     "footer.privacy",
     "submitPage.previewLocation",
     "clinicPage.onlineBreadcrumb",
-    "bookingPage.options.consultationLanguage.tl"
+    "bookingPage.options.consultationLanguage.tl",
+    "bookingPage.contactChannel.email",
+    "bookingDashboard.contactChannelEmail"
   ],
   "pt": [
     "common.menu",
@@ -98,11 +100,15 @@
     "clinicCorrection.paymentElectronicMoney",
     "clinicCorrection.website",
     "modCorrectionReview.fieldAddress",
-    "modCorrectionReview.fieldWebsite"
+    "modCorrectionReview.fieldWebsite",
+    "bookingPage.contactChannel.email",
+    "bookingDashboard.contactChannelEmail"
   ],
   "vi": [
     "common.menu",
-    "submitPage.previewLocation"
+    "submitPage.previewLocation",
+    "bookingPage.contactChannel.email",
+    "bookingDashboard.contactChannelEmail"
   ],
   "id": [
     "bookingDashboard.columns.status",
@@ -113,6 +119,8 @@
     "moderationTable.status",
     "search.email",
     "submitPage.previewLocation",
-    "modDashboardTopbar.statusFilter"
+    "modDashboardTopbar.statusFilter",
+    "bookingPage.contactChannel.email",
+    "bookingDashboard.contactChannelEmail"
   ]
 }

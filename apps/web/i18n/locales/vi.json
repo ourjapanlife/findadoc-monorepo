@@ -1089,7 +1089,8 @@
       "openRequestLimit": "Email này đã có yêu cầu đang chờ tại phòng khám này. Hãy đợi phòng khám trả lời, hoặc hủy một yêu cầu bằng liên kết trong email của bạn.",
       "confirmations": "Hãy đánh dấu cả hai ô trước khi gửi yêu cầu",
       "regionUnavailable": "Hiện chỉ những người đang ở Nhật Bản mới có thể đặt lịch.",
-      "phoneJapan": "Hãy nhập số điện thoại Nhật Bản, ví dụ 090-1234-5678"
+      "phoneJapan": "Hãy nhập số điện thoại Nhật Bản, ví dụ 090-1234-5678",
+      "smsNotOffered": "Phòng khám này hiện không gửi được tin nhắn. Vui lòng chọn email."
     },
     "slotLabel": "Giờ mong muốn",
     "slotLoading": "Đang tải giờ trống…",
@@ -1211,7 +1212,14 @@
       "email": "Thư điện tử",
       "website": "Trang web",
       "clinicLink": "Quay lại {clinic}"
-    }
+    },
+    "contactChannel": {
+      "legend": "Bạn muốn nhận xác nhận bằng cách nào?",
+      "email": "Email",
+      "sms": "Tin nhắn (SMS)",
+      "smsHelp": "Chúng tôi sẽ gửi tin nhắn về yêu cầu này đến số điện thoại của bạn. Bạn không cần cung cấp email."
+    },
+    "manageLinkHelpSms": "Hãy lưu đường dẫn riêng này. Bạn có thể xem và hủy yêu cầu tại đây. Tin nhắn xác nhận cũng có đường dẫn này."
   },
   "bookingDashboard": {
     "detailHeading": "Đặt lịch",
@@ -1276,7 +1284,10 @@
     "preview": "Xem trước",
     "previewOf": "Mở {name} trong thẻ mới",
     "purgedNote": "Tệp này đã bị xóa.",
-    "downloadNote": "Bản đã tải xuống do phòng khám giữ an toàn và xóa khi không còn cần."
+    "downloadNote": "Bản đã tải xuống do phòng khám giữ an toàn và xóa khi không còn cần.",
+    "contactChannel": "Cách liên hệ bệnh nhân",
+    "contactChannelEmail": "Email",
+    "contactChannelSms": "Tin nhắn (SMS). Có thể không có email."
   },
   "bookingAvailability": {
     "clinicLabel": "Trang phòng khám",
@@ -1345,7 +1356,10 @@
       "save": "Lưu cài đặt",
       "interpretation": "Chúng tôi có phiên dịch/biên dịch: bác sĩ nào cũng có thể khám cho bệnh nhân bằng mọi ngôn ngữ chúng tôi cung cấp",
       "interpretationHelp": "Bật tính năng này sẽ thêm một phiên dịch viên cho mọi ngôn ngữ vào mọi giờ mở cửa. Thay đổi bên dưới để đặt ngôn ngữ, giờ hoặc số lượt khám cùng lúc của mỗi phiên dịch viên.",
-      "interpretationLocked": "Find a Doc bật tính năng này cho phòng khám của bạn. Hãy liên hệ với chúng tôi để thay đổi."
+      "interpretationLocked": "Find a Doc bật tính năng này cho phòng khám của bạn. Hãy liên hệ với chúng tôi để thay đổi.",
+      "sms": "Bệnh nhân có thể chọn tin nhắn (SMS) thay cho email",
+      "smsHelp": "Trang Đặt lịch sẽ có lựa chọn Email / SMS. Nếu chọn SMS, bệnh nhân chỉ cần số điện thoại, không cần email.",
+      "smsLocked": "Find a Doc sẽ bật tính năng này cho phòng khám của bạn. Hãy liên hệ với chúng tôi để thay đổi."
     },
     "payment": {
       "heading": "Thanh toán",

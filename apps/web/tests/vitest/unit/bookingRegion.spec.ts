@@ -17,6 +17,13 @@ describe('booking region and confirmations', () => {
         })).to.equal('failed')
     })
 
+    // The clinic stopped offering SMS after the page loaded (#206).
+    it('reads the API\'s SMS refusal as its own reason', () => {
+        expect(bookingRefusal({
+            errors: [{ message: 'SMS not offered', code: ErrorCode.SMS_NOT_OFFERED, field: 'contactChannel' }]
+        })).to.equal('smsNotOffered')
+    })
+
     it('keeps the API answer when there is one', () => {
         expect(bookingAvailability({ data: { bookingAvailable: true }, hasErrors: false })).to.equal(true)
         expect(bookingAvailability({ data: { bookingAvailable: false }, hasErrors: false })).to.equal(false)

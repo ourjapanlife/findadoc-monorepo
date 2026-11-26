@@ -1583,6 +1583,11 @@ type BookingForm {
   """True when the clinic has interpretation on and at least one interpreter (#205)."""
   offersInterpretation: Boolean!
   """
+  True when the patient may choose SMS instead of email (#206). The contact step then shows
+  an Email / SMS switch; with SMS the email field is hidden and not required.
+  """
+  offersSms: Boolean!
+  """
   What each interpreter covers, for the doctor list. A doctor who does not speak a chosen
   language is listed when one interpreter covers every such language. Times come from
   bookingAvailableStarts, which also checks each interpreter's hours and capacity.
@@ -1668,6 +1673,13 @@ enum BookingPaymentMethod {
   CREDIT_CARD
   BANK_TRANSFER
   PAY_PAY
+}
+
+"""How the patient asked to hear back about a request (#206). The phone is required either way."""
+enum BookingContactChannel {
+  EMAIL
+  """Only when the clinic offers SMS. The request may have no email."""
+  SMS
 }
 
 enum BookingCancelledBy {
@@ -1763,6 +1775,10 @@ type BookingSettings {
   offersInterpretation: Boolean!
   """True when this user may turn offersInterpretation on or off. Clinic members may not."""
   canChangeInterpretation: Boolean!
+  """Patients may choose SMS instead of email (#206). Admins turn it on; it is meant to be a paid add-on."""
+  offersSms: Boolean!
+  """True when this user may turn offersSms on or off. Clinic members may not."""
+  canChangeSms: Boolean!
   """Languages the clinic lists: its own, its doctors', and its interpreters'."""
   clinicLanguages: [Locale!]!
 }
@@ -1895,6 +1911,8 @@ type BookingSubmissionDetail {
   appointmentStatus: BookingAppointmentStatus
   """The paymentMethod answer. Null when the form did not ask."""
   paymentMethod: BookingPaymentMethod
+  """How the patient asked to hear back (#206). With SMS there may be no email answer."""
+  contactChannel: BookingContactChannel!
   cancelledBy: BookingCancelledBy
   """Reason staff or the patient gave for a decline or cancel."""
   statusReason: String
@@ -2215,6 +2233,11 @@ input SetBookingInterpretationInput {
   offersInterpretation: Boolean!
 }
 
+input SetBookingSmsInput {
+  facilityId: ID!
+  offersSms: Boolean!
+}
+
 input SubmitBookingInput {
   """Facility id, clinic site id, or clinic site slug."""
   clinicSiteId: ID!
@@ -2222,6 +2245,11 @@ input SubmitBookingInput {
   formVersion: Int!
   locale: String!
   answers: [BookingAnswerInput!]!
+  """
+  How the patient wants to hear back (#206). Omitted means EMAIL. SMS is refused unless the
+  clinic offers it; with SMS the email answer is not required and is discarded.
+  """
+  contactChannel: BookingContactChannel
   """Required start inside a staff availability window. ISO 8601 UTC."""
   startsAt: String!
   """Visit length in minutes. Must be one of the clinic's allowedDurations."""
@@ -2738,6 +2766,8 @@ type Mutation {
 
   """Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on."""
   setBookingInterpretation(input: SetBookingInterpretationInput!): BookingSettings!
+  """Let patients choose SMS instead of email, or stop (#206). Admins only; it is meant to be a paid add-on."""
+  setBookingSms(input: SetBookingSmsInput!): BookingSettings!
 
   """Add or change one interpreter, with their whole week (#205). The clinic owner only."""
   saveClinicInterpreter(input: SaveClinicInterpreterInput!): ClinicInterpreter!

@@ -1,4 +1,5 @@
 import {
+    BookingContactChannel,
     BookingFormFieldType,
     BookingSubmissionStatus,
     type Locale,
@@ -14,6 +15,7 @@ import {
     assembleBookingForm,
     chooseFormDefinitionId,
     dateAnswerIsValid,
+    EMAIL_FIELD_ID,
     type AssembledBookingForm,
     fieldById,
     fieldIsShown,
@@ -21,6 +23,7 @@ import {
     isOfferedFormId,
     phoneAnswer,
     PAYMENT_METHOD_FIELD_ID,
+    PHONE_FIELD_ID,
     storedSensitivity
 } from '../booking/formDefinitions.js'
 import {
@@ -57,6 +60,7 @@ import {
     type ScheduleLane
 } from '../booking/practitioners.js'
 import { retainUntilFromNow } from '../booking/retention.js'
+import { CONTACT_CHANNEL, type ContactChannel, offersSms } from '../booking/sms.js'
 import {
     appointmentEndFromStart,
     availableStarts,
@@ -120,12 +124,13 @@ export async function getBookingForm(
     if (target === undefined) {
         return null
     }
-    const context = await choiceContext(target)
+    const [context, sms] = await Promise.all([choiceContext(target), offersSms(target.facilityId)])
     return {
         ...bookingFormForTarget(target, chooseFormDefinitionId(target.formDefinitionIds, formId)),
         practitioners: context.practitioners,
         languages: context.offered,
         offersInterpretation: context.coverage.length > 0,
+        offersSms: sms,
         // Only languages the clinic offers, all known Locale values, so a stray stored value cannot break the page.
         interpreters: context.coverage.map(interpreter => ({
             languages: context.offered.filter(language => interpreter.languages.includes(language))
@@ -319,27 +324,36 @@ function scalarAnswerIsValid(
     return true
 }
 
-/** Validated answers to store, and the uploads they name. Exported for tests. */
+/**
+ * Validated answers to store, and the uploads they name. Exported for tests.
+ * With SMS (#206) the email answer is not required and is dropped, and the phone is required.
+ */
 export function collectAnswers(
     form: Pick<AssembledBookingForm, 'fields'>,
-    answers: SubmitBookingInput['answers']
+    answers: SubmitBookingInput['answers'],
+    contactChannel: ContactChannel = CONTACT_CHANNEL.EMAIL
 ): Result<{ storedAnswers: Record<string, string>, uploads: AnswerUpload[] }> {
     const answersByField = asAnswerMap(answers)
     const storedAnswers: Record<string, string> = {}
     const uploads: AnswerUpload[] = []
 
     const answerFor = (fieldId: string) => answersByField.get(fieldId)?.value?.trim() ?? ''
+    const bySms = contactChannel === CONTACT_CHANNEL.SMS
 
     for (const field of form.fields) {
         // A field hidden by its condition is not required, and anything sent for it is dropped.
         if (!fieldIsShown(field, answerFor)) {
             continue
         }
+        if (bySms && field.id === EMAIL_FIELD_ID) {
+            continue
+        }
+        const required = field.required || (bySms && field.id === PHONE_FIELD_ID)
         const answer = answersByField.get(field.id)
 
         if (field.type === BookingFormFieldType.File) {
             const uploadId = answer?.uploadId?.trim()
-            if ((uploadId === undefined || uploadId === '') && field.required) {
+            if ((uploadId === undefined || uploadId === '') && required) {
                 return validationError(field.id)
             }
             if (uploadId !== undefined && uploadId !== '') {
@@ -350,7 +364,7 @@ export function collectAnswers(
         }
 
         const raw = answer?.value?.trim() ?? ''
-        if (raw === '' && field.required) {
+        if (raw === '' && required) {
             return validationError(field.id)
         }
         if (raw === '') {
@@ -503,6 +517,17 @@ async function notifyBookingParties(input: PatientEmailInput & {
     return patientSent ? BookingSubmissionStatus.Notified : BookingSubmissionStatus.FailedNotify
 }
 
+const SMS_NOT_OFFERED: Result<never> = {
+    data: undefined as never,
+    hasErrors: true,
+    errors: [{ field: 'contactChannel', errorCode: ErrorCode.SMS_NOT_OFFERED, httpStatus: 400 }]
+}
+
+/** The stored channel for the request. Omitted is email, as before #206. */
+function contactChannelFromInput(value: SubmitBookingInput['contactChannel']): ContactChannel {
+    return value === BookingContactChannel.Sms ? CONTACT_CHANNEL.SMS : CONTACT_CHANNEL.EMAIL
+}
+
 function parseServiceKey(value: string | null | undefined): string | null {
     if (value === null || value === undefined) {
         return null
@@ -561,7 +586,13 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
     }
     const endsAt = appointmentEndFromStart(startsAt, durationMinutes)
 
-    const collected = collectAnswers(form, input.answers)
+    // SMS only where the clinic offers it (#206). Checked again under the clinic lock below.
+    const contactChannel = contactChannelFromInput(input.contactChannel)
+    if (contactChannel === CONTACT_CHANNEL.SMS && !await offersSms(target.facilityId)) {
+        return SMS_NOT_OFFERED
+    }
+
+    const collected = collectAnswers(form, input.answers, contactChannel)
     if (collected.hasErrors) {
         return collected as Result<never>
     }
@@ -616,6 +647,10 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
             if (lane === undefined) {
                 throw new Error('BOOKING_SLOT_TAKEN')
             }
+            // setSms takes the same lock, so an admin turning SMS off is seen here.
+            if (contactChannel === CONTACT_CHANNEL.SMS && !await offersSms(target.facilityId, transaction)) {
+                throw new Error('BOOKING_SMS_NOT_OFFERED')
+            }
 
             const email = requesterEmail(storedAnswers)
             if (email !== undefined) {
@@ -638,6 +673,7 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
                     answers: asJsonb(storedAnswers),
                     status: 'received',
                     notify_email_sent_at: null,
+                    contact_channel: contactChannel,
                     cancel_token_hash: patientToken.hash,
                     health_data_consented_at: healthDataConsentedAt,
                     consent_text_version: CURRENT_CONSENT_TEXT_VERSION
@@ -688,6 +724,9 @@ export async function submitBooking(input: SubmitBookingInput): Promise<Result<B
         }
         if (error instanceof Error && error.message === 'BOOKING_SLOT_TAKEN') {
             return validationError('startsAt')
+        }
+        if (error instanceof Error && error.message === 'BOOKING_SMS_NOT_OFFERED') {
+            return SMS_NOT_OFFERED
         }
         if (error instanceof Error && error.message === 'BOOKING_OPEN_REQUEST_LIMIT') {
             return {

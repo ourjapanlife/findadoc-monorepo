@@ -1089,7 +1089,8 @@
       "openRequestLimit": "Für diese E-Mail-Adresse warten bereits Anfragen bei dieser Klinik auf Antwort. Warten Sie auf die Antwort der Klinik oder stornieren Sie eine Anfrage über den Link in Ihrer E-Mail.",
       "confirmations": "Setzen Sie vor dem Absenden beide Häkchen",
       "regionUnavailable": "Terminanfragen sind derzeit nur für Personen in Japan möglich.",
-      "phoneJapan": "Geben Sie eine japanische Telefonnummer ein, z. B. 090-1234-5678"
+      "phoneJapan": "Geben Sie eine japanische Telefonnummer ein, z. B. 090-1234-5678",
+      "smsNotOffered": "Diese Klinik kann gerade keine SMS senden. Wählen Sie stattdessen E-Mail."
     },
     "slotLabel": "Wunschzeit",
     "slotLoading": "Freie Zeiten werden geladen…",
@@ -1211,7 +1212,14 @@
       "email": "E-Mail",
       "website": "Webseite",
       "clinicLink": "Zurück zu {clinic}"
-    }
+    },
+    "contactChannel": {
+      "legend": "Wie sollen wir Ihnen die Bestätigung senden?",
+      "email": "E-Mail",
+      "sms": "Textnachricht (SMS)",
+      "smsHelp": "Wir senden Nachrichten zu dieser Anfrage an Ihre Telefonnummer. Eine E-Mail-Adresse ist nicht nötig."
+    },
+    "manageLinkHelpSms": "Speichern Sie diesen privaten Link. Er zeigt Ihre Anfrage, und Sie können sie dort stornieren. Derselbe Link steht in Ihrer Bestätigungs-SMS."
   },
   "bookingDashboard": {
     "detailHeading": "Buchung",
@@ -1276,7 +1284,10 @@
     "preview": "Vorschau",
     "previewOf": "{name} in neuem Tab öffnen",
     "purgedNote": "Diese Datei wurde gelöscht.",
-    "downloadNote": "Für eine heruntergeladene Kopie ist die Praxis verantwortlich: sicher aufbewahren und löschen, wenn sie nicht mehr gebraucht wird."
+    "downloadNote": "Für eine heruntergeladene Kopie ist die Praxis verantwortlich: sicher aufbewahren und löschen, wenn sie nicht mehr gebraucht wird.",
+    "contactChannel": "Kontakt zum Patienten",
+    "contactChannelEmail": "E-Mail",
+    "contactChannelSms": "SMS. Möglicherweise gibt es keine E-Mail."
   },
   "bookingAvailability": {
     "clinicLabel": "Klinikseite",
@@ -1345,7 +1356,10 @@
       "save": "Einstellungen speichern",
       "interpretation": "Wir bieten Dolmetschen/Übersetzen an: Alle Ärztinnen und Ärzte können Patienten in jeder unserer Sprachen behandeln",
       "interpretationHelp": "Beim Einschalten wird ein Dolmetscher für alle Sprachen zu allen Öffnungszeiten angelegt. Unten können Sie Sprachen, Zeiten und die Zahl gleichzeitiger Termine pro Dolmetscher ändern.",
-      "interpretationLocked": "Find a Doc schaltet dies für Ihre Praxis ein. Kontaktieren Sie uns, um es zu ändern."
+      "interpretationLocked": "Find a Doc schaltet dies für Ihre Praxis ein. Kontaktieren Sie uns, um es zu ändern.",
+      "sms": "Patienten können SMS statt E-Mail wählen",
+      "smsHelp": "Die Buchungsseite bietet die Wahl E-Mail / SMS. Bei SMS gibt der Patient eine Telefonnummer und keine E-Mail an.",
+      "smsLocked": "Find a Doc schaltet dies für Ihre Klinik frei. Kontaktieren Sie uns, um es zu ändern."
     },
     "payment": {
       "heading": "Zahlung",

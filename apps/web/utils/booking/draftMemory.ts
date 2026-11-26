@@ -12,6 +12,8 @@ export type BookingDraftMemory = {
     startsAt: string | null
     practitionerId: string | null
     spokenLanguages: string[]
+    /** Email or SMS (#206), so a locale change keeps the patient's choice. */
+    smsChosen: boolean
     stepIndex: number
     uploadIds: Record<string, string>
     fileNames: Record<string, string>

@@ -1089,7 +1089,8 @@
       "openRequestLimit": "May mga kahilingan na ang email na ito na naghihintay sa klinikang ito. Hintayin ang sagot ng klinika, o kanselahin ang isa gamit ang link sa iyong email.",
       "confirmations": "Lagyan ng tsek ang dalawang kahon bago ipadala ang kahilingan",
       "regionUnavailable": "Sa ngayon, para lang sa mga nasa Japan ang booking.",
-      "phoneJapan": "Maglagay ng numero ng telepono sa Japan, gaya ng 090-1234-5678"
+      "phoneJapan": "Maglagay ng numero ng telepono sa Japan, gaya ng 090-1234-5678",
+      "smsNotOffered": "Hindi makapagpadala ng text message ang klinikang ito ngayon. Piliin ang email."
     },
     "slotLabel": "Gustong oras",
     "slotLoading": "Naglo-load ng bukas na oras…",
@@ -1211,7 +1212,14 @@
       "email": "Email",
       "website": "Website",
       "clinicLink": "Bumalik sa {clinic}"
-    }
+    },
+    "contactChannel": {
+      "legend": "Paano namin ipapadala ang iyong kumpirmasyon?",
+      "email": "Email",
+      "sms": "Mensahe sa telepono (SMS)",
+      "smsHelp": "Ipapadala namin ang mga mensahe tungkol sa kahilingang ito sa numero ng iyong telepono. Hindi mo na kailangang magbigay ng email."
+    },
+    "manageLinkHelpSms": "I-save ang pribadong link na ito. Makikita mo rito ang iyong kahilingan at maaari mo itong kanselahin. Nasa text message ng kumpirmasyon din ang link na ito."
   },
   "bookingDashboard": {
     "detailHeading": "Pagpapareserba",
@@ -1276,7 +1284,10 @@
     "preview": "Silipin",
     "previewOf": "Buksan ang {name} sa bagong tab",
     "purgedNote": "Nabura na ang file na ito.",
-    "downloadNote": "Ang kopyang na-download ay pananagutan ng klinika na ingatan at burahin kapag hindi na kailangan."
+    "downloadNote": "Ang kopyang na-download ay pananagutan ng klinika na ingatan at burahin kapag hindi na kailangan.",
+    "contactChannel": "Paraan ng pag-contact sa pasyente",
+    "contactChannelEmail": "Email",
+    "contactChannelSms": "Text message (SMS). Maaaring walang email."
   },
   "bookingAvailability": {
     "clinicLabel": "Site ng klinika",
@@ -1345,7 +1356,10 @@
       "save": "I-save ang mga setting",
       "interpretation": "Nag-aalok kami ng interpretasyon/pagsasalin: kahit sinong doktor ay makakakita ng pasyente sa bawat wikang inaalok namin",
       "interpretationHelp": "Kapag in-on ito, magdadagdag ng isang interpreter para sa bawat wika sa lahat ng oras na bukas. Baguhin sa ibaba ang mga wika, oras, o ilang pagbisita ang kaya ng bawat interpreter nang sabay.",
-      "interpretationLocked": "Ang Find a Doc ang nag-o-on nito para sa inyong klinika. Makipag-ugnayan sa amin para baguhin ito."
+      "interpretationLocked": "Ang Find a Doc ang nag-o-on nito para sa inyong klinika. Makipag-ugnayan sa amin para baguhin ito.",
+      "sms": "Maaaring piliin ng pasyente ang text message (SMS) sa halip na email",
+      "smsHelp": "May pagpipiliang Email / SMS sa Book page. Kapag SMS, numero ng telepono lang ang ibibigay ng pasyente, walang email.",
+      "smsLocked": "Ang Find a Doc ang nag-o-on nito para sa iyong klinika. Makipag-ugnayan sa amin para baguhin ito."
     },
     "payment": {
       "heading": "Pagbabayad",

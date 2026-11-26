@@ -49,6 +49,8 @@ export enum ErrorCode {
     FORBIDDEN = 'FORBIDDEN',
     TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS',
     OPEN_REQUEST_LIMIT = 'OPEN_REQUEST_LIMIT',
+    /** The patient chose SMS at a clinic that does not offer it (#206). */
+    SMS_NOT_OFFERED = 'SMS_NOT_OFFERED',
     FACILITY_HAS_BOOKINGS = 'FACILITY_HAS_BOOKINGS',
     INTERPRETER_HAS_BOOKINGS = 'INTERPRETER_HAS_BOOKINGS',
     /** A facility that is not online needs a Google place id (#228). */

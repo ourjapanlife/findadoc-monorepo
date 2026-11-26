@@ -169,6 +169,16 @@
                         {{ detail.interpreterLabel }}
                     </dd>
                 </div>
+                <div>
+                    <dt class="text-sm text-primary-text-muted">
+                        {{ t('bookingDashboard.contactChannel') }}
+                    </dt>
+                    <dd data-testid="booking-detail-contact-channel">
+                        {{ detail.contactChannel === BookingContactChannel.Sms
+                            ? t('bookingDashboard.contactChannelSms')
+                            : t('bookingDashboard.contactChannelEmail') }}
+                    </dd>
+                </div>
             </dl>
 
             <section class="flex flex-col gap-3">
@@ -334,6 +344,7 @@ import type { RouteLocationRaw } from 'vue-router'
 import {
     BookingAppointmentStatus,
     BookingCancelledBy,
+    BookingContactChannel,
     BookingFieldSensitivity,
     BookingSubmissionStatus,
     BookingUploadDisposition,

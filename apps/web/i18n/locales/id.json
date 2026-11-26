@@ -1089,7 +1089,8 @@
       "openRequestLimit": "Email ini sudah memiliki permintaan yang menunggu di klinik ini. Tunggu jawaban klinik, atau batalkan salah satunya melalui tautan di email Anda.",
       "confirmations": "Centang kedua kotak sebelum mengirim permintaan",
       "regionUnavailable": "Saat ini reservasi hanya tersedia bagi orang yang berada di Jepang.",
-      "phoneJapan": "Masukkan nomor telepon Jepang, misalnya 090-1234-5678"
+      "phoneJapan": "Masukkan nomor telepon Jepang, misalnya 090-1234-5678",
+      "smsNotOffered": "Klinik ini belum bisa mengirim SMS saat ini. Pilih email."
     },
     "slotLabel": "Waktu yang diinginkan",
     "slotLoading": "Memuat waktu yang tersedia…",
@@ -1211,7 +1212,14 @@
       "email": "Email",
       "website": "Situs web",
       "clinicLink": "Kembali ke {clinic}"
-    }
+    },
+    "contactChannel": {
+      "legend": "Bagaimana kami mengirim konfirmasi Anda?",
+      "email": "Email",
+      "sms": "Pesan singkat (SMS)",
+      "smsHelp": "Kami akan mengirim pesan tentang permintaan ini ke nomor telepon Anda. Anda tidak perlu memberikan email."
+    },
+    "manageLinkHelpSms": "Simpan tautan pribadi ini. Tautan ini menampilkan permintaan Anda dan memungkinkan Anda membatalkannya. Tautan yang sama ada di SMS konfirmasi Anda."
   },
   "bookingDashboard": {
     "detailHeading": "Reservasi",
@@ -1276,7 +1284,10 @@
     "preview": "Pratinjau",
     "previewOf": "Buka {name} di tab baru",
     "purgedNote": "File ini sudah dihapus.",
-    "downloadNote": "Salinan yang diunduh menjadi tanggung jawab klinik untuk dijaga keamanannya dan dihapus jika tidak diperlukan lagi."
+    "downloadNote": "Salinan yang diunduh menjadi tanggung jawab klinik untuk dijaga keamanannya dan dihapus jika tidak diperlukan lagi.",
+    "contactChannel": "Kontak pasien",
+    "contactChannelEmail": "Email",
+    "contactChannelSms": "SMS. Mungkin tidak ada email."
   },
   "bookingAvailability": {
     "clinicLabel": "Lokasi klinik",
@@ -1345,7 +1356,10 @@
       "save": "Simpan pengaturan",
       "interpretation": "Kami menyediakan juru bahasa/penerjemah: setiap dokter dapat melayani pasien dalam semua bahasa yang kami tawarkan",
       "interpretationHelp": "Mengaktifkan ini menambahkan satu juru bahasa untuk semua bahasa di semua jam buka. Ubah di bawah untuk mengatur bahasa, jam, atau jumlah kunjungan sekaligus per juru bahasa.",
-      "interpretationLocked": "Find a Doc mengaktifkan ini untuk klinik Anda. Hubungi kami untuk mengubahnya."
+      "interpretationLocked": "Find a Doc mengaktifkan ini untuk klinik Anda. Hubungi kami untuk mengubahnya.",
+      "sms": "Pasien dapat memilih SMS sebagai pengganti email",
+      "smsHelp": "Halaman Pemesanan menampilkan pilihan Email / SMS. Dengan SMS, pasien memberikan nomor telepon tanpa email.",
+      "smsLocked": "Find a Doc yang mengaktifkan fitur ini untuk klinik Anda. Hubungi kami untuk mengubahnya."
     },
     "payment": {
       "heading": "Pembayaran",

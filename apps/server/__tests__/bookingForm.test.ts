@@ -16,6 +16,7 @@ import {
     phoneAnswer,
     staffAnswers
 } from '../src/booking/formDefinitions.js'
+import { CONTACT_CHANNEL } from '../src/booking/sms.js'
 import { collectAnswers } from '../src/services/bookingService.js'
 
 describe('booking forms', () => {
@@ -152,6 +153,38 @@ describe('booking forms', () => {
 
         it('refuses a value too short to be a phone number', () => {
             expect(submitWithPhone('090-123').hasErrors).toBe(true)
+        })
+    })
+
+    describe('the contact channel (#206)', () => {
+        const fields = formSourceById(DEFAULT_BOOKING_FORM_ID)?.fields ?? []
+        const withoutEmail = [
+            { fieldId: 'phone', value: '090-1234-5678' },
+            { fieldId: 'fullName', value: 'Test Patient' },
+            { fieldId: 'reason', value: 'Checkup' }
+        ]
+
+        it('requires an email by email', () => {
+            const result = collectAnswers({ fields }, withoutEmail, CONTACT_CHANNEL.EMAIL)
+            expect(result.errors?.[0]?.field).toBe('email')
+        })
+
+        it('does not require an email by SMS and drops one that was sent', () => {
+            expect(collectAnswers({ fields }, withoutEmail, CONTACT_CHANNEL.SMS).hasErrors).toBe(false)
+            const sent = collectAnswers(
+                { fields },
+                [{ fieldId: 'email', value: 'patient@example.com' }, ...withoutEmail],
+                CONTACT_CHANNEL.SMS
+            )
+            expect(sent.hasErrors).toBe(false)
+            expect(sent.data?.storedAnswers.email).toBeUndefined()
+        })
+
+        it('still requires the phone by SMS, even where the form leaves it optional', () => {
+            const optionalPhone = fields.map(field => (field.id === 'phone' ? { ...field, required: false } : field))
+            const noPhone = withoutEmail.filter(answer => answer.fieldId !== 'phone')
+            expect(collectAnswers({ fields: optionalPhone }, noPhone, CONTACT_CHANNEL.SMS).errors?.[0]?.field)
+                .toBe('phone')
         })
     })
 

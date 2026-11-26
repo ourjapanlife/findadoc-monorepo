@@ -1089,7 +1089,8 @@
       "openRequestLimit": "Este e-mail já tem pedidos aguardando resposta nesta clínica. Aguarde a resposta da clínica ou cancele um deles pelo link no seu e-mail.",
       "confirmations": "Marque as duas caixas antes de enviar o pedido",
       "regionUnavailable": "No momento, o agendamento está disponível apenas para quem está no Japão.",
-      "phoneJapan": "Informe um número de telefone japonês, como 090-1234-5678"
+      "phoneJapan": "Informe um número de telefone japonês, como 090-1234-5678",
+      "smsNotOffered": "Esta clínica não pode enviar SMS agora. Escolha e-mail."
     },
     "slotLabel": "Horário preferido",
     "slotLoading": "Carregando horários…",
@@ -1211,7 +1212,14 @@
       "email": "E-mail",
       "website": "Site",
       "clinicLink": "Voltar para {clinic}"
-    }
+    },
+    "contactChannel": {
+      "legend": "Como devemos enviar a sua confirmação?",
+      "email": "E-mail",
+      "sms": "Mensagem de texto (SMS)",
+      "smsHelp": "Enviaremos as mensagens sobre este pedido para o seu número de telefone. Não é preciso informar um e-mail."
+    },
+    "manageLinkHelpSms": "Guarde este link privado. Ele mostra o seu pedido e permite cancelá-lo. O mesmo link está na mensagem de confirmação."
   },
   "bookingDashboard": {
     "detailHeading": "Reserva",
@@ -1276,7 +1284,10 @@
     "preview": "Visualizar",
     "previewOf": "Abrir {name} em uma nova aba",
     "purgedNote": "Este arquivo foi apagado.",
-    "downloadNote": "A cópia baixada fica sob responsabilidade da clínica, que deve guardá-la com segurança e apagá-la quando não for mais necessária."
+    "downloadNote": "A cópia baixada fica sob responsabilidade da clínica, que deve guardá-la com segurança e apagá-la quando não for mais necessária.",
+    "contactChannel": "Contacto do paciente",
+    "contactChannelEmail": "E-mail",
+    "contactChannelSms": "SMS. Pode não haver e-mail."
   },
   "bookingAvailability": {
     "clinicLabel": "Site da clínica",
@@ -1345,7 +1356,10 @@
       "save": "Salvar configurações",
       "interpretation": "Oferecemos interpretação/tradução: qualquer médico pode atender pacientes em todos os idiomas que oferecemos",
       "interpretationHelp": "Ativar adiciona um intérprete para todos os idiomas em todos os horários de funcionamento. Altere abaixo os idiomas, horários ou quantas consultas cada intérprete atende ao mesmo tempo.",
-      "interpretationLocked": "O Find a Doc ativa isso para a sua clínica. Entre em contato conosco para alterar."
+      "interpretationLocked": "O Find a Doc ativa isso para a sua clínica. Entre em contato conosco para alterar.",
+      "sms": "Os pacientes podem escolher SMS em vez de e-mail",
+      "smsHelp": "A página de marcação mostra a escolha E-mail / SMS. Com SMS, o paciente indica um número de telefone e nenhum e-mail.",
+      "smsLocked": "A Find a Doc ativa esta opção para a sua clínica. Contacte-nos para a alterar."
     },
     "payment": {
       "heading": "Pagamento",
