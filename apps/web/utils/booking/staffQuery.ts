@@ -64,7 +64,7 @@ const BOOKING_LIST_ITEM_FIELDS = `
 
 const BOOKING_DETAIL_FIELDS = `
   ${BOOKING_SUBMISSION_FIELDS}
-  contactChannel
+  smsOptIn
   cancelledBy
   statusReason
   statusReasonPurgedAt

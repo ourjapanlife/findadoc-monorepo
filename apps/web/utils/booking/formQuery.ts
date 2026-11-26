@@ -1,6 +1,5 @@
 import { gql } from 'graphql-request'
 import type {
-    BookingContactChannel,
     BookingForm,
     BookingSubmissionResult,
     BookingUploadUrl,
@@ -243,7 +242,7 @@ export async function submitBookingForm(input: {
     practitionerId?: string | null
     spokenLanguages?: Locale[]
     service?: string | null
-    contactChannel?: BookingContactChannel
+    smsOptIn?: boolean
 } & BookingConfirmations): Promise<BookingSubmissionResult | BookingRefusal> {
     initializeGqlClient()
     const response = await graphQLClientRequestWithRetry<{ submitBooking: BookingSubmissionResult }>(

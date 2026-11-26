@@ -177,13 +177,6 @@ export type BookingClinic = {
   takesPayment: Scalars['Boolean']['output'];
 };
 
-/** How the patient asked to hear back about a request (#206). The phone is required either way. */
-export enum BookingContactChannel {
-  Email = 'EMAIL',
-  /** Only when the clinic offers SMS. The request may have no email. */
-  Sms = 'SMS'
-}
-
 /**
  * How carefully an answer or upload must be retained.
  * IDENTITY_DOCUMENT covers insurance cards, eligibility certificates, マイナポータル insurance screenshots,
@@ -229,8 +222,8 @@ export type BookingForm = {
   /** True when the clinic has interpretation on and at least one interpreter (#205). */
   offersInterpretation: Scalars['Boolean']['output'];
   /**
-   * True when the patient may choose SMS instead of email (#206). The contact step then shows
-   * an Email / SMS switch; with SMS the email field is hidden and not required.
+   * True when the patient may ask for SMS as well as email (#206). The contact step then shows
+   * an "also send me text messages" box; when it is ticked the email is optional.
    */
   offersSms: Scalars['Boolean']['output'];
   /** Doctors at this clinic the patient may choose. */
@@ -400,7 +393,7 @@ export type BookingSettings = {
   offerableFormDefinitionIds: Array<Scalars['String']['output']>;
   /** The clinic may use interpreters (#205). Admins turn it on; it is meant to be a paid add-on. */
   offersInterpretation: Scalars['Boolean']['output'];
-  /** Patients may choose SMS instead of email (#206). Admins turn it on; it is meant to be a paid add-on. */
+  /** Patients may ask for SMS as well as email (#206). Admins turn it on; it is meant to be a paid add-on. */
   offersSms: Scalars['Boolean']['output'];
 };
 
@@ -419,8 +412,6 @@ export type BookingSubmissionDetail = {
   clinicName: Scalars['String']['output'];
   clinicSiteId?: Maybe<Scalars['ID']['output']>;
   clinicSiteSlug?: Maybe<Scalars['String']['output']>;
-  /** How the patient asked to hear back (#206). With SMS there may be no email answer. */
-  contactChannel: BookingContactChannel;
   createdDate: Scalars['String']['output'];
   endsAt?: Maybe<Scalars['String']['output']>;
   facilityId?: Maybe<Scalars['ID']['output']>;
@@ -436,6 +427,8 @@ export type BookingSubmissionDetail = {
   /** The chosen or assigned doctor's names. Empty when no doctor was named. */
   practitionerNames: Array<LocalizedName>;
   service?: Maybe<Scalars['String']['output']>;
+  /** The patient asked for SMS as well as email (#206). Then there may be no email answer. */
+  smsOptIn: Scalars['Boolean']['output'];
   /** Languages the patient asked for. */
   spokenLanguages: Array<Locale>;
   startsAt?: Maybe<Scalars['String']['output']>;
@@ -1826,7 +1819,7 @@ export type Mutation = {
   saveClinicInterpreter: ClinicInterpreter;
   /** Turn clinic interpretation on or off (#205). Admins only; it is meant to be a paid add-on. */
   setBookingInterpretation: BookingSettings;
-  /** Let patients choose SMS instead of email, or stop (#206). Admins only; it is meant to be a paid add-on. */
+  /** Let patients ask for SMS as well as email, or stop (#206). Admins only; it is meant to be a paid add-on. */
   setBookingSms: BookingSettings;
   /** Replace the clinic's usual week. Members and moderators. */
   setClinicWeeklyHours: Array<ClinicWeeklyHours>;
@@ -3006,11 +2999,6 @@ export type SubmitBookingInput = {
   clinicSiteId: Scalars['ID']['input'];
   /** The patient ticked "I am currently in Japan". Must be true. */
   confirmedInJapan: Scalars['Boolean']['input'];
-  /**
-   * How the patient wants to hear back (#206). Omitted means EMAIL. SMS is refused unless the
-   * clinic offers it; with SMS the email answer is not required and is discarded.
-   */
-  contactChannel?: InputMaybe<BookingContactChannel>;
   /** Visit length in minutes. Must be one of the clinic's allowedDurations. */
   durationMinutes?: InputMaybe<Scalars['Int']['input']>;
   formDefinitionId: Scalars['String']['input'];
@@ -3031,6 +3019,11 @@ export type SubmitBookingInput = {
   practitionerId?: InputMaybe<Scalars['ID']['input']>;
   /** Optional service or appointment-type key from the Book URL. */
   service?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The patient asked for SMS as well as email (#206). Omitted means false. Refused unless the
+   * clinic offers SMS. When true the email answer is optional; one that is given is kept.
+   */
+  smsOptIn?: InputMaybe<Scalars['Boolean']['input']>;
   /** Languages the patient needs. At most 10. */
   spokenLanguages?: InputMaybe<Array<Locale>>;
   /** Required start inside a staff availability window. ISO 8601 UTC. */
@@ -3294,7 +3287,6 @@ export type ResolversTypes = {
   BookingCancelledBy: BookingCancelledBy;
   BookingCardPaymentMode: BookingCardPaymentMode;
   BookingClinic: ResolverTypeWrapper<BookingClinic>;
-  BookingContactChannel: BookingContactChannel;
   BookingFieldSensitivity: BookingFieldSensitivity;
   BookingForm: ResolverTypeWrapper<BookingForm>;
   BookingFormField: ResolverTypeWrapper<BookingFormField>;
@@ -3729,7 +3721,6 @@ export type BookingSubmissionDetailResolvers<ContextType = any, ParentType exten
   clinicName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   clinicSiteId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   clinicSiteSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contactChannel?: Resolver<ResolversTypes['BookingContactChannel'], ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   endsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   facilityId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -3742,6 +3733,7 @@ export type BookingSubmissionDetailResolvers<ContextType = any, ParentType exten
   practitionerId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   practitionerNames?: Resolver<Array<ResolversTypes['LocalizedName']>, ParentType, ContextType>;
   service?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  smsOptIn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   spokenLanguages?: Resolver<Array<ResolversTypes['Locale']>, ParentType, ContextType>;
   startsAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['BookingSubmissionStatus'], ParentType, ContextType>;

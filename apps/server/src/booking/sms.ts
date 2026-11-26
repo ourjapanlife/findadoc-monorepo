@@ -3,29 +3,18 @@ import { lockClinicBookings } from './target.js'
 import { db } from '../kyselyClient.js'
 
 /**
- * SMS as the patient's contact channel (#206).
+ * SMS as well as email for the patient's messages (#206).
  *
- * booking_sms says a clinic's patients may choose SMS instead of email. SMS is meant
- * to be a paid add-on, so canChangeSms is the one gate and billing hooks in there.
- * The phone answer is required on every request; with SMS the email answer is not.
+ * booking_sms says a clinic's patients may ask for SMS too. SMS is meant to be a
+ * paid add-on, so canChangeSms is the one gate and billing hooks in there. Messages
+ * go to every channel the patient gave. The phone answer is required on every
+ * request; a patient who asks for SMS may leave the email empty.
  */
 
 export const SMS_SOURCE = {
     PILOT: 'pilot',
     ADMIN: 'admin'
 } as const
-
-/** How the patient asked to hear back, as stored in booking_submissions.contact_channel. */
-export const CONTACT_CHANNEL = {
-    EMAIL: 'email',
-    SMS: 'sms'
-} as const
-
-export type ContactChannel = typeof CONTACT_CHANNEL[keyof typeof CONTACT_CHANNEL]
-
-export function isContactChannel(value: unknown): value is ContactChannel {
-    return value === CONTACT_CHANNEL.EMAIL || value === CONTACT_CHANNEL.SMS
-}
 
 type Executor = Pick<typeof db, 'selectFrom'>
 

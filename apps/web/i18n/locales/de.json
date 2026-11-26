@@ -1111,7 +1111,7 @@
       "confirmations": "Setzen Sie vor dem Absenden beide Häkchen",
       "regionUnavailable": "Terminanfragen sind derzeit nur für Personen in Japan möglich.",
       "phoneJapan": "Geben Sie eine japanische Telefonnummer ein, z. B. 090-1234-5678",
-      "smsNotOffered": "Diese Klinik kann gerade keine SMS senden. Wählen Sie stattdessen E-Mail."
+      "smsNotOffered": "Diese Klinik kann gerade keine SMS senden. Entfernen Sie das SMS-Häkchen und geben Sie eine E-Mail-Adresse an."
     },
     "slotLabel": "Wunschzeit",
     "slotLoading": "Freie Zeiten werden geladen…",
@@ -1234,13 +1234,11 @@
       "website": "Webseite",
       "clinicLink": "Zurück zu {clinic}"
     },
-    "contactChannel": {
-      "legend": "Wie sollen wir Ihnen die Bestätigung senden?",
-      "email": "E-Mail",
-      "sms": "Textnachricht (SMS)",
-      "smsHelp": "Wir senden Nachrichten zu dieser Anfrage an Ihre Telefonnummer. Eine E-Mail-Adresse ist nicht nötig."
-    },
-    "manageLinkHelpSms": "Speichern Sie diesen privaten Link. Er zeigt Ihre Anfrage, und Sie können sie dort stornieren. Derselbe Link steht in Ihrer Bestätigungs-SMS."
+    "manageLinkHelpSms": "Speichern Sie diesen privaten Link. Er zeigt Ihre Anfrage, und Sie können sie dort stornieren. Derselbe Link steht in Ihrer Bestätigungs-SMS.",
+    "smsOptIn": {
+      "label": "Mir zusätzlich SMS senden",
+      "help": "Wir senden Nachrichten zu dieser Anfrage auch an Ihre Telefonnummer. Wenn Sie keine E-Mail-Adresse haben, lassen Sie das Feld leer."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Buchung",
@@ -1306,9 +1304,9 @@
     "previewOf": "{name} in neuem Tab öffnen",
     "purgedNote": "Diese Datei wurde gelöscht.",
     "downloadNote": "Für eine heruntergeladene Kopie ist die Praxis verantwortlich: sicher aufbewahren und löschen, wenn sie nicht mehr gebraucht wird.",
-    "contactChannel": "Kontakt zum Patienten",
-    "contactChannelEmail": "E-Mail",
-    "contactChannelSms": "SMS. Möglicherweise gibt es keine E-Mail."
+    "smsOptIn": "Nachrichten per SMS",
+    "smsOptInYes": "Ja. Möglicherweise gibt es keine E-Mail.",
+    "smsOptInNo": "Nein, nur E-Mail"
   },
   "bookingAvailability": {
     "clinicLabel": "Klinikseite",
@@ -1378,8 +1376,8 @@
       "interpretation": "Wir bieten Dolmetschen/Übersetzen an: Alle Ärztinnen und Ärzte können Patienten in jeder unserer Sprachen behandeln",
       "interpretationHelp": "Beim Einschalten wird ein Dolmetscher für alle Sprachen zu allen Öffnungszeiten angelegt. Unten können Sie Sprachen, Zeiten und die Zahl gleichzeitiger Termine pro Dolmetscher ändern.",
       "interpretationLocked": "Find a Doc schaltet dies für Ihre Praxis ein. Kontaktieren Sie uns, um es zu ändern.",
-      "sms": "Patienten können SMS statt E-Mail wählen",
-      "smsHelp": "Die Buchungsseite bietet die Wahl E-Mail / SMS. Bei SMS gibt der Patient eine Telefonnummer und keine E-Mail an.",
+      "sms": "Patienten können zusätzlich SMS wählen",
+      "smsHelp": "Die Buchungsseite fragt, ob zusätzlich SMS gesendet werden sollen. Wer SMS wählt, kann die E-Mail leer lassen, daher haben manche Anfragen nur eine Telefonnummer.",
       "smsLocked": "Find a Doc schaltet dies für Ihre Klinik frei. Kontaktieren Sie uns, um es zu ändern."
     },
     "payment": {

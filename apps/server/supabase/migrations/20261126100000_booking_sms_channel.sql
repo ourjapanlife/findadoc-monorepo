@@ -1,4 +1,4 @@
--- Patients may choose SMS instead of email for their booking messages (#206).
+-- Patients may ask for SMS as well as email for their booking messages (#206).
 --
 -- booking_sms: one row per facility that offers SMS. SMS is a paid add-on, so
 -- admins turn it on (booking/sms.ts canChangeSms is the one gate; billing hooks
@@ -6,9 +6,10 @@
 -- booking_settings column, for the same reason as booking_interpretation: a
 -- booking_settings row opens a clinic to patients (booking/target.ts).
 --
--- booking_submissions.contact_channel: how the patient asked to hear back.
--- Every existing request was email, so the default fills them. With sms the
--- request may have no email answer; the phone answer is always required.
+-- booking_submissions.sms_opt_in: the patient asked for SMS too. Messages go
+-- to every channel the patient gave. With sms_opt_in the email answer may be
+-- empty, for a patient with no email; the phone answer is always required.
+-- Every existing request was email only, so the default fills them.
 --
 -- No clinic gets SMS here. The pilot is turned on once messages are actually sent.
 
@@ -25,11 +26,7 @@ ALTER TABLE booking_sms ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE booking_sms FROM PUBLIC, anon, authenticated;
 
 ALTER TABLE booking_submissions
-  ADD COLUMN contact_channel text NOT NULL DEFAULT 'email';
-
-ALTER TABLE booking_submissions
-  ADD CONSTRAINT booking_submissions_contact_channel_check
-  CHECK (contact_channel IN ('email', 'sms'));
+  ADD COLUMN sms_opt_in boolean NOT NULL DEFAULT false;
 
 DO $$
 BEGIN

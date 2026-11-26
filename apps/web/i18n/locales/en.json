@@ -1111,7 +1111,7 @@
       "confirmations": "Tick both boxes before you send the request",
       "regionUnavailable": "Booking is currently available only to people in Japan.",
       "phoneJapan": "Enter a Japanese phone number, such as 090-1234-5678",
-      "smsNotOffered": "This clinic cannot send text messages right now. Choose email instead."
+      "smsNotOffered": "This clinic cannot send text messages right now. Untick SMS and give an email."
     },
     "slotLabel": "Preferred time",
     "slotLoading": "Loading open times…",
@@ -1234,13 +1234,11 @@
       "website": "Website",
       "clinicLink": "Back to {clinic}"
     },
-    "contactChannel": {
-      "legend": "How should we send your confirmation?",
-      "email": "Email",
-      "sms": "Text message (SMS)",
-      "smsHelp": "We will send messages about this request to your phone number. You do not need to give an email."
-    },
-    "manageLinkHelpSms": "Save this private link. It shows your request and lets you cancel it. The same link is in your confirmation text message."
+    "manageLinkHelpSms": "Save this private link. It shows your request and lets you cancel it. The same link is in your confirmation text message.",
+    "smsOptIn": {
+      "label": "Also send me text messages (SMS)",
+      "help": "We will also send messages about this request to your phone number. If you have no email, leave the email blank."
+    }
   },
   "bookingDashboard": {
     "detailHeading": "Booking",
@@ -1306,9 +1304,9 @@
     "previewOf": "Open {name} in a new tab",
     "purgedNote": "This file was deleted.",
     "downloadNote": "A downloaded copy is the clinic's to keep safe and to delete when it is no longer needed.",
-    "contactChannel": "Patient contact",
-    "contactChannelEmail": "Email",
-    "contactChannelSms": "Text message (SMS). There may be no email."
+    "smsOptIn": "Text messages (SMS)",
+    "smsOptInYes": "Yes. There may be no email.",
+    "smsOptInNo": "No, email only"
   },
   "bookingAvailability": {
     "clinicLabel": "Clinic site",
@@ -1378,8 +1376,8 @@
       "interpretation": "We offer interpretation/translation: any doctor can see patients in every language we offer",
       "interpretationHelp": "Turning this on adds one interpreter for every language at every open time. Change it below to set languages, hours, or how many visits each interpreter takes at once.",
       "interpretationLocked": "Find a Doc turns this on for your clinic. Contact us to change it.",
-      "sms": "Patients may choose text messages (SMS) instead of email",
-      "smsHelp": "The Book page shows an Email / SMS choice. With SMS, the patient gives a phone number and no email.",
+      "sms": "Patients may also choose text messages (SMS)",
+      "smsHelp": "The Book page asks whether to also send text messages. A patient who chooses SMS may leave the email blank, so some requests will have a phone number only.",
       "smsLocked": "Find a Doc turns this on for your clinic. Contact us to change it."
     },
     "payment": {

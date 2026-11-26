@@ -171,12 +171,10 @@
                 </div>
                 <div>
                     <dt class="text-sm text-primary-text-muted">
-                        {{ t('bookingDashboard.contactChannel') }}
+                        {{ t('bookingDashboard.smsOptIn') }}
                     </dt>
-                    <dd data-testid="booking-detail-contact-channel">
-                        {{ detail.contactChannel === BookingContactChannel.Sms
-                            ? t('bookingDashboard.contactChannelSms')
-                            : t('bookingDashboard.contactChannelEmail') }}
+                    <dd data-testid="booking-detail-sms-opt-in">
+                        {{ detail.smsOptIn ? t('bookingDashboard.smsOptInYes') : t('bookingDashboard.smsOptInNo') }}
                     </dd>
                 </div>
             </dl>
@@ -344,7 +342,6 @@ import type { RouteLocationRaw } from 'vue-router'
 import {
     BookingAppointmentStatus,
     BookingCancelledBy,
-    BookingContactChannel,
     BookingFieldSensitivity,
     BookingSubmissionStatus,
     BookingUploadDisposition,

@@ -1,7 +1,6 @@
 import {
     BookingAppointmentStatus,
     BookingCancelledBy,
-    BookingContactChannel,
     BookingFieldSensitivity,
     BookingPaymentMethod,
     BookingSubmissionStatus,
@@ -21,7 +20,6 @@ import {
     type PaymentMethod
 } from '../booking/formDefinitions.js'
 import { APPOINTMENT_STATUS, CANCELLED_BY, type AppointmentStatus } from '../booking/lifecycle.js'
-import { CONTACT_CHANNEL } from '../booking/sms.js'
 import { db } from '../kyselyClient.js'
 import { logger } from '../logger.js'
 import { ErrorCode, Result } from '../result.js'
@@ -256,7 +254,7 @@ export async function getBookingSubmissionDetail(
             'booking.form_version',
             'booking.answers',
             'booking.answers_purged_at',
-            'booking.contact_channel',
+            'booking.sms_opt_in',
             'booking.created_date',
             'booking.updated_date',
             'site.slug',
@@ -313,9 +311,7 @@ export async function getBookingSubmissionDetail(
         appointmentId: row.appointment_id,
         appointmentStatus: appointmentStatusFromRow(row.appointment_status),
         paymentMethod: paymentMethodFromAnswer(answersRecord[PAYMENT_METHOD_FIELD_ID]),
-        contactChannel: row.contact_channel === CONTACT_CHANNEL.SMS
-            ? BookingContactChannel.Sms
-            : BookingContactChannel.Email,
+        smsOptIn: row.sms_opt_in,
         cancelledBy: cancelledByFromRow(row.cancelled_by),
         statusReason: row.status_reason,
         statusReasonPurgedAt: row.status_reason_purged_at === null

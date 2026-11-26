@@ -52,7 +52,7 @@
                 class="flex flex-col gap-1"
             >
                 <p class="text-sm">
-                    {{ bySms ? t('bookingPage.manageLinkHelpSms') : t('bookingPage.manageLinkHelp') }}
+                    {{ smsOnly ? t('bookingPage.manageLinkHelpSms') : t('bookingPage.manageLinkHelp') }}
                 </p>
                 <NuxtLink
                     :to="manageUrl"
@@ -105,43 +105,28 @@
                         @update:duration-minutes="durationMinutes = $event"
                     />
 
-                    <fieldset
-                        v-if="showContactChannel"
-                        class="flex flex-col gap-2"
-                        data-testid="clinic-booking-contact-channel"
+                    <div
+                        v-if="showSmsOptIn"
+                        class="flex flex-col gap-1"
+                        data-testid="clinic-booking-sms-opt-in"
                     >
-                        <legend class="field-label">
-                            {{ t('bookingPage.contactChannel.legend') }}
-                        </legend>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label
-                                v-for="option in contactChannelOptions"
-                                :key="option.value"
-                                class="flex h-12 cursor-pointer items-center justify-center rounded-lg border
-                                    border-border-strong bg-secondary-bg px-3 text-sm font-semibold
-                                    has-checked:border-primary has-checked:bg-primary has-checked:text-primary-text-inverted
-                                    has-focus-visible:outline-2 has-focus-visible:outline-offset-2
-                                    has-focus-visible:outline-primary"
+                        <label class="flex cursor-pointer items-start gap-3">
+                            <input
+                                v-model="smsOptIn"
+                                type="checkbox"
+                                class="mt-0.5 size-5 shrink-0 accent-primary"
+                                aria-describedby="booking-sms-opt-in-help"
+                                data-testid="clinic-booking-sms-opt-in-toggle"
                             >
-                                <input
-                                    v-model="smsChosen"
-                                    type="radio"
-                                    name="booking-contact-channel"
-                                    class="sr-only"
-                                    :value="option.sms"
-                                    :data-testid="`clinic-booking-contact-channel-${option.value}`"
-                                >
-                                {{ option.label }}
-                            </label>
-                        </div>
+                            <span class="font-semibold">{{ t('bookingPage.smsOptIn.label') }}</span>
+                        </label>
                         <p
-                            v-if="bySms"
-                            class="text-sm text-primary-text-muted"
-                            data-testid="clinic-booking-contact-channel-sms-help"
+                            id="booking-sms-opt-in-help"
+                            class="ml-8 text-sm text-primary-text-muted"
                         >
-                            {{ t('bookingPage.contactChannel.smsHelp') }}
+                            {{ t('bookingPage.smsOptIn.help') }}
                         </p>
-                    </fieldset>
+                    </div>
 
                     <div
                         v-for="field in visibleFields"
@@ -381,7 +366,6 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
     BookingAppointmentStatus,
-    BookingContactChannel,
     BookingFormFieldType,
     type BookingForm,
     type BookingFormField,
@@ -461,9 +445,11 @@ const practitionerId = ref<string | null>(props.form.practitioners.some(practiti
     ? props.query.practitioner ?? null
     : null)
 const spokenLanguages = ref<Locale[]>([])
-// Email or SMS (#206). The switch shows only when the clinic offers SMS; email is the default.
-const smsChosen = ref(false)
-const bySms = computed(() => props.form.offersSms && smsChosen.value)
+// SMS as well as email (#206). The box shows only when the clinic offers SMS, and starts unticked.
+const smsOptIn = ref(false)
+const bySms = computed(() => props.form.offersSms && smsOptIn.value)
+// Set at submit: SMS with no email, so the manage link arrives by SMS only.
+const smsOnly = ref(false)
 const clinicKey = computed(() => bookingClinicKey(props.form))
 const stepIndex = ref(0)
 
@@ -484,33 +470,32 @@ const currentStepKey = computed(() => formSteps.value[stepIndex.value]?.key ?? '
 const visibleFields = computed(() =>
     props.form.fields.filter(field => field.stepKey === currentStepKey.value && isShown(field)))
 
-/** Self-described gender appears only after "Other" (#202); the backup handle after any app. SMS hides email. */
+/** Self-described gender appears only after "Other" (#202); the backup handle after any app. */
 function isShown(field: BookingFormField): boolean {
-    if (bySms.value && field.id === EMAIL_FIELD_ID) {
-        return false
-    }
     return fieldIsShown(field, fieldId => fieldText(values[fieldId]))
 }
 
-/** With SMS the phone is how the clinic reaches the patient, so it is required (#206). */
+/**
+ * With SMS (#206) the email is optional, for a patient who has none, and the phone is
+ * required because it is how the clinic reaches them. The API applies the same rule.
+ */
 function isRequired(field: BookingFormField): boolean {
-    return field.required || (bySms.value && field.id === PHONE_FIELD_ID)
+    if (!bySms.value) {
+        return field.required
+    }
+    return field.id === PHONE_FIELD_ID || (field.required && field.id !== EMAIL_FIELD_ID)
 }
 
-// The switch sits on the step that asks for email, which is the contact step on every form.
-const showContactChannel = computed(() => props.form.offersSms
+// The box sits on the step that asks for email, which is the contact step on every form.
+const showSmsOptIn = computed(() => props.form.offersSms
   && props.form.fields.some(field => field.id === EMAIL_FIELD_ID && field.stepKey === currentStepKey.value))
-const contactChannelOptions = computed(() => [
-    { value: 'email', sms: false, label: t('bookingPage.contactChannel.email') },
-    { value: 'sms', sms: true, label: t('bookingPage.contactChannel.sms') }
-])
 
-// Choosing SMS discards the email, so it is never sent or kept in the draft.
-watch(smsChosen, chosen => {
-    if (chosen) {
-        values[EMAIL_FIELD_ID] = ''
-        fieldErrors[EMAIL_FIELD_ID] = ''
-        touched[EMAIL_FIELD_ID] = false
+// Ticking or unticking changes whether email and phone are required, so a shown error is checked again.
+watch(smsOptIn, () => {
+    for (const fieldId of [EMAIL_FIELD_ID, PHONE_FIELD_ID]) {
+        if (touched[fieldId]) {
+            validateField(fieldId)
+        }
     }
 })
 const isLastStep = computed(() => stepIndex.value >= formSteps.value.length - 1)
@@ -559,7 +544,7 @@ if (resumedDraft !== null) {
     selectedStart.value = resumedDraft.startsAt
     practitionerId.value = resumedDraft.practitionerId
     spokenLanguages.value = resumedDraft.spokenLanguages as Locale[]
-    smsChosen.value = resumedDraft.smsChosen
+    smsOptIn.value = resumedDraft.smsOptIn
     const lastStep = Math.max(formSteps.value.length - 1, 0)
     stepIndex.value = Math.min(Math.max(resumedDraft.stepIndex, 0), lastStep)
     for (const [id, uploadId] of Object.entries(resumedDraft.uploadIds)) {
@@ -653,7 +638,7 @@ function rememberCurrentDraft(): void {
         startsAt: selectedStart.value,
         practitionerId: practitionerId.value,
         spokenLanguages: [...spokenLanguages.value],
-        smsChosen: smsChosen.value,
+        smsOptIn: smsOptIn.value,
         stepIndex: stepIndex.value,
         uploadIds: { ...uploadIds },
         fileNames: { ...fileNames },
@@ -1038,7 +1023,7 @@ async function onSubmit() {
             practitionerId: practitionerId.value,
             spokenLanguages: spokenLanguages.value,
             service: props.query.service,
-            contactChannel: bySms.value ? BookingContactChannel.Sms : BookingContactChannel.Email,
+            smsOptIn: bySms.value,
             confirmedInJapan: confirmations.confirmedInJapan,
             healthDataConsent: confirmations.healthDataConsent
         })
@@ -1050,6 +1035,7 @@ async function onSubmit() {
 
         makeNonDirty()
         submitted.value = true
+        smsOnly.value = bySms.value && fieldText(values[EMAIL_FIELD_ID]) === ''
         submissionId.value = result.id
         pendingPayment.value = result.appointmentStatus === BookingAppointmentStatus.PendingPayment
         manageUrl.value = result.manageToken

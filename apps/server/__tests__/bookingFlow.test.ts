@@ -1,11 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import {
-    BookingAppointmentStatus,
-    BookingContactChannel,
-    ClinicMemberRole,
-    HoursRecurrence,
-    Locale
-} from '@findadoc/graphql'
+import { BookingAppointmentStatus, ClinicMemberRole, HoursRecurrence, Locale } from '@findadoc/graphql'
 import { sharedFacilityIds } from './testSetup.test.js'
 import { db } from '../src/kyselyClient.js'
 import { MEMBERSHIP_ROLE, type BookingAccess } from '../src/booking/access.js'
@@ -51,7 +45,7 @@ async function submit(
         spokenLanguages?: Locale[]
         confirmedInJapan?: boolean
         healthDataConsent?: boolean
-        contactChannel?: BookingContactChannel
+        smsOptIn?: boolean
     } = {}
 ) {
     return bookingService.submitBooking({
@@ -794,46 +788,52 @@ describe('booking flow', () => {
         expect((await bookingService.getBookingForm(facilityId))?.offersSms).toBe(false)
     })
 
-    it('takes a request with no email only by SMS at a clinic that offers it (#206)', async () => {
+    it('takes a request with no email only when the patient asks for SMS at a clinic that offers it (#206)', async () => {
         const facilityId = sharedFacilityIds[0]!
         const at = (minutes: number) => iso(6 * 24 * 60 + minutes)
         const window = await availabilityService.createClinicAvailabilityWindow(
-            { clinicSiteId: facilityId, startsAt: at(0), endsAt: at(60) },
+            { clinicSiteId: facilityId, startsAt: at(0), endsAt: at(120) },
             'test|staff',
             adminOwner
         )
         expect(window.hasErrors).toBe(false)
+        const storedRequest = (id: string) => db.selectFrom('booking_submissions')
+            .select(['sms_opt_in', 'answers'])
+            .where('id', '=', id)
+            .executeTakeFirstOrThrow()
+        const answersOf = (row: { answers: unknown }): Record<string, string> =>
+            (typeof row.answers === 'string' ? JSON.parse(row.answers) : row.answers) as Record<string, string>
 
         // SMS off: no email is refused, and a hand-made SMS request is refused too.
         const noEmail = await submit(facilityId, at(0), '')
         expect(noEmail.errors?.[0]?.field).toBe('email')
-        const smsWhenOff = await submit(facilityId, at(0), '', { contactChannel: BookingContactChannel.Sms })
-        expect(smsWhenOff.errors?.[0]).toMatchObject({
-            field: 'contactChannel',
-            errorCode: ErrorCode.SMS_NOT_OFFERED
-        })
-        expect(await bookingService.getAvailableBookingStarts(facilityId, at(-60), at(120), 60)).toEqual([at(0)])
+        const smsWhenOff = await submit(facilityId, at(0), '', { smsOptIn: true })
+        expect(smsWhenOff.errors?.[0]).toMatchObject({ field: 'smsOptIn', errorCode: ErrorCode.SMS_NOT_OFFERED })
+        expect(await bookingService.getAvailableBookingStarts(facilityId, at(-60), at(180), 60)).toContain(at(0))
 
         try {
             await clinicAccessService.setBookingSms({ facilityId, offersSms: true }, adminWithNoClinic)
-            // An email sent with SMS is discarded, so the request holds no email at all.
-            const bySms = await submit(facilityId, at(0), 'discarded@example.com', {
-                contactChannel: BookingContactChannel.Sms
-            })
-            expect(bySms.hasErrors).toBe(false)
-            createdSubmissionIds.push(bySms.data.id)
+            // Without the box ticked, email is still required.
+            expect((await submit(facilityId, at(0), '')).errors?.[0]?.field).toBe('email')
 
-            const stored = await db.selectFrom('booking_submissions')
-                .select(['contact_channel', 'answers'])
-                .where('id', '=', bySms.data.id)
-                .executeTakeFirstOrThrow()
-            expect(stored.contact_channel).toBe('sms')
-            const storedAnswers = typeof stored.answers === 'string' ? JSON.parse(stored.answers) : stored.answers
-            expect(storedAnswers.email).toBeUndefined()
-            expect(storedAnswers.phone).toBe('090-1234-5678')
+            // SMS only: no email at all.
+            const smsOnly = await submit(facilityId, at(0), '', { smsOptIn: true })
+            expect(smsOnly.hasErrors).toBe(false)
+            createdSubmissionIds.push(smsOnly.data.id)
+            const smsOnlyRow = await storedRequest(smsOnly.data.id)
+            expect(smsOnlyRow.sms_opt_in).toBe(true)
+            expect(answersOf(smsOnlyRow).email).toBeUndefined()
+            expect(answersOf(smsOnlyRow).phone).toBe('090-1234-5678')
+            const detail = await staffBookingService.getBookingSubmissionDetail(smsOnly.data.id, adminOwner)
+            expect(detail?.smsOptIn).toBe(true)
 
-            const detail = await staffBookingService.getBookingSubmissionDetail(bySms.data.id, adminOwner)
-            expect(detail?.contactChannel).toBe(BookingContactChannel.Sms)
+            // SMS and email: the email is kept, so messages can go to both.
+            const both = await submit(facilityId, at(60), 'both@example.com', { smsOptIn: true })
+            expect(both.hasErrors).toBe(false)
+            createdSubmissionIds.push(both.data.id)
+            const bothRow = await storedRequest(both.data.id)
+            expect(bothRow.sms_opt_in).toBe(true)
+            expect(answersOf(bothRow).email).toBe('both@example.com')
         } finally {
             await clinicAccessService.setBookingSms({ facilityId, offersSms: false }, adminWithNoClinic)
         }

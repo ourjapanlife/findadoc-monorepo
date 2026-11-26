@@ -20,7 +20,7 @@ describe('booking region and confirmations', () => {
     // The clinic stopped offering SMS after the page loaded (#206).
     it('reads the API\'s SMS refusal as its own reason', () => {
         expect(bookingRefusal({
-            errors: [{ message: 'SMS not offered', code: ErrorCode.SMS_NOT_OFFERED, field: 'contactChannel' }]
+            errors: [{ message: 'SMS not offered', code: ErrorCode.SMS_NOT_OFFERED, field: 'smsOptIn' }]
         })).to.equal('smsNotOffered')
     })
 

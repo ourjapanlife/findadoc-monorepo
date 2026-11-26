@@ -1111,7 +1111,7 @@
       "confirmations": "发送请求前，请勾选两个复选框",
       "regionUnavailable": "预约目前仅向身在日本的用户开放。",
       "phoneJapan": "请输入日本的电话号码，例如 090-1234-5678",
-      "smsNotOffered": "该诊所目前无法发送短信。请改选电子邮件。"
+      "smsNotOffered": "该诊所目前无法发送短信。请取消勾选短信，并填写电子邮箱。"
     },
     "slotLabel": "希望时间",
     "slotLoading": "正在加载可预约时间…",
@@ -1234,13 +1234,11 @@
       "website": "网站",
       "clinicLink": "返回{clinic}"
     },
-    "contactChannel": {
-      "legend": "您希望通过哪种方式接收确认？",
-      "email": "电子邮件",
-      "sms": "短信（SMS）",
-      "smsHelp": "我们会把有关此预约申请的消息发送到您的电话号码。无需填写电子邮箱。"
-    },
-    "manageLinkHelpSms": "请保存此专属链接。您可以通过它查看或取消申请。确认短信中也有同一链接。"
+    "manageLinkHelpSms": "请保存此专属链接。您可以通过它查看或取消申请。确认短信中也有同一链接。",
+    "smsOptIn": {
+      "label": "同时通过短信（SMS）通知我",
+      "help": "我们也会把有关此预约申请的消息发送到您的电话号码。如果您没有电子邮箱，请将电子邮箱一栏留空。"
+    }
   },
   "bookingDashboard": {
     "detailHeading": "预约",
@@ -1306,9 +1304,9 @@
     "previewOf": "在新标签页中打开{name}",
     "purgedNote": "此文件已删除。",
     "downloadNote": "下载的副本由诊所负责妥善保管，不再需要时请删除。",
-    "contactChannel": "患者联系方式",
-    "contactChannelEmail": "电子邮件",
-    "contactChannelSms": "短信（可能没有电子邮箱）"
+    "smsOptIn": "短信（SMS）通知",
+    "smsOptInYes": "是（可能没有电子邮箱）",
+    "smsOptInNo": "否，仅电子邮件"
   },
   "bookingAvailability": {
     "clinicLabel": "诊所站点",
@@ -1378,8 +1376,8 @@
       "interpretation": "我们提供口译/翻译服务：任何医生都可以用我们提供的每种语言为患者看诊",
       "interpretationHelp": "开启后会添加一位口译员，覆盖所有语言和所有开放时间。可在下方设置语言、时间或每位口译员可同时负责的预约数。",
       "interpretationLocked": "此功能由 Find a Doc 为您的诊所开启。如需更改，请联系我们。",
-      "sms": "患者可选择短信（SMS）代替电子邮件",
-      "smsHelp": "预约页面会显示“电子邮件／短信”选项。选择短信的患者只填写电话号码，不填写电子邮箱。",
+      "sms": "患者也可选择短信（SMS）通知",
+      "smsHelp": "预约页面会询问是否同时发送短信。选择短信的患者可以不填电子邮箱，因此部分申请只有电话号码。",
       "smsLocked": "此功能由 Find a Doc 为您的诊所开启。如需更改，请联系我们。"
     },
     "payment": {

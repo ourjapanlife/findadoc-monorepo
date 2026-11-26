@@ -313,7 +313,7 @@ export interface BookingInterpretationTable {
     updated_date: Generated<string>
 }
 
-/** A facility whose patients may choose SMS instead of email (#206). source is who turned it on. */
+/** A facility whose patients may ask for SMS as well as email (#206). source is who turned it on. */
 export interface BookingSmsTable {
     facility_id: string
     source: 'pilot' | 'admin'
@@ -358,8 +358,8 @@ export interface BookingSubmissionsTable {
     answers: ColumnType<Record<string, string>, Record<string, string>, Record<string, string>>
     status: string
     notify_email_sent_at: string | null
-    /** How the patient asked to hear back (#206). With sms the answers may have no email. */
-    contact_channel: ColumnType<'email' | 'sms', 'email' | 'sms' | undefined, 'email' | 'sms'>
+    /** The patient asked for SMS as well as email (#206). Then the answers may have no email. */
+    sms_opt_in: ColumnType<boolean, boolean | undefined, boolean>
     cancel_token_hash: string | null
     /** When the patient ticked the health-data consent box (#173). Null on requests sent before it existed. */
     health_data_consented_at: string | null
