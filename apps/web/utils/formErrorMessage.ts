@@ -20,6 +20,8 @@ const SENTENCE_BY_CODE: Readonly<Record<string, string>> = {
     INVALID_PHONE_NUMBER: 'serverErrorMessages.invalidPhone',
     INVALID_WEBSITE: 'serverErrorMessages.invalidWebsite',
     INVALID_INPUT: 'serverErrorMessages.invalidInformation',
+    // The picker only offers the four genders; another value is a bad request (#224).
+    INVALID_GENDER: 'serverErrorMessages.invalidInformation',
     BAD_USER_INPUT: 'serverErrorMessages.invalidInformation',
     INVALID_SUBMISSION_APPROVAL: 'serverErrorMessages.submissionCannotBeApproved',
     SUBMISSION_ALREADY_APPROVED: 'serverErrorMessages.submissionAlreadyApproved',

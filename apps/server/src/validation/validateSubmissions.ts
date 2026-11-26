@@ -2,7 +2,13 @@ import * as gqlTypes from '@findadoc/graphql'
 import { ErrorCode, Result } from '../result.js'
 import { hasScriptTags, isInvalidName } from '../../utils/stringUtils.js'
 import { UUID_REGEX, validateContactInput, validateGooglePlaceId, validatePaymentOptions } from './validateFacility.js'
-import { validateNames, validateDegrees, validateSpecialties, validateSpokenLanguages } from './validationHealthcareProfessional.js'
+import {
+    validateNames,
+    validateDegrees,
+    validateGender,
+    validateSpecialties,
+    validateSpokenLanguages
+} from './validationHealthcareProfessional.js'
 
 export function validateIdInput(id: string): Result<unknown> {
     const validationResults: Result<unknown> = {
@@ -540,6 +546,8 @@ export function validateUpdateSubmissionInput(
                     })
                 }
             }
+
+            validateGender(hp.gender, validationResults, `healthcareProfessionals[${index}].gender`)
 
             if (hp.additionalInfoForPatients && hp.additionalInfoForPatients.length > 2048) {
                 validationResults.hasErrors = true

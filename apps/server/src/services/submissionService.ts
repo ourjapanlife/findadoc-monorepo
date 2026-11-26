@@ -800,6 +800,7 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
             ),
             degrees: firstHp.degrees ?? [],
             specialties: firstHp.specialties ?? [],
+            gender: firstHp.gender ?? gqlTypes.Gender.Unknown,
             additionalInfoForPatients: firstHp.additionalInfoForPatients ?? '',
             facilityIds: [finalFacilityId]
         }
@@ -822,6 +823,7 @@ async function tryCreateHealthcareProfessionalForSubmissionInTransaction(
             license_recommendation: licensed.licenseRecommendation,
             specialties: asJsonb<gqlTypes.Specialty[]>(hpInput!.specialties ?? []),
             spoken_languages: asJsonb<gqlTypes.Locale[]>(hpInput!.spokenLanguages ?? []),
+            gender: hpInput!.gender ?? gqlTypes.Gender.Unknown,
             email: null,
             created_date: new Date().toISOString(),
             updated_date: new Date().toISOString()

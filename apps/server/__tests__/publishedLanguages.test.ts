@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Locale, Specialty } from '@findadoc/graphql'
+import { Gender, Locale, Specialty } from '@findadoc/graphql'
 import { isPublishedLocale, PUBLISHED_LOCALES } from '../src/languages/publishedLocales.js'
 import { supportedLanguageFields, professionalFromRow } from '../src/services/mappersEntityService.js'
 import {
@@ -61,6 +61,7 @@ describe('published language allowlist', () => {
             additional_credentials: [],
             license_review: null,
             name_review: null,
+            gender: Gender.Unknown,
             license_recommendation: null,
             specialties: [],
             additional_info_for_patients: null,

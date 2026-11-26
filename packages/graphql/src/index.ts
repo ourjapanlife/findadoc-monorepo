@@ -1043,6 +1043,8 @@ export type CreateHealthcareProfessionalInput = {
   degrees?: InputMaybe<Array<Degree>>;
   /** IDs of facilities where this professional practices. */
   facilityIds: Array<Scalars['ID']['input']>;
+  /** Gender from a source (#224). Omit it for UNKNOWN. */
+  gender?: InputMaybe<Gender>;
   /** Localized names (e.g. English and Japanese). */
   names: Array<LocalizedNameInput>;
   /** Medical specialties practiced. */
@@ -1406,6 +1408,16 @@ export enum FacilityVerificationStatus {
   UnverifiedLocation = 'UNVERIFIED_LOCATION'
 }
 
+/** A healthcare professional's gender (#224). A moderator sets it from a source, never from a name or a photo. */
+export enum Gender {
+  Female = 'FEMALE',
+  Male = 'MALE',
+  /** Nobody has checked yet. */
+  Unknown = 'UNKNOWN',
+  /** The professional or clinic chose not to say. */
+  Unspecified = 'UNSPECIFIED'
+}
+
 /** A healthcare professional registered in the Find a Doc database. */
 export type HealthcareProfessional = {
   __typename?: 'HealthcareProfessional';
@@ -1426,6 +1438,8 @@ export type HealthcareProfessional = {
   degrees: Array<Degree>;
   /** IDs of facilities where this professional practices. */
   facilityIds: Array<Scalars['ID']['output']>;
+  /** The professional's gender (#224). UNKNOWN until a moderator sets it from a source. */
+  gender: Gender;
   /** Unique identifier for the healthcare professional. */
   id: Scalars['ID']['output'];
   /** Suggestion for a dual license. A moderator decides whether to apply it. */
@@ -1492,6 +1506,8 @@ export type HealthcareProfessionalSubmission = {
   degrees?: Maybe<Array<Degree>>;
   /** IDs of facilities where this professional practices. */
   facilityIds: Array<Scalars['ID']['output']>;
+  /** Gender a moderator set on the draft (#224). Absent means UNKNOWN. */
+  gender?: Maybe<Gender>;
   /** ID of an existing healthcare professional, if this submission updates one. */
   id?: Maybe<Scalars['ID']['output']>;
   /** Submitted localized names. */
@@ -3104,6 +3120,8 @@ export type UpdateHealthcareProfessionalInput = {
   degrees?: InputMaybe<Array<Degree>>;
   /** Facility relationships to add, update, or remove. */
   facilityIds?: InputMaybe<Array<Relationship>>;
+  /** Updated gender (#224). */
+  gender?: InputMaybe<Gender>;
   /** CONFIRMED keeps a dual license. Omit this to classify the degrees you send. */
   licenseReview?: InputMaybe<LicenseReviewStatus>;
   /** Updated localized names. */
@@ -3340,6 +3358,7 @@ export type ResolversTypes = {
   FacilitySubmission: ResolverTypeWrapper<FacilitySubmission>;
   FacilityVerificationStatus: FacilityVerificationStatus;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  Gender: Gender;
   HealthcareProfessional: ResolverTypeWrapper<HealthcareProfessional>;
   HealthcareProfessionalSearchFilters: HealthcareProfessionalSearchFilters;
   HealthcareProfessionalSubmission: ResolverTypeWrapper<HealthcareProfessionalSubmission>;
@@ -4098,6 +4117,7 @@ export type HealthcareProfessionalResolvers<ContextType = any, ParentType extend
   createdDate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   degrees?: Resolver<Array<ResolversTypes['Degree']>, ParentType, ContextType>;
   facilityIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
+  gender?: Resolver<ResolversTypes['Gender'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   licenseRecommendation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   licenseReview?: Resolver<Maybe<ResolversTypes['LicenseReviewStatus']>, ParentType, ContextType>;
@@ -4113,6 +4133,7 @@ export type HealthcareProfessionalSubmissionResolvers<ContextType = any, ParentT
   additionalInfoForPatients?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   degrees?: Resolver<Maybe<Array<ResolversTypes['Degree']>>, ParentType, ContextType>;
   facilityIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
+  gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   names?: Resolver<Array<ResolversTypes['LocalizedName']>, ParentType, ContextType>;
   specialties?: Resolver<Maybe<Array<ResolversTypes['Specialty']>>, ParentType, ContextType>;

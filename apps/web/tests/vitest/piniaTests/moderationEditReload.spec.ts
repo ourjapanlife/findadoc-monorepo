@@ -2,6 +2,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
     FacilityVerificationStatus,
+    Gender,
     Locale,
     type Facility,
     type HealthcareProfessional
@@ -41,6 +42,7 @@ const PROFESSIONAL = {
     additionalCredentials: [],
     degrees: [],
     facilityIds: [],
+    gender: Gender.Unknown,
     specialties: [],
     spokenLanguages: [],
     createdDate: '2026-11-01T00:00:00.000Z',

@@ -4,6 +4,7 @@ import {
     Degree,
     FacilitySource,
     FacilityVerificationStatus,
+    Gender,
     Locale,
     OpeningDay,
     PaymentType,
@@ -90,6 +91,9 @@ const extraLanguages = [
 ]
 
 const statuses = ['pending', 'under_review', 'approved', 'rejected'] as const
+
+// Fake rows cover every gender (#224). Most stay UNKNOWN, as real rows do until a moderator checks.
+const genders = [Gender.Unknown, Gender.Female, Gender.Unknown, Gender.Male, Gender.Unspecified] as const
 
 // Payment from the controlled list (#20). Most rows stay unknown, as most real clinics do.
 const paymentSets: Array<SeedFile['facilities'][number]['payment_options']> = [
@@ -310,6 +314,7 @@ function buildSeed(): SeedFile {
             license_review: licensed.licenseReview,
             license_recommendation: licensed.licenseRecommendation,
             name_review: null,
+            gender: genders[index % genders.length]!,
             specialties,
             spoken_languages: spokenLanguages,
             email: faker.internet.email().toLowerCase(),

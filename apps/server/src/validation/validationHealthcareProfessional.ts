@@ -433,6 +433,36 @@ export function validateSpokenLanguages(
     }
 }
 
+const GENDER_VALUES: readonly string[] = Object.values(gqlTypes.Gender)
+
+/** True for the four professional genders: MALE, FEMALE, UNSPECIFIED, and UNKNOWN (#224). */
+export function isGender(value: unknown): value is gqlTypes.Gender {
+    return typeof value === 'string' && GENDER_VALUES.includes(value)
+}
+
+/**
+ * Checks a professional's gender (#224). Absent (`undefined` or `null`) is allowed: a new
+ * professional is then UNKNOWN, and an update leaves the stored gender alone.
+ * GraphQL already refuses an unknown enum value; this also covers a submission draft,
+ * which is stored as JSON.
+ */
+export function validateGender(
+    gender: unknown,
+    validationResults: Result<unknown>,
+    field = 'gender'
+): void {
+    if (gender === undefined || gender === null || isGender(gender)) {
+        return
+    }
+
+    validationResults.hasErrors = true
+    validationResults.errors?.push({
+        field,
+        errorCode: ErrorCode.INVALID_GENDER,
+        httpStatus: 400
+    })
+}
+
 export function validateUpdateProfessionalInput(input: Partial<gqlTypes.UpdateHealthcareProfessionalInput>)
 : Result<unknown> {
     const validationResults: Result<unknown> = {
@@ -466,6 +496,8 @@ export function validateUpdateProfessionalInput(input: Partial<gqlTypes.UpdateHe
         validateSpokenLanguages(input.spokenLanguages, validationResults)
     }
 
+    validateGender(input.gender, validationResults)
+
     return validationResults
 }
 
@@ -491,6 +523,7 @@ export function validateCreateProfessionalInput(input: gqlTypes.CreateHealthcare
     validateDegrees(input.degrees, validationResults)
     validateSpecialties(input.specialties, validationResults)
     validateSpokenLanguages(input.spokenLanguages, validationResults)
+    validateGender(input.gender, validationResults)
 
     return validationResults
 }

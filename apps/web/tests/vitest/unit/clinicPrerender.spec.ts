@@ -10,7 +10,7 @@ import {
     writeClinicPrerenderCache
 } from '@/utils/clinicPrerender'
 import type { Facility, HealthcareProfessional } from '@findadoc/graphql'
-import { Locale } from '@findadoc/graphql'
+import { Gender, Locale } from '@findadoc/graphql'
 
 function facility(id: string, professionalIds: string[]): Facility {
     return {
@@ -40,6 +40,7 @@ function professional(id: string, facilityIds: string[] = []): HealthcareProfess
         specialties: [],
         facilityIds,
         spokenLanguages: [],
+        gender: Gender.Unknown,
         additionalInfoForPatients: '',
         createdDate: '2026-01-01T00:00:00.000Z',
         updatedDate: '2026-01-01T00:00:00.000Z'

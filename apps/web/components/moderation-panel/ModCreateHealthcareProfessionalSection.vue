@@ -25,6 +25,7 @@
                     v-model="createHealthcareProfessionalSectionFields.specialties"
                     test-id="mod-healthcare-professional-section-specialties"
                 />
+                <ModProfessionalGenderField v-model="createGender" />
                 <div class="mod-picker">
                     <label
                         for="locales"
@@ -76,7 +77,7 @@ import { computed, type Ref } from 'vue'
 import { useHealthcareProfessionalsStore } from '~/stores/healthcareProfessionalsStore'
 import { useFacilitiesStore } from '~/stores/facilitiesStore'
 import { useLocaleStore } from '~/stores/localeStore'
-import { Locale } from '@findadoc/graphql'
+import { Gender, Locale } from '@findadoc/graphql'
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
@@ -90,6 +91,13 @@ const facilitiesStore = useFacilitiesStore()
 await facilitiesStore.getFacilities() // Fix a bug where facilities disappear after the user refreshes the page
 
 const createHealthcareProfessionalSectionFields = healthcareProfessionalsStore.createHealthcareProfessionalSectionFields
+// The input type allows an omitted gender; the form always holds one, starting at Unknown (#224).
+const createGender = computed({
+    get: () => createHealthcareProfessionalSectionFields.gender ?? Gender.Unknown,
+    set: (value: Gender) => {
+        createHealthcareProfessionalSectionFields.gender = value
+    }
+})
 const spokenLanguageLabels = computed(() =>
     (createHealthcareProfessionalSectionFields.spokenLanguages ?? [])
         .map(locale => localesStore.formatLanguageCodeToSimpleText(locale)))
