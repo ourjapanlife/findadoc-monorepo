@@ -27,4 +27,25 @@ describe('searchResultsStore', () => {
 
         expect(store.currentPage).toBe(2)
     })
+
+    it('goes back to the first page when the order changes', async () => {
+        const store = useSearchResultsStore()
+        store.currentPage = 3
+
+        store.sort = 'near'
+        await nextTick()
+
+        expect(store.currentPage).toBe(1)
+    })
+
+    it('keeps the distance order when filters are cleared, since it narrows nothing', () => {
+        const store = useSearchResultsStore()
+        store.sort = 'near'
+        store.selectedRegion = 'KANTO'
+
+        store.clearFilters()
+
+        expect(store.sort).toBe('near')
+        expect(store.selectedRegion).toBeUndefined()
+    })
 })

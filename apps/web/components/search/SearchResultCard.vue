@@ -24,6 +24,13 @@
                 <p class="m-0 text-sm text-primary-text-muted">
                     {{ addressSummary }}
                 </p>
+                <p
+                    v-if="distanceText"
+                    data-testid="search-result-distance"
+                    class="m-0 text-sm font-medium text-primary-text"
+                >
+                    {{ distanceText }}
+                </p>
             </div>
             <svg
                 class="mt-1 size-5 shrink-0 stroke-primary-text-muted"
@@ -103,6 +110,7 @@ import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { formatHealthcareProfessionalName } from '~/utils/nameUtils'
 import { isJapaneseLocale, toGqlLocale } from '~/utils/activeLocale'
 import { facilityPath } from '~/utils/clinicPath'
+import { formatDistance } from '~/utils/nearMe'
 import { spokenLanguageNames } from '~/utils/languageName'
 import { professionalPath } from '~/utils/doctorPath'
 import { useUmami } from '~/composables/useUmamiTracking'
@@ -179,6 +187,12 @@ const hiddenProfessionalCount = computed(() => Math.max(0, professionals.value.l
 
 // In script rather than the template: i18n/cleanUnusedLocaleKeys.js only sees template t() calls with no second argument.
 const moreProfessionalsText = computed(() => t('search.moreProfessionals', { n: hiddenProfessionalCount.value }))
+
+/** Shown only while results are sorted by distance. Straight-line, so the wording says so. */
+const distanceText = computed(() => {
+    const meters = props.result.distanceMeters
+    return meters === undefined ? '' : t('search.distanceAway', { distance: formatDistance(meters, locale.value) })
+})
 
 const detailsRoute = computed(() => facilityPath(props.result))
 </script>

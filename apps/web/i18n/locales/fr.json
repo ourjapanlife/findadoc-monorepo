@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "Politique de confidentialité",
     "subheading": "Ce que nous collectons, pourquoi, avec qui nous le partageons, et comment nous contacter au sujet de vos informations.",
-    "date": "Date d'entrée en vigueur : 16 novembre 2026",
+    "date": "Date d'entrée en vigueur : 27 novembre 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Qui nous sommes",
@@ -135,10 +135,11 @@
       "collect": {
         "heading": "2. Informations que nous collectons",
         "p1": "Recherche dans l'annuaire : vous pouvez chercher sans compte. Nous recevons vos termes de recherche, vos filtres et votre langue. Votre langue, votre thème et vos filtres récents sont enregistrés dans votre propre navigateur.",
-        "p2": "Suggestion d'une clinique ou d'un médecin : nous recevons ce que vous saisissez, par exemple un lien Google Maps, des noms, les langues parlées et des remarques. N'y mettez pas d'informations sur votre propre santé.",
-        "p3": "Prise de rendez-vous : lorsqu'une clinique reçoit des demandes de rendez-vous via Find a Doc, Japan, nous collectons ce que son formulaire demande. Cela peut inclure votre nom, votre adresse e-mail, votre numéro de téléphone, votre date de naissance, votre genre, le motif de consultation, l'horaire choisi et des fichiers comme une photo de vous et de votre carte d'assurance maladie ou de votre certificat d'éligibilité. La prise de rendez-vous n'est proposée qu'aux personnes qui se trouvent au Japon au moment de l'envoi de la demande.",
-        "p4": "Le motif de consultation est une information de santé, que l'APPI considère comme une information personnelle nécessitant une attention particulière. Nous ne la collectons que lorsque vous envoyez vous-même le formulaire, après avoir coché une case par laquelle vous consentez à ce que nous la collections et la transmettions à la clinique choisie. Nous enregistrons la date et l'heure de ce consentement.",
-        "p5": "Comptes et informations techniques : les modérateurs et le personnel des cliniques se connectent via Auth0, qui nous transmet leur nom, leur adresse e-mail et un identifiant de compte. Nos serveurs enregistrent les adresses IP et le détail des requêtes pour assurer le fonctionnement du service et prévenir les abus."
+        "p2": "Cliniques près de chez vous : si vous touchez « Près de moi », votre navigateur vous demande si vous voulez partager votre position. Elle sert, sur votre appareil, à trier les cliniques par distance. Nous ne la recevons pas et elle n'est pas enregistrée. Si la carte est ouverte, elle se déplace vers votre secteur : Google Maps charge alors la carte de ce secteur, comme pour tout endroit que vous affichez sur la carte.",
+        "p3": "Suggestion d'une clinique ou d'un médecin : nous recevons ce que vous saisissez, par exemple un lien Google Maps, des noms, les langues parlées et des remarques. N'y mettez pas d'informations sur votre propre santé.",
+        "p4": "Prise de rendez-vous : lorsqu'une clinique reçoit des demandes de rendez-vous via Find a Doc, Japan, nous collectons ce que son formulaire demande. Cela peut inclure votre nom, votre adresse e-mail, votre numéro de téléphone, votre date de naissance, votre genre, le motif de consultation, l'horaire choisi et des fichiers comme une photo de vous et de votre carte d'assurance maladie ou de votre certificat d'éligibilité. La prise de rendez-vous n'est proposée qu'aux personnes qui se trouvent au Japon au moment de l'envoi de la demande.",
+        "p5": "Le motif de consultation est une information de santé, que l'APPI considère comme une information personnelle nécessitant une attention particulière. Nous ne la collectons que lorsque vous envoyez vous-même le formulaire, après avoir coché une case par laquelle vous consentez à ce que nous la collections et la transmettions à la clinique choisie. Nous enregistrons la date et l'heure de ce consentement.",
+        "p6": "Comptes et informations techniques : les modérateurs et le personnel des cliniques se connectent via Auth0, qui nous transmet leur nom, leur adresse e-mail et un identifiant de compte. Nos serveurs enregistrent les adresses IP et le détail des requêtes pour assurer le fonctionnement du service et prévenir les abus."
       },
       "use": {
         "heading": "3. Comment nous les utilisons",
@@ -911,6 +912,14 @@
     "mapUnavailable": "La carte n’a pas pu être chargée.",
     "mapUnavailableHint": "Les autres résultats ne sont pas affectés.",
     "notOnMap": "Tous les résultats sont sur la carte | 1 résultat n’est pas encore sur la carte | {n} résultats ne sont pas encore sur la carte",
+    "nearMe": "Près de moi",
+    "nearMeLocating": "Recherche de votre position… Elle reste sur cet appareil.",
+    "nearMeSorted": "Les plus proches d'abord, à vol d'oiseau. Votre position reste sur cet appareil.",
+    "nearMeDenied": "La localisation est désactivée pour ce site. Activez-la dans les paramètres du site de votre navigateur, ou choisissez une zone.",
+    "nearMeUnavailable": "Nous n'avons pas pu trouver votre position. Réessayez, ou choisissez une zone.",
+    "nearMeChooseArea": "Choisir une zone",
+    "distanceAway": "à {distance}",
+    "youAreHere": "Vous êtes ici",
     "payment": "Paiement",
     "clinicLanguagesCaveat": "La clinique indique pouvoir vous accueillir dans ces langues. Tous les médecins ne les parlent pas forcément : demandez-le en contactant la clinique."
   },

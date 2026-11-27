@@ -7,7 +7,7 @@ export type PrivacySection = { id: string, paragraphs: number, anchor?: string }
 
 export const PRIVACY_SECTIONS: readonly PrivacySection[] = [
     { id: 'whoWeAre', paragraphs: 1 },
-    { id: 'collect', paragraphs: 5 },
+    { id: 'collect', paragraphs: 6 },
     { id: 'use', paragraphs: 1 },
     { id: 'share', paragraphs: 4 },
     { id: 'retention', paragraphs: 3 },

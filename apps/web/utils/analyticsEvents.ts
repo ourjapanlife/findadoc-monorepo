@@ -25,6 +25,7 @@ const CONTACT_SURFACE = ['search_details', 'clinic'] as const
 const FILTER_FROM = ['filter_bar', 'empty_results'] as const
 const RESULT_OUTCOME = ['empty', 'some'] as const
 const MAP_STATE = ['shown', 'hidden'] as const
+const NEAR_ME_RESULT = ['located', 'denied', 'unavailable', 'off'] as const
 const BACK_FROM = ['clinic', 'doctor'] as const
 const RELATED_KIND = ['specialty', 'language'] as const
 const RELATED_FROM = ['clinic', 'doctor'] as const
@@ -97,6 +98,10 @@ export const eventCatalog = {
         state: MAP_STATE
     },
     'Map failed': null,
+    // The outcome only. The position itself is never an event property.
+    'Near me': {
+        result: NEAR_ME_RESULT
+    },
     'Map pin clicked': null,
     'Call clicked': {
         surface: CONTACT_SURFACE

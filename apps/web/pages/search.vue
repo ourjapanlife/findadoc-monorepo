@@ -93,9 +93,12 @@ function applyQuery(query: LocationQuery) {
     if (!sameList(searchResultsStore.selectedLanguages, state.languages)) {
         searchResultsStore.selectedLanguages = state.languages
     }
+    if (searchResultsStore.sort !== state.sort) {
+        searchResultsStore.sort = state.sort
+    }
     searchResultsStore.activeFacilityId = state.facilityId
 
-    // After filters: the store resets the page to 1 whenever they change.
+    // After filters and sort: the store resets the page to 1 whenever they change.
     const page = state.page ?? 1
     if (searchResultsStore.currentPage !== page) {
         searchResultsStore.currentPage = page
@@ -106,7 +109,8 @@ function queryFromStore(): LocationQueryRaw {
     return buildSearchQuery({
         ...searchResultsStore.filters,
         facilityId: searchResultsStore.activeFacilityId,
-        page: searchResultsStore.currentPage
+        page: searchResultsStore.currentPage,
+        sort: searchResultsStore.sort
     })
 }
 
