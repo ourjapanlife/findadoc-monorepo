@@ -166,7 +166,7 @@
   "privacyPage": {
     "heading": "Informativa sulla privacy",
     "subheading": "Cosa raccogliamo, perché, con chi lo condividiamo e come contattarci riguardo alle tue informazioni.",
-    "date": "Data di entrata in vigore: 16 novembre 2026",
+    "date": "Data di entrata in vigore: 27 novembre 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Chi siamo",
@@ -175,10 +175,11 @@
       "collect": {
         "heading": "2. Informazioni che raccogliamo",
         "p1": "Ricerca nella directory: puoi cercare senza account. Riceviamo i termini di ricerca, i filtri e la lingua. La tua lingua, il tema e i filtri recenti vengono salvati nel tuo browser.",
-        "p2": "Suggerimento di una clinica o di un medico: riceviamo ciò che inserisci, come un link di Google Maps, nomi, lingue parlate e note. Non includere informazioni sulla tua salute.",
-        "p3": "Prenotazione: quando una clinica riceve richieste di prenotazione tramite Find a Doc, Japan, raccogliamo ciò che il suo modulo richiede. Può includere nome, indirizzo e-mail, numero di telefono, data di nascita, genere, motivo della visita, orario scelto e file come una tua foto e quella della tessera di assicurazione sanitaria o del certificato di idoneità. La prenotazione è offerta solo a chi si trova in Giappone al momento dell'invio della richiesta.",
-        "p4": "Il motivo della visita è un'informazione sulla salute, che l'APPI considera un'informazione personale che richiede particolare attenzione. La raccogliamo solo quando invii tu stesso il modulo, dopo aver spuntato una casella con cui acconsenti alla raccolta e alla sua trasmissione alla clinica scelta. Registriamo il momento in cui hai dato il consenso.",
-        "p5": "Account e informazioni tecniche: moderatori e personale delle cliniche accedono tramite Auth0, che ci fornisce nome, indirizzo e-mail e un identificativo dell'account. I nostri server registrano indirizzi IP e dettagli delle richieste per mantenere attivo il servizio e prevenire abusi."
+        "p2": "Cliniche vicino a te: se tocchi «Vicino a me», il browser ti chiede se vuoi condividere la tua posizione. Viene usata sul tuo dispositivo per ordinare le cliniche per distanza. Non la riceviamo e non viene salvata. Se la mappa è aperta, si sposta nella tua zona, quindi Google Maps carica la mappa di quella zona, come per qualsiasi luogo che visualizzi sulla mappa.",
+        "p3": "Suggerimento di una clinica o di un medico: riceviamo ciò che inserisci, come un link di Google Maps, nomi, lingue parlate e note. Non includere informazioni sulla tua salute.",
+        "p4": "Prenotazione: quando una clinica riceve richieste di prenotazione tramite Find a Doc, Japan, raccogliamo ciò che il suo modulo richiede. Può includere nome, indirizzo e-mail, numero di telefono, data di nascita, genere, motivo della visita, orario scelto e file come una tua foto e quella della tessera di assicurazione sanitaria o del certificato di idoneità. La prenotazione è offerta solo a chi si trova in Giappone al momento dell'invio della richiesta.",
+        "p5": "Il motivo della visita è un'informazione sulla salute, che l'APPI considera un'informazione personale che richiede particolare attenzione. La raccogliamo solo quando invii tu stesso il modulo, dopo aver spuntato una casella con cui acconsenti alla raccolta e alla sua trasmissione alla clinica scelta. Registriamo il momento in cui hai dato il consenso.",
+        "p6": "Account e informazioni tecniche: moderatori e personale delle cliniche accedono tramite Auth0, che ci fornisce nome, indirizzo e-mail e un identificativo dell'account. I nostri server registrano indirizzi IP e dettagli delle richieste per mantenere attivo il servizio e prevenire abusi."
       },
       "use": {
         "heading": "3. Come le usiamo",
@@ -911,6 +912,14 @@
     "mapUnavailable": "Impossibile caricare la mappa.",
     "mapUnavailableHint": "Gli altri risultati non sono interessati.",
     "notOnMap": "Tutti i risultati sono sulla mappa | 1 risultato non è ancora sulla mappa | {n} risultati non sono ancora sulla mappa",
+    "nearMe": "Vicino a me",
+    "nearMeLocating": "Ricerca della tua posizione… Resta su questo dispositivo.",
+    "nearMeSorted": "Prima i più vicini, in linea d'aria. La tua posizione resta su questo dispositivo.",
+    "nearMeDenied": "La posizione è disattivata per questo sito. Attivala nelle impostazioni del sito del browser, oppure scegli una zona.",
+    "nearMeUnavailable": "Non è stato possibile trovare la tua posizione. Riprova, oppure scegli una zona.",
+    "nearMeChooseArea": "Scegli una zona",
+    "distanceAway": "a {distance}",
+    "youAreHere": "Tu sei qui",
     "payment": "Pagamento",
     "clinicLanguagesCaveat": "Sono le lingue che la clinica dichiara di supportare. Non tutti i medici potrebbero parlarle: chiedi quando contatti la clinica."
   },

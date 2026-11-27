@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, watch, type Ref } from 'vue'
 import type { SearchFilters } from '~/utils/searchDirectory'
 import type { JapanRegion } from '~/utils/japanRegions'
+import type { SearchSort } from '~/utils/nearMe'
 import type { Locale, Specialty, SpecialtyCategory } from '@findadoc/graphql'
 
 /** Results shown per "load more" step. */
@@ -28,13 +29,19 @@ export const useSearchResultsStore = defineStore('searchResultsStore', () => {
         languages: selectedLanguages.value
     }))
 
+    /*
+     * How results are ordered, apart from the filters: it narrows nothing, so "Clear filters"
+     * leaves it alone. Undefined is directory order.
+     */
+    const sort: Ref<SearchSort | undefined> = ref()
+
     const currentPage = ref(1)
 
     /*
-     * A new filter combination starts from the first page. Sync, so the reset lands before
-     * search.vue restores `page` from a link; a queued reset would undo `?page=2`.
+     * A new filter combination or order starts from the first page. Sync, so the reset lands
+     * before search.vue restores `page` from a link; a queued reset would undo `?page=2`.
      */
-    watch(filters, () => {
+    watch([filters, sort], () => {
         currentPage.value = 1
     }, { flush: 'sync' })
 
@@ -66,6 +73,7 @@ export const useSearchResultsStore = defineStore('searchResultsStore', () => {
         selectedLanguages,
         filters,
         clearFilters,
+        sort,
         currentPage,
         activeFacilityId,
         setActiveFacility,

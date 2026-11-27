@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "Chính sách quyền riêng tư",
     "subheading": "Chúng tôi thu thập gì, vì sao, chia sẻ với ai, và cách liên hệ với chúng tôi về thông tin của bạn.",
-    "date": "Ngày hiệu lực: 16 tháng 11 năm 2026",
+    "date": "Ngày hiệu lực: 27 tháng 11 năm 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Chúng tôi là ai",
@@ -135,10 +135,11 @@
       "collect": {
         "heading": "2. Thông tin chúng tôi thu thập",
         "p1": "Tìm kiếm danh bạ: bạn có thể tìm kiếm mà không cần tài khoản. Chúng tôi nhận từ khóa, bộ lọc và ngôn ngữ của bạn. Ngôn ngữ, giao diện và các bộ lọc gần đây được lưu trong chính trình duyệt của bạn.",
-        "p2": "Đề xuất phòng khám hoặc bác sĩ: chúng tôi nhận những gì bạn nhập, như liên kết Google Maps, tên, ngôn ngữ sử dụng và ghi chú. Vui lòng không đưa thông tin sức khỏe của chính bạn.",
-        "p3": "Đặt lịch hẹn: khi một phòng khám nhận yêu cầu đặt lịch qua Find a Doc, Japan, chúng tôi thu thập những gì mẫu của họ yêu cầu. Thông tin này có thể gồm họ tên, email, số điện thoại, ngày sinh, giới tính, lý do khám, thời gian bạn chọn, và các tệp như ảnh của bạn và ảnh thẻ bảo hiểm y tế hoặc giấy xác nhận tư cách. Dịch vụ đặt lịch chỉ dành cho người đang ở Nhật Bản tại thời điểm gửi yêu cầu.",
-        "p4": "Lý do khám là thông tin sức khỏe, được APPI coi là thông tin cá nhân cần lưu ý đặc biệt. Chúng tôi chỉ thu thập khi bạn tự gửi mẫu, sau khi bạn đánh dấu ô đồng ý để chúng tôi thu thập và chuyển thông tin này cho phòng khám bạn đã chọn. Chúng tôi ghi lại thời điểm bạn đồng ý.",
-        "p5": "Tài khoản và thông tin kỹ thuật: người kiểm duyệt và nhân viên phòng khám đăng nhập qua Auth0, cho chúng tôi biết tên, email và mã định danh tài khoản. Máy chủ ghi lại địa chỉ IP và chi tiết yêu cầu để duy trì dịch vụ và ngăn lạm dụng."
+        "p2": "Phòng khám gần bạn: khi bạn chạm vào Gần tôi, trình duyệt sẽ hỏi bạn có muốn chia sẻ vị trí không. Vị trí được dùng trên thiết bị của bạn để sắp xếp phòng khám theo khoảng cách. Chúng tôi không nhận được vị trí đó, và vị trí không được lưu. Nếu bản đồ đang mở, bản đồ sẽ di chuyển đến khu vực của bạn, nên Google Maps sẽ tải bản đồ của khu vực đó, giống như với bất kỳ nơi nào bạn xem trên bản đồ.",
+        "p3": "Đề xuất phòng khám hoặc bác sĩ: chúng tôi nhận những gì bạn nhập, như liên kết Google Maps, tên, ngôn ngữ sử dụng và ghi chú. Vui lòng không đưa thông tin sức khỏe của chính bạn.",
+        "p4": "Đặt lịch hẹn: khi một phòng khám nhận yêu cầu đặt lịch qua Find a Doc, Japan, chúng tôi thu thập những gì mẫu của họ yêu cầu. Thông tin này có thể gồm họ tên, email, số điện thoại, ngày sinh, giới tính, lý do khám, thời gian bạn chọn, và các tệp như ảnh của bạn và ảnh thẻ bảo hiểm y tế hoặc giấy xác nhận tư cách. Dịch vụ đặt lịch chỉ dành cho người đang ở Nhật Bản tại thời điểm gửi yêu cầu.",
+        "p5": "Lý do khám là thông tin sức khỏe, được APPI coi là thông tin cá nhân cần lưu ý đặc biệt. Chúng tôi chỉ thu thập khi bạn tự gửi mẫu, sau khi bạn đánh dấu ô đồng ý để chúng tôi thu thập và chuyển thông tin này cho phòng khám bạn đã chọn. Chúng tôi ghi lại thời điểm bạn đồng ý.",
+        "p6": "Tài khoản và thông tin kỹ thuật: người kiểm duyệt và nhân viên phòng khám đăng nhập qua Auth0, cho chúng tôi biết tên, email và mã định danh tài khoản. Máy chủ ghi lại địa chỉ IP và chi tiết yêu cầu để duy trì dịch vụ và ngăn lạm dụng."
       },
       "use": {
         "heading": "3. Cách chúng tôi sử dụng",
@@ -911,6 +912,14 @@
     "mapUnavailable": "Không tải được bản đồ.",
     "mapUnavailableHint": "Các kết quả còn lại không bị ảnh hưởng.",
     "notOnMap": "Tất cả kết quả đều có trên bản đồ | 1 kết quả chưa có trên bản đồ | {n} kết quả chưa có trên bản đồ",
+    "nearMe": "Gần tôi",
+    "nearMeLocating": "Đang tìm vị trí của bạn… Vị trí chỉ ở trên thiết bị này.",
+    "nearMeSorted": "Gần nhất trước, theo đường chim bay. Vị trí của bạn chỉ ở trên thiết bị này.",
+    "nearMeDenied": "Vị trí đang tắt cho trang này. Hãy bật trong cài đặt trang web của trình duyệt, hoặc chọn một khu vực.",
+    "nearMeUnavailable": "Chúng tôi không tìm được vị trí của bạn. Hãy thử lại, hoặc chọn một khu vực.",
+    "nearMeChooseArea": "Chọn khu vực",
+    "distanceAway": "Cách {distance}",
+    "youAreHere": "Bạn ở đây",
     "payment": "Thanh toán",
     "clinicLanguagesCaveat": "Đây là các ngôn ngữ phòng khám cho biết có thể hỗ trợ. Không phải bác sĩ nào cũng nói được, vì vậy hãy hỏi khi liên hệ phòng khám."
   },

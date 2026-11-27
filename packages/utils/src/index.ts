@@ -64,6 +64,7 @@ export {
     isValidWebsite
 } from './string.js'
 export type { OptionalsRemoved } from './types.js'
+export { distanceMeters, type GeoPoint } from './geo.js'
 export { hasUsableMapPin } from './mapPin.js'
 export {
     cleanHoursRepeat,

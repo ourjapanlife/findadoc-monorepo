@@ -126,7 +126,7 @@
   "privacyPage": {
     "heading": "Datenschutzerklärung",
     "subheading": "Was wir erheben, warum, an wen wir es weitergeben und wie Sie uns zu Ihren Daten erreichen.",
-    "date": "Gültig ab: 16. November 2026",
+    "date": "Gültig ab: 27. November 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Wer wir sind",
@@ -135,10 +135,11 @@
       "collect": {
         "heading": "2. Welche Daten wir erheben",
         "p1": "Suche im Verzeichnis: Sie können ohne Konto suchen. Wir erhalten Ihre Suchbegriffe, Filter und Sprache. Ihre Sprache, Ihr Design und Ihre letzten Filter werden in Ihrem eigenen Browser gespeichert.",
-        "p2": "Vorschlag einer Praxis oder eines Arztes: Wir erhalten Ihre Eingaben, etwa einen Google-Maps-Link, Namen, gesprochene Sprachen und Notizen. Bitte geben Sie keine Angaben zu Ihrer eigenen Gesundheit an.",
-        "p3": "Terminanfrage: Wenn eine Praxis Terminanfragen über Find a Doc, Japan annimmt, erheben wir, was ihr Formular abfragt. Dazu können Ihr Name, Ihre E-Mail-Adresse, Telefonnummer, Ihr Geburtsdatum, Ihr Geschlecht, der Besuchsgrund, die gewählte Zeit sowie Dateien wie ein Foto von Ihnen und von Ihrer Krankenversicherungskarte oder Berechtigungsbescheinigung gehören. Terminanfragen bieten wir nur Personen an, die sich beim Absenden in Japan befinden.",
-        "p4": "Der Besuchsgrund ist eine Gesundheitsangabe, die das APPI als besonders schutzbedürftige personenbezogene Information einstuft. Wir erheben sie nur, wenn Sie das Formular selbst absenden, nachdem Sie per Häkchen eingewilligt haben, dass wir sie erheben und an die gewählte Praxis weitergeben. Wir speichern, wann Sie diese Einwilligung erteilt haben.",
-        "p5": "Konten und technische Daten: Moderatoren und Praxispersonal melden sich über Auth0 an, wodurch wir Name, E-Mail-Adresse und eine Kontokennung erhalten. Unsere Server protokollieren IP-Adressen und Anfragedetails, um den Dienst zu betreiben und Missbrauch zu verhindern."
+        "p2": "Kliniken in Ihrer Nähe: Wenn Sie auf „In meiner Nähe“ tippen, fragt Ihr Browser, ob Sie Ihren Standort teilen möchten. Er wird auf Ihrem Gerät verwendet, um Kliniken nach Entfernung zu sortieren. Wir erhalten ihn nicht, und er wird nicht gespeichert. Ist die Karte geöffnet, bewegt sie sich zu Ihrer Umgebung, sodass Google Maps die Karte dieser Umgebung lädt, wie bei jedem Ort, den Sie auf der Karte ansehen.",
+        "p3": "Vorschlag einer Praxis oder eines Arztes: Wir erhalten Ihre Eingaben, etwa einen Google-Maps-Link, Namen, gesprochene Sprachen und Notizen. Bitte geben Sie keine Angaben zu Ihrer eigenen Gesundheit an.",
+        "p4": "Terminanfrage: Wenn eine Praxis Terminanfragen über Find a Doc, Japan annimmt, erheben wir, was ihr Formular abfragt. Dazu können Ihr Name, Ihre E-Mail-Adresse, Telefonnummer, Ihr Geburtsdatum, Ihr Geschlecht, der Besuchsgrund, die gewählte Zeit sowie Dateien wie ein Foto von Ihnen und von Ihrer Krankenversicherungskarte oder Berechtigungsbescheinigung gehören. Terminanfragen bieten wir nur Personen an, die sich beim Absenden in Japan befinden.",
+        "p5": "Der Besuchsgrund ist eine Gesundheitsangabe, die das APPI als besonders schutzbedürftige personenbezogene Information einstuft. Wir erheben sie nur, wenn Sie das Formular selbst absenden, nachdem Sie per Häkchen eingewilligt haben, dass wir sie erheben und an die gewählte Praxis weitergeben. Wir speichern, wann Sie diese Einwilligung erteilt haben.",
+        "p6": "Konten und technische Daten: Moderatoren und Praxispersonal melden sich über Auth0 an, wodurch wir Name, E-Mail-Adresse und eine Kontokennung erhalten. Unsere Server protokollieren IP-Adressen und Anfragedetails, um den Dienst zu betreiben und Missbrauch zu verhindern."
       },
       "use": {
         "heading": "3. Wofür wir sie nutzen",
@@ -911,6 +912,14 @@
     "mapUnavailable": "Die Karte konnte nicht geladen werden.",
     "mapUnavailableHint": "Die übrigen Ergebnisse sind davon nicht betroffen.",
     "notOnMap": "Alle Ergebnisse sind auf der Karte | 1 Ergebnis ist noch nicht auf der Karte | {n} Ergebnisse sind noch nicht auf der Karte",
+    "nearMe": "In meiner Nähe",
+    "nearMeLocating": "Ihr Standort wird ermittelt… Er bleibt auf diesem Gerät.",
+    "nearMeSorted": "Nächste zuerst, nach Luftlinie. Ihr Standort bleibt auf diesem Gerät.",
+    "nearMeDenied": "Der Standort ist für diese Website deaktiviert. Aktivieren Sie ihn in den Website-Einstellungen Ihres Browsers oder wählen Sie eine Region.",
+    "nearMeUnavailable": "Wir konnten Ihren Standort nicht ermitteln. Versuchen Sie es erneut oder wählen Sie eine Region.",
+    "nearMeChooseArea": "Region wählen",
+    "distanceAway": "{distance} entfernt",
+    "youAreHere": "Ihr Standort",
     "payment": "Zahlung",
     "clinicLanguagesCaveat": "Diese Sprachen unterstützt die Klinik nach eigenen Angaben. Nicht jede Ärztin und jeder Arzt spricht sie. Fragen Sie nach, wenn Sie die Klinik kontaktieren."
   },

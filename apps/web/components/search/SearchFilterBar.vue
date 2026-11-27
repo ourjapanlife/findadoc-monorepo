@@ -13,13 +13,21 @@
                 >
                     {{ countText }}
                 </p>
-                <div class="flex shrink-0 items-center gap-2 portrait:ml-auto">
+                <!--
+                    Three equal columns on a phone, so a long translation wraps inside its own button
+                    instead of pushing the last one off screen.
+                -->
+                <div
+                    class="flex shrink-0 items-center gap-2 portrait:grid portrait:w-full portrait:grid-cols-3
+                           portrait:items-stretch"
+                >
                     <button
                         type="button"
                         data-testid="search-filters-toggle"
                         :aria-expanded="filtersOpen ?? false"
                         aria-controls="search-filters"
-                        class="btn btn-secondary btn-sm"
+                        class="btn btn-secondary btn-sm portrait:h-auto portrait:min-h-10 portrait:gap-1.5 portrait:px-2
+                               portrait:py-1.5 portrait:text-sm/tight portrait:whitespace-normal"
                         @click="toggleFilters"
                     >
                         <SVGFiltersIcon
@@ -33,16 +41,57 @@
                                    text-xs font-bold text-primary-text-inverted"
                         >{{ activeFilterCount }}</span>
                         <SVGAccordionArrow
-                            class="size-3 shrink-0 fill-current transition-transform"
+                            class="size-3 shrink-0 fill-current transition-transform portrait:hidden"
                             :class="filtersOpen ? 'rotate-180' : ''"
                             aria-hidden="true"
                         />
+                    </button>
+                    <!--
+                        Near me sorts the results; it filters nothing. The browser is asked for a
+                        position only from this tap, never on page load.
+                    -->
+                    <button
+                        v-if="nearMe.isSupported"
+                        type="button"
+                        data-testid="search-near-me"
+                        :aria-pressed="isSortedByDistance"
+                        :aria-busy="isLocating"
+                        aria-describedby="search-near-me-status"
+                        class="btn btn-secondary btn-sm portrait:h-auto portrait:min-h-10 portrait:gap-1.5 portrait:px-2
+                               portrait:py-1.5 portrait:text-sm/tight portrait:whitespace-normal"
+                        @click="toggleNearMe"
+                    >
+                        <svg
+                            class="size-4 shrink-0 stroke-current"
+                            :class="isLocating ? 'animate-pulse' : ''"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="7"
+                            />
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="2.5"
+                                :class="isSortedByDistance ? 'fill-current' : ''"
+                            />
+                            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+                        </svg>
+                        {{ t('search.nearMe') }}
                     </button>
                     <button
                         type="button"
                         data-testid="search-map-toggle"
                         :aria-pressed="showMap"
-                        class="btn btn-secondary btn-sm"
+                        class="btn btn-secondary btn-sm portrait:h-auto portrait:min-h-10 portrait:gap-1.5 portrait:px-2
+                               portrait:py-1.5 portrait:text-sm/tight portrait:whitespace-normal"
                         @click="toggleMap"
                     >
                         <SVGMapPinIcon
@@ -52,6 +101,35 @@
                         {{ showMap ? t('search.hideMap') : t('search.showMap') }}
                     </button>
                 </div>
+            </div>
+
+            <!--
+                What Near me is doing, and the privacy line. Polite live region: it reports
+                "finding", "sorted", or why it could not, without moving focus.
+            -->
+            <div
+                id="search-near-me-status"
+                data-testid="search-near-me-status"
+                aria-live="polite"
+                class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm"
+                :class="nearMeMessage ? '' : 'sr-only'"
+            >
+                <p
+                    v-if="nearMeMessage"
+                    class="m-0"
+                    :class="nearMeFailed ? 'text-primary-text' : 'text-primary-text-muted'"
+                >
+                    {{ nearMeMessage }}
+                </p>
+                <button
+                    v-if="nearMeFailed"
+                    type="button"
+                    data-testid="search-near-me-choose-area"
+                    class="font-medium text-primary underline-offset-2 hover:underline"
+                    @click="chooseAreaInstead"
+                >
+                    {{ t('search.nearMeChooseArea') }}
+                </button>
             </div>
 
             <!-- What the collapsed bar is filtering on, so the visitor does not have to open it to check. -->
@@ -259,12 +337,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SVGAccordionArrow from '~/assets/icons/accordion-arrow.svg'
 import SVGFiltersIcon from '~/assets/icons/equalizer-icon.svg'
 import SVGMapPinIcon from '~/assets/icons/map-pin-icon.svg'
+import { NEAR_ME_STATUS, useNearMeStore } from '~/stores/nearMeStore'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
+import { NEAR_ME_SORT } from '~/utils/nearMe'
 import { useSearchDirectory } from '~/composables/useSearchDirectory'
 import { useSpecialtiesStore } from '~/stores/specialtiesStore'
 import { localeDisplayOptions } from '~/stores/localeStore'
@@ -291,7 +371,8 @@ const emit = defineEmits<{ (e: 'update:showMap', value: boolean): void }>()
 
 const { t, locale } = useI18n()
 const searchResultsStore = useSearchResultsStore()
-const { isLoading, hasLoadError, totalResults } = useSearchDirectory()
+const { isLoading, hasLoadError, totalResults, isSortedByDistance } = useSearchDirectory()
+const nearMe = useNearMeStore()
 const specialtiesStore = useSpecialtiesStore()
 const { track } = useUmami()
 
@@ -311,8 +392,17 @@ const summaryClass = computed(() => {
     return filtersOpen.value ? 'hidden' : ''
 })
 
-onMounted(() => {
+onMounted(async () => {
     filtersOpen.value = window.matchMedia('(orientation: landscape)').matches
+
+    /*
+     * A `?sort=near` link sorts on arrival only when the browser already allows location here,
+     * so asking shows no prompt. Anyone else gets the button, and the prompt comes from a tap.
+     */
+    await nearMe.checkPermission()
+    if (searchResultsStore.sort === NEAR_ME_SORT && nearMe.permissionGranted && !nearMe.position) {
+        await nearMe.locate()
+    }
 })
 
 /*
@@ -420,6 +510,48 @@ function toggleMap() {
     const next = !props.showMap
     emit('update:showMap', next)
     track('Map toggled', { state: next ? 'shown' : 'hidden' })
+}
+
+const isLocating = computed(() => nearMe.status === NEAR_ME_STATUS.LOCATING)
+const nearMeFailed = computed(() => nearMe.status === NEAR_ME_STATUS.DENIED
+  || nearMe.status === NEAR_ME_STATUS.UNAVAILABLE)
+
+const nearMeMessage = computed(() => {
+    switch (nearMe.status) {
+        case NEAR_ME_STATUS.LOCATING: return t('search.nearMeLocating')
+        case NEAR_ME_STATUS.DENIED: return t('search.nearMeDenied')
+        case NEAR_ME_STATUS.UNAVAILABLE: return t('search.nearMeUnavailable')
+        default: return isSortedByDistance.value ? t('search.nearMeSorted') : ''
+    }
+})
+
+/**
+ * On: ask for a position (or reuse the one from earlier in this visit) and sort by it.
+ * Off: back to directory order. The position stays in memory, so turning it on again is instant.
+ */
+async function toggleNearMe() {
+    // Not disabled while waiting, so focus stays on the button; a second tap just waits too.
+    if (isLocating.value) return
+    if (isSortedByDistance.value) {
+        searchResultsStore.sort = undefined
+        track('Near me', { result: 'off' })
+        return
+    }
+
+    const position = nearMe.position ?? await nearMe.locate()
+    if (position) {
+        searchResultsStore.sort = NEAR_ME_SORT
+        track('Near me', { result: 'located' })
+        return
+    }
+    track('Near me', { result: nearMe.status === NEAR_ME_STATUS.DENIED ? 'denied' : 'unavailable' })
+}
+
+/** Without a location, the area filter is the way to find what is close. */
+async function chooseAreaInstead() {
+    filtersOpen.value = true
+    await nextTick()
+    document.getElementById('search-region')?.focus()
 }
 
 function onFilterChange() {

@@ -1,3 +1,4 @@
+import { distanceMeters } from '@findadoc/utils'
 import type { MapsPreviewTarget } from './mapsLink.js'
 
 export type FacilityMapIdentity = {
@@ -62,7 +63,7 @@ function pinsMatch(
     const left = readPin(leftLat, leftLng)
     const right = readPin(rightLat, rightLng)
     if (!left || !right) { return false }
-    return distanceMeters(left.latitude, left.longitude, right.latitude, right.longitude) <= PIN_MATCH_METERS
+    return distanceMeters(left, right) <= PIN_MATCH_METERS
 }
 
 function readPin(
@@ -73,14 +74,4 @@ function readPin(
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) { return null }
     if (latitude === 0 && longitude === 0) { return null }
     return { latitude, longitude }
-}
-
-function distanceMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
-    const radians = Math.PI / 180
-    const dLat = (lat2 - lat1) * radians
-    const dLng = (lng2 - lng1) * radians
-    const lat = ((lat1 + lat2) / 2) * radians
-    const x = dLng * Math.cos(lat) * 6371000
-    const y = dLat * 6371000
-    return Math.hypot(x, y)
 }

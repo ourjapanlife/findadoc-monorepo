@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed } from 'vue'
+import { useNearMeStore } from '~/stores/nearMeStore'
 import { SEARCH_RESULTS_PER_PAGE, useSearchResultsStore } from '~/stores/searchResultsStore'
+import { NEAR_ME_SORT, sortByDistance } from '~/utils/nearMe'
 import { DIRECTORY_GC_TIME_MS, DIRECTORY_STALE_TIME_MS } from '~/utils/queryClient'
 import { queryKeys } from '~/utils/queryKeys'
 import { filterDirectory, type FacilitySearchResult } from '~/utils/searchDirectory'
@@ -18,6 +20,7 @@ import { seedSearchDirectoryFromSnapshot } from '~/utils/searchDirectorySnapshot
  */
 export function useSearchDirectory() {
     const store = useSearchResultsStore()
+    const nearMe = useNearMeStore()
     const queryClient = useQueryClient()
 
     if (import.meta.client) {
@@ -44,8 +47,22 @@ export function useSearchDirectory() {
     const isLoading = computed(() => !hasDirectory.value && (query.isPending.value || query.isFetching.value))
     const hasLoadError = computed(() => !hasDirectory.value && query.isError.value && !query.isFetching.value)
 
-    const searchResultsList = computed<FacilitySearchResult[]>(() =>
+    const filteredResults = computed<FacilitySearchResult[]>(() =>
         filterDirectory(facilities.value, professionals.value, store.filters))
+
+    /** True while results are in distance order: the visitor chose it and a position is known. */
+    const isSortedByDistance = computed(() => store.sort === NEAR_ME_SORT && nearMe.position !== undefined)
+
+    /*
+     * "Near me" orders the filtered results and removes none, so it combines with every filter.
+     * Without a position yet (a shared `?sort=near` link), the directory order stands.
+     */
+    const searchResultsList = computed<FacilitySearchResult[]>(() => {
+        const origin = nearMe.position
+        return isSortedByDistance.value && origin
+            ? sortByDistance(filteredResults.value, origin)
+            : filteredResults.value
+    })
 
     const totalResults = computed(() => searchResultsList.value.length)
 
@@ -92,6 +109,7 @@ export function useSearchDirectory() {
         hasLoadError,
         reloadDirectory,
         searchResultsList,
+        isSortedByDistance,
         paginatedResults,
         totalResults,
         hasMore,

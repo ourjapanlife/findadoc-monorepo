@@ -1,5 +1,6 @@
 import { Locale, Specialty, SpecialtyCategory, type Facility, type HealthcareProfessional } from '@findadoc/graphql'
 import { formatJapanPhone, PHONE_DISPLAY, SPECIALTY_CATEGORY_MEMBERS, toJapanE164 } from '@findadoc/utils'
+import { isSearchSort, type SearchSort } from './nearMe'
 import { parseRegion, regionFromAreaValue, regionOfPrefecture, regionSearchParam, type JapanRegion } from './japanRegions'
 
 /**
@@ -14,6 +15,8 @@ import { parseRegion, regionFromAreaValue, regionOfPrefecture, regionSearchParam
 
 export type FacilitySearchResult = Facility & {
     healthcareProfessionals: HealthcareProfessional[]
+    /** Straight-line meters from the visitor, set only while results are sorted by distance. */
+    distanceMeters?: number
 }
 
 export interface SearchFilters {
@@ -41,6 +44,11 @@ export function effectiveSpecialties(filters: SearchFilters): readonly Specialty
 
 export interface SearchQueryState extends SearchFilters {
     facilityId?: string
+    /**
+     * `near` sorts by distance from the visitor. The URL carries only the choice, never a
+     * position: a shared link sorts for the person who opens it, from where they are.
+     */
+    sort?: SearchSort
     /** 1-based load-more page. Omitted from the URL when it is 1. */
     page?: number
 }
@@ -240,6 +248,11 @@ function parseRegionFor(raw: string | undefined, prefecture: string | undefined)
     return region
 }
 
+function parseSort(raw: string | undefined): SearchSort | undefined {
+    const sort = raw?.toLowerCase()
+    return isSearchSort(sort) ? sort : undefined
+}
+
 function parsePage(raw: string | undefined): number | undefined {
     if (!raw || !/^\d+$/.test(raw)) return undefined
     const page = Number(raw)
@@ -270,7 +283,8 @@ export function parseSearchQuery(query: SearchLocationQuery): SearchQueryState {
         specialties: specialty ? [specialty] : undefined,
         languages: language ? [language] : undefined,
         facilityId: firstString(query.facility),
-        page: parsePage(firstString(query.page))
+        page: parsePage(firstString(query.page)),
+        sort: parseSort(firstString(query.sort))
     }
 }
 
@@ -284,6 +298,7 @@ export function buildSearchQuery(state: SearchQueryState): Record<string, string
     if (state.region) query.region = regionSearchParam(state.region)
     if (state.prefecture) query.prefecture = prefectureSearchParam(state.prefecture)
     if (state.city) query.city = parsePlace(state.city) ?? state.city
+    if (state.sort) query.sort = state.sort
     if ((state.page ?? 1) > 1) query.page = String(state.page)
     if (state.facilityId) query.facility = state.facilityId
 
@@ -301,6 +316,7 @@ export function sameSearchQueryState(left: SearchLocationQuery, right: SearchLoc
       && (a.specialties?.[0] ?? '') === (b.specialties?.[0] ?? '')
       && (a.languages?.[0] ?? '') === (b.languages?.[0] ?? '')
       && a.facilityId === b.facilityId
+      && a.sort === b.sort
       && (a.page ?? 1) === (b.page ?? 1)
 }
 

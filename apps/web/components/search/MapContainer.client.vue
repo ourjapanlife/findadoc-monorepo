@@ -62,6 +62,26 @@
                     </template>
                 </AdvancedMarker>
             </MarkerCluster>
+            <!--
+                The visitor, while results are sorted by distance. Outside the cluster so it is
+                never merged into a count. Moving the map here makes Google load the tiles for
+                this area, which the privacy policy says (collect, p6).
+            -->
+            <AdvancedMarker
+                v-if="visitorPosition"
+                :options="{
+                    position: visitorPosition,
+                    title: t('search.youAreHere'),
+                    zIndex: 2000000,
+                }"
+            >
+                <template #content>
+                    <span
+                        data-testid="map-visitor-position"
+                        class="block size-5 rounded-full border-2 border-primary-bg bg-info shadow-raised"
+                    />
+                </template>
+            </AdvancedMarker>
         </GoogleMap>
         <!--
             A facility without a pin stays in the list but off the map. Drawing it at a default
@@ -85,6 +105,7 @@ import { useI18n } from 'vue-i18n'
 import { GoogleMap, AdvancedMarker, MarkerCluster } from 'vue3-google-map'
 import type { Renderer } from '@googlemaps/markerclusterer'
 import { useUmami } from '~/composables/useUmamiTracking'
+import { useNearMeStore } from '~/stores/nearMeStore'
 import { useSearchResultsStore } from '~/stores/searchResultsStore'
 import { useSearchDirectory } from '~/composables/useSearchDirectory'
 import { useRuntimeConfig } from '#imports'
@@ -108,12 +129,21 @@ const currentLocation = ref(defaultLocation)
 const currentZoom = ref(9)
 
 const searchResultsStore = useSearchResultsStore()
-const { searchResultsList, activeFacility } = useSearchDirectory()
+const { searchResultsList, activeFacility, isSortedByDistance } = useSearchDirectory()
+const nearMe = useNearMeStore()
 const mapRef = ref<{ map: google.maps.Map } | null>(null)
 const markerClusterRef = ref<typeof MarkerCluster | null>(null)
 const runtimeConfig = useRuntimeConfig()
 
 const markerIcons = ref<Record<string, string>>({})
+
+/** Fitting the map to the visitor and this many nearest pins shows the neighbourhood, not all Japan. */
+const NEAREST_PINS_IN_VIEW = 10
+
+const visitorPosition = computed<Location | undefined>(() => {
+    const position = nearMe.position
+    return isSortedByDistance.value && position ? { lat: position.latitude, lng: position.longitude } : undefined
+})
 
 /** Results that can be placed. The rest stay in the list only. */
 const mappedResults = computed(() => mapPins(searchResultsList.value))
@@ -327,7 +357,15 @@ const recenterMap = () => {
     setLocation(center.lat, center.lng)
 }
 
-const getAllCurrentCoordinates = () => mappedResults.value.map(location => location.position)
+/*
+ * In distance order the pins are nearest first, so the view is the visitor plus the nearest
+ * few. Otherwise it fits every result.
+ */
+const getAllCurrentCoordinates = () => {
+    const pins = mappedResults.value.map(location => location.position)
+    const visitor = visitorPosition.value
+    return visitor ? [visitor, ...pins.slice(0, NEAREST_PINS_IN_VIEW)] : pins
+}
 
 const calculateAvgCenter = (coordinates: { lat: number, lng: number }[]): Location => {
     if (coordinates.length === 0) return defaultLocation

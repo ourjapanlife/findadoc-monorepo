@@ -214,7 +214,7 @@
   "privacyPage": {
     "heading": "Kebijakan Privasi",
     "subheading": "Data apa yang kami kumpulkan, mengapa kami mengumpulkannya, dengan siapa kami membagikannya, dan cara menghubungi kami tentang informasi Anda.",
-    "date": "Tanggal berlaku: 16 November 2026",
+    "date": "Tanggal berlaku: 27 November 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Siapa kami",
@@ -223,10 +223,11 @@
       "collect": {
         "heading": "2. Informasi yang kami kumpulkan",
         "p1": "Mencari di direktori: Anda dapat mencari tanpa akun. Kami menerima kata kunci pencarian, filter, dan bahasa Anda. Bahasa, tema, dan filter terakhir Anda disimpan di browser Anda sendiri.",
-        "p2": "Mengusulkan klinik atau dokter: kami menerima apa yang Anda masukkan, seperti tautan Google Maps, nama, bahasa yang digunakan, dan catatan. Mohon jangan mencantumkan informasi kesehatan Anda sendiri.",
-        "p3": "Membuat reservasi janji temu: jika sebuah klinik menerima permintaan reservasi melalui Find a Doc, Japan, kami mengumpulkan data yang diminta dalam formulirnya. Data ini dapat mencakup nama, alamat email, nomor telepon, tanggal lahir, jenis kelamin, alasan kunjungan, waktu yang Anda pilih, serta file seperti foto diri Anda dan foto kartu asuransi kesehatan atau sertifikat konfirmasi kelayakan Anda. Reservasi hanya tersedia bagi orang yang sedang berada di Jepang saat mengirim permintaan.",
-        "p4": "Alasan kunjungan Anda adalah informasi kesehatan, yang oleh APPI digolongkan sebagai informasi pribadi yang memerlukan perhatian khusus. Kami hanya mengumpulkannya jika Anda sendiri mengirim formulir, setelah Anda mencentang kotak persetujuan agar kami mengumpulkannya dan meneruskannya ke klinik yang Anda pilih. Kami mencatat waktu Anda memberikan persetujuan tersebut.",
-        "p5": "Akun dan informasi teknis: moderator dan staf klinik masuk melalui Auth0, yang memberikan nama, alamat email, dan ID akun mereka kepada kami. Server kami mencatat alamat IP dan detail permintaan untuk menjaga layanan tetap berjalan dan mencegah penyalahgunaan."
+        "p2": "Klinik di dekat Anda: jika Anda mengetuk Di dekat saya, browser Anda akan menanyakan apakah Anda ingin membagikan lokasi. Lokasi digunakan di perangkat Anda untuk mengurutkan klinik berdasarkan jarak. Kami tidak menerimanya, dan lokasi tidak disimpan. Jika peta sedang terbuka, peta berpindah ke area Anda, sehingga Google Maps memuat peta area tersebut, sama seperti saat Anda melihat tempat mana pun di peta.",
+        "p3": "Mengusulkan klinik atau dokter: kami menerima apa yang Anda masukkan, seperti tautan Google Maps, nama, bahasa yang digunakan, dan catatan. Mohon jangan mencantumkan informasi kesehatan Anda sendiri.",
+        "p4": "Membuat reservasi janji temu: jika sebuah klinik menerima permintaan reservasi melalui Find a Doc, Japan, kami mengumpulkan data yang diminta dalam formulirnya. Data ini dapat mencakup nama, alamat email, nomor telepon, tanggal lahir, jenis kelamin, alasan kunjungan, waktu yang Anda pilih, serta file seperti foto diri Anda dan foto kartu asuransi kesehatan atau sertifikat konfirmasi kelayakan Anda. Reservasi hanya tersedia bagi orang yang sedang berada di Jepang saat mengirim permintaan.",
+        "p5": "Alasan kunjungan Anda adalah informasi kesehatan, yang oleh APPI digolongkan sebagai informasi pribadi yang memerlukan perhatian khusus. Kami hanya mengumpulkannya jika Anda sendiri mengirim formulir, setelah Anda mencentang kotak persetujuan agar kami mengumpulkannya dan meneruskannya ke klinik yang Anda pilih. Kami mencatat waktu Anda memberikan persetujuan tersebut.",
+        "p6": "Akun dan informasi teknis: moderator dan staf klinik masuk melalui Auth0, yang memberikan nama, alamat email, dan ID akun mereka kepada kami. Server kami mencatat alamat IP dan detail permintaan untuk menjaga layanan tetap berjalan dan mencegah penyalahgunaan."
       },
       "use": {
         "heading": "3. Cara kami menggunakannya",
@@ -917,6 +918,14 @@
     "mapUnavailable": "Peta tidak dapat dimuat.",
     "mapUnavailableHint": "Hasil lainnya tidak terpengaruh.",
     "notOnMap": "Semua hasil ada di peta | 1 hasil belum ada di peta | {n} hasil belum ada di peta",
+    "nearMe": "Di dekat saya",
+    "nearMeLocating": "Mencari lokasi Anda… Lokasi tetap di perangkat ini.",
+    "nearMeSorted": "Terdekat lebih dulu, menurut jarak garis lurus. Lokasi Anda tetap di perangkat ini.",
+    "nearMeDenied": "Lokasi dinonaktifkan untuk situs ini. Aktifkan di pengaturan situs browser Anda, atau pilih wilayah.",
+    "nearMeUnavailable": "Kami tidak dapat menemukan lokasi Anda. Coba lagi, atau pilih wilayah.",
+    "nearMeChooseArea": "Pilih wilayah",
+    "distanceAway": "{distance} dari Anda",
+    "youAreHere": "Lokasi Anda",
     "payment": "Pembayaran",
     "clinicLanguagesCaveat": "Ini adalah bahasa yang menurut klinik dapat dilayani. Belum tentu setiap dokter menguasainya, jadi tanyakan saat menghubungi klinik."
   },

@@ -53,13 +53,20 @@ const professionals = [
     }
 ]
 
-function facility(id: string, nameEn: string, professionalIds: string[], cityEn: string, prefectureEn: string) {
+function facility(
+    id: string,
+    nameEn: string,
+    professionalIds: string[],
+    cityEn: string,
+    prefectureEn: string,
+    pin: { latitude: number, longitude: number }
+) {
     return {
         id,
         nameEn,
         nameJa: `${nameEn} JA`,
-        mapLatitude: 35.6,
-        mapLongitude: 139.7,
+        mapLatitude: pin.latitude,
+        mapLongitude: pin.longitude,
         healthcareProfessionalIds: professionalIds,
         contact: {
             address: {
@@ -82,12 +89,74 @@ function facility(id: string, nameEn: string, professionalIds: string[], cityEn:
     }
 }
 
+// Fake pins in each city, far enough apart that distance order is unambiguous.
+const SHIBUYA_PIN = { latitude: 35.658, longitude: 139.7016 }
+const OSAKA_PIN = { latitude: 34.7055, longitude: 135.4983 }
+const SAPPORO_PIN = { latitude: 43.0618, longitude: 141.3545 }
+
 const facilities = [
-    facility('f1', 'Tokyo Family Clinic', ['p1', 'p2'], 'Shibuya', 'Tokyo'),
-    facility('f2', 'Osaka Dental', ['p3'], 'Kita', 'Osaka'),
+    facility('f1', 'Tokyo Family Clinic', ['p1', 'p2'], 'Shibuya', 'Tokyo', SHIBUYA_PIN),
+    facility('f2', 'Osaka Dental', ['p3'], 'Kita', 'Osaka', OSAKA_PIN),
     // Imported from the Ministry of Health list (#21), so its details credit the ministry.
-    { ...facility('f3', 'Sapporo Skin Clinic', ['p4'], 'Chuo', 'Hokkaido'), source: 'MHLW_MULTILINGUAL_INSTITUTIONS' }
+    {
+        ...facility('f3', 'Sapporo Skin Clinic', ['p4'], 'Chuo', 'Hokkaido', SAPPORO_PIN),
+        source: 'MHLW_MULTILINGUAL_INSTITUTIONS'
+    }
 ]
+
+/** Somewhere in Kyoto: Osaka is nearest, then Tokyo, then Sapporo. */
+const VISITOR_IN_KYOTO = { latitude: 35.0116, longitude: 135.7681 }
+
+type LocationStub = {
+    /** What `navigator.permissions.query` reports before anything is asked. */
+    permission: PermissionState
+    /** The answer to `getCurrentPosition`: a position, or a refusal. */
+    answer: { latitude: number, longitude: number } | 'denied'
+}
+
+/**
+ * Replaces the browser's location and permission APIs, so the same test runs in every engine
+ * and counts how often the page asks. `window.findadocLocationRequests` is that count.
+ */
+async function stubLocation(page: Page, stub: LocationStub) {
+    await page.addInitScript((options: LocationStub) => {
+        const counter = window as unknown as { findadocLocationRequests: number }
+        counter.findadocLocationRequests = 0
+        const geolocation = {
+            getCurrentPosition(
+                success: (position: { coords: { latitude: number, longitude: number } }) => void,
+                failure: (error: { code: number, PERMISSION_DENIED: number }) => void
+            ) {
+                counter.findadocLocationRequests++
+                setTimeout(() => {
+                    if (options.answer === 'denied') {
+                        failure({ code: 1, PERMISSION_DENIED: 1 })
+                    } else {
+                        success({ coords: options.answer })
+                    }
+                }, 50)
+            }
+        }
+        Object.defineProperty(navigator, 'geolocation', { value: geolocation, configurable: true })
+        const originalQuery = navigator.permissions?.query?.bind(navigator.permissions)
+        Object.defineProperty(navigator, 'permissions', {
+            configurable: true,
+            value: {
+                query: (descriptor: { name: string }) => descriptor.name === 'geolocation'
+                    ? Promise.resolve({ state: options.permission, addEventListener: () => undefined })
+                    : originalQuery?.(descriptor as PermissionDescriptor)
+            }
+        })
+    }, stub)
+}
+
+async function locationRequests(page: Page): Promise<number> {
+    return page.evaluate(() => (window as unknown as { findadocLocationRequests: number }).findadocLocationRequests)
+}
+
+function cardNames(page: Page) {
+    return page.getByTestId('search-result-card').locator('h3')
+}
 
 function isApiRequest(url: URL): boolean {
     return (url.hostname === '127.0.0.1' && url.port === '4000') || url.hostname === 'api.findadoc.jp'
@@ -598,6 +667,87 @@ test.describe('Search page', () => {
             await page.getByTestId('search-map-toggle').click()
 
             await expect(page.getByTestId('search-map-panel')).toBeVisible()
+        })
+    })
+
+    test.describe('Near me', () => {
+        test.beforeEach(async ({ page }) => {
+            await page.setViewportSize({ width: 1728, height: 1077 })
+        })
+
+        test('sorts every result nearest first and shows each distance', async ({ page }) => {
+            const requestUrls: string[] = []
+            page.on('request', request => requestUrls.push(`${request.url()} ${request.postData() ?? ''}`))
+            await stubLocation(page, { permission: 'prompt', answer: VISITOR_IN_KYOTO })
+            await page.goto('/search')
+            await expect(cardNames(page)).toHaveText(['Tokyo Family Clinic', 'Osaka Dental', 'Sapporo Skin Clinic'])
+
+            await page.getByTestId('search-near-me').click()
+
+            await expect(cardNames(page)).toHaveText(['Osaka Dental', 'Tokyo Family Clinic', 'Sapporo Skin Clinic'])
+            await expect(page.getByTestId('search-near-me')).toHaveAttribute('aria-pressed', 'true')
+            await expect(page.getByTestId('search-result-distance').first()).toHaveText(/^\d+ km away$/)
+            await expect(page.getByTestId('search-near-me-status')).toHaveText(enUS.search.nearMeSorted)
+            await expect(page).toHaveURL(/[?&]sort=near/)
+
+            // The position stays on the device: not in the URL, and not in any request.
+            expect(page.url()).not.toContain(String(VISITOR_IN_KYOTO.latitude))
+            expect(requestUrls.filter(url => url.includes(String(VISITOR_IN_KYOTO.latitude)))).toEqual([])
+        })
+
+        test('orders only what the filters leave', async ({ page }) => {
+            await stubLocation(page, { permission: 'prompt', answer: VISITOR_IN_KYOTO })
+            await page.goto('/search?specialty=dentistry')
+            await expect(page.getByTestId('search-result-card')).toHaveCount(2)
+
+            await page.getByTestId('search-near-me').click()
+
+            await expect(cardNames(page)).toHaveText(['Osaka Dental', 'Tokyo Family Clinic'])
+            await expect(page).toHaveURL(/specialty=dentistry/)
+        })
+
+        test('turns off again and goes back to directory order', async ({ page }) => {
+            await stubLocation(page, { permission: 'prompt', answer: VISITOR_IN_KYOTO })
+            await page.goto('/search')
+            await page.getByTestId('search-near-me').click()
+            await expect(cardNames(page).first()).toHaveText('Osaka Dental')
+
+            await page.getByTestId('search-near-me').click()
+
+            await expect(cardNames(page).first()).toHaveText('Tokyo Family Clinic')
+            await expect(page.getByTestId('search-result-distance')).toHaveCount(0)
+            await expect(page).not.toHaveURL(/sort=near/)
+        })
+
+        test('never asks for the location on page load, even from a shared sort=near link', async ({ page }) => {
+            await stubLocation(page, { permission: 'prompt', answer: VISITOR_IN_KYOTO })
+            await page.goto('/search?sort=near')
+            await expect(page.getByTestId('search-result-card')).toHaveCount(3)
+
+            expect(await locationRequests(page)).toBe(0)
+            await expect(cardNames(page).first()).toHaveText('Tokyo Family Clinic')
+            await expect(page.getByTestId('search-near-me')).toHaveAttribute('aria-pressed', 'false')
+        })
+
+        test('sorts a shared sort=near link on arrival when location is already allowed', async ({ page }) => {
+            await stubLocation(page, { permission: 'granted', answer: VISITOR_IN_KYOTO })
+            await page.goto('/search?sort=near')
+
+            await expect(cardNames(page).first()).toHaveText('Osaka Dental')
+            await expect(page.getByTestId('search-near-me')).toHaveAttribute('aria-pressed', 'true')
+        })
+
+        test('offers the area filter when location is refused', async ({ page }) => {
+            await stubLocation(page, { permission: 'prompt', answer: 'denied' })
+            await page.goto('/search')
+            await expect(page.getByTestId('search-result-card')).toHaveCount(3)
+
+            await page.getByTestId('search-near-me').click()
+
+            await expect(page.getByTestId('search-near-me-status')).toContainText(enUS.search.nearMeDenied)
+            await expect(cardNames(page).first()).toHaveText('Tokyo Family Clinic')
+            await page.getByTestId('search-near-me-choose-area').click()
+            await expect(page.getByTestId('search-region')).toBeFocused()
         })
     })
 })

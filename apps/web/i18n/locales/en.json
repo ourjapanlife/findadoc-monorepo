@@ -214,7 +214,7 @@
   "privacyPage": {
     "heading": "Privacy Policy",
     "subheading": "What we collect, why we collect it, who we share it with, and how to reach us about your information.",
-    "date": "Effective date: November 16, 2026",
+    "date": "Effective date: November 27, 2026",
     "sections": {
       "whoWeAre": {
         "heading": "1. Who we are",
@@ -223,10 +223,11 @@
       "collect": {
         "heading": "2. Information we collect",
         "p1": "Searching the directory: you can search without an account. We receive your search terms, filters, and language. Your language, theme, and recent filters are saved in your own browser.",
-        "p2": "Suggesting a clinic or doctor: we receive what you enter, such as a Google Maps link, names, languages spoken, and notes. Please do not include your own health information.",
-        "p3": "Booking an appointment: when a clinic takes booking requests through Find a Doc, Japan, we collect what its form asks for. This can include your name, email address, phone number, date of birth, gender, the reason for your visit, the time you choose, and files such as a photo of you and of your health insurance card or eligibility certificate. Booking is offered only to people who are in Japan when they send the request.",
-        "p4": "The reason for your visit is health information, which the APPI treats as special care-required personal information. We collect it only when you submit the form yourself, after you tick a box consenting to us collecting it and passing it to the clinic you chose. We record when you gave that consent.",
-        "p5": "Accounts and technical information: moderators and clinic staff sign in through Auth0, which gives us their name, email address, and an account identifier. Our servers record IP addresses and request details to keep the service running and to prevent abuse."
+        "p2": "Clinics near you: if you tap Near me, your browser asks whether to share your location. It is used on your device to sort clinics by distance. We do not receive it, and it is not saved. If the map is open, it moves to your area, so Google Maps loads the map of that area, as it does for any place you view on the map.",
+        "p3": "Suggesting a clinic or doctor: we receive what you enter, such as a Google Maps link, names, languages spoken, and notes. Please do not include your own health information.",
+        "p4": "Booking an appointment: when a clinic takes booking requests through Find a Doc, Japan, we collect what its form asks for. This can include your name, email address, phone number, date of birth, gender, the reason for your visit, the time you choose, and files such as a photo of you and of your health insurance card or eligibility certificate. Booking is offered only to people who are in Japan when they send the request.",
+        "p5": "The reason for your visit is health information, which the APPI treats as special care-required personal information. We collect it only when you submit the form yourself, after you tick a box consenting to us collecting it and passing it to the clinic you chose. We record when you gave that consent.",
+        "p6": "Accounts and technical information: moderators and clinic staff sign in through Auth0, which gives us their name, email address, and an account identifier. Our servers record IP addresses and request details to keep the service running and to prevent abuse."
       },
       "use": {
         "heading": "3. How we use it",
@@ -917,6 +918,14 @@
     "mapUnavailable": "The map could not be loaded.",
     "mapUnavailableHint": "The rest of the results are unaffected.",
     "notOnMap": "Every result is on the map | 1 result is not on the map yet | {n} results are not on the map yet",
+    "nearMe": "Near me",
+    "nearMeLocating": "Finding your location… It stays on this device.",
+    "nearMeSorted": "Nearest first, by straight-line distance. Your location stays on this device.",
+    "nearMeDenied": "Location is off for this site. Turn it on in your browser's site settings, or choose an area.",
+    "nearMeUnavailable": "We could not find your location. Try again, or choose an area.",
+    "nearMeChooseArea": "Choose an area",
+    "distanceAway": "{distance} away",
+    "youAreHere": "You are here",
     "payment": "Payment",
     "clinicLanguagesCaveat": "These are languages the clinic says it supports. Not every doctor may speak them, so ask when you contact the clinic."
   },
