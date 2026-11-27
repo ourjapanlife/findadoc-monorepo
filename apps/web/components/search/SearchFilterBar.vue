@@ -57,8 +57,9 @@
                         :aria-pressed="isSortedByDistance"
                         :aria-busy="isLocating"
                         aria-describedby="search-near-me-status"
-                        class="btn btn-secondary btn-sm portrait:h-auto portrait:min-h-10 portrait:gap-1.5 portrait:px-2
-                               portrait:py-1.5 portrait:text-sm/tight portrait:whitespace-normal"
+                        class="btn btn-secondary btn-sm aria-pressed:border-primary aria-pressed:bg-primary/10 portrait:h-auto
+                               portrait:min-h-10 portrait:gap-1.5 portrait:px-2 portrait:py-1.5 portrait:text-sm/tight
+                               portrait:whitespace-normal"
                         @click="toggleNearMe"
                     >
                         <svg
