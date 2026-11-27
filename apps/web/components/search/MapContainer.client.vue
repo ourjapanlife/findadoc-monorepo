@@ -346,10 +346,38 @@ const setLocation = (lat: number, lng: number) => {
     currentLocation.value = locationExists ? { lat, lng } : defaultLocation
 }
 
+/** Space around the fitted area, so the visitor dot and edge pins are not under the map's border. */
+const FIT_PADDING_PX = 48
+
+/**
+ * Fits the visitor and the nearest pins to the map's real size with `fitBounds`. The averaged
+ * centre and fixed zoom below can leave the visitor off screen when they are far from every
+ * clinic. Returns false when the map is not ready yet, so the caller falls back.
+ */
+const fitVisitorAndNearest = (coordinates: Location[]): boolean => {
+    const map = mapRef.value?.map
+    const LatLngBounds = window.google?.maps?.LatLngBounds
+    if (!map || !LatLngBounds) return false
+
+    const bounds = new LatLngBounds()
+    for (const coordinate of coordinates) {
+        bounds.extend(coordinate)
+    }
+    map.fitBounds(bounds, FIT_PADDING_PX)
+    // Keep the bound center in step, so a later setLocation to a pin still registers as a change.
+    currentLocation.value = bounds.getCenter().toJSON()
+    return true
+}
+
 const recenterMap = () => {
     const allCoordinates = getAllCurrentCoordinates()
     if (!allCoordinates || !allCoordinates.length)
         return
+
+    // One point has no area to fit; the heuristic zooms in on it.
+    if (visitorPosition.value && allCoordinates.length > 1 && fitVisitorAndNearest(allCoordinates)) {
+        return
+    }
 
     currentZoom.value = calculateZoomLevel(allCoordinates)
 
@@ -412,4 +440,9 @@ watch(activeFacility, adjustMapToActiveResult)
 
 // Fit the map to the results whenever they change, including the set already loaded on mount.
 watch(searchResultsList, recenterMap, { immediate: true })
+
+// The first fit can run before Google's map exists. Fit again once it does.
+watch(() => mapRef.value?.map, map => {
+    if (map && visitorPosition.value) recenterMap()
+})
 </script>
